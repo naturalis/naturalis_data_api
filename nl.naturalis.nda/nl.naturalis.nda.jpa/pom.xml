@@ -6,9 +6,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>nl.naturalis.nda</groupId>
-	<version>1.0.0</version>
 	<artifactId>nl.naturalis.nda.jpa</artifactId>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
+	
 	<name>nl.naturalis.nda.jpa</name>
 
 	<parent>

@@ -7,8 +7,9 @@
 
 	<groupId>nl.naturalis.nda</groupId>
 	<artifactId>nl.naturalis.nda.ear</artifactId>
-	<packaging>ear</packaging>
 	<version>1.0.0</version>
+	<packaging>ear</packaging>
+	
 	<name>nl.naturalis.nda.ear</name>
 
 	<parent>

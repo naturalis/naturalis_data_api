@@ -6,9 +6,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>nl.naturalis.nda</groupId>
-	<version>1.0.0</version>
 	<artifactId>nl.naturalis.nda.project</artifactId>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
+	
 	<name>nl.naturalis.nda.project</name>
 
 	<modules>
@@ -20,6 +21,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>nl.naturalis.nda.ear</groupId>
+				<artifactId>nl.naturalis.nda.ear</artifactId>
+				<version>1.0.0</version>
+				<type>ear</type>
+			</dependency>
 			<dependency>
 				<groupId>nl.naturalis.nda</groupId>
 				<artifactId>nl.naturalis.nda.service.rest</artifactId>

@@ -1,16 +1,24 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>nl.naturalis.nda</groupId>
-   <version>1.0.0</version>
-   <artifactId>jpa</artifactId>
-   <packaging>jar</packaging>
-   <name>nl.naturalis.nda.jpa</name>
-   
-   <parent>
-      <groupId>nl.naturalis.nda</groupId>
-      <artifactId>project</artifactId>
-      <version>1.0.0</version>
-   </parent>
-   
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>nl.naturalis.nda</groupId>
+	<version>1.0.0</version>
+	<artifactId>nl.naturalis.nda.jpa</artifactId>
+	<packaging>jar</packaging>
+	<name>nl.naturalis.nda.jpa</name>
+
+	<parent>
+		<groupId>nl.naturalis.nda</groupId>
+		<artifactId>nl.naturalis.nda.project</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<build>
+		<finalName>nl.naturalis.nda.jpa</finalName>
+	</build>
+
 </project>

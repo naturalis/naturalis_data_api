@@ -4,37 +4,39 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>nl.naturalis.nda</groupId>
-	<artifactId>ear</artifactId>
+	<artifactId>nl.naturalis.nda.ear</artifactId>
 	<packaging>ear</packaging>
 	<version>1.0.0</version>
 	<name>nl.naturalis.nda.ear</name>
 
 	<parent>
 		<groupId>nl.naturalis.nda</groupId>
-		<artifactId>project</artifactId>
+		<artifactId>nl.naturalis.nda.project</artifactId>
 		<version>1.0.0</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>nl.naturalis.nda</groupId>
-			<artifactId>ejb</artifactId>
+			<artifactId>nl.naturalis.nda.ejb</artifactId>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>nl.naturalis.nda</groupId>
-			<artifactId>service.rest</artifactId>
+			<artifactId>nl.naturalis.nda.service.rest</artifactId>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>nl.naturalis.nda</groupId>
-			<artifactId>jpa</artifactId>
+			<artifactId>nl.naturalis.nda.jpa</artifactId>
 			<type>jar</type>
 		</dependency>
 	</dependencies>
 
 	<build>
+		<finalName>nl.naturalis.nda.ear</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-ear-plugin</artifactId>
@@ -44,7 +46,7 @@
 					<modules>
 						<webModule>
 							<groupId>nl.naturalis.nda</groupId>
-							<artifactId>service.rest</artifactId>
+							<artifactId>nl.naturalis.nda.service.rest</artifactId>
 							<contextRoot>rest</contextRoot>
 						</webModule>
 					</modules>

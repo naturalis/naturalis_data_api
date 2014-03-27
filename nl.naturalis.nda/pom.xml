@@ -1,43 +1,48 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>nl.naturalis.nda</groupId>
-   <version>1.0.0</version>
-   <artifactId>project</artifactId>
-   <packaging>pom</packaging>
-   <name>nl.naturalis.nda.project</name>
-   
-   <modules>
-      <module>nl.naturalis.nda.ear</module>
-      <module>nl.naturalis.nda.service.rest</module>
-      <module>nl.naturalis.nda.ejb</module>
-      <module>nl.naturalis.nda.jpa</module>
-   </modules>
-   
-   <dependencyManagement>
-      <dependencies>
-          <dependency>
-            <groupId>nl.naturalis.nda</groupId>
-            <artifactId>service.rest</artifactId>
-            <version>1.0.0</version>
-            <type>war</type>
-         </dependency>
-         <dependency>
-            <groupId>nl.naturalis.nda</groupId>
-            <artifactId>ejb</artifactId>
-            <version>1.0.0</version>
-            <type>ejb</type>
-         </dependency>
-      <dependency>
-         <groupId>nl.naturalis.nda</groupId>
-         <artifactId>jpa</artifactId>
-		 <version>1.0.0</version>
-         <type>jar</type>
-      </dependency>
-     </dependencies>
-   </dependencyManagement>  
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>nl.naturalis.nda</groupId>
+	<version>1.0.0</version>
+	<artifactId>nl.naturalis.nda.project</artifactId>
+	<packaging>pom</packaging>
+	<name>nl.naturalis.nda.project</name>
+
+	<modules>
+		<module>nl.naturalis.nda.ear</module>
+		<module>nl.naturalis.nda.service.rest</module>
+		<module>nl.naturalis.nda.ejb</module>
+		<module>nl.naturalis.nda.jpa</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>nl.naturalis.nda</groupId>
+				<artifactId>nl.naturalis.nda.service.rest</artifactId>
+				<version>1.0.0</version>
+				<type>war</type>
+			</dependency>
+			<dependency>
+				<groupId>nl.naturalis.nda</groupId>
+				<artifactId>nl.naturalis.nda.ejb</artifactId>
+				<version>1.0.0</version>
+				<type>ejb</type>
+			</dependency>
+			<dependency>
+				<groupId>nl.naturalis.nda</groupId>
+				<artifactId>nl.naturalis.nda.jpa</artifactId>
+				<version>1.0.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>  
 
 	<build>
+		<finalName>nl.naturalis.nda.project</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -59,5 +64,5 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
-	
+
 </project>

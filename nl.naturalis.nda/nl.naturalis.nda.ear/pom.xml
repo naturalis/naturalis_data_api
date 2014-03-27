@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>nl.naturalis.nda</groupId>
+	<artifactId>ear</artifactId>
+	<packaging>ear</packaging>
+	<version>1.0.0</version>
+	<name>nl.naturalis.nda.ear</name>
+
+	<parent>
+		<groupId>nl.naturalis.nda</groupId>
+		<artifactId>project</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>nl.naturalis.nda</groupId>
+			<artifactId>ejb</artifactId>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>nl.naturalis.nda</groupId>
+			<artifactId>service.rest</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>nl.naturalis.nda</groupId>
+			<artifactId>jpa</artifactId>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-ear-plugin</artifactId>
+				<configuration>
+					<defaultJavaBundleDir>lib</defaultJavaBundleDir>
+					<skinnyWars>true</skinnyWars>
+					<modules>
+						<webModule>
+							<groupId>nl.naturalis.nda</groupId>
+							<artifactId>service.rest</artifactId>
+							<contextRoot>rest</contextRoot>
+						</webModule>
+					</modules>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

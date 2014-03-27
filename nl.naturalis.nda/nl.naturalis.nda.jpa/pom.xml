@@ -1,0 +1,16 @@
+<project>
+
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>nl.naturalis.nda</groupId>
+   <version>1.0.0</version>
+   <artifactId>jpa</artifactId>
+   <packaging>jar</packaging>
+   <name>nl.naturalis.nda.jpa</name>
+   
+   <parent>
+      <groupId>nl.naturalis.nda</groupId>
+      <artifactId>project</artifactId>
+      <version>1.0.0</version>
+   </parent>
+   
+</project>

@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
 
-	<display-name>QAW Service Layer</display-name>
+	<display-name>NDA REST Layer</display-name>
 
 	<!--
 	<data-source>

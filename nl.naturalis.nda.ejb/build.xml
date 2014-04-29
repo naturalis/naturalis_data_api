@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." name="nl.naturalis.nda.ejb" default="build">
+
+    <import file="../nl.naturalis.nda.build/common.xml" />
+
+    <target name="package" depends="test">
+        <!--
+			We don't use the <ejbjar> task. Given the structure and contents,
+			it doesn't seem necessary. If you look at how Eclipse itself exports
+			the jar file, or if you look at the contents of the jar file in
+			JBoss's standalone/deployments directory, a regular jar suffices.	
+		 -->
+        <jar destfile="build/${ant.project.name}.jar" basedir="build/main" update="true" />
+    </target>
+
+    <target name="build" depends="package" />
+
+</project>

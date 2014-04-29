@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="nl.naturalis.nda.jpa.hibernate">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../eclipse/eclipse-kepler-jee"/>
+    <property name="nl.naturalis.nda.ejb.location" value="../nl.naturalis.nda.ejb"/>
+    <property name="org.domainobject.util.location" value="../org.domainobject.util"/>
+    <property name="org.domainobject.util.debug.location" value="../org.domainobject.util.debug"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="JBoss 7.1 Runtime [JBoss 7.1 Runtime].libraryclasspath">
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/activation/api/main/activation-1.1.1.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/annotation/api/main/jboss-annotations-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/ejb/api/main/jboss-ejb-api_3.1_spec-1.0.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/el/api/main/jboss-el-api_2.2_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/enterprise/api/main/cdi-api-1.0-SP4.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/enterprise/deploy/api/main/jboss-jad-api_1.2_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/faces/api/main/jboss-jsf-api_2.1_spec-2.0.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/inject/api/main/javax.inject-1.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/interceptor/api/main/jboss-interceptors-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/jms/api/main/jboss-jms-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/jws/api/main/jsr181-api-1.0-MR1.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/mail/api/main/mail-1.4.4.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/management/j2ee/api/main/jboss-j2eemgmt-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/persistence/api/main/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/resource/api/main/jboss-connector-api_1.6_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/rmi/api/main/jboss-rmi-api_1.0_spec-1.0.4.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/security/auth/message/api/main/jboss-jaspi-api_1.0_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/security/jacc/api/main/jboss-jacc-api_1.4_spec-1.0.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/servlet/jsp/api/main/jboss-jsp-api_2.2_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/servlet/jstl/api/main/jboss-jstl-api_1.2_spec-1.0.2.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/transaction/api/main/jboss-transaction-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/validation/api/main/validation-api-1.0.0.GA.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/ws/rs/api/main/jboss-jaxrs-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/wsdl4j/api/main/wsdl4j-1.6.2.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/xml/bind/api/main/jboss-jaxb-api_2.2_spec-1.0.3.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/xml/registry/api/main/jboss-jaxr-api_1.0_spec-1.0.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/xml/rpc/api/main/jboss-jaxrpc-api_1.1_spec-1.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/xml/soap/api/main/jboss-saaj-api_1.3_spec-1.0.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/javax/xml/ws/api/main/jboss-jaxws-api_2.2_spec-2.0.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/hibernate/validator/main/hibernate-validator-4.2.0.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/picketbox/main/picketbox-4.0.7.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/picketbox/main/picketbox-commons-1.0.0.final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/picketbox/main/picketbox-infinispan-4.0.7.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/as/controller-client/main/jboss-as-controller-client-7.1.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/dmr/main/jboss-dmr-1.1.1.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/logging/main/jboss-logging-3.1.0.GA.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-jaxb-provider/main/resteasy-jaxb-provider-2.3.2.Final-jandex.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-jaxb-provider/main/resteasy-jaxb-provider-2.3.2.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-jaxrs/main/async-http-servlet-3.0-2.3.2.Final-jandex.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-jaxrs/main/async-http-servlet-3.0-2.3.2.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-jaxrs/main/resteasy-jaxrs-2.3.2.Final-jandex.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-jaxrs/main/resteasy-jaxrs-2.3.2.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-multipart-provider/main/resteasy-multipart-provider-2.3.2.Final-jandex.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/resteasy/resteasy-multipart-provider/main/resteasy-multipart-provider-2.3.2.Final.jar"/>
+        <pathelement location="../../../lib/java/jboss-as-7.1.1.Final/modules/org/jboss/ejb3/main/jboss-ejb3-ext-api-2.0.0.jar"/>
+    </path>
+    <path id="MySQL JDBC Driver.libraryclasspath">
+        <pathelement location="../../../.m2/repository/mysql/mysql-connector-java/5.1.26/mysql-connector-java-5.1.26.jar"/>
+    </path>
+    <path id="EAR Libraries.libraryclasspath">
+        <pathelement location="../../../../../nl.naturalis.nda.ear/EarContent/lib/logback-classic-1.0.0.jar"/>
+        <pathelement location="../../../../../nl.naturalis.nda.ear/EarContent/lib/logback-core-1.0.0.jar"/>
+        <pathelement location="../../../../../nl.naturalis.nda.ear/EarContent/lib/mysql-connector-java-5.1.26.jar"/>
+        <pathelement location="../../../../../nl.naturalis.nda.ear/EarContent/lib/slf4j-api-1.6.4.jar"/>
+    </path>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+    <path id="Maven Dependencies.libraryclasspath">
+        <pathelement location="../../../.m2/repository/junit/junit/4.10/junit-4.10.jar"/>
+        <pathelement location="../../../.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/slf4j/slf4j-api/1.6.6/slf4j-api-1.6.6.jar"/>
+        <pathelement location="../../../.m2/repository/org/slf4j/slf4j-simple/1.6.6/slf4j-simple-1.6.6.jar"/>
+    </path>
+    <path id="Plug-in Dependencies.libraryclasspath"/>
+    <path id="org.domainobject.util.classpath">
+        <pathelement location="${org.domainobject.util.location}/target/classes"/>
+        <pathelement location="${org.domainobject.util.location}/target/test-classes"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+    </path>
+    <path id="org.domainobject.util.debug.classpath">
+        <pathelement location="${org.domainobject.util.debug.location}/target/test-classes"/>
+        <pathelement location="${org.domainobject.util.debug.location}/build/main"/>
+        <pathelement location="${org.domainobject.util.debug.location}/target/classes"/>
+        <pathelement location="${org.domainobject.util.debug.location}/build/test"/>
+        <path refid="org.domainobject.util.classpath"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="nl.naturalis.nda.jpa.hibernate.classpath">
+        <pathelement location="build/classes"/>
+        <path refid="JBoss 7.1 Runtime [JBoss 7.1 Runtime].libraryclasspath"/>
+        <path refid="MySQL JDBC Driver.libraryclasspath"/>
+        <path refid="EAR Libraries.libraryclasspath"/>
+        <path refid="org.domainobject.util.debug.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="build/classes"/>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="build/classes"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${org.domainobject.util.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${org.domainobject.util.debug.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${org.domainobject.util.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${org.domainobject.util.debug.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="test"/>
+            <classpath refid="nl.naturalis.nda.jpa.hibernate.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${nl.naturalis.nda.ejb.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${nl.naturalis.nda.ejb.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>

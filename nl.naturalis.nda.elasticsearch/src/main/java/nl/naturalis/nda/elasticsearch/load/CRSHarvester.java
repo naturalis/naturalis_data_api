@@ -17,9 +17,12 @@ import nl.naturalis.bioportal.oaipmh.CRSBioportalInterface;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
+import org.domainobject.util.debug.BeanPrinter;
+import org.openarchives.oai._2.MetadataType;
 import org.openarchives.oai._2.OAIPMHtype;
 import org.openarchives.oai._2.RecordType;
 import org.openarchives.oai._2.ResumptionTokenType;
+import org.openarchives.oai._2_0.oai_dc.OaiDcType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +106,7 @@ public class CRSHarvester {
 
 	private final ConfigObject config;
 	private final Unmarshaller unmarshaller;
+	private final BeanPrinter beanPrinter;
 
 	private int batch;
 
@@ -113,6 +117,7 @@ public class CRSHarvester {
 		config = new ConfigObject(url);
 		JAXBContext jaxbContext = JAXBContext.newInstance(JAXB_PACKAGES);
 		unmarshaller = jaxbContext.createUnmarshaller();
+		beanPrinter = new BeanPrinter("C:/tmp/BeanPrinter.txt");
 	}
 
 
@@ -123,18 +128,19 @@ public class CRSHarvester {
 
 			String resToken;
 
-			URL url = getClass().getResource(RES_TOKEN_FILE);
-			if (url == null) {
-				String dir = getClass().getResource("/").toString();
-				logger.info(String.format("Did not find resumption token file (.resumption-token) in %s.will start from scratch", dir));
+			File resTokenFile = getResumptionTokenFile();
+			if (!resTokenFile.exists()) {
+				logger.info(String.format("Did not find resumption token file: %s", resTokenFile.getCanonicalPath()));
+				logger.info("Will start from scratch (batch 0)");
 				batch = 0;
 				resToken = null;
 			}
 			else {
-				String[] elements = FileUtil.getContents(url).split(RES_TOKEN_DELIM);
-				batch = Integer.parseInt(elements[0]);
-				resToken = elements[1];
-				logger.info(String.format("Found resumption token file (%s). Will start with resumption token %s.", url.toString(), resToken));
+				String[] elements = FileUtil.getContents(resTokenFile).split(RES_TOKEN_DELIM);
+				batch = Integer.parseInt(elements[1]);
+				resToken = elements[0];
+				logger.info(String.format("Found resumption token file: %s", resTokenFile.getCanonicalPath()));
+				logger.info(String.format("Will resume with resumption token %s (batch %s)" , resToken, batch));
 			}
 
 			do {
@@ -143,6 +149,11 @@ public class CRSHarvester {
 				++batch;
 				break;
 			} while (resToken != null);
+			
+			logger.info("Deleting resumption token file");
+			if(resTokenFile.exists()) {
+				resTokenFile.delete();
+			}
 
 			logger.info(getClass().getSimpleName() + " finished successfully");
 
@@ -162,10 +173,16 @@ public class CRSHarvester {
 		OAIPMHtype root = e.getValue();
 
 		List<RecordType> records = root.getListRecords().getRecord();
+		beanPrinter.dump(records);
 
 		for (RecordType record : records) {
-			//MetadataType metadata = record.getMetadata();
-			//JAXBElement<OaiDcType> x = (JAXBElement<OaiDcType>) metadata.getAny();
+			MetadataType metadata = record.getMetadata();
+			if (metadata == null) {
+				// This is a record that was deleted in CRS
+			}
+			else {
+				JAXBElement<OaiDcType> oaiDc = (JAXBElement<OaiDcType>) metadata.getAny();
+			}
 		}
 
 		return processResumptionToken(root);
@@ -179,8 +196,7 @@ public class CRSHarvester {
 		if (rtt != null) {
 			resToken = rtt.getValue();
 			logger.info("Next batches available using resumption token " + resToken);
-			URI uri = URI.create(getClass().getResource("/").toString() + RES_TOKEN_FILE);
-			File file = new File(uri);
+			File file = getResumptionTokenFile();
 			try {
 				logger.info("Writing resumption token to file " + file.getCanonicalPath());
 			}
@@ -190,6 +206,14 @@ public class CRSHarvester {
 			FileUtil.putContents(file, resToken + RES_TOKEN_DELIM + batch);
 		}
 		return resToken;
+	}
+
+
+	private static File getResumptionTokenFile()
+	{
+		String path = CRSHarvester.class.getResource("/").toString() + RES_TOKEN_FILE;
+		URI uri = URI.create(path);
+		return new File(uri);
 	}
 
 

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir=".">
+
+    <!-- The absolute path to the parent directory of the directory containing this file -->
+    <property name="home" location="${basedir}/../" />
+    <property name="nl.naturalis.nda.build.location" location="${home}/nl.naturalis.nda.build" />
+    <property name="nl.naturalis.nda.ear.location" location="${home}/nl.naturalis.nda.ear" />
+    <property name="nl.naturalis.nda.service.rest.location" location="${home}/nl.naturalis.nda.service.rest" />
+    <property name="nl.naturalis.nda.ejb.location" location="${home}/nl.naturalis.nda.ejb" />
+    <property name="nl.naturalis.nda.domain.location" location="${home}/nl.naturalis.nda.domain" />
+    <property name="nl.naturalis.nda.client.location" location="${home}/nl.naturalis.nda.client" />
+
+    <!-- Libraries in the EAR's lib directory -->
+    <path id="earLibs">
+        <fileset dir="${nl.naturalis.nda.ear.location}/EarContent/lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <!-- Non-packaged libraries (e.g. for unit testing) -->
+    <path id="buildOnlyLibs">
+        <fileset dir="${nl.naturalis.nda.build.location}/lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <!-- Non-packaged libraries (provided by JBoss runtime) -->
+    <path id="jbossLibs">
+        <pathelement location="${jbossHome}/modules/javax/activation/api/main/activation-1.1.1.jar" />
+        <pathelement location="${jbossHome}/modules/javax/annotation/api/main/jboss-annotations-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/ejb/api/main/jboss-ejb-api_3.1_spec-1.0.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/el/api/main/jboss-el-api_2.2_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/enterprise/api/main/cdi-api-1.0-SP4.jar" />
+        <pathelement location="${jbossHome}/modules/javax/enterprise/deploy/api/main/jboss-jad-api_1.2_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/faces/api/main/jboss-jsf-api_2.1_spec-2.0.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/inject/api/main/javax.inject-1.jar" />
+        <pathelement location="${jbossHome}/modules/javax/interceptor/api/main/jboss-interceptors-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/jms/api/main/jboss-jms-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/jws/api/main/jsr181-api-1.0-MR1.jar" />
+        <pathelement location="${jbossHome}/modules/javax/mail/api/main/mail-1.4.4.jar" />
+        <pathelement location="${jbossHome}/modules/javax/management/j2ee/api/main/jboss-j2eemgmt-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/persistence/api/main/hibernate-jpa-2.0-api-1.0.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/resource/api/main/jboss-connector-api_1.6_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/rmi/api/main/jboss-rmi-api_1.0_spec-1.0.4.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/security/auth/message/api/main/jboss-jaspi-api_1.0_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/security/jacc/api/main/jboss-jacc-api_1.4_spec-1.0.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/servlet/jsp/api/main/jboss-jsp-api_2.2_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/servlet/jstl/api/main/jboss-jstl-api_1.2_spec-1.0.2.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/transaction/api/main/jboss-transaction-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/validation/api/main/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${jbossHome}/modules/javax/ws/rs/api/main/jboss-jaxrs-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/wsdl4j/api/main/wsdl4j-1.6.2.jar" />
+        <pathelement location="${jbossHome}/modules/javax/xml/bind/api/main/jboss-jaxb-api_2.2_spec-1.0.3.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/xml/registry/api/main/jboss-jaxr-api_1.0_spec-1.0.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/xml/rpc/api/main/jboss-jaxrpc-api_1.1_spec-1.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/xml/soap/api/main/jboss-saaj-api_1.3_spec-1.0.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/javax/xml/ws/api/main/jboss-jaxws-api_2.2_spec-2.0.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/hibernate/validator/main/hibernate-validator-4.2.0.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/picketbox/main/picketbox-4.0.7.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/picketbox/main/picketbox-commons-1.0.0.final.jar" />
+        <pathelement location="${jbossHome}/modules/org/picketbox/main/picketbox-infinispan-4.0.7.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/as/controller-client/main/jboss-as-controller-client-7.1.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/dmr/main/jboss-dmr-1.1.1.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/logging/main/jboss-logging-3.1.0.GA.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-jaxb-provider/main/resteasy-jaxb-provider-2.3.2.Final-jandex.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-jaxb-provider/main/resteasy-jaxb-provider-2.3.2.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-jaxrs/main/async-http-servlet-3.0-2.3.2.Final-jandex.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-jaxrs/main/async-http-servlet-3.0-2.3.2.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-jaxrs/main/resteasy-jaxrs-2.3.2.Final-jandex.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-jaxrs/main/resteasy-jaxrs-2.3.2.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-multipart-provider/main/resteasy-multipart-provider-2.3.2.Final-jandex.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/resteasy/resteasy-multipart-provider/main/resteasy-multipart-provider-2.3.2.Final.jar" />
+        <pathelement location="${jbossHome}/modules/org/jboss/ejb3/main/jboss-ejb3-ext-api-2.0.0.jar" />
+    </path>
+
+    <path id="nl.naturalis.nda.domain.classpath">
+        <pathelement location="${nl.naturalis.nda.domain.location}/build/main" />
+        <pathelement location="${nl.naturalis.nda.domain.location}/build/test" />
+        <path refid="buildOnlyLibs" />
+        <path refid="earLibs" />
+        <path refid="jbossLibs" />
+    </path>
+
+    <path id="nl.naturalis.nda.ejb.classpath">
+        <pathelement location="${nl.naturalis.nda.ejb.location}/build/main" />
+        <pathelement location="${nl.naturalis.nda.ejb.location}/build/test" />
+        <path refid="nl.naturalis.nda.domain.classpath" />
+        <path refid="buildOnlyLibs" />
+        <path refid="earLibs" />
+        <path refid="jbossLibs" />
+    </path>
+
+    <path id="nl.naturalis.nda.service.rest.classpath">
+        <pathelement location="${nl.naturalis.nda.service.rest.location}/build/main" />
+        <pathelement location="${nl.naturalis.nda.service.rest.location}/build/test" />
+        <fileset dir="${nl.naturalis.nda.service.rest.location}/WebContent/WEB-INF/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <path refid="nl.naturalis.nda.domain.classpath" />
+        <path refid="nl.naturalis.nda.ejb.classpath" />
+        <path refid="buildOnlyLibs" />
+        <path refid="earLibs" />
+        <path refid="jbossLibs" />
+    </path>
+
+    <path id="nl.naturalis.nda.client.classpath">
+        <pathelement location="${nl.naturalis.nda.client.location}/build/main" />
+        <pathelement location="${nl.naturalis.nda.client.location}/build/test" />
+        <fileset dir="${nl.naturalis.nda.client.location}/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <path refid="buildOnlyLibs" />
+    </path>
+
+
+</project>

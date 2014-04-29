@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="LT004109" name="nl.naturalis.nda.ejb.service.SpecimenServiceTest" skipped="0" tests="3" time="0.044" timestamp="2014-04-10T13:43:33">
+  <properties>
+    <property name="java.vendor" value="Oracle Corporation" />
+    <property name="home" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="javacSource" value="1.6" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="nl.naturalis.nda.service.rest.location" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.service.rest" />
+    <property name="os.name" value="Windows 7" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jdk1.7\jre\lib\resources.jar;C:\Program Files\Java\jdk1.7\jre\lib\rt.jar;C:\Program Files\Java\jdk1.7\jre\lib\sunrsasign.jar;C:\Program Files\Java\jdk1.7\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.7\jre\lib\jce.jar;C:\Program Files\Java\jdk1.7\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.7\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.7\jre\classes" />
+    <property name="jbossHome" value="C:/Users/admin.ayco.holleman/lib/java/jboss-as-7.1.1.Final" />
+    <property name="TODAY" value="April 10 2014" />
+    <property name="ant.file.type.common" value="file" />
+    <property name="sun.desktop" value="windows" />
+    <property name="ant.file.nl.naturalis.nda.ejb" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.ejb\build.xml" />
+    <property name="nl.naturalis.nda.build.location" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.build" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3" />
+    <property name="java.runtime.version" value="1.7.0_51-b13" />
+    <property name="nl.naturalis.nda.domain.location" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.domain" />
+    <property name="user.name" value="admin.Ayco.Holleman" />
+    <property name="user.language" value="nl" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.7\jre\bin" />
+    <property name="ant.file.nl.naturalis.nda.build" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.build\build.xml" />
+    <property name="ant.project.default-target" value="build" />
+    <property name="ant.project.name" value="nl.naturalis.nda.ejb" />
+    <property name="DSTAMP" value="20140410" />
+    <property name="java.version" value="1.7.0_51" />
+    <property name="user.timezone" value="" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jdk1.7\jre\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="amd64" />
+    <property name="sun.jnu.encoding" value="Cp1252" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="51.0" />
+    <property name="ant.file.type.nl.naturalis.nda.ejb" value="file" />
+    <property name="user.country" value="NL" />
+    <property name="java.home" value="C:\Program Files\Java\jdk1.7\jre" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.ejb\build.xml" />
+    <property name="os.version" value="6.1" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="24.51-b03" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="ant.file.type.nl.naturalis.nda.build" value="file" />
+    <property name="user.script" value="" />
+    <property name="user.home" value="C:\Users\admin.ayco.holleman" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="nl.naturalis.nda.client.location" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.client" />
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.7\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Users\admin.ayco.holleman\lib\java\apache-maven-3.2.1\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\Java\jdk1.7\bin;C:\wamp\bin\mysql\mysql5.5.24\bin;C:\wamp\bin\php\php5.4.3;C:\Program Files\ImageMagick-6.8.6-Q16;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\bin;C:\Program Files (x86)\Git\cmd;C:\Program Files (x86)\Git\bin;." />
+    <property name="java.vendor.url" value="http://java.oracle.com/" />
+    <property name="java.vm.vendor" value="Oracle Corporation" />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="sun.java.command" value="org.apache.tools.ant.launch.Launcher build-ear" />
+    <property name="java.class.path" value="C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-launcher.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-antlr.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-bcel.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-bsf.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-log4j.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-oro.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-regexp.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-resolver.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-apache-xalan2.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-commons-logging.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-commons-net.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-jai.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-javamail.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-jdepend.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-jmf.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-jsch.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-junit.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-junit4.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-launcher.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-netrexx.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-swing.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant-testutil.jar;C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant.jar;C:\Program Files\Java\jdk1.7\lib\tools.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.9.3 compiled on December 23 2013" />
+    <property name="TSTAMP" value="1543" />
+    <property name="javacTarget" value="1.6" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="ant.file.type" value="file" />
+    <property name="java.vm.specification.version" value="1.7" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="Service Pack 1" />
+    <property name="java.io.tmpdir" value="C:\Users\ADMINA~1.HOL\AppData\Local\Temp\" />
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/" />
+    <property name="ant.file.common" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.build\common.xml" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jdk1.7\jre\lib\ext;C:\Windows\Sun\Java\lib\ext" />
+    <property name="user.dir" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.build" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="nl.naturalis.nda.ear.location" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.ear" />
+    <property name="basedir" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.ejb" />
+    <property name="ant.java.version" value="1.7" />
+    <property name="ant.core.lib" value="C:\Users\admin.ayco.holleman\lib\java\apache-ant-1.9.3\lib\ant.jar" />
+    <property name="now" value="2014_04_10___15_43_33" />
+    <property name="file.encoding" value="Cp1252" />
+    <property name="javacDebugLevel" value="source,lines,vars" />
+    <property name="nl.naturalis.nda.ejb.location" value="C:\Users\admin.ayco.holleman\eclipse_workspaces\qaw\nl.naturalis.nda.ejb" />
+    <property name="java.specification.version" value="1.7" />
+    <property name="ant.project.invoked-targets" value="build" />
+  </properties>
+  <testcase classname="nl.naturalis.nda.ejb.service.SpecimenServiceTest" name="test" time="0.001" />
+  <testcase classname="nl.naturalis.nda.ejb.service.SpecimenServiceTest" name="test2" time="0.0" />
+  <testcase classname="nl.naturalis.nda.ejb.service.SpecimenServiceTest" name="test3" time="0.001" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

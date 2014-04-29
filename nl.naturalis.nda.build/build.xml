@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="build" name="nl.naturalis.nda.build">
+
+    <property file="build.properties" />
+
+    <include file="./paths.xml" />
+
+    <property name="javacSource" value="1.6" />
+    <property name="javacTarget" value="1.6" />
+    <property name="javacDebugLevel" value="source,lines,vars" />
+
+    <tstamp>
+        <format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
+    </tstamp>
+
+    <target name="clean">
+        <ant antfile="../nl.naturalis.nda.ear/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+        <ant antfile="../nl.naturalis.nda.service.rest/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+        <ant antfile="../nl.naturalis.nda.ejb/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+        <ant antfile="../nl.naturalis.nda.domain/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+        <ant antfile="../nl.naturalis.nda.client/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+    </target>
+
+    <target name="build-domain">
+        <ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
+    </target>
+
+    <target name="build-ejb">
+        <ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" />
+    </target>
+
+    <target name="build-rest">
+        <ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
+    </target>
+
+    <target name="build-ear" depends="build-domain,build-ejb,build-rest">
+        <ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" />
+    </target>
+
+    <target name="build-client" depends="build-domain">
+        <ant antfile="../nl.naturalis.nda.client/build.xml" useNativeBasedir="true" inheritrefs="true" />
+    </target>
+
+    <target name="build-all" depends="build-ear,build-client" />
+
+    <target name="build" depends="build-all" />
+
+</project>

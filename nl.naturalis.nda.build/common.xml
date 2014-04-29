@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="common">
+
+	<target name="clean">
+		<echo message="*** Performing cleanup for ${ant.project.name}" />
+		<delete dir="build/main" />
+		<delete dir="build/test" />
+		<delete  includeemptydirs="true">
+			<fileset dir="build">
+				<include name="*"/>
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="init">
+		<echo message="*** Creating build directories for ${ant.project.name}" />
+		<mkdir dir="build/main" />
+		<mkdir dir="build/test" />
+		<echo message="*** Copying resources to build directories" />
+		<copy includeemptydirs="false" todir="build/main">
+			<fileset dir="src/main/java">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="build/main">
+			<fileset dir="src/main/resources">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="build/test">
+			<fileset dir="src/test/java">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="build/test">
+			<fileset dir="src/test/resources">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile" depends="init">
+		<echo message="*** Compiling ${ant.project.name}" />
+		<javac destdir="build/main" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
+			<src path="src/main/java" />
+			<classpath refid="${ant.project.name}.classpath" />
+		</javac>
+		<javac destdir="build/test" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
+			<src path="src/test/java" />
+			<classpath refid="${ant.project.name}.classpath" />
+		</javac>
+	</target>
+
+	<target name="test" depends="compile">
+		<echo message="*** Testing ${ant.project.name}" />
+		<junit printsummary="yes" haltonfailure="yes">
+			<classpath refid="${ant.project.name}.classpath" />
+			<formatter type="xml" />
+			<formatter type="plain" />
+			<batchtest todir="${nl.naturalis.nda.build.location}/test-reports">
+				<fileset dir="src/test/java">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+</project>

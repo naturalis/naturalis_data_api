@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." name="nl.naturalis.nda.service.rest" default="build">
+
+    <import file="../nl.naturalis.nda.build/common.xml" />
+
+    <target name="clean" depends="common.clean">
+        <delete file="build/nda.war">
+        </delete>
+    </target>
+
+    <target name="package" depends="compile">
+        <war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
+            <lib dir="WebContent/WEB-INF/lib" />
+            <classes dir="build/main" />
+            <fileset dir="WebContent" />
+        </war>
+    </target>
+
+    <target name="build" depends="package" />
+
+</project>

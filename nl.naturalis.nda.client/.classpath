@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java" />
+	<classpathentry kind="src" path="src/main/resources" />
+	<classpathentry kind="src" path="src/test/java" output="build/test" />
+	<classpathentry kind="src" path="src/test/resources" output="build/test" />
+	<classpathentry kind="output" path="build/main" />
+	<classpathentry kind="con"
+		path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7" />
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain" />
+	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.debug" />
+	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar" />
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar" />
+	<classpathentry kind="lib" path="lib/httpclient-4.2.5.jar" />
+	<classpathentry kind="lib" path="lib/httpcore-4.2.4.jar" />
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.2.2.jar" />
+	<classpathentry kind="lib" path="lib/jackson-core-2.2.2.jar" />
+	<classpathentry kind="lib" path="lib/jackson-databind-2.2.2.jar" />
+	<classpathentry kind="lib" path="lib/logback-classic-1.0.0.jar" />
+	<classpathentry kind="lib" path="lib/logback-core-1.0.0.jar" />
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar" />
+	<classpathentry kind="lib" path="../nl.naturalis.nda.build/lib/junit-4.11.jar" />
+	<classpathentry kind="lib" path="../nl.naturalis.nda.build/lib/hamcrest-core-1.3.jar" />
+</classpath>

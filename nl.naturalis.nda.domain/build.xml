@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." name="nl.naturalis.nda.domain" default="build">
+
+	<import file="../nl.naturalis.nda.build/common.xml" />
+
+	<target name="package" depends="test">
+		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" />
+	</target>
+	
+	<target name="build" depends="package"/>
+
+</project>

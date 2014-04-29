@@ -1,0 +1,14 @@
+{
+	"specimen" : {
+		"properties" : {
+			"source_system" : {
+				"type" : "string",
+				"include_in_all" : false
+			},
+			"source_id" : {
+				"type" : "string",
+				"include_in_all" : false
+			}
+		}
+	}	
+}

@@ -22,7 +22,6 @@ public class SpecimenResource {
 	public Specimen getSpecimen(@PathParam("id") String id)
 	{
 		Specimen specimen = new Specimen();
-		specimen.setBarcode(id);
 		return specimen;
 	}
 

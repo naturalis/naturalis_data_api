@@ -18,6 +18,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.debug.BeanPrinter;
+import org.domainobject.util.http.SimpleHttpGet;
 import org.openarchives.oai._2.MetadataType;
 import org.openarchives.oai._2.OAIPMHtype;
 import org.openarchives.oai._2.RecordType;
@@ -26,9 +27,17 @@ import org.openarchives.oai._2_0.oai_dc.OaiDcType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CRSHarvester {
+/**
+ * Class harvesting CRS using its OAIPMH interface. The OAIPMH parsing is left
+ * to JAXB. Development is halted due to strange behaviour of JAXB with respect
+ * to the &lt;metadata&gt; element in the XML.
+ * 
+ * @author ayco
+ * 
+ */
+public class JAXBCrsHarvester {
 
-	private static final Logger logger = LoggerFactory.getLogger(CRSHarvester.class);
+	private static final Logger logger = LoggerFactory.getLogger(JAXBCrsHarvester.class);
 
 	private static final String CONFIG_FILE = "/config/import-crs.properties";
 	private static final String RES_TOKEN_FILE = "/.resumption-token";
@@ -100,7 +109,7 @@ public class CRSHarvester {
 
 	public static void main(String[] args) throws JAXBException
 	{
-		CRSHarvester harvester = new CRSHarvester();
+		JAXBCrsHarvester harvester = new JAXBCrsHarvester();
 		harvester.harvest();
 	}
 
@@ -111,7 +120,7 @@ public class CRSHarvester {
 	private int batch;
 
 
-	public CRSHarvester() throws JAXBException
+	public JAXBCrsHarvester() throws JAXBException
 	{
 		URL url = CRSBioportalInterface.class.getResource(CONFIG_FILE);
 		config = new ConfigObject(url);
@@ -140,7 +149,7 @@ public class CRSHarvester {
 				batch = Integer.parseInt(elements[1]);
 				resToken = elements[0];
 				logger.info(String.format("Found resumption token file: %s", resTokenFile.getCanonicalPath()));
-				logger.info(String.format("Will resume with resumption token %s (batch %s)" , resToken, batch));
+				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
 			}
 
 			do {
@@ -149,9 +158,9 @@ public class CRSHarvester {
 				++batch;
 				break;
 			} while (resToken != null);
-			
+
 			logger.info("Deleting resumption token file");
-			if(resTokenFile.exists()) {
+			if (resTokenFile.exists()) {
 				resTokenFile.delete();
 			}
 
@@ -181,7 +190,7 @@ public class CRSHarvester {
 				// This is a record that was deleted in CRS
 			}
 			else {
-				JAXBElement<OaiDcType> oaiDc = (JAXBElement<OaiDcType>) metadata.getAny();
+				//OaiDcType oaiDc = metadata.getOaiDc();
 			}
 		}
 
@@ -211,7 +220,7 @@ public class CRSHarvester {
 
 	private static File getResumptionTokenFile()
 	{
-		String path = CRSHarvester.class.getResource("/").toString() + RES_TOKEN_FILE;
+		String path = JAXBCrsHarvester.class.getResource("/").toString() + RES_TOKEN_FILE;
 		URI uri = URI.create(path);
 		return new File(uri);
 	}

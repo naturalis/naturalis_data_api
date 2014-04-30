@@ -108,8 +108,9 @@ public class SimpleElasticSearchClient {
 	private void execute()
 	{
 		try {
-			if (lastRequest.execute()) {
-				out.println(lastRequest.getResponseBody());
+			lastRequest.execute();
+			if (lastRequest.isOK()) {
+				out.println(lastRequest.getResponse());
 			}
 			else {
 				out.println(String.format("[ERROR] code: %s; message: %s", lastRequest.getErrorCode(), lastRequest.getError()));

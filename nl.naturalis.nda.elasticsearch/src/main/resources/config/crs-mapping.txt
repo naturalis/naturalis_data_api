@@ -41,4 +41,5 @@ MultiMediaPublic			, multiMediaPublic,
 LatitudeDecimal				, latitudeDecimal,
 LongitudeDecimal			, longitudeDecimal,
 geodeticDatum				, geodeticDatum,
-taxonCoverage				, @NOT_MAPPED@
+taxonCoverage				, @NOT_MAPPED@,
+Url							, @NOT_MAPPED@ 

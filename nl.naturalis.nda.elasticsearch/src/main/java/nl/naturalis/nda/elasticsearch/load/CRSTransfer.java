@@ -1,10 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import nl.naturalis.nda.domain.Determination;
 import nl.naturalis.nda.domain.Specimen;
@@ -16,92 +13,22 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class CRSTransfer {
+class CRSTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CRSTransfer.class);
 
 	private static final String ABCD_NAMESPACE_URI = "http://rs.tdwg.org/abcd/2.06/b/";
-	private static final String NOT_MAPPED = "@";
 
-	//@formatter:off
-	private static final String[] CRS_TO_NDA_TUPLES = new String[] {
-		NOT_MAPPED					, "sourceSystemName",
-		"identifier"				, "sourceSystemId",
-		"UnitID"					, "specimenId",
-		"RecordBasis"				, "recordBasis",
-		"KindOfUnit"				, "kindOfUnit",
-		"SourceInstitutionID"		, "sourceInstitutionID",
-		"UnitGUID"					, "phylum",
-		"Sex"						, "sex",
-		"PhaseOrStage"				, "phaseOrStage",
-		"AccessionSpecimenNumbers"	, "accessionSpecimenNumbers",
-		"Altitude"					, "altitude",
-		"Depth"						, "depth",
-		"PreferredFlag"				, "preferred",
-		"ScientificName"			, "scientificName",
-		"HigherTaxonRank"			, "higherTaxonRank",
-		"GenusOrMonomial"			, "genusOrMonomial",
-		"Subgenus"					, "subgenus",
-		"SpeciesEpithet"			, "speciesEpithet",
-		"InfrasubspecificRank"		, "infraSubspecificRank",
-		"subspeciesepithet"			, "subspeciesEpithet",
-		"InfrasubspecificName"		, "infraSubspecificName",
-		"AuthorTeamOriginalAndYear"	, "authorTeamOriginalAndYear",
-		"TypeStatus"				, "typeStatus",
-		"NameAddendum"				, "nameAddendum",
-		"IdentificationQualifier1"	, "identificationQualifier1",
-		"IdentificationQualifier2"	, "identificationQualifier2",
-		"IdentificationQualifier3"	, "identificationQualifier3",
-		"GatheringAgent"			, "gatheringAgent",
-		"WorldRegion"				, "worldRegion",
-		"Country"					, "country",
-		"ProvinceState"				, "provinceState",
-		"Locality"					, "locality",
-		"ObjectPublic"				, "publicObject",
-		"AltitudeUnit"				, "altitudeUnit",
-		"DepthUnit"					, "depthUnit",
-		"CollectingStartDate"		, "collectingStartDate",
-		"CollectingEndDate"			, "collectingEndDate",
-		"Title"						, "title",
-		"taxonCoverage"				, "taxonCoverage",
-		"MultiMediaPublic"			, "multiMediaPublic",
-		"LatitudeDecimal"			, "latitudeDecimal",
-		"LongitudeDecimal"			, "longitudeDecimal",
-		"geodeticDatum"				, "geodeticDatum",
-		"taxonCoverage"				, NOT_MAPPED
-	};
-	
-	private static final String[] DERMINATION_ELEMENTS_ARRAY = new String[] {
-		"PreferredFlag",
-		"ScientificName",
-		"HigherTaxonRank",
-		"GenusOrMonomial",
-		"Subgenus",
-		"SpeciesEpithet",
-		"InfrasubspecificRank",
-		"subspeciesepithet",
-		"InfrasubspecificName",
-		"AuthorTeamOriginalAndYear",
-		"TypeStatus",
-		"NameAddendum",
-		"IdentificationQualifier1",
-		"IdentificationQualifier2",
-		"IdentificationQualifier3",
-		"taxonCoverage"
-	};
-	//@formatter:on
+	private final CRSMap mapping;
 
-	static final HashMap<String, String> mapping = new HashMap<String, String>(CRS_TO_NDA_TUPLES.length / 2, 1.0F);
-	static final HashSet<String> determinationElements = new HashSet<String>(Arrays.asList(DERMINATION_ELEMENTS_ARRAY));
 
-	static {
-		for (int i = 0; i < CRS_TO_NDA_TUPLES.length; i += 2) {
-			mapping.put(CRS_TO_NDA_TUPLES[i], CRS_TO_NDA_TUPLES[i + 1]);
-		}
+	public CRSTransfer()
+	{
+		mapping = new CRSMap();
 	}
 
 
-	public static Specimen createSpecimen(Element record)
+	public Specimen createSpecimen(Element record)
 	{
 		Specimen specimen = new Specimen();
 		specimen.setSourceSystemName("CRS");
@@ -113,17 +40,19 @@ public class CRSTransfer {
 	}
 
 
-	private static void setSpecimenFields(Specimen specimen, Element[] abcdElements)
+	private void setSpecimenFields(Specimen specimen, Element[] abcdElements)
 	{
 		for (int i = 0; i < abcdElements.length; ++i) {
 			Element e = abcdElements[i];
 			String tag = e.getLocalName();
-			if (determinationElements.contains(tag)) {
+			if (mapping.isDeterminationElement(tag)) {
 				continue;
 			}
 			String field = mapping.get(tag);
-			if (field == null || field.equals(NOT_MAPPED)) {
-				logger.info("Skipping unmapped element: " + tag);
+			if (field == CRSMap.NOT_MAPPED) {
+				if (!mapping.isIncludedInMap(tag)) {
+					logger.info("Skipping unmapped element: " + tag);
+				}
 				continue;
 			}
 			setValue(specimen, e);
@@ -131,7 +60,7 @@ public class CRSTransfer {
 	}
 
 
-	private static void addDeterminations(Specimen specimen, Element[] abcd)
+	private void addDeterminations(Specimen specimen, Element[] abcd)
 	{
 		Determination determination = null;
 		for (int i = 0; i < abcd.length; ++i) {
@@ -140,10 +69,12 @@ public class CRSTransfer {
 				specimen.addDetermination(determination);
 			}
 			String tag = abcd[i].getLocalName();
-			if (determinationElements.contains(tag)) {
+			if (mapping.isDeterminationElement(tag)) {
 				String field = mapping.get(tag);
-				if (field == null || field.equals(NOT_MAPPED)) {
-					logger.info("Skipping unmapped element: " + tag);
+				if (field == CRSMap.NOT_MAPPED) {
+					if (!mapping.isIncludedInMap(tag)) {
+						logger.info("Skipping unmapped element: " + tag);
+					}
 				}
 				else {
 					setValue(determination, abcd[i]);
@@ -153,18 +84,7 @@ public class CRSTransfer {
 	}
 
 
-	private static Element[] getAbcdElements(Element record)
-	{
-		NodeList nl = record.getElementsByTagNameNS(ABCD_NAMESPACE_URI, "*");
-		Element[] elements = new Element[nl.getLength()];
-		for (int i = 0; i < elements.length; ++i) {
-			elements[i] = (Element) nl.item(i);
-		}
-		return elements;
-	}
-
-
-	private static void setValue(Object obj, Element e)
+	private void setValue(Object obj, Element e)
 	{
 		String tag = e.getLocalName();
 		String fieldName = mapping.get(tag);
@@ -208,7 +128,18 @@ public class CRSTransfer {
 	}
 
 
-	private static Element getDescendant(Element ancestor, String descendant)
+	private static Element[] getAbcdElements(Element record)
+	{
+		NodeList nl = record.getElementsByTagNameNS(ABCD_NAMESPACE_URI, "*");
+		Element[] elements = new Element[nl.getLength()];
+		for (int i = 0; i < elements.length; ++i) {
+			elements[i] = (Element) nl.item(i);
+		}
+		return elements;
+	}
+
+
+	static Element getDescendant(Element ancestor, String descendant)
 	{
 		NodeList nl = ancestor.getElementsByTagName(descendant);
 		if (nl.getLength() == 1 && nl.item(0) instanceof Element) {
@@ -220,7 +151,7 @@ public class CRSTransfer {
 	}
 
 
-	private static String getValue(Element ancestor, String descendant)
+	static String getValue(Element ancestor, String descendant)
 	{
 		return getDescendant(ancestor, descendant).getTextContent();
 	}

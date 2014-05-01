@@ -1,6 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -15,13 +16,14 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
-import org.domainobject.util.debug.BeanPrinter;
+//import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class DOMCrsHarvester {
 
@@ -39,7 +41,8 @@ public class DOMCrsHarvester {
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
-	private final BeanPrinter beanPrinter;
+	//private final BeanPrinter beanPrinter;
+	private final CRSTransfer crsTransfer;
 
 	private int batch;
 
@@ -48,7 +51,7 @@ public class DOMCrsHarvester {
 	{
 		URL url = CRSBioportalInterface.class.getResource(CONFIG_FILE);
 		config = new ConfigObject(url);
-		beanPrinter = new BeanPrinter("C:/tmp/BeanPrinter.txt");
+		//beanPrinter = new BeanPrinter("C:/tmp/BeanPrinter.txt");
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
 		try {
@@ -57,6 +60,7 @@ public class DOMCrsHarvester {
 		catch (ParserConfigurationException e) {
 			throw ExceptionUtil.smash(e);
 		}
+		crsTransfer = new CRSTransfer();
 	}
 
 
@@ -85,7 +89,6 @@ public class DOMCrsHarvester {
 				logger.info("Processing batch " + batch);
 				resToken = processBatch(resToken);
 				++batch;
-				break;
 			} while (resToken != null);
 
 			logger.info("Deleting resumption token file");
@@ -105,38 +108,60 @@ public class DOMCrsHarvester {
 
 	private String processBatch(String resToken)
 	{
+		logger.info("Saving resumption token");
+		saveResumptionToken(resToken);
 		logger.info("Calling CRS OAI service");
 		String xml = getXML(resToken);
 		Document doc;
+		logger.info("Parsing XML");
 		try {
-			logger.info("Parsing XML");
 			doc = builder.parse(StringUtil.asInputStream(xml));
-			doc.normalize();
-			NodeList records = doc.getElementsByTagName("record");
-			int batchSize = records.getLength();
-			logger.info("Records in batch: " + batchSize);
-			for (int i = 0; i < batchSize; ++i) {
-				Element record = (Element) records.item(i);
-				Element header = getChild(record, "header");
-				String id = getChild(header, "identifier").getTextContent();
-				if (header.hasAttribute("status") && header.getAttribute("status").equals("deleted")) {
-					deleteRecord(id);
-				}
-				else {
-					Specimen specimen = CRSTransfer.createSpecimen(record);
-					beanPrinter.dump(specimen);
-				}
+		}
+		catch (SAXException | IOException e) {
+			throw ExceptionUtil.smash(e);
+		}
+		doc.normalize();
+		NodeList records = doc.getElementsByTagName("record");
+		int batchSize = records.getLength();
+		logger.info("Records in batch: " + batchSize);
+		for (int i = 0; i < batchSize; ++i) {
+			Element record = (Element) records.item(i);
+			Element header = getChild(record, "header");
+			String id = getChild(header, "identifier").getTextContent();
+			if (header.hasAttribute("status") && header.getAttribute("status").equals("deleted")) {
+				deleteRecord(id);
+			}
+			else {
+				Specimen specimen = crsTransfer.createSpecimen(record);
+				//beanPrinter.dump(specimen);
 			}
 		}
-		catch (Throwable t) {
-			throw ExceptionUtil.smash(t);
-		}
-		return null;
+		return getResumptionToken(doc);
 	}
 
 
 	private void deleteRecord(String id)
 	{
+	}
+
+
+	private void saveResumptionToken(String resToken)
+	{
+		File resTokenFile = getResumptionTokenFile();
+		if (resTokenFile.exists()) {
+			resTokenFile.delete();
+		}
+		FileUtil.putContents(String.valueOf(batch), resToken);
+	}
+
+
+	private static String getResumptionToken(Document doc)
+	{
+		NodeList nl = doc.getElementsByTagName("resumptionToken");
+		if (nl.getLength() == 0) {
+			return null;
+		}
+		return nl.item(0).getTextContent();
 	}
 
 

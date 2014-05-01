@@ -111,7 +111,7 @@ public class DOMCrsHarvester {
 		try {
 			logger.info("Parsing XML");
 			doc = builder.parse(StringUtil.asInputStream(xml));
-			//doc.normalize();
+			doc.normalize();
 			NodeList records = doc.getElementsByTagName("record");
 			int batchSize = records.getLength();
 			logger.info("Records in batch: " + batchSize);

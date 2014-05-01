@@ -11,11 +11,9 @@ import nl.naturalis.nda.domain.Specimen;
 
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.StringUtil;
-import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class CRSTransfer {
@@ -41,12 +39,13 @@ public class CRSTransfer {
 		"Depth"						, "depth",
 		"PreferredFlag"				, "preferred",
 		"ScientificName"			, "scientificName",
+		"HigherTaxonRank"			, "higherTaxonRank",
 		"GenusOrMonomial"			, "genusOrMonomial",
 		"Subgenus"					, "subgenus",
 		"SpeciesEpithet"			, "speciesEpithet",
-		"InfrasubspecificRank"		, "infrasubspecificRank",
-		"subspeciesepithet"			, "subspeciesepithet",
-		"InfrasubspecificName"		, "infrasubspecificName",
+		"InfrasubspecificRank"		, "infraSubspecificRank",
+		"subspeciesepithet"			, "subspeciesEpithet",
+		"InfrasubspecificName"		, "infraSubspecificName",
 		"AuthorTeamOriginalAndYear"	, "authorTeamOriginalAndYear",
 		"TypeStatus"				, "typeStatus",
 		"NameAddendum"				, "nameAddendum",
@@ -68,12 +67,14 @@ public class CRSTransfer {
 		"MultiMediaPublic"			, "multiMediaPublic",
 		"LatitudeDecimal"			, "latitudeDecimal",
 		"LongitudeDecimal"			, "longitudeDecimal",
-		"geodeticDatum"				, "geodeticDatum"
+		"geodeticDatum"				, "geodeticDatum",
+		"taxonCoverage"				, NOT_MAPPED
 	};
 	
 	private static final String[] DERMINATION_ELEMENTS_ARRAY = new String[] {
 		"PreferredFlag",
 		"ScientificName",
+		"HigherTaxonRank",
 		"GenusOrMonomial",
 		"Subgenus",
 		"SpeciesEpithet",
@@ -85,18 +86,17 @@ public class CRSTransfer {
 		"NameAddendum",
 		"IdentificationQualifier1",
 		"IdentificationQualifier2",
-		"IdentificationQualifier3"		
+		"IdentificationQualifier3",
+		"taxonCoverage"
 	};
 	//@formatter:on
 
-	static final HashMap<String, String> crsToNda = new HashMap<String, String>(CRS_TO_NDA_TUPLES.length / 2, 1.0F);
+	static final HashMap<String, String> mapping = new HashMap<String, String>(CRS_TO_NDA_TUPLES.length / 2, 1.0F);
 	static final HashSet<String> determinationElements = new HashSet<String>(Arrays.asList(DERMINATION_ELEMENTS_ARRAY));
-
-	private static final BeanPrinter bp = new BeanPrinter("C:/tmp/bp.txt");
 
 	static {
 		for (int i = 0; i < CRS_TO_NDA_TUPLES.length; i += 2) {
-			crsToNda.put(CRS_TO_NDA_TUPLES[i], CRS_TO_NDA_TUPLES[i + 1]);
+			mapping.put(CRS_TO_NDA_TUPLES[i], CRS_TO_NDA_TUPLES[i + 1]);
 		}
 	}
 
@@ -106,28 +106,24 @@ public class CRSTransfer {
 		Specimen specimen = new Specimen();
 		specimen.setSourceSystemName("CRS");
 		specimen.setSourceSystemId(getValue(record, "identifier"));
-		setSpecimenFields(specimen, record);
-		addDeterminations(specimen, record);
+		Element[] abcdElements = getAbcdElements(record);
+		setSpecimenFields(specimen, abcdElements);
+		addDeterminations(specimen, abcdElements);
 		return specimen;
 	}
 
 
-	private static void setSpecimenFields(Specimen specimen, Element record)
+	private static void setSpecimenFields(Specimen specimen, Element[] abcdElements)
 	{
-		NodeList abcdElements = record.getElementsByTagNameNS(ABCD_NAMESPACE_URI, "*");
-		for (int i = 0; i < abcdElements.getLength(); ++i) {
-			Element e = (Element) abcdElements.item(i);
+		for (int i = 0; i < abcdElements.length; ++i) {
+			Element e = abcdElements[i];
 			String tag = e.getLocalName();
 			if (determinationElements.contains(tag)) {
 				continue;
 			}
-			String fieldName = crsToNda.get(tag);
-			if (fieldName == null) {
-				logger.warn("Unexpected element in XML: " + fieldName);
-				continue;
-			}
-			if (fieldName.equals(NOT_MAPPED)) {
-				logger.debug("Skipping unmapped element: " + fieldName);
+			String field = mapping.get(tag);
+			if (field == null || field.equals(NOT_MAPPED)) {
+				logger.info("Skipping unmapped element: " + tag);
 				continue;
 			}
 			setValue(specimen, e);
@@ -135,53 +131,43 @@ public class CRSTransfer {
 	}
 
 
-	private static void addDeterminations(Specimen specimen, Element record)
+	private static void addDeterminations(Specimen specimen, Element[] abcd)
 	{
-		NodeList preferredFlags = record.getElementsByTagNameNS(ABCD_NAMESPACE_URI, "PreferredFlag");
-		for (int i = 0; i < preferredFlags.getLength(); ++i) {
-			Element preferredFlag = (Element) preferredFlags.item(i);
-			Determination determination = createDetermination(preferredFlag);
-			specimen.addDetermination(determination);
+		Determination determination = null;
+		for (int i = 0; i < abcd.length; ++i) {
+			if (abcd[i].getLocalName().equals("PreferredFlag")) {
+				determination = new Determination();
+				specimen.addDetermination(determination);
+			}
+			String tag = abcd[i].getLocalName();
+			if (determinationElements.contains(tag)) {
+				String field = mapping.get(tag);
+				if (field == null || field.equals(NOT_MAPPED)) {
+					logger.info("Skipping unmapped element: " + tag);
+				}
+				else {
+					setValue(determination, abcd[i]);
+				}
+			}
 		}
 	}
 
 
-	private static Determination createDetermination(Element e)
+	private static Element[] getAbcdElements(Element record)
 	{
-		Determination determination = new Determination();
-		while (true) {
-			setValue(determination, e);
-			System.out.println("XXX: " + e.getNodeName());
-			Node n = e.getNextSibling();
-			if (n == null) {
-				break;
-			}
-			if (n instanceof Element) {
-				e = (Element) n;
-				if (e.getLocalName().equals("PreferredFlag")) {
-					break;
-				}
-				if (!determinationElements.contains(e.getLocalName())) {
-					break;
-				}
-			}
+		NodeList nl = record.getElementsByTagNameNS(ABCD_NAMESPACE_URI, "*");
+		Element[] elements = new Element[nl.getLength()];
+		for (int i = 0; i < elements.length; ++i) {
+			elements[i] = (Element) nl.item(i);
 		}
-		return determination;
+		return elements;
 	}
 
 
 	private static void setValue(Object obj, Element e)
 	{
 		String tag = e.getLocalName();
-		String fieldName = crsToNda.get(tag);
-		if (fieldName == null) {
-			logger.warn("Unexpected element in XML: " + tag);
-			return;
-		}
-		if (fieldName.equals(NOT_MAPPED)) {
-			logger.debug("Skipping unmapped element: " + tag);
-			return;
-		}
+		String fieldName = mapping.get(tag);
 		String val = e.getTextContent();
 		try {
 			Field field = obj.getClass().getDeclaredField(fieldName);
@@ -198,6 +184,7 @@ public class CRSTransfer {
 				field.set(obj, i);
 			}
 			else if (type == boolean.class || type == Boolean.class) {
+				val = val.trim().equals("") ? "false" : val;
 				Boolean b = new Boolean(StringUtil.asBoolean(val));
 				field.set(obj, b);
 			}
@@ -212,7 +199,8 @@ public class CRSTransfer {
 			}
 		}
 		catch (NoSuchFieldException t) {
-			throw new HarvestException("No field \"" + fieldName + "\" in class " + obj.getClass().getName());
+			String pattern = "Skipping bad mapping: no field \"%s\" in class %s";
+			logger.warn(String.format(pattern, fieldName, obj.getClass().getSimpleName()));
 		}
 		catch (Throwable t) {
 			throw ExceptionUtil.smash(t);
@@ -220,15 +208,21 @@ public class CRSTransfer {
 	}
 
 
-	private static String getValue(Element ancestor, String descendant)
+	private static Element getDescendant(Element ancestor, String descendant)
 	{
 		NodeList nl = ancestor.getElementsByTagName(descendant);
-		if (nl.getLength() == 1) {
-			return nl.item(0).getTextContent();
+		if (nl.getLength() == 1 && nl.item(0) instanceof Element) {
+			return (Element) nl.item(0);
 		}
-		String ancestorName = ancestor.getTagName() == null ? ancestor.getLocalName() : ancestor.getTagName();
-		String pattern = "getValue() requires exactly one descendant. Element %s has %s descendent %s elements";
-		throw new HarvestException(String.format(pattern, ancestorName, nl.getLength(), descendant));
+		String name = ancestor.getTagName() == null ? ancestor.getLocalName() : ancestor.getTagName();
+		String pattern = "getValue() requires %s to be a unique element under %s (found %s descendants with same name)";
+		throw new HarvestException(String.format(pattern, descendant, name, nl.getLength()));
+	}
+
+
+	private static String getValue(Element ancestor, String descendant)
+	{
+		return getDescendant(ancestor, descendant).getTextContent();
 	}
 
 }

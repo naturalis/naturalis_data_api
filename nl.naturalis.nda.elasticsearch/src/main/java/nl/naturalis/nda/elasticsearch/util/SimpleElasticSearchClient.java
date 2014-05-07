@@ -70,6 +70,15 @@ public class SimpleElasticSearchClient {
 	}
 
 
+	public void index(String indexName, String type, Object obj)
+	{
+		put.setPath(indexName + "/" + type);
+		put.createRequestBodyFromObject(obj);
+		lastRequest = put;
+		execute();
+	}
+
+
 	public void showIndices()
 	{
 		out.println("-> showIndices");
@@ -77,13 +86,14 @@ public class SimpleElasticSearchClient {
 		get.setPath("_aliases");
 		execute();
 	}
-	
+
+
 	public void createIndex(String name, String mapping)
 	{
 		out.println("-> createIndex [name=" + name + "] , [mapping=" + mapping + "]");
 		lastRequest = put;
 		put.setPath(name);
-		put.setBody(mapping);
+		put.setRequestBody(mapping);
 	}
 
 

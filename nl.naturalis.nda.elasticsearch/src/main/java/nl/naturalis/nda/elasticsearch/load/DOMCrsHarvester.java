@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,6 +20,9 @@ import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 //import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.node.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -25,12 +30,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 public class DOMCrsHarvester {
 
 	public static void main(String[] args)
 	{
 		DOMCrsHarvester harvester = new DOMCrsHarvester();
-		harvester.harvest();
+		//harvester.harvest();
+		harvester.testEL();
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(DOMCrsHarvester.class);
@@ -43,6 +50,7 @@ public class DOMCrsHarvester {
 	private final DocumentBuilder builder;
 	//private final BeanPrinter beanPrinter;
 	private final CRSTransfer crsTransfer;
+	private final Client elClient;
 
 	private int batch;
 
@@ -61,6 +69,26 @@ public class DOMCrsHarvester {
 			throw ExceptionUtil.smash(e);
 		}
 		crsTransfer = new CRSTransfer();
+		Node node = nodeBuilder().node();
+		elClient = node.client();
+
+	}
+	
+	public void testEL() {
+		String json = "{" +
+		        "\"user\":\"kimchy\"," +
+		        "\"postDate\":\"2013-01-30\"," +
+		        "\"message\":\"trying out Elasticsearch\"" +
+		    "}";
+
+		IndexResponse response = elClient.prepareIndex("twitter", "tweet")
+		        .setSource(json)
+		        .execute()
+		        .actionGet();
+		System.out.println("_index: " + response.getIndex());
+		System.out.println("_id: " + response.getId());
+		System.out.println("_type: " + response.getType());
+		
 	}
 
 
@@ -108,8 +136,10 @@ public class DOMCrsHarvester {
 
 	private String processBatch(String resToken)
 	{
-		logger.info("Saving resumption token");
-		saveResumptionToken(resToken);
+		if (resToken != null) {
+			logger.info("Saving resumption token");
+			saveResumptionToken(resToken);
+		}
 		logger.info("Calling CRS OAI service");
 		String xml = getXML(resToken);
 		Document doc;

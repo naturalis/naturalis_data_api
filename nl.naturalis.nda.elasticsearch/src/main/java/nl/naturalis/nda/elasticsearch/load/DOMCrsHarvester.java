@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.bioportal.oaipmh.CRSBioportalInterface;
 import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.elasticsearch.setup.SchemaCreator;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
@@ -20,9 +21,9 @@ import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 //import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.node.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -30,19 +31,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DOMCrsHarvester {
 
 	public static void main(String[] args)
 	{
 		DOMCrsHarvester harvester = new DOMCrsHarvester();
-		//harvester.harvest();
-		harvester.testEL();
+		harvester.harvest();
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(DOMCrsHarvester.class);
 
-	private static final String CONFIG_FILE = "/config/import-crs.properties";
 	private static final String RES_TOKEN_FILE = "/.resumption-token";
 	private static final String RES_TOKEN_DELIM = ",";
 
@@ -50,14 +51,17 @@ public class DOMCrsHarvester {
 	private final DocumentBuilder builder;
 	//private final BeanPrinter beanPrinter;
 	private final CRSTransfer crsTransfer;
-	private final Client elClient;
+	private final ObjectMapper objectMapper;
+	private final IndexRequestBuilder indexRequestBuilder;
 
 	private int batch;
+	private int recordsProcessed;
+	private int badRecords;
 
 
 	public DOMCrsHarvester()
 	{
-		URL url = CRSBioportalInterface.class.getResource(CONFIG_FILE);
+		URL url = CRSBioportalInterface.class.getResource("/config/import-crs.properties");
 		config = new ConfigObject(url);
 		//beanPrinter = new BeanPrinter("C:/tmp/BeanPrinter.txt");
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -69,26 +73,29 @@ public class DOMCrsHarvester {
 			throw ExceptionUtil.smash(e);
 		}
 		crsTransfer = new CRSTransfer();
-		Node node = nodeBuilder().node();
-		elClient = node.client();
-
+		objectMapper = new ObjectMapper();
+		Client esClient = nodeBuilder().node().client();
+		indexRequestBuilder = esClient.prepareIndex(SchemaCreator.NDA_INDEX_NAME, "specimen");
 	}
-	
-	public void testEL() {
-		String json = "{" +
-		        "\"user\":\"kimchy\"," +
-		        "\"postDate\":\"2013-01-30\"," +
-		        "\"message\":\"trying out Elasticsearch\"" +
-		    "}";
 
-		IndexResponse response = elClient.prepareIndex("twitter", "tweet")
-		        .setSource(json)
-		        .execute()
-		        .actionGet();
+
+	public void testEL() throws JsonProcessingException
+	{
+		Specimen specimen = new Specimen();
+		specimen.setAltitude("altitude");
+		specimen.setCountry("country");
+		specimen.setDepth("depth");
+		specimen.setAccessionSpecimenNumbers("accessionSpecimenNumbers");
+		specimen.setAltitudeUnit("altitudeUnit");
+
+		String json = objectMapper.writeValueAsString(specimen);
+
+		IndexResponse response = indexRequestBuilder.setSource(json).execute().actionGet();
 		System.out.println("_index: " + response.getIndex());
 		System.out.println("_id: " + response.getId());
 		System.out.println("_type: " + response.getType());
-		
+		System.out.println("Created: " + response.isCreated());
+
 	}
 
 
@@ -102,16 +109,19 @@ public class DOMCrsHarvester {
 			if (!resTokenFile.exists()) {
 				logger.info(String.format("Did not find resumption token file: %s", resTokenFile.getCanonicalPath()));
 				logger.info("Will start from scratch (batch 0)");
-				batch = 0;
 				resToken = null;
+				batch = 0;
 			}
 			else {
 				String[] elements = FileUtil.getContents(resTokenFile).split(RES_TOKEN_DELIM);
-				batch = Integer.parseInt(elements[1]);
 				resToken = elements[0];
+				batch = Integer.parseInt(elements[1]);
 				logger.info(String.format("Found resumption token file: %s", resTokenFile.getCanonicalPath()));
 				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
 			}
+
+			recordsProcessed = 0;
+			badRecords = 0;
 
 			do {
 				logger.info("Processing batch " + batch);
@@ -124,6 +134,8 @@ public class DOMCrsHarvester {
 				resTokenFile.delete();
 			}
 
+			logger.info("Records processed: " + recordsProcessed);
+			logger.info("Bad records: " + badRecords);
 			logger.info(getClass().getSimpleName() + " finished successfully");
 
 		}
@@ -163,7 +175,10 @@ public class DOMCrsHarvester {
 			}
 			else {
 				Specimen specimen = crsTransfer.createSpecimen(record);
-				//beanPrinter.dump(specimen);
+				saveSpecimen(specimen);
+			}
+			if (++recordsProcessed % 1000 == 0) {
+				logger.info("Records processed: " + recordsProcessed);
 			}
 		}
 		return getResumptionToken(doc);
@@ -181,7 +196,27 @@ public class DOMCrsHarvester {
 		if (resTokenFile.exists()) {
 			resTokenFile.delete();
 		}
-		FileUtil.putContents(String.valueOf(batch), resToken);
+		FileUtil.putContents(resTokenFile, String.valueOf(batch) + "," + resToken);
+	}
+
+
+	private void saveSpecimen(Specimen specimen)
+	{
+		final String json;
+		try {
+			json = objectMapper.writeValueAsString(specimen);
+		}
+		catch (JsonProcessingException e) {
+			throw new HarvestException(e);
+		}
+		String docId = specimen.getSourceSystemName() + "-" + specimen.getSpecimenId();
+		indexRequestBuilder.setId(docId);
+		IndexResponse response = indexRequestBuilder.setSource(json).execute().actionGet();
+		if (!response.isCreated()) {
+			String fmt = "Failed to create specimen (source system: %s; source system id: %s)";
+			String err = String.format(fmt, specimen.getSourceSystemName(), specimen.getSourceSystemId());
+			logger.error(err);
+		}
 	}
 
 

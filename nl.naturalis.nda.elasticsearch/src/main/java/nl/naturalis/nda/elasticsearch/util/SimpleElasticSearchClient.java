@@ -72,45 +72,75 @@ public class SimpleElasticSearchClient {
 
 	public void index(String indexName, String type, Object obj)
 	{
+		lastRequest = put;
 		put.setPath(indexName + "/" + type);
 		put.createRequestBodyFromObject(obj);
-		lastRequest = put;
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
 		execute();
 	}
 
 
-	public void showIndices()
+	public void showAllIndices()
 	{
-		out.println("-> showIndices");
 		lastRequest = get;
-		get.setPath("_aliases");
+		get.setPath("_aliases?pretty");
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
 		execute();
 	}
 
 
-	public void createIndex(String name, String mapping)
+	public void showIndex(String indexName)
 	{
-		out.println("-> createIndex [name=" + name + "] , [mapping=" + mapping + "]");
+		lastRequest = get;
+		get.setPath(indexName + "/_mapping?pretty");
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
+		execute();
+	}
+
+
+	public void createIndex(String name)
+	{
 		lastRequest = put;
 		put.setPath(name);
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
+		execute();
+	}
+
+
+	public void createIndex(String name, String mappings)
+	{
+		lastRequest = put;
+		put.setPath(name);
+		put.setRequestBody(mappings);
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
+		execute();
+	}
+
+
+	public void addType(String indexName, String typeName, String mapping)
+	{
+		lastRequest = put;
+		put.setPath(indexName + "/" + typeName + "/_mapping");
 		put.setRequestBody(mapping);
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
+		execute();
 	}
 
 
 	public void deleteIndex(String name)
 	{
-		out.println("-> deleteIndex [name=" + name + "]");
 		lastRequest = del;
 		del.setPath(name);
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
 		execute();
 	}
 
 
 	public void deleteAllIndices()
 	{
-		out.println("-> deleteAllIndices");
 		lastRequest = del;
 		del.setPath("_all");
+		out.println(lastRequest.getMethod() + " " + lastRequest.getURL());
 		execute();
 	}
 

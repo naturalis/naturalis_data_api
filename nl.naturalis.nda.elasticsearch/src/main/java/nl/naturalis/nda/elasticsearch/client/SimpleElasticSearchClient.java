@@ -1,4 +1,4 @@
-package nl.naturalis.nda.elasticsearch.util;
+package nl.naturalis.nda.elasticsearch.client;
 
 import java.io.IOException;
 import java.io.OutputStream;

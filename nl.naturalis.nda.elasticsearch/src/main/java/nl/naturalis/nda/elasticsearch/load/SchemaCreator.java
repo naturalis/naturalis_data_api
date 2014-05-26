@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 
-import nl.naturalis.nda.elasticsearch.util.SimpleElasticSearchClient;
+import nl.naturalis.nda.elasticsearch.client.SimpleElasticSearchClient;
 
 import org.domainobject.util.FileUtil;
 

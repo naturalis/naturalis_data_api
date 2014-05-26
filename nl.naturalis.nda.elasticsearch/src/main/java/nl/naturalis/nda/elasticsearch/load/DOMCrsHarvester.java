@@ -13,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.bioportal.oaipmh.CRSBioportalInterface;
 import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.elasticsearch.setup.SchemaCreator;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;

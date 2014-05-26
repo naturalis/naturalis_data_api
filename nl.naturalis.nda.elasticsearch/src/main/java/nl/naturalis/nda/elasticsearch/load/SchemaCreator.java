@@ -1,4 +1,4 @@
-package nl.naturalis.nda.elasticsearch.setup;
+package nl.naturalis.nda.elasticsearch.load;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,7 +11,7 @@ import org.domainobject.util.FileUtil;
 
 public class SchemaCreator {
 
-	public static final String NDA_INDEX_NAME = "nda_v1_0";
+	public static final String NDA_INDEX_NAME = "nda";
 
 	private static final PrintStream err = new PrintStream(new OutputStream() {
 		public void write(int b) throws IOException

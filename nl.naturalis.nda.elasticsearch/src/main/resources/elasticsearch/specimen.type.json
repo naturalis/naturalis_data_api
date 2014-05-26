@@ -1,0 +1,187 @@
+{
+	"specimen": {
+		"properties": {
+			"sourceSystemName": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"sourceSystemId": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"sourceSystemDateCreated": {
+				"type": "date",
+				"format": "yyyy-MM-dd HH:mm:ss",
+				"include_in_all": false
+			},
+			"specimenId": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"recordBasis": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"kindOfUnit": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"sourceInstitutionID": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"phylum": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"sex": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"phaseOrStage": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"accessionSpecimenNumbers": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"altitude": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"depth": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"gatheringAgent": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"worldRegion": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"country": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"provinceState": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"locality": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"publicObject": {
+				"type": "boolean",
+				"include_in_all": false
+			},
+			"altitudeUnit": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"depthUnit": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"collectingStartDate": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"collectingEndDate": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"title": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"taxonCoverage": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"multiMediaPublic": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"latitudeDecimal": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"longitudeDecimal": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"geodeticDatum": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"determinations": {
+				"properties": {
+					"preferred": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"scientificName": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"higherTaxonRank": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"genusOrMonomial": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"subgenus": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"speciesEpithet": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"infraSubspecificRank": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"subspeciesEpithet": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"infraSubspecificName": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"authorTeamOriginalAndYear": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"typeStatus": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"nameAddendum": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"identificationQualifier1": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"identificationQualifier2": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"identificationQualifier3": {
+						"type": "string",
+						"include_in_all": false
+					}
+				}
+			}
+		}
+	}
+}

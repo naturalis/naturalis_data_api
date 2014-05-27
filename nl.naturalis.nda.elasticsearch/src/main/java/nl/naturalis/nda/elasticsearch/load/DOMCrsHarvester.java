@@ -251,7 +251,7 @@ public class DOMCrsHarvester {
 		if (config.getBoolean("isTest")) {
 			return FileUtil.getContents(url);
 		}
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		return new SimpleHttpGet().setBaseUrl(url.toExternalForm()).execute().getResponse();
 	}
 
 

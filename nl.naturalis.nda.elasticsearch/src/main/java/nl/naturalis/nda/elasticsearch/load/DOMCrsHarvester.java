@@ -74,7 +74,7 @@ public class DOMCrsHarvester {
 		crsTransfer = new CRSTransfer();
 		objectMapper = new ObjectMapper();
 		Client esClient = nodeBuilder().node().client();
-		indexRequestBuilder = esClient.prepareIndex(SchemaCreator.NDA_INDEX_NAME, "specimen");
+		indexRequestBuilder = esClient.prepareIndex(NDASchemaManager.DEFAULT_NDA_INDEX_NAME, "specimen");
 	}
 
 

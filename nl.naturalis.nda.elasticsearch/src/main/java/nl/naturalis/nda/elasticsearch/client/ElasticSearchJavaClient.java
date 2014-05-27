@@ -2,7 +2,7 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import java.net.URL;
 
-import nl.naturalis.nda.elasticsearch.load.SchemaCreator;
+import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.FileUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -49,7 +49,7 @@ public class ElasticSearchJavaClient {
 			esjc.deleteIndex();
 		}
 		esjc.createIndex();
-		URL url = SchemaCreator.class.getResource("/elasticsearch/specimen.type.json");
+		URL url = NDASchemaManager.class.getResource("/elasticsearch/specimen.type.json");
 		String mappings = FileUtil.getContents(url);
 		esjc.createType("specimen", mappings);
 	}

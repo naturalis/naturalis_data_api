@@ -12,7 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
+/**
+ * Data Transfer Object converting XML elements to NDA domain objects.
+ * 
+ * @author ayco_holleman
+ *
+ */
 class CRSTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CRSTransfer.class);

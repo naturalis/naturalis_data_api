@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -13,24 +11,22 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.bioportal.oaipmh.CRSBioportalInterface;
 import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.elasticsearch.client.Index;
+import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexREST;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
+import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * ETL class using CRS's OAIPMH service to extract the data, w3c DOM to parse
@@ -41,6 +37,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class DOMCrsHarvester {
 
+	private static final String TYPE_SPECIMEN = "specimen";
+
+
 	public static void main(String[] args)
 	{
 		DOMCrsHarvester harvester = new DOMCrsHarvester();
@@ -49,14 +48,13 @@ public class DOMCrsHarvester {
 
 	private static final Logger logger = LoggerFactory.getLogger(DOMCrsHarvester.class);
 
-	private static final String RES_TOKEN_FILE = "/.resumption-token";
+	private static final String RES_TOKEN_FILE = "/resumption-token";
 	private static final String RES_TOKEN_DELIM = ",";
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
 	private final CRSTransfer crsTransfer;
-	private final ObjectMapper objectMapper;
-	private final IndexRequestBuilder indexRequestBuilder;
+	private final Index index;
 
 	private int batch;
 	private int recordsProcessed;
@@ -76,9 +74,8 @@ public class DOMCrsHarvester {
 			throw ExceptionUtil.smash(e);
 		}
 		crsTransfer = new CRSTransfer();
-		objectMapper = new ObjectMapper();
-		Client esClient = nodeBuilder().node().client();
-		indexRequestBuilder = esClient.prepareIndex(NDASchemaManager.DEFAULT_NDA_INDEX_NAME, "specimen");
+		index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+		//index = new IndexREST(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 	}
 
 
@@ -89,17 +86,16 @@ public class DOMCrsHarvester {
 
 			String resToken;
 			File resTokenFile = getResumptionTokenFile();
+			logger.info(String.format("Looking for resumption token file: %s", resTokenFile.getCanonicalPath()));
 			if (!resTokenFile.exists()) {
-				logger.info(String.format("Did not find resumption token file: %s", resTokenFile.getCanonicalPath()));
-				logger.info("Will start from scratch (batch 0)");
+				logger.info("Resumption token file not found. Will start from scratch");
 				resToken = null;
 				batch = 0;
 			}
 			else {
 				String[] elements = FileUtil.getContents(resTokenFile).split(RES_TOKEN_DELIM);
-				resToken = elements[0];
-				batch = Integer.parseInt(elements[1]);
-				logger.info(String.format("Found resumption token file: %s", resTokenFile.getCanonicalPath()));
+				batch = Integer.parseInt(elements[0]);
+				resToken = elements[1];
 				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
 			}
 
@@ -151,20 +147,37 @@ public class DOMCrsHarvester {
 		logger.info("Records in batch: " + batchSize);
 		for (int i = 0; i < batchSize; ++i) {
 			Element record = (Element) records.item(i);
+			saveSpecimen(record, i);
+			if (++recordsProcessed % 1000 == 0) {
+				logger.info("Records processed: " + recordsProcessed);
+			}
+		}
+		return getResumptionToken(doc);
+	}
+
+
+	private void saveSpecimen(Element record, int recNo)
+	{
+		Specimen specimen = null;
+		try {
 			Element header = getChild(record, "header");
 			String id = getChild(header, "identifier").getTextContent();
 			if (header.hasAttribute("status") && header.getAttribute("status").equals("deleted")) {
 				deleteRecord(id);
 			}
 			else {
-				Specimen specimen = crsTransfer.createSpecimen(record);
-				saveSpecimen(specimen);
-			}
-			if (++recordsProcessed % 1000 == 0) {
-				logger.info("Records processed: " + recordsProcessed);
+				specimen = crsTransfer.createSpecimen(record);
+				specimen.setSpecimenId(specimen.getSpecimenId().trim());
+				index.saveObject(TYPE_SPECIMEN, specimen, specimen.getSpecimenId());
 			}
 		}
-		return getResumptionToken(doc);
+		catch (Throwable t) {
+			++badRecords;
+			String fmt = "Error while processing record %s, specimen \"%s\": %s";
+			String msg = String.format(fmt, recNo, specimen.getSpecimenId(), t.getMessage());
+			logger.error(msg);
+			logger.error("Stack trace for error: ", t);
+		}
 	}
 
 
@@ -180,26 +193,6 @@ public class DOMCrsHarvester {
 			resTokenFile.delete();
 		}
 		FileUtil.putContents(resTokenFile, String.valueOf(batch) + "," + resToken);
-	}
-
-
-	private void saveSpecimen(Specimen specimen)
-	{
-		final String json;
-		try {
-			json = objectMapper.writeValueAsString(specimen);
-		}
-		catch (JsonProcessingException e) {
-			throw new HarvestException(e);
-		}
-		String docId = specimen.getSourceSystemName() + "-" + specimen.getSpecimenId();
-		indexRequestBuilder.setId(docId);
-		IndexResponse response = indexRequestBuilder.setSource(json).execute().actionGet();
-		if (!response.isCreated()) {
-			String fmt = "Failed to create specimen (source system: %s; source system id: %s)";
-			String err = String.format(fmt, specimen.getSourceSystemName(), specimen.getSourceSystemId());
-			logger.error(err);
-		}
 	}
 
 
@@ -254,26 +247,6 @@ public class DOMCrsHarvester {
 		catch (MalformedURLException e) {
 			throw ExceptionUtil.smash(e);
 		}
-	}
-
-
-	public void test() throws JsonProcessingException
-	{
-		Specimen specimen = new Specimen();
-		specimen.setAltitude("altitude");
-		specimen.setCountry("country");
-		specimen.setDepth("depth");
-		specimen.setAccessionSpecimenNumbers("accessionSpecimenNumbers");
-		specimen.setAltitudeUnit("altitudeUnit");
-
-		String json = objectMapper.writeValueAsString(specimen);
-
-		IndexResponse response = indexRequestBuilder.setSource(json).execute().actionGet();
-		System.out.println("_index: " + response.getIndex());
-		System.out.println("_id: " + response.getId());
-		System.out.println("_type: " + response.getType());
-		System.out.println("Created: " + response.isCreated());
-
 	}
 
 }

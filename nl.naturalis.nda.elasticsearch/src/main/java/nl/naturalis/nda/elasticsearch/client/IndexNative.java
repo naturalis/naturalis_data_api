@@ -11,11 +11,16 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.indices.IndexMissingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Wrapper around ElasticSearch's Native (Java) client. Since the API seems to
@@ -27,7 +32,8 @@ import org.slf4j.LoggerFactory;
  */
 public class IndexNative implements Index {
 
-	private static Logger logger = LoggerFactory.getLogger(IndexNative.class);
+	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
 	public static void main(String[] args)
@@ -195,10 +201,28 @@ public class IndexNative implements Index {
 
 
 	@Override
-	public void addDocument(String type, Object obj)
+	public void save(String type, String json, String id)
 	{
-		// TODO Auto-generated method stub
+		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
+		irb.setSource(json);
+		IndexResponse response = irb.execute().actionGet();
+		if (!response.isCreated()) {
+			throw new IndexException("Failed to add document: " + json);
+		}
+	}
 
+
+	@Override
+	public void saveObject(String type, Object obj, String id)
+	{
+		final String json;
+		try {
+			json = objectMapper.writeValueAsString(obj);
+		}
+		catch (JsonProcessingException e) {
+			throw new IndexException(e);
+		}
+		save(type, json, id);
 	}
 
 }

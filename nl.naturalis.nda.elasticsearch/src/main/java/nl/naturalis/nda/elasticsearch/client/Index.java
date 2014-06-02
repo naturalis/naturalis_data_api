@@ -79,14 +79,24 @@ public interface Index {
 
 
 	/**
-	 * Add a new document to the index, or overrides an already existing one (if
-	 * the _id values coincide).
+	 * Adds the JSON representation of the specified object to the index.
 	 * 
 	 * @param type The type of the document
-	 * @param obj An object represting the document. The document will be
-	 *            coverted to JSON and then added to the index.
+	 * @param obj The object to add
+	 * @param id The document ID
+	 */
+	void saveObject(String type, Object obj, String id);
+
+	/**
+	 * Add a new document to the index.
+	 * 
+	 * @param type The type of the document
+	 * @param json The document
+	 * @param id The document ID
 	 * 
 	 */
-	void addDocument(String type, Object obj);
+	void save(String type, String json, String id);
+
+
 
 }

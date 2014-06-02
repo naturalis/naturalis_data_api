@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import static org.domainobject.util.http.SimpleHttpRequest.*;
+
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.http.SimpleHttpDelete;
 import org.domainobject.util.http.SimpleHttpGet;
@@ -92,7 +94,7 @@ public class IndexREST implements Index {
 		if (isSuccess()) {
 			return getResponse();
 		}
-		if (httpGet.getStatus() == SimpleHttpRequest.HTTP_NOT_FOUND) {
+		if (httpGet.getStatus() == HTTP_NOT_FOUND) {
 			return null;
 		}
 		throw createIndexException();
@@ -187,7 +189,7 @@ public class IndexREST implements Index {
 			logger.info("Index " + indexName + " deleted");
 			return true;
 		}
-		if (httpDelete.getStatus() == SimpleHttpRequest.HTTP_NOT_FOUND) {
+		if (httpDelete.getStatus() == HTTP_NOT_FOUND) {
 			logger.info("Index " + indexName + " does not exist (nothing deleted)");
 			return false;
 		}
@@ -212,19 +214,28 @@ public class IndexREST implements Index {
 	}
 
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * nl.naturalis.nda.elasticsearch.client.Index#addDocument(java.lang.String,
-	 * java.lang.Object)
-	 */
 	@Override
-	public void addDocument(String type, Object obj)
+	public void save(String type, String json, String id)
 	{
 		lastRequest = httpPut;
-		httpPut.setPath(indexName + "/" + type);
-		httpPut.objectToRequestBody(obj);
+		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
+		httpPut.setPath(sb.toString());
+		httpPut.setRequestBody(json);
+		execute();
+		if (!isSuccess()) {
+			throw createIndexException();
+		}
+	}
+
+
+	@Override
+	public void saveObject(String type, Object obj, String id)
+	{
+		lastRequest = httpPut;
+		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
+		httpPut.setPath(sb.toString());
+		httpPut.setContentType(MIME_JSON);
+		httpPut.setObject(obj);
 		execute();
 		if (!isSuccess()) {
 			throw createIndexException();
@@ -246,52 +257,36 @@ public class IndexREST implements Index {
 
 
 	/**
-	 * Convenience method indicating whether the most recently executed request
-	 * completed successfully (i.e. resulting in HTTP 200, OK).
-	 * 
-	 * @return Whether the most recently executed request complete successfully
-	 */
-	public boolean isSuccess()
-	{
-		return lastRequest.getStatus() == SimpleHttpRequest.HTTP_OK;
-	}
-
-
-	/**
-	 * Convenience method indicating whether the most recently executed request
-	 * resulted in HTTP status 404, NOT FOUND.
-	 * 
-	 * @return Whether the most recently executed request resulted in HTTP
-	 *         status 404, NOT FOUND
-	 */
-	public boolean isNotFound()
-	{
-		return lastRequest.getStatus() == SimpleHttpRequest.HTTP_NOT_FOUND;
-	}
-
-
-	/**
-	 * Gets the HTTP status code for the most recently executed request.
+	 * Get the HTTP status code for the most recently executed request
 	 * 
 	 * @return The HTTP status code
 	 */
-	public int getHttpStatusCode()
+	public int getStatus()
 	{
 		return lastRequest.getStatus();
 	}
 
 
+	/**
+	 * Convenience method indicating whether or not the most recently executed
+	 * resulted in a HTTP success status (>= 200 and < 300).
+	 * 
+	 * @return Whether the most recently executed request complete successfully
+	 */
+	public boolean isSuccess()
+	{
+		return lastRequest.getStatus() >= 200 && lastRequest.getStatus() < 300;
+	}
+
+
 	private void execute()
 	{
-		logger.info(lastRequest.getMethod() + " " + lastRequest.getURL());
+		logger.debug(lastRequest.getMethod() + " " + lastRequest.getURL());
 		try {
 			lastRequest.execute();
 		}
 		catch (Throwable t) {
 			throw ExceptionUtil.smash(t);
-		}
-		if (!lastRequest.isOK()) {
-			throw createIndexException();
 		}
 	}
 

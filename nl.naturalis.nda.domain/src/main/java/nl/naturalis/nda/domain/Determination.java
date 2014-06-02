@@ -4,11 +4,12 @@ public class Determination {
 
 	private boolean preferred;
 	private String scientificName;
+	private String higherTaxonRank;
 	private String genusOrMonomial;
 	private String subgenus;
 	private String speciesEpithet;
 	private String infraSubspecificRank;
-	private String subSpeciesEpithet;
+	private String subspeciesEpithet;
 	private String infraSubspecificName;
 	private String authorTeamOriginalAndYear;
 	private String typeStatus;
@@ -41,6 +42,18 @@ public class Determination {
 	public void setScientificName(String scientificName)
 	{
 		this.scientificName = scientificName;
+	}
+
+
+	public String getHigherTaxonRank()
+	{
+		return higherTaxonRank;
+	}
+
+
+	public void setHigherTaxonRank(String higherTaxonRank)
+	{
+		this.higherTaxonRank = higherTaxonRank;
 	}
 
 
@@ -92,15 +105,15 @@ public class Determination {
 	}
 
 
-	public String getSubSpeciesEpithet()
+	public String getSubspeciesEpithet()
 	{
-		return subSpeciesEpithet;
+		return subspeciesEpithet;
 	}
 
 
-	public void setSubSpeciesEpithet(String subSpeciesEpithet)
+	public void setSubspeciesEpithet(String subspeciesEpithet)
 	{
-		this.subSpeciesEpithet = subSpeciesEpithet;
+		this.subspeciesEpithet = subspeciesEpithet;
 	}
 
 

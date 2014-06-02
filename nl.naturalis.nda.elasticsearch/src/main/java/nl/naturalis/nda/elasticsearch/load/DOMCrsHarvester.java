@@ -18,7 +18,6 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
-//import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
@@ -33,6 +32,13 @@ import org.xml.sax.SAXException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * ETL class using CRS's OAIPMH service to extract the data, w3c DOM to parse
+ * the data, and ElasticSearch's native client to save the data.
+ * 
+ * @author ayco_holleman
+ * 
+ */
 public class DOMCrsHarvester {
 
 	public static void main(String[] args)
@@ -48,7 +54,6 @@ public class DOMCrsHarvester {
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
-	//private final BeanPrinter beanPrinter;
 	private final CRSTransfer crsTransfer;
 	private final ObjectMapper objectMapper;
 	private final IndexRequestBuilder indexRequestBuilder;
@@ -62,7 +67,6 @@ public class DOMCrsHarvester {
 	{
 		URL url = CRSBioportalInterface.class.getResource("/config/import-crs.properties");
 		config = new ConfigObject(url);
-		//beanPrinter = new BeanPrinter("C:/tmp/BeanPrinter.txt");
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
 		try {
@@ -75,26 +79,6 @@ public class DOMCrsHarvester {
 		objectMapper = new ObjectMapper();
 		Client esClient = nodeBuilder().node().client();
 		indexRequestBuilder = esClient.prepareIndex(NDASchemaManager.DEFAULT_NDA_INDEX_NAME, "specimen");
-	}
-
-
-	public void testEL() throws JsonProcessingException
-	{
-		Specimen specimen = new Specimen();
-		specimen.setAltitude("altitude");
-		specimen.setCountry("country");
-		specimen.setDepth("depth");
-		specimen.setAccessionSpecimenNumbers("accessionSpecimenNumbers");
-		specimen.setAltitudeUnit("altitudeUnit");
-
-		String json = objectMapper.writeValueAsString(specimen);
-
-		IndexResponse response = indexRequestBuilder.setSource(json).execute().actionGet();
-		System.out.println("_index: " + response.getIndex());
-		System.out.println("_id: " + response.getId());
-		System.out.println("_type: " + response.getType());
-		System.out.println("Created: " + response.isCreated());
-
 	}
 
 
@@ -270,6 +254,26 @@ public class DOMCrsHarvester {
 		catch (MalformedURLException e) {
 			throw ExceptionUtil.smash(e);
 		}
+	}
+
+
+	public void test() throws JsonProcessingException
+	{
+		Specimen specimen = new Specimen();
+		specimen.setAltitude("altitude");
+		specimen.setCountry("country");
+		specimen.setDepth("depth");
+		specimen.setAccessionSpecimenNumbers("accessionSpecimenNumbers");
+		specimen.setAltitudeUnit("altitudeUnit");
+
+		String json = objectMapper.writeValueAsString(specimen);
+
+		IndexResponse response = indexRequestBuilder.setSource(json).execute().actionGet();
+		System.out.println("_index: " + response.getIndex());
+		System.out.println("_id: " + response.getId());
+		System.out.println("_type: " + response.getType());
+		System.out.println("Created: " + response.isCreated());
+
 	}
 
 }

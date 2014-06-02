@@ -2,15 +2,23 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import java.net.URL;
 
-import nl.naturalis.nda.elasticsearch.client.ElasticSearchHttpClient;
+import nl.naturalis.nda.elasticsearch.client.Index;
+import nl.naturalis.nda.elasticsearch.client.IndexREST;
 
 import org.domainobject.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Small utility class for creating the NDA ElasticSeatch schema.
+ * 
+ * @author ayco_holleman
+ * 
+ */
 public class NDASchemaManager {
-	
-	public static void main(String[] args) {
+
+	public static void main(String[] args)
+	{
 		NDASchemaManager nsm = new NDASchemaManager();
 		nsm.bootstrap();
 	}
@@ -22,18 +30,17 @@ public class NDASchemaManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(NDASchemaManager.class);
 
-	private final ElasticSearchHttpClient client;
+	private final Index client;
 
 
 	/**
 	 * Creates a {@code NDASchemaManager} managing the default NDA schema (i.e.
 	 * the schema with name {@link #DEFAULT_NDA_INDEX_NAME} in the local cluster
-	 * ({@link ElasticSearchHttpClient#LOCAL_CLUSTER}).
+	 * ({@link IndexREST#LOCAL_CLUSTER}).
 	 */
 	public NDASchemaManager()
 	{
-		logger.info(String.format("Creating client for index %s in cluster %s", DEFAULT_NDA_INDEX_NAME, ElasticSearchHttpClient.LOCAL_CLUSTER));
-		client = new ElasticSearchHttpClient(DEFAULT_NDA_INDEX_NAME, ElasticSearchHttpClient.LOCAL_CLUSTER);
+		this(IndexREST.LOCAL_CLUSTER);
 	}
 
 
@@ -46,8 +53,7 @@ public class NDASchemaManager {
 	 */
 	public NDASchemaManager(String clusterUrl)
 	{
-		logger.info(String.format("Creating client for index %s in cluster %s", DEFAULT_NDA_INDEX_NAME, clusterUrl));
-		client = new ElasticSearchHttpClient(DEFAULT_NDA_INDEX_NAME, clusterUrl);
+		this(DEFAULT_NDA_INDEX_NAME, clusterUrl);
 	}
 
 
@@ -61,8 +67,8 @@ public class NDASchemaManager {
 	 */
 	public NDASchemaManager(String indexName, String clusterUrl)
 	{
-		logger.info(String.format("Creating client for index %s in cluster %s", indexName, clusterUrl));
-		client = new ElasticSearchHttpClient(indexName, clusterUrl);
+		logger.info(String.format("Creating client for index \"%s\" in cluster \"%s\"", indexName, clusterUrl));
+		client = new IndexREST(indexName, clusterUrl);
 	}
 
 
@@ -74,11 +80,11 @@ public class NDASchemaManager {
 	{
 		logger.info("Bootstrapping NDA index!");
 		try {
-			//client.deleteIndex();
-			client.createIndex();
+			client.delete();
+			client.create();
 			URL url = NDASchemaManager.class.getResource("/elasticsearch/specimen.type.json");
 			String mappings = FileUtil.getContents(url);
-			client.addType("specimen", mappings);
+			client.createType("specimen", mappings);
 			logger.info(client.describe());
 		}
 		catch (Throwable t) {

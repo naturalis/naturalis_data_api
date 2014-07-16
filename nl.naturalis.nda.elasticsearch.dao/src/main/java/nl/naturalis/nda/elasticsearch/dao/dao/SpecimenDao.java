@@ -1,6 +1,7 @@
-package nl.naturalis.nda.elasticsearch.dao;
+package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import nl.naturalis.nda.elasticsearch.dao.util.MultiValuedProperties;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -17,7 +18,8 @@ public class SpecimenDao {
 	public static void main(String[] args)
 	{
 		SpecimenDao dao = new SpecimenDao();
-		System.out.println(dao.listSpecimens());
+		MultiValuedProperties props = new MultiValuedProperties();
+		System.out.println(dao.listSpecimens(props));
 	}
 
 	final Client esClient;
@@ -29,7 +31,7 @@ public class SpecimenDao {
 	}
 
 
-	public String listSpecimens()
+	public String listSpecimens(MultiValuedProperties properties)
 	{
 		SearchRequestBuilder srb = esClient.prepareSearch("specimen");
 		TermQueryBuilder termQuery = QueryBuilders.termQuery("sourceSystemName", "CRS");

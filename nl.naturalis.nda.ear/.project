@@ -9,6 +9,7 @@
 		<project>nl.naturalis.nda.service.rest</project>
 		<project>org.domainobject.util.debug</project>
 		<project>org.domainobject.util</project>
+		<project>nl.naturalis.nda.elasticsearch</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

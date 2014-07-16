@@ -22,7 +22,11 @@ import nl.naturalis.nda.service.rest.exception.InvalidQueryException;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
@@ -46,6 +50,9 @@ public class SpecimenResource {
 	{
 		SearchRequestBuilder srb = registry.getESClient().prepareSearch("specimen");
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+		MatchAllQueryBuilder matchAllQueryBuilder = QueryBuilders.matchAllQuery();
+		BoolFilterBuilder boolFilterBuilder = FilterBuilders.boolFilter();
+		FilteredQueryBuilder filteredQueryBuilder = QueryBuilders.filteredQuery(matchAllQueryBuilder, boolFilterBuilder);
 		srb.setSize(100);
 		Set<String> params = request.getQueryParameters().keySet();
 		int numTerms = 0;
@@ -61,12 +68,15 @@ public class SpecimenResource {
 			}
 			else {
 				++numTerms;
-				boolQuery.must(QueryBuilders.matchQuery(param, value));
+				//boolFilterBuilder.must(FilterBuilders.termFilter(param, value));
+				//boolQuery.must(QueryBuilders.matchQuery(param, value));
 			}
 		}
 		if (numTerms != 0) {
-			srb.setQuery(boolQuery);
+			//srb.setQuery(boolQuery);
+			//srb.setQuery(filteredQueryBuilder);
 		}
+		srb.setQuery("");
 		SearchResponse response = srb.execute().actionGet();
 		SpecimenSearchResult result = new SpecimenSearchResult();
 		result.setTotalSize(response.getHits().getTotalHits());

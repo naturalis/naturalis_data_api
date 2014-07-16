@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/main" path="src/main/java" />
+	<classpathentry kind="src" output="build/main" path="src/main/resources" />
+	<classpathentry kind="src" output="build/test" path="src/test/java" />
+	<classpathentry kind="src" output="build/test" path="src/test/resources" />
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Elastic Search" />
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache httpclient" />
+	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util" />
+	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.debug" />
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jackson" />
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/slf4j" />
+	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http" />
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain" />
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container" />
+	<classpathentry kind="con"
+		path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7">
+		<attributes>
+			<attribute name="owner.project.facets" value="java" />
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="build/main" />
+</classpath>

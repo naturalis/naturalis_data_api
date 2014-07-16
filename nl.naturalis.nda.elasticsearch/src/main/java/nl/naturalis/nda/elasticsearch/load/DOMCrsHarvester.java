@@ -138,7 +138,10 @@ public class DOMCrsHarvester {
 		try {
 			doc = builder.parse(StringUtil.asInputStream(xml));
 		}
-		catch (SAXException | IOException e) {
+		catch (SAXException e) {
+			throw ExceptionUtil.smash(e);
+		}
+		catch (IOException e) {
 			throw ExceptionUtil.smash(e);
 		}
 		doc.normalize();

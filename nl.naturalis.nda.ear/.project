@@ -10,6 +10,7 @@
 		<project>org.domainobject.util.debug</project>
 		<project>org.domainobject.util</project>
 		<project>nl.naturalis.nda.elasticsearch</project>
+		<project>nl.naturalis.nda.elasticsearch.dao</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

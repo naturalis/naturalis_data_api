@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nederlands_soorten_register>
+	<taxon>
+		<id>119843</id>
+		<parent_id>119842</parent_id>
+		<taxon_concept>Taraxacum officinale F.H.Wigg.</taxon_concept>
+		<rank>species</rank>
+		<status_voorkomen>1a Oorspronkelijk. Minimaal 10 jaar achtereen voortplanting.</status_voorkomen>
+		<nsr_id>000457095789</nsr_id>
+		<url>http://nederlandsesoorten.nl/nsr/concept/000457095789</url>
+		<name>
+			<name>Gewone paardenbloem</name>
+			<nametype>isAlternativeNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Haakpaardebloem</name>
+			<nametype>isAlternativeNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Moeraspaardenbloem</name>
+			<nametype>isAlternativeNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Oranjegele paardenbloem</name>
+			<nametype>isAlternativeNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Schraallandpaardenbloem</name>
+			<nametype>isAlternativeNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Zandpaardenbloem</name>
+			<nametype>isAlternativeNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Paardenbloem</name>
+			<nametype>isPreferredNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Taraxacum officinale F.H.Wigg.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>officinale</specific_epithet>
+			<name_author>F.H.Wigg.</name_author>
+			<nametype>isValidNameOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum celticum A.J.Richards</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>celticum</specific_epithet>
+			<name_author>A.J.Richards</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum hamatum Raunk.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>hamatum</specific_epithet>
+			<name_author>Raunk.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum laevigatum (Willd.) DC.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>laevigatum</specific_epithet>
+			<name_author>(Willd.) DC.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum nordstedtii Dahlst.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>nordstedtii</specific_epithet>
+			<name_author>Dahlst.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [21e druk]</reference_label>
+			<reference_author>Meijden, R. van der</reference_author>
+			<reference_date>1990</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum obliquum (Fr.) Dahlst.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>obliquum</specific_epithet>
+			<name_author>(Fr.) Dahlst.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum oxoniense Dahlst.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>oxoniense</specific_epithet>
+			<name_author>Dahlst.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [21e druk]</reference_label>
+			<reference_author>Meijden, R. van der</reference_author>
+			<reference_date>1990</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum palustre (Lyons) Symond</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>palustre</specific_epithet>
+			<name_author>(Lyons) Symond</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum taeniatum Holmgr.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>taeniatum</specific_epithet>
+			<name_author>Holmgr.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [21e druk]</reference_label>
+			<reference_author>Meijden, R. van der</reference_author>
+			<reference_date>1990</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum tortilobum Florstr.</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>tortilobum</specific_epithet>
+			<name_author>Florstr.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [21e druk]</reference_label>
+			<reference_author>Meijden, R. van der</reference_author>
+			<reference_date>1990</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Taraxacum vulgare Schrank</name>
+			<uninomial>Taraxacum</uninomial>
+			<specific_epithet>vulgare</specific_epithet>
+			<name_author>Schrank</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Leontodon taraxacum L.</name>
+			<uninomial>Leontodon</uninomial>
+			<specific_epithet>taraxacum</specific_epithet>
+			<name_author>L.</name_author>
+			<nametype>isSynonymOf</nametype>
+			<expert_name>Duistermaat, L.</expert_name>
+			<organisation_name>NHN</organisation_name>
+			<reference_label>Heukels' Flora van Nederland [23e druk]</reference_label>
+			<reference_author>Meijden, R., van der</reference_author>
+			<reference_date>2005</reference_date>
+			<language>Scientific</language>
+		</name>
+	</taxon>
+	<taxon>
+		<id>126429</id>
+		<parent_id>126387</parent_id>
+		<taxon_concept>Coltricia</taxon_concept>
+		<rank>genus</rank>
+		<nsr_id>0FHCYFAWNJPI</nsr_id>
+		<url>http://nederlandsesoorten.nl/nsr/concept/0FHCYFAWNJPI</url>
+		<name>
+			<name>Coltricia</name>
+			<uninomial>Coltricia</uninomial>
+			<nametype>isValidNameOf</nametype>
+			<language>Scientific</language>
+		</name>
+	</taxon>
+	<taxon>
+		<id>126431</id>
+		<parent_id>126429</parent_id>
+		<taxon_concept>Coltricia cinnamomea (Jacq.) Murrill, 1904</taxon_concept>
+		<rank>species</rank>
+		<status_voorkomen>1a Oorspronkelijk. Minimaal 10 jaar achtereen voortplanting.</status_voorkomen>
+		<nsr_id>000486858855</nsr_id>
+		<url>http://nederlandsesoorten.nl/nsr/concept/000486858855</url>
+		<name>
+			<name>Zijdetolzwam</name>
+			<nametype>isPreferredNameOf</nametype>
+			<expert_name>Stalpers, J.</expert_name>
+			<organisation_name>CBS</organisation_name>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Coltricia cinnamomea (Jacq.) Murrill, 1904</name>
+			<uninomial>Coltricia</uninomial>
+			<specific_epithet>cinnamomea</specific_epithet>
+			<name_author>(Jacq.) Murrill</name_author>
+			<authorship_year>1904</authorship_year>
+			<nametype>isValidNameOf</nametype>
+			<expert_name>Stalpers, J.</expert_name>
+			<organisation_name>CBS</organisation_name>
+			<reference_label>Overzicht van de paddestoelen in Nederland</reference_label>
+			<reference_author><![CDATA[Arnolds, E., Kuyper, Th.W. & M.E. Noordeloos.]]></reference_author>
+			<reference_date>1995</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Boletus cinnamomeus Jacq., 1786</name>
+			<specific_epithet>cinnamomeus</specific_epithet>
+			<name_author>Jacq.</name_author>
+			<authorship_year>1786</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Coltricia oblectans (Berk.) G. Cunn., 1948</name>
+			<specific_epithet>oblectans</specific_epithet>
+			<name_author>(Berk.) G. Cunn.</name_author>
+			<authorship_year>1948</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Coltricia parvula (Klotzsch) Murrill, 1904</name>
+			<specific_epithet>parvula</specific_epithet>
+			<name_author>(Klotzsch) Murrill</name_author>
+			<authorship_year>1904</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Coltricia perennis form. casimirii (Velen.) Bondartsev, 1953</name>
+			<name_author>(Velen.) Bondartsev</name_author>
+			<authorship_year>1953</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Microporus bulbipes (Fr.) Kuntze, 1898</name>
+			<specific_epithet>bulbipes</specific_epithet>
+			<name_author>(Fr.) Kuntze</name_author>
+			<authorship_year>1898</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Microporus cinnamomeus (Jacq.) Kuntze, 1898</name>
+			<specific_epithet>cinnamomeus</specific_epithet>
+			<name_author>(Jacq.) Kuntze</name_author>
+			<authorship_year>1898</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Microporus oblectans (Berk.) Kuntze, 1898</name>
+			<specific_epithet>oblectans</specific_epithet>
+			<name_author>(Berk.) Kuntze</name_author>
+			<authorship_year>1898</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Microporus parvulus (Klotzsch) Kuntze, 1898</name>
+			<specific_epithet>parvulus</specific_epithet>
+			<name_author>(Klotzsch) Kuntze</name_author>
+			<authorship_year>1898</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Pelloporus cinnamomeus (Jacq.) Quél., 1888</name>
+			<specific_epithet>cinnamomeus</specific_epithet>
+			<name_author>(Jacq.) Quél.</name_author>
+			<authorship_year>1888</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Pelloporus fimbriatus var. cinnamomeus (Jacq.) Quél., 1888</name>
+			<name_author>(Jacq.) Quél.</name_author>
+			<authorship_year>1888</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polystictus bulbipes (Fr.) Fr., 1851</name>
+			<specific_epithet>bulbipes</specific_epithet>
+			<name_author>(Fr.) Fr.</name_author>
+			<authorship_year>1851</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polystictus bulbipes cladonia (Berk.) Sacc., 1888</name>
+			<name_author>(Berk.) Sacc.</name_author>
+			<authorship_year>1888</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polystictus cinnamomeus (Jacq.) Sacc., 1888</name>
+			<specific_epithet>cinnamomeus</specific_epithet>
+			<name_author>(Jacq.) Sacc.</name_author>
+			<authorship_year>1888</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polystictus oblectans (Berk.) Cooke, 1886</name>
+			<specific_epithet>oblectans</specific_epithet>
+			<name_author>(Berk.) Cooke</name_author>
+			<authorship_year>1886</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polystictus perennis form. casimiri (Velen.) Pilát, 1940</name>
+			<name_author>(Velen.) Pilát</name_author>
+			<authorship_year>1940</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polystictus perennis form. cinnamomeus (Jacq.) Pilát, 1940</name>
+			<name_author>(Jacq.) Pilát</name_author>
+			<authorship_year>1940</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus baudysii Kavina, 1922</name>
+			<specific_epithet>baudysii</specific_epithet>
+			<name_author>Kavina</name_author>
+			<authorship_year>1922</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus bulbipes Fr., 1847</name>
+			<specific_epithet>bulbipes</specific_epithet>
+			<name_author>Fr.</name_author>
+			<authorship_year>1847</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus casimirii Velen., 1922</name>
+			<specific_epithet>casimirii</specific_epithet>
+			<name_author>Velen.</name_author>
+			<authorship_year>1922</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus cinnamomeus (Jacq.) Pers., 1825</name>
+			<specific_epithet>cinnamomeus</specific_epithet>
+			<name_author>(Jacq.) Pers.</name_author>
+			<authorship_year>1825</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus cladonia Berk., 1845</name>
+			<specific_epithet>cladonia</specific_epithet>
+			<name_author>Berk.</name_author>
+			<authorship_year>1845</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus oblectans Berk., 1845</name>
+			<specific_epithet>oblectans</specific_epithet>
+			<name_author>Berk.</name_author>
+			<authorship_year>1845</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus parvulus Klotzsch, 1833</name>
+			<specific_epithet>parvulus</specific_epithet>
+			<name_author>Klotzsch</name_author>
+			<authorship_year>1833</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus splendens Peck, 1874</name>
+			<specific_epithet>splendens</specific_epithet>
+			<name_author>Peck</name_author>
+			<authorship_year>1874</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Polyporus subsericeus Peck, 1883</name>
+			<specific_epithet>subsericeus</specific_epithet>
+			<name_author>Peck</name_author>
+			<authorship_year>1883</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Strilia cinnamomea (Jacq.) Gray, 1821</name>
+			<specific_epithet>cinnamomea</specific_epithet>
+			<name_author>(Jacq.) Gray</name_author>
+			<authorship_year>1821</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Xanthochrous bulbipes (Fr.) Pat., 1900</name>
+			<specific_epithet>bulbipes</specific_epithet>
+			<name_author>(Fr.) Pat.</name_author>
+			<authorship_year>1900</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Xanthochrous cinnamomeus (Jacq.) Pat., 1900</name>
+			<specific_epithet>cinnamomeus</specific_epithet>
+			<name_author>(Jacq.) Pat.</name_author>
+			<authorship_year>1900</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Xanthochrous oblectans (Berk.) Pat., 1921</name>
+			<specific_epithet>oblectans</specific_epithet>
+			<name_author>(Berk.) Pat.</name_author>
+			<authorship_year>1921</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Xanthochrous parvulus (Klotzsch) Pat., 1900</name>
+			<specific_epithet>parvulus</specific_epithet>
+			<name_author>(Klotzsch) Pat.</name_author>
+			<authorship_year>1900</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Xanthochrous splendens (Peck) Pat., 1900</name>
+			<specific_epithet>splendens</specific_epithet>
+			<name_author>(Peck) Pat.</name_author>
+			<authorship_year>1900</authorship_year>
+			<nametype>isSynonymOf</nametype>
+			<organisation_name>NMV</organisation_name>
+			<language>Scientific</language>
+		</name>
+	</taxon>
+	<taxon>
+		<id>138867</id>
+		<parent_id>138866</parent_id>
+		<taxon_concept>Vipera berus Linnaeus, 1758</taxon_concept>
+		<rank>species</rank>
+		<status_voorkomen>1a Oorspronkelijk. Minimaal 10 jaar achtereen voortplanting.</status_voorkomen>
+		<nsr_id>000455512059</nsr_id>
+		<url>http://nederlandsesoorten.nl/nsr/concept/000455512059</url>
+		<content>
+			<title>Algemeen</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><p>De adder is de enige gifslang in Nederland. Het gif wordt gebruikt om prooien te doden, maar ook ter verdediging. Het is een zwaargebouwde slang met een duidelijke zigzagstreep over de rug. De adder wordt vooral aangetroffen op de pleistocene zandgronden in het noordoosten en midden van Nederland. Hij leeft daar op natte heide, in hoogveen en in open bos. De soort is eierlevendbarend en de vrouwtjes krijgen om de twee jaar jongen.</p></body>]]></text>
+		</content>
+		<content>
+			<title>Biotopen</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Habitat</h2><p>De adder is in zijn gehele verspreidingsgebied een bewoner van halfopen tot open leefgebieden, met een rijke vegetatiestructuur. Hij heeft een voorkeur voor gebieden met overgangen van droog naar vochtig. In Nederland komt de adder voor op de hoge zandgronden en in hoogveenlandschappen. Op zeeklei, rivierklei, löss en in de duinen ontbreekt de adder volledig.</p><p>In het ravon-databestand t/m 2005 zijn 2659 van de 14.517 waarnemingen voorzien van een habitatcodering (18%). Daarbij komt in het bijzonder hoogveen, maar ook heide naar voren als voorkeurshabitat. De soort komt ook voor in (open) bos en struweel en langs infrastructuur (spoor- en wegbermen). De adder is een vochtminnende soort die ook wordt aangetroffen op venoevers, bij kleine wateren (dit zullen ook vaak vennen zijn) en langs lijnvormige wateren in de hiervoor genoemde landschapstypen.</p><p>In adderhabitat dienen open plekken met voldoende zoninstraling aanwezig te zijn, maar ook voldoende schuilmogelijkheden. De zonplekken zijn voornamelijk op het zuiden geëxponeerd, liggen vaak tegen een helling en zijn beschut van bovenaf. Bij voorkeur liggen de adders in een kuiltje of een lager gelegen terreindeel waar de wind minder invloed heeft en opgewarmde lucht beter blijft hangen. Schuilplaatsen bieden beschutting tegen ongunstige weersinvloeden en predatoren. Temperatuur en vochtigheid zijn in de vegetatie constanter dan op open plekken.</p><p>Zonnende adders platten zich af en liggen daarbij gestrekt. Het lichaam ligt daarbij loodrecht ten opzichte van de zoninstraling en vormt een zo groot mogelijk oppervlak. Bij kouder weer en regen liggen ze vaak strak opgerold. Hierdoor wordt het lichaamsoppervlak verkleind en wordt minder warmte afgegeven. In het vroege voorjaar kunnen meerdere adders in elkaar verstrengeld liggen.</p><p>In de Meinweg liggen adders meestal tegen of op pollen van pijpenstrootje of op verdorde blaadjes van gagel of vuilboom (De Ponti 2001). De ligplek bevindt zich vaak op een overgang in de buurt van struik- en dopheide, vuilboom, gagel en bochtige smele. Op circa 20 cm van de ligplek bereikt de vegetatie een minimale hoogte van 20 cm, maar meestal 30-60 cm. De zuidzijde van de ligplek is altijd lager begroeid dan de andere zijden.</p><p>Op de Veluwe, in de omgeving van Ermelo, troffen Lamberts &amp; Van der Rijst (1988) adders het meeste aan op dikke (15-35 cm) matten bochtige smele. Andere ondergronden waren dennennaalden, adelaarsvaren, dode bladeren, kale grond en bosbes. Op dergelijke substraten is de temperatuur enkele graden hoger dan in de omgeving. Vroeger kwamen adders ook veelvuldig voor in schrale akkers en heischraalgrasland, vrijwel verdwenen habitats. Menige adder werd met korenschoven of hooi meegebracht naar de boerderij en kwam op de deel bij het dorsen van graan om het leven (André Donker pers. med.). In de schrale wintergraanakkers rond Dwingeloo (Veldslagen) en op de Es bij Uffelte (Ooster- en Westerzand) worden nog steeds met enige regelmaat adders aangetroffen. Ook wordt de soort wel gevonden op braakliggende terreinen, in ruigten, natuurontwikkelingsgebieden die grenzen aan heidegebieden of open bos (André Donker pers. med.). Ook pitrusvegetaties kunnen een belangrijke habitat vormen (Donker 1999).</p><p>Een zeer uitzonderlijk habitattype is laagveen. De aanwezigheid op laagveen is uitsluitend bekend uit Zuidwest-Friesland in het gebiedje Oosterschar en in elk geval tot en met 1996 ook in het Haulsterbos. De adder wordt er aangetroffen op open plekken in hakhoutbos, op verruigde weilandjes in het bos en op en langs paden (Hofstra 2003, Werkgroep Monitoring 2003a).</p><p>Voor de overwintering maken adders gebruik van ondergrondse, vorstvrije schuilplaatsen; de hibernacula. Hiervoor kunnen holen van knaagdieren en holten tussen stronken of wortels van bomen dienst doen. Vaak zijn de plaatsen begroeid met dichte vegetatie en gelegen in de nabijheid van bomen of struiken. De hibernacula bevinden zich vaak in bodemsoorten met een redelijk leemgehalte of een hoog percentage organische stof. Hierdoor blijft de vochtigheid in de overwinteringsplaatsen hoog (Lenders 2003). Vaak hebben de overwinteringsplaatsen een zuidelijke expositie, wat te maken heeft met gunstige omstandigheden in het voorjaar.</p></body>]]></text>
+		</content>
+		<content>
+			<title>Gelijkende soorten</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Herkenning</h2><p>De adder is door enkele kenmerken duidelijk van de twee andere Nederlandse slangen en de hazelworm te onderscheiden. De adder heeft bij helder licht als enige een verticale spleetpupil. De adder is ook zwaarder gebouwd en heeft een staart die veel korter is en abrupter eindigt. De adder heeft een opstaande snuit, terwijl de andere genoemde soorten een afgeronde snuit hebben.</p><p>Hazelworm en gladde slang hebben ongekielde schubben op hun lichaam. Bij adder en ringslang zijn deze gekield. De drie slangen hebben één rij buikschubben. De hazelworm heeft meerdere rijen kleine buikschubjes. Ook vervellingshuiden zijn aan de hand van deze schubkenmerken te determineren. Over de rug van de adder loopt een donkere zigzagstreep of donkere lijn. Bij ringslang en hazelworm is deze afwezig. Bij de ringslang vindt men meestal achter op de kop twee halvemaanvormige licht gekleurde vlekken die bij de adder niet voorkomen. De gladde slang bezit soms een rij van donkere vlekken op de rug, wat verwarring kan veroorzaken.</p><p>Zie ook de determinatiesleutels in Van Diepenbeek &amp; Creemers (2006).</p></body>]]></text>
+		</content>
+		<content>
+			<title>Herkenning</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Beschrijving</h2><p>De adder is een relatief zwaargebouwde gifslang met een verticale pupil, een korte, stompe staart en een duidelijk van de romp te onderscheiden kop. Volwassen vrouwtjes zijn 39-78 cm lang (gemiddeld 58 cm) en volwassen mannetjes 35-67 cm (gemiddeld 54 cm) (gegevens Werkgroep Adderonderzoek Nederland). Het gewicht is afhankelijk van de leeftijd, de conditie en het seizoen. Bij vrouwtjes is het gewicht tevens sterk afhankelijk van de tweejarige voortplantingscyclus. Nadat de vrouwtjes jongen hebben gekregen, zijn ze tot aan het daaropvolgende voorjaar erg mager. Volwassen vrouwtjes (alleen vrouwtjes tot en met juni) wegen 61-222 g (gemiddeld 106 g), volwassen mannetjes 45-131 g (gemiddeld 70 g) (gegevens Werkgroep Adderonderzoek Nederland). Bij pasgeboren adders zijn er geen verschillen in gewicht tussen mannetjes en vrouwtjes geconstateerd (Petzold 1980).</p><p>Buitenlandse studies geven een grote spreiding in gewichten en maten aan. De gegevens van de Nederlandse adders vallen binnen deze range. Adders uit het laagland zijn gemiddeld groter dan de dieren die in middel- en hooggebergtes voorkomen (Schiemenz 1985).</p><p>De kleur is zeer variabel en deels afhankelijk van het geslacht. Mannetjes hebben veelal een grijze tot beigeachtige grondkleur. Bij vrouwtjes is deze grondkleur beige tot (rood)bruin. Op de rug is bij beide geslachten een duidelijke donkere lijn of zigzagstreep aanwezig en op de flanken een rij donkere vlekken. De rugstreep en de flankvlekken zijn bij mannetjes donkerder en contrasteren sterker met de grondkleur dan bij vrouwtjes. Op de kop is vaak een patroon van donkere vlekken aanwezig. Op de achterzijde van de kop vormen deze vlekken gewoonlijk een X-, Y-, V-, of O-vormige figuur. De buik is meestal donker gekleurd, variërend van grijs tot bruin tot zwart en is soms gespikkeld of gevlekt. De onderzijde van de staart eindigt veelal in een gele, oranje of rode kleur. In sommige gebieden is ook de laatste 2-3 cm van de bovenzijde van de staart gekleurd. De betekenis staat niet vast, maar het zou een rol kunnen spelen bij ‘caudal luring’, het vermogen van sommige slangen om hun staartpunt snel heen en weer te bewegen om zo prooidieren te lokken. Dat gedrag is van enkele verwante soorten bekend (Heatwole &amp; Davidson 1976, Henderson 1970).</p><p>Bij juveniele adders is het geslachtsverschil op basis van kleur niet zo duidelijk als bij adulte dieren. Juveniele mannetjes worden soms bruin geboren en veranderen na enkele jaren van kleur.</p><p>Geslachtsonderscheid op basis van kleur kan in verschillende gebieden moeilijkheden opleveren. In de Meinweg zijn vrijwel alle mannetjes beige en de vrouwtjes roodbruin. In het Dwingelderveld daarentegen vertoont een groot deel van de mannetjes en vrouwtjes een zelfde donkerbeige kleur. Het geslacht is dan alleen vast te stellen via andere kenmerken. Mannetjes zijn slanker dan vrouwtjes, de kop is langer en de bovenlipschilden zijn lichter. Verder hebben mannetjes een langere staart en de staartwortel is verdikt door de daarin liggende hemipenes.</p><p>Diverse morfologische kenmerken van Nederlandse adders, zoals gewicht, lichaamslengte, relatieve koplengte en -breedte blijken gebiedsafhankelijk (Van Hoof &amp; Dorenbosch 2000).</p><h2>Bijzonderheden</h2><p>In Nederland zijn 53 waarnemingen bekend van zwarte adders uit de periode 1995-2006 (gegevens Werkgroep Adderonderzoek Nederland). Deze waarnemingen komen vooral uit de provincie Drenthe (50 exemplaren). Zwarte adders worden in Europa voornamelijk aangetroffen op grotere hoogte (&gt;500 m) en in de noordelijkste gedeelten van het verspreidingsgebied. Er is een verband tussen melanisme en klimaatfactoren. Drenthe ligt aan de ondergrens van het zogenoemde ‘boreale’ gebied (Barkman &amp; Westhof 1969). Deze klimaatgordel kenmerkt zich door lagere temperaturen en een daaraan aangepaste flora en fauna. Dat is de belangrijkste verklaring waarom er in Nederland vrijwel geen zwarte adders worden aangetroffen zuidelijker dan Drenthe. Geen van de in Nederland aangetroffen adders is geheel zwart. De bovenlipschilden zijn bruin of wit, de buikschilden zijn grijs of bruinachtig en het oog is donkerrood. Ook is er soms op de rug zeer vaag nog enige tekening te zien. De dieren hebben een rood-zwarte of blauw-zwarte kleur. Ze zijn partieel melanistisch. Partieel melanistische adders worden meestal ‘normaal’ gekleurd geboren, vaak wel donkerder. De zwarte kleur nemen ze pas na enkele jaren aan (Brodmann 1987).</p><p>In Zuid-Duitsland, Zwitserland en Oostenrijk komen op grotere hoogte wel totaal melanistische adders voor, waarbij zelfs het oog zwart is. Zwarte adders zijn groter dan hun ‘normaal’ gekleurde soortgenoten (Andrén &amp; Nilson 1981, Monney et al. 1995).</p><p>Trutnau (1981) schrijft dat er zeer zeldzaam albinistische adders worden aangetroffen. Deze zullen vrijwel nooit volwassen worden, omdat ze een grotere kans lopen gepredeerd te worden. Naast totaal melanistische en albinistische adders worden er zeer zeldzaam ook andere tekeningsloze kleurvormen aangetroffen. Een voorbeeld hiervan is de zogenaamde koper- of vuuradder, welke geheel koperrood gekleurd is (Bruno 1985). Een andere zeldzaamheid zijn adders met een ronde pupil. Dat zou moeilijkheden kunnen geven bij de determinatie (Brodmann 1972, Pedro Janssen pers. med.).</p><p>Afwijkende buikschubben komen veel voor bij adders. De buikschubben lopen dan niet helemaal door tussen de flanken. Dit resulteert in zogenoemde ‘halve’ buikschubben. Het percentage adders met afwijkende buikschubben verschilt tussen populaties (Dorenbosch &amp; Van Hoof 2000). Merilä et al. (1992) zien een verband tussen afwijkende buikschubben en een verarmde genetische variatie. In een genetisch onderzoek, dat is uitgevoerd door de Werkgroep Adderonderzoek Nederland, is het verband tussen inteelt en afwijkende buikschubben binnen Nederlandse adderpopulaties niet aangetoond (Janssen in prep.).</p></body>]]></text>
+		</content>
+		<content>
+			<title>Levenswijze</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Jaarritmiek</h2><p>Van de inheemse slangen komen de mannetjes van de adder als eerste uit de winterverblijven. In de meeste gevallen gebeurt dat begin maart, maar soms ook al eind februari. Eén tot drie weken later volgen de vrouwtjes en de subadulte adders. Het ontwaken van de adders uit de winterslaap is afhankelijk van de bodem- en luchttemperatuur en de expositie van het winterverblijf in het terrein. Waarschijnlijk speelt ook een hormonale component een rol. De eerste weken besteden de mannetjes veel tijd aan het zonnen, ter voltooiing van de spermatogenese. Ze eten niet in deze periode. In de tweede helft van april wordt de zonperiode afgerond met het vervellen van de mannetjes. Daarna begint de paartijd, waarbij mannetjes actief op zoek gaan naar vrouwtjes. Hierbij kunnen de dieren afstanden van enkele honderden meters per dag afleggen (Andrén 1986, Viitanen 1967). De mannetjes volgen de geurspren van vrouwtjes. Na de paartijd verspreiden alle adders zich over hun zomerhabitat. In de warme zomermaanden worden relatief weinig dieren waargenomen. De mannetjes en de dieren die niet aan de voortplanting deelnemen, voeden zich in deze periode om zo de vetreserves op te bouwen voor de volgende winter en het daarop volgende voortplantingsseizoen. Het gewichtverlies in de winter bedraagt 1-16% bij volwassen dieren (Schiemenz 1985).</p><p>De adder is eierlevendbarend. De vrouwtjes hebben in Nederland, evenals in het grootste deel van Europa, een tweejarige voortplantingscyclus. Drachtige vrouwtjes zoeken meestal vaste zonplaatsen op om daar de embryo’s te laten ontwikkelen. Deze zonplaatsen worden vaak meerdere jaren achtereen gebruikt. Vanaf eind augustus trekken de drachtige vrouwtjes richting de winterverblijven (hibernacula). De jonge adders worden vervolgens in de buurt van de winterverblijven geboren. Dat gebeurt vanaf augustus, maar vooral in september. Direct na de geboorte vervellen de jonge slangen. Afhankelijk van temperatuur, lichtintensiteit en daglengte gaan adders meestal in oktober in winterslaap. Een populatie gebruikt meestal gedurende tientallen jaren dezelfde winterverblijven (Phelps 1978, Presst 1971).</p><h2>Legselgrootte, groei en leeftijd</h2><p>Het aantal jongen is afhankelijk van de grootte van het vrouwtje en bedraagt 4 tot 15. Juveniele adders zijn bij de geboorte 14-18 cm lang en wegen 3-4 g. De jongen vervellen voor de eerste maal binnen enkele minuten tot uren na de geboorte. Binnen enkele dagen tot weken eten de jonge adders voor het eerst.</p><p>Mannetjes zijn geslachtsrijp in hun vierde levensjaar, bij een lengte van circa 35 cm. Vrouwtjes worden voor het eerst drachtig in hun vijfde of zesde levensjaar, bij een lengte van ongeveer 39 cm (Völkl &amp; Thiesmeier 2002; gegevens Werkgroep Adderonderzoek Nederland). Günther (1996) vermeldt een maximale leeftijd van 10-15 jaar. In een langlopend populatieonderzoek in Zuid-Engeland werd een maximale leeftijd van circa 30 jaar vastgesteld (Phelps 2004).</p><h2>Voedsel</h2><p>Kleine zoogdieren vormen het belangrijkste voedsel van volwassen adders. Het menu wordt bepaald door het lokale aanbod. Het merendeel betreft spitsmuizen, woelmuizen en echte muizen. In vochtige leefgebieden zijn ook heikikkers en bruine kikkers belangrijke prooidieren. Kleine watersalamanders worden soms ook gegeten (André Donker pers. med.). Hagedissen worden wel gegeten, maar vormen nooit een belangrijk aandeel in het totale voedselpakket van volwassen adders. Soms worden ook vogels, vogeleieren en insecten gegeten. Vermeldenswaardig is de waarneming van een adder die zich te goed deed aan een dode vogel zonder kop en ingewanden (Nijhof 1998).</p><p>Jonge adders tot anderhalf jaar oud voeden zich voornamelijk met jonge muizen, kikkers en hagedissen. Juveniele adders eten in bepaalde gebieden ook veel ongewervelde dieren. (Hordies &amp; Van Hecke 1985, Luiselli et al. 1995, Presst 1971).</p><p>Volwassen adders eten circa zes tot tien prooien per jaar. Uitzondering daarop vormen de drachtige vrouwtjes die in het jaar dat ze drachtig zijn slechts enkele prooidieren eten.</p><h2>Predatoren</h2><p>Vooral in het voorjaar lopen adders een groot risico om gepredeerd te worden. De dieren zonnen dan veel, terwijl de vegetatie nog laag is (Presst 1971). In deze periode worden, na de eerste vervelling, meer addermannetjes gegrepen dan vrouwtjes. Deze zijn dan actief op zoek naar vrouwtjes en vallen daardoor op (Andrén 1985). In een literatuurstudie geeft Strijbosch (1981b) een opsomming van 27 inheemse vogels, 18 zoogdieren en acht overige dieren of diergroepen waarvan is aangetoond dat ze in de vrije natuur of tijdens experimenten adders eten.</p><p>De buizerd geldt in Nederland als de voornaamste adderpredator onder de vogels. Ook van blauwe reiger, bosuil, ekster en raaf is bekend dat ze met enige regelmaat (meestal jonge) adders eten. De gladde slang is het enige reptiel dat wel eens een adder eet.</p><p>Onder de zoogdieren zijn egel en bunzing de belangrijkste predatoren. Daarnaast staat bij vos, das en wild zwijn wel eens een adder op het menu. Bij de overige zoogdieren gaat het om incidentele waarnemingen die meestal betrekking hebben op juveniele adders. Aangezien zoogdieren, in tegenstelling tot adders, veelal ’s nachts actief zijn, vormen zij nauwelijks een bedreiging voor adderpopulaties. Van wilde zwijnen en bruine ratten is bekend dat zij ook tijdens de overwintering adders prederen.</p><p>Opmerkelijke en incidentele predatoren van (jonge) adders zijn onder meer de gewone pad, groene kikkers, snoek, paling en grotere loopkeversoorten (<em>Carabus</em> spec.).</p><p>Melanistische adders vallen meer op dan normaal gekleurde soortgenoten. Zij worden ongeveer twee keer zo snel gepredeerd. Daartegenover staat dat ze sneller opwarmen en daardoor minder tijd aan predatie bloot staan (Andrén &amp; Nilson 1981).</p><h2>Gedrag</h2><p>In de paartijd is soms de adderdans waar te nemen. Tijdens dit schijngevecht strijden twee mannetjes met elkaar om uit te maken wie met een in de buurt liggend vrouwtje kan paren. Tijdens de adderdans richten de beide mannetjes zich op en strengelen zich om elkaar heen, waarbij ze proberen de tegenstander naar beneden te drukken en zelf de kop hoger te houden dan die van de rivaal. Aangezien adders zich hoger op kunnen richten naarmate ze groter worden, wint het grootste dier meestal het gevecht. Vaak is alleen dreigen, door het verticaal oprichten van het voorste deel van het lichaam, voldoende om de rivaal te verjagen. Het merendeel van de adderdansen duurt maximaal zes minuten en de dieren bijten elkaar tijdens deze schijngevechten nooit (Andrén 1986, Madsen et al. 1993).</p><p>In de paartijd vinden de mannetjes de vrouwtjes door geursporen te volgen. Op een afstand van circa 2 m neemt het mannetje een vrouwtje waar. Hij benadert haar dan al tongelend. Ook het eerste contact gebeurt tongelend, waarbij door beide dieren met de staart wordt getrild. Na enige tijd begint het mannetje al schokkend langs het vrouwtje te bewegen. Na enkele minuten tracht het mannetje met één van zijn beide hemipenes de copulatie tot stand te brengen. Meestal zoekt het vrouwtje vervolgens beschutting op, het mannetje met zich mee sleurend. De paring duurt ongeveer twee uur (Andrén 1986).</p><p>Vrouwelijke adders paren meerdere malen met verschillende mannetjes. Dat heeft als voordeel dat er spermacompetitie plaatsvindt in de vrouwelijke voortplantingsorganen, waardoor een groter deel van de eicellen wordt bevrucht door genetisch superieure mannetjes. Dat vergroot de levensvatbaarheid van de nakomelingen (Madsen et al. 1992).</p><p>Foeragerende adders gebruiken de zit-en-wachtstrategie. Ze liggen vaak onder overhangende vegetatie te wachten tot een prooi passeert. Komt deze binnen bereik, dan slaat de adder met een snelle gifbeet toe. De prooi wordt niet vastgehouden, maar er wordt afgewacht totdat deze bezwijkt. Vervolgens volgt de slang het geurspoor van de prooi, die vaak nog enige afstand heeft afgelegd. De adder besnuffelt zijn prooi om de kop te vinden en verslindt deze dan in zijn geheel. Een enkele keer gebruikt de adder een actieve jachttechniek, waarbij de prooi achtervolgd wordt.</p><p>Bij verstoring zal een adder altijd eerst proberen te vluchten. Alleen als dat niet mogelijk is neemt het dier een dreighouding aan. Hierbij wordt het voorste derde deel van het lichaam in een S-vorm gehouden, om snel te kunnen toeslaan. Ook zal een adder vaak sissen als waarschuwing. Bij verstoring kan de adder bijten, hoewel hij ook kan toestoten met een gesloten bek. Een adderbeet is voor mensen zelden dodelijk, maar leidt in de regel wel tot tal van onaangename verschijnselen die beslist niet onderschat mogen worden (zie kader ‘Gifapparaat, gif &amp; beet’).</p><h2>Verplaatsingen</h2><p>Grote verplaatsingen vinden bij adders plaats na de overwintering door subadulte dieren en niet-reproductieve vrouwtjes en na de voortplanting ook door mannetjes. Het gaat hier om dieren die hun zomerhabitat opzoeken. Ook in de voortplantingstijd leggen mannetjes relatief grote afstanden af tijdens hun zoektocht naar vrouwtjes. De maximale afstanden die bekend zijn (tabel 2), zijn ruim 3 km in Nederland (Hijkerveld; gegevens Werkgroep Adderonderzoek Nederland), 1500 m in Vlaanderen (Claus 1993) tot maximaal 1900 m in andere delen van Europa (Presst 1971). Afstanden van 1-3 km als kolonisatieafstand voor nieuwe leefgebieden lijken een reële maat. Adders kunnen in een uur tientallen tot honderden meters afleggen.</p><p>Water is geen onoverkomelijke barrière voor de adder. Zo werden in de Meinweg enkele malen adders waargenomen die een ven overzwommen (Peter Keijsers pers. med.). In Zuid-Duitsland werden in het voorjaar adders waargenomen die in ijskoud smeltwater zwommen (Lehnert &amp; Fritz 1993). Kampf (1984) nam een adder waar die de zee in kroop. Forsmann &amp; Lindell (1997) stelden in Zweden uitwisseling tussen populaties op verschillende eilanden vast.</p><h2>Gifapparaat, gif en beet</h2><p>Onderstaande gegevens zijn gebaseerd op het protocol dat is opgesteld ter behandeling van adderbeten, door een samenwerkingsverband van het Havenziekenhuis, Rijksinstituut voor Volksgezondheid en Milieu/Nationaal Vergiftigingen Informatie Centrum en de Werkgroep Adderonderzoek Nederland van ravon (Havenziekenhuis et al. 2006).</p><h3>Gifapparaat</h3><p>Adders behoren tot de solenoglyfen. Dat zijn de gifslangen die het hoogst ontwikkelde gifapparaat bezitten. Deze gifslangen hebben twee scharnierende holle giftanden in de bovenkaak, die bij het openen van de bek rechtop gaan staan. Achter de functionele giftanden staat een aantal reservetanden klaar in verschillende ontwikkelingsstadia. Zo kan de adder regelmatig van tanden wisselen. Bij gesloten bek liggen de tanden achterwaarts teruggeklapt tegen het gehemelte aan. Tijdens het openen van de bek wordt door twee spieren een aantal beenderen in de bovenkaak in beweging gebracht, waardoor de tanden worden opgericht. Deze spieren en beenderen kunnen bij het openen van de bek ook in rust blijven, zodat de tanden niet onnodig worden opgericht. Door spierwerking wordt ook het gif uit de gifklieren door de tanden heen geperst, zodat het diep in het prooidier kan worden gespoten. De gifklieren zijn evolutionair ontstaan uit speekselklieren, wat verklaart dat het gif ook een rol speelt bij de vertering van voedsel.</p><h3>Gif</h3><p>Het gif van de adder is een kleurloze tot lichtgele, iets visceuze vloeistof. Het behoort tot de toxalbuminen en is samengesteld uit een mix van hoofdzakelijk enzymen, non-enzymatische eiwitten, catecholaminen (neurotransmitters), serotoninen en vetten. Het werkt voornamelijk in op het bloed, de bloedsomloop en het hart en heeft opvallende lokale weefselvernietigende effecten.</p><p>Het gif bestaat onder andere uit de volgende werkzame componenten (Schiemenz 1985):</p><ul><li>Haemorragine: vernietigt de bloedvatwanden en veroorzaakt zwellingen. </li><li>Haemolysine: lost de rode bloedcellen op.</li><li>Trombine: beïnvloedt de bloedstolling.</li><li>Cytolysine: verwoest witte bloedlichaampjes en tast weefsels aan.</li><li>Neurotoxine: werkt in op hersen- en ruggenmergzenuwknopen en veroorzaakt ademhalingsstoornissen en andere storingen aan het centrale zenuwstelsel. </li></ul><p> </p><p>Ook zijn er enzymen aanwezig die niet toxisch zijn, maar een rol spelen bij het binnendringen van het gif en het transport naar de weefsels; verder ondersteunen ze ook de vertering. Gemiddeld geeft een adder 25-30 mg vloeibaar gif af bij een beet, dat is 10 mg droog gif. Als het gif door een adder onder de huid van een muis wordt gebracht is er 6,45 microgram nodig om 50% van de aangedane muizen te doden. Als het gif tot in de ader van een muis wordt gebracht is hiervoor al 0,55 nicrogram genoeg (Engelmann &amp; Obst 1981).</p><h3>De symptomen van een adderbeet</h3><p>Als een mens wordt gebeten kunnen rondom de beet (enkele van) de volgende lokale verschijnselen optreden: pijn, tintelingen, zwelling, verkleuring en vergrote lymfeklieren (van het gebeten lichaamsdeel). De algemene verschijnselen die kunnen optreden zijn: misselijkheid, braken, buikpijn, diarree, zweten, bloedingen, verhoogde hartslag, bewustzijnsverlies, lage bloeddruk, shock en/of nierfalen. Het is mogelijk dat er nog meer symptomen optreden. De bovenstaande zijn echter de meest voorkomende, afhankelijk van de ernst van de beet.</p><h3>De behandeling van een adderbeet</h3><p>Het is van groot belang om als gebeten persoon of hulpverlener de rust te bewaren (adderbeten zijn zelden dodelijk). Dat voorkomt onder meer een versnelde verspreiding van het gif door het lichaam als gevolg van een versnelde hartslag. Knellende sierraden en banden moeten worden verwijderd. Het gebeten lichaamsdeel dient geïmmobiliseerd en laag gehouden te worden en het is verstandig altijd medische hulp te zoeken. Het gebeten lichaamsdeel moet nooit worden afgebonden, ingesneden of uitgezogen. De consumptie van alcohol, thee of koffie na een beet is uit den boze. Gebruik alleen paracetamol tegen de pijn (geen aspirine, ibuprofen of andere pijnstillende/ontstekingsremmende geneesmiddelen (nsaid’s), omdat deze ook bloedverdunnend werken). Antiserum wordt alleen toegediend bij ernstige vergiftigingen, met één van de volgende symptomen: stollingsstoornis, neurotoxiciteit, hartritmestoornis, snelle bloeddrukdaling, shock, snelle progressieve lokale zwelling of blaasjes, rhabdomyolyse (afbraak van dwarsgestreept spierweefsel) en/of longoedeem. Het besluit om antiserum toe te dienen moet altijd zorgvuldig overwogen worden, omdat er een groep van risicopatiënten is, waarbij een anafylactische shock of serumziekte kan optreden. Toediening moet altijd in het ziekenhuis gebeuren. Daarbij dient de arts niet klakkeloos te vertrouwen op de determinatie verricht door het slachtoffer of omstanders. Zo is in Nijmegen een kind, na onterechte toediening van antiserum in een ziekenhuis aldaar, ernstig ziek geworden. De bewuste beet was van een gladde slang, die zelfs meegenomen was naar het ziekenhuis, maar daar echter werd aangezien voor een adder (Henk Strijbosch pers. med.).</p><h3>Beten in Nederland</h3><h4>Periode voor 1973</h4><p>Door Hemmes (1973) is onderzoek gedaan naar adderbeten. Hij achterhaalde 138 beten tussen 1885 en 1972. Van de beten kwam 60% uit het noordoosten van het land, 30% van de Veluwe en de resterende 10% van onder andere de Utrechtse Heuvelrug (omgeving Baarn), de Meinweg en het zuidwesten van Brabant (omgeving Ulvenhout). Drie personen zijn aan de gevolgen van een adderbeet overleden; een 3½ jaar oud meisje, een twaalfjarige jongen en een jonge vrouw. Er werden 58 maal mensen in de armen gebeten, 39 maal in de benen en twee maal in het hoofd.</p><h4>Periode vanaf 1973 tot en met 2006</h4><p>De Werkgroep Adderonderzoek Nederland heeft de afgelopen jaren een grootschalig onderzoek verricht naar adderbeten in de periode 1973-2006, door alle huisartsen te benaderen in het oosten van het land (Janssen in prep.) Adderbeten worden in ziekenhuizen en bij het Rijksinstituut voor Volksgezondheid en Milieu (rivm) vaak algemeen als ‘slangenbeet’ geregistreerd, waardoor ze niet goed bruikbaar zijn. Er zijn 83 beten achterhaald, waarvan 41 in Drenthe, 23 in Limburg, zeven in Friesland, vier in Overijssel, vier in Gelderland, twee in Utrecht en van twee personen was de provincie onbekend. Van de gebeten personen werden er 37 in de arm of hand gebeten, 15 in been of voet en bij 31 beten is dit onbekend. Vangen of vasthouden van de adder was in 25 gevallen de oorzaak van de beet, 21 maal werd iemand gebeten door een adder te storen tijdens het wandelen, iets vast te pakken in de omgeving van de adder of op de adder te gaan zitten. Van 37 beten is hier niets over bekend. In 44 gevallen werd een huisarts geraadpleegd, waarbij 26 maal werd doorverwezen naar het ziekenhuis. Het ziekenhuis werd ook 15 maal direct bezocht. Voor zover bekend is in zes gevallen antiserum toegediend. Bij 15 beten werden één of meer symptomen van ernstige vergiftigingsverschijnselen vastgesteld. In de periode na 1973 is niemand in Nederland overleden aan een beet van de adder.</p></body>]]></text>
+		</content>
+		<content>
+			<title>Onderzoek</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Inventarisatie</h2><p>Adders zijn het beste te vinden in het voor- en najaar. In deze perioden liggen de dieren veel te zonnen in de buurt van de overwinteringsplaatsen. In het voorjaar is de vegetatie nog laag en zijn de dieren relatief gemakkelijk te zien. Daarnaast zijn de adders vrij goed te vinden tijdens de paartijd, van eind april tot medio mei. In deze periode zijn de mannetjes actief op zoek naar vrouwtjes en vinden de adderdansen plaats. Tijdens deze activiteiten bewegen vooral de mannetjes veel, waardoor ze beter opvallen. Vanaf half augustus kunnen juveniele adders gevonden worden in de buurt van de overwinteringsplaatsen.</p><p>Het optimale weer om adders te vinden is dunne sluierbewolking met zwakke zoninstraling en niet te hoge temperaturen (12-18°C). Bij hogere temperaturen zijn adders snel opgewarmd en verschuilen ze zich onder de vegetatie, waardoor ze vrijwel niet meer te vinden zijn. Ook bij harde wind en neerslag zijn adders moeilijk waarneembaar.</p><p>Het zoeken naar vervellingshuidjes kan ook veel waarnemingen opleveren. De huidjes blijven langere tijd tussen de vegetatie liggen en kunnen onafhankelijk van het weer worden gezocht.</p><p>Een voor reptielen steeds meer toegepaste inventarisatiemethode is het creëren van kunstmatige schuilplaatsen door het uitleggen van metalen of houten platen. Barker &amp; Hobson (1996) en Reading (1997) vinden deze methode voor het inventariseren van hazelworm en gladde slang wel goed werken, maar niet voor de adder. Een onderzoek in gebieden van Natuurmonumenten laat echter zien dat de adder wel degelijk regelmatig onder plaatjes is aan te treffen (Werkgroep Monitoring 2005a). Presst (1971) gebruikte tijdens een studie in Zuid-Engeland met succes vallen om adders te vangen. Deze vallen bestonden uit fuiken van gaas met geleidende rasters.</p><p>Adders zijn individueel herkenbaar aan de hand van de aantallen en positie van hun kopschilden. De kop dient van bovenaf gefotografeerd te worden en met behulp van de zogenaamde ‘kopschildenformule’ kan het patroon systematisch worden genoteerd (Janssen 2006, Lenders 2000b).</p></body>]]></text>
+		</content>
+		<content>
+			<title>Relaties</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Begeleidende soorten</h2><p>Heikikker en levendbarende hagedis zijn opvallend vaak als begeleider van de adder aanwezig. De karakteristieke begeleiders zijn daarnaast gladde slang, hazelworm, ringslang en poelkikker. Al deze soorten zijn, evenals de adder, aanwezig in veel (vochtige) heidegebieden, hoogveengebieden en open bossen.</p></body>]]></text>
+		</content>
+		<content>
+			<title>Summary</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><h2>Distribution</h2><p>The adder is present on the high sandy soils, with exception of the coastal dunes. The two core areas are the Veluwe area (province of Gelderland) in the centre of the Netherlands and the provinces of Friesland and Drenthe in the north. The adder can also be found in the provinces of Overijssel and Limburg. The species disappeared from the provinces of Groningen, Noord-Holland, Utrecht and Noord-Brabant. There are indications that the well-studied and famous Limburg population originates from an early introduction at the beginning of the 20th century by Roman Catholic monks from the central European region of Silesia.</p><h2>Status</h2><p>The adder is listed on the Red List as vulnerable. It is strictly protected under Dutch legislation and listed on the Bern Convention (Annex iii). The range of the adder has decreased by 65% since 1950. The decrease is caused by reclamation of heathlands and raised bogs, afforestation, lowering of ground water levels, habitat fragmentation, persecution and too intense and large scale nature management on heathlands. The adder can be encouraged by a careful and small scale management of heathlands and raised bogs.</p><h2>Remarks</h2><p>Of the 53 known black adders between 1995 and 2006, 50 came from the northern province of Drenthe. This province can be assigned to the southern limit of the ‘boreal’ area in Europe. Black adders in Europe are known especially from high and northern areas of distribution. None of the Dutch black adders are completely melanistic.</p></body>]]></text>
+		</content>
+		<content>
+			<title>Verspreiding</title>
+			<text><![CDATA[<body><h2>Areaal</h2><p>Het verspreidingsgebied van de adder strekt zich uit van Groot-Brittannië tot op het Russische eiland Sachalin ten noorden van Japan. De noordgrens van het areaal komt boven de poolcirkel uit en loopt door Scandinavië en het noorden van Rusland. In het zuiden bereikt de soort het zuiden van Frankrijk en het noorden van Italië en Griekenland (Nilson &amp; Andrén 1997, Schiemenz 1985).</p><p>In het noordelijke deel van het verspreidingsgebied komt de adder vooral voor rond zeeniveau. Naar het zuiden toe wordt de soort steeds hoger in de bergen aangetroffen. In Midden-Europa komt de adder vrijwel uitsluitend voor in het middel- en hooggebergte, waar een hoogte van bijna 3000 m bereikt kan worden (Brodmann 1987).</p><p>Er zijn drie ondersoorten beschreven. De nominaatvorm <em>Vipera berus berus</em> komt voor in het grootste deel van het verspreidingsgebied, waaronder Nederland (Brodmann 1987). Op de Balkan komt de ondersoort <em>V. b. bosniensis</em> voor, terwijl vanaf Zuidoost-Siberië oostwaarts de ondersoort <em>V. b. sachalinensis</em> voorkomt. Deze laatste betreft mogelijk een aparte soort.</p><h2>Verspreiding in Nederland</h2><p>De adder komt voor op de hoge zandgronden van Nederland met uitzondering van de duinen. Er zijn momenteel nog twee grote min of meer aaneengesloten leefgebieden van de adder, gelegen in Friesland en Drenthe en op de Veluwe (Veluws-Drents district). Daarnaast is de soort nog aanwezig in Overijssel (zowel binnen het Veluws-Drents als het Oost- en Zuid-Nederlands district) en Limburg (Meinweg, deel van het Kempens district). In maar liefst vier provincies (Noord-Brabant, Utrecht, Noord-Holland en Groningen) is de adder uitgestorven.</p><h3>Voor 1971</h3><p>De eerste geregistreerde adderwaarneming stamt uit Borger-Odoorn (dr) uit 1852. Tot 1900 zijn maar 25 waarnemingen bekend. Deze komen vooral uit Drenthe en van de Veluwe.</p><p>Het verspreidingsbeeld in deze periode geeft duidelijk twee grote kerngebieden weer. Het ene omvat Drenthe, Zuidoost-Friesland en Zuid-Groningen, het andere bestaat uit de Veluwe en de Utrechtse Heuvelrug. Verder zijn er geïsoleerde waarnemingen uit Overijssel en Limburg, veelal uit gebieden waar de adder nu nog voorkomt of uit gebieden die hier landschappelijk op aansloten.</p><p>In Limburg is in 1953 een adder door schoolkinderen gevangen nabij Tegelen. Het dier is in de collectie van het Nationaal Natuurhistorisch Museum Naturalis te Leiden beland (rmnh 9906). Aangezien vroeger het gehele gebied ten westen van het hoogterras langs de Nederlands-Duitse grens uit aaneengesloten geschikte adderhabitat bestond, is het mogelijk dat de adder er in de hele grensstreek aanwezig is geweest (Janssen &amp; Lenders in prep., Lenders 1992d). Het is echter ook mogelijk dat de Limburgse adders zijn geïntroduceerd (zie onder de periode 1996-2007).</p><p>Van de historische Brabantse waarnemingen uit deze en andere perioden worden, in tegenstelling tot Bergmans &amp; Zuiderwijk (1986), alleen de waarnemingen tussen Breda en de Belgische grens betrouwbaar geacht. Op de Oude Buissche Heide bij Zundert vond een waarnemer in 1967 zowel gladde slangen als adders in zogenaamde klapvallen. Doordat deze waarnemer, in tegenstelling tot veel andere Brabantse ‘adderwaarnemers’, wél het onderscheid tussen beide soorten lijkt te kennen, vormt deze waarneming de meest overtuigende uit deze regio. In 1903 is een vrouw doodgebeten in het Geersbroek (ten zuidoosten van Ulvenhoutse Bos; uurhok 5024). Zij werd in haar pols gebeten tijdens het snijden van gras bij de Chaamse Beek. Deze waarneming is later foutief vermeld als ‘Ulvenhout’ (uurhok 5013, Willemse 1916a) en dit vormt weer de basis voor vermelding van dit uurhok in Van Wijngaarden (1959). Deze auteur plaatst op zijn beurt de waarneming in de periode 1910-1945, waarmee zowel de plaats- als tijdsbepaling zijn verschoven. Ook latere geruchten met als vindplaatsen ‘Breda, Ginneken en Ulvenhout’ zijn waarschijnlijk niet gebaseerd op de originele vondst maar op doorreferenties. Met het accepteren van de waarnemingen in het Geersbroek en de Oude Buissche Heide worden ook de waarnemingen in de Lokker (uurhok 5024) en de Moeren (uurhok 5024) aannemelijk, al ontbreekt het bij deze waarnemingen aan voldoende achtergrondinformatie om ze op betrouwbaarheid te kunnen toetsen. Uit bestudering van oud kaartmateriaal blijkt dat deze vindplaatsen vroeger deel uitmaakten van een uitgebreid complex van voornamelijk hoogveen en natte heide. Bovendien sloten deze gebieden tot omstreeks 1900 naadloos aan op de huidige leefgebieden van adders enkele kilometers over de grens in België. Daarmee zijn beide waarnemingen aannemelijk en daarom op de kaart weergegeven. De vindplaatsen uit Schlegel (1862) uit Midden-Brabant (Vught, Boxtel en Schijndel) zijn onverifieerbaar en niet weergegeven. Er waren in die tijd geen geschikte determinatiewerken, bovendien zijn het waarnemingen die hoogstwaarschijnlijk niet door de auteur zelf zijn gedaan. Voor een natuurlijke aanwezigheid in de Peelregio (op de grens van Limburg en Noord-Brabant) zijn geen bewijzen.</p><h3>1971-1995</h3><p>Hoewel het aantal waarnemingen fors is toegenomen, zijn de twee kerngebieden ten opzichte van de vorige periode duidelijk in omvang afgenomen. Vooral de achteruitgang op de Utrechtse Heuvelrug en in de Gelderse Vallei is opvallend. De adder is na 1974 niet meer waargenomen in de provincie Utrecht. Uit de Gelderse Vallei verdwijnt de soort al enkele jaren eerder. Ook verdwijnt de soort definitief ten oosten van de Veluwe uit de Gelderse landgoederenzone rond Brummen (Leusveld en Voorstonden), waar de soort eerder gemeld werd uit oude eikenhakhoutpercelen (Cuppen &amp; Heinen 1984). Door het verdwijnen van de hakhoutcultuur is de adder hier verdwenen. In de noordelijke verspreidingskern loopt in Groningen het aantal vindplaatsen sterk terug en de soort sterft er waarschijnlijk in deze periode uit. In 1992 zijn de laatste waarnemingen gedaan in de Appèlbergen ten zuiden van Haren. Uit het noorden en het uiterste westen (Gaasterland) van Friesland zijn geen adders meer gemeld. Het verspreidingsbeeld in Drenthe is op uurhokniveau nagenoeg gelijk gebleven. Alleen de verspreiding aan de meest oostelijke rand is afgenomen. In Noord-Brabant zijn geen waarnemingen meer bekend van adders, de populaties tussen Breda en België zijn uitgestorven. De laatste waarneming uit dit gebied dateert uit 1967. In Overijssel is de adder teruggedrongen tot enkele gebieden. In Limburg beperken de waarnemingen zich tot de Meinweg (Frigge et al. 1978b). De enige zekere adderwaarneming uit de Peel in de jaren 80 betreft volgens Lenders (1992) een uitzetting.</p><h3>1996-2007</h3><p>Terwijl het aantal waarnemingen sterk is toegenomen, heeft in veel gebieden een verdere achteruitgang van de adder plaatsgevonden. Deze achteruitgang in bezette hokken is het sterkst op de Veluwe. Hier liggen nog ruim 30 aaneengesloten bezette uurhokken (in de vorige periode nog ruim 40). De nattere delen in het Nationaal Park de Hoge Veluwe, boswachterij Kootwijk en waarschijnlijk ook de Kroondomeinen zijn de belangrijkste bolwerken. Uit de Kroondomeinen zijn onvoldoende gegevens bekend.</p><p>In de Noord-Nederlandse verspreidingskern (ruim 70 min of meer aaneengesloten uurhokken voornamelijk in Friesland en Drenthe) lijkt de achteruitgang mee te vallen, hoewel met name uit diverse Friese uurhokken geen recente waarnemingen meer komen. De belangrijkste gebieden zijn hier het Fochtelöerveen, Doldersummer- en Wapserveld (onderdeel van Nationaal Park Drents-Friese Wold), Nationaal Park Dwingelderveld, het Bargerveen en het Hijkerveld. Naast deze grote kerngebieden (&gt;200 ha) vinden we in beide provincies kleinere leefgebieden die vanwege hun landschappelijke en hydrologische kwaliteit toch zeer kansrijk zijn om duurzaam een leefgebied voor de adder te blijven (André Donker pers. med.). De beide kleine vindplaatsen op laagveen in Friesland, het Oosterschar en Haulsterbos, staan onder grote druk. Mogelijk is de adder uit het laatstgenoemde gebied recent al verdwenen. Vanwege het bijzondere habitattype voor de adder zijn beide gebieden zeer beschermenswaardig. De omgeving van Ommen, de Engbertsdijksvenen, het Aamsveen en het Haaksbergerveen zijn de belangrijkste Overijsselse leefgebieden voor de adder. In het noorden van de provincie zijn tegen Drenthe aan nog enkele kleinere vindplaatsen aanwezig.</p><p>Ondanks dat er nog steeds met enige regelmaat geruchten binnenkomen over waarnemingen uit de Peel, Cartierheide en de Reuselse Moeren (Noord-Brabant) is er nooit een bewijs voor de aanwezigheid van de adder gevonden. Er zijn uit deze gebieden wel volop waarnemingen van de veel lastiger waarneembare gladde slang bekend.</p><p>De Meinweg is de enige Limburgse vindplaats. Dit is zelfs de enige populatie in de gehele Middenrijnse laagvlakte van Nederland en Duitsland. Broens (2007) komt na uitvoerig historisch onderzoek met de hypothese dat de adders op de Meinweg mogelijk te herleiden zijn tot een vroege introductie (omstreeks 1900) door Franciscaner monniken uit Silezië. Dit zou de late ontdekking van adders op de Meinweg verklaren (na 1925, terwijl van andere bekende adderpopulaties dan al waarnemingen bekend zijn), evenals de grote genetische verschillen tussen de adders van de Meinweg en die van elders in Nederland en in België (Huisman 2006, Janssen in prep.). Genetisch vervolgonderzoek door de Werkgroep Adderonderzoek Nederland van ravon kan waarschijnlijk meer inzicht geven in de herkomst van de adderpopulatie van het Meinweggebied.</p><h2>Trend</h2><h3>Lange termijn</h3><p>De adder staat op de Rode Lijst in de categorie ‘kwetsbaar’. De soort is ten opzichte van de referentieperiode (de periode voor 1950) met 65% afgenomen (Van Delft et al. 2007).</p><p>Als oorzaken van achteruitgang vermelden Lenders (1992) en Creemers (1996) ontginning en bebossing van heide en venen, verdroging, vervolging, te grootschalig heidebeheer, overbegrazing en versnippering.</p><h3>Recente ontwikkeling</h3><p>De adder vertoont een matige toename binnen de reptielenmonitoring (1994-2007) (werkgroep monitoring 2008g). In veel Drentse gebieden gaat het redelijk goed met deze soort, terwijl enkele gebieden in Friesland en ook de Meinweg (Lenders 2004, Lenders et al. 2002) een negatieve ontwikkeling kennen. Op de Veluwe zijn de aantallen in de monitoring stabiel (Werkgroep Monitoring 2004). In de verspreiding lijkt de soort echter vooral op de noordelijke en de westelijke Veluwe achteruit te gaan.</p><p>Verdroging en versnippering zijn belangrijke bedreigingen voor de adder (Van Strien et al. 2007). Ook vindt binnen diverse terreinen met adderpopulaties nog een te grootschalig of te intensief beheer plaats. Zo zijn in meerdere gebieden zeer belangrijke terreindelen voor de adder in één keer geheel geplagd of gemaaid met een decimering van de adderpopulatie tot gevolg. Door het plotseling vernatten van terreindelen in de wintermaanden zijn in meerdere gebieden vermoedelijk tientallen adders verdronken en zijn populaties verdwenen. Bomen die bovenop overwinteringsplaatsen stonden, zijn op diverse plaatsen gekapt. Hierdoor kunnen hibernacula, door een verminderde verdamping, te vochtig worden (ongepubliceerde gegevens Werkgroep Adderonderzoek Nederland, Werkgroep Monitoring 2004). Het wortelstelsel van bomen geeft waarschijnlijk ook stevigheid aan de ondergrondse holten (Ton Lenders pers. med.). Overbegrazing leidt tot een te open vegetatie waardoor schuilgelegenheid en prooidieren verdwijnen en de vochthuishouding ongunstig verandert. In de Meinweg is de achteruitgang mogelijk ook ten dele te wijten aan het wegvangen van adders (Lenders 2004, Pedro Janssen pers. med.).</p></body>]]></text>
+		</content>
+		<name>
+			<name>Vipera berus Linnaeus, 1758</name>
+			<uninomial>Vipera</uninomial>
+			<specific_epithet>berus</specific_epithet>
+			<name_author>Linnaeus</name_author>
+			<authorship_year>1758</authorship_year>
+			<nametype>isValidNameOf</nametype>
+			<expert_name>Arntzen, J.W.</expert_name>
+			<organisation_name>Naturalis Biodiversity Center</organisation_name>
+			<reference_label>Die Amphibien und Reptilien Europas</reference_label>
+			<reference_author><![CDATA[Mertens, R. & H. Wermuth]]></reference_author>
+			<reference_date>1960</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Adder</name>
+			<nametype>isPreferredNameOf</nametype>
+			<expert_name>Arntzen, J.W.</expert_name>
+			<organisation_name>Naturalis Biodiversity Center</organisation_name>
+			<reference_label>Nederlandse namenlijst voor de Europese herpetofauna</reference_label>
+			<reference_author><![CDATA[Strijbosch, H., A.H.P. Stumpel, R.C.M. Creemers, J.J.C.W. van Delft, A. Groenveld & D. Bauwens, in p]]></reference_author>
+			<reference_date>in prep</reference_date>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Adder</name>
+			<nametype>isPreferredNameOf</nametype>
+			<expert_name>Arntzen, J.W.</expert_name>
+			<organisation_name>Naturalis Biodiversity Center</organisation_name>
+			<reference_label>A field guide to the reptiles and amphibians of Britain and Europe</reference_label>
+			<reference_author><![CDATA[E.N. Arnold & D.W. Ovenden]]></reference_author>
+			<reference_date>2002</reference_date>
+			<language>English</language>
+		</name>
+	</taxon>
+	<taxon>
+		<id>139499</id>
+		<parent_id>139497</parent_id>
+		<taxon_concept>Accipiter gentilis (Linnaeus, 1758)</taxon_concept>
+		<rank>species</rank>
+		<status_voorkomen>1a Oorspronkelijk. Minimaal 10 jaar achtereen voortplanting.</status_voorkomen>
+		<nsr_id>000464941632</nsr_id>
+		<url>http://nederlandsesoorten.nl/nsr/concept/000464941632</url>
+		<content>
+			<title>Samenvatting</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><p>De Havik heeft een holarctische verspreiding. In Europa broedt hij op vrijwel het gehele vasteland en in Groot-Brittannië, waarbij Duitsland met zo’n 20.000 paren de grootste broedpopulatie herbergt. De soort is vrijwel overal een standvogel die, na vestiging, zijn territorium levenslang blijft bezetten. Jonge vogels zwerven meestal hooguit enkele tientallen kilometers uit om een eigen territorium te veroveren. De Havik is een uitgesproken bosvogel maar handhaaft zich de laatste jaren ook steeds beter in minder bosrijke streken. Het nest, een vaak imposant takkenbouwsel hoog in een boom, wordt gewoonlijk zelf gebouwd en jarenlang gebruikt. De broedtijd loopt in Nederland van eind maart (eileg) tot begin juli (uitvliegen jongen). Het gemiddeld aantal grootgebrachte jongen ligt tussen 2,5-3 maar kan variëren van 1-5. Het voedsel bestaat vrijwel uitsluitend uit levend bemachtigde vogels en zoogdieren, met een voorkeur voor duiven, lijsters, kraaiachtigen en konijnen. De prooien worden middels een korte verrassingsaanval overmeesterd.</p></body>]]></text>
+		</content>
+		<content>
+			<title>Summary</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><p>Breeding bird in almost all atlas squares with sufficient woodland, sometimes in isolated woodlots or urban habitat (Amsterdam: 5 bp). Densities of 1-3 bp/square are common, 4-10/square only in extensive forests with favourable food conditions. Enormous range expansion since the 1970s reflects a recovery from the pesticide era, decreased persecution and increase of breeding habitat (afforestation) and food supplies. In the 1990s numbers stabilized or even fell on the sandy  soils, partly due to deteriorating food availability. In 1998-2000 about 1800-2000 bp were recorded (500-600 in 1977).</p></body>]]></text>
+		</content>
+		<content>
+			<title>Verspreiding</title>
+			<text><![CDATA[<body xlink="http://www.w3.org/1999/xlink" mce="http://tinymce.moxiecode.com/"><div class="mceTmpl" acuate="onRequest"><div class="nsr" params="template=presence&amp;cid=tn.nlsr.concept/000464941632"></div></div><p>In 53% van de atlasblokken is de Havik een zekere of waarschijnlijke broedvogel. Broedgevallen zijn meestal niet moeilijk vast te stellen, getuige ook het hoge aandeel zekere broedgevallen (80%). In de 70 blokken waarin de Havik alleen als mogelijke broedvogel is geregistreerd, zal de soort - voor zover het niet om matig onderzochte blokken gaat - doorgaans niet tot broeden zijn gekomen.</p><p>De Havik is vrijwel overal aan te treffen waar bossen voorkomen, ook als het om kleinere en geïsoleerd liggende bosjes gaat. Het is in dit kader opvallend dat broeden nog steeds niet met zekerheid is vastgesteld op het eiland Terschelling. Verder ontbreekt de soort alleen in de zeer open gebieden van de noordwestelijke helft van Nederland, het rivierengebied en in grote verstedelijkte gebieden (al waren er vijf succesvolle broedgevallen in Amsterdam in 1997; Marcus 1998). Voor zover het ontbreken in deze gebieden een gevolg is van de absentie van bos, valt een (verdere) uitbreiding hier niet te verwachten.</p><p>Het territorium van de Havik omvat minimaal enkele honderden hectares. Het leefgebied van individuen die in (zeer) kleine bosjes broeden, strekt zich uit tot ver over de omgeving. Haviken jagen tot op 3 km of meer van hun nest. De kortste afstand tussen bewoonde nesten in goed bezette gebieden bedraagt ongeveer 1 km. Bij de incidenteel gerapporteerde veel geringere afstanden van 250 m betreft het mees­tal kleinere bossen of bosranden waaromheen grote geschikte jachtgebieden liggen. Omdat Haviken zeer territoriaal zijn en zulke grote territoria hebben, ligt het voor de hand dat het aantal vastgestelde broedparen per atlasblok nergens boven de tien uitkomt. In de grote en doorgaans voedselrijke bosgebieden van Nederland (Fries-Drentse Woudengebied, Midden-Drenthe, Veluwe, Utrechtse Heuvelrug, Noord-Hollandse duinen, zuidelijk en oostelijk Noord-Brabant,  Noord- en Midden-Limburg) worden 4-10 paren per blok aangetroffen (27% van de bezette blokken). In het merendeel van de Nederlandse atlasblokken is er blijkbaar te weinig bos voorhanden, en in sommige grotere bossen mogelijk te weinig voedsel voorradig, om meer dan drie paar Haviken te kunnen herbergen.</p><h2>Veranderingen</h2><p>Het verspreidingsgebied heeft zich in de afgelopen 25 jaar op het niveau van atlasblokken ruim verdrievoudigd. Slechts in een enkel blok is de soort in deze periode verdwenen als waarschijnlijk of zekere broedvogel.</p><p>Ten tijde van de vorige broedvogelatlas was de Havik nog herstellende van een enorme inzinking in de jaren zestig, veroorzaakt door het gebruik van niet-afbreekbare gifstoffen in de landbouw. De sterke uitbreiding van het verspreidings­gebied van de Havik sinds de jaren zeventig geeft aan dat het herstel krachtig heeft doorgezet, zozeer zelfs dat de soort momenteel een ruimere verspreiding heeft dan ooit eerder in de 20e eeuw. Tevens geeft de uitbreiding aan dat er destijds veel geschikte leefgebieden voorkwamen die nog onbezet waren, en dat er ook nieuwe leefgebieden zijn ontstaan. Een gebied is geschikt voor de Havik indien er voldoende voedsel voorhanden (en bereikbaar) is en er opgaand bos voorkomt om in te nestelen. De hoeveelheid bos is in Nederland de laatste eeuw sterk toegenomen en ook de voedselsituatie is, op zijn minst tot voor kort, verbeterd. Tegelijkertijd is de (illegale) vervolging van roofvogels, met name de Havik, in de laatste decennia afgenomen. Het zou vroeger vrijwel ondenkbaar zijn geweest dat Haviken succes­vol in kleinere, goed toegankelijke bossen konden broeden vanwege conflicten met het jachtbeheer, postduivenhouderij of andere vormen van dierenhouderij. Overigens zijn er ook tegenwoordig nog hier en daar vervolgingshaarden. Voorts is de toename van de Havik in sommige lang bezette gebieden, vooral op de zandgronden, in de jaren negentig omgebogen in een lichte afname, waarschijnlijk een gevolg van verminderd prooiaanbod (Bijlsma et al. 2001).</p><p>De trend in Nederland, met een verdrievoudiging van de po­pulatie sinds medio jaren zeventig, vindt een parallel in de aangrenzende gebieden. Zo zijn de aantallen in het Rijnland in Duitsland bijna verdubbeld in de periode 1978-96, waarschijnlijk mede onder invloed van het jachtverbod in 1970. Sinds 1996 nemen de aantallen echter weer licht af (Kostrzewa et al. 2001).</p><h2>Aantallen</h2><p>De schattingen per atlasblok komen uit op 2600 paren, wat te hoog zal zijn. Zo zijn in de atlasblokken waarvoor een schatting van 4-10 paren gemaakt is (en waarvoor het rekenmodel een gemiddelde van 6,3 aanhoudt), in werkelijkheid vaak maar 4-5 paren aanwezig. Uitgaande van een conservatieve interpretatie van de gemaakte schattingen wordt de Nederlandse broedpopulatie in 1998-2000 op 1800-2000 paren becijferd. Rond 1977, aan het eind van de vorige atlas­periode, ging het om 500-600 paren (Bijlsma et al. 2001). </p></body>]]></text>
+		</content>
+		<name>
+			<name>Accipiter gentilis (Linnaeus, 1758)</name>
+			<uninomial>Accipiter</uninomial>
+			<specific_epithet>gentilis</specific_epithet>
+			<name_author>Linnaeus</name_author>
+			<authorship_year>1758</authorship_year>
+			<nametype>isValidNameOf</nametype>
+			<expert_name>Roselaar, K.</expert_name>
+			<organisation_name>Naturalis Biodiversity Center</organisation_name>
+			<reference_label>Zeldzame vogels van Nederland</reference_label>
+			<reference_author>Van den Berg, A.B.</reference_author>
+			<reference_date>2001</reference_date>
+			<language>Scientific</language>
+		</name>
+		<name>
+			<name>Havik</name>
+			<nametype>isPreferredNameOf</nametype>
+			<expert_name>Roselaar, K.</expert_name>
+			<organisation_name>Naturalis Biodiversity Center</organisation_name>
+			<language>Dutch</language>
+		</name>
+		<name>
+			<name>Northern Goshawk</name>
+			<nametype>isPreferredNameOf</nametype>
+			<expert_name>Roselaar, K.</expert_name>
+			<organisation_name>Naturalis Biodiversity Center</organisation_name>
+			<language>English</language>
+		</name>
+	</taxon>
+	<taxon>
+		<id>139500</id>
+		<parent_id>139464</parent_id>
+		<taxon_concept>Pernis Cuvier, 1817</taxon_concept>
+		<rank>genus</rank>
+		<nsr_id>0AHCYFCNYCUV</nsr_id>
+		<url>http://nederlandsesoorten.nl/nsr/concept/0AHCYFCNYCUV</url>
+		<name>
+			<name>Pernis Cuvier, 1817</name>
+			<uninomial>Pernis</uninomial>
+			<name_author>Cuvier</name_author>
+			<authorship_year>1817</authorship_year>
+			<nametype>isValidNameOf</nametype>
+			<language>Scientific</language>
+		</name>
+	</taxon>
+</nederlands_soorten_register>

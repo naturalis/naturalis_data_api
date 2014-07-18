@@ -7,24 +7,29 @@ import java.util.Map;
 
 /**
  * A class that mimicks and is functionally equivalent to
- * javax.ws.rs.core.MultiValuedMap<String,String>. Created so that the library
- * that this class is part of does not have a awkward dependence on the entire
- * JAX-RS framework, while having nothing to do with REST services, just for
- * something as generic as a map with multiple values per key.
+ * javax.ws.rs.core.MultiValuedMap<String,String>. The DAOs in this library can
+ * be used outside and independently of the NDA REST framework, which is nice
+ * for testing. Yet their prime purpose is to be used within it, so ES queries
+ * are likely to come in the form of a URL's query string, converted into a
+ * {@code MultiValuedMap}. The {@code QueryParams} class enables the DAO library
+ * to be rid of an awkward depencency on the the entire JAX-RS framework, just
+ * for something as generic as a map with multiple values per key.
  * 
  * @author ayco_holleman
  * 
  */
 @SuppressWarnings("serial")
-public class MultiValuedProperties extends HashMap<String, List<String>> {
+public class QueryParams extends HashMap<String, List<String>> {
 
 	/**
-	 * Instantiate a MultiValuedProperties from another map, presumed to be a
-	 * JAX-RS MultiValuedMap (or at least a Map<String,List<String>>).
+	 * Instantiate a QueryParams instance from another map. Althoug the
+	 * constructor argument does not specify any concrete type of {@code Map},
+	 * it is actually presumed to be a JAX-RS MultiValuedMap, or at least a
+	 * Map<String,List<String>>.
 	 * 
 	 * @param multiValuedMap
 	 */
-	public MultiValuedProperties(Map<?, ?> multiValuedMap)
+	public QueryParams(Map<?, ?> multiValuedMap)
 	{
 		for (Object key : multiValuedMap.keySet()) {
 			List<String> values = (List<String>) multiValuedMap.get(key);
@@ -33,19 +38,19 @@ public class MultiValuedProperties extends HashMap<String, List<String>> {
 	}
 
 
-	public MultiValuedProperties()
+	public QueryParams()
 	{
 		super();
 	}
 
 
-	public MultiValuedProperties(int initialCapacity, float loadFactor)
+	public QueryParams(int initialCapacity, float loadFactor)
 	{
 		super(initialCapacity, loadFactor);
 	}
 
 
-	public MultiValuedProperties(int initialCapacity)
+	public QueryParams(int initialCapacity)
 	{
 		super(initialCapacity);
 	}

@@ -1,62 +1,52 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import nl.naturalis.nda.elasticsearch.dao.exception.InvalidQueryException;
-import nl.naturalis.nda.elasticsearch.dao.util.MultiValuedProperties;
+import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.AndFilterBuilder;
-import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermFilterBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 
-public class SpecimenDao {
+public class SpecimenDao extends AbstractDao {
 
 	public static void main(String[] args)
 	{
-		SpecimenDao dao = new SpecimenDao();
-		MultiValuedProperties props = new MultiValuedProperties();
+		SpecimenDao dao = new SpecimenDao("nda");
+		QueryParams params = new QueryParams();
 		//props.add("offset", "10");
 		//props.add("sex", "female");
 		//props.add("sourceSystemId", "6809111");
-		props.add("specimenId", "50004");
-		System.out.println(dao.listSpecimens(props));
+		//props.add("specimenId", "50004");
+		params.add("specimenId", "RMNH.MAM.51251");
+		System.out.println(dao.listSpecimens(params));
 	}
 
-	private static Client localClient;
+	private static final String TYPE = "specimen";
 
 
-	public static final Client getDefaultLocalClient()
+	public SpecimenDao(String ndaIndexName)
 	{
-		if (localClient == null) {
-			localClient = nodeBuilder().local(true).client(false).node().client();
-			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
-		}
-		return localClient;
-	}
-
-	final Client esClient;
-
-
-	public SpecimenDao()
-	{
-		this.esClient = getDefaultLocalClient();
+		super(ndaIndexName);
 	}
 
 
-	public String listSpecimens(MultiValuedProperties properties)
+	public SpecimenDao(Client esClient, String ndaIndexName)
 	{
-		SearchRequestBuilder srb = esClient.prepareSearch("specimen");
+		super(esClient, ndaIndexName);
+	}
+
+
+	public String listSpecimens(QueryParams properties)
+	{
+		SearchRequestBuilder srb = newSearchRequest();
+		srb.setTypes(TYPE);
 		srb.setSize(30);
-		TermQueryBuilder termQuery = QueryBuilders.termQuery("sourceSystemName", "CRS");
 		MatchAllQueryBuilder matchAllQuery = QueryBuilders.matchAllQuery();
-		TermFilterBuilder termFilter = FilterBuilders.termFilter("sourceSystemId", "6809111");
 		AndFilterBuilder andFilter = FilterBuilders.andFilter();
 		for (String[] kv : properties.keyValuePairs()) {
 			if (kv[0].equals("offset")) {

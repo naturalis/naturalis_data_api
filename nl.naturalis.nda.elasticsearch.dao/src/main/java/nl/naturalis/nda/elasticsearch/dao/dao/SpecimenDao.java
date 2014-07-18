@@ -1,8 +1,14 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.domain.SpecimenSearchResult;
 import nl.naturalis.nda.elasticsearch.dao.exception.InvalidQueryException;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 
+import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -11,6 +17,7 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 
 public class SpecimenDao extends AbstractDao {
 
@@ -18,12 +25,14 @@ public class SpecimenDao extends AbstractDao {
 	{
 		SpecimenDao dao = new SpecimenDao("nda");
 		QueryParams params = new QueryParams();
-		//props.add("offset", "10");
-		//props.add("sex", "female");
-		//props.add("sourceSystemId", "6809111");
-		//props.add("specimenId", "50004");
-		params.add("specimenId", "RMNH.MAM.51251");
-		System.out.println(dao.listSpecimens(params));
+		//params.add("offset", "10");
+		//params.add("sex", "female");
+		//params.add("sourceSystemId", "6809111");
+		//params.add("specimenId", "50004");
+		//params.add("specimenId", "RMNH.MAM.51251");
+		params.add("locality", "San Paolo");
+		//params.add("country", "Suriname");
+		BeanPrinter.out(dao.listSpecimens(params));
 	}
 
 	private static final String TYPE = "specimen";
@@ -41,11 +50,11 @@ public class SpecimenDao extends AbstractDao {
 	}
 
 
-	public String listSpecimens(QueryParams properties)
+	public SpecimenSearchResult listSpecimens(QueryParams properties)
 	{
 		SearchRequestBuilder srb = newSearchRequest();
 		srb.setTypes(TYPE);
-		srb.setSize(30);
+		srb.setSize(5);
 		MatchAllQueryBuilder matchAllQuery = QueryBuilders.matchAllQuery();
 		AndFilterBuilder andFilter = FilterBuilders.andFilter();
 		for (String[] kv : properties.keyValuePairs()) {
@@ -64,7 +73,16 @@ public class SpecimenDao extends AbstractDao {
 		FilteredQueryBuilder filteredQuery = QueryBuilders.filteredQuery(matchAllQuery, andFilter);
 		srb.setQuery(filteredQuery);
 		SearchResponse response = srb.execute().actionGet();
-		return response.toString();
+		SpecimenSearchResult result = new SpecimenSearchResult();
+		result.setTotalSize(response.getHits().getTotalHits());
+		Iterator<SearchHit> iterator = response.getHits().iterator();
+		while (iterator.hasNext()) {
+			SearchHit hit = iterator.next();
+			Map<String, Object> source = hit.getSource();
+			Specimen specimen = getObjectMapper().convertValue(source, Specimen.class);
+			result.addSpecimen(specimen);
+		}
+		return result;
 	}
 
 }

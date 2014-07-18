@@ -13,7 +13,6 @@ import nl.naturalis.bioportal.oaipmh.CRSBioportalInterface;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.client.IndexREST;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
@@ -201,7 +200,7 @@ public class DOMCrsHarvester {
 		if (resTokenFile.exists()) {
 			resTokenFile.delete();
 		}
-		FileUtil.putContents(resTokenFile, String.valueOf(batch) + "," + resToken);
+		FileUtil.setContents(resTokenFile, String.valueOf(batch) + "," + resToken);
 	}
 
 

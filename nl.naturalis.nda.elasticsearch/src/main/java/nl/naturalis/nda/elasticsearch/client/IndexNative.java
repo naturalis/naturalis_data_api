@@ -10,9 +10,9 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -42,7 +42,8 @@ public class IndexNative implements Index {
 
 
 	/**
-	 * Returns {@code Client} configured using /src/main/resources/elasticsearch.yml
+	 * Returns {@code Client} configured using
+	 * /src/main/resources/elasticsearch.yml
 	 */
 	public static final Client getDefaultClient()
 	{
@@ -64,7 +65,7 @@ public class IndexNative implements Index {
 	 * Java Client.
 	 * 
 	 * @param indexName The Lucene index that this instance will operate upon.
-	 *            
+	 * 
 	 * @see #getDefaultClient()
 	 */
 	public IndexNative(String indexName)

@@ -5,13 +5,16 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
@@ -35,17 +38,20 @@ public class IndexNative implements Index {
 	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
+	private static Client localClient;
 
-	public static void main(String[] args)
+
+	/**
+	 * Returns a non-embedded, client-only {@code Client} joining the ES cluster
+	 * specified in /src/main/resources/elasticsearch.yml
+	 */
+	public static final Client getDefaultClient()
 	{
-		IndexNative esjc = new IndexNative("nda");
-		if (esjc.exists()) {
-			esjc.delete();
+		if (localClient == null) {
+			localClient = nodeBuilder().client(true).data(false).node().client();
+			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 		}
-		esjc.create();
-		//		URL url = NDASchemaManager.class.getResource("/elasticsearch/specimen.type.json");
-		//		String mappings = FileUtil.getContents(url);
-		//		esjc.createType("specimen", mappings);
+		return localClient;
 	}
 
 	final Client esClient;
@@ -54,17 +60,17 @@ public class IndexNative implements Index {
 
 
 	/**
-	 * Create an instance manipulating the specified index using a default Java
-	 * Client. If elasticsearch.yml in the classpath, it will be used to
-	 * configure the cluster, node and client.
+	 * Create an instance manipulating the specified index using a default ES
+	 * Java Client.
 	 * 
-	 * @param indexName The index for which to create this instance. All
-	 *            methods, except a few, will operate against this index.
+	 * @param indexName The Lucene index that this instance will operate upon.
+	 *            
+	 * @see #getDefaultClient()
 	 */
 	public IndexNative(String indexName)
 	{
 		this.indexName = indexName;
-		this.esClient = nodeBuilder().node().client();
+		this.esClient = getDefaultClient();
 		admin = esClient.admin().indices();
 	}
 
@@ -123,8 +129,15 @@ public class IndexNative implements Index {
 	@Override
 	public String describe()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		GetMappingsRequest request = new GetMappingsRequest();
+		request.indices(indexName);
+		GetMappingsResponse response = admin.getMappings(request).actionGet();
+		try {
+			return objectMapper.writeValueAsString(response.getMappings());
+		}
+		catch (JsonProcessingException e) {
+			throw ExceptionUtil.smash(e);
+		}
 	}
 
 
@@ -142,7 +155,7 @@ public class IndexNative implements Index {
 		CreateIndexRequest request = new CreateIndexRequest(indexName);
 		CreateIndexResponse response = admin.create(request).actionGet();
 		if (!response.isAcknowledged()) {
-			throw new IndexException("Failed to delete index " + indexName);
+			throw new IndexException("Failed to create index " + indexName);
 		}
 		logger.info("Index created");
 	}
@@ -151,16 +164,24 @@ public class IndexNative implements Index {
 	@Override
 	public void create(String mappings)
 	{
-		// TODO Auto-generated method stub
-
+		logger.info("Creating index " + indexName);
+		CreateIndexRequest request = new CreateIndexRequest(indexName);
+		request.mapping(indexName, mappings);
+		CreateIndexResponse response = admin.create(request).actionGet();
+		if (!response.isAcknowledged()) {
+			throw new IndexException("Failed to create index " + indexName);
+		}
+		logger.info("Index created");
 	}
 
 
 	public void createType(String name, String mapping)
 	{
 		logger.info(String.format("Creating type \"%s\"", name));
-		CreateIndexRequestBuilder cirb = admin.prepareCreate(indexName).addMapping(name, mapping);
-		CreateIndexResponse response = cirb.execute().actionGet();
+		PutMappingRequest request = new PutMappingRequest(indexName);
+		request.source(mapping);
+		request.type(name);
+		PutMappingResponse response = admin.putMapping(request).actionGet();
 		if (!response.isAcknowledged()) {
 			throw new IndexException(String.format("Failed to create type \"%s\"", name));
 		}
@@ -195,17 +216,30 @@ public class IndexNative implements Index {
 	@Override
 	public void deleteAllIndices()
 	{
-		// TODO Auto-generated method stub
-
+		logger.info("Deleting all indices in cluster");
+		DeleteIndexRequest request = new DeleteIndexRequest("_all");
+		try {
+			DeleteIndexResponse response = admin.delete(request).actionGet();
+			if (!response.isAcknowledged()) {
+				throw new IndexException("Failed to delete index " + indexName);
+			}
+			logger.info("Indices deleted");
+		}
+		catch (Exception e) {
+			logger.info("Failed to delete all indices in cluster: " + e.getMessage());
+		}
 	}
 
 
 	@Override
 	public void save(String type, String json, String id)
 	{
-		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
-		irb.setSource(json);
-		IndexResponse response = irb.execute().actionGet();
+		IndexRequest request = new IndexRequest(indexName, type, id);
+		request.source(json);
+		IndexResponse response = esClient.index(request).actionGet();
+		//		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
+		//		irb.setSource(json);
+		//		IndexResponse response = irb.execute().actionGet();
 		if (!response.isCreated()) {
 			throw new IndexException("Failed to add document: " + json);
 		}
@@ -223,6 +257,12 @@ public class IndexNative implements Index {
 			throw new IndexException(e);
 		}
 		save(type, json, id);
+	}
+
+
+	public Client getClient()
+	{
+		return esClient;
 	}
 
 }

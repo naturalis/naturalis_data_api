@@ -12,7 +12,7 @@
       </header>
       <metadata>
         <oai_dc:dc xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:abcd="http://rs.tdwg.org/abcd/2.06/b/">
-          <abcd:UnitID>RMNH.MAM.50004</abcd:UnitID>
+          <abcd:UnitID>50004</abcd:UnitID>
           <abcd:RecordBasis>PreservedSpecimen</abcd:RecordBasis>
           <abcd:KindOfUnit></abcd:KindOfUnit>
           <abcd:SourceInstitutionID></abcd:SourceInstitutionID>

@@ -54,11 +54,12 @@ public class DOMCrsHarvester {
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
 	private final CRSTransfer crsTransfer;
-	private final Index index;
 
 	private int batch;
 	private int recordsProcessed;
 	private int badRecords;
+
+	private Index index;
 
 
 	public DOMCrsHarvester()
@@ -74,15 +75,15 @@ public class DOMCrsHarvester {
 			throw ExceptionUtil.smash(e);
 		}
 		crsTransfer = new CRSTransfer();
-		index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		//index = new IndexREST(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 	}
 
 
 	public void harvest()
 	{
-
 		try {
+
+			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+			//index = new IndexREST(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 
 			String resToken;
 			File resTokenFile = getResumptionTokenFile();
@@ -120,6 +121,11 @@ public class DOMCrsHarvester {
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
+		}
+		finally {
+			if (index != null && index instanceof IndexNative) {
+				((IndexNative) index).getClient().close();
+			}
 		}
 
 	}

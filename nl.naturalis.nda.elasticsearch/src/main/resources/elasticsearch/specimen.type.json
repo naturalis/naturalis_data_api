@@ -3,10 +3,12 @@
 		"properties": {
 			"sourceSystemName": {
 				"type": "string",
+				"index" : "not_analyzed",
 				"include_in_all": false
 			},
 			"sourceSystemId": {
 				"type": "string",
+				"index" : "not_analyzed",
 				"include_in_all": false
 			},
 			"sourceSystemDateCreated": {
@@ -16,6 +18,7 @@
 			},
 			"specimenId": {
 				"type": "string",
+				"index" : "not_analyzed",
 				"include_in_all": false
 			},
 			"recordBasis": {

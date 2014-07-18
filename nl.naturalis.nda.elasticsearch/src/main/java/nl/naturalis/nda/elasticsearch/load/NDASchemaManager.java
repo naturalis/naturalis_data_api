@@ -53,7 +53,7 @@ public class NDASchemaManager {
 			index.create();
 			URL url = NDASchemaManager.class.getResource("/elasticsearch/specimen.type.json");
 			String mappings = FileUtil.getContents(url);
-			index.createType("specimen", mappings);
+			index.addType("specimen", mappings);
 			logger.info(index.describe());
 		}
 		catch (Throwable t) {

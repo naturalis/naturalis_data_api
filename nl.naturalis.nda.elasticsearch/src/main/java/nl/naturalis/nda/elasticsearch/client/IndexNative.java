@@ -14,7 +14,7 @@ import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
-import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
@@ -176,7 +176,7 @@ public class IndexNative implements Index {
 	}
 
 
-	public void createType(String name, String mapping)
+	public void addType(String name, String mapping)
 	{
 		logger.info(String.format("Creating type \"%s\"", name));
 		PutMappingRequest request = new PutMappingRequest(indexName);
@@ -233,17 +233,25 @@ public class IndexNative implements Index {
 
 
 	@Override
-	public void save(String type, String json, String id)
+	public void saveDocument(String type, String json, String id)
 	{
-		IndexRequest request = new IndexRequest(indexName, type, id);
-		request.source(json);
-		IndexResponse response = esClient.index(request).actionGet();
-		//		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
-		//		irb.setSource(json);
-		//		IndexResponse response = irb.execute().actionGet();
-		if (!response.isCreated()) {
-			throw new IndexException("Failed to add document: " + json);
-		}
+		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
+		irb.setSource(json);
+		irb.execute(new ActionListener<IndexResponse>() {
+
+			@Override
+			public void onFailure(Throwable t)
+			{
+				throw ExceptionUtil.smash(t);
+			}
+
+
+			@Override
+			public void onResponse(IndexResponse response)
+			{
+
+			}
+		});
 	}
 
 
@@ -257,7 +265,7 @@ public class IndexNative implements Index {
 		catch (JsonProcessingException e) {
 			throw new IndexException(e);
 		}
-		save(type, json, id);
+		saveDocument(type, json, id);
 	}
 
 

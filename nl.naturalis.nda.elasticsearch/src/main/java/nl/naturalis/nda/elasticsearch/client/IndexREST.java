@@ -162,7 +162,7 @@ public class IndexREST implements Index {
 	 * java.lang.String)
 	 */
 	@Override
-	public void createType(String name, String mapping)
+	public void addType(String name, String mapping)
 	{
 		lastRequest = httpPut;
 		httpPut.setPath(indexName + "/" + name + "/_mapping");
@@ -215,7 +215,7 @@ public class IndexREST implements Index {
 
 
 	@Override
-	public void save(String type, String json, String id)
+	public void saveDocument(String type, String json, String id)
 	{
 		lastRequest = httpPut;
 		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);

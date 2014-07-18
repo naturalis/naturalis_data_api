@@ -57,7 +57,7 @@ public interface Index {
 	 * @param mapping The mapping for the type
 	 * 
 	 */
-	void createType(String name, String mapping);
+	void addType(String name, String mapping);
 
 
 	/**
@@ -79,15 +79,6 @@ public interface Index {
 
 
 	/**
-	 * Adds the JSON representation of the specified object to the index.
-	 * 
-	 * @param type The type of the document
-	 * @param obj The object to add
-	 * @param id The document ID
-	 */
-	void saveObject(String type, Object obj, String id);
-
-	/**
 	 * Add a new document to the index.
 	 * 
 	 * @param type The type of the document
@@ -95,8 +86,16 @@ public interface Index {
 	 * @param id The document ID
 	 * 
 	 */
-	void save(String type, String json, String id);
+	void saveDocument(String type, String json, String id);
 
 
+	/**
+	 * Adds the JSON representation of the specified object to the index.
+	 * 
+	 * @param type The type of the document
+	 * @param obj The object to add
+	 * @param id The document ID
+	 */
+	void saveObject(String type, Object obj, String id);
 
 }

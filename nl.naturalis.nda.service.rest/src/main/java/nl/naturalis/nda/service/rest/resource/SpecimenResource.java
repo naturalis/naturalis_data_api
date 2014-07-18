@@ -18,6 +18,8 @@ import javax.ws.rs.core.UriInfo;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenSearchResult;
 import nl.naturalis.nda.ejb.service.SpecimenService;
+import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
+import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.service.rest.exception.InvalidQueryException;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -48,46 +50,10 @@ public class SpecimenResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SpecimenSearchResult search(@Context UriInfo request)
 	{
-		SearchRequestBuilder srb = registry.getESClient().prepareSearch("specimen");
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-		MatchAllQueryBuilder matchAllQueryBuilder = QueryBuilders.matchAllQuery();
-		BoolFilterBuilder boolFilterBuilder = FilterBuilders.boolFilter();
-		FilteredQueryBuilder filteredQueryBuilder = QueryBuilders.filteredQuery(matchAllQueryBuilder, boolFilterBuilder);
-		srb.setSize(100);
-		Set<String> params = request.getQueryParameters().keySet();
-		int numTerms = 0;
-		for (String param : params) {
-			String value = request.getQueryParameters().getFirst(param);
-			if (param.equals("offset")) {
-				try {
-					srb.setFrom(Integer.parseInt(value));
-				}
-				catch (NumberFormatException e) {
-					throw new InvalidQueryException("Parameter \"offset\" must be an integer");
-				}
-			}
-			else {
-				++numTerms;
-				//boolFilterBuilder.must(FilterBuilders.termFilter(param, value));
-				//boolQuery.must(QueryBuilders.matchQuery(param, value));
-			}
-		}
-		if (numTerms != 0) {
-			//srb.setQuery(boolQuery);
-			//srb.setQuery(filteredQueryBuilder);
-		}
-		srb.setQuery("");
-		SearchResponse response = srb.execute().actionGet();
-		SpecimenSearchResult result = new SpecimenSearchResult();
-		result.setTotalSize(response.getHits().getTotalHits());
-		Iterator<SearchHit> iterator = response.getHits().iterator();
-		while (iterator.hasNext()) {
-			SearchHit hit = iterator.next();
-			Map<String, Object> source = hit.getSource();
-			Specimen specimen = registry.getObjectMapper().convertValue(source, Specimen.class);
-			result.addResult(specimen);
-		}
-		return result;
+		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		SpecimenSearchResult result = dao.listSpecimens(params);
+		return result;		
 	}
 
 

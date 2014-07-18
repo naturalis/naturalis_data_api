@@ -395,4 +395,16 @@ public class Specimen {
 		this.geodeticDatum = geodeticDatum;
 	}
 
+
+	public List<Determination> getDeterminations()
+	{
+		return determinations;
+	}
+
+
+	public void setDeterminations(List<Determination> determinations)
+	{
+		this.determinations = determinations;
+	}
+
 }

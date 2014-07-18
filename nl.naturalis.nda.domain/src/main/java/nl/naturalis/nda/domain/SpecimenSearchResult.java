@@ -8,7 +8,7 @@ public class SpecimenSearchResult {
 	private long totalSize;
 	private List<Specimen> specimens;
 	
-	public void addResult(Specimen result) {
+	public void addSpecimen(Specimen result) {
 		if(specimens == null) {
 			specimens = new ArrayList<Specimen>();
 		}

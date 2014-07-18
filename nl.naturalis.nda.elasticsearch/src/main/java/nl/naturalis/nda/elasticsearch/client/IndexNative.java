@@ -42,13 +42,13 @@ public class IndexNative implements Index {
 
 
 	/**
-	 * Returns a non-embedded, client-only {@code Client} joining the ES cluster
-	 * specified in /src/main/resources/elasticsearch.yml
+	 * Returns {@code Client} configured using /src/main/resources/elasticsearch.yml
 	 */
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
-			localClient = nodeBuilder().client(true).data(false).node().client();
+			//localClient = nodeBuilder().client(true).data(false).node().client();
+			localClient = nodeBuilder().node().client();
 			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 		}
 		return localClient;

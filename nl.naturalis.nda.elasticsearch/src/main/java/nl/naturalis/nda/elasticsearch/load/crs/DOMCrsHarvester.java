@@ -1,4 +1,4 @@
-package nl.naturalis.nda.elasticsearch.load;
+package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.bioportal.oaipmh.CRSBioportalInterface;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.HarvestException;
+import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
@@ -63,7 +64,7 @@ public class DOMCrsHarvester {
 
 	public DOMCrsHarvester()
 	{
-		URL url = CRSBioportalInterface.class.getResource("/config/import-crs.properties");
+		URL url = DOMCrsHarvester.class.getResource("/config/crs/import-crs.properties");
 		config = new ConfigObject(url);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);

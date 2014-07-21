@@ -1,10 +1,11 @@
-package nl.naturalis.nda.elasticsearch.load;
+package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.lang.reflect.Field;
 import java.util.Date;
 
 import nl.naturalis.nda.domain.Determination;
 import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.elasticsearch.load.HarvestException;
 
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.StringUtil;

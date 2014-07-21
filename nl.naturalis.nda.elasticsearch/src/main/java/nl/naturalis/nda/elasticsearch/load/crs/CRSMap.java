@@ -1,7 +1,9 @@
-package nl.naturalis.nda.elasticsearch.load;
+package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.util.HashMap;
 import java.util.HashSet;
+
+import nl.naturalis.nda.elasticsearch.load.HarvestException;
 
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
@@ -47,7 +49,7 @@ public class CRSMap {
 	private HashMap<String, String> loadMap()
 	{
 		logger.info("Loading CRS-to-NDA map (crs-mapping.txt)");
-		String contents = FileUtil.getContents(getClass().getResource("/config/crs-mapping.txt"));
+		String contents = FileUtil.getContents(getClass().getResource("/config/crs/crs-mapping.txt"));
 		contents = StringUtil.trim(contents, " \t\r\n,");
 		String[] elements = contents.split(",");
 		if ((elements.length % 2) != 0) {
@@ -69,7 +71,7 @@ public class CRSMap {
 	private HashSet<String> loadDeterminationElements()
 	{
 		logger.info("Loading CRS determination elements (crs-determination-elements.txt)");
-		String contents = FileUtil.getContents(getClass().getResource("/config/crs-determination-elements.txt"));
+		String contents = FileUtil.getContents(getClass().getResource("/config/crs/crs-determination-elements.txt"));
 		contents = StringUtil.trim(contents, " \t\r\n,");
 		String[] elements = contents.split(",");
 		HashSet<String> set = new HashSet<String>(elements.length);

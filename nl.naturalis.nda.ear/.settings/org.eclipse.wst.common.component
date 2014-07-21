@@ -8,9 +8,6 @@
         <dependent-module archiveName="nl.naturalis.nda.domain.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.domain/nl.naturalis.nda.domain">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="nl.naturalis.nda.jpa.hibernate.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.jpa.hibernate/nl.naturalis.nda.jpa.hibernate">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="nl.naturalis.nda.service.rest.war" deploy-path="/" handle="module:/resource/nl.naturalis.nda.service.rest/nl.naturalis.nda.service.rest">
             <dependent-object/>
             <dependency-type>uses</dependency-type>
@@ -19,9 +16,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="org.domainobject.util.jar" deploy-path="/lib" handle="module:/resource/org.domainobject.util/org.domainobject.util">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="nl.naturalis.nda.elasticsearch.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch/nl.naturalis.nda.elasticsearch">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="nl.naturalis.nda.elasticsearch.dao.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch.dao/nl.naturalis.nda.elasticsearch.dao">

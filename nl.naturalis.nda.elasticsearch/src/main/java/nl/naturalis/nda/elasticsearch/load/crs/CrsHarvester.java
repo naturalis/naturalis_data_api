@@ -35,18 +35,18 @@ import org.xml.sax.SAXException;
  * @author ayco_holleman
  * 
  */
-public class DOMCrsHarvester {
+public class CrsHarvester {
 
 	private static final String TYPE_SPECIMEN = "specimen";
 
 
 	public static void main(String[] args)
 	{
-		DOMCrsHarvester harvester = new DOMCrsHarvester();
+		CrsHarvester harvester = new CrsHarvester();
 		harvester.harvest();
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(DOMCrsHarvester.class);
+	private static final Logger logger = LoggerFactory.getLogger(CrsHarvester.class);
 
 	private static final String RES_TOKEN_FILE = "/resumption-token";
 	private static final String RES_TOKEN_DELIM = ",";
@@ -62,9 +62,9 @@ public class DOMCrsHarvester {
 	private Index index;
 
 
-	public DOMCrsHarvester()
+	public CrsHarvester()
 	{
-		URL url = DOMCrsHarvester.class.getResource("/config/crs/import-crs.properties");
+		URL url = CrsHarvester.class.getResource("/config/crs/CrsHarvester.properties");
 		config = new ConfigObject(url);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);

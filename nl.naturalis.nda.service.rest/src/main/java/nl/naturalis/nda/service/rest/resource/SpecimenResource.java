@@ -1,9 +1,5 @@
 package nl.naturalis.nda.service.rest.resource;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -20,17 +16,6 @@ import nl.naturalis.nda.domain.SpecimenSearchResult;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
-import nl.naturalis.nda.service.rest.exception.InvalidQueryException;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
-import org.elasticsearch.index.query.MatchAllQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 
 @Path("/specimen")
 @Stateless
@@ -53,7 +38,7 @@ public class SpecimenResource {
 		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		SpecimenSearchResult result = dao.listSpecimens(params);
-		return result;		
+		return result;
 	}
 
 

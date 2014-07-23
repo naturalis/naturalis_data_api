@@ -22,5 +22,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.debug"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.ejb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

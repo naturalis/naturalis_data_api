@@ -48,9 +48,8 @@ public class IndexNative implements Index {
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
-			//localClient = nodeBuilder().client(true).data(false).node().client();
 			localClient = nodeBuilder().node().client();
-			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+			//localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 		}
 		return localClient;
 	}

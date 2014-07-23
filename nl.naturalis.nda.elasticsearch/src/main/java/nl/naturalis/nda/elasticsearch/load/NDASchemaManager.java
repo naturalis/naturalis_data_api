@@ -47,7 +47,6 @@ public class NDASchemaManager {
 	 */
 	public void bootstrap()
 	{
-		logger.info("Bootstrapping NDA index!");
 		try {
 			index.delete();
 			index.create();
@@ -60,9 +59,9 @@ public class NDASchemaManager {
 			t.printStackTrace();
 		}
 		finally {
-			if (index instanceof IndexNative) {
-				((IndexNative) index).getClient().close();
-			}
+//			if (index instanceof IndexNative) {
+//				((IndexNative) index).getClient().close();
+//			}
 		}
 	}
 }

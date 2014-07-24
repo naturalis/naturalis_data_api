@@ -3,8 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,7 +40,7 @@ public class CrsHarvester {
 
 	public static void main(String[] args)
 	{
-		Index index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);		
+		Index index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 		CrsHarvester harvester = new CrsHarvester(index);
 		harvester.harvest();
 	}
@@ -237,6 +235,5 @@ public class CrsHarvester {
 		String val = config.getString(key);
 		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
 	}
-
 
 }

@@ -228,29 +228,15 @@ public class CrsHarvester {
 
 	private String getXML(String resToken)
 	{
-		URL url = getServiceUrl(resToken);
-		if (config.getBoolean("isTest")) {
-			return FileUtil.getContents(url);
-		}
-		return new SimpleHttpGet().setBaseUrl(url.toExternalForm()).execute().getResponse();
-	}
-
-
-	private URL getServiceUrl(String resToken)
-	{
 		if (config.getBoolean("isTest")) {
 			String key = resToken == null ? "service.url.initial.test" : "service.url.resume.test";
 			String val = config.getString(key);
-			return getClass().getResource(val);
+			return StringUtil.getResourceAsString(val);
 		}
 		String key = resToken == null ? "service.url.initial" : "service.url.resume";
 		String val = config.getString(key);
-		try {
-			return new URL(val);
-		}
-		catch (MalformedURLException e) {
-			throw ExceptionUtil.smash(e);
-		}
+		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
 	}
+
 
 }

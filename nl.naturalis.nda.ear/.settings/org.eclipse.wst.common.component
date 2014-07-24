@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="nl.naturalis.nda.ear">
         <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
         <dependent-module archiveName="nl.naturalis.nda.ejb.jar" deploy-path="/" handle="module:/resource/nl.naturalis.nda.ejb/nl.naturalis.nda.ejb">
@@ -19,6 +20,9 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="nl.naturalis.nda.elasticsearch.dao.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch.dao/nl.naturalis.nda.elasticsearch.dao">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="nl.naturalis.nda.elasticsearch.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch/nl.naturalis.nda.elasticsearch">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

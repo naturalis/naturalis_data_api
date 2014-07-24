@@ -1,11 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import java.net.URL;
-
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 
-import org.domainobject.util.FileUtil;
+import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,21 +45,10 @@ public class NDASchemaManager {
 	 */
 	public void bootstrap()
 	{
-		try {
-			index.delete();
-			index.create();
-			URL url = NDASchemaManager.class.getResource("/es-mappings/specimen.type.json");
-			String mappings = FileUtil.getContents(url);
-			index.addType("specimen", mappings);
-			logger.info(index.describe());
-		}
-		catch (Throwable t) {
-			t.printStackTrace();
-		}
-		finally {
-//			if (index instanceof IndexNative) {
-//				((IndexNative) index).getClient().close();
-//			}
-		}
+		index.delete();
+		index.create();
+		String mappings = StringUtil.getResourceAsString("/es-mappings/specimen.type.json");
+		index.addType("specimen", mappings);
+		logger.info(index.describe());
 	}
 }

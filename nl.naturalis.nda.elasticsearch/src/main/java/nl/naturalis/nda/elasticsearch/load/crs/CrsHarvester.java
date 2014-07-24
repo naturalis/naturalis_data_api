@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -19,7 +20,6 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
-import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,8 @@ public class CrsHarvester {
 
 	public static void main(String[] args)
 	{
-		CrsHarvester harvester = new CrsHarvester();
+		Index index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);		
+		CrsHarvester harvester = new CrsHarvester(index);
 		harvester.harvest();
 	}
 
@@ -59,13 +60,15 @@ public class CrsHarvester {
 	private int recordsProcessed;
 	private int badRecords;
 
-	private Index index;
+	private final Index index;
 
 
-	public CrsHarvester()
+	@SuppressWarnings("resource")
+	public CrsHarvester(Index index)
 	{
-		URL url = CrsHarvester.class.getResource("/config/crs/CrsHarvester.properties");
-		config = new ConfigObject(url);
+		this.index = index;
+		InputStream is = getClass().getResourceAsStream("/config/crs/CrsHarvester.properties");
+		config = new ConfigObject(is);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
 		try {
@@ -81,9 +84,6 @@ public class CrsHarvester {
 	public void harvest()
 	{
 		try {
-
-			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-			//index = new IndexREST(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 
 			String resToken;
 			File resTokenFile = getResumptionTokenFile();
@@ -121,11 +121,6 @@ public class CrsHarvester {
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
-		}
-		finally {
-			if (index != null && index instanceof IndexNative) {
-				((IndexNative) index).getClient().close();
-			}
 		}
 
 	}

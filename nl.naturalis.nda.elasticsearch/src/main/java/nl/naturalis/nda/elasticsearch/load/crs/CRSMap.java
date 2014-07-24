@@ -49,7 +49,9 @@ public class CRSMap {
 	private HashMap<String, String> loadMap()
 	{
 		logger.info("Loading CRS-to-NDA map (crs-mapping.txt)");
-		String contents = FileUtil.getContents(getClass().getResource("/config/crs/crs-mapping.txt"));
+		//String contents = FileUtil.getContents(getClass().getResource("/config/crs/crs-mapping.txt"));
+		String contents = StringUtil.getResourceAsString("/config/crs/crs-mapping.txt");
+		
 		contents = StringUtil.trim(contents, " \t\r\n,");
 		String[] elements = contents.split(",");
 		if ((elements.length % 2) != 0) {
@@ -68,10 +70,11 @@ public class CRSMap {
 	}
 
 
-	private HashSet<String> loadDeterminationElements()
+	private static HashSet<String> loadDeterminationElements()
 	{
 		logger.info("Loading CRS determination elements (crs-determination-elements.txt)");
-		String contents = FileUtil.getContents(getClass().getResource("/config/crs/crs-determination-elements.txt"));
+		//String contents = FileUtil.getContents(getClass().getResource("/config/crs/crs-determination-elements.txt"));
+		String contents = StringUtil.getResourceAsString("/config/crs/crs-determination-elements.txt");
 		contents = StringUtil.trim(contents, " \t\r\n,");
 		String[] elements = contents.split(",");
 		HashSet<String> set = new HashSet<String>(elements.length);

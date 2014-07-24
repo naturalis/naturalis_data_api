@@ -4,6 +4,8 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -48,8 +50,14 @@ public class IndexNative implements Index {
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
+			logger.info("Initializing ElasticSearch session");
 			localClient = nodeBuilder().node().client();
+			// Results in MasterNotFound exception if cluster is in yellow status, while that apparently
+			// shouldn't prevent this program from running OK.
 			//localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+			ClusterStatsRequest request = new ClusterStatsRequest();
+			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
+			logger.info("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}

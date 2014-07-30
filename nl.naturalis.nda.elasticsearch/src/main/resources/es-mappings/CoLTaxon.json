@@ -1,0 +1,129 @@
+{
+	"CoLTaxon": {
+	
+		"dynamic": "strict",
+	
+		"properties" : {	
+			"taxonID": {
+				"type": "integer",
+				"include_in_all": false
+			},
+			"identifier": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"datasetID": {
+				"type": "integer",
+				"include_in_all": false
+			},
+			"datasetName": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"acceptedNameUsageID": {
+				"type": "integer",
+				"include_in_all": false
+			},
+			"parentNameUsageID": {
+				"type": "integer",
+				"include_in_all": false
+			},
+			"taxonomicStatus": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"taxonRank": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"verbatimTaxonRank": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"scientificName": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"kingdom": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"phylum": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"classRank": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"order": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"superfamily": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"family": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"genericName": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"genus": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"subgenus": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"specificEpithet": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"infraspecificEpithet": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"scientificNameAuthorship": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"source": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"namePublishedIn": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"nameAccordingTo": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"modified": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"description": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"taxonConceptID": {
+				"type": "integer",
+				"include_in_all": false
+			},
+			"scientificNameID": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"references": {
+				"type": "string",
+				"include_in_all": false
+			}		
+		}	
+	}
+}

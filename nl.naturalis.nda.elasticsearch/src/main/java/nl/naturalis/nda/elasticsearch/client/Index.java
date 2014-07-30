@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.util.List;
+
 /**
  * Interface defining methods for classes representing an ElasticSearch index,
  * presumably by wrapping an ElasticSearch client.
@@ -51,6 +53,15 @@ public interface Index {
 
 
 	/**
+	 * Delete the index and all its types and data from the cluster.
+	 * 
+	 * @return {@code true} if the index existed and was successfully deleted;
+	 *         {@code false} if the index did not exist.
+	 */
+	boolean delete();
+
+
+	/**
 	 * Adds a new type to the index or overrides an existing one.
 	 * 
 	 * @param name The name of the type
@@ -60,13 +71,7 @@ public interface Index {
 	void addType(String name, String mapping);
 
 
-	/**
-	 * Delete the index from the cluster.
-	 * 
-	 * @return {@code true} if the index existed and was successfully deleted;
-	 *         {@code false} if the index did not exist.
-	 */
-	boolean delete();
+	boolean deleteType(String name);
 
 
 	/**
@@ -79,7 +84,7 @@ public interface Index {
 
 
 	/**
-	 * Add a new document to the index.
+	 * Add a new document of the specified type to the index.
 	 * 
 	 * @param type The type of the document
 	 * @param json The document
@@ -90,12 +95,52 @@ public interface Index {
 
 
 	/**
-	 * Adds the JSON representation of the specified object to the index.
+	 * Adds the specified object to the index.
 	 * 
 	 * @param type The type of the document
 	 * @param obj The object to add
 	 * @param id The document ID
 	 */
 	void saveObject(String type, Object obj, String id);
+
+
+	/**
+	 * Adds multiple objects to the index, presumably using ElasticSearch's bulk
+	 * processing capabilities.
+	 * 
+	 * @param type The type of the document
+	 * @param objs The objects to add
+	 */
+	void saveObjects(String type, List<?> objs);
+
+
+	/**
+	 * Adds multiple objects to the index, presumably using ElasticSearch's bulk
+	 * processing capabilities.
+	 * 
+	 * @param type The type of the document
+	 * @param objs The objects to add
+	 * @param ids The ids of the objects to add. For each object you must
+	 *            specify an ID. In other words the sizes of the {@objs}
+	 *            list and the {@ids} list must be equal. If you want Lucene to
+	 *            generate the IDs for you, specify null.
+	 */
+	void saveObjects(String type, List<?> objs, List<String> ids);
+
+
+	/**
+	 * Adds multiple objects to the index, presumably using ElasticSearch's bulk
+	 * processing capabilities.
+	 * 
+	 * @param type The type of the document
+	 * @param objs The objects to add
+	 * @param ids The ids of the objects to add. For each object you must
+	 *            specify an ID. In other words the sizes of the {@objs}
+	 *            list and the {@ids} list must be equal. If you want Lucene to
+	 *            generate the IDs for you, specify null.
+	 * @param parentIds The IDs of the parents of the objects. Specify null if
+	 *            the objects do not have a relational parent.
+	 */
+	void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds);
 
 }

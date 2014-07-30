@@ -2,6 +2,8 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
+import java.util.List;
+
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
@@ -12,15 +14,19 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequestBuilder;
+import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.indices.IndexMissingException;
+import org.elasticsearch.indices.TypeMissingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +63,7 @@ public class IndexNative implements Index {
 			//localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 			ClusterStatsRequest request = new ClusterStatsRequest();
 			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			logger.info("Cluster stats: " + response.toString());
+			//logger.info("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}
@@ -183,19 +189,6 @@ public class IndexNative implements Index {
 	}
 
 
-	public void addType(String name, String mapping)
-	{
-		logger.info(String.format("Creating type \"%s\"", name));
-		PutMappingRequest request = new PutMappingRequest(indexName);
-		request.source(mapping);
-		request.type(name);
-		PutMappingResponse response = admin.putMapping(request).actionGet();
-		if (!response.isAcknowledged()) {
-			throw new IndexException(String.format("Failed to create type \"%s\"", name));
-		}
-	}
-
-
 	/**
 	 * Deletes the index for which this client was set up.
 	 * 
@@ -215,7 +208,7 @@ public class IndexNative implements Index {
 			return true;
 		}
 		catch (IndexMissingException e) {
-			logger.info("No such index: " + indexName);
+			logger.info(String.format("No such index \"%s\" (nothing deleted)", indexName));
 			return false;
 		}
 	}
@@ -235,6 +228,41 @@ public class IndexNative implements Index {
 		}
 		catch (Exception e) {
 			logger.info("Failed to delete all indices in cluster: " + e.getMessage());
+		}
+	}
+
+
+	public void addType(String name, String mapping)
+	{
+		logger.info(String.format("Creating type \"%s\"", name));
+		PutMappingRequest request = new PutMappingRequest(indexName);
+		request.source(mapping);
+		request.type(name);
+		PutMappingResponse response = admin.putMapping(request).actionGet();
+		if (!response.isAcknowledged()) {
+			throw new IndexException(String.format("Failed to create type \"%s\"", name));
+		}
+	}
+
+
+	@Override
+	public boolean deleteType(String name)
+	{
+		logger.info(String.format("Deleting type \"%s\"", name));
+		DeleteMappingRequestBuilder request = esClient.admin().indices().prepareDeleteMapping();
+		request.setIndices(indexName);
+		request.setType(name);
+		try {
+			DeleteMappingResponse response = request.execute().actionGet();
+			if (!response.isAcknowledged()) {
+				throw new IndexException(String.format("Failed to delete type \"%s\"", name));
+			}
+			logger.info("Type deleted");
+			return true;
+		}
+		catch (TypeMissingException e) {
+			logger.info(String.format("No such type \"%s\" (nothing deleted)", name));
+			return false;
 		}
 	}
 
@@ -272,7 +300,67 @@ public class IndexNative implements Index {
 		catch (JsonProcessingException e) {
 			throw new IndexException(e);
 		}
-		saveDocument(type, json, id);
+		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
+		irb.setSource(json);
+		irb.execute().actionGet();
+	}
+
+
+	@Override
+	public void saveObjects(String type, List<?> objs)
+	{
+		BulkRequestBuilder brb = esClient.prepareBulk();
+		for (int i = 0; i < objs.size(); ++i) {
+			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
+			try {
+				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
+			}
+			catch (JsonProcessingException e) {
+				throw new IndexException(e);
+			}
+			brb.add(irb);
+		}
+		brb.execute().actionGet();
+	}
+
+
+	@Override
+	public void saveObjects(String type, List<?> objs, List<String> ids)
+	{
+		BulkRequestBuilder brb = esClient.prepareBulk();
+		for (int i = 0; i < objs.size(); ++i) {
+			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, ids.get(i));
+			try {
+				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
+			}
+			catch (JsonProcessingException e) {
+				throw new IndexException(e);
+			}
+			brb.add(irb);
+		}
+		brb.execute().actionGet();
+	}
+
+
+	@Override
+	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
+	{
+		BulkRequestBuilder brb = esClient.prepareBulk();
+		for (int i = 0; i < objs.size(); ++i) {
+			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
+			try {
+				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
+				if (ids != null) {
+					irb.setId(ids.get(i));
+				}
+				irb.setParent(parentIds.get(i));
+			}
+			catch (JsonProcessingException e) {
+				throw new IndexException(e);
+			}
+			brb.add(irb);
+		}
+		brb.execute().actionGet();
 	}
 
 

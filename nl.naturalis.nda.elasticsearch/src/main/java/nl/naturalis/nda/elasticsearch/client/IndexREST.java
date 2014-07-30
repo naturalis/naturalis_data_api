@@ -2,6 +2,8 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.*;
 
+import java.util.List;
+
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.http.SimpleHttpDelete;
 import org.domainobject.util.http.SimpleHttpGet;
@@ -174,6 +176,13 @@ public class IndexREST implements Index {
 	}
 
 
+	@Override
+	public boolean deleteType(String name)
+	{
+		return false;
+	}
+
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -243,6 +252,14 @@ public class IndexREST implements Index {
 	}
 
 
+	@Override
+	public void saveObjects(String type, List<?> objs, List<String> ids)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+
 	/**
 	 * Get the response for the most recently executed request. Useful if you
 	 * want to print or log status messages for requests that just do something
@@ -296,6 +313,22 @@ public class IndexREST implements Index {
 		String fmt = "Error while executing request: code=\"%s\";message=\"%s\"";
 		String msg = String.format(fmt, lastRequest.getStatus(), lastRequest.getError());
 		return new IndexException(msg);
+	}
+
+
+	@Override
+	public void saveObjects(String type, List<?> objs)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

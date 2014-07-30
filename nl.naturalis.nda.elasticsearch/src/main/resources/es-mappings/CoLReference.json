@@ -1,0 +1,41 @@
+{
+	"CoLReference": {
+	
+		"dynamic": "strict",
+		
+		"_parent": {
+			"type": "CoLTaxon"
+		},
+	
+		"properties": {		
+			"taxonID": {
+				"type": "integer",
+				"include_in_all": false
+			},
+			"creator": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"date": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"title": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"description": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"identitifer": {
+				"type": "string",
+				"include_in_all": false
+			},
+			"type": {
+				"type": "string",
+				"include_in_all": false
+			}
+		}
+	}			
+}

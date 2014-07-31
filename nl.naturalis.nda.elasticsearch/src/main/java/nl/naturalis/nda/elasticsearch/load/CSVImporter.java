@@ -1,7 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,24 +52,35 @@ public abstract class CSVImporter<T> {
 		CSVFormat format = CSVFormat.DEFAULT;
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
+		
 		int processed = 0;
+		int skipped = 0;
+		int bad = 0;
+
+		List<T> objects = new ArrayList<T>(batchSize);
+		List<String> ids = specifyId ? new ArrayList<String>(batchSize) : null;
+		List<String> parentIds = specifyParent ? new ArrayList<String>(batchSize) : null;
+
 		String line;
+		CSVRecord record;
+
 		try {
-			lnr.readLine(); // Skip header
-			List<T> objects = new ArrayList<T>(batchSize);
-			List<String> ids = specifyId ? new ArrayList<String>(batchSize) : null;
-			List<String> parentIds = specifyParent ? new ArrayList<String>(batchSize) : null;
+			lnr.readLine(); // Skip header		
+
 			while ((line = lnr.readLine()) != null) {
 				if (++processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
 				}
 				if (line.trim().length() == 0) {
-					logger.info("Skipping empty line: " + processed);
+					logger.info("Ignoring empty line: " + (processed + 1));
 				}
 				try {
-					CSVRecord record = CSVParser.parse(line, format).iterator().next();
-					T object = transfer(record);
-					objects.add(object);
+					record = CSVParser.parse(line, format).iterator().next();
+					if (skipRecord(record)) {
+						++skipped;
+						continue;
+					}
+					objects.add(transfer(record));
 					if (specifyId) {
 						ids.add(getId(record));
 					}
@@ -75,7 +88,7 @@ public abstract class CSVImporter<T> {
 						parentIds.add(getParentId(record));
 					}
 					if (objects.size() == batchSize) {
-						index.saveObjects(type, objects, null, parentIds);
+						index.saveObjects(type, objects, ids, parentIds);
 						objects.clear();
 						if (specifyId) {
 							ids.clear();
@@ -86,7 +99,8 @@ public abstract class CSVImporter<T> {
 					}
 				}
 				catch (Throwable t) {
-					logger.error("Error at line " + processed, t);
+					++bad;
+					logger.error("Error at line " + (processed + 1), t);
 				}
 			}
 			if (!objects.isEmpty()) {
@@ -96,12 +110,22 @@ public abstract class CSVImporter<T> {
 		finally {
 			lnr.close();
 		}
+		logger.info("Records processed: " + processed);
+		logger.info("Records skipped: " + skipped);
+		logger.info("Bad records: " + bad);
 		logger.info("Ready");
 
 	}
 
 
 	protected abstract T transfer(CSVRecord record);
+
+
+	@SuppressWarnings({ "static-method", "unused" })
+	protected boolean skipRecord(CSVRecord record)
+	{
+		return false;
+	}
 
 
 	@SuppressWarnings({ "static-method", "unused" })

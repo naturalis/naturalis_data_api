@@ -353,7 +353,9 @@ public class IndexNative implements Index {
 				if (ids != null) {
 					irb.setId(ids.get(i));
 				}
-				irb.setParent(parentIds.get(i));
+				if (parentIds != null) {
+					irb.setParent(parentIds.get(i));
+				}
 			}
 			catch (JsonProcessingException e) {
 				throw new IndexException(e);

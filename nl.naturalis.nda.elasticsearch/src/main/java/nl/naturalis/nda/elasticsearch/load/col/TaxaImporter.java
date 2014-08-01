@@ -15,19 +15,21 @@ public class TaxaImporter extends CSVImporter<CoLTaxon> {
 
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
-		Index index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		
+		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+
 		index.delete();
 		Thread.sleep(2000);
 		index.create();
 		Thread.sleep(2000);
-		
+
 		//index.deleteType(LUCENE_TYPE);
-		
+
 		String mapping = StringUtil.getResourceAsString("/es-mappings/CoLTaxon.json");
 		index.addType(LUCENE_TYPE, mapping);
 		TaxaImporter importer = new TaxaImporter(index);
 		importer.importCsv("C:/test/col-dwca/taxa.txt");
+
+		index.getClient().close();
 	}
 
 	//@formatter:off
@@ -74,7 +76,6 @@ public class TaxaImporter extends CSVImporter<CoLTaxon> {
 		setSpecifyId(true);
 		setSpecifyParent(false);
 	}
-
 
 
 	@Override

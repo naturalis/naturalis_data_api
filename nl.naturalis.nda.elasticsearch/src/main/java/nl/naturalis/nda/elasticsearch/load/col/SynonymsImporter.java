@@ -15,13 +15,15 @@ public class SynonymsImporter extends CSVImporter<CoLSynonym> {
 
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
-		Index index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);		
+		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);		
 		index.deleteType(LUCENE_TYPE);
 		Thread.sleep(2000);
 		String mapping = StringUtil.getResourceAsString("/es-mappings/CoLSynonym.json");
 		index.addType(LUCENE_TYPE, mapping);
 		SynonymsImporter importer = new SynonymsImporter(index);
+		importer.setBatchSize(500);
 		importer.importCsv("C:/test/col-dwca/taxa.txt");
+		index.getClient().close();
 	}
 
 	private static final String LUCENE_TYPE = "CoLSynonym";

@@ -1,9 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,7 @@ public abstract class CSVImporter<T> {
 		CSVFormat format = CSVFormat.DEFAULT;
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
-		
+
 		int processed = 0;
 		int skipped = 0;
 		int bad = 0;

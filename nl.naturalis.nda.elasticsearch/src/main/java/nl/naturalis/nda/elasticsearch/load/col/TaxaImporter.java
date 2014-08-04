@@ -17,15 +17,12 @@ public class TaxaImporter extends CSVImporter<CoLTaxon> {
 	{
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 
-		index.delete();
-		Thread.sleep(2000);
-		index.create();
-		Thread.sleep(2000);
-
-		//index.deleteType(LUCENE_TYPE);
+		index.deleteType(LUCENE_TYPE);
+		Thread.sleep(2000);		
 
 		String mapping = StringUtil.getResourceAsString("/es-mappings/CoLTaxon.json");
 		index.addType(LUCENE_TYPE, mapping);
+		
 		TaxaImporter importer = new TaxaImporter(index);
 		importer.importCsv("C:/test/col-dwca/taxa.txt");
 

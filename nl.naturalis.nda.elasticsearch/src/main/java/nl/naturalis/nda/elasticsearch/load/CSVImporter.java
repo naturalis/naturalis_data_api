@@ -19,6 +19,16 @@ public abstract class CSVImporter<T> {
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
 	private static final int DEFAULT_BATCH_SIZE = 1000;
 
+	protected static int getInt(CSVRecord record, int fieldNo)
+	{
+		String s = record.get(fieldNo);
+		if (s.trim().length() == 0) {
+			return 0;
+		}
+		return Integer.parseInt(s);
+	}
+
+
 	private final Index index;
 	private final String type;
 
@@ -31,16 +41,6 @@ public abstract class CSVImporter<T> {
 	{
 		this.index = index;
 		this.type = type;
-	}
-
-
-	protected static int getInt(CSVRecord record, int fieldNo)
-	{
-		String s = record.get(fieldNo);
-		if (s.trim().length() == 0) {
-			return 0;
-		}
-		return Integer.parseInt(s);
 	}
 
 

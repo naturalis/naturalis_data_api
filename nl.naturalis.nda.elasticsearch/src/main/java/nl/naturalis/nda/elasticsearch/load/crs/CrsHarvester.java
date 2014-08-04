@@ -35,18 +35,23 @@ import org.xml.sax.SAXException;
  */
 public class CrsHarvester {
 
-	private static final String TYPE_SPECIMEN = "specimen";
 
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws InterruptedException
 	{
-		Index index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+		index.deleteType(LUCENE_TYPE);
+		Thread.sleep(2000);	
+		
+		String mapping = StringUtil.getResourceAsString("/es-mappings/specimen.type.json");
+		index.addType(LUCENE_TYPE, mapping);
+		
 		CrsHarvester harvester = new CrsHarvester(index);
 		harvester.harvest();
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsHarvester.class);
-
+	private static final String LUCENE_TYPE = "specimen";
 	private static final String RES_TOKEN_FILE = "/resumption-token";
 	private static final String RES_TOKEN_DELIM = ",";
 
@@ -55,8 +60,8 @@ public class CrsHarvester {
 	private final CRSTransfer crsTransfer;
 
 	private int batch;
-	private int recordsProcessed;
-	private int badRecords;
+	private int processed;
+	private int bad;
 
 	private final Index index;
 
@@ -98,8 +103,8 @@ public class CrsHarvester {
 				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
 			}
 
-			recordsProcessed = 0;
-			badRecords = 0;
+			processed = 0;
+			bad = 0;
 
 			do {
 				logger.info("Processing batch " + batch);
@@ -112,8 +117,8 @@ public class CrsHarvester {
 				resTokenFile.delete();
 			}
 
-			logger.info("Records processed: " + recordsProcessed);
-			logger.info("Bad records: " + badRecords);
+			logger.info("Records processed: " + processed);
+			logger.info("Bad records: " + bad);
 			logger.info(getClass().getSimpleName() + " finished successfully");
 
 		}
@@ -150,8 +155,8 @@ public class CrsHarvester {
 		for (int i = 0; i < batchSize; ++i) {
 			Element record = (Element) records.item(i);
 			saveSpecimen(record, i);
-			if (++recordsProcessed % 1000 == 0) {
-				logger.info("Records processed: " + recordsProcessed);
+			if (++processed % 1000 == 0) {
+				logger.info("Records processed: " + processed);
 			}
 		}
 		return getResumptionToken(doc);
@@ -170,11 +175,11 @@ public class CrsHarvester {
 			else {
 				specimen = crsTransfer.createSpecimen(record);
 				specimen.setSpecimenId(specimen.getSpecimenId().trim());
-				index.saveObject(TYPE_SPECIMEN, specimen, specimen.getSpecimenId());
+				index.saveObject(LUCENE_TYPE, specimen, specimen.getSpecimenId());
 			}
 		}
 		catch (Throwable t) {
-			++badRecords;
+			++bad;
 			String fmt = "Error while processing record %s, specimen \"%s\": %s";
 			String msg = String.format(fmt, recNo, specimen.getSpecimenId(), t.getMessage());
 			logger.error(msg);

@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import nl.naturalis.nda.elasticsearch.load.HarvestException;
 
-import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

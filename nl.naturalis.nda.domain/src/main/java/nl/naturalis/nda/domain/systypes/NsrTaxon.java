@@ -1,4 +1,4 @@
-package nl.naturalis.nda.domain;
+package nl.naturalis.nda.domain.systypes;
 
 import java.util.List;
 
@@ -16,6 +16,12 @@ public class NsrTaxon {
 	private List<NsrSynonym> synonyms;
 	private List<NsrCommonName> commonNames;
 	private List<NsrTaxonDescription> descriptions;
+	
+	// De free-style classificatie a la NSR. De monomials
+	// zijn gesorteerd van hoog (kingdom) naar laag (de
+	// rank net boven de rank van dit taxon); er is geen
+	// garantie hoeveel en welke tussen-ranks er zijn.
+	private List<NsrMonomial> classification;
 
 
 	public int getId()
@@ -135,6 +141,18 @@ public class NsrTaxon {
 	public void setDescriptions(List<NsrTaxonDescription> descriptions)
 	{
 		this.descriptions = descriptions;
+	}
+
+
+	public List<NsrMonomial> getClassification()
+	{
+		return classification;
+	}
+
+
+	public void setClassification(List<NsrMonomial> classification)
+	{
+		this.classification = classification;
 	}
 
 }

@@ -1,4 +1,4 @@
-package nl.naturalis.nda.domain;
+package nl.naturalis.nda.domain.systypes;
 
 public class NsrScientificName extends NsrName {
 

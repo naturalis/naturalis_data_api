@@ -1,9 +1,11 @@
-package nl.naturalis.nda.domain;
+package nl.naturalis.nda.domain.systypes;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Specimen {
+public class CrsSpecimen {
 
+	private String systemID;
 	private String unitID;
 	private String recordBasis;
 	private String kindOfUnit;
@@ -33,7 +35,28 @@ public class Specimen {
 	private String geodeticDatum;
 	private String url;
 
-	List<Determination> determinations;
+	private List<CrsDetermination> determinations;
+
+
+	public void addDetermination(CrsDetermination determination)
+	{
+		if (determinations == null) {
+			determinations = new ArrayList<CrsDetermination>(4);
+		}
+		determinations.add(determination);
+	}
+
+
+	public String getSystemID()
+	{
+		return systemID;
+	}
+
+
+	public void setSystemID(String systemID)
+	{
+		this.systemID = systemID;
+	}
 
 
 	public String getUnitID()
@@ -360,6 +383,7 @@ public class Specimen {
 	}
 
 
+
 	public String getUrl()
 	{
 		return url;
@@ -371,16 +395,16 @@ public class Specimen {
 		this.url = url;
 	}
 
-
-	public List<Determination> getDeterminations()
+	public List<CrsDetermination> getDeterminations()
 	{
 		return determinations;
 	}
 
 
-	public void setDeterminations(List<Determination> determinations)
+	public void setDeterminations(List<CrsDetermination> determinations)
 	{
 		this.determinations = determinations;
 	}
+
 
 }

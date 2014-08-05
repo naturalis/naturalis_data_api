@@ -1,24 +1,17 @@
-package nl.naturalis.nda.domain;
+package nl.naturalis.nda.domain.systypes;
 
-public class CoLTaxon {
+public class CoLSynonym {
 
+	private int synonymID;
 	private int taxonID;
 	private String identifier;
 	private String datasetID;
 	private String datasetName;
-	private int acceptedNameUsageID;
-	private int parentNameUsageID;
 	private String taxonomicStatus;
 	private String taxonRank;
 	private String verbatimTaxonRank;
 	private String scientificName;
 	private String kingdom;
-	private String phylum;
-	private String classRank;
-	private String order;
-	private String superfamily;
-	private String family;
-	private String genericName;
 	private String genus;
 	private String subgenus;
 	private String specificEpithet;
@@ -32,6 +25,20 @@ public class CoLTaxon {
 	private int taxonConceptID;
 	private String scientificNameID;
 	private String references;
+
+	private CoLTaxon taxon;
+
+
+	public int getSynonymID()
+	{
+		return synonymID;
+	}
+
+
+	public void setSynonymID(int synonymID)
+	{
+		this.synonymID = synonymID;
+	}
 
 
 	public int getTaxonID()
@@ -79,30 +86,6 @@ public class CoLTaxon {
 	public void setDatasetName(String datasetName)
 	{
 		this.datasetName = datasetName;
-	}
-
-
-	public int getAcceptedNameUsageID()
-	{
-		return acceptedNameUsageID;
-	}
-
-
-	public void setAcceptedNameUsageID(int acceptedNameUsageID)
-	{
-		this.acceptedNameUsageID = acceptedNameUsageID;
-	}
-
-
-	public int getParentNameUsageID()
-	{
-		return parentNameUsageID;
-	}
-
-
-	public void setParentNameUsageID(int parentNameUsageID)
-	{
-		this.parentNameUsageID = parentNameUsageID;
 	}
 
 
@@ -163,78 +146,6 @@ public class CoLTaxon {
 	public void setKingdom(String kingdom)
 	{
 		this.kingdom = kingdom;
-	}
-
-
-	public String getPhylum()
-	{
-		return phylum;
-	}
-
-
-	public void setPhylum(String phylum)
-	{
-		this.phylum = phylum;
-	}
-
-
-	public String getClassRank()
-	{
-		return classRank;
-	}
-
-
-	public void setClassRank(String classRank)
-	{
-		this.classRank = classRank;
-	}
-
-
-	public String getOrder()
-	{
-		return order;
-	}
-
-
-	public void setOrder(String order)
-	{
-		this.order = order;
-	}
-
-
-	public String getSuperfamily()
-	{
-		return superfamily;
-	}
-
-
-	public void setSuperfamily(String superfamily)
-	{
-		this.superfamily = superfamily;
-	}
-
-
-	public String getFamily()
-	{
-		return family;
-	}
-
-
-	public void setFamily(String family)
-	{
-		this.family = family;
-	}
-
-
-	public String getGenericName()
-	{
-		return genericName;
-	}
-
-
-	public void setGenericName(String genericName)
-	{
-		this.genericName = genericName;
 	}
 
 
@@ -391,6 +302,18 @@ public class CoLTaxon {
 	public void setReferences(String references)
 	{
 		this.references = references;
+	}
+
+
+	public CoLTaxon getTaxon()
+	{
+		return taxon;
+	}
+
+
+	public void setTaxon(CoLTaxon taxon)
+	{
+		this.taxon = taxon;
 	}
 
 }

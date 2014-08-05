@@ -1,22 +1,48 @@
-package nl.naturalis.nda.domain;
+package nl.naturalis.nda.domain.systypes;
 
-public class NsrTaxonStatus {
+public class NsrName {
 
-	private String status;
+	private String name;
+	private String expert;
+	private String organisation;
 	private String referenceTitle;
 	private String referenceAuthor;
 	private String referenceDate;
 
 
-	public String getStatus()
+	public String getName()
 	{
-		return status;
+		return name;
 	}
 
 
-	public void setStatus(String status)
+	public void setName(String name)
 	{
-		this.status = status;
+		this.name = name;
+	}
+
+
+	public String getExpert()
+	{
+		return expert;
+	}
+
+
+	public void setExpert(String expert)
+	{
+		this.expert = expert;
+	}
+
+
+	public String getOrganisation()
+	{
+		return organisation;
+	}
+
+
+	public void setOrganisation(String organisation)
+	{
+		this.organisation = organisation;
 	}
 
 

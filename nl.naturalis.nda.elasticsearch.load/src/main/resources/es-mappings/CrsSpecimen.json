@@ -125,8 +125,76 @@
 				"type": "integer",
 				"include_in_all": false
 			},			
-			"preferredDetermination": {
+			"determination0": {
 				"properties": {
+					"preferred": {
+						"type": "boolean",
+						"include_in_all": false
+					},
+					"scientificName": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"higherTaxonRank": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"genusOrMonomial": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"subgenus": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"speciesEpithet": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"infraSubspecificRank": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"subspeciesEpithet": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"infraSubspecificName": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"authorTeamOriginalAndYear": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"typeStatus": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"nameAddendum": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"identificationQualifier1": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"identificationQualifier2": {
+						"type": "string",
+						"include_in_all": false
+					},
+					"identificationQualifier3": {
+						"type": "string",
+						"include_in_all": false
+					}
+				}
+			},
+			"determination1": {
+				"properties": {
+					"preferred": {
+						"type": "boolean",
+						"include_in_all": false
+					},
 					"scientificName": {
 						"type": "string",
 						"include_in_all": false
@@ -187,66 +255,10 @@
 			},
 			"determination2": {
 				"properties": {
-					"scientificName": {
-						"type": "string",
+					"preferred": {
+						"type": "boolean",
 						"include_in_all": false
 					},
-					"higherTaxonRank": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"genusOrMonomial": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"subgenus": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"speciesEpithet": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"infraSubspecificRank": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"subspeciesEpithet": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"infraSubspecificName": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"authorTeamOriginalAndYear": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"typeStatus": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"nameAddendum": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"identificationQualifier1": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"identificationQualifier2": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"identificationQualifier3": {
-						"type": "string",
-						"include_in_all": false
-					}
-				}
-			},
-			"determination3": {
-				"properties": {
 					"scientificName": {
 						"type": "string",
 						"include_in_all": false

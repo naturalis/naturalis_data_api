@@ -60,10 +60,10 @@ public class IndexNative implements Index {
 			localClient = nodeBuilder().node().client();
 			// Results in MasterNotFound exception if cluster is in yellow status, while that apparently
 			// shouldn't prevent this program from running OK.
-			//localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+			// localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
 			ClusterStatsRequest request = new ClusterStatsRequest();
 			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			//logger.info("Cluster stats: " + response.toString());
+			// logger.debug("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}
@@ -293,6 +293,13 @@ public class IndexNative implements Index {
 	@Override
 	public void saveObject(String type, Object obj, String id)
 	{
+		saveObject(type, obj, id, null);
+	}
+
+
+	@Override
+	public void saveObject(String type, Object obj, String id, String parentId)
+	{
 		final String json;
 		try {
 			json = objectMapper.writeValueAsString(obj);
@@ -300,7 +307,13 @@ public class IndexNative implements Index {
 		catch (JsonProcessingException e) {
 			throw new IndexException(e);
 		}
-		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
+		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
+		if (id != null) {
+			irb.setId(id);
+		}
+		if (parentId != null) {
+			irb.setParent(parentId);
+		}
 		irb.setSource(json);
 		irb.execute().actionGet();
 	}

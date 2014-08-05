@@ -8,6 +8,10 @@
 		},
 				
 		"properties": {
+			"preferred": {
+				"type": "boolean",
+				"include_in_all": false
+			},
 			"scientificName": {
 				"type": "string",
 				"include_in_all": false

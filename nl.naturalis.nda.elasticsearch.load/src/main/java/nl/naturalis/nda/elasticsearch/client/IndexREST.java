@@ -331,4 +331,12 @@ public class IndexREST implements Index {
 		
 	}
 
+
+	@Override
+	public void saveObject(String type, Object obj, String id, String parentId)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

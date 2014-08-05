@@ -3,14 +3,18 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.naturalis.nda.domain.systypes.CrsDetermination;
 import nl.naturalis.nda.domain.systypes.CrsSpecimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.estypes.ESCrsDetermination;
+import nl.naturalis.nda.elasticsearch.estypes.ESCrsSpecimen;
 import nl.naturalis.nda.elasticsearch.load.HarvestException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
@@ -40,17 +44,21 @@ public class CrsHarvester {
 	{
 		IndexNative index = null;
 		try {
-			String mapping = LoadUtil.getMapping(CrsSpecimen.class);
 
 			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-			index.deleteType(LUCENE_TYPE);
+			index.deleteType(LUCENE_TYPE_SPECIMEN);
+			index.deleteType(LUCENE_TYPE_DETERMINATION);
 			Thread.sleep(2000);
 
-			index.addType(LUCENE_TYPE, mapping);
+			String mapping = LoadUtil.getMapping(CrsSpecimen.class);
+			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
+
+			mapping = LoadUtil.getMapping(CrsDetermination.class);
+			index.addType(LUCENE_TYPE_DETERMINATION, mapping);
 
 			CrsHarvester harvester = new CrsHarvester(index);
 			harvester.harvest();
-			
+
 		}
 		finally {
 			if (index != null) {
@@ -60,7 +68,8 @@ public class CrsHarvester {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsHarvester.class);
-	private static final String LUCENE_TYPE = LoadUtil.getLuceneType(CrsSpecimen.class);
+	private static final String LUCENE_TYPE_SPECIMEN = LoadUtil.getLuceneType(CrsSpecimen.class);
+	private static final String LUCENE_TYPE_DETERMINATION = LoadUtil.getLuceneType(CrsDetermination.class);
 	private static final String RES_TOKEN_FILE = "/resumption-token";
 	private static final String RES_TOKEN_DELIM = ",";
 
@@ -172,7 +181,7 @@ public class CrsHarvester {
 
 	private void saveSpecimen(Element record, int recNo)
 	{
-		CrsSpecimen specimen = null;
+		ESCrsSpecimen specimen = null;
 		try {
 			Element header = getChild(record, "header");
 			String id = getChild(header, "identifier").getTextContent();
@@ -182,14 +191,27 @@ public class CrsHarvester {
 			else {
 				specimen = CRSTransfer.createSpecimen(record);
 				specimen.setUnitID(specimen.getUnitID().trim());
-				index.saveObject(LUCENE_TYPE, specimen, specimen.getUnitID());
+				List<ESCrsDetermination> determinations = CRSTransfer.getDeterminations(record);
+				if (determinations.size() > 0) {
+					specimen.setDetermination0(determinations.get(0));
+					if (determinations.size() > 1) {
+						specimen.setDetermination2(determinations.get(1));
+						if (determinations.size() > 2) {
+							specimen.setDetermination2(determinations.get(2));
+						}
+					}
+				}
+				index.saveObject(LUCENE_TYPE_SPECIMEN, specimen, specimen.getUnitID());
+				for (int i = 3; i < determinations.size(); ++i) {
+					index.saveObject(LUCENE_TYPE_DETERMINATION, determinations.get(i), null, specimen.getUnitID());
+				}
 			}
 		}
 		catch (Throwable t) {
 			++bad;
-			//String fmt = "Error while processing record %s, specimen \"%s\": %s";
-			//String msg = String.format(fmt, recNo, specimen.getUnitID(), t.getMessage());
-			//logger.error(msg);
+			String fmt = "Error while processing record %s, specimen \"%s\": %s";
+			String msg = String.format(fmt, recNo, specimen.getUnitID(), t.getMessage());
+			logger.error(msg);
 			logger.error("Stack trace for error: ", t);
 		}
 	}
@@ -241,7 +263,7 @@ public class CrsHarvester {
 		if (config.getBoolean("isTest")) {
 			String key = resToken == null ? "service.url.initial.test" : "service.url.resume.test";
 			String val = config.getString(key);
-			return StringUtil.getResourceAsString(val);
+			return FileUtil.getContents(val);
 		}
 		String key = resToken == null ? "service.url.initial" : "service.url.resume";
 		String val = config.getString(key);

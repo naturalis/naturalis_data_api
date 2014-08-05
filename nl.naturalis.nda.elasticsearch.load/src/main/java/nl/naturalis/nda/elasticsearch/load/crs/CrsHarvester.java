@@ -8,10 +8,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.domain.systypes.CrsSpecimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.HarvestException;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.ConfigObject;
@@ -35,29 +36,36 @@ import org.xml.sax.SAXException;
  */
 public class CrsHarvester {
 
-
-
 	public static void main(String[] args) throws InterruptedException
 	{
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		index.deleteType(LUCENE_TYPE);
-		Thread.sleep(2000);	
-		
-		String mapping = StringUtil.getResourceAsString("/es-mappings/specimen.type.json");
-		index.addType(LUCENE_TYPE, mapping);
-		
-		CrsHarvester harvester = new CrsHarvester(index);
-		harvester.harvest();
+		IndexNative index = null;
+		try {
+			String mapping = LoadUtil.getMapping(CrsSpecimen.class);
+
+			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+			index.deleteType(LUCENE_TYPE);
+			Thread.sleep(2000);
+
+			index.addType(LUCENE_TYPE, mapping);
+
+			CrsHarvester harvester = new CrsHarvester(index);
+			harvester.harvest();
+			
+		}
+		finally {
+			if (index != null) {
+				index.getClient().close();
+			}
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsHarvester.class);
-	private static final String LUCENE_TYPE = "specimen";
+	private static final String LUCENE_TYPE = LoadUtil.getLuceneType(CrsSpecimen.class);
 	private static final String RES_TOKEN_FILE = "/resumption-token";
 	private static final String RES_TOKEN_DELIM = ",";
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
-	private final CRSTransfer crsTransfer;
 
 	private int batch;
 	private int processed;
@@ -80,7 +88,6 @@ public class CrsHarvester {
 		catch (ParserConfigurationException e) {
 			throw ExceptionUtil.smash(e);
 		}
-		crsTransfer = new CRSTransfer();
 	}
 
 
@@ -165,7 +172,7 @@ public class CrsHarvester {
 
 	private void saveSpecimen(Element record, int recNo)
 	{
-		Specimen specimen = null;
+		CrsSpecimen specimen = null;
 		try {
 			Element header = getChild(record, "header");
 			String id = getChild(header, "identifier").getTextContent();
@@ -173,16 +180,16 @@ public class CrsHarvester {
 				deleteRecord(id);
 			}
 			else {
-				specimen = crsTransfer.createSpecimen(record);
-				specimen.setSpecimenId(specimen.getSpecimenId().trim());
-				index.saveObject(LUCENE_TYPE, specimen, specimen.getSpecimenId());
+				specimen = CRSTransfer.createSpecimen(record);
+				specimen.setUnitID(specimen.getUnitID().trim());
+				index.saveObject(LUCENE_TYPE, specimen, specimen.getUnitID());
 			}
 		}
 		catch (Throwable t) {
 			++bad;
-			String fmt = "Error while processing record %s, specimen \"%s\": %s";
-			String msg = String.format(fmt, recNo, specimen.getSpecimenId(), t.getMessage());
-			logger.error(msg);
+			//String fmt = "Error while processing record %s, specimen \"%s\": %s";
+			//String msg = String.format(fmt, recNo, specimen.getUnitID(), t.getMessage());
+			//logger.error(msg);
 			logger.error("Stack trace for error: ", t);
 		}
 	}

@@ -9,8 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.domain.NsrTaxon;
-import nl.naturalis.nda.domain.NsrTaxonDescription;
+import nl.naturalis.nda.domain.systypes.NsrTaxon;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;

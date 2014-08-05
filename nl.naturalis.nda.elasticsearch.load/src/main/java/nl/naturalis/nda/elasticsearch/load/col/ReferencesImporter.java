@@ -2,7 +2,7 @@ package nl.naturalis.nda.elasticsearch.load.col;
 
 import java.io.IOException;
 
-import nl.naturalis.nda.domain.CoLReference;
+import nl.naturalis.nda.domain.systypes.CoLReference;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;

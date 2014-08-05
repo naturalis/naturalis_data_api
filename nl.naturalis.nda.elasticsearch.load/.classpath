@@ -18,5 +18,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
 	<classpathentry kind="lib" path="C:/Users/admin.ayco.holleman/lib/java/commons-csv-1.0/commons-csv-1.0-SNAPSHOT.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

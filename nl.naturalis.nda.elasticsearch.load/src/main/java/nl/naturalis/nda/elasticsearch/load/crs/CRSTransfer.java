@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.estypes.ESCrsDetermination;
-import nl.naturalis.nda.elasticsearch.estypes.ESCrsSpecimen;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsDetermination;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsSpecimen;
 import nl.naturalis.nda.elasticsearch.load.HarvestException;
 
 import org.slf4j.Logger;

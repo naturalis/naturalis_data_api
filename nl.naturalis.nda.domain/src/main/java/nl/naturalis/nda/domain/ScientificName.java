@@ -2,8 +2,8 @@ package nl.naturalis.nda.domain;
 
 public class ScientificName {	
 
-	private String fullScientificName;
+	private String scientificName;
 	private String author;
-	private String yearPublished;
+	private String year;
 
 }

@@ -17,7 +17,7 @@ public class AcceptedName extends ScientificName {
 	
 	// This allows for classification that deviates from
 	// the fixed classification through the above fields
-	private List<Monomial> alternativeClassification;
+	private List<Monomial> actualClassification;
 	
 	
 }

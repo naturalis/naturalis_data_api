@@ -1,11 +1,15 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenSearchResult;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsDetermination;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.exception.InvalidQueryException;
+import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 
 import org.domainobject.util.debug.BeanPrinter;
@@ -26,17 +30,15 @@ public class SpecimenDao extends AbstractDao {
 		SpecimenDao dao = new SpecimenDao("nda");
 		QueryParams params = new QueryParams();
 		//params.add("offset", "10");
-		//params.add("sex", "female");
+		params.add("sex", "female");
 		//params.add("sourceSystemId", "6809111");
 		//params.add("specimenId", "50004");
 		//params.add("specimenId", "RMNH.MAM.51251");
-		params.add("locality", "San Paolo");
+		//params.add("locality", "San Paolo");
 		//params.add("country", "Suriname");
-		BeanPrinter.out(dao.listSpecimens(params));
+		SpecimenSearchResult ssr = dao.listSpecimens(params);
+		BeanPrinter.out(ssr);
 	}
-
-	private static final String TYPE = "specimen";
-
 
 	public SpecimenDao(String ndaIndexName)
 	{
@@ -53,7 +55,7 @@ public class SpecimenDao extends AbstractDao {
 	public SpecimenSearchResult listSpecimens(QueryParams properties)
 	{
 		SearchRequestBuilder srb = newSearchRequest();
-		srb.setTypes(TYPE);
+		srb.setTypes("CrsSpecimen");
 		srb.setSize(5);
 		MatchAllQueryBuilder matchAllQuery = QueryBuilders.matchAllQuery();
 		AndFilterBuilder andFilter = FilterBuilders.andFilter();
@@ -79,7 +81,15 @@ public class SpecimenDao extends AbstractDao {
 		while (iterator.hasNext()) {
 			SearchHit hit = iterator.next();
 			Map<String, Object> source = hit.getSource();
-			Specimen specimen = getObjectMapper().convertValue(source, Specimen.class);
+			ESCrsSpecimen crsSpecimen = getObjectMapper().convertValue(source, ESCrsSpecimen.class);
+			// BeanPrinter.out(crsSpecimen);
+			List<ESCrsDetermination> extraDeterminations = null;
+			if(crsSpecimen.getNumDeterminations() > 3) {
+				// TODO: Fetch the remaining CrsDetermination documents (the first 3
+				// are already "denormalized into" the CrsDetermination document)
+				extraDeterminations = null; /* Fetch */
+			}
+			Specimen specimen = SpecimenTransfer.transfer(crsSpecimen, extraDeterminations);
 			result.addSpecimen(specimen);
 		}
 		return result;

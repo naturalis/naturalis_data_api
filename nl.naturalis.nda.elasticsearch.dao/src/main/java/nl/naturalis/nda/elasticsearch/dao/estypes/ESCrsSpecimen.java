@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.dao.estypes;
 
-
 public class ESCrsSpecimen {
 
 	private String systemID;
@@ -33,6 +32,7 @@ public class ESCrsSpecimen {
 	private String geodeticDatum;
 	private String url;
 
+	private int numDeterminations;
 	private ESCrsDetermination determination0;
 	private ESCrsDetermination determination1;
 	private ESCrsDetermination determination2;
@@ -383,6 +383,18 @@ public class ESCrsSpecimen {
 	public void setUrl(String url)
 	{
 		this.url = url;
+	}
+
+
+	public int getNumDeterminations()
+	{
+		return numDeterminations;
+	}
+
+
+	public void setNumDeterminations(int numDeterminations)
+	{
+		this.numDeterminations = numDeterminations;
 	}
 
 

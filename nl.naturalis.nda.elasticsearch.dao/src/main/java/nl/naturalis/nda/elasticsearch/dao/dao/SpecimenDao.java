@@ -86,7 +86,7 @@ public class SpecimenDao extends AbstractDao {
 			List<ESCrsDetermination> extraDeterminations = null;
 			if(crsSpecimen.getNumDeterminations() > 3) {
 				// TODO: Fetch the remaining CrsDetermination documents (the first 3
-				// are already "denormalized into" the CrsDetermination document)
+				// are already "denormalized into" the CrsSpecimen type)
 				extraDeterminations = null; /* Fetch */
 			}
 			Specimen specimen = SpecimenTransfer.transfer(crsSpecimen, extraDeterminations);

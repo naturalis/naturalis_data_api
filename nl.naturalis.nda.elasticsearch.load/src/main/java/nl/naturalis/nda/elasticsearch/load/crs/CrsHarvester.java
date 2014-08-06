@@ -192,10 +192,11 @@ public class CrsHarvester {
 				specimen = CRSTransfer.createSpecimen(record);
 				specimen.setUnitID(specimen.getUnitID().trim());
 				List<ESCrsDetermination> determinations = CRSTransfer.getDeterminations(record);
+				specimen.setNumDeterminations(determinations.size());
 				if (determinations.size() > 0) {
 					specimen.setDetermination0(determinations.get(0));
 					if (determinations.size() > 1) {
-						specimen.setDetermination2(determinations.get(1));
+						specimen.setDetermination1(determinations.get(1));
 						if (determinations.size() > 2) {
 							specimen.setDetermination2(determinations.get(2));
 						}

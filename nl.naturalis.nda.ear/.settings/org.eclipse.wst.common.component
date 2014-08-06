@@ -22,7 +22,7 @@
         <dependent-module archiveName="nl.naturalis.nda.elasticsearch.dao.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch.dao/nl.naturalis.nda.elasticsearch.dao">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="nl.naturalis.nda.elasticsearch.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch/nl.naturalis.nda.elasticsearch">
+        <dependent-module archiveName="nl.naturalis.nda.elasticsearch.load.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nda.elasticsearch.load/nl.naturalis.nda.elasticsearch.load">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

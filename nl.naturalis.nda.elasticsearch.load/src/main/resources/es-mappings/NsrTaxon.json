@@ -1,101 +1,128 @@
 {
-	"NsrTaxon": {
+	"NsrTaxon" : {
 	
-		"dynamic": "strict",
+		"dynamic" : "strict",
 	
 		"properties" : {
-			"id": {
-				"type": "integer",
-				"include_in_all": false
+			"id" : { "type" : "integer" },
+			"parentId" : { "type" : "integer" },
+			"nsrId" : { "type" : "string" },
+			"url" : { "type" : "string" },
+			"rank" : { "type" : "string" },
+			"defaultClassification" : {
+				"properties" : {
+					"kingdom" : { "type" : "string" },
+					"phylum" : { "type" : "string" },
+					"class" : { "type" : "string" },
+					"order" : { "type" : "string" },
+					"superFamily" : { "type" : "string" },
+					"family" : { "type" : "string" },
+					"genus" : { "type" : "string" },
+					"subgenus" : { "type" : "string" }
+				}
 			},
-			"parentId": {
-				"type": "integer",
-				"include_in_all": false
+			"systemClassification" : {
+				"properties" : {
+					"numMonomials" : { "type" : "integer" },
+					"monomial00" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial01" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial02" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial03" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial04" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial05" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial06" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial07" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial08" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial09" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial10" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"monomial11" : {
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					}
+				}
 			},
-			"nsrId": {
-				"type": "string",
-				"include_in_all": false
-			},
-			"url": {
-				"type": "string",
-				"include_in_all": false
-			},
-			"rank": {
-				"type": "string",
-				"include_in_all": false
+			"scientificName" : {
+				"properties" : {
+					"scientificName" : { "type" : "string" },
+					"genusOrMonomial" : { "type" : "string" },
+					"specificEpithet" : { "type" : "string" },
+					"infraSpecificEpithet" : { "type" : "string" },
+					"referenceTitle" : { "type" : "string" },
+					"referenceAuthor" : { "type" : "string" },
+					"referenceDate" : { "type" : "string" },
+					"expert" : { "type" : "string" },
+					"organisation" : { "type" : "string" },
+					"authorship" : { "type" : "string" },
+					"authorName" : { "type" : "string" },
+					"authorYear" : { "type" : "string" },
+					"nameStatus" : { "type" : "string" }
+				}
 			},
 			"status" : {
 				"properties" : {
-					"status": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"referenceTitle": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"referenceAuthor": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"referenceDate": {
-						"type": "string",
-						"include_in_all": false
-					}					
+					"status" : { "type" : "string" },
+					"referenceTitle" : { "type" : "string" },
+					"referenceAuthor" : { "type" : "string" },
+					"referenceDate" : { "type" : "string" }
 				}
-			},
-			"acceptedName" : {
-				"properties" : {
-					"name": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"expert": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"organisation": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"referenceTitle": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"referenceAuthor": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"referenceDate": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"uninomial": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"specificEpithet": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"infraSpecificEpithet": {
-						"type": "string",
-						"include_in_all": false
-					},
-					"authorship": {
-						"type": "string",
-						"include_in_all": false
-					},					
-					"authorName": {
-						"type": "string",
-						"include_in_all": false
-					},					
-					"authorYear": {
-						"type": "string",
-						"include_in_all": false
-					}					
-				}
-			}			
+			}
 		}
 	}
 }

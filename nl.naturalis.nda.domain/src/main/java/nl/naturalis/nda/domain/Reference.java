@@ -4,8 +4,11 @@ import java.util.Date;
 
 public class Reference {
 
-	String title;
-	String author;
-	Date datePublished;
+	private String creator;
+	private Date date;
+	private String title;
+	private String description;
+	private String identifier;
+	private String type;
 
 }

@@ -10,6 +10,9 @@ public class DefaultClassification {
 	private String family;
 	private String genus;
 	private String subgenus;
+	private String specificEpithet;
+	private String infraspecificEpithet;
+	private String infraspecificRank;
 
 
 	public String getKingdom()
@@ -105,6 +108,42 @@ public class DefaultClassification {
 	public void setSubgenus(String subgenus)
 	{
 		this.subgenus = subgenus;
+	}
+
+
+	public String getSpecificEpithet()
+	{
+		return specificEpithet;
+	}
+
+
+	public void setSpecificEpithet(String specificEpithet)
+	{
+		this.specificEpithet = specificEpithet;
+	}
+
+
+	public String getInfraspecificEpithet()
+	{
+		return infraspecificEpithet;
+	}
+
+
+	public void setInfraspecificEpithet(String infraspecificEpithet)
+	{
+		this.infraspecificEpithet = infraspecificEpithet;
+	}
+
+
+	public String getInfraspecificRank()
+	{
+		return infraspecificRank;
+	}
+
+
+	public void setInfraspecificRank(String infraspecificRank)
+	{
+		this.infraspecificRank = infraspecificRank;
 	}
 
 }

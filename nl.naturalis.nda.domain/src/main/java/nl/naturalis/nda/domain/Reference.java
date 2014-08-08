@@ -2,13 +2,52 @@ package nl.naturalis.nda.domain;
 
 import java.util.Date;
 
+/**
+ * A {@code Reference} represents a literature reference for a scientific name
+ * or common name. In case of scientific names it represents the publication in
+ * which BLA
+ * 
+ */
 public class Reference {
 
-	private String creator;
-	private Date date;
 	private String title;
-	private String description;
-	private String identifier;
-	private String type;
+	private String author;
+	private Date date;
+
+
+	public String getTitle()
+	{
+		return title;
+	}
+
+
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+
+	public String getAuthor()
+	{
+		return author;
+	}
+
+
+	public void setAuthor(String author)
+	{
+		this.author = author;
+	}
+
+
+	public Date getDate()
+	{
+		return date;
+	}
+
+
+	public void setDate(Date date)
+	{
+		this.date = date;
+	}
 
 }

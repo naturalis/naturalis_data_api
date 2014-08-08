@@ -1,8 +1,10 @@
 package nl.naturalis.nda.domain;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class Specimen {
+public class Occurrence {
 
 	private String unitID;
 	private String recordBasis;
@@ -13,8 +15,8 @@ public class Specimen {
 	private String unitGUID;
 	private String phaseOrStage;
 	private String accessionSpecimenNumbers;
-	private String altitude;
-	private String depth;
+	private int altitude;
+	private int depth;
 	private String gatheringAgent;
 	private String worldRegion;
 	private String country;
@@ -23,8 +25,8 @@ public class Specimen {
 	private boolean objectPublic;
 	private String altitudeUnit;
 	private String depthUnit;
-	private String collectingStartDate;
-	private String collectingEndDate;
+	private Date collectingStartDate;
+	private Date collectingEndDate;
 	private String title;
 	private String taxonCoverage;
 	private String multiMediaPublic;
@@ -33,7 +35,16 @@ public class Specimen {
 	private String geodeticDatum;
 	private String url;
 
-	List<Determination> determinations;
+	List<Identification> identifications;
+
+
+	public void addIndentification(Identification identification)
+	{
+		if (identifications == null) {
+			identifications = new ArrayList<Identification>();
+		}
+		identifications.add(identification);
+	}
 
 
 	public String getUnitID()
@@ -144,25 +155,25 @@ public class Specimen {
 	}
 
 
-	public String getAltitude()
+	public int getAltitude()
 	{
 		return altitude;
 	}
 
 
-	public void setAltitude(String altitude)
+	public void setAltitude(int altitude)
 	{
 		this.altitude = altitude;
 	}
 
 
-	public String getDepth()
+	public int getDepth()
 	{
 		return depth;
 	}
 
 
-	public void setDepth(String depth)
+	public void setDepth(int depth)
 	{
 		this.depth = depth;
 	}
@@ -264,25 +275,25 @@ public class Specimen {
 	}
 
 
-	public String getCollectingStartDate()
+	public Date getCollectingStartDate()
 	{
 		return collectingStartDate;
 	}
 
 
-	public void setCollectingStartDate(String collectingStartDate)
+	public void setCollectingStartDate(Date collectingStartDate)
 	{
 		this.collectingStartDate = collectingStartDate;
 	}
 
 
-	public String getCollectingEndDate()
+	public Date getCollectingEndDate()
 	{
 		return collectingEndDate;
 	}
 
 
-	public void setCollectingEndDate(String collectingEndDate)
+	public void setCollectingEndDate(Date collectingEndDate)
 	{
 		this.collectingEndDate = collectingEndDate;
 	}
@@ -372,15 +383,15 @@ public class Specimen {
 	}
 
 
-	public List<Determination> getDeterminations()
+	public List<Identification> getIdentifications()
 	{
-		return determinations;
+		return identifications;
 	}
 
 
-	public void setDeterminations(List<Determination> determinations)
+	public void setIdentifications(List<Identification> identifications)
 	{
-		this.determinations = determinations;
+		this.identifications = identifications;
 	}
 
 }

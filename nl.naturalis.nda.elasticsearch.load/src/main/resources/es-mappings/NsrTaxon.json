@@ -115,12 +115,75 @@
 					"nameStatus" : { "type" : "string" }
 				}
 			},
+			"synonyms" : { "type" : "string" },
+			"commonNames" : { "type" : "string" },
 			"status" : {
 				"properties" : {
 					"status" : { "type" : "string" },
 					"referenceTitle" : { "type" : "string" },
 					"referenceAuthor" : { "type" : "string" },
 					"referenceDate" : { "type" : "string" }
+				}
+			},
+			"numDescriptions" : { "type" : "integer" },
+			"description0" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description1" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description2" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description3" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description4" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description5" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description6" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description7" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description8" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description9" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
 				}
 			}
 		}

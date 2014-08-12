@@ -1,8 +1,11 @@
 package nl.naturalis.nda.elasticsearch.dao.estypes;
 
+import java.util.List;
+
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.systypes.NsrScientificName;
+import nl.naturalis.nda.domain.systypes.NsrTaxonDescription;
 import nl.naturalis.nda.domain.systypes.NsrTaxonStatus;
 
 public class ESNsrTaxon {
@@ -29,6 +32,21 @@ public class ESNsrTaxon {
 	private Monomial monomial09;
 	private Monomial monomial10;
 	private Monomial monomial11;
+
+	private List<String> synonyms;
+	private List<String> commonNames;
+
+	private int numDescriptions;
+	private NsrTaxonDescription description00;
+	private NsrTaxonDescription description01;
+	private NsrTaxonDescription description02;
+	private NsrTaxonDescription description03;
+	private NsrTaxonDescription description04;
+	private NsrTaxonDescription description05;
+	private NsrTaxonDescription description06;
+	private NsrTaxonDescription description07;
+	private NsrTaxonDescription description08;
+	private NsrTaxonDescription description09;
 
 	private NsrTaxonStatus nameStatus;
 
@@ -270,6 +288,162 @@ public class ESNsrTaxon {
 	public void setMonomial11(Monomial monomial11)
 	{
 		this.monomial11 = monomial11;
+	}
+
+
+	public List<String> getSynonyms()
+	{
+		return synonyms;
+	}
+
+
+	public void setSynonyms(List<String> synonyms)
+	{
+		this.synonyms = synonyms;
+	}
+
+
+	public List<String> getCommonNames()
+	{
+		return commonNames;
+	}
+
+
+	public void setCommonNames(List<String> commonNames)
+	{
+		this.commonNames = commonNames;
+	}
+
+
+	public int getNumDescriptions()
+	{
+		return numDescriptions;
+	}
+
+
+	public void setNumDescriptions(int numDescriptions)
+	{
+		this.numDescriptions = numDescriptions;
+	}
+
+
+	public NsrTaxonDescription getDescription00()
+	{
+		return description00;
+	}
+
+
+	public void setDescription00(NsrTaxonDescription description00)
+	{
+		this.description00 = description00;
+	}
+
+
+	public NsrTaxonDescription getDescription01()
+	{
+		return description01;
+	}
+
+
+	public void setDescription01(NsrTaxonDescription description01)
+	{
+		this.description01 = description01;
+	}
+
+
+	public NsrTaxonDescription getDescription02()
+	{
+		return description02;
+	}
+
+
+	public void setDescription02(NsrTaxonDescription description02)
+	{
+		this.description02 = description02;
+	}
+
+
+	public NsrTaxonDescription getDescription03()
+	{
+		return description03;
+	}
+
+
+	public void setDescription03(NsrTaxonDescription description03)
+	{
+		this.description03 = description03;
+	}
+
+
+	public NsrTaxonDescription getDescription04()
+	{
+		return description04;
+	}
+
+
+	public void setDescription04(NsrTaxonDescription description04)
+	{
+		this.description04 = description04;
+	}
+
+
+	public NsrTaxonDescription getDescription05()
+	{
+		return description05;
+	}
+
+
+	public void setDescription05(NsrTaxonDescription description05)
+	{
+		this.description05 = description05;
+	}
+
+
+	public NsrTaxonDescription getDescription06()
+	{
+		return description06;
+	}
+
+
+	public void setDescription06(NsrTaxonDescription description06)
+	{
+		this.description06 = description06;
+	}
+
+
+	public NsrTaxonDescription getDescription07()
+	{
+		return description07;
+	}
+
+
+	public void setDescription07(NsrTaxonDescription description07)
+	{
+		this.description07 = description07;
+	}
+
+
+	public NsrTaxonDescription getDescription08()
+	{
+		return description08;
+	}
+
+
+	public void setDescription08(NsrTaxonDescription description08)
+	{
+		this.description08 = description08;
+	}
+
+
+	public NsrTaxonDescription getDescription09()
+	{
+		return description09;
+	}
+
+
+	public void setDescription09(NsrTaxonDescription description09)
+	{
+		this.description09 = description09;
 	}
 
 

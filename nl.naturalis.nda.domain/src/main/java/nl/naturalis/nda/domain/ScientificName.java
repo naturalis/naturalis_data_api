@@ -25,6 +25,7 @@ public class ScientificName {
 	private String fullScientificName;
 	private Status nameStatus;
 	private String genusOrMonomial;
+	private String subgenus;
 	private String specificEpithet;
 	private String infraspecificEpithet;
 	private String infraspecificMarker;
@@ -70,6 +71,18 @@ public class ScientificName {
 	public void setGenusOrMonomial(String genusOrMonomial)
 	{
 		this.genusOrMonomial = genusOrMonomial;
+	}
+
+
+	public String getSubgenus()
+	{
+		return subgenus;
+	}
+
+
+	public void setSubgenus(String subgenus)
+	{
+		this.subgenus = subgenus;
 	}
 
 

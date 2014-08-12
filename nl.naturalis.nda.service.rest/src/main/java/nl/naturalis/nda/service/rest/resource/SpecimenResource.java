@@ -11,11 +11,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenSearchResult;
+import nl.naturalis.nda.domain.Occurrence;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
+import nl.naturalis.nda.search.OccurrenceSearchResultSet;
 
 @Path("/specimen")
 @Stateless
@@ -33,11 +33,11 @@ public class SpecimenResource {
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SpecimenSearchResult search(@Context UriInfo request)
+	public OccurrenceSearchResultSet search(@Context UriInfo request)
 	{
 		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
 		QueryParams params = new QueryParams(request.getQueryParameters());
-		SpecimenSearchResult result = dao.listSpecimens(params);
+		OccurrenceSearchResultSet result = dao.listSpecimens(params);
 		return result;
 	}
 
@@ -45,9 +45,9 @@ public class SpecimenResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Specimen getSpecimen(@PathParam("id") String id)
+	public Occurrence getSpecimen(@PathParam("id") String id)
 	{
-		Specimen specimen = new Specimen();
+		Occurrence specimen = new Occurrence();
 		return specimen;
 	}
 

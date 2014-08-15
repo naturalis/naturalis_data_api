@@ -8,7 +8,7 @@ public class Taxon extends NdaTraceableObject {
 	private String taxonRank;
 
 	private DefaultClassification defaultClassification;
-	private List<Monomial> actualClassification;
+	private List<Monomial> systemClassification;
 
 	private List<Synonym> synonyms;
 	private List<CommonName> commonNames;
@@ -16,13 +16,41 @@ public class Taxon extends NdaTraceableObject {
 	private List<SpecimenUnit> specimenUnits;
 
 
+	/**
+	 * Botanical
+	 * 
+	 * @return
+	 */
 	public ScientificName getAcceptedName()
 	{
 		return acceptedName;
 	}
 
 
+	/**
+	 * Zoological
+	 * 
+	 * @return
+	 */
+	public ScientificName getValidName()
+	{
+		return acceptedName;
+	}
+
+
+	/**
+	 * Botanical
+	 */
 	public void setAcceptedName(ScientificName scientificName)
+	{
+		this.acceptedName = scientificName;
+	}
+
+
+	/**
+	 * Zoological
+	 */
+	public void setValidName(ScientificName scientificName)
 	{
 		this.acceptedName = scientificName;
 	}
@@ -52,15 +80,21 @@ public class Taxon extends NdaTraceableObject {
 	}
 
 
-	public List<Monomial> getActualClassification()
+	/**
+	 * Get the system classification of this taxon, i.e. the as-is
+	 * classification of the source system.
+	 * 
+	 * @return The system classification of this taxon
+	 */
+	public List<Monomial> getSystemClassification()
 	{
-		return actualClassification;
+		return systemClassification;
 	}
 
 
-	public void setActualClassification(List<Monomial> actualClassification)
+	public void setSystemClassification(List<Monomial> systemClassification)
 	{
-		this.actualClassification = actualClassification;
+		this.systemClassification = systemClassification;
 	}
 
 

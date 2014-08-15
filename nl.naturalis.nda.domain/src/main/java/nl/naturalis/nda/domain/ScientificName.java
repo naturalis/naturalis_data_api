@@ -3,14 +3,14 @@ package nl.naturalis.nda.domain;
 /**
  * This class encapsulates a taxon's full scientific name and the components it
  * is composed of. Only the full scientific name will always be set. Individual
- * name components will only be set if they were provided separately, or if they
- * could be parsed out of the full scientific name.
+ * name components will only be set if they were provided separately by the
+ * source system.
  * 
  */
 public class ScientificName {
 
 	//@formatter:off
-	public static enum Status {
+	public static enum TaxonomicStatus {
 		ACCEPTED_NAME,
 		AMBIGUOUS_SYNONYM,
 		MISAPPLIED_NAME,
@@ -23,7 +23,7 @@ public class ScientificName {
 	//@formatter:on
 
 	private String fullScientificName;
-	private Status nameStatus;
+	private TaxonomicStatus taxonomicStatus;
 	private String genusOrMonomial;
 	private String subgenus;
 	private String specificEpithet;
@@ -50,15 +50,15 @@ public class ScientificName {
 	}
 
 
-	public Status getNameStatus()
+	public TaxonomicStatus getTaxonomicStatus()
 	{
-		return nameStatus;
+		return taxonomicStatus;
 	}
 
 
-	public void setNameStatus(Status nameStatus)
+	public void setTaxonomicStatus(TaxonomicStatus taxonomicStatus)
 	{
-		this.nameStatus = nameStatus;
+		this.taxonomicStatus = taxonomicStatus;
 	}
 
 

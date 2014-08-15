@@ -1,7 +1,7 @@
 package nl.naturalis.nda.domain;
 
 public class SourceSystem {
-	
+
 	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS", "Brahms");
 	public static final SourceSystem COL = new SourceSystem("COL", "Catalogue Of Life");
 	public static final SourceSystem CRS = new SourceSystem("CRS", "Naturalis Collectie Registratie Systeem");
@@ -44,6 +44,27 @@ public class SourceSystem {
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		return code.equals(((SourceSystem) obj).code);
+	}
+
+
+	@Override
+	public int hashCode()
+	{
+		return code.hashCode();
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return code;
 	}
 
 }

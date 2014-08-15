@@ -10,11 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import nl.naturalis.nda.domain.Occurrence;
-
 import org.domainobject.util.ClassUtil;
 import org.domainobject.util.ExceptionUtil;
-import org.domainobject.util.debug.BeanPrinter;
 
 public class Mocker {
 
@@ -70,8 +67,8 @@ public class Mocker {
 					ParameterizedType listType = (ParameterizedType) f.getGenericType();
 					Class<?> listElementClass = (Class<?>) listType.getActualTypeArguments()[0];
 					if (relations.contains(listElementClass) && listElementClass != ancestor) {
-						int maxSize = maxListSizes.containsKey(listElementClass) ? maxListSizes.get(listElementClass) : 8;
-						int listSize = 2 + random.nextInt(maxSize - 2);
+						//int maxSize = maxListSizes.containsKey(listElementClass) ? maxListSizes.get(listElementClass) : 5;
+						int listSize = 2 + random.nextInt(3);
 						@SuppressWarnings("rawtypes")
 						List list = new ArrayList(listSize);
 						for (int j = 0; j < listSize; ++j) {

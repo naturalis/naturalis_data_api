@@ -5,8 +5,11 @@ import java.util.List;
 
 public class SearchResult<T> {
 
-	private T result;
+	private float score;
+	private String actualType;
 	private List<Link> links;
+	private List<MatchInfo<?>> matchInfo;
+	private T result;
 
 
 	public SearchResult(T result)
@@ -30,6 +33,51 @@ public class SearchResult<T> {
 			links = new ArrayList<Link>();
 		}
 		links.add(link);
+	}
+
+
+	public void addMatchInfo(MatchInfo<?> matchInfo)
+	{
+		if (this.matchInfo == null) {
+			this.matchInfo = new ArrayList<MatchInfo<?>>();
+		}
+		this.matchInfo.add(matchInfo);
+	}
+
+
+	public float getScore()
+	{
+		return score;
+	}
+
+
+	public void setScore(float score)
+	{
+		this.score = score;
+	}
+
+
+	public String getActualType()
+	{
+		return actualType;
+	}
+
+
+	public void setActualType(String actualType)
+	{
+		this.actualType = actualType;
+	}
+
+
+	public List<MatchInfo<?>> getMatchInfo()
+	{
+		return matchInfo;
+	}
+
+
+	public void setMatchInfo(List<MatchInfo<?>> matchInfo)
+	{
+		this.matchInfo = matchInfo;
 	}
 
 

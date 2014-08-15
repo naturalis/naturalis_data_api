@@ -3,30 +3,11 @@ package nl.naturalis.nda.search;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchResultSet<T> {
+public class ResultGroupSet<T, U> {
 
 	private long totalSize;
 	private List<Link> links;
-	private List<SearchResult<T>> searchResults;
-	
-
-
-	public void addSearchResult(SearchResult<T> result)
-	{
-		if (searchResults == null) {
-			searchResults = new ArrayList<SearchResult<T>>();
-		}
-		searchResults.add(result);
-	}
-
-
-	public void addSearchResult(T result)
-	{
-		if (searchResults == null) {
-			searchResults = new ArrayList<SearchResult<T>>();
-		}
-		searchResults.add(new SearchResult<T>(result));
-	}
+	private List<ResultGroup<T, U>> resultGroups;
 
 
 	public void addLink(String rel, String href)
@@ -44,6 +25,15 @@ public class SearchResultSet<T> {
 			links = new ArrayList<Link>();
 		}
 		links.add(link);
+	}
+
+
+	public void addGroup(ResultGroup<T, U> group)
+	{
+		if (resultGroups == null) {
+			resultGroups = new ArrayList<ResultGroup<T, U>>();
+		}
+		resultGroups.add(group);
 	}
 
 
@@ -71,15 +61,15 @@ public class SearchResultSet<T> {
 	}
 
 
-	public List<SearchResult<T>> getSearchResults()
+	public List<ResultGroup<T, U>> getResultGroups()
 	{
-		return searchResults;
+		return resultGroups;
 	}
 
 
-	public void setSearchResults(List<SearchResult<T>> searchResults)
+	public void setResultGroups(List<ResultGroup<T, U>> resultGroups)
 	{
-		this.searchResults = searchResults;
+		this.resultGroups = resultGroups;
 	}
 
 }

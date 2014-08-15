@@ -7,6 +7,7 @@ public class Identification {
 	private boolean preferred;
 	private String identifiedBy;
 	private Date dateIdentified;
+	private String verificationStatus;
 	private String typeStatus;
 	private String qualifier1;
 	private String qualifier2;
@@ -14,8 +15,8 @@ public class Identification {
 	private String remarks;
 	private String references;
 
-	private Taxon taxon;
-	private Occurrence occurrence;
+	private ScientificName scientificName;
+	private DefaultClassification defaultClassification;
 
 
 	public boolean isPreferred()
@@ -51,6 +52,18 @@ public class Identification {
 	public void setDateIdentified(Date dateIdentified)
 	{
 		this.dateIdentified = dateIdentified;
+	}
+
+
+	public String getVerificationStatus()
+	{
+		return verificationStatus;
+	}
+
+
+	public void setVerificationStatus(String verificationStatus)
+	{
+		this.verificationStatus = verificationStatus;
 	}
 
 
@@ -126,27 +139,27 @@ public class Identification {
 	}
 
 
-	public Taxon getTaxon()
+	public ScientificName getScientificName()
 	{
-		return taxon;
+		return scientificName;
 	}
 
 
-	public void setTaxon(Taxon taxon)
+	public void setScientificName(ScientificName scientificName)
 	{
-		this.taxon = taxon;
+		this.scientificName = scientificName;
 	}
 
 
-	public Occurrence getOccurrence()
+	public DefaultClassification getDefaultClassification()
 	{
-		return occurrence;
+		return defaultClassification;
 	}
 
 
-	public void setOccurrence(Occurrence occurrence)
+	public void setDefaultClassification(DefaultClassification defaultClassification)
 	{
-		this.occurrence = occurrence;
+		this.defaultClassification = defaultClassification;
 	}
 
 }

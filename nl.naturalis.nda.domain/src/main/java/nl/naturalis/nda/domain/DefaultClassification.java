@@ -1,5 +1,10 @@
 package nl.naturalis.nda.domain;
 
+/**
+ * A {@code DefaultClassification} classifies a specimen or species according to
+ * the ranks explicitly listed as a term the Darwin Core specification (see
+ * http://rs.tdwg.org/dwc/terms/#taxonindex).
+ */
 public class DefaultClassification {
 
 	private String kingdom;

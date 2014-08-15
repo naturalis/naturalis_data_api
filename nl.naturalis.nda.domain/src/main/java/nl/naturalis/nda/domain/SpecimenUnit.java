@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Occurrence {
+public class SpecimenUnit extends NdaTraceableObject {
 
 	private String unitID;
 	private String recordBasis;
@@ -35,7 +35,8 @@ public class Occurrence {
 	private String geodeticDatum;
 	private String url;
 
-	List<Identification> identifications;
+	private List<Identification> identifications;
+	private List<Specimen> specimens;
 
 
 	public void addIndentification(Identification identification)
@@ -44,6 +45,15 @@ public class Occurrence {
 			identifications = new ArrayList<Identification>();
 		}
 		identifications.add(identification);
+	}
+
+
+	public void addSpecimen(Specimen specimen)
+	{
+		if (specimens == null) {
+			specimens = new ArrayList<Specimen>();
+		}
+		specimens.add(specimen);
 	}
 
 
@@ -392,6 +402,18 @@ public class Occurrence {
 	public void setIdentifications(List<Identification> identifications)
 	{
 		this.identifications = identifications;
+	}
+
+
+	public List<Specimen> getSpecimens()
+	{
+		return specimens;
+	}
+
+
+	public void setSpecimens(List<Specimen> specimens)
+	{
+		this.specimens = specimens;
 	}
 
 }

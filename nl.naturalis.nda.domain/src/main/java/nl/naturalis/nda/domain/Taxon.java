@@ -2,9 +2,9 @@ package nl.naturalis.nda.domain;
 
 import java.util.List;
 
-public class Taxon {
+public class Taxon extends NdaTraceableObject {
 
-	private ScientificName scientificName;
+	private ScientificName acceptedName;
 	private String taxonRank;
 
 	private DefaultClassification defaultClassification;
@@ -13,17 +13,18 @@ public class Taxon {
 	private List<Synonym> synonyms;
 	private List<CommonName> commonNames;
 	private List<TaxonDescription> descriptions;
+	private List<SpecimenUnit> specimenUnits;
 
 
-	public ScientificName getScientificName()
+	public ScientificName getAcceptedName()
 	{
-		return scientificName;
+		return acceptedName;
 	}
 
 
-	public void setScientificName(ScientificName scientificName)
+	public void setAcceptedName(ScientificName scientificName)
 	{
-		this.scientificName = scientificName;
+		this.acceptedName = scientificName;
 	}
 
 
@@ -96,6 +97,18 @@ public class Taxon {
 	public void setDescriptions(List<TaxonDescription> descriptions)
 	{
 		this.descriptions = descriptions;
+	}
+
+
+	public List<SpecimenUnit> getOccurrences()
+	{
+		return specimenUnits;
+	}
+
+
+	public void setOccurrences(List<SpecimenUnit> specimenUnits)
+	{
+		this.specimenUnits = specimenUnits;
 	}
 
 }

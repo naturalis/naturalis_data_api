@@ -3,7 +3,7 @@ package nl.naturalis.nda.elasticsearch.dao.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.Identification;
+import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.SpecimenUnit;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsDetermination;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsSpecimen;
@@ -41,17 +41,17 @@ public class SpecimenTransfer {
 		specimenUnit.setUnitID(crsSpecimen.getUnitID());
 		specimenUnit.setUrl(crsSpecimen.getUrl());
 		specimenUnit.setWorldRegion(crsSpecimen.getWorldRegion());
-		List<Identification> identifications = new ArrayList<Identification>(crsSpecimen.getNumDeterminations());
-		specimenUnit.setIdentifications(identifications);
+		List<SpecimenIdentification> specimenIdentifications = new ArrayList<SpecimenIdentification>(crsSpecimen.getNumDeterminations());
+		specimenUnit.setIdentifications(specimenIdentifications);
 		if (crsSpecimen.getNumDeterminations() > 0) {
-			identifications.add(transfer(crsSpecimen.getDetermination0()));
+			specimenIdentifications.add(transfer(crsSpecimen.getDetermination0()));
 			if (crsSpecimen.getNumDeterminations() > 1) {
-				identifications.add(transfer(crsSpecimen.getDetermination1()));
+				specimenIdentifications.add(transfer(crsSpecimen.getDetermination1()));
 				if (crsSpecimen.getNumDeterminations() > 2) {
-					identifications.add(transfer(crsSpecimen.getDetermination2()));
+					specimenIdentifications.add(transfer(crsSpecimen.getDetermination2()));
 					if (extraDeterminations != null) {
 						for (ESCrsDetermination d : extraDeterminations) {
-							identifications.add(transfer(d));
+							specimenIdentifications.add(transfer(d));
 						}
 					}
 				}
@@ -61,9 +61,9 @@ public class SpecimenTransfer {
 	}
 
 
-	public static Identification transfer(ESCrsDetermination crsDetermination)
+	public static SpecimenIdentification transfer(ESCrsDetermination crsDetermination)
 	{
-		final Identification identification = new Identification();
+		final SpecimenIdentification specimenIdentification = new SpecimenIdentification();
 		
 //		identification.setAuthorTeamOriginalAndYear(crsDetermination.getAuthorTeamOriginalAndYear());
 //		identification.setGenusOrMonomial(crsDetermination.getGenusOrMonomial());
@@ -79,6 +79,6 @@ public class SpecimenTransfer {
 //		identification.setSpeciesEpithet(crsDetermination.getSpeciesEpithet());
 //		identification.setSubgenus(crsDetermination.getSubgenus());
 //		identification.setTypeStatus(crsDetermination.getTypeStatus());
-		return identification;
+		return specimenIdentification;
 	}
 }

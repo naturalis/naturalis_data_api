@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import nl.naturalis.nda.domain.Specimen;
+
 import org.domainobject.util.ClassUtil;
 import org.domainobject.util.ExceptionUtil;
 
@@ -66,15 +68,19 @@ public class Mocker {
 				else if (ClassUtil.isA(f.getType(), List.class)) {
 					ParameterizedType listType = (ParameterizedType) f.getGenericType();
 					Class<?> listElementClass = (Class<?>) listType.getActualTypeArguments()[0];
-					if (relations.contains(listElementClass) && listElementClass != ancestor) {
-						//int maxSize = maxListSizes.containsKey(listElementClass) ? maxListSizes.get(listElementClass) : 5;
-						int listSize = 2 + random.nextInt(3);
-						@SuppressWarnings("rawtypes")
-						List list = new ArrayList(listSize);
-						for (int j = 0; j < listSize; ++j) {
-							list.add(createMock(listElementClass, cls, relations));
+					// A Class containing a List whose elements are of that same class
+					// will cause infinite recursion
+					if (!listElementClass.equals(cls)) {
+						if (relations.contains(listElementClass) && listElementClass != ancestor) {
+							//int maxSize = maxListSizes.containsKey(listElementClass) ? maxListSizes.get(listElementClass) : 5;
+							int listSize = 2 + random.nextInt(3);
+							@SuppressWarnings("rawtypes")
+							List list = new ArrayList(listSize);
+							for (int j = 0; j < listSize; ++j) {
+								list.add(createMock(listElementClass, cls, relations));
+							}
+							f.set(mock, list);
 						}
-						f.set(mock, list);
 					}
 				}
 				else if (relations.contains(f.getType()) && f.getType() != ancestor) {
@@ -90,18 +96,21 @@ public class Mocker {
 	}
 
 
-	private <T> List<Field> getFields(Class<T> cls)
+	private List<Field> getFields(Class<?> cls)
 	{
 		List<Field> list = fieldCache.get(cls);
 		if (list == null) {
-			Field[] fields = cls.getDeclaredFields();
-			list = new ArrayList<Field>(fields.length);
-			for (Field f : fields) {
-				//int i = f.getModifiers();
-				if (!f.isAccessible()) {
-					f.setAccessible(true);
+			list = new ArrayList<Field>();
+			while (!cls.equals(Object.class)) {
+				Field[] fields = cls.getDeclaredFields();
+				for (Field f : fields) {
+					//int i = f.getModifiers();
+					if (!f.isAccessible()) {
+						f.setAccessible(true);
+					}
+					list.add(f);
 				}
-				list.add(f);
+				cls = cls.getSuperclass();
 			}
 		}
 		return list;

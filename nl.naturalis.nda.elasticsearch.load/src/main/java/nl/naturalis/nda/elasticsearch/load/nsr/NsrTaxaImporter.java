@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.nsr;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +16,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESNsrTaxon;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
-import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -86,15 +83,15 @@ public class NsrTaxaImporter {
 
 		List<ESNsrTaxon> taxa = new ArrayList<ESNsrTaxon>(batchSize);
 		List<String> ids = new ArrayList<String>(batchSize);
-		
-		BeanPrinter bp = new BeanPrinter("C:/test/taxa.tst");
+
+		//BeanPrinter bp = new BeanPrinter("C:/test/taxa.tst");
 
 		for (Element taxonElement : taxonElements) {
 			if (++processed % 1000 == 0) {
 				logger.info("Records processed: " + processed);
 			}
 			taxon = NsrTaxonTransfer.transfer(taxonElement);
-			bp.dump(taxon);
+			// bp.dump(taxon);
 			taxa.add(taxon);
 			ids.add(taxon.getNsrId());
 			if (taxa.size() == batchSize) {

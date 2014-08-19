@@ -41,7 +41,7 @@ class NsrTaxonTransfer {
 		taxon.setSynonyms(synonyms);
 		for (NsrScientificName sn : getScientificNames(taxonElement)) {
 			// BeanPrinter.out(sn);
-			if (sn.getStatus().equals(ScientificName.Status.ACCEPTED_NAME.toString())) {
+			if (sn.getStatus().equals(ScientificName.TaxonomicStatus.ACCEPTED_NAME.toString())) {
 				taxon.setScientificName(sn);
 			}
 			else {
@@ -234,13 +234,13 @@ class NsrTaxonTransfer {
 	private static final HashMap<String, String> translations = new HashMap<String, String>();
 
 	static {
-		translations.put("isValidNameOf", ScientificName.Status.ACCEPTED_NAME.toString());
-		translations.put("isSynonymOf", ScientificName.Status.SYNONYM.toString());
-		translations.put("isSynonymSLOf", ScientificName.Status.SYNONYM.toString());
-		translations.put("isBasionymOf", ScientificName.Status.BASIONYM.toString());
-		translations.put("isHomonymOf", ScientificName.Status.HOMONYM.toString());
-		translations.put("isMisspelledNameOf", ScientificName.Status.MISSPELLED_NAME.toString());
-		translations.put("isInvalidNameOf", ScientificName.Status.MISAPPLIED_NAME.toString());
+		translations.put("isValidNameOf", ScientificName.TaxonomicStatus.ACCEPTED_NAME.toString());
+		translations.put("isSynonymOf", ScientificName.TaxonomicStatus.SYNONYM.toString());
+		translations.put("isSynonymSLOf", ScientificName.TaxonomicStatus.SYNONYM.toString());
+		translations.put("isBasionymOf", ScientificName.TaxonomicStatus.BASIONYM.toString());
+		translations.put("isHomonymOf", ScientificName.TaxonomicStatus.HOMONYM.toString());
+		translations.put("isMisspelledNameOf", ScientificName.TaxonomicStatus.MISSPELLED_NAME.toString());
+		translations.put("isInvalidNameOf", ScientificName.TaxonomicStatus.MISAPPLIED_NAME.toString());
 	}
 
 

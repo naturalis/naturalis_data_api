@@ -1,6 +1,6 @@
 package nl.naturalis.nda.domain;
 
-public class CommonName {
+public class VernacularName {
 
 	private String name;
 	private String language;

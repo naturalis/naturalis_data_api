@@ -35,16 +35,16 @@ public class SpecimenUnit extends NdaTraceableObject {
 	private String geodeticDatum;
 	private String url;
 
-	private List<Identification> identifications;
+	private List<SpecimenIdentification> specimenIdentifications;
 	private List<Specimen> specimens;
 
 
-	public void addIndentification(Identification identification)
+	public void addIndentification(SpecimenIdentification specimenIdentification)
 	{
-		if (identifications == null) {
-			identifications = new ArrayList<Identification>();
+		if (specimenIdentifications == null) {
+			specimenIdentifications = new ArrayList<SpecimenIdentification>();
 		}
-		identifications.add(identification);
+		specimenIdentifications.add(specimenIdentification);
 	}
 
 
@@ -393,15 +393,15 @@ public class SpecimenUnit extends NdaTraceableObject {
 	}
 
 
-	public List<Identification> getIdentifications()
+	public List<SpecimenIdentification> getIdentifications()
 	{
-		return identifications;
+		return specimenIdentifications;
 	}
 
 
-	public void setIdentifications(List<Identification> identifications)
+	public void setIdentifications(List<SpecimenIdentification> specimenIdentifications)
 	{
-		this.identifications = identifications;
+		this.specimenIdentifications = specimenIdentifications;
 	}
 
 

@@ -7,12 +7,13 @@ import java.util.List;
 public class Specimen extends NdaTraceableObject {
 
 	private String unitID;
+	private String setID;
+	private String sourceInstitutionID;
+	private String unitGUID;
 	private String recordBasis;
 	private String kindOfUnit;
-	private String sourceInstitutionID;
 	private String collectionType;
 	private String sex;
-	private String unitGUID;
 	private String phaseOrStage;
 	private String accessionSpecimenNumbers;
 	private int altitude;
@@ -35,17 +36,25 @@ public class Specimen extends NdaTraceableObject {
 	private String geodeticDatum;
 	private String url;
 
-	private SpecimenUnit specimenUnit;
+	private List<SpecimenIdentification> identifications;
+	private List<Specimen> otherSpecimensInSet;
 
-	List<Identification> identifications;
 
-
-	public void addIndentification(Identification identification)
+	public void addIndentification(SpecimenIdentification identification)
 	{
 		if (identifications == null) {
-			identifications = new ArrayList<Identification>();
+			identifications = new ArrayList<SpecimenIdentification>();
 		}
 		identifications.add(identification);
+	}
+
+
+	public void addOtherSpecimenToSet(Specimen specimen)
+	{
+		if (otherSpecimensInSet == null) {
+			otherSpecimensInSet = new ArrayList<Specimen>();
+		}
+		otherSpecimensInSet.add(specimen);
 	}
 
 
@@ -58,6 +67,42 @@ public class Specimen extends NdaTraceableObject {
 	public void setUnitID(String unitID)
 	{
 		this.unitID = unitID;
+	}
+
+
+	public String getSetID()
+	{
+		return setID;
+	}
+
+
+	public void setSetID(String setID)
+	{
+		this.setID = setID;
+	}
+
+
+	public String getSourceInstitutionID()
+	{
+		return sourceInstitutionID;
+	}
+
+
+	public void setSourceInstitutionID(String sourceInstitutionID)
+	{
+		this.sourceInstitutionID = sourceInstitutionID;
+	}
+
+
+	public String getUnitGUID()
+	{
+		return unitGUID;
+	}
+
+
+	public void setUnitGUID(String unitGUID)
+	{
+		this.unitGUID = unitGUID;
 	}
 
 
@@ -85,18 +130,6 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public String getSourceInstitutionID()
-	{
-		return sourceInstitutionID;
-	}
-
-
-	public void setSourceInstitutionID(String sourceInstitutionID)
-	{
-		this.sourceInstitutionID = sourceInstitutionID;
-	}
-
-
 	public String getCollectionType()
 	{
 		return collectionType;
@@ -118,18 +151,6 @@ public class Specimen extends NdaTraceableObject {
 	public void setSex(String sex)
 	{
 		this.sex = sex;
-	}
-
-
-	public String getUnitGUID()
-	{
-		return unitGUID;
-	}
-
-
-	public void setUnitGUID(String unitGUID)
-	{
-		this.unitGUID = unitGUID;
 	}
 
 
@@ -385,27 +406,27 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public SpecimenUnit getSpecimenUnit()
-	{
-		return specimenUnit;
-	}
-
-
-	public void setSpecimenUnit(SpecimenUnit specimenUnit)
-	{
-		this.specimenUnit = specimenUnit;
-	}
-
-
-	public List<Identification> getIdentifications()
+	public List<SpecimenIdentification> getIdentifications()
 	{
 		return identifications;
 	}
 
 
-	public void setIdentifications(List<Identification> identifications)
+	public void setIdentifications(List<SpecimenIdentification> identifications)
 	{
 		this.identifications = identifications;
+	}
+
+
+	public List<Specimen> getOtherSpecimensInSet()
+	{
+		return otherSpecimensInSet;
+	}
+
+
+	public void setOtherSpecimensInSet(List<Specimen> otherSpecimensInSet)
+	{
+		this.otherSpecimensInSet = otherSpecimensInSet;
 	}
 
 }

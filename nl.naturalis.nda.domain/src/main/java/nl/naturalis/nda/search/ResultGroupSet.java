@@ -7,6 +7,7 @@ public class ResultGroupSet<T, U> {
 
 	private long totalSize;
 	private List<Link> links;
+	private List<String> searchTerms;
 	private List<ResultGroup<T, U>> resultGroups;
 
 
@@ -58,6 +59,18 @@ public class ResultGroupSet<T, U> {
 	public void setLinks(List<Link> links)
 	{
 		this.links = links;
+	}
+
+
+	public List<String> getSearchTerms()
+	{
+		return searchTerms;
+	}
+
+
+	public void setSearchTerms(List<String> searchTerms)
+	{
+		this.searchTerms = searchTerms;
 	}
 
 

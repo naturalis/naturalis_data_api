@@ -11,7 +11,7 @@ public class Taxon extends NdaTraceableObject {
 	private List<Monomial> systemClassification;
 
 	private List<Synonym> synonyms;
-	private List<CommonName> commonNames;
+	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
 	private List<SpecimenUnit> specimenUnits;
 
@@ -110,15 +110,15 @@ public class Taxon extends NdaTraceableObject {
 	}
 
 
-	public List<CommonName> getCommonNames()
+	public List<VernacularName> getCommonNames()
 	{
-		return commonNames;
+		return vernacularNames;
 	}
 
 
-	public void setCommonNames(List<CommonName> commonNames)
+	public void setCommonNames(List<VernacularName> vernacularNames)
 	{
-		this.commonNames = commonNames;
+		this.vernacularNames = vernacularNames;
 	}
 
 

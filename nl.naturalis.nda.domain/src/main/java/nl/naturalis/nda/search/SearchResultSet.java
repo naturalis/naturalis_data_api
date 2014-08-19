@@ -7,8 +7,8 @@ public class SearchResultSet<T> {
 
 	private long totalSize;
 	private List<Link> links;
+	private List<String> searchTerms;
 	private List<SearchResult<T>> searchResults;
-	
 
 
 	public void addSearchResult(SearchResult<T> result)
@@ -68,6 +68,18 @@ public class SearchResultSet<T> {
 	public void setLinks(List<Link> links)
 	{
 		this.links = links;
+	}
+
+
+	public List<String> getSearchTerms()
+	{
+		return searchTerms;
+	}
+
+
+	public void setSearchTerms(List<String> searchTerms)
+	{
+		this.searchTerms = searchTerms;
 	}
 
 

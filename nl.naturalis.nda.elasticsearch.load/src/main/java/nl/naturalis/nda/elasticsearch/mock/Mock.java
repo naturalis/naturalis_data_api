@@ -6,18 +6,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Expert;
-import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenUnit;
+import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.Reference;
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.ServiceAccessPoint;
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.SpecimenMultiMediaObject;
+import nl.naturalis.nda.domain.SpecimenUnit;
 import nl.naturalis.nda.domain.Synonym;
 import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.domain.TaxonMultiMediaObject;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.MatchInfo;
 import nl.naturalis.nda.search.ResultGroup;
@@ -27,7 +31,6 @@ import nl.naturalis.nda.search.SearchResultSet;
 import nl.naturalis.nda.search.StringMatchInfo;
 
 import org.domainobject.util.FileUtil;
-import org.domainobject.util.debug.BeanPrinter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,9 +44,10 @@ public class Mock {
 		//		mock.occurrenceWithIdentificationsWithTaxa();
 		//		mock.occurrenceTheFullMonty();
 		//		mock.taxaWithscientificNameAndClassification();
-		//		mock.taxaTheFullMonty();
+		//mock.taxaTheFullMonty();
 		//mock.groupTaxaByName();
-		mock.groupSpecimenBySpecificName();
+		//mock.groupSpecimenBySpecificName();
+		mock.getMediaObjects();
 		System.out.println("Done");
 	}
 
@@ -53,8 +57,15 @@ public class Mock {
 		om.setDateFormat(new SimpleDateFormat("YYYY-MM-dd"));
 	}
 
-	private final Mocker mocker = new Mocker();
+	private final Mocker mocker;
 	private final Random random = new Random();
+
+
+	public Mock()
+	{
+		mocker = new Mocker();
+		mocker.setMaxListSize(SpecimenIdentification.class, 2);
+	}
 
 
 	public void occurrenceWithIdentifications() throws JsonProcessingException
@@ -327,6 +338,7 @@ public class Mock {
 		ResultGroupSet<Taxon, String> rs = new ResultGroupSet<Taxon, String>();
 		rs.setTotalSize(988);
 		rs.addLink("self", "http://nda.naturalis.nl/taxon/name-search/?term=Malus");
+		rs.setSearchTerms(Arrays.asList("Malus"));
 
 		// GROUP 1: Malus domestica Borkh. (accepted name)
 
@@ -349,8 +361,8 @@ public class Mock {
 		result.addMatchInfo(matchInfo);
 		result.addLink("taxon.detail", "http://nda.naturalis.nl/taxon/?sourceSystem=COL&id=87985138");
 
-		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class, Reference.class,
-				Expert.class, Monomial.class);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
+				Reference.class, Expert.class, Monomial.class);
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.getAcceptedName().setFullScientificName("Malus domestica Borkh.");
 		result = new SearchResult<Taxon>(taxon);
@@ -370,7 +382,8 @@ public class Mock {
 		resultGroup.setSharedValue("Malus sylvestris");
 		resultGroup.addLink("taxon.detail", "http://nda.naturalis.nl/taxon/?acceptedName=Malus+sylvestris");
 
-		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class, Reference.class);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
+				Reference.class);
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.getAcceptedName().setFullScientificName("Malus sylvestris");
 		result = new SearchResult<Taxon>(taxon);
@@ -403,7 +416,8 @@ public class Mock {
 		resultGroup.setSharedValue("Afrikaans Malusaapje");
 		resultGroup.addLink("taxon.detail", "http://nda.naturalis.nl/taxon/?acceptedName=Malusmonkius+africanus");
 
-		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class, Reference.class);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
+				Reference.class);
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.getAcceptedName().setFullScientificName("Malusmonkius africanus L.");
 		taxon.getCommonNames().get(0).setName("Afrikaans Malusaapje");
@@ -424,7 +438,8 @@ public class Mock {
 		resultGroup.setSharedValue("Langstaart Maluskonijn");
 		resultGroup.addLink("taxon.detail", "http://nda.naturalis.nl/taxon/?acceptedName=Konijnus+langstaartis");
 
-		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class, Reference.class);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
+				Reference.class);
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.getAcceptedName().setFullScientificName("Konijnus langstaartis");
 		taxon.getCommonNames().get(0).setName("Langstaart Maluskonijn");
@@ -438,7 +453,8 @@ public class Mock {
 		result.addMatchInfo(matchInfo);
 		result.addLink("taxon.detail", "http://nda.naturalis.nl/taxon/?sourceSystem=COL&id=5933754");
 
-		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class, Reference.class);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
+				Reference.class);
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.getAcceptedName().setFullScientificName("Konijnus langstaartis");
 		taxon.getCommonNames().get(0).setName("Langstaart Maluskonijn");
@@ -459,7 +475,8 @@ public class Mock {
 		resultGroup.setSharedValue("Pyrus Malus L.");
 		resultGroup.addLink("taxon.detail", "http://nda.naturalis.nl/taxon/?acceptedName=Malus+Sylvestris");
 
-		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class, Reference.class);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
+				Reference.class);
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.getAcceptedName().setFullScientificName("Malus sylvestris");
 		taxon.getSynonyms().get(0).getScientificName().setFullScientificName("Pyrus Malus L.");
@@ -519,7 +536,12 @@ public class Mock {
 		related.setSourceSystem(SourceSystem.BRAHMS);
 		related.setSetID("0000000001");
 		specimen.addOtherSpecimenToSet(related);
-		
+
+		for (int i = 0; i < specimen.getOtherSpecimensInSet().size(); ++i) {
+			link = new Link("specimen-detail.otherSpecimensInSet." + i, "http://nda.naturalis.nl/specimen/" + random.nextInt(10000));
+			result.addLink(link);
+		}
+
 		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSetID("0000000002");
@@ -544,9 +566,13 @@ public class Mock {
 		related = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
 		related.setSourceSystem(SourceSystem.BRAHMS);
 		related.setSetID("0000000002");
-		specimen.addOtherSpecimenToSet(related);		
-		
-	
+		specimen.addOtherSpecimenToSet(related);
+
+		for (int i = 0; i < specimen.getOtherSpecimensInSet().size(); ++i) {
+			link = new Link("specimen-detail.otherSpecimensInSet." + i, "http://nda.naturalis.nl/specimen/" + random.nextInt(10000));
+			result.addLink(link);
+		}
+
 		// GROUP 2: Malus silvestris
 
 		resultGroup = new ResultGroup<Specimen, String>();
@@ -557,12 +583,12 @@ public class Mock {
 		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSetID("0000000003");
-		specimen.getIdentifications().get(1).getScientificName().setFullScientificName("Malus silvestris");
+		specimen.getIdentifications().get(0).getScientificName().setFullScientificName("Malus silvestris");
 		result = new SearchResult<Specimen>(specimen);
 		resultGroup.addSearchResult(result);
 		matchInfo = new StringMatchInfo();
 		result.addMatchInfo(matchInfo);
-		matchInfo.setPath("identifications[1].scientificName.fullScientificName");
+		matchInfo.setPath("identifications[0].scientificName.fullScientificName");
 		matchInfo.setValue("Malus silvestris");
 		matchInfo.setValueHighlighted("<span>Malus</span> silvestris");
 		result.setScore(0.97F);
@@ -579,8 +605,11 @@ public class Mock {
 		related.setSetID("0000000003");
 		specimen.addOtherSpecimenToSet(related);
 
-		
-		
+		for (int i = 0; i < specimen.getOtherSpecimensInSet().size(); ++i) {
+			link = new Link("specimen-detail.otherSpecimensInSet." + i, "http://nda.naturalis.nl/specimen/" + random.nextInt(10000));
+			result.addLink(link);
+		}
+
 		// GROUP 3: Malus sapiens
 
 		resultGroup = new ResultGroup<Specimen, String>();
@@ -602,8 +631,7 @@ public class Mock {
 		result.setScore(0.97F);
 		link = new Link("specimen-detail", "http://nda.naturalis.nl/specimen/" + random.nextInt(10000));
 		result.addLink(link);
-		
-		
+
 		// GROUP 4: Malus bombasticus
 
 		resultGroup = new ResultGroup<Specimen, String>();
@@ -614,23 +642,104 @@ public class Mock {
 		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setSetID(null);
-		specimen.getIdentifications().get(1).getScientificName().setFullScientificName("Malus bombasticus");
+		specimen.getIdentifications().get(0).getScientificName().setFullScientificName("Malus bombasticus");
 		result = new SearchResult<Specimen>(specimen);
 		resultGroup.addSearchResult(result);
 		matchInfo = new StringMatchInfo();
 		result.addMatchInfo(matchInfo);
-		matchInfo.setPath("identifications[1].scientificName.fullScientificName");
+		matchInfo.setPath("identifications[0].scientificName.fullScientificName");
 		matchInfo.setValue("Malus bombasticus");
 		matchInfo.setValueHighlighted("<span>Malus</span> bombasticus");
 		result.setScore(0.97F);
 		link = new Link("specimen-detail", "http://nda.naturalis.nl/specimen/" + random.nextInt(10000));
-		result.addLink(link);		
-		
-		
+		result.addLink(link);
+
 		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
 		//System.out.println(json);
 		FileUtil.setContents("C:/test/nda/mock/groupSpecimenBySpecificName.json", json);
 
+	}
+
+
+	public void getMediaObjects() throws JsonProcessingException
+	{
+		SearchResultSet<MultiMediaObject> rs = new SearchResultSet<MultiMediaObject>();
+		rs.setTotalSize(988);
+		rs.addLink("self", "http://nda.naturalis.nl/multimedia/?term=Malus");
+		rs.setSearchTerms(Arrays.asList("Malus"));
+
+		TaxonMultiMediaObject tmmo = mocker.createMock(TaxonMultiMediaObject.class, ScientificName.class);
+		tmmo.setCaption("De leuke Malus Mill.");
+		tmmo.addServiceAccessPoint("http://medialib.naturalis.nl/NSR-1234578", "JPEG", ServiceAccessPoint.Variant.MEDIUM_QUALITY);
+		Taxon taxon = mocker.createMock(Taxon.class, ScientificName.class);
+		taxon.getAcceptedName().setFullScientificName("Malus Mill.");
+		taxon.setSourceSystem(SourceSystem.NSR);
+		tmmo.setTaxon(taxon);
+		SearchResult<MultiMediaObject> result = new SearchResult<MultiMediaObject>(tmmo);
+		rs.addSearchResult(result);
+		result.addLink("multimedia-detail", "http://nda.naturalis.nl/multimedia/" + random.nextInt(10000));
+		tmmo.getScientificNames().get(0).setFullScientificName("Malus Mill.");
+		StringMatchInfo matchInfo = new StringMatchInfo();
+		matchInfo.setPath("scientificNames[0].fullScientificName");
+		matchInfo.setValue("Malus Mill.");
+		matchInfo.setValueHighlighted("<span>Malus</span> Mill.");
+		result.addMatchInfo(matchInfo);
+
+		tmmo = mocker.createMock(TaxonMultiMediaObject.class, ScientificName.class);
+		tmmo.setCaption("Een appeltje voor de dorst :-)");
+		tmmo.addServiceAccessPoint("http://medialib.naturalis.nl/NSR-87398745", "JPEG", ServiceAccessPoint.Variant.THUMBNAIL);
+		taxon = mocker.createMock(Taxon.class, ScientificName.class);
+		taxon.getAcceptedName().setFullScientificName("Malus silvestris");
+		taxon.setSourceSystem(SourceSystem.NSR);
+		tmmo.setTaxon(taxon);
+		result = new SearchResult<MultiMediaObject>(tmmo);
+		rs.addSearchResult(result);
+		result.addLink("multimedia-detail", "http://nda.naturalis.nl/multimedia/" + random.nextInt(10000));
+		tmmo.getScientificNames().get(0).setFullScientificName("Malus silvestris");
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("scientificNames[0].fullScientificName");
+		matchInfo.setValue("Malus silvestris");
+		matchInfo.setValueHighlighted("<span>Malus</span> silvestris");
+		result.addMatchInfo(matchInfo);
+
+		SpecimenMultiMediaObject smmo = mocker.createMock(SpecimenMultiMediaObject.class, ScientificName.class);
+		smmo.setCaption("Malus bombasticus in al zijn glorie");
+		smmo.addServiceAccessPoint("http://medialib.naturalis.nl/ZMA.RMNH.453563217.l", "JPEG", ServiceAccessPoint.Variant.MEDIUM_QUALITY);
+		Specimen specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
+		specimen.getIdentifications().get(0).getScientificName().setFullScientificName("Malus bombasticus");
+		specimen.setSourceSystem(SourceSystem.CRS);
+		smmo.setSpecimen(specimen);
+		result = new SearchResult<MultiMediaObject>(smmo);
+		rs.addSearchResult(result);
+		result.addLink("multimedia-detail", "http://nda.naturalis.nl/multimedia/" + random.nextInt(10000));
+		smmo.getScientificNames().get(0).setFullScientificName("Malus bombasticus");
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("scientificNames[0].fullScientificName");
+		matchInfo.setValue("Malus Mill.");
+		matchInfo.setValueHighlighted("<span>Malus</span> bombasticus");
+		result.addMatchInfo(matchInfo);
+
+		smmo = mocker.createMock(SpecimenMultiMediaObject.class, ScientificName.class);
+		smmo.setCaption("Glaspreparaat van een Malus bombasticus");
+		smmo.addServiceAccessPoint("http://medialib.naturalis.nl/ZMA.RMNH.123456", "JPEG", ServiceAccessPoint.Variant.THUMBNAIL);
+		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
+		specimen.getIdentifications().get(0).getScientificName().setFullScientificName("Malus bombasticus");
+		specimen.setSourceSystem(SourceSystem.CRS);
+		smmo.setSpecimen(specimen);
+		result = new SearchResult<MultiMediaObject>(smmo);
+		rs.addSearchResult(result);
+		result.addLink("multimedia-detail", "http://nda.naturalis.nl/multimedia/" + random.nextInt(10000));
+		smmo.getScientificNames().get(0).setFullScientificName("Malus bombasticus");
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("scientificNames[0].fullScientificName");
+		matchInfo.setValue("Malus Mill.");
+		matchInfo.setValueHighlighted("<span>Malus</span> bombasticus");
+		result.addMatchInfo(matchInfo);
+
+
+		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
+		//System.out.println(json);
+		FileUtil.setContents("C:/test/nda/mock/getMediaObjects.json", json);
 	}
 
 }

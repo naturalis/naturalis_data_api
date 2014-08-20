@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import nl.naturalis.nda.domain.Specimen;
-
 import org.domainobject.util.ClassUtil;
 import org.domainobject.util.ExceptionUtil;
 
@@ -67,19 +65,49 @@ public class Mocker {
 				}
 				else if (ClassUtil.isA(f.getType(), List.class)) {
 					ParameterizedType listType = (ParameterizedType) f.getGenericType();
-					Class<?> listElementClass = (Class<?>) listType.getActualTypeArguments()[0];
-					// A Class containing a List whose elements are of that same class
-					// will cause infinite recursion
-					if (!listElementClass.equals(cls)) {
-						if (relations.contains(listElementClass) && listElementClass != ancestor) {
-							//int maxSize = maxListSizes.containsKey(listElementClass) ? maxListSizes.get(listElementClass) : 5;
-							int listSize = 2 + random.nextInt(3);
-							@SuppressWarnings("rawtypes")
-							List list = new ArrayList(listSize);
-							for (int j = 0; j < listSize; ++j) {
-								list.add(createMock(listElementClass, cls, relations));
+					if (!(listType.getActualTypeArguments()[0] instanceof ParameterizedType)) {
+						Class<?> listElementClass = (Class<?>) listType.getActualTypeArguments()[0];
+						// A Class containing a List whose elements are of that same class
+						// will cause infinite recursion
+						if (!listElementClass.equals(cls)) {
+							if (relations.contains(listElementClass)) {
+								int listSize = 0;
+								if (maxListSizes.containsKey(listElementClass)) {
+									int maxSize = maxListSizes.get(listElementClass);
+									switch (maxSize) {
+										case 0:
+											break;
+										case 1:
+											listSize = 1;
+											break;
+										// Special value: 0 or 1 element:
+										case -1:
+											listSize = ((random.nextInt() % 2 == 0) ? 1 : 0);
+											break;
+										default:
+											// positive values: list size at least 1
+											if (maxSize > 0) {
+												listSize = random.nextInt(maxSize + 1);
+												if (listSize == 0) {
+													listSize = 1;
+												}
+											}
+											// negative values: list size may be 0
+											else {
+												listSize = random.nextInt(-maxSize + 1);
+											}
+									}
+								}
+								else {
+									listSize = 2 + random.nextInt(3);
+								}
+								@SuppressWarnings("rawtypes")
+								List list = new ArrayList(listSize);
+								for (int j = 0; j < listSize; ++j) {
+									list.add(createMock(listElementClass, cls, relations));
+								}
+								f.set(mock, list);
 							}
-							f.set(mock, list);
 						}
 					}
 				}

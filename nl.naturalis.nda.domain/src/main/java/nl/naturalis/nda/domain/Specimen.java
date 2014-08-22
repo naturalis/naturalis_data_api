@@ -38,6 +38,7 @@ public class Specimen extends NdaTraceableObject {
 
 	private List<SpecimenIdentification> identifications;
 	private List<Specimen> otherSpecimensInSet;
+	private List<Taxon> associatedTaxa;
 
 
 	public void addIndentification(SpecimenIdentification identification)
@@ -427,6 +428,18 @@ public class Specimen extends NdaTraceableObject {
 	public void setOtherSpecimensInSet(List<Specimen> otherSpecimensInSet)
 	{
 		this.otherSpecimensInSet = otherSpecimensInSet;
+	}
+
+
+	public List<Taxon> getAssociatedTaxa()
+	{
+		return associatedTaxa;
+	}
+
+
+	public void setAssociatedTaxa(List<Taxon> associatedTaxa)
+	{
+		this.associatedTaxa = associatedTaxa;
 	}
 
 }

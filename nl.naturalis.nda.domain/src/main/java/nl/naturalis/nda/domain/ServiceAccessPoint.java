@@ -14,6 +14,19 @@ public class ServiceAccessPoint {
 	private Variant variant;
 
 
+	public ServiceAccessPoint()
+	{
+	}
+
+
+	public ServiceAccessPoint(String uri, String format, Variant variant)
+	{
+		this.accessUri = URI.create(uri);
+		this.format = format;
+		this.variant = variant;
+	}
+
+
 	public URI getAccessUri()
 	{
 		return accessUri;

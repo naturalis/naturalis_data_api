@@ -12,6 +12,11 @@ public class SearchResult<T> {
 	private T result;
 
 
+	public SearchResult()
+	{
+	}
+
+
 	public SearchResult(T result)
 	{
 		this.result = result;

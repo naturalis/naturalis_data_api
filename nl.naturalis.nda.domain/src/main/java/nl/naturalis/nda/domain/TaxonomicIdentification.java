@@ -5,18 +5,11 @@ import java.util.List;
 
 public abstract class TaxonomicIdentification {
 
-	public static enum Sex
-	{
-		MALE, FEMALE
-	}
-
 	private ScientificName scientificName;
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
 	private List<VernacularName> vernacularNames;
 	private List<String> identificationQualifiers;
-	private Sex sex;
-	private String lifeStage;
 	private String identifiedBy;
 	private Date dateIdentified;
 
@@ -78,30 +71,6 @@ public abstract class TaxonomicIdentification {
 	public void setIdentificationQualifiers(List<String> identificationQualifiers)
 	{
 		this.identificationQualifiers = identificationQualifiers;
-	}
-
-
-	public Sex getSex()
-	{
-		return sex;
-	}
-
-
-	public void setSex(Sex sex)
-	{
-		this.sex = sex;
-	}
-
-
-	public String getLifeStage()
-	{
-		return lifeStage;
-	}
-
-
-	public void setLifeStage(String lifeStage)
-	{
-		this.lifeStage = lifeStage;
 	}
 
 

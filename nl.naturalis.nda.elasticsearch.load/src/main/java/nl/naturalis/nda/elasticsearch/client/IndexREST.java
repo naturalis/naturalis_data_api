@@ -339,4 +339,12 @@ public class IndexREST implements Index {
 		
 	}
 
+
+	@Override
+	public <T> T get(String type, String id, Class<T> targetClass)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

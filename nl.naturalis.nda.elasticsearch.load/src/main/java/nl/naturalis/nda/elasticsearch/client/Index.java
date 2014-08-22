@@ -84,6 +84,18 @@ public interface Index {
 
 
 	/**
+	 * Load the document of the specified type and id and convert it to an
+	 * object of the specified class.
+	 * 
+	 * @param type
+	 * @param id
+	 * @param targetClass
+	 * @return
+	 */
+	<T> T get(String type, String id, Class<T> targetClass);
+
+
+	/**
 	 * Add a new document of the specified type to the index.
 	 * 
 	 * @param type The type of the document

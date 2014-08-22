@@ -1,0 +1,191 @@
+{
+	"Taxon" : {
+	
+		"dynamic" : "strict",
+	
+		"properties" : {
+			"sourceSystem" : {
+				"properties" : {
+					"code" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"sourceSystemId" : { "type" : "string" },
+			"sourceSystemParentId" : { "type" : "string" },
+			"taxonRank" : { "type" : "string" },
+			"defaultClassification" : {
+				"properties" : {
+					"kingdom" : { "type" : "string" },
+					"phylum" : { "type" : "string" },
+					"className" : { "type" : "string" },
+					"order" : { "type" : "string" },
+					"superFamily" : { "type" : "string" },
+					"family" : { "type" : "string" },
+					"genus" : { "type" : "string" },
+					"subgenus" : { "type" : "string" },
+					"specificEpithet" : { "type" : "string" },
+					"infraspecificEpithet" : { "type" : "string" },
+					"infraspecificRank" : { "type" : "string" }
+				}
+			},
+			"numMonomials" : { "type" : "integer" },
+			"monomial00" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial01" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial02" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial03" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial04" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial05" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial06" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial07" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial08" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial09" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial10" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"monomial11" : {
+				"properties" : {
+					"rank" : { "type" : "string" },
+					"name" : { "type" : "string" }
+				}
+			},
+			"acceptedName" : {
+				"properties" : {
+					"fullScientificName" : { "type" : "string" },
+					"taxonomicStatus" : { "type" : "string" },
+					"genusOrMonomial" : { "type" : "string" },
+					"subgenus" : { "type" : "string" },
+					"specificEpithet" : { "type" : "string" },
+					"infraspecificEpithet" : { "type" : "string" },
+					"nameAddendum" : { "type" : "string" },
+					"authorshipVerbatim" : { "type" : "string" },
+					"author" : { "type" : "string" },
+					"year" : { "type" : "string" }
+				}
+			},
+			"synonyms" : { "type" : "string" },
+			"commonNames" : { "type" : "string" },
+			"status" : {
+				"properties" : {
+					"status" : { "type" : "string" },
+					"referenceTitle" : { "type" : "string" },
+					"referenceAuthor" : { "type" : "string" },
+					"referenceDate" : { "type" : "string" }
+				}
+			},
+			"numDescriptions" : { "type" : "integer" },
+			"description00" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description01" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description02" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description03" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description04" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description05" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description06" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description07" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description08" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			},
+			"description09" : {
+				"properties" : {
+					"category" : { "type" : "string" },
+					"description" : { "type" : "string" }
+				}
+			}
+		}
+	}
+}

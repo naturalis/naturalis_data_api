@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
@@ -21,6 +22,9 @@ import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetRequestBuilder;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
@@ -30,7 +34,9 @@ import org.elasticsearch.indices.TypeMissingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -267,6 +273,25 @@ public class IndexNative implements Index {
 	}
 
 
+	public <T> T get(String type, String id, Class<T> targetClass)
+	{
+		GetRequestBuilder grb = esClient.prepareGet();
+		grb.setIndex(indexName);
+		grb.setType(type);
+		grb.setId(id);
+		GetResponse response = grb.execute().actionGet();
+		if(response.isExists()) {
+			try {
+				return objectMapper.readValue(response.getSourceAsString(), targetClass);
+			}
+			catch (Exception e) {
+				throw new IndexException(e);
+			}
+		}
+		return null;
+	}
+
+
 	@Override
 	public void saveDocument(String type, String json, String id)
 	{
@@ -375,7 +400,11 @@ public class IndexNative implements Index {
 			}
 			brb.add(irb);
 		}
-		brb.execute().actionGet();
+		BulkResponse response = brb.execute().actionGet();
+		if(response.hasFailures()) {
+			String message = response.buildFailureMessage();
+			throw new RuntimeException(message);
+		}
 	}
 
 

@@ -20,8 +20,10 @@ import nl.naturalis.nda.domain.SpecimenMultiMediaObject;
 import nl.naturalis.nda.domain.SpecimenUnit;
 import nl.naturalis.nda.domain.Synonym;
 import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.TaxonMultiMediaObject;
 import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.elasticsearch.load.col.CommonNamesImporter;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.MatchInfo;
 import nl.naturalis.nda.search.ResultGroup;
@@ -47,7 +49,12 @@ public class Mock {
 		//mock.taxaTheFullMonty();
 		//mock.groupTaxaByName();
 		//mock.groupSpecimenBySpecificName();
-		mock.getMediaObjects();
+		//mock.getMediaObjects();
+		//mock.getSpecimensForOtherSearchTerms();
+		mock.specimenDetail();
+		//mock.taxonDetail();
+		//mock.taxonMediaDetail();
+		//mock.specimenMediaDetail();
 		System.out.println("Done");
 	}
 
@@ -736,10 +743,261 @@ public class Mock {
 		matchInfo.setValueHighlighted("<span>Malus</span> bombasticus");
 		result.addMatchInfo(matchInfo);
 
-
 		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
 		//System.out.println(json);
 		FileUtil.setContents("C:/test/nda/mock/getMediaObjects.json", json);
+	}
+
+
+	public void getSpecimensForOtherSearchTerms() throws JsonProcessingException
+	{
+		SearchResultSet<Specimen> rs = new SearchResultSet<Specimen>();
+		rs.setTotalSize(123);
+		rs.addLink("self", "http://nda.naturalis.nl/specimen/?term=Malus");
+		rs.setSearchTerms(Arrays.asList("Malus"));
+
+		SearchResult<Specimen> result = new SearchResult<Specimen>();
+		rs.addSearchResult(result);
+		Specimen specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
+		specimen.setSourceSystem(SourceSystem.BRAHMS);
+		result.setResult(specimen);
+		specimen.getIdentifications().get(0).getDefaultClassification().setGenus("Malus");
+		specimen.setCountry("Alamalusia");
+		String unitId = "ZMA.RMNH." + random.nextInt();
+		specimen.setUnitID(unitId);
+		result.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/" + unitId);
+		result.setScore(.7F);
+		StringMatchInfo matchInfo = new StringMatchInfo();
+		matchInfo.setPath("identifications[0].defaultClassification.genus");
+		matchInfo.setValue("Malus");
+		matchInfo.setValueHighlighted("<span>Malus</span>");
+		result.addMatchInfo(matchInfo);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("country");
+		matchInfo.setValue("Alamalusia");
+		matchInfo.setValueHighlighted("Ala<span>malus</span>ia");
+		result.addMatchInfo(matchInfo);
+
+		result = new SearchResult<Specimen>();
+		rs.addSearchResult(result);
+		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
+		specimen.setSourceSystem(SourceSystem.CRS);
+		result.setResult(specimen);
+		specimen.getIdentifications().get(0).getDefaultClassification().setGenus("Malus");
+		unitId = "ZMA.RMNH." + random.nextInt();
+		specimen.setUnitID(unitId);
+		result.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/" + unitId);
+		result.setScore(.73F);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("title");
+		matchInfo.setValue("Het malusje van alles");
+		matchInfo.setValueHighlighted("Het <span>malus</span>je van alles");
+		result.addMatchInfo(matchInfo);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("country");
+		matchInfo.setValue("Alamalusia");
+		matchInfo.setValueHighlighted("Ala<span>malus</span>ia");
+		result.addMatchInfo(matchInfo);
+
+		result = new SearchResult<Specimen>();
+		rs.addSearchResult(result);
+		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
+		specimen.setSourceSystem(SourceSystem.CRS);
+		result.setResult(specimen);
+		specimen.setCountry("Malusonie");
+		specimen.setTitle("In Malusonie komen veel tijgers voor");
+		unitId = "ZMA.RMNH." + random.nextInt();
+		specimen.setUnitID(unitId);
+		result.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/" + unitId);
+		result.setScore(.78F);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("title");
+		matchInfo.setValue("In Malusonie komen veel tijgers voor");
+		matchInfo.setValueHighlighted("In <span>Malus</span>ionie komen veel tijgers voor");
+		result.addMatchInfo(matchInfo);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("country");
+		matchInfo.setValue("Malusonie");
+		matchInfo.setValueHighlighted("<span>Malus</span>onie");
+		result.addMatchInfo(matchInfo);
+
+		result = new SearchResult<Specimen>();
+		rs.addSearchResult(result);
+		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
+		specimen.setSourceSystem(SourceSystem.CRS);
+		result.setResult(specimen);
+		specimen.getIdentifications().get(0).getDefaultClassification().setGenus("Malus");
+		unitId = "ZMA.RMNH." + random.nextInt();
+		specimen.setUnitID(unitId);
+		result.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/" + unitId);
+		result.setScore(.73F);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("title");
+		matchInfo.setValue("Het malusje van alles");
+		matchInfo.setValueHighlighted("Het <span>malus</span>je van alles");
+		result.addMatchInfo(matchInfo);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("country");
+		matchInfo.setValue("Alamalusia");
+		matchInfo.setValueHighlighted("Ala<span>malus</span>ia");
+		result.addMatchInfo(matchInfo);
+
+		result = new SearchResult<Specimen>();
+		rs.addSearchResult(result);
+		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
+		specimen.setSourceSystem(SourceSystem.CRS);
+		result.setResult(specimen);
+		specimen.setCountry("Malusonie");
+		specimen.setTitle("In Malusonie komen veel tijgers voor");
+		unitId = "ZMA.RMNH." + random.nextInt();
+		specimen.setUnitID(unitId);
+		result.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/" + unitId);
+		result.setScore(.78F);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("title");
+		matchInfo.setValue("In Malusonie komen veel tijgers voor");
+		matchInfo.setValueHighlighted("In <span>Malus</span>ionie komen veel tijgers voor");
+		result.addMatchInfo(matchInfo);
+		matchInfo = new StringMatchInfo();
+		matchInfo.setPath("country");
+		matchInfo.setValue("Malusonie");
+		matchInfo.setValueHighlighted("<span>Malus</span>onie");
+		result.addMatchInfo(matchInfo);
+
+		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
+		//System.out.println(json);
+		FileUtil.setContents("C:/test/nda/mock/getSpecimensForOtherSearchTerms.json", json);
+	}
+
+
+	public void specimenDetail() throws JsonProcessingException
+	{
+		SearchResultSet<Specimen> rs = new SearchResultSet<Specimen>();
+		rs.setTotalSize(1);
+		int id = 2 + random.nextInt(100000);
+		rs.addLink("self", "http://nda.naturalis.nl/specimen/ZMA.RMNH." + id);
+		rs.addLink("prev", "http://nda.naturalis.nl/specimen/ZMA.RMNH." + (id - 1));
+		rs.addLink("next", "http://nda.naturalis.nl/specimen/ZMA.RMNH." + (id + 1));
+		rs.addLink("associated-taxa", "http://nda.naturalis.nl/taxon/accepted-name/Larus+fuscus");
+
+		SearchResult<Specimen> result = new SearchResult<Specimen>();
+		rs.addSearchResult(result);
+		mocker.setMaxListSize(SpecimenIdentification.class, 1);
+		Specimen specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
+		specimen.setUnitID("ZMA.RMNH." + id);
+		specimen.setSourceSystem(SourceSystem.BRAHMS);
+		specimen.getIdentifications().get(0).getScientificName().setFullScientificName("Larus fuscus");
+		result.setResult(specimen);
+
+		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
+		//System.out.println(json);
+		FileUtil.setContents("C:/test/nda/mock/specimen-detail.json", json);
+
+	}
+
+
+	public void taxonDetail() throws JsonProcessingException
+	{
+		SearchResultSet<Taxon> rs = new SearchResultSet<Taxon>();
+		rs.setTotalSize(2);
+		int id = 2 + random.nextInt(100000);
+		rs.addLink("self", "http://nda.naturalis.nl/taxon/" + id);
+		rs.addLink("prev", "http://nda.naturalis.nl/taxon/" + (id - 2));
+		rs.addLink("next", "http://nda.naturalis.nl/taxon/" + (id + 2));
+		rs.addLink("get-specimens", "http://nda.naturalis.nl/specimen/for-taxon/Larus+fuscus");
+
+		SearchResult<Taxon> result = new SearchResult<Taxon>();
+		rs.addSearchResult(result);
+		mocker.setMaxListSize(Synonym.class, 3);
+		mocker.setMaxListSize(TaxonDescription.class, 0);
+		mocker.setMaxListSize(VernacularName.class, 3);
+		Taxon taxon = mocker.createMock(Taxon.class, DefaultClassification.class, VernacularName.class, Synonym.class, TaxonDescription.class,
+				ScientificName.class, Expert.class);
+		taxon.setSourceSystem(SourceSystem.COL);
+		taxon.setSourceSystemId("" + id);
+		taxon.getAcceptedName().setFullScientificName("Larus Fuscus");
+		result.setResult(taxon);
+
+		result = new SearchResult<Taxon>();
+		rs.addSearchResult(result);
+		mocker.setMaxListSize(TaxonDescription.class, 3);
+		mocker.setMaxListSize(VernacularName.class, 1);
+		taxon = mocker.createMock(Taxon.class, DefaultClassification.class, VernacularName.class, Synonym.class, TaxonDescription.class,
+				ScientificName.class, Expert.class);
+		taxon.setSourceSystem(SourceSystem.NSR);
+		taxon.setSourceSystemId("" + (id + 1));
+		taxon.getAcceptedName().setFullScientificName("Larus Fuscus");
+		result.setResult(taxon);
+
+		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
+		//System.out.println(json);
+		FileUtil.setContents("C:/test/nda/mock/taxon-detail.json", json);
+
+	}
+
+
+	public void taxonMediaDetail() throws JsonProcessingException
+	{
+		SearchResultSet<MultiMediaObject> rs = new SearchResultSet<MultiMediaObject>();
+		rs.setTotalSize(2);
+		int id = 2 + random.nextInt(100000);
+		rs.addLink("self", "http://nda.naturalis.nl/media/" + id);
+		rs.addLink("prev", "http://nda.naturalis.nl/media/" + (id - 2));
+		rs.addLink("next", "http://nda.naturalis.nl/media/" + (id + 2));
+		rs.addLink("taxon-detail", "http://nda.naturalis.nl/taxon/NSR-1234567");
+
+		SearchResult<MultiMediaObject> result = new SearchResult<MultiMediaObject>();
+		rs.addSearchResult(result);
+
+		TaxonMultiMediaObject tmmo = mocker.createMock(TaxonMultiMediaObject.class, ServiceAccessPoint.class);
+		tmmo.setCaption("De leuke Malus Mill.");
+		tmmo.addServiceAccessPoint("http://medialib.naturalis.nl/NSR-123457", "JPEG", ServiceAccessPoint.Variant.MEDIUM_QUALITY);
+
+		DefaultClassification dc = mocker.createMock(DefaultClassification.class);
+		ScientificName sn = mocker.createMock(ScientificName.class);
+		Taxon taxon = mocker.createMock(Taxon.class);
+		tmmo.setTaxon(taxon);
+		taxon.setAcceptedName(sn);
+		taxon.setDefaultClassification(dc);
+		tmmo.setScientificNames(Arrays.asList(sn));
+		tmmo.setDefaultClassifications(Arrays.asList(dc));
+		tmmo.getTaxon().setSourceSystem(SourceSystem.NSR);
+		tmmo.getTaxon().setSourceSystemId("NSR-1234567");
+		result.setResult(tmmo);
+
+		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
+		//System.out.println(json);
+		FileUtil.setContents("C:/test/nda/mock/taxon-media-detail.json", json);
+	}
+
+
+	public void specimenMediaDetail() throws JsonProcessingException
+	{
+		SearchResultSet<MultiMediaObject> rs = new SearchResultSet<MultiMediaObject>();
+		rs.setTotalSize(2);
+		int id = 2 + random.nextInt(100000);
+		rs.addLink("self", "http://nda.naturalis.nl/media/" + id);
+		rs.addLink("prev", "http://nda.naturalis.nl/media/" + (id - 2));
+		rs.addLink("next", "http://nda.naturalis.nl/media/" + (id + 2));
+		rs.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/ZMA.RMNH.453563217.l");
+
+		SearchResult<MultiMediaObject> result = new SearchResult<MultiMediaObject>();
+		rs.addSearchResult(result);
+		
+		SpecimenMultiMediaObject smmo = mocker.createMock(SpecimenMultiMediaObject.class, ScientificName.class);
+		smmo.setCaption("Malus bombasticus in al zijn glorie");
+		smmo.addServiceAccessPoint("http://medialib.naturalis.nl/ZMA.RMNH.453563217.l", "JPEG", ServiceAccessPoint.Variant.MEDIUM_QUALITY);
+		Specimen specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class);
+		specimen.getIdentifications().get(0).getScientificName().setFullScientificName("Malus bombasticus");
+		specimen.setSourceSystem(SourceSystem.CRS);
+		smmo.setSpecimen(specimen);
+		result = new SearchResult<MultiMediaObject>(smmo);
+		rs.addSearchResult(result);
+		smmo.getScientificNames().get(0).setFullScientificName("Malus bombasticus");
+
+		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
+		//System.out.println(json);
+		FileUtil.setContents("C:/test/nda/mock/specimen-media-detail.json", json);
 	}
 
 }

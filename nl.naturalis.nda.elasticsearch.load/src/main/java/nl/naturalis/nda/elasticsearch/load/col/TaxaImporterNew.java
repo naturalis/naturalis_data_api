@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.load.col;
 import java.io.IOException;
 
 import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.TaxonDescription;
@@ -22,7 +23,7 @@ public class TaxaImporterNew extends CSVImporter<ESTaxon> {
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 
 		index.deleteType(LUCENE_TYPE);
-		index.deleteType("CoLTaxon");
+
 		Thread.sleep(2000);
 
 		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
@@ -36,6 +37,8 @@ public class TaxaImporterNew extends CSVImporter<ESTaxon> {
 		finally {
 			index.getClient().close();
 		}
+
+		System.out.println("Done");
 	}
 
 	//@formatter:off
@@ -102,6 +105,7 @@ public class TaxaImporterNew extends CSVImporter<ESTaxon> {
 
 		DefaultClassification dc = new DefaultClassification();
 		taxon.setDefaultClassification(dc);
+
 		dc.setKingdom(record.get(CsvField.kingdom.ordinal()));
 		dc.setPhylum(record.get(CsvField.phylum.ordinal()));
 		dc.setClassName(record.get(CsvField.classRank.ordinal()));
@@ -112,13 +116,14 @@ public class TaxaImporterNew extends CSVImporter<ESTaxon> {
 		dc.setSubgenus(record.get(CsvField.subgenus.ordinal()));
 		dc.setSpecificEpithet(record.get(CsvField.specificEpithet.ordinal()));
 		dc.setInfraspecificEpithet(record.get(CsvField.infraspecificEpithet.ordinal()));
+		
+		addMonomials(taxon);
 
 		String description = record.get(CsvField.description.ordinal()).trim();
 		if (description.length() != 0) {
-			taxon.setNumDescriptions(1);
 			TaxonDescription td = new TaxonDescription();
 			td.setDescription(description);
-			taxon.setDescription00(td);
+			taxon.addDescription(td);
 		}
 
 		return taxon;
@@ -138,6 +143,32 @@ public class TaxaImporterNew extends CSVImporter<ESTaxon> {
 	protected String getId(CSVRecord record)
 	{
 		return "COL-" + record.get(CsvField.taxonID.ordinal());
+	}
+
+
+	private static void addMonomials(ESTaxon taxon)
+	{
+		DefaultClassification dc = taxon.getDefaultClassification();
+		Monomial monomial = new Monomial(DefaultClassification.Rank.KINGDOM.toString(), dc.getKingdom());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.PHYLUM.toString(), dc.getPhylum());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.CLASS.toString(), dc.getClassName());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.ORDER.toString(), dc.getOrder());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.SUPER_FAMILY.toString(), dc.getSuperFamily());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.FAMILY.toString(), dc.getFamily());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.GENUS.toString(), dc.getGenus());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.SUBGENUS.toString(), dc.getSubgenus());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.SPECIFIC_EPITHET.toString(), dc.getSpecificEpithet());
+		taxon.addMonomial(monomial);
+		monomial = new Monomial(DefaultClassification.Rank.INFRASPECIFIC_EPITHET.toString(), dc.getInfraspecificEpithet());
+		taxon.addMonomial(monomial);
 	}
 
 }

@@ -280,7 +280,7 @@ public class IndexNative implements Index {
 		grb.setType(type);
 		grb.setId(id);
 		GetResponse response = grb.execute().actionGet();
-		if(response.isExists()) {
+		if (response.isExists()) {
 			try {
 				return objectMapper.readValue(response.getSourceAsString(), targetClass);
 			}
@@ -347,36 +347,14 @@ public class IndexNative implements Index {
 	@Override
 	public void saveObjects(String type, List<?> objs)
 	{
-		BulkRequestBuilder brb = esClient.prepareBulk();
-		for (int i = 0; i < objs.size(); ++i) {
-			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
-			try {
-				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
-			}
-			catch (JsonProcessingException e) {
-				throw new IndexException(e);
-			}
-			brb.add(irb);
-		}
-		brb.execute().actionGet();
+		saveObjects(type, objs, null, null);
 	}
 
 
 	@Override
 	public void saveObjects(String type, List<?> objs, List<String> ids)
 	{
-		BulkRequestBuilder brb = esClient.prepareBulk();
-		for (int i = 0; i < objs.size(); ++i) {
-			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, ids.get(i));
-			try {
-				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
-			}
-			catch (JsonProcessingException e) {
-				throw new IndexException(e);
-			}
-			brb.add(irb);
-		}
-		brb.execute().actionGet();
+		saveObjects(type, objs, ids, null);
 	}
 
 
@@ -401,7 +379,7 @@ public class IndexNative implements Index {
 			brb.add(irb);
 		}
 		BulkResponse response = brb.execute().actionGet();
-		if(response.hasFailures()) {
+		if (response.hasFailures()) {
 			String message = response.buildFailureMessage();
 			throw new RuntimeException(message);
 		}

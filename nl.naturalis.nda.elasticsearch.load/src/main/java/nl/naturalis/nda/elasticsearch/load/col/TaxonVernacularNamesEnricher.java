@@ -10,7 +10,7 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
-import nl.naturalis.nda.elasticsearch.load.col.TaxaImporter.CsvField;
+import nl.naturalis.nda.elasticsearch.load.col.CommonNamesImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -18,19 +18,19 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaxonSynonymsEnricher {
+public class TaxonVernacularNamesEnricher {
 
 	public static void main(String[] args) throws IOException
 	{
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 
-		TaxonSynonymsEnricher enricher = new TaxonSynonymsEnricher(index);
-		enricher.importCsv("C:/test/col-dwca/taxa.txt");
+		TaxonVernacularNamesEnricher enricher = new TaxonVernacularNamesEnricher(index);
+		enricher.importCsv("C:/test/col-dwca/vernacular.txt");
 
 		index.getClient().close();
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(TaxonSynonymsEnricher.class);
+	private static final Logger logger = LoggerFactory.getLogger(TaxonVernacularNamesEnricher.class);
 	private static final int DEFAULT_BATCH_SIZE = 1000;
 
 	private static final String LUCENE_TYPE = "Taxon";
@@ -39,7 +39,7 @@ public class TaxonSynonymsEnricher {
 	private int batchSize = DEFAULT_BATCH_SIZE;
 
 
-	public TaxonSynonymsEnricher(Index index)
+	public TaxonVernacularNamesEnricher(Index index)
 	{
 		this.index = index;
 	}
@@ -73,20 +73,16 @@ public class TaxonSynonymsEnricher {
 				}
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					if (getInt(record, TaxaImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
-						++skipped;
-						continue;
-					}
-					String id = TaxaImporter.ID_PREFIX + record.get(CsvField.acceptedNameUsageID.ordinal());
-					String synonym = record.get(CsvField.scientificName.ordinal());
+					String id = TaxaImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
+					String commonName = record.get(CsvField.vernacularName.ordinal());
 					taxon = index.get(LUCENE_TYPE, id, ESTaxon.class);
 					if (taxon == null) {
-						logger.warn("Orphan synonym: " + synonym);
+						logger.warn("Orphan name: " + commonName);
 						continue;
 					}
 					//logger.info("Adding synonym: " + synonym);
-					if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
-						taxon.addSynonym(synonym);
+					if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(commonName)) {
+						taxon.addVernacularName(commonName);
 					}
 					else {
 						continue;
@@ -115,16 +111,6 @@ public class TaxonSynonymsEnricher {
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
 		logger.info("Ready");
-	}
-
-
-	private static int getInt(CSVRecord record, int fieldNo)
-	{
-		String s = record.get(fieldNo);
-		if (s.trim().length() == 0) {
-			return 0;
-		}
-		return Integer.parseInt(s);
 	}
 
 }

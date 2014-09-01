@@ -6,7 +6,7 @@
 		"properties" : {
 			"sourceSystem" : {
 				"properties" : {
-					"code" : { "type" : "string" },
+					"code" : { "type" : "string", "index" : "not_analyzed" },
 					"name" : { "type" : "string" }
 				}
 			},
@@ -50,7 +50,7 @@
 				}
 			},
 			"synonyms" : { "type" : "string" },
-			"commonNames" : { "type" : "string" },
+			"vernacularNames" : { "type" : "string" },
 			"status" : {
 				"properties" : {
 					"status" : { "type" : "string" },

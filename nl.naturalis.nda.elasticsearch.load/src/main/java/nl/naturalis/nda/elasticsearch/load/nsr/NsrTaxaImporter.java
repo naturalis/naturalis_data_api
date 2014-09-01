@@ -12,11 +12,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESNsrTaxon;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -27,34 +26,16 @@ public class NsrTaxaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-
-		index.deleteType(LUCENE_TYPE_TAXON);
-		index.deleteType(LUCENE_TYPE_SYNONYM);
-		index.deleteType(LUCENE_TYPE_COMMON_NAME);
-		index.deleteType(LUCENE_TYPE_DESCRIPTION);
-
-		Thread.sleep(2000);
-
-		String mapping = StringUtil.getResourceAsString("/es-mappings/NsrTaxon.json");
-		index.addType(LUCENE_TYPE_TAXON, mapping);
-		mapping = StringUtil.getResourceAsString("/es-mappings/NsrSynonym.json");
-		index.addType(LUCENE_TYPE_SYNONYM, mapping);
-		mapping = StringUtil.getResourceAsString("/es-mappings/NsrCommonName.json");
-		index.addType(LUCENE_TYPE_COMMON_NAME, mapping);
-		mapping = StringUtil.getResourceAsString("/es-mappings/NsrTaxonDescription.json");
-		index.addType(LUCENE_TYPE_DESCRIPTION, mapping);
-
+		//index.deleteType(LUCENE_TYPE);
+		//Thread.sleep(2000);
 		NsrTaxaImporter importer = new NsrTaxaImporter(index);
 		importer.importXml();
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrTaxaImporter.class);
-	private static final String LUCENE_TYPE_TAXON = "NsrTaxon";
-	private static final String LUCENE_TYPE_SYNONYM = "NsrSynonym";
-	private static final String LUCENE_TYPE_COMMON_NAME = "NsrCommonName";
-	private static final String LUCENE_TYPE_DESCRIPTION = "NsrTaxonDescription";
+	static final Logger logger = LoggerFactory.getLogger(NsrTaxaImporter.class);
+	static final String ID_PREFIX = "NSR-";
+	static final String LUCENE_TYPE = "Taxon";
 
 	private final Index index;
 
@@ -79,9 +60,9 @@ public class NsrTaxaImporter {
 
 		int processed = 0;
 
-		ESNsrTaxon taxon;
+		ESTaxon taxon;
 
-		List<ESNsrTaxon> taxa = new ArrayList<ESNsrTaxon>(batchSize);
+		List<ESTaxon> taxa = new ArrayList<ESTaxon>(batchSize);
 		List<String> ids = new ArrayList<String>(batchSize);
 
 		//BeanPrinter bp = new BeanPrinter("C:/test/taxa.tst");
@@ -93,15 +74,15 @@ public class NsrTaxaImporter {
 			taxon = NsrTaxonTransfer.transfer(taxonElement);
 			// bp.dump(taxon);
 			taxa.add(taxon);
-			ids.add(taxon.getNsrId());
+			ids.add(taxon.getSourceSystemId());
 			if (taxa.size() == batchSize) {
-				index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+				index.saveObjects(LUCENE_TYPE, taxa, ids);
 				taxa.clear();
 				ids.clear();
 			}
 		}
 		if (!taxa.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+			index.saveObjects(LUCENE_TYPE, taxa, ids);
 		}
 
 		logger.info("Records processed: " + processed);

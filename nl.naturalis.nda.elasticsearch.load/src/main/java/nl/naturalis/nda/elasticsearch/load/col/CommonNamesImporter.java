@@ -24,7 +24,7 @@ public class CommonNamesImporter extends CSVImporter<CoLCommonName> {
 	}
 
 	//@formatter:off
-	private static enum CsvField {
+	static enum CsvField {
 		taxonID
 		, vernacularName
 		, language

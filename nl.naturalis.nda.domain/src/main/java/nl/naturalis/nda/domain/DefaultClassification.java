@@ -7,6 +7,28 @@ package nl.naturalis.nda.domain;
  */
 public class DefaultClassification {
 
+	//@formatter:off
+	public static enum Rank
+	{
+		
+		KINGDOM("kingdom"),
+		PHYLUM("phylum"),
+		CLASS("class"),
+		ORDER("order"),
+		SUPER_FAMILY("superfamily"),
+		FAMILY("family"),
+		GENUS("genus"),
+		SUBGENUS("subgenus"),
+		SPECIFIC_EPITHET("specificEpithet"),
+		INFRASPECIFIC_EPITHET("infraspecificEpithet");
+		
+		private String name;	
+		private Rank(String name) { this.name = name; }
+		public String toString() { return name; }
+		
+	}
+	//@formatter:on
+
 	private String kingdom;
 	private String phylum;
 	private String className;

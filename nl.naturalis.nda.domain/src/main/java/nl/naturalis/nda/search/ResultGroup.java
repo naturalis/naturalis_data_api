@@ -3,7 +3,7 @@ package nl.naturalis.nda.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.SpecimenUnit;
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.Taxon;
 
 /**
@@ -11,7 +11,7 @@ import nl.naturalis.nda.domain.Taxon;
  * common.
  * 
  * @param <T> The type of the domain objects that the group consists of (e.g.
- *            {@link Taxon}, {@link SpecimenUnit}, etc.)
+ *            {@link Taxon}, {@link Specimen}, etc.)
  * @param <U> The type of the value shared by the domain objects in the group
  */
 public class ResultGroup<T, U> {

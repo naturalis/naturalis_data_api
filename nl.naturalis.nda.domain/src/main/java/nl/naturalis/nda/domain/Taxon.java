@@ -13,7 +13,7 @@ public class Taxon extends NdaTraceableObject {
 	private List<Synonym> synonyms;
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
-	private List<SpecimenUnit> specimenUnits;
+	private List<Specimen> specimens;
 
 
 	/**
@@ -134,15 +134,15 @@ public class Taxon extends NdaTraceableObject {
 	}
 
 
-	public List<SpecimenUnit> getOccurrences()
+	public List<Specimen> getSpecimens()
 	{
-		return specimenUnits;
+		return specimens;
 	}
 
 
-	public void setOccurrences(List<SpecimenUnit> specimenUnits)
+	public void setSpecimens(List<Specimen> specimens)
 	{
-		this.specimenUnits = specimenUnits;
+		this.specimens = specimens;
 	}
 
 }

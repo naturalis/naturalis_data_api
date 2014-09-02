@@ -1,62 +1,17 @@
 package nl.naturalis.nda.elasticsearch.dao.transfer;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.SpecimenUnit;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsDetermination;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsSpecimen;
 
 public class SpecimenTransfer {
 
-	public static SpecimenUnit transfer(ESCrsSpecimen crsSpecimen, List<ESCrsDetermination> extraDeterminations)
+	public static Specimen transfer(ESCrsSpecimen crsSpecimen, List<ESCrsDetermination> extraDeterminations)
 	{
-		SpecimenUnit specimenUnit = new SpecimenUnit();
-		specimenUnit.setAccessionSpecimenNumbers(crsSpecimen.getAccessionSpecimenNumbers());
-		//specimen.setAltitude(crsSpecimen.getAltitude());
-		specimenUnit.setAltitudeUnit(crsSpecimen.getAltitudeUnit());
-		//specimen.setCollectingEndDate(crsSpecimen.getCollectingEndDate());
-		//specimen.setCollectingStartDate(crsSpecimen.getCollectingStartDate());
-		specimenUnit.setCollectionType(crsSpecimen.getCollectionType());
-		specimenUnit.setCountry(crsSpecimen.getCountry());
-		//specimen.setDepth(crsSpecimen.getDepth());
-		specimenUnit.setDepthUnit(crsSpecimen.getDepthUnit());
-		specimenUnit.setGatheringAgent(crsSpecimen.getGatheringAgent());
-		specimenUnit.setGeodeticDatum(crsSpecimen.getGeodeticDatum());
-		specimenUnit.setKindOfUnit(crsSpecimen.getKindOfUnit());
-		specimenUnit.setLatitudeDecimal(crsSpecimen.getLatitudeDecimal());
-		specimenUnit.setLocality(crsSpecimen.getLocality());
-		specimenUnit.setLongitudeDecimal(crsSpecimen.getLongitudeDecimal());
-		specimenUnit.setMultiMediaPublic(crsSpecimen.getMultiMediaPublic());
-		specimenUnit.setObjectPublic(crsSpecimen.isObjectPublic());
-		specimenUnit.setPhaseOrStage(crsSpecimen.getPhaseOrStage());
-		specimenUnit.setProvinceState(crsSpecimen.getPhaseOrStage());
-		specimenUnit.setRecordBasis(crsSpecimen.getRecordBasis());
-		specimenUnit.setSex(crsSpecimen.getSex());
-		specimenUnit.setSourceInstitutionID(crsSpecimen.getSourceInstitutionID());
-		specimenUnit.setTaxonCoverage(crsSpecimen.getTaxonCoverage());
-		specimenUnit.setTitle(crsSpecimen.getTitle());
-		specimenUnit.setUnitGUID(crsSpecimen.getUnitGUID());
-		specimenUnit.setUnitID(crsSpecimen.getUnitID());
-		specimenUnit.setUrl(crsSpecimen.getUrl());
-		specimenUnit.setWorldRegion(crsSpecimen.getWorldRegion());
-		List<SpecimenIdentification> specimenIdentifications = new ArrayList<SpecimenIdentification>(crsSpecimen.getNumDeterminations());
-		specimenUnit.setIdentifications(specimenIdentifications);
-		if (crsSpecimen.getNumDeterminations() > 0) {
-			specimenIdentifications.add(transfer(crsSpecimen.getDetermination0()));
-			if (crsSpecimen.getNumDeterminations() > 1) {
-				specimenIdentifications.add(transfer(crsSpecimen.getDetermination1()));
-				if (crsSpecimen.getNumDeterminations() > 2) {
-					specimenIdentifications.add(transfer(crsSpecimen.getDetermination2()));
-					if (extraDeterminations != null) {
-						for (ESCrsDetermination d : extraDeterminations) {
-							specimenIdentifications.add(transfer(d));
-						}
-					}
-				}
-			}
-		}
+		Specimen specimenUnit = new Specimen();
 		return specimenUnit;
 	}
 

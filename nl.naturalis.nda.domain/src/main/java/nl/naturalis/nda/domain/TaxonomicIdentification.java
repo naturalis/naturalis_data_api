@@ -96,4 +96,5 @@ public abstract class TaxonomicIdentification {
 	{
 		this.dateIdentified = dateIdentified;
 	}
+
 }

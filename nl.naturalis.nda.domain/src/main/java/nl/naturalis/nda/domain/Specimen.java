@@ -1,41 +1,26 @@
 package nl.naturalis.nda.domain;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Specimen extends NdaTraceableObject {
 
 	private String unitID;
+	private String unitGUID;
 	private String setID;
 	private String sourceInstitutionID;
-	private String unitGUID;
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
 	private String sex;
 	private String phaseOrStage;
 	private String accessionSpecimenNumbers;
-	private int altitude;
-	private int depth;
-	private String gatheringAgent;
-	private String worldRegion;
-	private String country;
-	private String provinceState;
-	private String locality;
-	private boolean objectPublic;
-	private String altitudeUnit;
-	private String depthUnit;
-	private Date collectingStartDate;
-	private Date collectingEndDate;
 	private String title;
-	private String taxonCoverage;
-	private String multiMediaPublic;
-	private String latitudeDecimal;
-	private String longitudeDecimal;
-	private String geodeticDatum;
-	private String url;
+	private boolean objectPublic;
+	private boolean multiMediaPublic;
 
+	private GatheringEvent gatheringEvent;
+	private List<GatheringSiteCoordinates> siteCoordinates;
 	private List<SpecimenIdentification> identifications;
 	private List<Specimen> otherSpecimensInSet;
 	private List<Taxon> associatedTaxa;
@@ -71,6 +56,18 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
+	public String getUnitGUID()
+	{
+		return unitGUID;
+	}
+
+
+	public void setUnitGUID(String unitGUID)
+	{
+		this.unitGUID = unitGUID;
+	}
+
+
 	public String getSetID()
 	{
 		return setID;
@@ -92,18 +89,6 @@ public class Specimen extends NdaTraceableObject {
 	public void setSourceInstitutionID(String sourceInstitutionID)
 	{
 		this.sourceInstitutionID = sourceInstitutionID;
-	}
-
-
-	public String getUnitGUID()
-	{
-		return unitGUID;
-	}
-
-
-	public void setUnitGUID(String unitGUID)
-	{
-		this.unitGUID = unitGUID;
 	}
 
 
@@ -179,87 +164,15 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public int getAltitude()
+	public String getTitle()
 	{
-		return altitude;
+		return title;
 	}
 
 
-	public void setAltitude(int altitude)
+	public void setTitle(String title)
 	{
-		this.altitude = altitude;
-	}
-
-
-	public int getDepth()
-	{
-		return depth;
-	}
-
-
-	public void setDepth(int depth)
-	{
-		this.depth = depth;
-	}
-
-
-	public String getGatheringAgent()
-	{
-		return gatheringAgent;
-	}
-
-
-	public void setGatheringAgent(String gatheringAgent)
-	{
-		this.gatheringAgent = gatheringAgent;
-	}
-
-
-	public String getWorldRegion()
-	{
-		return worldRegion;
-	}
-
-
-	public void setWorldRegion(String worldRegion)
-	{
-		this.worldRegion = worldRegion;
-	}
-
-
-	public String getCountry()
-	{
-		return country;
-	}
-
-
-	public void setCountry(String country)
-	{
-		this.country = country;
-	}
-
-
-	public String getProvinceState()
-	{
-		return provinceState;
-	}
-
-
-	public void setProvinceState(String provinceState)
-	{
-		this.provinceState = provinceState;
-	}
-
-
-	public String getLocality()
-	{
-		return locality;
-	}
-
-
-	public void setLocality(String locality)
-	{
-		this.locality = locality;
+		this.title = title;
 	}
 
 
@@ -275,135 +188,39 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public String getAltitudeUnit()
-	{
-		return altitudeUnit;
-	}
-
-
-	public void setAltitudeUnit(String altitudeUnit)
-	{
-		this.altitudeUnit = altitudeUnit;
-	}
-
-
-	public String getDepthUnit()
-	{
-		return depthUnit;
-	}
-
-
-	public void setDepthUnit(String depthUnit)
-	{
-		this.depthUnit = depthUnit;
-	}
-
-
-	public Date getCollectingStartDate()
-	{
-		return collectingStartDate;
-	}
-
-
-	public void setCollectingStartDate(Date collectingStartDate)
-	{
-		this.collectingStartDate = collectingStartDate;
-	}
-
-
-	public Date getCollectingEndDate()
-	{
-		return collectingEndDate;
-	}
-
-
-	public void setCollectingEndDate(Date collectingEndDate)
-	{
-		this.collectingEndDate = collectingEndDate;
-	}
-
-
-	public String getTitle()
-	{
-		return title;
-	}
-
-
-	public void setTitle(String title)
-	{
-		this.title = title;
-	}
-
-
-	public String getTaxonCoverage()
-	{
-		return taxonCoverage;
-	}
-
-
-	public void setTaxonCoverage(String taxonCoverage)
-	{
-		this.taxonCoverage = taxonCoverage;
-	}
-
-
-	public String getMultiMediaPublic()
+	public boolean isMultiMediaPublic()
 	{
 		return multiMediaPublic;
 	}
 
 
-	public void setMultiMediaPublic(String multiMediaPublic)
+	public void setMultiMediaPublic(boolean multiMediaPublic)
 	{
 		this.multiMediaPublic = multiMediaPublic;
 	}
 
 
-	public String getLatitudeDecimal()
+	public GatheringEvent getGatheringEvent()
 	{
-		return latitudeDecimal;
+		return gatheringEvent;
 	}
 
 
-	public void setLatitudeDecimal(String latitudeDecimal)
+	public void setGatheringEvent(GatheringEvent gatheringEvent)
 	{
-		this.latitudeDecimal = latitudeDecimal;
+		this.gatheringEvent = gatheringEvent;
 	}
 
 
-	public String getLongitudeDecimal()
+	public List<GatheringSiteCoordinates> getSiteCoordinates()
 	{
-		return longitudeDecimal;
+		return siteCoordinates;
 	}
 
 
-	public void setLongitudeDecimal(String longitudeDecimal)
+	public void setSiteCoordinates(List<GatheringSiteCoordinates> siteCoordinates)
 	{
-		this.longitudeDecimal = longitudeDecimal;
-	}
-
-
-	public String getGeodeticDatum()
-	{
-		return geodeticDatum;
-	}
-
-
-	public void setGeodeticDatum(String geodeticDatum)
-	{
-		this.geodeticDatum = geodeticDatum;
-	}
-
-
-	public String getUrl()
-	{
-		return url;
-	}
-
-
-	public void setUrl(String url)
-	{
-		this.url = url;
+		this.siteCoordinates = siteCoordinates;
 	}
 
 

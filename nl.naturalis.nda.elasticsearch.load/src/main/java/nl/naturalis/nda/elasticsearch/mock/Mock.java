@@ -1,13 +1,12 @@
 package nl.naturalis.nda.elasticsearch.mock;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Expert;
+import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.Reference;
@@ -17,15 +16,12 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.SpecimenMultiMediaObject;
-import nl.naturalis.nda.domain.SpecimenUnit;
 import nl.naturalis.nda.domain.Synonym;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.TaxonMultiMediaObject;
 import nl.naturalis.nda.domain.VernacularName;
-import nl.naturalis.nda.elasticsearch.load.col.CommonNamesImporter;
 import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.MatchInfo;
 import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
@@ -72,271 +68,6 @@ public class Mock {
 	{
 		mocker = new Mocker();
 		mocker.setMaxListSize(SpecimenIdentification.class, 2);
-	}
-
-
-	public void occurrenceWithIdentifications() throws JsonProcessingException
-	{
-		SearchResultSet<SpecimenUnit> rs = new SearchResultSet<SpecimenUnit>();
-		rs.setTotalSize(1386);
-		rs.addLink("self", "http://nda.naturalis.nl/occurence/?country=Suriname&offset=150");
-		rs.addLink("occurrence.extra-info", "http://nda.naturalis.nl/occurence/extra-info");
-		rs.addLink("taxon.cool-taxon-data", "http://nda.naturalis.nl/taxon/cool-data");
-
-		for (int i = 0; i < 20; ++i) {
-			SpecimenUnit specimenUnit = mocker.createMock(SpecimenUnit.class, SpecimenIdentification.class);
-			Link link0 = new Link("self", "http://nda.naturalis.nl/occurence/?unitId=" + i);
-			Link link1 = new Link("occurrence.related-occurences", "http://nda.naturalis.nl/occurence/related/unitId=" + i);
-			SearchResult<SpecimenUnit> result = new SearchResult<SpecimenUnit>(specimenUnit);
-			List<MatchInfo<?>> matchInfos = new ArrayList<MatchInfo<?>>();
-			if (i % 2 == 0) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("country");
-				inf.setValue("Nederland");
-				inf.setValueHighlighted("Neder<em>land</em>");
-				matchInfos.add(inf);
-			}
-			else {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("locality");
-				inf.setValue("Nederland");
-				inf.setValueHighlighted("Neder<em>land</em>");
-				matchInfos.add(inf);
-			}
-			if (i % 5 == 0) {
-				if (specimenUnit.getIdentifications().size() > 1) {
-					StringMatchInfo inf = new StringMatchInfo();
-					inf.setPath("identifications[1].remarks");
-					inf.setValue("In Nederland is het altijd leuk");
-					inf.setValueHighlighted("In Neder<em>land</em> is het altijd leuk");
-					matchInfos.add(inf);
-				}
-				else {
-					StringMatchInfo inf = new StringMatchInfo();
-					inf.setPath("identifications[0].references");
-					inf.setValue("Het Nederlands Insectenboek");
-					inf.setValueHighlighted("Het Neder<em>land</em>s Insectenboek");
-					matchInfos.add(inf);
-				}
-			}
-			result.setMatchInfo(matchInfos);
-			float score = Float.parseFloat("0." + random.nextInt(99));
-			result.setScore(score);
-			result.addLink(link0);
-			result.addLink(link1);
-			rs.addSearchResult(result);
-		}
-		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
-		System.out.println(json);
-		FileUtil.setContents("C:/test/nda/mock/occurrences-with-identifications.json", json);
-	}
-
-
-	public void occurrenceWithIdentificationsWithTaxa() throws JsonProcessingException
-	{
-		SearchResultSet<SpecimenUnit> rs = new SearchResultSet<SpecimenUnit>();
-		rs.setTotalSize(1386);
-		rs.addLink("self", "http://nda.naturalis.nl/occurence/?country=Suriname&offset=1200");
-		rs.addLink("occurrence.extra-info", "http://nda.naturalis.nl/occurence/extra-info");
-		rs.addLink("taxon.cool-taxon-data", "http://nda.naturalis.nl/taxon/cool-data");
-
-		for (int i = 0; i < 20; ++i) {
-			SpecimenUnit specimenUnit = mocker.createMock(SpecimenUnit.class, SpecimenIdentification.class, Taxon.class);
-			Link link0 = new Link("self", "http://nda.naturalis.nl/occurence/?unitId=" + i);
-			Link link1 = new Link("occurrence.related-occurences", "http://nda.naturalis.nl/occurence/related/unitId=" + i);
-			SearchResult<SpecimenUnit> result = new SearchResult<SpecimenUnit>(specimenUnit);
-			List<MatchInfo<?>> matchInfos = new ArrayList<MatchInfo<?>>();
-			if (i % 2 == 0) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("country");
-				inf.setValue("Nederland");
-				inf.setValueHighlighted("Neder<em>land</em>");
-				matchInfos.add(inf);
-			}
-			else {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("locality");
-				inf.setValue("Nederland");
-				inf.setValueHighlighted("Neder<em>land</em>");
-				matchInfos.add(inf);
-			}
-			if (i % 5 == 0) {
-				if (specimenUnit.getIdentifications().size() > 1) {
-					StringMatchInfo inf = new StringMatchInfo();
-					inf.setPath("identifications[1].remarks");
-					inf.setValue("In Nederland is het altijd leuk");
-					inf.setValueHighlighted("In Neder<em>land</em> is het altijd leuk");
-					matchInfos.add(inf);
-				}
-				else {
-					StringMatchInfo inf = new StringMatchInfo();
-					inf.setPath("identifications[0].references");
-					inf.setValue("Het Nederlands Insectenboek");
-					inf.setValueHighlighted("Het Neder<em>land</em>s Insectenboek");
-					matchInfos.add(inf);
-				}
-			}
-			result.setMatchInfo(matchInfos);
-			float score = Float.parseFloat("0." + random.nextInt(99));
-			result.setScore(score);
-			result.addLink(link0);
-			result.addLink(link1);
-			rs.addSearchResult(result);
-		}
-		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
-		System.out.println(json);
-		FileUtil.setContents("C:/test/nda/mock/occurrences-with-identifications-with-taxa.json", json);
-	}
-
-
-	public void occurrenceTheFullMonty() throws JsonProcessingException
-	{
-		SearchResultSet<SpecimenUnit> rs = new SearchResultSet<SpecimenUnit>();
-		rs.setTotalSize(1020);
-		rs.addLink("self", "http://nda.naturalis.nl/occurence/?country=Suriname&offset=1200");
-		rs.addLink("occurrence.extra-info", "http://nda.naturalis.nl/occurence/extra");
-		rs.addLink("taxon.cool-taxon-data", "http://nda.naturalis.nl/taxon/cool-data");
-
-		for (int i = 0; i < 20; ++i) {
-			SpecimenUnit specimenUnit = mocker.createMock(SpecimenUnit.class, SpecimenIdentification.class, Taxon.class, ScientificName.class,
-					DefaultClassification.class, Synonym.class);
-			Link link0 = new Link("self", "http://nda.naturalis.nl/occurence/?unitId=" + i);
-			Link link1 = new Link("occurrence.related-occurences", "http://nda.naturalis.nl/occurence/related/unitId=" + i);
-			SearchResult<SpecimenUnit> result = new SearchResult<SpecimenUnit>(specimenUnit);
-			List<MatchInfo<?>> matchInfos = new ArrayList<MatchInfo<?>>();
-			if (i % 2 == 0) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("country");
-				inf.setValue("Nederland");
-				inf.setValueHighlighted("Neder<em>land</em>");
-				matchInfos.add(inf);
-			}
-			else {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("locality");
-				inf.setValue("Nederland");
-				inf.setValueHighlighted("Neder<em>land</em>");
-				matchInfos.add(inf);
-			}
-			if (i % 5 == 0) {
-				if (specimenUnit.getIdentifications().size() > 1) {
-					StringMatchInfo inf = new StringMatchInfo();
-					inf.setPath("identifications[1].remarks");
-					inf.setValue("In Nederland is het altijd leuk");
-					inf.setValueHighlighted("In Neder<em>land</em> is het altijd leuk");
-					matchInfos.add(inf);
-				}
-				else {
-					StringMatchInfo inf = new StringMatchInfo();
-					inf.setPath("identifications[0].references");
-					inf.setValue("Het Nederlands Insectenboek");
-					inf.setValueHighlighted("Het Neder<em>land</em>s Insectenboek");
-					matchInfos.add(inf);
-				}
-			}
-			result.setMatchInfo(matchInfos);
-			float score = Float.parseFloat("0." + random.nextInt(99));
-			result.setScore(score);
-			result.addLink(link0);
-			result.addLink(link1);
-			rs.addSearchResult(result);
-		}
-		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
-		System.out.println(json);
-		FileUtil.setContents("C:/test/nda/mock/occurrence-the-full-monty.json", json);
-	}
-
-
-	public void taxaWithscientificNameAndClassification() throws JsonProcessingException
-	{
-		SearchResultSet<Taxon> rs = new SearchResultSet<Taxon>();
-		rs.setTotalSize(236);
-		rs.addLink("self", "http://nda.naturalis.nl/taxon/?offset=200");
-
-		for (int i = 0; i < 20; ++i) {
-			Taxon taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class);
-			Link link0 = new Link("self", "http://nda.naturalis.nl/taxon/?taxonId=" + i);
-			Link link1 = new Link("occurrence.list-all", "http://nda.naturalis.nl/occurence/taxonId=" + i);
-			SearchResult<Taxon> result = new SearchResult<Taxon>(taxon);
-			List<MatchInfo<?>> matchInfos = new ArrayList<MatchInfo<?>>();
-			if (i % 3 == 0) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("acceptedName.author");
-				inf.setValue("Mariska van Dongen");
-				inf.setValueHighlighted("M<em>aris</em>ka van Dongen");
-				matchInfos.add(inf);
-			}
-			else if (i % 3 == 1) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("acceptedName.fullScientificName");
-				inf.setValue("Paris Major");
-				inf.setValueHighlighted("P<em>aris</em> Major");
-				matchInfos.add(inf);
-			}
-			else if (i % 3 == 2) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("acceptedName.genusOrMonomial");
-				inf.setValue("Paris");
-				inf.setValueHighlighted("P<em>aris</em>");
-				matchInfos.add(inf);
-			}
-			result.setMatchInfo(matchInfos);
-			float score = Float.parseFloat("0." + random.nextInt(99));
-			result.setScore(score);
-			result.addLink(link0);
-			result.addLink(link1);
-			rs.addSearchResult(result);
-		}
-		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
-		System.out.println(json);
-		FileUtil.setContents("C:/test/nda/mock/taxa-with-scientific-names-and-classification.json", json);
-	}
-
-
-	public void taxaTheFullMonty() throws JsonProcessingException
-	{
-		SearchResultSet<Taxon> rs = new SearchResultSet<Taxon>();
-		rs.setTotalSize(988);
-		rs.addLink("self", "http://nda.naturalis.nl/taxon/?offset=200");
-
-		for (int i = 0; i < 20; ++i) {
-			Taxon taxon = mocker.createMock(Taxon.class, ScientificName.class, DefaultClassification.class, Synonym.class, VernacularName.class,
-					Reference.class, Expert.class, Monomial.class);
-			Link link0 = new Link("self", "http://nda.naturalis.nl/taxon/?taxonId=" + i);
-			Link link1 = new Link("occurrence.list-all", "http://nda.naturalis.nl/occurence/taxonId=" + i);
-			SearchResult<Taxon> result = new SearchResult<Taxon>(taxon);
-			List<MatchInfo<?>> matchInfos = new ArrayList<MatchInfo<?>>();
-			if (i % 3 == 0) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("acceptedName.author");
-				inf.setValue("Mariska van Dongen");
-				inf.setValueHighlighted("M<em>aris</em>ka van Dongen");
-				matchInfos.add(inf);
-			}
-			else if (i % 3 == 1) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("acceptedName.fullScientificName");
-				inf.setValue("Paris Major");
-				inf.setValueHighlighted("P<em>aris</em> Major");
-				matchInfos.add(inf);
-			}
-			else if (i % 3 == 2) {
-				StringMatchInfo inf = new StringMatchInfo();
-				inf.setPath("synonyms[0].scientificName.fullScientificName");
-				inf.setValue("Paris Major");
-				inf.setValueHighlighted("P<em>aris</em> Major");
-				matchInfos.add(inf);
-			}
-			result.setMatchInfo(matchInfos);
-			float score = Float.parseFloat("0." + random.nextInt(99));
-			result.setScore(score);
-			result.addLink(link0);
-			result.addLink(link1);
-			rs.addSearchResult(result);
-		}
-		String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(rs);
-		System.out.println(json);
-		FileUtil.setContents("C:/test/nda/mock/taxa-the-full-monty.json", json);
 	}
 
 
@@ -762,7 +493,9 @@ public class Mock {
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		result.setResult(specimen);
 		specimen.getIdentifications().get(0).getDefaultClassification().setGenus("Malus");
-		specimen.setCountry("Alamalusia");
+		GatheringEvent gatheringEvent = new GatheringEvent();
+		specimen.setGatheringEvent(gatheringEvent);
+		gatheringEvent.setCountry("Alamalusia");
 		String unitId = "ZMA.RMNH." + random.nextInt();
 		specimen.setUnitID(unitId);
 		result.addLink("specimen-detail", "http://nda.naturalis.nl/specimen/" + unitId);
@@ -773,7 +506,7 @@ public class Mock {
 		matchInfo.setValueHighlighted("<span>Malus</span>");
 		result.addMatchInfo(matchInfo);
 		matchInfo = new StringMatchInfo();
-		matchInfo.setPath("country");
+		matchInfo.setPath("gatheringEvent.country");
 		matchInfo.setValue("Alamalusia");
 		matchInfo.setValueHighlighted("Ala<span>malus</span>ia");
 		result.addMatchInfo(matchInfo);
@@ -804,7 +537,9 @@ public class Mock {
 		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
 		specimen.setSourceSystem(SourceSystem.CRS);
 		result.setResult(specimen);
-		specimen.setCountry("Malusonie");
+		gatheringEvent = new GatheringEvent();
+		specimen.setGatheringEvent(gatheringEvent);
+		gatheringEvent.setCountry("Malusonie");
 		specimen.setTitle("In Malusonie komen veel tijgers voor");
 		unitId = "ZMA.RMNH." + random.nextInt();
 		specimen.setUnitID(unitId);
@@ -816,7 +551,7 @@ public class Mock {
 		matchInfo.setValueHighlighted("In <span>Malus</span>ionie komen veel tijgers voor");
 		result.addMatchInfo(matchInfo);
 		matchInfo = new StringMatchInfo();
-		matchInfo.setPath("country");
+		matchInfo.setPath("gatheringEvent.country");
 		matchInfo.setValue("Malusonie");
 		matchInfo.setValueHighlighted("<span>Malus</span>onie");
 		result.addMatchInfo(matchInfo);
@@ -847,7 +582,9 @@ public class Mock {
 		specimen = mocker.createMock(Specimen.class, SpecimenIdentification.class, ScientificName.class, DefaultClassification.class);
 		specimen.setSourceSystem(SourceSystem.CRS);
 		result.setResult(specimen);
-		specimen.setCountry("Malusonie");
+		gatheringEvent = new GatheringEvent();
+		specimen.setGatheringEvent(gatheringEvent);
+		gatheringEvent.setCountry("Malusonie");
 		specimen.setTitle("In Malusonie komen veel tijgers voor");
 		unitId = "ZMA.RMNH." + random.nextInt();
 		specimen.setUnitID(unitId);

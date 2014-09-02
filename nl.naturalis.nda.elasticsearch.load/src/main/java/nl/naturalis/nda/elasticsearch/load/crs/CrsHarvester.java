@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.ConfigObject;
@@ -44,10 +45,10 @@ public class CrsHarvester {
 
 			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 
-			//index.deleteType(LUCENE_TYPE_SPECIMEN);
-			//Thread.sleep(2000);
-			//String mapping = LoadUtil.getMapping(Specimen.class);
-			//index.addType(LUCENE_TYPE_SPECIMEN, mapping);
+			index.deleteType(LUCENE_TYPE_SPECIMEN);
+			Thread.sleep(2000);
+			String mapping = LoadUtil.getMapping(Specimen.class);
+			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 
 			CrsHarvester harvester = new CrsHarvester(index);
 			harvester.harvest();

@@ -10,56 +10,80 @@
 					"name" : { "type" : "string" }
 				}
 			},	
-			"sourceSystemID" : { "type" : "string", "index" : "not_analyzed" },
+			"sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
 			"unitID" : { "type" : "string", "index" : "not_analyzed" },
+			"unitGUID" : { "type" : "string", "index" : "not_analyzed" },
 			"recordBasis" : { "type" : "string" },
 			"kindOfUnit" : { "type" : "string" },
+			"collectionType" : { "type" : "string" },
 			"sourceInstitutionID" : { "type" : "string" },
-			"sex" : { "type" : "string" },
-			"unitGUID" : { "type" : "string" },
+			"sex" : { "type" : "string", "index" : "not_analyzed" },
 			"phaseOrStage" : { "type" : "string" },
 			"accessionSpecimenNumbers" : { "type" : "string" },
-			"altitude" : { "type" : "string" },
-			"depth" : { "type" : "string" },
-			"gatheringAgent" : { "type" : "string" },
-			"worldRegion" : { "type" : "string" },
-			"country" : { 
-				"type" : "string",
-				"fields" : {
-					"raw" : {"type" : "string", "index" : "not_analyzed" }
-				}
-			},
-			"provinceState" : {
-				"type" : "string",
-				"fields" : {
-					"raw" : {"type" : "string", "index" : "not_analyzed" }
-				}
-			},
-			"locality" : {
-				"type" : "string",
-				"fields" : {
-					"raw" : {"type" : "string", "index" : "not_analyzed" }
-				}
-			},
-			"objectPublic" : { "type" : "boolean" },
-			"altitudeUnit" : { "type" : "string" },
-			"depthUnit" : { "type" : "string" },
-			"collectingStartDate" : { "type" : "string" },
-			"collectingEndDate" : { "type" : "string" },
 			"title" : { "type" : "string" },
-			"taxonCoverage" : { "type" : "string" },
+			"objectPublic" : { "type" : "boolean" },
 			"multiMediaPublic" : { "type" : "boolean" },
-			"latitudeDecimal" : { "type" : "string" },
-			"longitudeDecimal" : { "type" : "string" },
-			"geodeticDatum" : { "type" : "string" },
-			"url" : { "type" : "string" },
+			"gatheringEvent" : {
+				"properties" : {
+					"worldRegion" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"country" : { 
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"provinceState" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"island" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"locality" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"localityText" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"dateTimeBegin" : { "type" : "date" },
+					"dateTimeEnd" : { "type" : "date" },
+					"method" : { "type" : "string", "index" : "not_analyzed" },
+					"altitude" : { "type" : "string", "index" : "not_analyzed" },
+					"altitudeUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
+					"depth" : { "type" : "string", "index" : "not_analyzed" },
+					"depthUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
+					"siteCoordinates" : {
+						"type" : "nested",
+						"properties" : {
+							"longitudeDecimal" : { "type" : "float" },
+							"latitudeDecimal" : { "type" : "float" }
+						}
+					}
+				}
+			},
 			"identifications" : {
 				"type" : "nested",				
 				"properties" : {
 					"preferred" : { "type" : "boolean" },
 					"verificationStatus" : { "type" : "string", "index" : "not_analyzed" },
 					"typeStatus" : { "type" : "string", "index" : "not_analyzed" },
-					"remarks" : { "type" : "string", "index" : "not_analyzed" },
+					"remarks" : { "type" : "string" },
 					"scientificName" : {
 						"properties" : {
 							"fullScientificName" : { "type" : "string" },

@@ -3,23 +3,20 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.domain.systypes.CrsDetermination;
-import nl.naturalis.nda.domain.systypes.CrsSpecimen;
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsDetermination;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsSpecimen;
-import nl.naturalis.nda.elasticsearch.load.HarvestException;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.ConfigObject;
+import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
@@ -40,21 +37,17 @@ import org.xml.sax.SAXException;
  */
 public class CrsHarvester {
 
-	public static void main(String[] args) throws InterruptedException
+	public static void main(String[] args) throws Exception
 	{
 		IndexNative index = null;
 		try {
 
 			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-			index.deleteType(LUCENE_TYPE_SPECIMEN);
-			index.deleteType(LUCENE_TYPE_DETERMINATION);
-			Thread.sleep(2000);
 
-			String mapping = LoadUtil.getMapping(CrsSpecimen.class);
-			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-
-			mapping = LoadUtil.getMapping(CrsDetermination.class);
-			index.addType(LUCENE_TYPE_DETERMINATION, mapping);
+			//index.deleteType(LUCENE_TYPE_SPECIMEN);
+			//Thread.sleep(2000);
+			//String mapping = LoadUtil.getMapping(Specimen.class);
+			//index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 
 			CrsHarvester harvester = new CrsHarvester(index);
 			harvester.harvest();
@@ -68,15 +61,13 @@ public class CrsHarvester {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsHarvester.class);
-	private static final String LUCENE_TYPE_SPECIMEN = LoadUtil.getLuceneType(CrsSpecimen.class);
-	private static final String LUCENE_TYPE_DETERMINATION = LoadUtil.getLuceneType(CrsDetermination.class);
-	private static final String RES_TOKEN_FILE = "/resumption-token";
-	private static final String RES_TOKEN_DELIM = ",";
+	private static final String LUCENE_TYPE_SPECIMEN = "Specimen";
+	private static final String ID_PREFIX = "CRS-";
+	private static final int ES_BULK_REQUEST_SIZE = 1000;
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
 
-	private int batch;
 	private int processed;
 	private int bad;
 
@@ -102,6 +93,9 @@ public class CrsHarvester {
 
 	public void harvest()
 	{
+		
+		int batch = 0;
+		
 		try {
 
 			String resToken;
@@ -113,7 +107,7 @@ public class CrsHarvester {
 				batch = 0;
 			}
 			else {
-				String[] elements = FileUtil.getContents(resTokenFile).split(RES_TOKEN_DELIM);
+				String[] elements = FileUtil.getContents(resTokenFile).split(",");
 				batch = Integer.parseInt(elements[0]);
 				resToken = elements[1];
 				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
@@ -124,8 +118,7 @@ public class CrsHarvester {
 
 			do {
 				logger.info("Processing batch " + batch);
-				resToken = processBatch(resToken);
-				++batch;
+				resToken = processXML(batch++, resToken);
 			} while (resToken != null);
 
 			logger.info("Deleting resumption token file");
@@ -145,14 +138,17 @@ public class CrsHarvester {
 	}
 
 
-	private String processBatch(String resToken)
+	private String processXML(int batch, String resumptionToken)
 	{
-		if (resToken != null) {
+		
+		if (resumptionToken != null) {
 			logger.info("Saving resumption token");
-			saveResumptionToken(resToken);
+			String contents = String.valueOf(batch) + "," + resumptionToken;
+			FileUtil.setContents(getResumptionTokenFile(), contents);
 		}
+		
 		logger.info("Calling CRS OAI service");
-		String xml = getXML(resToken);
+		String xml = getXML(resumptionToken);
 		Document doc;
 		logger.info("Parsing XML");
 		try {
@@ -166,70 +162,55 @@ public class CrsHarvester {
 		}
 		doc.normalize();
 		NodeList records = doc.getElementsByTagName("record");
-		int batchSize = records.getLength();
-		logger.info("Records in batch: " + batchSize);
-		for (int i = 0; i < batchSize; ++i) {
+		int numRecords = records.getLength();
+		logger.info("Number of records in XML output: " + numRecords);
+
+		List<Specimen> specimens = new ArrayList<Specimen>(ES_BULK_REQUEST_SIZE);
+		List<String> ids = new ArrayList<String>(ES_BULK_REQUEST_SIZE);
+		for (int i = 0; i < numRecords; ++i) {
 			Element record = (Element) records.item(i);
-			saveSpecimen(record, i);
+			String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
+			if (isDeletedRecord(record)) {
+				index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
+			}
+			else {
+				specimens.add(CrsTransfer.transfer(record));
+				ids.add(id);
+				if (specimens.size() == ES_BULK_REQUEST_SIZE) {
+					index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
+					specimens.clear();
+					ids.clear();
+				}
+			}
 			if (++processed % 1000 == 0) {
 				logger.info("Records processed: " + processed);
 			}
+		}
+		if (!specimens.isEmpty()) {
+			index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
 		}
 		return getResumptionToken(doc);
 	}
 
 
-	private void saveSpecimen(Element record, int recNo)
+	private String getXML(String resumptionToken)
 	{
-		ESCrsSpecimen specimen = null;
-		try {
-			Element header = getChild(record, "header");
-			String id = getChild(header, "identifier").getTextContent();
-			if (header.hasAttribute("status") && header.getAttribute("status").equals("deleted")) {
-				deleteRecord(id);
-			}
-			else {
-				specimen = CRSTransfer.createSpecimen(record);
-				specimen.setUnitID(specimen.getUnitID().trim());
-				List<ESCrsDetermination> determinations = CRSTransfer.getDeterminations(record);
-				specimen.setNumDeterminations(determinations.size());
-				if (determinations.size() > 0) {
-					specimen.setDetermination0(determinations.get(0));
-					if (determinations.size() > 1) {
-						specimen.setDetermination1(determinations.get(1));
-						if (determinations.size() > 2) {
-							specimen.setDetermination2(determinations.get(2));
-						}
-					}
-				}
-				index.saveObject(LUCENE_TYPE_SPECIMEN, specimen, specimen.getUnitID());
-				for (int i = 3; i < determinations.size(); ++i) {
-					index.saveObject(LUCENE_TYPE_DETERMINATION, determinations.get(i), null, specimen.getUnitID());
-				}
-			}
+		if (config.getBoolean("isTest")) {
+			String key = resumptionToken == null ? "service.url.initial.test" : "service.url.resume.test";
+			String val = config.getString(key);
+			return FileUtil.getContents(val);
 		}
-		catch (Throwable t) {
-			++bad;
-			String fmt = "Error while processing record %s, specimen \"%s\": %s";
-			String msg = String.format(fmt, recNo, specimen.getUnitID(), t.getMessage());
-			logger.error(msg);
-			logger.error("Stack trace for error: ", t);
-		}
+		String key = resumptionToken == null ? "service.url.initial" : "service.url.resume";
+		String val = config.getString(key);
+		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
 	}
 
-
-	private void deleteRecord(String id)
+	private static boolean isDeletedRecord(Element record)
 	{
-	}
-
-
-	private void saveResumptionToken(String resToken)
-	{
-		File resTokenFile = getResumptionTokenFile();
-		if (resTokenFile.exists()) {
-			resTokenFile.delete();
+		if (!DOMUtil.getChild(record, "header").hasAttribute("status")) {
+			return false;
 		}
-		FileUtil.setContents(resTokenFile, String.valueOf(batch) + "," + resToken);
+		return DOMUtil.getChild(record, "header").getAttribute("status").equals("deleted");
 	}
 
 
@@ -245,30 +226,9 @@ public class CrsHarvester {
 
 	private static File getResumptionTokenFile()
 	{
-		return new File(System.getProperty("java.io.tmpdir") + RES_TOKEN_FILE);
+		return new File(System.getProperty("java.io.tmpdir") + "/resumption-token");
 	}
 
 
-	private static Element getChild(Element e, String childName)
-	{
-		NodeList nl = e.getElementsByTagName(childName);
-		if (nl.getLength() != 0) {
-			return (Element) nl.item(0);
-		}
-		throw new HarvestException("No such child element: " + childName);
-	}
-
-
-	private String getXML(String resToken)
-	{
-		if (config.getBoolean("isTest")) {
-			String key = resToken == null ? "service.url.initial.test" : "service.url.resume.test";
-			String val = config.getString(key);
-			return FileUtil.getContents(val);
-		}
-		String key = resToken == null ? "service.url.initial" : "service.url.resume";
-		String val = config.getString(key);
-		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
-	}
 
 }

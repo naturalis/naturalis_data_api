@@ -96,6 +96,16 @@ public interface Index {
 
 
 	/**
+	 * Delete the document with the specified id
+	 * 
+	 * @param type The type of the document
+	 * @param id The id of the document
+	 * @return Whether or not the document was found
+	 */
+	boolean deleteDocument(String type, String id);
+
+
+	/**
 	 * Add a new document of the specified type to the index.
 	 * 
 	 * @param type The type of the document

@@ -347,4 +347,12 @@ public class IndexREST implements Index {
 		return null;
 	}
 
+
+	@Override
+	public boolean deleteDocument(String type, String id)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

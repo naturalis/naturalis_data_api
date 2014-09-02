@@ -1,0 +1,105 @@
+{
+	"Specimen" : {
+	
+		"dynamic" : "strict",
+	
+		"properties" : {
+			"sourceSystem" : {
+				"properties" : {
+					"code" : { "type" : "string", "index" : "not_analyzed" },
+					"name" : { "type" : "string" }
+				}
+			},	
+			"sourceSystemID" : { "type" : "string", "index" : "not_analyzed" },
+			"unitID" : { "type" : "string", "index" : "not_analyzed" },
+			"recordBasis" : { "type" : "string" },
+			"kindOfUnit" : { "type" : "string" },
+			"sourceInstitutionID" : { "type" : "string" },
+			"sex" : { "type" : "string" },
+			"unitGUID" : { "type" : "string" },
+			"phaseOrStage" : { "type" : "string" },
+			"accessionSpecimenNumbers" : { "type" : "string" },
+			"altitude" : { "type" : "string" },
+			"depth" : { "type" : "string" },
+			"gatheringAgent" : { "type" : "string" },
+			"worldRegion" : { "type" : "string" },
+			"country" : { 
+				"type" : "string",
+				"fields" : {
+					"raw" : {"type" : "string", "index" : "not_analyzed" }
+				}
+			},
+			"provinceState" : {
+				"type" : "string",
+				"fields" : {
+					"raw" : {"type" : "string", "index" : "not_analyzed" }
+				}
+			},
+			"locality" : {
+				"type" : "string",
+				"fields" : {
+					"raw" : {"type" : "string", "index" : "not_analyzed" }
+				}
+			},
+			"objectPublic" : { "type" : "boolean" },
+			"altitudeUnit" : { "type" : "string" },
+			"depthUnit" : { "type" : "string" },
+			"collectingStartDate" : { "type" : "string" },
+			"collectingEndDate" : { "type" : "string" },
+			"title" : { "type" : "string" },
+			"taxonCoverage" : { "type" : "string" },
+			"multiMediaPublic" : { "type" : "boolean" },
+			"latitudeDecimal" : { "type" : "string" },
+			"longitudeDecimal" : { "type" : "string" },
+			"geodeticDatum" : { "type" : "string" },
+			"url" : { "type" : "string" },
+			"identifications" : {
+				"type" : "nested",				
+				"properties" : {
+					"preferred" : { "type" : "boolean" },
+					"verificationStatus" : { "type" : "string", "index" : "not_analyzed" },
+					"typeStatus" : { "type" : "string", "index" : "not_analyzed" },
+					"remarks" : { "type" : "string", "index" : "not_analyzed" },
+					"scientificName" : {
+						"properties" : {
+							"fullScientificName" : { "type" : "string" },
+							"taxonomicStatus" : { "type" : "string" },
+							"genusOrMonomial" : { "type" : "string" },
+							"subgenus" : { "type" : "string" },
+							"specificEpithet" : { "type" : "string" },
+							"infraspecificEpithet" : { "type" : "string" },
+							"nameAddendum" : { "type" : "string" },
+							"authorshipVerbatim" : { "type" : "string" },
+							"author" : { "type" : "string" },
+							"year" : { "type" : "string" }							
+						}
+					},
+					"defaultClassification" : {
+						"properties" : {
+							"kingdom" : { "type" : "string" },
+							"phylum" : { "type" : "string" },
+							"className" : { "type" : "string" },
+							"order" : { "type" : "string" },
+							"superFamily" : { "type" : "string" },
+							"family" : { "type" : "string" },
+							"genus" : { "type" : "string" },
+							"subgenus" : { "type" : "string" },
+							"specificEpithet" : { "type" : "string" },
+							"infraspecificEpithet" : { "type" : "string" },
+							"infraspecificRank" : { "type" : "string" }
+						}
+					},					
+					"systemClassification" : {
+						"type" : "nested",
+						"properties" : {
+							"rank" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					},
+					"vernacularNames" : { "type" : "string" },
+					"identificationQualifiers" : { "type" : "string" }
+				}
+			}
+		}
+	}
+}

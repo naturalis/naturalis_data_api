@@ -23,6 +23,8 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -289,6 +291,18 @@ public class IndexNative implements Index {
 			}
 		}
 		return null;
+	}
+
+
+	@Override
+	public boolean deleteDocument(String type, String id)
+	{
+		DeleteRequestBuilder drb = esClient.prepareDelete();
+		drb.setId(id);
+		drb.setType(type);
+		drb.setIndex(indexName);
+		DeleteResponse response = drb.execute().actionGet();
+		return response.isFound();
 	}
 
 

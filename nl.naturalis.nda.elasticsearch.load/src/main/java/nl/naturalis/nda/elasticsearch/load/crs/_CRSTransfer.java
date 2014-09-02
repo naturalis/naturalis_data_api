@@ -2,8 +2,6 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -22,10 +20,10 @@ import org.w3c.dom.NodeList;
  * @author ayco_holleman
  * 
  */
-class CRSTransfer {
+class _CRSTransfer {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(CRSTransfer.class);
+	private static final Logger logger = LoggerFactory.getLogger(_CRSTransfer.class);
 	private static final String ABCD_NAMESPACE_URI = "http://rs.tdwg.org/abcd/2.06/b/";
 
 	//@formatter:off

@@ -6,6 +6,18 @@ public class GatheringSiteCoordinates {
 	private Double latitudeDecimal;
 
 
+	public GatheringSiteCoordinates()
+	{
+	}
+
+
+	public GatheringSiteCoordinates(Double latitude, Double longitude)
+	{
+		this.longitudeDecimal = longitude;
+		this.latitudeDecimal = latitude;
+	}
+
+
 	public Double getLongitudeDecimal()
 	{
 		return longitudeDecimal;

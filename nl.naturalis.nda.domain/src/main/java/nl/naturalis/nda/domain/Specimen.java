@@ -20,7 +20,6 @@ public class Specimen extends NdaTraceableObject {
 	private boolean multiMediaPublic;
 
 	private GatheringEvent gatheringEvent;
-	private List<GatheringSiteCoordinates> siteCoordinates;
 	private List<SpecimenIdentification> identifications;
 	private List<Specimen> otherSpecimensInSet;
 	private List<Taxon> associatedTaxa;
@@ -209,18 +208,6 @@ public class Specimen extends NdaTraceableObject {
 	public void setGatheringEvent(GatheringEvent gatheringEvent)
 	{
 		this.gatheringEvent = gatheringEvent;
-	}
-
-
-	public List<GatheringSiteCoordinates> getSiteCoordinates()
-	{
-		return siteCoordinates;
-	}
-
-
-	public void setSiteCoordinates(List<GatheringSiteCoordinates> siteCoordinates)
-	{
-		this.siteCoordinates = siteCoordinates;
 	}
 
 

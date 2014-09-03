@@ -5,6 +5,7 @@ import java.util.List;
 
 public abstract class TaxonomicIdentification {
 
+	private String taxonRank;
 	private ScientificName scientificName;
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
@@ -12,6 +13,18 @@ public abstract class TaxonomicIdentification {
 	private List<String> identificationQualifiers;
 	private String identifiedBy;
 	private Date dateIdentified;
+
+
+	public String getTaxonRank()
+	{
+		return taxonRank;
+	}
+
+
+	public void setTaxonRank(String taxonRank)
+	{
+		this.taxonRank = taxonRank;
+	}
 
 
 	public ScientificName getScientificName()

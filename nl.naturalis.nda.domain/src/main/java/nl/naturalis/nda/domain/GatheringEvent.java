@@ -1,6 +1,8 @@
 package nl.naturalis.nda.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GatheringEvent {
 
@@ -17,6 +19,26 @@ public class GatheringEvent {
 	private String altitudeUnifOfMeasurement;
 	private String dept;
 	private String deptUnitOfMeasurement;
+	private List<GatheringAgent> gatheringAgents;
+	private List<GatheringSiteCoordinates> siteCoordinates;
+
+
+	public void addGatheringAgent(GatheringAgent agent)
+	{
+		if (gatheringAgents == null) {
+			gatheringAgents = new ArrayList<GatheringAgent>();
+		}
+		gatheringAgents.add(agent);
+	}
+
+
+	public void addSiteCoordinates(GatheringSiteCoordinates coordinates)
+	{
+		if (siteCoordinates == null) {
+			siteCoordinates = new ArrayList<GatheringSiteCoordinates>();
+		}
+		siteCoordinates.add(coordinates);
+	}
 
 
 	public String getWorldRegion()
@@ -172,6 +194,30 @@ public class GatheringEvent {
 	public void setDeptUnitOfMeasurement(String deptUnitOfMeasurement)
 	{
 		this.deptUnitOfMeasurement = deptUnitOfMeasurement;
+	}
+
+
+	public List<GatheringAgent> getGatheringAgents()
+	{
+		return gatheringAgents;
+	}
+
+
+	public void setGatheringAgents(List<GatheringAgent> gatheringAgents)
+	{
+		this.gatheringAgents = gatheringAgents;
+	}
+
+
+	public List<GatheringSiteCoordinates> getSiteCoordinates()
+	{
+		return siteCoordinates;
+	}
+
+
+	public void setSiteCoordinates(List<GatheringSiteCoordinates> siteCoordinates)
+	{
+		this.siteCoordinates = siteCoordinates;
 	}
 
 }

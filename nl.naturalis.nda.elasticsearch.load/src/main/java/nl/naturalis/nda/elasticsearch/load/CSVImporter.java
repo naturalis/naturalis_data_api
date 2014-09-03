@@ -35,6 +35,8 @@ public abstract class CSVImporter<T> {
 	private int batchSize = DEFAULT_BATCH_SIZE;
 	private boolean specifyId = false;
 	private boolean specifyParent = false;
+	
+	protected char delimiter = '\t';
 
 
 	public CSVImporter(Index index, String type)
@@ -48,7 +50,8 @@ public abstract class CSVImporter<T> {
 	{
 		logger.info(String.format("Processing CSV file \"%s\"", path));
 		CSVFormat format = CSVFormat.DEFAULT;
-		format = format.withDelimiter('\t');
+		format = format.withDelimiter(delimiter);
+		format = format.withRecordSeparator("\r\n");
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
 		int processed = 0;

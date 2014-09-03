@@ -18,6 +18,15 @@ public class GatheringSiteCoordinates {
 	}
 
 
+	public GeoPoint getPoint()
+	{
+		if (longitudeDecimal == null || latitudeDecimal == null) {
+			return null;
+		}
+		return new GeoPoint(longitudeDecimal, latitudeDecimal);
+	}
+
+
 	public Double getLongitudeDecimal()
 	{
 		return longitudeDecimal;

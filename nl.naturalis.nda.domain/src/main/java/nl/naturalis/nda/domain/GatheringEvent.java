@@ -41,6 +41,12 @@ public class GatheringEvent {
 	}
 
 
+	public void addSiteCoordinates(Double latitude, Double longitude)
+	{
+		addSiteCoordinates(new GatheringSiteCoordinates(latitude, longitude));
+	}
+
+
 	public String getWorldRegion()
 	{
 		return worldRegion;

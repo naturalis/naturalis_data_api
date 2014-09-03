@@ -68,6 +68,14 @@
 					"altitudeUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
 					"depth" : { "type" : "string", "index" : "not_analyzed" },
 					"depthUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
+					"gatheringAgents" : {
+						"type" : "nested",
+						"properties" : {
+							"agentText" : { "type" : "string" },
+							"name" : { "type" : "string" }, /* organization */
+							"fullName" : { "type" : "string" } /* person */
+						}
+					},
 					"siteCoordinates" : {
 						"type" : "nested",
 						"properties" : {

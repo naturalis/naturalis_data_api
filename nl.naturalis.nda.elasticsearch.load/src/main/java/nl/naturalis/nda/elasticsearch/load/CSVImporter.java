@@ -85,7 +85,7 @@ public abstract class CSVImporter<T> {
 					if (specifyParent) {
 						parentIds.add(getParentId(record));
 					}
-					if (objects.size() == batchSize) {
+					if (objects.size() >= batchSize) {
 						index.saveObjects(type, objects, ids, parentIds);
 						objects.clear();
 						if (specifyId) {
@@ -116,7 +116,7 @@ public abstract class CSVImporter<T> {
 	}
 
 
-	protected abstract T transfer(CSVRecord record);
+	protected abstract T transfer(CSVRecord record) throws Exception;
 
 
 	@SuppressWarnings({ "static-method", "unused" })

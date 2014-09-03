@@ -2,7 +2,6 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
@@ -36,9 +35,7 @@ import org.elasticsearch.indices.TypeMissingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**

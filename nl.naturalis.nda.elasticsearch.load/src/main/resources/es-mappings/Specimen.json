@@ -80,7 +80,8 @@
 						"type" : "nested",
 						"properties" : {
 							"longitudeDecimal" : { "type" : "float" },
-							"latitudeDecimal" : { "type" : "float" }
+							"latitudeDecimal" : { "type" : "float" },
+							"point" : { "type" : "geo_shape" }
 						}
 					}
 				}

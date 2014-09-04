@@ -1,0 +1,81 @@
+{
+	"MultiMedia" : {
+	
+		"dynamic" : "strict",
+	
+		"properties" : {
+			"sourceSystem" : {
+				"properties" : {
+					"code" : { "type" : "string", "index" : "not_analyzed" },
+					"name" : { "type" : "string" }
+				}
+			},	
+			"sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
+			"type" : { "type" : "string", "index" : "not_analyzed" },
+			"title" : { "type" : "string" },
+			"taxonCount" : { "type" : "integer" },
+			"subjectParts" : { "type" : "string" },
+			"subjectOrientations" : { "type" : "string" },
+			"phasesOrStages" : { "type" : "string", "index" : "not_analyzed" },
+			"sexes" : { "type" : "string", "index" : "not_analyzed" },
+			"serviceAccessPoints" : {
+				"type" : "nested",
+				"properties" : {
+					"accessUri" : { "type" : "string" },
+					"format" : { "type" : "string" },
+					"variant" : { "type" : "string" }
+				}
+			},
+			"iptcInfo" : {
+				"type" : "nested",
+				"properties" : {
+					"locationShown" : { "type" : "string" },
+					"worldRegion" : { "type" : "string" },
+					"countryCode" : { "type" : "string" },
+					"countryName" : { "type" : "string" },
+					"provinceState" : { "type" : "string" },
+					"city" : { "type" : "string" },
+					"sublocation" :  	{ "type" : "string" }		
+				}
+			},		
+			"scientificNames" : {
+				"type" : "nested",
+				"properties" : {
+					"fullScientificName" : { "type" : "string" },
+					"taxonomicStatus" : { "type" : "string" },
+					"genusOrMonomial" : { "type" : "string" },
+					"subgenus" : { "type" : "string" },
+					"specificEpithet" : { "type" : "string" },
+					"infraspecificEpithet" : { "type" : "string" },
+					"nameAddendum" : { "type" : "string" },
+					"authorshipVerbatim" : { "type" : "string" },
+					"author" : { "type" : "string" },
+					"year" : { "type" : "string" }							
+				}
+			},
+			"defaultClassifications" : {
+				"type" : "nested",	
+				"properties" : {
+					"kingdom" : { "type" : "string" },
+					"phylum" : { "type" : "string" },
+					"className" : { "type" : "string" },
+					"order" : { "type" : "string" },
+					"superFamily" : { "type" : "string" },
+					"family" : { "type" : "string" },
+					"genus" : { "type" : "string" },
+					"subgenus" : { "type" : "string" },
+					"specificEpithet" : { "type" : "string" },
+					"infraspecificEpithet" : { "type" : "string" },
+					"infraspecificRank" : { "type" : "string" }
+				}
+			},
+			"systemClassifications" : {
+					"type" : "nested",
+					"properties" : {
+						"rank" : { "type" : "string", "index" : "not_analyzed" },
+						"name" : { "type" : "string" }
+					}
+				}
+			}
+		}
+}

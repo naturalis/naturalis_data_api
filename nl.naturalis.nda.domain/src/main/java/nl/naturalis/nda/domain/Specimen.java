@@ -12,10 +12,12 @@ public class Specimen extends NdaTraceableObject {
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
+	private String typeStatus;
 	private String sex;
 	private String phaseOrStage;
 	private String accessionSpecimenNumbers;
 	private String title;
+	private String notes;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
 
@@ -115,6 +117,18 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
+	public String getTypeStatus()
+	{
+		return typeStatus;
+	}
+
+
+	public void setTypeStatus(String typeStatus)
+	{
+		this.typeStatus = typeStatus;
+	}
+
+
 	public String getCollectionType()
 	{
 		return collectionType;
@@ -172,6 +186,18 @@ public class Specimen extends NdaTraceableObject {
 	public void setTitle(String title)
 	{
 		this.title = title;
+	}
+
+
+	public String getNotes()
+	{
+		return notes;
+	}
+
+
+	public void setNotes(String notes)
+	{
+		this.notes = notes;
 	}
 
 

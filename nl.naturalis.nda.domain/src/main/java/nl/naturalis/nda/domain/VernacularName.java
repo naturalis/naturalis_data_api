@@ -4,9 +4,20 @@ public class VernacularName {
 
 	private String name;
 	private String language;
-	private boolean preferred;
+	private Boolean preferred;
 
 	private Expert expert;
+
+
+	public VernacularName()
+	{
+	}
+
+
+	public VernacularName(String name)
+	{
+		this.name = name;
+	}
 
 
 	public String getName()
@@ -33,13 +44,13 @@ public class VernacularName {
 	}
 
 
-	public boolean isPreferred()
+	public Boolean isPreferred()
 	{
 		return preferred;
 	}
 
 
-	public void setPreferred(boolean preferred)
+	public void setPreferred(Boolean preferred)
 	{
 		this.preferred = preferred;
 	}

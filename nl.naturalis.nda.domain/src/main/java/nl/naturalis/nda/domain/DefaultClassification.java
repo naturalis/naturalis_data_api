@@ -91,8 +91,7 @@ public class DefaultClassification {
 				break;
 		}
 	}
-
-
+	
 	public String getKingdom()
 	{
 		return kingdom;

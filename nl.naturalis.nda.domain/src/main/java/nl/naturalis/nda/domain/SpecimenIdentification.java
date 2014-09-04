@@ -4,7 +4,6 @@ public class SpecimenIdentification extends TaxonomicIdentification {
 
 	private boolean preferred;
 	private String verificationStatus;
-	private String typeStatus;
 	private String remarks;
 	private String references;
 
@@ -30,18 +29,6 @@ public class SpecimenIdentification extends TaxonomicIdentification {
 	public void setVerificationStatus(String verificationStatus)
 	{
 		this.verificationStatus = verificationStatus;
-	}
-
-
-	public String getTypeStatus()
-	{
-		return typeStatus;
-	}
-
-
-	public void setTypeStatus(String typeStatus)
-	{
-		this.typeStatus = typeStatus;
 	}
 
 

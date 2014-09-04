@@ -101,7 +101,9 @@ public abstract class CSVImporter<T> {
 				}
 				catch (Throwable t) {
 					++bad;
-					logger.error("Error at line " + (processed + 1), t);
+					logger.debug(line, t);
+					logger.error("Error at line " + (processed + 1) + ": " + t.getMessage());
+					
 				}
 			}
 			if (!objects.isEmpty()) {

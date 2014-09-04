@@ -13,14 +13,17 @@
 			"sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
 			"unitID" : { "type" : "string", "index" : "not_analyzed" },
 			"unitGUID" : { "type" : "string", "index" : "not_analyzed" },
+			"setID" : { "type" : "string", "index" : "not_analyzed" },
 			"recordBasis" : { "type" : "string" },
 			"kindOfUnit" : { "type" : "string" },
+			"typeStatus" : { "type" : "string" },
 			"collectionType" : { "type" : "string" },
 			"sourceInstitutionID" : { "type" : "string" },
 			"sex" : { "type" : "string", "index" : "not_analyzed" },
 			"phaseOrStage" : { "type" : "string" },
 			"accessionSpecimenNumbers" : { "type" : "string" },
 			"title" : { "type" : "string" },
+			"notes" : { "type" : "string" },
 			"objectPublic" : { "type" : "boolean" },
 			"multiMediaPublic" : { "type" : "boolean" },
 			"gatheringEvent" : {
@@ -91,8 +94,10 @@
 				"properties" : {
 					"preferred" : { "type" : "boolean" },
 					"verificationStatus" : { "type" : "string", "index" : "not_analyzed" },
-					"typeStatus" : { "type" : "string", "index" : "not_analyzed" },
 					"remarks" : { "type" : "string" },
+					"identifiedBy" : { "type" : "string" },
+					"identifiedBy" : { "type" : "string" },
+					"dateIdentified" : { "type" : "date" },
 					"scientificName" : {
 						"properties" : {
 							"fullScientificName" : { "type" : "string" },
@@ -129,7 +134,14 @@
 							"name" : { "type" : "string" }
 						}
 					},
-					"vernacularNames" : { "type" : "string" },
+					"vernacularNames" : {
+						"type" : "nested",
+						"properties" : {
+							"name" : { "type" : "string" },
+							"language" : { "type" : "string" },
+							"preferred" : { "type" : "boolean" }
+						}
+					},
 					"identificationQualifiers" : { "type" : "string" }
 				}
 			}

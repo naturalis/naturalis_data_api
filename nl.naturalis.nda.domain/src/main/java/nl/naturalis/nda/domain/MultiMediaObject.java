@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dwc:scientificName
  */
-public class MultiMediaObject {
+public class MultiMediaObject extends NdaTraceableObject {
 
 	/**
 	 * Enumeration of the possible types of a {@code Media} object.
@@ -32,6 +32,7 @@ public class MultiMediaObject {
 	private List<String> phasesOrStages;
 	private List<String> sexes;
 
+	private List<Iptc4xmpExt> iptcInfo;
 	private List<ScientificName> scientificNames;
 	private List<DefaultClassification> defaultClassifications;
 	private List<List<Monomial>> systemClassifications;
@@ -163,6 +164,18 @@ public class MultiMediaObject {
 	public void setSexes(List<String> sexes)
 	{
 		this.sexes = sexes;
+	}
+
+
+	public List<Iptc4xmpExt> getIptcInfo()
+	{
+		return iptcInfo;
+	}
+
+
+	public void setIptcInfo(List<Iptc4xmpExt> iptcInfo)
+	{
+		this.iptcInfo = iptcInfo;
 	}
 
 

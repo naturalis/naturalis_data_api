@@ -19,9 +19,16 @@ public class ServiceAccessPoint {
 	}
 
 
+	public ServiceAccessPoint(URI uri, String format, Variant variant)
+	{
+		this.accessUri = uri;
+		this.format = format;
+		this.variant = variant;
+	}
+
 	public ServiceAccessPoint(String uri, String format, Variant variant)
 	{
-		this.accessUri = URI.create(uri);
+		this.accessUri = URI.create("file://" + uri);
 		this.format = format;
 		this.variant = variant;
 	}

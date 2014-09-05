@@ -1,6 +1,6 @@
 package nl.naturalis.nda.domain;
 
-public class GatheringPerson extends GatheringAgent {
+public class PersonAgent extends Agent {
 
 	private String fullName;
 
@@ -15,5 +15,6 @@ public class GatheringPerson extends GatheringAgent {
 	{
 		this.fullName = fullName;
 	}
+
 
 }

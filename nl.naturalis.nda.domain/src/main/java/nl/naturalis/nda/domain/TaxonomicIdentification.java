@@ -1,5 +1,6 @@
 package nl.naturalis.nda.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,8 +12,15 @@ public abstract class TaxonomicIdentification {
 	private List<Monomial> systemClassification;
 	private List<VernacularName> vernacularNames;
 	private List<String> identificationQualifiers;
-	private String identifiedBy;
 	private Date dateIdentified;
+	private List<Agent> identifiers;
+	
+	public void addIdentifier(Agent identifier) {
+		if(identifiers == null) {
+			identifiers = new ArrayList<Agent>(4);
+		}
+		identifiers.add(identifier);
+	}
 
 
 	public String getTaxonRank()
@@ -87,18 +95,6 @@ public abstract class TaxonomicIdentification {
 	}
 
 
-	public String getIdentifiedBy()
-	{
-		return identifiedBy;
-	}
-
-
-	public void setIdentifiedBy(String identifiedBy)
-	{
-		this.identifiedBy = identifiedBy;
-	}
-
-
 	public Date getDateIdentified()
 	{
 		return dateIdentified;
@@ -108,6 +104,18 @@ public abstract class TaxonomicIdentification {
 	public void setDateIdentified(Date dateIdentified)
 	{
 		this.dateIdentified = dateIdentified;
+	}
+
+
+	public List<Agent> getIdentifiers()
+	{
+		return identifiers;
+	}
+
+
+	public void setIdentifiers(List<Agent> identifiers)
+	{
+		this.identifiers = identifiers;
 	}
 
 }

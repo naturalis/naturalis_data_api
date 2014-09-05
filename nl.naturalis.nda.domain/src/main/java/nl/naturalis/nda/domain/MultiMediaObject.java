@@ -24,18 +24,14 @@ public class MultiMediaObject extends NdaTraceableObject {
 	private String caption;
 	private String description;
 	private Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints;
-
 	private Type type;
 	private int taxonCount;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
 	private List<String> sexes;
-
-	private List<Iptc4xmpExt> iptcInfo;
-	private List<ScientificName> scientificNames;
-	private List<DefaultClassification> defaultClassifications;
-	private List<List<Monomial>> systemClassifications;
+	private List<MultiMediaGatheringEvent> gatheringEvents;
+	private List<MultiMediaContentIdentification> identifications;
 
 
 	public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
@@ -44,6 +40,15 @@ public class MultiMediaObject extends NdaTraceableObject {
 			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
 		}
 		serviceAccessPoints.put(variant, new ServiceAccessPoint(uri, format, variant));
+	}
+
+
+	public void addServiceAccessPoint(ServiceAccessPoint sap)
+	{
+		if (serviceAccessPoints == null) {
+			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
+		}
+		serviceAccessPoints.put(sap.getVariant(), sap);
 	}
 
 
@@ -167,51 +172,27 @@ public class MultiMediaObject extends NdaTraceableObject {
 	}
 
 
-	public List<Iptc4xmpExt> getIptcInfo()
+	public List<MultiMediaGatheringEvent> getGatheringEvents()
 	{
-		return iptcInfo;
+		return gatheringEvents;
 	}
 
 
-	public void setIptcInfo(List<Iptc4xmpExt> iptcInfo)
+	public void setGatheringEvents(List<MultiMediaGatheringEvent> gatheringEvents)
 	{
-		this.iptcInfo = iptcInfo;
+		this.gatheringEvents = gatheringEvents;
 	}
 
 
-	public List<ScientificName> getScientificNames()
+	public List<MultiMediaContentIdentification> getIdentifications()
 	{
-		return scientificNames;
+		return identifications;
 	}
 
 
-	public void setScientificNames(List<ScientificName> scientificNames)
+	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
 	{
-		this.scientificNames = scientificNames;
-	}
-
-
-	public List<DefaultClassification> getDefaultClassifications()
-	{
-		return defaultClassifications;
-	}
-
-
-	public void setDefaultClassifications(List<DefaultClassification> defaultClassifications)
-	{
-		this.defaultClassifications = defaultClassifications;
-	}
-
-
-	public List<List<Monomial>> getSystemClassifications()
-	{
-		return systemClassifications;
-	}
-
-
-	public void setSystemClassifications(List<List<Monomial>> systemClassifications)
-	{
-		this.systemClassifications = systemClassifications;
+		this.identifications = identifications;
 	}
 
 }

@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.GatheringAgent;
 import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.Monomial;
@@ -70,7 +70,7 @@ public class CrsTransfer {
 		ge.setDateTimeEnd(date(recordElement,"CollectingEndDate"));
 		String s = val(recordElement, "GatheringAgent");
 		if (s != null) {
-			ge.addGatheringAgent(new GatheringAgent(s));
+			ge.addGatheringAgent(new Agent(s));
 		}
 		Double lat = dval(recordElement, "LatitudeDecimal");
 		Double lon = dval(recordElement, "LongitudeDecimal");

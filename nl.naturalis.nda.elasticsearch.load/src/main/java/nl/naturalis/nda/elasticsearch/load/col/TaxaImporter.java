@@ -1,6 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Monomial;
@@ -89,7 +91,7 @@ public class TaxaImporter extends CSVImporter<ESTaxon> {
 
 
 	@Override
-	protected ESTaxon transfer(CSVRecord record)
+	protected List<ESTaxon> transfer(CSVRecord record)
 	{
 		final ESTaxon taxon = new ESTaxon();
 
@@ -127,7 +129,7 @@ public class TaxaImporter extends CSVImporter<ESTaxon> {
 			taxon.addDescription(td);
 		}
 
-		return taxon;
+		return Arrays.asList(taxon);
 	}
 
 
@@ -141,9 +143,10 @@ public class TaxaImporter extends CSVImporter<ESTaxon> {
 
 
 	@Override
-	protected String getId(CSVRecord record)
+	protected List<String> getIds(CSVRecord record)
 	{
-		return ID_PREFIX + record.get(CsvField.taxonID.ordinal());
+		String id =ID_PREFIX + record.get(CsvField.taxonID.ordinal());
+		return Arrays.asList(id);
 	}
 
 

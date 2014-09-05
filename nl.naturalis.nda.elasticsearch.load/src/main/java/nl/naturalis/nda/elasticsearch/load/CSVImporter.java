@@ -19,6 +19,7 @@ public abstract class CSVImporter<T> {
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
 	private static final int DEFAULT_BATCH_SIZE = 1000;
 
+
 	protected static int getInt(CSVRecord record, int fieldNo)
 	{
 		String s = record.get(fieldNo);
@@ -28,14 +29,13 @@ public abstract class CSVImporter<T> {
 		return Integer.parseInt(s);
 	}
 
-
 	private final Index index;
 	private final String type;
 
 	private int batchSize = DEFAULT_BATCH_SIZE;
 	private boolean specifyId = false;
 	private boolean specifyParent = false;
-	
+
 	protected char delimiter = '\t';
 
 
@@ -81,12 +81,12 @@ public abstract class CSVImporter<T> {
 						++skipped;
 						continue;
 					}
-					objects.add(transfer(record));
+					objects.addAll(transfer(record));
 					if (specifyId) {
-						ids.add(getId(record));
+						ids.addAll(getIds(record));
 					}
 					if (specifyParent) {
-						parentIds.add(getParentId(record));
+						parentIds.addAll(getParentIds(record));
 					}
 					if (objects.size() >= batchSize) {
 						index.saveObjects(type, objects, ids, parentIds);
@@ -103,7 +103,7 @@ public abstract class CSVImporter<T> {
 					++bad;
 					logger.debug(line, t);
 					logger.error("Error at line " + (processed + 1) + ": " + t.getMessage());
-					
+
 				}
 			}
 			if (!objects.isEmpty()) {
@@ -121,9 +121,6 @@ public abstract class CSVImporter<T> {
 	}
 
 
-	protected abstract T transfer(CSVRecord record) throws Exception;
-
-
 	@SuppressWarnings({ "static-method", "unused" })
 	protected boolean skipRecord(CSVRecord record)
 	{
@@ -131,15 +128,18 @@ public abstract class CSVImporter<T> {
 	}
 
 
+	protected abstract List<T> transfer(CSVRecord record) throws Exception;
+
+
 	@SuppressWarnings({ "static-method", "unused" })
-	protected String getId(CSVRecord record)
+	protected List<String> getIds(CSVRecord record)
 	{
 		return null;
 	}
 
 
 	@SuppressWarnings({ "static-method", "unused" })
-	protected String getParentId(CSVRecord record)
+	protected List<String> getParentIds(CSVRecord record)
 	{
 		return null;
 	}

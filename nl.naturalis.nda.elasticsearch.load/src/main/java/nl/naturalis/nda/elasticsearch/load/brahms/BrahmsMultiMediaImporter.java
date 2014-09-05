@@ -6,10 +6,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.Monomial;
+import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.Specimen;
@@ -24,7 +24,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
+public class BrahmsMultiMediaImporter extends CSVImporter<MultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -37,7 +37,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 			String mapping = LoadUtil.getMapping(Specimen.class);
 			index.addType(LUCENE_TYPE, mapping);						
 			
-			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
+			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsv("C:/brahms-dumps/20140704_U_DARWINCORE_21-05-2014_at_08-55-44.CSV");
 		}
 		finally {
@@ -47,7 +47,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
+	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
 	static final String LUCENE_TYPE = "Specimen";
 	static final String ID_PREFIX = "BRAHMS-";
 
@@ -103,51 +103,49 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 	}
 	//@formatter:on
 
-	public BrahmsSpecimensImporter(IndexNative index)
+	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE);
 		this.delimiter = ',';
 		setSpecifyId(true);
 		setSpecifyParent(false);
-
 	}
 
 
 	@Override
-	protected List<Specimen> transfer(CSVRecord record) throws Exception
+	protected List<MultiMediaObject> transfer(CSVRecord record) throws Exception
 	{
-		final Specimen specimen = new Specimen();
-		specimen.setSourceSystem(SourceSystem.BRAHMS);
-		String s = get(record, CsvField.barcode.ordinal());
-		if (s == null) {
-			throw new Exception("Missing barcode");
+		List<MultiMediaObject> mmos = new ArrayList<MultiMediaObject>(4);
+		String s = get(record, CsvField.imagelist.ordinal());
+		if (s != null) {
+			String[] urls = s.split(",");
+			for (String url : urls) {
+				mmos.add(transferOne(record, url));
+			}
 		}
-		specimen.setSourceSystemId(s);
-		specimen.setUnitID(s);
-		specimen.setRecordBasis(get(record, CsvField.basisofrec.ordinal()));
-		specimen.setSetID(ID_PREFIX + get(record, CsvField.brahms.ordinal()));
-		specimen.setNotes(get(record, CsvField.plantdesc.ordinal()));
-		specimen.setGatheringEvent(getGatheringEvent(record));
-		specimen.addIndentification(getSpecimenIdentification(record));
-		return Arrays.asList(specimen);
+		return mmos;
+	}
+
+
+	private MultiMediaObject transferOne(CSVRecord record, String url)
+	{
+		MultiMediaObject mmo = new MultiMediaObject();
+		mmo.addServiceAccessPoint(url, null, null);
+		
+		return null;
 	}
 
 
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String id = ID_PREFIX + get(record, CsvField.barcode.ordinal());
-		return Arrays.asList(id);
+		return null;// ID_PREFIX + get(record, CsvField.barcode.ordinal());
 	}
 
 
 	private static GatheringEvent getGatheringEvent(CSVRecord record)
 	{
 		final GatheringEvent ge = new GatheringEvent();
-		ge.setWorldRegion(get(record, CsvField.continent.ordinal()));
-		ge.setContinent(ge.getWorldRegion());
-		ge.setCountry(get(record, CsvField.country.ordinal()));
-		ge.setProvinceState(get(record, CsvField.stateprov.ordinal()));
 		String y = get(record, CsvField.ycollected.ordinal());
 		String m = get(record, CsvField.mcollected.ordinal());
 		String d = get(record, CsvField.dcollected.ordinal());
@@ -164,11 +162,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 	private static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
 	{
 		final SpecimenIdentification identification = new SpecimenIdentification();
-		String s = get(record, CsvField.ident_by.ordinal());
-		if (s != null) {
-			identification.addIdentifier(new Agent(s));
-		}
-		s = get(record, CsvField.vernacular.ordinal());
+		String s = get(record, CsvField.vernacular.ordinal());
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
@@ -291,7 +285,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 			}
 			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
 		}
-		catch (Exception e) {
+		catch (NumberFormatException e) {
 			logger.warn(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\"", year, month, day));
 			return null;
 		}

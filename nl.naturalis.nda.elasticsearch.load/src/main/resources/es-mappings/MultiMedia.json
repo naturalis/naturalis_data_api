@@ -35,47 +35,65 @@
 					"countryName" : { "type" : "string" },
 					"provinceState" : { "type" : "string" },
 					"city" : { "type" : "string" },
-					"sublocation" :  	{ "type" : "string" }		
+					"sublocation" : { "type" : "string" }		
 				}
-			},		
-			"scientificNames" : {
+			},
+			"identifications" : {
 				"type" : "nested",
 				"properties" : {
-					"fullScientificName" : { "type" : "string" },
-					"taxonomicStatus" : { "type" : "string" },
-					"genusOrMonomial" : { "type" : "string" },
-					"subgenus" : { "type" : "string" },
-					"specificEpithet" : { "type" : "string" },
-					"infraspecificEpithet" : { "type" : "string" },
-					"nameAddendum" : { "type" : "string" },
-					"authorshipVerbatim" : { "type" : "string" },
-					"author" : { "type" : "string" },
-					"year" : { "type" : "string" }							
+					"scientificName" : {
+						"properties" : {
+							"fullScientificName" : { "type" : "string" },
+							"taxonomicStatus" : { "type" : "string" },
+							"genusOrMonomial" : { "type" : "string" },
+							"subgenus" : { "type" : "string" },
+							"specificEpithet" : { "type" : "string" },
+							"infraspecificEpithet" : { "type" : "string" },
+							"nameAddendum" : { "type" : "string" },
+							"authorshipVerbatim" : { "type" : "string" },
+							"author" : { "type" : "string" },
+							"year" : { "type" : "string" }							
+						}
+					},
+					"defaultClassification" : {
+						"properties" : {
+							"kingdom" : { "type" : "string" },
+							"phylum" : { "type" : "string" },
+							"className" : { "type" : "string" },
+							"order" : { "type" : "string" },
+							"superFamily" : { "type" : "string" },
+							"family" : { "type" : "string" },
+							"genus" : { "type" : "string" },
+							"subgenus" : { "type" : "string" },
+							"specificEpithet" : { "type" : "string" },
+							"infraspecificEpithet" : { "type" : "string" },
+							"infraspecificRank" : { "type" : "string" }
+						}
+					},
+					"systemClassification" : {
+						"properties" : {
+							"rank" : { "type" : "string", "index" : "not_analyzed" },
+							"name" : { "type" : "string" }
+						}
+					},					
+					"vernacularNames" : {
+						"type" : "nested",
+						"properties" : {
+							"name" : { "type" : "string" },
+							"language" : { "type" : "string" },
+							"preferred" : { "type" : "boolean" }
+						}
+					},
+					"identifiers" : {
+						"type" : "nested",
+						"properties" : {
+							"agentText" : { "type" : "string" },
+							"name" : { "type" : "string" }, /* organization */
+							"fullName" : { "type" : "string" } /* person */
+						}
+					},
+					"identificationQualifiers" : { "type" : "string" }
 				}
-			},
-			"defaultClassifications" : {
-				"type" : "nested",	
-				"properties" : {
-					"kingdom" : { "type" : "string" },
-					"phylum" : { "type" : "string" },
-					"className" : { "type" : "string" },
-					"order" : { "type" : "string" },
-					"superFamily" : { "type" : "string" },
-					"family" : { "type" : "string" },
-					"genus" : { "type" : "string" },
-					"subgenus" : { "type" : "string" },
-					"specificEpithet" : { "type" : "string" },
-					"infraspecificEpithet" : { "type" : "string" },
-					"infraspecificRank" : { "type" : "string" }
-				}
-			},
-			"systemClassifications" : {
-					"type" : "nested",
-					"properties" : {
-						"rank" : { "type" : "string", "index" : "not_analyzed" },
-						"name" : { "type" : "string" }
-					}
-				}
-			}
+			}	
 		}
 }

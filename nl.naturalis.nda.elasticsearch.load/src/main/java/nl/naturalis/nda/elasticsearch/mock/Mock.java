@@ -398,7 +398,7 @@ public class Mock {
 
 	}
 
-
+/*
 	public void getMediaObjects() throws JsonProcessingException
 	{
 		SearchResultSet<MultiMediaObject> rs = new SearchResultSet<MultiMediaObject>();
@@ -478,7 +478,7 @@ public class Mock {
 		//System.out.println(json);
 		FileUtil.setContents("C:/test/nda/mock/getMediaObjects.json", json);
 	}
-
+*/
 
 	public void getSpecimensForOtherSearchTerms() throws JsonProcessingException
 	{
@@ -672,7 +672,7 @@ public class Mock {
 
 	}
 
-
+/*
 	public void taxonMediaDetail() throws JsonProcessingException
 	{
 		SearchResultSet<MultiMediaObject> rs = new SearchResultSet<MultiMediaObject>();
@@ -706,8 +706,9 @@ public class Mock {
 		//System.out.println(json);
 		FileUtil.setContents("C:/test/nda/mock/taxon-media-detail.json", json);
 	}
+*/
 
-
+/*
 	public void specimenMediaDetail() throws JsonProcessingException
 	{
 		SearchResultSet<MultiMediaObject> rs = new SearchResultSet<MultiMediaObject>();
@@ -736,5 +737,6 @@ public class Mock {
 		//System.out.println(json);
 		FileUtil.setContents("C:/test/nda/mock/specimen-media-detail.json", json);
 	}
-
+*/
+	
 }

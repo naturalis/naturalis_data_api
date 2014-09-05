@@ -1,5 +1,5 @@
 {
-	"MultiMedia" : {
+	"MultiMediaObject" : {
 	
 		"dynamic" : "strict",
 	
@@ -11,8 +11,10 @@
 				}
 			},	
 			"sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
-			"type" : { "type" : "string", "index" : "not_analyzed" },
 			"title" : { "type" : "string" },
+			"caption" : { "type" : "string" },
+			"description" : { "type" : "string" },
+			"type" : { "type" : "string", "index" : "not_analyzed" },
 			"taxonCount" : { "type" : "integer" },
 			"subjectParts" : { "type" : "string" },
 			"subjectOrientations" : { "type" : "string" },
@@ -26,21 +28,93 @@
 					"variant" : { "type" : "string" }
 				}
 			},
-			"iptcInfo" : {
-				"type" : "nested",
+			"gatheringEvents" : {
+				"type" : "nested",	
 				"properties" : {
-					"locationShown" : { "type" : "string" },
-					"worldRegion" : { "type" : "string" },
-					"countryCode" : { "type" : "string" },
-					"countryName" : { "type" : "string" },
-					"provinceState" : { "type" : "string" },
-					"city" : { "type" : "string" },
-					"sublocation" : { "type" : "string" }		
+					"worldRegion" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"continent" : { 
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"country" : { 
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"iso3166Code" : {"type" : "string", "index" : "not_analyzed" },
+					"provinceState" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"island" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"locality" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"city" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"sublocality" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"localityText" : {
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
+					"dateTimeBegin" : { "type" : "date" },
+					"dateTimeEnd" : { "type" : "date" },
+					"method" : { "type" : "string", "index" : "not_analyzed" },
+					"altitude" : { "type" : "string", "index" : "not_analyzed" },
+					"altitudeUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
+					"depth" : { "type" : "string", "index" : "not_analyzed" },
+					"depthUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
+					"gatheringAgents" : {
+						"type" : "nested",
+						"properties" : {
+							"agentText" : { "type" : "string" },
+							"name" : { "type" : "string" }, /* organization */
+							"fullName" : { "type" : "string" } /* person */
+						}
+					},
+					"siteCoordinates" : {
+						"type" : "nested",
+						"properties" : {
+							"longitudeDecimal" : { "type" : "float" },
+							"latitudeDecimal" : { "type" : "float" },
+							"point" : { "type" : "geo_shape" }
+						}
+					}
 				}
 			},
 			"identifications" : {
 				"type" : "nested",
 				"properties" : {
+					"taxonRank" : { "type" : "string" },	
 					"scientificName" : {
 						"properties" : {
 							"fullScientificName" : { "type" : "string" },
@@ -84,6 +158,7 @@
 							"preferred" : { "type" : "boolean" }
 						}
 					},
+					"dateIdentified" : { "type" : "date" },
 					"identifiers" : {
 						"type" : "nested",
 						"properties" : {
@@ -96,4 +171,5 @@
 				}
 			}	
 		}
+	}
 }

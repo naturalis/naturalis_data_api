@@ -114,7 +114,7 @@
 					"preferred" : { "type" : "boolean" },
 					"verificationStatus" : { "type" : "string", "index" : "not_analyzed" },
 					"remarks" : { "type" : "string" },
-					"dateIdentified" : { "type" : "date" },
+					"taxonRank" : { "type" : "string" },
 					"scientificName" : {
 						"properties" : {
 							"fullScientificName" : { "type" : "string" },
@@ -159,6 +159,7 @@
 							"preferred" : { "type" : "boolean" }
 						}
 					},
+					"dateIdentified" : { "type" : "date" },
 					"identifiers" : {
 						"type" : "nested",
 						"properties" : {

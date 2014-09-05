@@ -5,6 +5,7 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
+import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
@@ -385,6 +386,13 @@ public class IndexNative implements Index {
 				}
 			}
 			catch (JsonProcessingException e) {
+//				BeanPrinter bp =new BeanPrinter("C:/tmp/bp0.txt");
+//				bp.dump(objs);
+//				bp.dump(ids);
+//				bp.dump(parentIds);
+//				if(true) {
+//					System.exit(0);
+//				}
 				throw new IndexException(e);
 			}
 			brb.add(irb);

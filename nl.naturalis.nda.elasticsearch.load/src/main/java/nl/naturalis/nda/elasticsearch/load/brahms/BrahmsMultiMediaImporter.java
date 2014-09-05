@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,36 +9,37 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.MultiMediaContentIdentification;
+import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.ServiceAccessPoint;
+import nl.naturalis.nda.domain.ServiceAccessPoint.Variant;
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.apache.commons.csv.CSVRecord;
+import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BrahmsMultiMediaImporter extends CSVImporter<MultiMediaObject> {
+public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
 		IndexNative index = null;
 		try {
 			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-			
+
 			index.deleteType(LUCENE_TYPE);
 			Thread.sleep(2000);
-			String mapping = LoadUtil.getMapping(Specimen.class);
-			index.addType(LUCENE_TYPE, mapping);						
-			
+			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+			index.addType(LUCENE_TYPE, mapping);
+
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsv("C:/brahms-dumps/20140704_U_DARWINCORE_21-05-2014_at_08-55-44.CSV");
 		}
@@ -48,7 +51,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<MultiMediaObject> {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
-	static final String LUCENE_TYPE = "Specimen";
+	static final String LUCENE_TYPE = "MultiMediaObject";
 	static final String ID_PREFIX = "BRAHMS-";
 
 	//@formatter:off
@@ -113,39 +116,67 @@ public class BrahmsMultiMediaImporter extends CSVImporter<MultiMediaObject> {
 
 
 	@Override
-	protected List<MultiMediaObject> transfer(CSVRecord record) throws Exception
+	protected List<ESMultiMediaObject> transfer(CSVRecord record) throws Exception
 	{
-		List<MultiMediaObject> mmos = new ArrayList<MultiMediaObject>(4);
+		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
 		String s = get(record, CsvField.imagelist.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
-			for (String url : urls) {
-				mmos.add(transferOne(record, url));
+			for (int i = 0; i < urls.length; ++i) {
+				mmos.add(transferOne(record, i, urls[i]));
 			}
 		}
 		return mmos;
 	}
 
 
-	private MultiMediaObject transferOne(CSVRecord record, String url)
-	{
-		MultiMediaObject mmo = new MultiMediaObject();
-		mmo.addServiceAccessPoint(url, null, null);
-		
-		return null;
-	}
-
-
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		return null;// ID_PREFIX + get(record, CsvField.barcode.ordinal());
+		String base = ID_PREFIX + get(record, CsvField.barcode.ordinal());
+		List<String> ids = new ArrayList<String>(4);
+		String s = get(record, CsvField.imagelist.ordinal());
+		if (s != null) {
+			String[] urls = s.split(",");
+			for (int i = 0; i < urls.length; ++i) {
+				ids.add(base + "_" + i);
+			}
+		}
+		return ids;
+	}
+
+
+	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl) throws Exception
+	{
+		ESMultiMediaObject mmo = new ESMultiMediaObject();
+		String s = get(record, CsvField.barcode.ordinal());
+		if (s == null) {
+			throw new Exception("Missing barcode");
+		}
+		mmo.setSourceSystemId(s + "_" + imageNo);
+		mmo.setSourceSystem(SourceSystem.BRAHMS);
+		mmo.setDescription(get(record, CsvField.plantdesc.ordinal()));
+		mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
+		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
+		try {
+			URI uri = new URI(imageUrl);
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));
+		}
+		catch(URISyntaxException e) {
+			logger.error("Invalid URL: " + imageUrl);
+			mmo.addServiceAccessPoint(new ServiceAccessPoint("http://nda.naturalis.nl/notfound", null, Variant.MEDIUM_QUALITY));
+		}
+		return mmo;
 	}
 
 
 	private static GatheringEvent getGatheringEvent(CSVRecord record)
 	{
 		final GatheringEvent ge = new GatheringEvent();
+		ge.setWorldRegion(get(record, CsvField.continent.ordinal()));
+		ge.setContinent(ge.getWorldRegion());
+		ge.setCountry(get(record, CsvField.country.ordinal()));
+		ge.setProvinceState(get(record, CsvField.stateprov.ordinal()));
 		String y = get(record, CsvField.ycollected.ordinal());
 		String m = get(record, CsvField.mcollected.ordinal());
 		String d = get(record, CsvField.dcollected.ordinal());
@@ -159,9 +190,9 @@ public class BrahmsMultiMediaImporter extends CSVImporter<MultiMediaObject> {
 	}
 
 
-	private static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
+	private static MultiMediaContentIdentification getIdentification(CSVRecord record)
 	{
-		final SpecimenIdentification identification = new SpecimenIdentification();
+		final MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
 		String s = get(record, CsvField.vernacular.ordinal());
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));

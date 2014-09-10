@@ -43,12 +43,12 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
-	public void addVernacularName(String name)
+	public void addVernacularName(VernacularName name)
 	{
 		if (vernacularNames == null) {
 			vernacularNames = new ArrayList<VernacularName>();
 		}
-		vernacularNames.add(new VernacularName(name));
+		vernacularNames.add(name);
 	}
 
 

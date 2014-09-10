@@ -38,17 +38,10 @@ class NsrTaxonTransfer {
 		for (NsrScientificName sn : getScientificNames(taxonElement)) {
 			// BeanPrinter.out(sn);
 			if (sn.getStatus().equals(ScientificName.TaxonomicStatus.ACCEPTED_NAME.toString())) {
-				ScientificName scientificName = new ScientificName();
-				taxon.setAcceptedName(scientificName);
-				scientificName.setFullScientificName(sn.getScientificName());
-				scientificName.setAuthor(sn.getAuthorName());
-				scientificName.setAuthorshipVerbatim(sn.getAuthorship());
-				scientificName.setGenusOrMonomial(sn.getGenusOrMonomial());
-				scientificName.setSpecificEpithet(sn.getSpecificEpithet());
-				scientificName.setInfraspecificEpithet(sn.getInfraSpecificEpithet());
+				taxon.setAcceptedName(transfer(sn));
 			}
 			else {
-				taxon.addSynonym(sn.getScientificName());
+				taxon.addSynonym(transfer(sn));
 			}
 		}
 
@@ -57,7 +50,7 @@ class NsrTaxonTransfer {
 		}
 
 		addDescriptions(taxon, getTaxonDescriptions(taxonElement));
-		
+
 		return taxon;
 	}
 
@@ -70,6 +63,19 @@ class NsrTaxonTransfer {
 			td.setDescription(d.getDescription());
 			taxon.addDescription(td);
 		}
+	}
+
+
+	private static ScientificName transfer(NsrScientificName sn)
+	{
+		final ScientificName scientificName = new ScientificName();
+		scientificName.setFullScientificName(sn.getScientificName());
+		scientificName.setAuthor(sn.getAuthorName());
+		scientificName.setAuthorshipVerbatim(sn.getAuthorship());
+		scientificName.setGenusOrMonomial(sn.getGenusOrMonomial());
+		scientificName.setSpecificEpithet(sn.getSpecificEpithet());
+		scientificName.setInfraspecificEpithet(sn.getInfraSpecificEpithet());
+		return scientificName;
 	}
 
 

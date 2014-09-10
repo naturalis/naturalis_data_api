@@ -6,6 +6,7 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
@@ -92,7 +93,7 @@ public class TaxonSynonymsEnricher {
 					}
 					//logger.info("Adding synonym: " + synonym);
 					if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
-						taxon.addSynonym(synonym);
+						taxon.addSynonym(transfer(record));
 					}
 					else {
 						continue;
@@ -121,6 +122,18 @@ public class TaxonSynonymsEnricher {
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
 		logger.info("Ready");
+	}
+
+
+	private static ScientificName transfer(CSVRecord record)
+	{
+		final ScientificName sn = new ScientificName();
+		sn.setFullScientificName(record.get(CsvField.scientificName.ordinal()));
+		sn.setGenusOrMonomial(record.get(CsvField.genus.ordinal()));
+		sn.setSpecificEpithet(record.get(CsvField.specificEpithet.ordinal()));
+		sn.setInfraspecificEpithet(record.get(CsvField.infraspecificEpithet.ordinal()));
+		sn.setAuthorshipVerbatim(record.get(CsvField.scientificNameAuthorship.ordinal()));
+		return sn;
 	}
 
 

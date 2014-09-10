@@ -46,11 +46,48 @@
 					"nameAddendum" : { "type" : "string" },
 					"authorshipVerbatim" : { "type" : "string" },
 					"author" : { "type" : "string" },
-					"year" : { "type" : "string" }
+					"year" : { "type" : "string" },
+					"nameAccordingTo" : {
+						"properties" : {
+							"name" : { "type" : "string" },
+							"organization" : { "type" : "string" } 
+						}
+					}
 				}
 			},
-			"synonyms" : { "type" : "string" },
-			"vernacularNames" : { "type" : "string" },
+			"synonyms" : {
+				"type" : "nested",
+				"properties": {
+					"fullScientificName" : { "type" : "string" },
+					"taxonomicStatus" : { "type" : "string" },
+					"genusOrMonomial" : { "type" : "string" },
+					"subgenus" : { "type" : "string" },
+					"specificEpithet" : { "type" : "string" },
+					"infraspecificEpithet" : { "type" : "string" },
+					"nameAddendum" : { "type" : "string" },
+					"authorshipVerbatim" : { "type" : "string" },
+					"author" : { "type" : "string" },
+					"year" : { "type" : "string" },
+					"nameAccordingTo" : {
+						"properties" : {
+							"name" : { "type" : "string" },
+							"organization" : { "type" : "string" } 
+						}
+					}
+				}
+			},
+			"vernacularNames" : {
+				"type" : "nested",
+				"properties": {
+					"name" : { "type" : "string" },
+					"nameAccordingTo" : {
+						"properties" : {
+							"name" : { "type" : "string" },
+							"organization" : { "type" : "string" } 
+						}
+					}
+				}			
+			},
 			"status" : {
 				"properties" : {
 					"status" : { "type" : "string" },
@@ -59,7 +96,6 @@
 					"referenceDate" : { "type" : "string" }
 				}
 			},
-			"numDescriptions" : { "type" : "integer" },
 			"descriptions" : {
 				"type" : "nested",				
 				"properties" : {

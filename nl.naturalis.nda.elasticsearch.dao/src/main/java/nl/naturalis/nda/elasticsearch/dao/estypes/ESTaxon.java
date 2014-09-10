@@ -8,26 +8,27 @@ import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.NdaTraceableObject;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.TaxonDescription;
+import nl.naturalis.nda.domain.VernacularName;
 
 public class ESTaxon extends NdaTraceableObject {
 
 	private String sourceSystemParentId;
 
-	private ScientificName acceptedName;
 	private String taxonRank;
+	private ScientificName acceptedName;
 
 	private DefaultClassification defaultClassification;
 
-	private List<String> synonyms;
-	private List<String> vernacularNames;
+	private List<ScientificName> synonyms;
+	private List<VernacularName> vernacularNames;
 	private List<Monomial> monomials;
 	private List<TaxonDescription> descriptions;
 
 
-	public void addSynonym(String synonym)
+	public void addSynonym(ScientificName synonym)
 	{
 		if (synonyms == null) {
-			synonyms = new ArrayList<String>();
+			synonyms = new ArrayList<ScientificName>();
 		}
 		synonyms.add(synonym);
 	}
@@ -45,9 +46,9 @@ public class ESTaxon extends NdaTraceableObject {
 	public void addVernacularName(String name)
 	{
 		if (vernacularNames == null) {
-			vernacularNames = new ArrayList<String>();
+			vernacularNames = new ArrayList<VernacularName>();
 		}
-		vernacularNames.add(name);
+		vernacularNames.add(new VernacularName(name));
 	}
 
 
@@ -108,25 +109,25 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
-	public List<String> getSynonyms()
+	public List<ScientificName> getSynonyms()
 	{
 		return synonyms;
 	}
 
 
-	public void setSynonyms(List<String> synonyms)
+	public void setSynonyms(List<ScientificName> synonyms)
 	{
 		this.synonyms = synonyms;
 	}
 
 
-	public List<String> getVernacularNames()
+	public List<VernacularName> getVernacularNames()
 	{
 		return vernacularNames;
 	}
 
 
-	public void setVernacularNames(List<String> vernacularNames)
+	public void setVernacularNames(List<VernacularName> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
 	}

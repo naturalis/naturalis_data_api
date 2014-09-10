@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class that mimicks and is functionally equivalent to
- * javax.ws.rs.core.MultiValuedMap<String,String>. The DAOs in this library can
- * be used outside and independently of the NDA REST framework, which is nice
- * for testing. Yet their prime purpose is to be used within it, so ES queries
- * are likely to come in the form of a URL's query string, converted into a
- * {@code MultiValuedMap}. The {@code QueryParams} class enables the DAO library
- * to be rid of an awkward depencency on the the entire JAX-RS framework, just
- * for something as generic as a map with multiple values per key.
+ * A class capturing the input for an ElasticSearch query. This class mimicks
+ * and is functionally equivalent to the {@code javax.ws.rs.core.MultiValuedMap}
+ * interface within the JAX-RS framework. When passing URL query parameters in
+ * bulk to a DAO, the REST resource classes copy them from a
+ * {@code MultiValuedMap} to a {@code QueryParams} object. This way the DAOs in
+ * this library can be used and tested independently of the NDA REST framework.
  * 
  * @author ayco_holleman
  * 

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsDetermination;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESCrsSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.exception.InvalidQueryException;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
@@ -80,20 +78,20 @@ public class SpecimenDao extends AbstractDao {
 		SearchResultSet<Specimen> result = new SearchResultSet<Specimen>();
 		result.setTotalSize(response.getHits().getTotalHits());
 		Iterator<SearchHit> iterator = response.getHits().iterator();
-		while (iterator.hasNext()) {
-			SearchHit hit = iterator.next();
-			Map<String, Object> source = hit.getSource();
-			ESCrsSpecimen crsSpecimen = getObjectMapper().convertValue(source, ESCrsSpecimen.class);
-			// BeanPrinter.out(crsSpecimen);
-			List<ESCrsDetermination> extraDeterminations = null;
-			if(crsSpecimen.getNumDeterminations() > 3) {
-				// TODO: Fetch the remaining CrsDetermination documents (the first 3
-				// are already "denormalized into" the CrsSpecimen type)
-				extraDeterminations = null; /* Fetch */
-			}
-			Specimen specimenUnit = SpecimenTransfer.transfer(crsSpecimen, extraDeterminations);
-			result.addSearchResult(specimenUnit);
-		}
+//		while (iterator.hasNext()) {
+//			SearchHit hit = iterator.next();
+//			Map<String, Object> source = hit.getSource();
+//			ESCrsSpecimen crsSpecimen = getObjectMapper().convertValue(source, ESCrsSpecimen.class);
+//			// BeanPrinter.out(crsSpecimen);
+//			List<ESCrsDetermination> extraDeterminations = null;
+//			if(crsSpecimen.getNumDeterminations() > 3) {
+//				// TODO: Fetch the remaining CrsDetermination documents (the first 3
+//				// are already "denormalized into" the CrsSpecimen type)
+//				extraDeterminations = null; /* Fetch */
+//			}
+//			Specimen specimenUnit = SpecimenTransfer.transfer(crsSpecimen, extraDeterminations);
+//			result.addSearchResult(specimenUnit);
+//		}
 		return result;
 	}
 

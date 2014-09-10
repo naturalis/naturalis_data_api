@@ -4,7 +4,7 @@ package nl.naturalis.nda.elasticsearch.load.col;
 public class DistributionsImporter  {
 
 	//@formatter:off
-	private static enum CsvField {
+	static enum CsvField {
 		taxonID
 		, locationID
 		, locality

@@ -20,14 +20,20 @@ import org.slf4j.LoggerFactory;
 
 public class TaxonSynonymsEnricher {
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
+		String dwcaDir = System.getProperty("dwcaDir");
+		if (dwcaDir == null) {
+			throw new Exception("Missing property \"dwcaDir\"");
+		}
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-
-		TaxonSynonymsEnricher enricher = new TaxonSynonymsEnricher(index);
-		enricher.importCsv("C:/test/col-dwca/taxa.txt");
-
-		index.getClient().close();
+		try {
+			TaxonSynonymsEnricher enricher = new TaxonSynonymsEnricher(index);
+			enricher.importCsv(dwcaDir + "/taxa.txt");
+		}
+		finally {
+			index.getClient().close();
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(TaxonSynonymsEnricher.class);

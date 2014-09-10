@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public abstract class CSVImporter<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
-	private static final int DEFAULT_BATCH_SIZE = 1000;
+	private static final int DEFAULT_BATCH_SIZE = 10000;
 
 
 	protected static int getInt(CSVRecord record, int fieldNo)

@@ -19,6 +19,16 @@ public interface Index {
 	boolean exists();
 
 
+
+	/**
+	 * Whether or not a mapping exists for the specified document type.
+	 * 
+	 * @param type The document type to verify
+	 * 
+	 * @return @return {@code true} if yes, {@code false} if not.
+	 */
+	boolean typeExists(String type);
+
 	/**
 	 * Describe the index (i.e. its mapping).
 	 * 

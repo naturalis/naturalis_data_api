@@ -355,4 +355,12 @@ public class IndexREST implements Index {
 		return false;
 	}
 
+
+	@Override
+	public boolean typeExists(String type)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

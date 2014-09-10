@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;

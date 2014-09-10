@@ -20,14 +20,20 @@ import org.slf4j.LoggerFactory;
 
 public class TaxonVernacularNamesEnricher {
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
+		String dwcaDir = System.getProperty("dwcaDir");
+		if (dwcaDir == null) {
+			throw new Exception("Missing property \"dwcaDir\"");
+		}
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-
-		TaxonVernacularNamesEnricher enricher = new TaxonVernacularNamesEnricher(index);
-		enricher.importCsv("C:/test/col-dwca/vernacular.txt");
-
-		index.getClient().close();
+		try {
+			TaxonVernacularNamesEnricher enricher = new TaxonVernacularNamesEnricher(index);
+			enricher.importCsv(dwcaDir + "/vernacular.txt");
+		}
+		finally {
+			index.getClient().close();
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(TaxonVernacularNamesEnricher.class);

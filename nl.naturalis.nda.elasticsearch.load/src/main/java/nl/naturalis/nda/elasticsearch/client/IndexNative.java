@@ -5,7 +5,6 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
-import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
@@ -13,8 +12,10 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequestBuilder;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequestBuilder;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
@@ -110,39 +111,25 @@ public class IndexNative implements Index {
 		admin = esClient.admin().indices();
 	}
 
-	/*
-	 * Inner class only used to be thrown out of the action listener within the
-	 * exists() method to signal that the index exists.
-	 */
-	@SuppressWarnings("serial")
-	private class ExistsException extends RuntimeException {
-	}
-
-
+	@Override
 	public boolean exists()
 	{
 		logger.info(String.format("Verifying existence of index \"%s\"", indexName));
-		IndicesExistsRequest request = new IndicesExistsRequest(indexName);
-		try {
-			admin.exists(request, new ActionListener<IndicesExistsResponse>() {
-				public void onResponse(IndicesExistsResponse response)
-				{
-					if (response.isExists()) {
-						throw new ExistsException();
-					}
-				}
+		IndicesExistsRequestBuilder irb = admin.prepareExists();
+		irb.setIndices(indexName);
+		IndicesExistsResponse response = irb.execute().actionGet();
+		return response.isExists();
+	}
 
 
-				public void onFailure(Throwable e)
-				{
-					ExceptionUtil.smash(e);
-				}
-			});
-		}
-		catch (ExistsException e) {
-			return true;
-		}
-		return false;
+	@Override
+	public boolean typeExists(String type)
+	{
+		logger.info(String.format("Verifying existence of type \"%s\"", type));
+		TypesExistsRequestBuilder terb = admin.prepareTypesExists();
+		terb.setTypes(type);
+		TypesExistsResponse response = terb.execute().actionGet();
+		return response.isExists();
 	}
 
 
@@ -309,21 +296,7 @@ public class IndexNative implements Index {
 	{
 		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
 		irb.setSource(json);
-		irb.execute(new ActionListener<IndexResponse>() {
-
-			@Override
-			public void onFailure(Throwable t)
-			{
-				throw ExceptionUtil.smash(t);
-			}
-
-
-			@Override
-			public void onResponse(IndexResponse response)
-			{
-
-			}
-		});
+		irb.execute().actionGet();
 	}
 
 
@@ -386,13 +359,13 @@ public class IndexNative implements Index {
 				}
 			}
 			catch (JsonProcessingException e) {
-//				BeanPrinter bp =new BeanPrinter("C:/tmp/bp0.txt");
-//				bp.dump(objs);
-//				bp.dump(ids);
-//				bp.dump(parentIds);
-//				if(true) {
-//					System.exit(0);
-//				}
+				//				BeanPrinter bp =new BeanPrinter("C:/tmp/bp0.txt");
+				//				bp.dump(objs);
+				//				bp.dump(ids);
+				//				bp.dump(parentIds);
+				//				if(true) {
+				//					System.exit(0);
+				//				}
 				throw new IndexException(e);
 			}
 			brb.add(irb);

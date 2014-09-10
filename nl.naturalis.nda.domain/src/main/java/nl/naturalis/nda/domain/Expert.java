@@ -5,24 +5,25 @@ package nl.naturalis.nda.domain;
  * authority a scientific name or common name was included in the source system
  * (e.g. the Catalogue of Life). Sometimes the expert is an anonymous person
  * within an organization, in which case only the name of the organization is
- * set.
+ * set; sometimes the agent does not work on behalf of an organization, or the
+ * organization is not known.
  * 
  */
 public class Expert {
 
-	private String name;
+	private String fullName;
 	private String organization;
 
 
-	public String getName()
+	public String getFullName()
 	{
-		return name;
+		return fullName;
 	}
 
 
-	public void setName(String name)
+	public void setFullName(String fullName)
 	{
-		this.name = name;
+		this.fullName = fullName;
 	}
 
 

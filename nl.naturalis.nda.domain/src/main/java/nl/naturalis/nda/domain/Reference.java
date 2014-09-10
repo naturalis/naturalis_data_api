@@ -4,8 +4,7 @@ import java.util.Date;
 
 /**
  * A {@code Reference} represents a literature reference for a scientific name
- * or common name. In case of scientific names it represents the publication in
- * which BLA
+ * or common name.
  * 
  */
 public class Reference {

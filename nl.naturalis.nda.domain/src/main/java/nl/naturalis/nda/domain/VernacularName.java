@@ -6,7 +6,7 @@ public class VernacularName {
 	private String language;
 	private Boolean preferred;
 
-	private Expert expert;
+	private Expert nameAccordingTo;
 
 
 	public VernacularName()
@@ -56,15 +56,15 @@ public class VernacularName {
 	}
 
 
-	public Expert getExpert()
+	public Expert getNameAccordingTo()
 	{
-		return expert;
+		return nameAccordingTo;
 	}
 
 
-	public void setExpert(Expert expert)
+	public void setNameAccordingTo(Expert expert)
 	{
-		this.expert = expert;
+		this.nameAccordingTo = expert;
 	}
 
 }

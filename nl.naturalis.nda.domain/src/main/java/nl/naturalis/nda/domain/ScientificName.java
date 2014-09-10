@@ -35,7 +35,7 @@ public class ScientificName {
 	private String year;
 
 	private Reference reference;
-	private Expert expert;
+	private Expert nameAccordingTo;
 
 
 	public String getFullScientificName()
@@ -182,15 +182,15 @@ public class ScientificName {
 	}
 
 
-	public Expert getExpert()
+	public Expert getNameAccordingTo()
 	{
-		return expert;
+		return nameAccordingTo;
 	}
 
 
-	public void setExpert(Expert expert)
+	public void setNameAccordingTo(Expert expert)
 	{
-		this.expert = expert;
+		this.nameAccordingTo = expert;
 	}
 
 }

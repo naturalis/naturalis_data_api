@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Taxon extends NdaTraceableObject {
 
-	private ScientificName acceptedName;
 	private String taxonRank;
+	private ScientificName acceptedName;
 
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
@@ -14,6 +14,18 @@ public class Taxon extends NdaTraceableObject {
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
 	private List<Specimen> specimens;
+
+
+	public String getTaxonRank()
+	{
+		return taxonRank;
+	}
+
+
+	public void setTaxonRank(String taxonRank)
+	{
+		this.taxonRank = taxonRank;
+	}
 
 
 	/**
@@ -53,18 +65,6 @@ public class Taxon extends NdaTraceableObject {
 	public void setValidName(ScientificName scientificName)
 	{
 		this.acceptedName = scientificName;
-	}
-
-
-	public String getTaxonRank()
-	{
-		return taxonRank;
-	}
-
-
-	public void setTaxonRank(String taxonRank)
-	{
-		this.taxonRank = taxonRank;
 	}
 
 

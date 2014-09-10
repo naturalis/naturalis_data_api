@@ -6,6 +6,7 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
@@ -70,6 +71,7 @@ public class TaxonVernacularNamesEnricher {
 		try {
 			lnr.readLine(); // Skip header		
 			ESTaxon taxon;
+			VernacularName vn;
 			while ((line = lnr.readLine()) != null) {
 				if (++processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
@@ -80,15 +82,17 @@ public class TaxonVernacularNamesEnricher {
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String id = TaxaImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
-					String commonName = record.get(CsvField.vernacularName.ordinal());
+					String vernacular = record.get(CsvField.vernacularName.ordinal());
 					taxon = index.get(LUCENE_TYPE, id, ESTaxon.class);
 					if (taxon == null) {
-						logger.warn("Orphan name: " + commonName);
+						logger.warn("Orphan name: " + vernacular);
 						continue;
 					}
 					//logger.info("Adding synonym: " + synonym);
-					if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(commonName)) {
-						taxon.addVernacularName(commonName);
+					if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(vernacular)) {
+						vn = new VernacularName(vernacular);
+						vn.setLanguage(record.get(CsvField.language.ordinal()));
+						taxon.addVernacularName(vn);
 					}
 					else {
 						continue;

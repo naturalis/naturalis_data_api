@@ -9,6 +9,7 @@ import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.TaxonDescription;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.domain.systypes.NsrCommonName;
 import nl.naturalis.nda.domain.systypes.NsrScientificName;
 import nl.naturalis.nda.domain.systypes.NsrTaxonDescription;
@@ -46,7 +47,9 @@ class NsrTaxonTransfer {
 		}
 
 		for (NsrCommonName cn : getCommonNames(taxonElement)) {
-			taxon.addVernacularName(cn.getName());
+			VernacularName vn = new VernacularName(cn.getName());
+			vn.setLanguage(cn.getLanguage());
+			taxon.addVernacularName(vn);
 		}
 
 		addDescriptions(taxon, getTaxonDescriptions(taxonElement));

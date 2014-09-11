@@ -22,6 +22,7 @@ public class TaxaImporter extends CSVImporter<ESTaxon> {
 	public static void main(String[] args) throws Exception
 	{
 		String dwcaDir = System.getProperty("dwcaDir");
+		// Whether or not to rebuild the Taxon document store from scratch
 		String rebuild = System.getProperty("rebuild", "false");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");

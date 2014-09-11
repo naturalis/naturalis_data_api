@@ -52,7 +52,7 @@ public class TaxonVernacularNamesEnricher {
 	}
 
 
-	private void importCsv(String path) throws IOException
+	public void importCsv(String path) throws IOException
 	{
 		logger.info(String.format("Processing CSV file \"%s\"", path));
 		CSVFormat format = CSVFormat.DEFAULT;

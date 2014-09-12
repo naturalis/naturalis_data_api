@@ -31,7 +31,7 @@ class NsrTaxonTransfer {
 		taxon.setTaxonRank(nl(DOMUtil.getValue(taxonElement, "rank")));
 
 		List<Monomial> monomials = getMonomials(taxonElement);
-		taxon.setMonomials(monomials);
+		taxon.setSystemClassification(monomials);
 
 		DefaultClassification dc = getDefaultClassification(monomials);
 		taxon.setDefaultClassification(dc);

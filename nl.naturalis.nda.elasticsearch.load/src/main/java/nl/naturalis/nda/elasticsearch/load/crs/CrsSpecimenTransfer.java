@@ -13,25 +13,25 @@ import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-public class CrsTransfer {
+public class CrsSpecimenTransfer {
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsTransfer.class);
+	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
 	private static final String ABCD_NAMESPACE_URI = "http://rs.tdwg.org/abcd/2.06/b/";
 
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
 
 
-	public static Specimen transfer(Element recordElement)
+	public static ESSpecimen transfer(Element recordElement)
 	{
-		final Specimen specimen = new Specimen();
+		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setSourceSystemId(val(recordElement, "UnitID"));
 		specimen.setUnitID(val(recordElement, "UnitID"));
@@ -146,7 +146,7 @@ public class CrsTransfer {
 	}
 
 
-	private static Date date(Element e, String tag)
+	static Date date(Element e, String tag)
 	{
 		String s = val(e, tag);
 		if (s == null) {
@@ -163,7 +163,7 @@ public class CrsTransfer {
 	}
 
 
-	private static Double dval(Element e, String tag)
+	static Double dval(Element e, String tag)
 	{
 		String s = val(e, tag);
 		if (s == null) {
@@ -179,7 +179,7 @@ public class CrsTransfer {
 	}
 
 
-	private static String val(Element e, String tag)
+	static String val(Element e, String tag)
 	{
 		String s = DOMUtil.getDescendantValue(e, tag, ABCD_NAMESPACE_URI);
 		if (s == null) {

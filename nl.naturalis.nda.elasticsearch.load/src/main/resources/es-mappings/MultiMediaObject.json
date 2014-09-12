@@ -16,6 +16,11 @@
 			"description" : { "type" : "string" },
 			"type" : { "type" : "string", "index" : "not_analyzed" },
 			"taxonCount" : { "type" : "integer" },
+			"creator" : { "type" : "string" },
+			"copyrightText" : { "type" : "string" },
+			"associatedSpecimenReference" : { "type" : "string", "index" : "not_analyzed" },
+			"associatedTaxonReference" : { "type" : "string", "index" : "not_analyzed" },
+			"multiMediaPublic" : { "type" : "boolean" },
 			"subjectParts" : { "type" : "string" },
 			"subjectOrientations" : { "type" : "string" },
 			"phasesOrStages" : { "type" : "string", "index" : "not_analyzed" },
@@ -93,12 +98,18 @@
 					"altitudeUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
 					"depth" : { "type" : "string", "index" : "not_analyzed" },
 					"depthUnitOfMeasurement" : { "type" : "string", "index" : "not_analyzed" },
-					"gatheringAgents" : {
+					"gatheringPersons" : {
 						"type" : "nested",
 						"properties" : {
 							"agentText" : { "type" : "string" },
-							"name" : { "type" : "string" }, /* organization */
-							"fullName" : { "type" : "string" } /* person */
+							"fullName" : { "type" : "string" }
+						}
+					},
+					"gatheringOrganizations" : {
+						"type" : "nested",
+						"properties" : {
+							"agentText" : { "type" : "string" },
+							"name" : { "type" : "string" }
 						}
 					},
 					"siteCoordinates" : {
@@ -163,8 +174,7 @@
 						"type" : "nested",
 						"properties" : {
 							"agentText" : { "type" : "string" },
-							"name" : { "type" : "string" }, /* organization */
-							"fullName" : { "type" : "string" } /* person */
+							"fullName" : { "type" : "string" }
 						}
 					},
 					"identificationQualifiers" : { "type" : "string" }

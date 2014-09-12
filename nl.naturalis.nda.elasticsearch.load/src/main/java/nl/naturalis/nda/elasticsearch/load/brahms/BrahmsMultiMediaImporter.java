@@ -156,7 +156,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setSourceSystemId(s + "_" + imageNo);
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
 		mmo.setDescription(get(record, CsvField.plantdesc.ordinal()));
-		mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
+		//mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		try {
 			URI uri = new URI(imageUrl);

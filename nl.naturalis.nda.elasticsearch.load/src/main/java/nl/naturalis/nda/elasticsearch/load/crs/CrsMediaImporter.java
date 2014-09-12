@@ -2,7 +2,6 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +9,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.ConfigObject;
@@ -36,23 +34,25 @@ import org.xml.sax.SAXException;
  * @author ayco_holleman
  * 
  */
-public class CrsHarvester {
+public class CrsMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
+
+		String configFile = System.getProperty("config", null);
+		String rebuild = System.getProperty("rebuild", "false");
+
 		IndexNative index = null;
 		try {
-
 			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-
-			index.deleteType(LUCENE_TYPE_SPECIMEN);
-			Thread.sleep(2000);
-			String mapping = LoadUtil.getMapping(Specimen.class);
-			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-
-			CrsHarvester harvester = new CrsHarvester(index);
+			if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
+				index.deleteType(LUCENE_TYPE);
+				Thread.sleep(2000);
+				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+				index.addType(LUCENE_TYPE, mapping);
+			}
+			CrsMediaImporter harvester = new CrsMediaImporter(index, configFile);
 			harvester.harvest();
-
 		}
 		finally {
 			if (index != null) {
@@ -61,8 +61,8 @@ public class CrsHarvester {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsHarvester.class);
-	private static final String LUCENE_TYPE_SPECIMEN = "Specimen";
+	private static final Logger logger = LoggerFactory.getLogger(CrsMediaImporter.class);
+	private static final String LUCENE_TYPE = "MultiMediaObject";
 	private static final String ID_PREFIX = "CRS-";
 	private static final int ES_BULK_REQUEST_SIZE = 1000;
 
@@ -75,14 +75,17 @@ public class CrsHarvester {
 	private final Index index;
 
 
-	@SuppressWarnings("resource")
-	public CrsHarvester(Index index)
+	public CrsMediaImporter(Index index, String configFile)
 	{
 		this.index = index;
-		InputStream is = getClass().getResourceAsStream("/config/crs/CrsHarvester.properties");
-		config = new ConfigObject(is);
+		if (configFile == null) {
+			config = new ConfigObject(getClass().getResourceAsStream("/crs-import.properties"));
+		}
+		else {
+			config = new ConfigObject(configFile);
+		}
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-		builderFactory.setNamespaceAware(true);
+		builderFactory.setNamespaceAware(false);
 		try {
 			builder = builderFactory.newDocumentBuilder();
 		}
@@ -94,9 +97,9 @@ public class CrsHarvester {
 
 	public void harvest()
 	{
-		
+
 		int batch = 0;
-		
+
 		try {
 
 			String resToken;
@@ -141,13 +144,13 @@ public class CrsHarvester {
 
 	private String processXML(int batch, String resumptionToken)
 	{
-		
+
 		if (resumptionToken != null) {
 			logger.info("Saving resumption token");
 			String contents = String.valueOf(batch) + "," + resumptionToken;
 			FileUtil.setContents(getResumptionTokenFile(), contents);
 		}
-		
+
 		logger.info("Calling CRS OAI service");
 		String xml = getXML(resumptionToken);
 		Document doc;
@@ -166,29 +169,39 @@ public class CrsHarvester {
 		int numRecords = records.getLength();
 		logger.info("Number of records in XML output: " + numRecords);
 
-		List<Specimen> specimens = new ArrayList<Specimen>(ES_BULK_REQUEST_SIZE);
+		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(ES_BULK_REQUEST_SIZE);
 		List<String> ids = new ArrayList<String>(ES_BULK_REQUEST_SIZE);
 		for (int i = 0; i < numRecords; ++i) {
-			Element record = (Element) records.item(i);
-			String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
-			if (isDeletedRecord(record)) {
-				index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
-			}
-			else {
-				specimens.add(CrsTransfer.transfer(record));
-				ids.add(id);
-				if (specimens.size() == ES_BULK_REQUEST_SIZE) {
-					index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
-					specimens.clear();
-					ids.clear();
+			try {
+				Element record = (Element) records.item(i);
+				if (isDeletedRecord(record)) {
+					// TODO delete media from ES index
+				}
+				else {
+					List<ESMultiMediaObject> extractedMedia = CrsMediaTransfer.transfer(record);
+					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
+					for (ESMultiMediaObject mo : extractedMedia) {
+						extractedIds.add(ID_PREFIX + mo.getSourceSystemId());
+					}
+					mediaObjects.addAll(extractedMedia);
+					ids.addAll(extractedIds);
+					if (mediaObjects.size() >= ES_BULK_REQUEST_SIZE) {
+						index.saveObjects(LUCENE_TYPE, mediaObjects, ids);
+						mediaObjects.clear();
+						ids.clear();
+					}
+				}
+				if (++processed % 1000 == 0) {
+					logger.info("Records processed: " + processed);
 				}
 			}
-			if (++processed % 1000 == 0) {
-				logger.info("Records processed: " + processed);
+			catch (Exception e) {
+				++bad;
+				logger.error(e.getMessage(),e);
 			}
 		}
-		if (!specimens.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
+		if (!mediaObjects.isEmpty()) {
+			index.saveObjects(LUCENE_TYPE, mediaObjects, ids);
 		}
 		return getResumptionToken(doc);
 	}
@@ -196,15 +209,16 @@ public class CrsHarvester {
 
 	private String getXML(String resumptionToken)
 	{
-		if (config.getBoolean("isTest")) {
-			String key = resumptionToken == null ? "service.url.initial.test" : "service.url.resume.test";
+		if (config.getBoolean("test")) {
+			String key = resumptionToken == null ? "test.media.url.initial" : "test.media.url.resume";
 			String val = config.getString(key);
 			return FileUtil.getContents(val);
 		}
-		String key = resumptionToken == null ? "service.url.initial" : "service.url.resume";
+		String key = resumptionToken == null ? "media.url.initial" : "media.url.resume";
 		String val = config.getString(key);
 		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
 	}
+
 
 	private static boolean isDeletedRecord(Element record)
 	{
@@ -227,9 +241,7 @@ public class CrsHarvester {
 
 	private static File getResumptionTokenFile()
 	{
-		return new File(System.getProperty("java.io.tmpdir") + "/resumption-token");
+		return new File(System.getProperty("java.io.tmpdir") + "/crs-oai-media-resumption-token");
 	}
-
-
 
 }

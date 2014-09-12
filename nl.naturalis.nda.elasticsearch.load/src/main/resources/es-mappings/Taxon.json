@@ -28,7 +28,7 @@
 					"infraspecificRank" : { "type" : "string" }
 				}
 			},
-			"monomials" : {
+			"systemClassification" : {
 				"type" : "nested",
 				"properties" : {
 					"rank" : { "type" : "string" },

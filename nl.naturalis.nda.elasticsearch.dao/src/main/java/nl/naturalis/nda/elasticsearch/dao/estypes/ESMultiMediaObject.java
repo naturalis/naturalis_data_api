@@ -3,10 +3,9 @@ package nl.naturalis.nda.elasticsearch.dao.estypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.NdaTraceableObject;
 import nl.naturalis.nda.domain.MultiMediaObject.Type;
+import nl.naturalis.nda.domain.NdaTraceableObject;
 import nl.naturalis.nda.domain.ServiceAccessPoint;
 
 public class ESMultiMediaObject extends NdaTraceableObject {
@@ -17,11 +16,16 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	private List<ServiceAccessPoint> serviceAccessPoints;
 	private Type type;
 	private int taxonCount;
+	private String creator;
+	private String copyrightText;
+	private String associatedSpecimenReference;
+	private String associatedTaxonReference;
+	private boolean multiMediaPublic;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
 	private List<String> sexes;
-	private List<GatheringEvent> gatheringEvents;
+	private List<ESGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
 
 
@@ -106,6 +110,66 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	}
 
 
+	public String getCreator()
+	{
+		return creator;
+	}
+
+
+	public void setCreator(String creator)
+	{
+		this.creator = creator;
+	}
+
+
+	public String getCopyrightText()
+	{
+		return copyrightText;
+	}
+
+
+	public void setCopyrightText(String copyrightText)
+	{
+		this.copyrightText = copyrightText;
+	}
+
+
+	public String getAssociatedSpecimenReference()
+	{
+		return associatedSpecimenReference;
+	}
+
+
+	public void setAssociatedSpecimenReference(String associatedSpecimenReference)
+	{
+		this.associatedSpecimenReference = associatedSpecimenReference;
+	}
+
+
+	public String getAssociatedTaxonReference()
+	{
+		return associatedTaxonReference;
+	}
+
+
+	public void setAssociatedTaxonReference(String associatedTaxonReference)
+	{
+		this.associatedTaxonReference = associatedTaxonReference;
+	}
+
+
+	public boolean isMultiMediaPublic()
+	{
+		return multiMediaPublic;
+	}
+
+
+	public void setMultiMediaPublic(boolean multiMediaPublic)
+	{
+		this.multiMediaPublic = multiMediaPublic;
+	}
+
+
 	public List<String> getSubjectParts()
 	{
 		return subjectParts;
@@ -154,13 +218,13 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	}
 
 
-	public List<GatheringEvent> getGatheringEvents()
+	public List<ESGatheringEvent> getGatheringEvents()
 	{
 		return gatheringEvents;
 	}
 
 
-	public void setGatheringEvents(List<GatheringEvent> gatheringEvents)
+	public void setGatheringEvents(List<ESGatheringEvent> gatheringEvents)
 	{
 		this.gatheringEvents = gatheringEvents;
 	}
@@ -176,4 +240,5 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	{
 		this.identifications = identifications;
 	}
+
 }

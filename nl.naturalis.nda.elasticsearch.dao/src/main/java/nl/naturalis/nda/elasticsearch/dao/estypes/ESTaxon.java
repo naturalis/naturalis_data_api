@@ -21,7 +21,7 @@ public class ESTaxon extends NdaTraceableObject {
 
 	private List<ScientificName> synonyms;
 	private List<VernacularName> vernacularNames;
-	private List<Monomial> monomials;
+	private List<Monomial> systemClassification;
 	private List<TaxonDescription> descriptions;
 
 
@@ -36,10 +36,10 @@ public class ESTaxon extends NdaTraceableObject {
 
 	public void addMonomial(Monomial monomial)
 	{
-		if (monomials == null) {
-			monomials = new ArrayList<Monomial>();
+		if (systemClassification == null) {
+			systemClassification = new ArrayList<Monomial>();
 		}
-		monomials.add(monomial);
+		systemClassification.add(monomial);
 	}
 
 
@@ -133,15 +133,15 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
-	public List<Monomial> getMonomials()
+	public List<Monomial> getSystemClassification()
 	{
-		return monomials;
+		return systemClassification;
 	}
 
 
-	public void setMonomials(List<Monomial> monomials)
+	public void setSystemClassification(List<Monomial> systemClassification)
 	{
-		this.monomials = monomials;
+		this.systemClassification = systemClassification;
 	}
 
 

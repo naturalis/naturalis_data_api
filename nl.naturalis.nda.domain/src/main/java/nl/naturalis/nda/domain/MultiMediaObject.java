@@ -26,12 +26,21 @@ public class MultiMediaObject extends NdaTraceableObject {
 	private Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints;
 	private Type type;
 	private int taxonCount;
+	private String creator;
+	private String copyrightText;
+	private String associatedSpecimenReference;
+	private String associatedTaxonReference;
+	private boolean multimediaPublic;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
 	private List<String> sexes;
 	private List<MultiMediaGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
+
+	// Non-persistent data
+	private Specimen associatedSpecimen;
+	private Taxon associatedTaxon;
 
 
 	public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
@@ -124,6 +133,66 @@ public class MultiMediaObject extends NdaTraceableObject {
 	}
 
 
+	public String getCreator()
+	{
+		return creator;
+	}
+
+
+	public void setCreator(String creator)
+	{
+		this.creator = creator;
+	}
+
+
+	public String getCopyrightText()
+	{
+		return copyrightText;
+	}
+
+
+	public void setCopyrightText(String copyrightText)
+	{
+		this.copyrightText = copyrightText;
+	}
+
+
+	public String getAssociatedSpecimenReference()
+	{
+		return associatedSpecimenReference;
+	}
+
+
+	public void setAssociatedSpecimenReference(String associatedSpecimenReference)
+	{
+		this.associatedSpecimenReference = associatedSpecimenReference;
+	}
+
+
+	public String getAssociatedTaxonReference()
+	{
+		return associatedTaxonReference;
+	}
+
+
+	public void setAssociatedTaxonReference(String associatedTaxonReference)
+	{
+		this.associatedTaxonReference = associatedTaxonReference;
+	}
+
+
+	public boolean isMultimediaPublic()
+	{
+		return multimediaPublic;
+	}
+
+
+	public void setMultimediaPublic(boolean multimediaPublic)
+	{
+		this.multimediaPublic = multimediaPublic;
+	}
+
+
 	public List<String> getSubjectParts()
 	{
 		return subjectParts;
@@ -193,6 +262,30 @@ public class MultiMediaObject extends NdaTraceableObject {
 	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
 	{
 		this.identifications = identifications;
+	}
+
+
+	public Specimen getAssociatedSpecimen()
+	{
+		return associatedSpecimen;
+	}
+
+
+	public void setAssociatedSpecimen(Specimen associatedSpecimen)
+	{
+		this.associatedSpecimen = associatedSpecimen;
+	}
+
+
+	public Taxon getAssociatedTaxon()
+	{
+		return associatedTaxon;
+	}
+
+
+	public void setAssociatedTaxon(Taxon associatedTaxon)
+	{
+		this.associatedTaxon = associatedTaxon;
 	}
 
 }

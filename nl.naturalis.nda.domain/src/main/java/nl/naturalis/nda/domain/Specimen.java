@@ -117,18 +117,6 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public String getTypeStatus()
-	{
-		return typeStatus;
-	}
-
-
-	public void setTypeStatus(String typeStatus)
-	{
-		this.typeStatus = typeStatus;
-	}
-
-
 	public String getCollectionType()
 	{
 		return collectionType;
@@ -138,6 +126,18 @@ public class Specimen extends NdaTraceableObject {
 	public void setCollectionType(String collectionType)
 	{
 		this.collectionType = collectionType;
+	}
+
+
+	public String getTypeStatus()
+	{
+		return typeStatus;
+	}
+
+
+	public void setTypeStatus(String typeStatus)
+	{
+		this.typeStatus = typeStatus;
 	}
 
 

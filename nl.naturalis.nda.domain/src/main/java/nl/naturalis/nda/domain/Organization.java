@@ -1,16 +1,16 @@
 package nl.naturalis.nda.domain;
 
-public class OrganizationAgent extends Agent {
+public class Organization extends Agent {
 
 	private String name;
 
 
-	public OrganizationAgent()
+	public Organization()
 	{
 	}
 
 
-	public OrganizationAgent(String name)
+	public Organization(String name)
 	{
 		this.name = name;
 	}

@@ -13,7 +13,6 @@ public class Taxon extends NdaTraceableObject {
 	private List<Synonym> synonyms;
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
-
 	private List<Reference> references;
 	private List<Expert> experts;
 

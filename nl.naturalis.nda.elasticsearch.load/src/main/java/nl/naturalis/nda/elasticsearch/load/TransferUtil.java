@@ -34,6 +34,10 @@ public class TransferUtil {
 		if (s == null) {
 			return null;
 		}
+		s = s.trim();
+		if (s.length() == 0) {
+			return null;
+		}
 		for (SimpleDateFormat df : DATE_FORMATS) {
 			try {
 				return df.parse(s);

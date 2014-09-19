@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nda.domain.GatheringSiteCoordinates;
-import nl.naturalis.nda.domain.OrganizationAgent;
-import nl.naturalis.nda.domain.PersonAgent;
+import nl.naturalis.nda.domain.Organization;
+import nl.naturalis.nda.domain.Person;
 
 public class ESGatheringEvent {
 
@@ -26,8 +26,8 @@ public class ESGatheringEvent {
 	private String altitudeUnifOfMeasurement;
 	private String dept;
 	private String deptUnitOfMeasurement;
-	private List<PersonAgent> gatheringPersons;
-	private List<OrganizationAgent> gatheringOrganizations;
+	private List<Person> gatheringPersons;
+	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
 
 
@@ -235,27 +235,27 @@ public class ESGatheringEvent {
 	}
 
 
-	public List<PersonAgent> getGatheringPersons()
+	public List<Person> getGatheringPersons()
 	{
 		return gatheringPersons;
 	}
 
 
-	public void setGatheringPersons(List<PersonAgent> personAgents)
+	public void setGatheringPersons(List<Person> persons)
 	{
-		this.gatheringPersons = personAgents;
+		this.gatheringPersons = persons;
 	}
 
 
-	public List<OrganizationAgent> getGatheringOrganizations()
+	public List<Organization> getGatheringOrganizations()
 	{
 		return gatheringOrganizations;
 	}
 
 
-	public void setGatheringOrganizations(List<OrganizationAgent> organizationAgents)
+	public void setGatheringOrganizations(List<Organization> organizations)
 	{
-		this.gatheringOrganizations = organizationAgents;
+		this.gatheringOrganizations = organizations;
 	}
 
 

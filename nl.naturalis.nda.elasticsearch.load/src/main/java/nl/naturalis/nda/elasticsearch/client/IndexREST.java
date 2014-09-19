@@ -363,4 +363,12 @@ public class IndexREST implements Index {
 		return false;
 	}
 
+
+	@Override
+	public void deleteWhere(String type, String field, String value)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

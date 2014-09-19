@@ -47,10 +47,38 @@
 					"authorshipVerbatim" : { "type" : "string" },
 					"author" : { "type" : "string" },
 					"year" : { "type" : "string" },
-					"nameAccordingTo" : {
+					"experts" : {
+						"type" : "nested",
 						"properties" : {
-							"name" : { "type" : "string" },
-							"organization" : { "type" : "string" } 
+							"agentText" : { "type" : "string" },
+							"fullName" : { "type" : "string" },
+							"organization" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"name" : { "type" : "string" }
+								}
+							}							
+						}
+					},
+					"references" : {
+						"type" : "nested",
+						"properties" : {
+							"titleCitation" : { "type" : "string" },
+							"citationDetail" : { "type" : "string" },
+							"uri" : { "type" : "string" },
+							"publicationDate" : { "type" : "date" },
+							"author" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"fullName" : { "type" : "string" },
+									"organization" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"name" : { "type" : "string" }
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -68,10 +96,38 @@
 					"authorshipVerbatim" : { "type" : "string" },
 					"author" : { "type" : "string" },
 					"year" : { "type" : "string" },
-					"nameAccordingTo" : {
+					"experts" : {
+						"type" : "nested",
 						"properties" : {
-							"name" : { "type" : "string" },
-							"organization" : { "type" : "string" } 
+							"agentText" : { "type" : "string" },
+							"fullName" : { "type" : "string" },
+							"organization" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"name" : { "type" : "string" }
+								}
+							}							
+						}
+					},
+					"references" : {
+						"type" : "nested",
+						"properties" : {
+							"titleCitation" : { "type" : "string" },
+							"citationDetail" : { "type" : "string" },
+							"uri" : { "type" : "string" },
+							"publicationDate" : { "type" : "date" },
+							"author" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"fullName" : { "type" : "string" },
+									"organization" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"name" : { "type" : "string" }
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -80,20 +136,76 @@
 				"type" : "nested",
 				"properties": {
 					"name" : { "type" : "string" },
-					"nameAccordingTo" : {
+					"language" : { "type" : "string" },
+					"preferred" : { "type" : "boolean" },
+					"experts" : {
+						"type" : "nested",
 						"properties" : {
-							"name" : { "type" : "string" },
-							"organization" : { "type" : "string" } 
+							"agentText" : { "type" : "string" },
+							"fullName" : { "type" : "string" },
+							"organization" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"name" : { "type" : "string" }
+								}
+							}							
+						}
+					},
+					"references" : {
+						"type" : "nested",
+						"properties" : {
+							"titleCitation" : { "type" : "string" },
+							"citationDetail" : { "type" : "string" },
+							"uri" : { "type" : "string" },
+							"publicationDate" : { "type" : "date" },
+							"author" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"fullName" : { "type" : "string" },
+									"organization" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"name" : { "type" : "string" }
+										}
+									}
+								}
+							}
 						}
 					}
 				}			
 			},
-			"status" : {
+			"experts" : {
+				"type" : "nested",
 				"properties" : {
-					"status" : { "type" : "string" },
-					"referenceTitle" : { "type" : "string" },
-					"referenceAuthor" : { "type" : "string" },
-					"referenceDate" : { "type" : "string" }
+					"agentText" : { "type" : "string" },
+					"fullName" : { "type" : "string" },
+					"organization" : {
+						"properties" : {
+							"agentText" : { "type" : "string" },
+							"name" : { "type" : "string" }
+						}
+					}							
+				}
+			},
+			"references" : {
+				"type" : "nested",
+				"properties" : {
+					"titleCitation" : { "type" : "string" },
+					"citationDetail" : { "type" : "string" },
+					"uri" : { "type" : "string" },
+					"publicationDate" : { "type" : "date" },
+					"author" : {
+						"properties" : {
+							"agentText" : { "type" : "string" },
+							"fullName" : { "type" : "string" },
+							"organization" : {
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"name" : { "type" : "string" }
+								}
+							}
+						}
+					}
 				}
 			},
 			"descriptions" : {

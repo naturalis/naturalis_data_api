@@ -115,6 +115,9 @@ public interface Index {
 	boolean deleteDocument(String type, String id);
 
 
+
+	void deleteWhere(String type, String field, String value);
+
 	/**
 	 * Add a new document of the specified type to the index.
 	 * 
@@ -186,5 +189,6 @@ public interface Index {
 	 *            the objects do not have a relational parent.
 	 */
 	void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds);
+
 
 }

@@ -48,8 +48,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
-	static final String LUCENE_TYPE = "Specimen";
-	static final String ID_PREFIX = "BRAHMS-";
+	private static final String LUCENE_TYPE = "Specimen";
+	private static final String ID_PREFIX = "BRAHMS-";
 
 	//@formatter:off
 	static enum CsvField {
@@ -109,7 +109,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<Specimen> {
 		this.delimiter = ',';
 		setSpecifyId(true);
 		setSpecifyParent(false);
-
 	}
 
 

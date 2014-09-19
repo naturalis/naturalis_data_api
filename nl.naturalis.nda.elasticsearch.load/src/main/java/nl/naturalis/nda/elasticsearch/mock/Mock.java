@@ -158,7 +158,7 @@ public class Mock {
 				Reference.class);
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.getAcceptedName().setFullScientificName("Malusmonkius africanus L.");
-		taxon.getCommonNames().get(0).setName("Afrikaans Malusaapje");
+		//taxon.getCommonNames().get(0).setName("Afrikaans Malusaapje");
 		result = new SearchResult<Taxon>(taxon);
 		resultGroup.addSearchResult(result);
 		matchInfo = new StringMatchInfo();
@@ -180,7 +180,7 @@ public class Mock {
 				Reference.class);
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.getAcceptedName().setFullScientificName("Konijnus langstaartis");
-		taxon.getCommonNames().get(0).setName("Langstaart Maluskonijn");
+		//taxon.getCommonNames().get(0).setName("Langstaart Maluskonijn");
 		result = new SearchResult<Taxon>(taxon);
 		resultGroup.addSearchResult(result);
 		matchInfo = new StringMatchInfo();
@@ -195,7 +195,7 @@ public class Mock {
 				Reference.class);
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.getAcceptedName().setFullScientificName("Konijnus langstaartis");
-		taxon.getCommonNames().get(0).setName("Langstaart Maluskonijn");
+		//taxon.getCommonNames().get(0).setName("Langstaart Maluskonijn");
 		result = new SearchResult<Taxon>(taxon);
 		resultGroup.addSearchResult(result);
 		matchInfo = new StringMatchInfo();

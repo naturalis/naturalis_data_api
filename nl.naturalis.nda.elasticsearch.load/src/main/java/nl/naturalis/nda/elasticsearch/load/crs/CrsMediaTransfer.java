@@ -6,7 +6,7 @@ import java.util.List;
 
 import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.PersonAgent;
+import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
@@ -84,7 +84,7 @@ public class CrsMediaTransfer {
 		}
 		String s = val(dcElement, "abcd:GatheringAgent");
 		if (s != null) {
-			PersonAgent agent = new PersonAgent();
+			Person agent = new Person();
 			ge.setGatheringPersons(Arrays.asList(agent));
 			agent.setFullName(s);
 		}

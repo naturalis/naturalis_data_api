@@ -5,9 +5,6 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -26,12 +23,13 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
 import org.slf4j.Logger;
@@ -65,12 +63,10 @@ public class IndexNative implements Index {
 		if (localClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			localClient = nodeBuilder().node().client();
-			// Results in MasterNotFound exception if cluster is in yellow status, while that apparently
-			// shouldn't prevent this program from running OK.
-			// localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
-			ClusterStatsRequest request = new ClusterStatsRequest();
-			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			// logger.debug("Cluster stats: " + response.toString());
+			//localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();	
+			//ClusterStatsRequest request = new ClusterStatsRequest();
+			//ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
+			//logger.debug("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}
@@ -110,6 +106,7 @@ public class IndexNative implements Index {
 		this.esClient = client;
 		admin = esClient.admin().indices();
 	}
+
 
 	@Override
 	public boolean exists()
@@ -292,6 +289,16 @@ public class IndexNative implements Index {
 
 
 	@Override
+	public void deleteWhere(String type, String field, String value)
+	{
+		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
+		request.setTypes(type);
+		request.setQuery(QueryBuilders.termQuery(field, value));
+		request.execute().actionGet();
+	}
+
+
+	@Override
 	public void saveDocument(String type, String json, String id)
 	{
 		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
@@ -359,13 +366,6 @@ public class IndexNative implements Index {
 				}
 			}
 			catch (JsonProcessingException e) {
-				//				BeanPrinter bp =new BeanPrinter("C:/tmp/bp0.txt");
-				//				bp.dump(objs);
-				//				bp.dump(ids);
-				//				bp.dump(parentIds);
-				//				if(true) {
-				//					System.exit(0);
-				//				}
 				throw new IndexException(e);
 			}
 			brb.add(irb);

@@ -94,8 +94,7 @@
 						"type" : "nested",
 						"properties" : {
 							"agentText" : { "type" : "string" },
-							"name" : { "type" : "string" }, /* organization */
-							"fullName" : { "type" : "string" } /* person */
+							"fullName" : { "type" : "string" }
 						}
 					},
 					"siteCoordinates" : {
@@ -164,8 +163,7 @@
 						"type" : "nested",
 						"properties" : {
 							"agentText" : { "type" : "string" },
-							"name" : { "type" : "string" }, /* organization */
-							"fullName" : { "type" : "string" } /* person */
+							"fullName" : { "type" : "string" }
 						}
 					},
 					"identificationQualifiers" : { "type" : "string" }

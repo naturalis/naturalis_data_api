@@ -1,92 +1,87 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Expert;
 import nl.naturalis.nda.domain.Monomial;
+import nl.naturalis.nda.domain.Organization;
+import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.Reference;
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.ScientificName.TaxonomicStatus;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.VernacularName;
-import nl.naturalis.nda.domain.systypes.NsrCommonName;
-import nl.naturalis.nda.domain.systypes.NsrScientificName;
-import nl.naturalis.nda.domain.systypes.NsrTaxonDescription;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
 import org.domainobject.util.DOMUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 class NsrTaxonTransfer {
 
-	static ESTaxon transfer(Element taxonElement)
-	{
+	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonTransfer.class);
+	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<String, TaxonomicStatus>();
 
-		final ESTaxon taxon = new ESTaxon();
+	static {
+		translations.put("isValidNameOf", ScientificName.TaxonomicStatus.ACCEPTED_NAME);
+		translations.put("isSynonymOf", ScientificName.TaxonomicStatus.SYNONYM);
+		translations.put("isSynonymSLOf", ScientificName.TaxonomicStatus.SYNONYM);
+		translations.put("isBasionymOf", ScientificName.TaxonomicStatus.BASIONYM);
+		translations.put("isHomonymOf", ScientificName.TaxonomicStatus.HOMONYM);
+		translations.put("isMisspelledNameOf", ScientificName.TaxonomicStatus.MISSPELLED_NAME);
+		translations.put("isInvalidNameOf", ScientificName.TaxonomicStatus.MISAPPLIED_NAME);
+	}
+
+
+	static ESTaxon transfer(Element taxonElement) throws Exception
+	{
+		ESTaxon taxon = new ESTaxon();
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.setSourceSystemId(nl(DOMUtil.getValue(taxonElement, "nsr_id")));
-		// TODO: Moet parent_nsr_id zijn ipv parent_id, maar dat zit nog niet in XML
-		taxon.setSourceSystemParentId(nl(DOMUtil.getValue(taxonElement, "parent_id")));
+		taxon.setSourceSystemParentId(nl(DOMUtil.getValue(taxonElement, "nsr_id_parent")));
 		taxon.setTaxonRank(nl(DOMUtil.getValue(taxonElement, "rank")));
-
 		List<Monomial> monomials = getMonomials(taxonElement);
 		taxon.setSystemClassification(monomials);
-
 		DefaultClassification dc = getDefaultClassification(monomials);
 		taxon.setDefaultClassification(dc);
-
-		for (NsrScientificName sn : getScientificNames(taxonElement)) {
-			// BeanPrinter.out(sn);
-			if (sn.getStatus().equals(ScientificName.TaxonomicStatus.ACCEPTED_NAME.toString())) {
-				taxon.setAcceptedName(transfer(sn));
+		for (ScientificName sn : getScientificNames(taxonElement)) {
+			if (sn.getTaxonomicStatus() == TaxonomicStatus.ACCEPTED_NAME) {
+				if (taxon.getAcceptedName() != null) {
+					throw new Exception("Only one accepted name per taxon allowed");
+				}
+				taxon.setAcceptedName(sn);
 			}
 			else {
-				taxon.addSynonym(transfer(sn));
+				taxon.addSynonym(sn);
 			}
 		}
-
-		for (NsrCommonName cn : getCommonNames(taxonElement)) {
-			VernacularName vn = new VernacularName(cn.getName());
-			vn.setLanguage(cn.getLanguage());
-			taxon.addVernacularName(vn);
+		if (taxon.getAcceptedName() == null) {
+			throw new Exception("Missing accepted name for taxon");
 		}
-
-		addDescriptions(taxon, getTaxonDescriptions(taxonElement));
-
+		taxon.setVernacularNames(getVernacularNames(taxonElement));
+		taxon.setDescriptions(getTaxonDescriptions(taxonElement));
 		return taxon;
 	}
 
 
-	private static void addDescriptions(ESTaxon taxon, List<NsrTaxonDescription> descriptions)
-	{
-		for (NsrTaxonDescription d : descriptions) {
-			TaxonDescription td = new TaxonDescription();
-			td.setCategory(d.getCategory());
-			td.setDescription(d.getDescription());
-			taxon.addDescription(td);
-		}
-	}
-
-
-	private static ScientificName transfer(NsrScientificName sn)
-	{
-		final ScientificName scientificName = new ScientificName();
-		scientificName.setFullScientificName(sn.getScientificName());
-		scientificName.setAuthor(sn.getAuthorName());
-		scientificName.setAuthorshipVerbatim(sn.getAuthorship());
-		scientificName.setGenusOrMonomial(sn.getGenusOrMonomial());
-		scientificName.setSpecificEpithet(sn.getSpecificEpithet());
-		scientificName.setInfraspecificEpithet(sn.getInfraSpecificEpithet());
-		return scientificName;
-	}
-
-
-	private static List<NsrScientificName> getScientificNames(Element taxonElement)
+	private static List<ScientificName> getScientificNames(Element taxonElement) throws Exception
 	{
 		Element namesElement = DOMUtil.getChild(taxonElement, "names");
+		if (namesElement == null) {
+			throw new Exception("Missing <names> element under <taxon> element");
+		}
 		List<Element> nameElements = DOMUtil.getChildren(namesElement);
-		List<NsrScientificName> names = new ArrayList<NsrScientificName>();
+		if (nameElements == null) {
+			throw new Exception("There must be at least one <name> element under a <names> element (for the accepted name)");
+		}
+		List<ScientificName> names = new ArrayList<ScientificName>();
 		for (Element e : nameElements) {
 			if (isScientificNameElement(e)) {
 				names.add(getScientificName(e));
@@ -96,24 +91,33 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static List<NsrCommonName> getCommonNames(Element taxonElement)
+	private static List<VernacularName> getVernacularNames(Element taxonElement) throws Exception
 	{
 		Element namesElement = DOMUtil.getChild(taxonElement, "names");
+		if (namesElement == null) {
+			return null;
+		}
 		List<Element> nameElements = DOMUtil.getChildren(namesElement);
-		List<NsrCommonName> names = new ArrayList<NsrCommonName>();
+		if (nameElements == null) {
+			return null;
+		}
+		List<VernacularName> names = new ArrayList<VernacularName>();
 		for (Element e : nameElements) {
 			if (!isScientificNameElement(e)) {
-				names.add(getCommonName(e));
+				names.add(getVernacularName(e));
 			}
 		}
 		return names;
 	}
 
 
-	private static boolean isScientificNameElement(Element e)
+	private static boolean isScientificNameElement(Element nameElement) throws Exception
 	{
-		String nameType = DOMUtil.getValue(e, "nametype");
-		return nameType != null && (!nameType.equals("isPreferredNameOf")) && (!nameType.equals("isAlternativeNameOf"));
+		String nameType = nl(DOMUtil.getValue(nameElement, "nametype"));
+		if(nameType == null) {
+			throw new Exception("Missing <nametype> element under <name> element");
+		}
+		return (!nameType.equals("isPreferredNameOf")) && (!nameType.equals("isAlternativeNameOf"));
 	}
 
 
@@ -144,18 +148,22 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static List<NsrTaxonDescription> getTaxonDescriptions(Element taxonElement)
+	private static List<TaxonDescription> getTaxonDescriptions(Element taxonElement)
 	{
-		List<NsrTaxonDescription> descriptions = new ArrayList<NsrTaxonDescription>();
 		Element descriptionElement = DOMUtil.getChild(taxonElement, "description");
-		if (descriptionElement != null) {
-			List<Element> pageElements = DOMUtil.getChildren(descriptionElement);
-			for (Element pageElement : pageElements) {
-				NsrTaxonDescription taxonDescription = new NsrTaxonDescription();
-				taxonDescription.setCategory(DOMUtil.getValue(pageElement, "title"));
-				taxonDescription.setDescription(DOMUtil.getValue(pageElement, "text"));
-				descriptions.add(taxonDescription);
-			}
+		if (descriptionElement == null) {
+			return null;
+		}
+		List<Element> pageElements = DOMUtil.getChildren(descriptionElement);
+		if (pageElements == null) {
+			return null;
+		}
+		List<TaxonDescription> descriptions = new ArrayList<TaxonDescription>(pageElements.size());
+		for (Element pageElement : pageElements) {
+			TaxonDescription taxonDescription = new TaxonDescription();
+			taxonDescription.setCategory(DOMUtil.getValue(pageElement, "title"));
+			taxonDescription.setDescription(DOMUtil.getValue(pageElement, "text"));
+			descriptions.add(taxonDescription);
 		}
 		return descriptions;
 	}
@@ -173,76 +181,89 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static NsrCommonName getCommonName(Element nameElement)
+	private static VernacularName getVernacularName(Element nameElement)
 	{
-		NsrCommonName name = new NsrCommonName();
-		String expert = nl(DOMUtil.getValue(nameElement, "expert_name"));
-		if (expert == null) {
-			expert = nl(DOMUtil.getValue(nameElement, "expert"));
-		}
-		name.setExpert(expert);
-		String organisation = nl(DOMUtil.getValue(nameElement, "organization_name"));
-		if (organisation == null) {
-			organisation = nl(DOMUtil.getValue(nameElement, "organization"));
-		}
-		name.setOrganisation(organisation);
+		VernacularName name = new VernacularName();
 		name.setLanguage(nl(DOMUtil.getValue(nameElement, "language")));
+		name.setName(nl(DOMUtil.getValue(nameElement, "fullname")));
 		String nameType = nl(DOMUtil.getValue(nameElement, "nametype"));
 		name.setPreferred(nameType.equals("isPreferredNameOf"));
-		name.setReferenceAuthor(nl(DOMUtil.getValue(nameElement, "reference_author")));
-		name.setReferenceDate(nl(DOMUtil.getValue(nameElement, "reference_date")));
-		name.setReferenceTitle(nl(DOMUtil.getValue(nameElement, "reference_title")));
+		String expertName = nl(DOMUtil.getValue(nameElement, "expert_name"));
+		if (expertName == null) {
+			expertName = nl(DOMUtil.getValue(nameElement, "expert"));
+		}
+		String organization = nl(DOMUtil.getValue(nameElement, "organization_name"));
+		if (organization == null) {
+			organization = nl(DOMUtil.getValue(nameElement, "organization"));
+		}
+		if (expertName != null || organization != null) {
+			Expert expert = new Expert();
+			expert.setFullName(expertName);
+			expert.setOrganization(new Organization(organization));
+			name.setExperts(Arrays.asList(expert));
+		}
+		String referenceAuthor = nl(DOMUtil.getValue(nameElement, "reference_author"));
+		String referenceTitle = nl(DOMUtil.getValue(nameElement, "reference_title"));
+		if (referenceAuthor != null || referenceTitle != null) {
+			Reference reference = new Reference();
+			reference.setTitleCitation(referenceTitle);
+			reference.setAuthor(new Person(referenceAuthor));
+			reference.setPublicationDate(TransferUtil.parseDate(nl(DOMUtil.getValue(nameElement, "reference_date"))));
+			name.setReferences(Arrays.asList(reference));
+		}
 		return name;
 	}
 
 
-	private static NsrScientificName getScientificName(Element nameElement)
+	private static ScientificName getScientificName(Element nameElement)
 	{
-		NsrScientificName name = new NsrScientificName();
-		name.setAuthorName(nl(DOMUtil.getValue(nameElement, "name_author")));
-		name.setAuthorYear(nl(DOMUtil.getValue(nameElement, "authorship_year")));
-		name.setExpert(nl(DOMUtil.getValue(nameElement, "expert")));
-		name.setGenusOrMonomial(nl(DOMUtil.getValue(nameElement, "uninomial")));
-		name.setInfraSpecificEpithet(nl(DOMUtil.getValue(nameElement, "infra_specific_epithet")));
-		name.setScientificName(nl(DOMUtil.getValue(nameElement, "fullname")));
-		name.setReferenceAuthor(nl(DOMUtil.getValue(nameElement, "reference_author")));
-		name.setReferenceDate(nl(DOMUtil.getValue(nameElement, "reference_date")));
-		name.setReferenceTitle(nl(DOMUtil.getValue(nameElement, "reference_title")));
-		name.setStatus(getNameStatus(nameElement));
-		String expert = nl(DOMUtil.getValue(nameElement, "expert_name"));
-		if (expert == null) {
-			expert = DOMUtil.getValue(nameElement, "expert");
+		ScientificName sn = new ScientificName();
+		sn.setFullScientificName(nl(DOMUtil.getValue(nameElement, "fullname")));
+		sn.setAuthor(nl(DOMUtil.getValue(nameElement, "name_author")));
+		sn.setGenusOrMonomial(DOMUtil.getValue(nameElement, "uninomial"));
+		sn.setSpecificEpithet(nl(DOMUtil.getValue(nameElement, "specific_epithet")));
+		sn.setInfraspecificEpithet(nl(DOMUtil.getValue(nameElement, "infra_specific_epithet")));
+		sn.setTaxonomicStatus(getTaxonomicStatus(nameElement));
+		String expertName = nl(DOMUtil.getValue(nameElement, "expert_name"));
+		if (expertName == null) {
+			expertName = nl(DOMUtil.getValue(nameElement, "expert"));
 		}
-		name.setExpert(expert);
-		String organisation = nl(DOMUtil.getValue(nameElement, "organization_name"));
-		if (organisation == null) {
-			organisation = DOMUtil.getValue(nameElement, "organization");
+		String organization = nl(DOMUtil.getValue(nameElement, "organization_name"));
+		if (organization == null) {
+			organization = nl(DOMUtil.getValue(nameElement, "organization"));
 		}
-		name.setOrganisation(organisation);
-		return name;
-	}
-
-	private static final HashMap<String, String> translations = new HashMap<String, String>();
-
-	static {
-		translations.put("isValidNameOf", ScientificName.TaxonomicStatus.ACCEPTED_NAME.toString());
-		translations.put("isSynonymOf", ScientificName.TaxonomicStatus.SYNONYM.toString());
-		translations.put("isSynonymSLOf", ScientificName.TaxonomicStatus.SYNONYM.toString());
-		translations.put("isBasionymOf", ScientificName.TaxonomicStatus.BASIONYM.toString());
-		translations.put("isHomonymOf", ScientificName.TaxonomicStatus.HOMONYM.toString());
-		translations.put("isMisspelledNameOf", ScientificName.TaxonomicStatus.MISSPELLED_NAME.toString());
-		translations.put("isInvalidNameOf", ScientificName.TaxonomicStatus.MISAPPLIED_NAME.toString());
+		if (expertName != null || organization != null) {
+			Expert expert = new Expert();
+			expert.setFullName(expertName);
+			expert.setOrganization(new Organization(organization));
+			sn.setExperts(Arrays.asList(expert));
+		}
+		String referenceAuthor = nl(DOMUtil.getValue(nameElement, "reference_author"));
+		String referenceTitle = nl(DOMUtil.getValue(nameElement, "reference_title"));
+		if (referenceAuthor != null || referenceTitle != null) {
+			Reference reference = new Reference();
+			reference.setTitleCitation(referenceTitle);
+			reference.setAuthor(new Person(referenceAuthor));
+			reference.setPublicationDate(TransferUtil.parseDate(nl(DOMUtil.getValue(nameElement, "reference_date"))));
+			sn.setReferences(Arrays.asList(reference));
+		}
+		return sn;
 	}
 
 
-	private static String getNameStatus(Element nameElement)
+	private static TaxonomicStatus getTaxonomicStatus(Element nameElement)
 	{
-		String untranslated = DOMUtil.getValue(nameElement, "nametype");
-		String translated = translations.get(untranslated);
-		if (translated == null) {
-			throw new RuntimeException("Unaccounted for name status: " + untranslated);
+		String raw = nl(DOMUtil.getValue(nameElement, "nametype"));
+		if (raw == null) {
+			logger.error("Missing or empty nametype element for name: " + DOMUtil.getValue(nameElement, "fullname"));
+			return null;
 		}
-		return translated;
+		TaxonomicStatus status = translations.get(raw);
+		if (status == null) {
+			logger.error("Unknown taxonomic status: " + raw);
+			return null;
+		}
+		return status;
 	}
 
 

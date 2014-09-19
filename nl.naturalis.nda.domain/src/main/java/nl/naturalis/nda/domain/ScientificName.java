@@ -1,5 +1,7 @@
 package nl.naturalis.nda.domain;
 
+import java.util.List;
+
 /**
  * This class encapsulates a taxon's full scientific name and the components it
  * is composed of. Only the full scientific name will always be set. Individual
@@ -34,8 +36,8 @@ public class ScientificName {
 	private String author;
 	private String year;
 
-	private Reference reference;
-	private Expert nameAccordingTo;
+	private List<Reference> references;
+	private List<Expert> experts;
 
 
 	public String getFullScientificName()
@@ -170,27 +172,27 @@ public class ScientificName {
 	}
 
 
-	public Reference getReference()
+	public List<Reference> getReferences()
 	{
-		return reference;
+		return references;
 	}
 
 
-	public void setReference(Reference reference)
+	public void setReferences(List<Reference> references)
 	{
-		this.reference = reference;
+		this.references = references;
 	}
 
 
-	public Expert getNameAccordingTo()
+	public List<Expert> getExperts()
 	{
-		return nameAccordingTo;
+		return experts;
 	}
 
 
-	public void setNameAccordingTo(Expert expert)
+	public void setExperts(List<Expert> experts)
 	{
-		this.nameAccordingTo = expert;
+		this.experts = experts;
 	}
 
 }

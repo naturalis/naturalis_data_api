@@ -1,12 +1,15 @@
 package nl.naturalis.nda.domain;
 
+import java.util.List;
+
 public class VernacularName {
 
 	private String name;
 	private String language;
 	private Boolean preferred;
 
-	private Expert nameAccordingTo;
+	private List<Reference> references;
+	private List<Expert> experts;
 
 
 	public VernacularName()
@@ -44,7 +47,7 @@ public class VernacularName {
 	}
 
 
-	public Boolean isPreferred()
+	public Boolean getPreferred()
 	{
 		return preferred;
 	}
@@ -56,15 +59,27 @@ public class VernacularName {
 	}
 
 
-	public Expert getNameAccordingTo()
+	public List<Reference> getReferences()
 	{
-		return nameAccordingTo;
+		return references;
 	}
 
 
-	public void setNameAccordingTo(Expert expert)
+	public void setReferences(List<Reference> references)
 	{
-		this.nameAccordingTo = expert;
+		this.references = references;
+	}
+
+
+	public List<Expert> getExperts()
+	{
+		return experts;
+	}
+
+
+	public void setExperts(List<Expert> experts)
+	{
+		this.experts = experts;
 	}
 
 }

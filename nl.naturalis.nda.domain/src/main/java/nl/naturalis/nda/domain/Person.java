@@ -6,6 +6,17 @@ public class Person extends Agent {
 	private Organization organization;
 
 
+	public Person()
+	{
+	}
+
+
+	public Person(String fullName)
+	{
+		this.fullName = fullName;
+	}
+
+
 	public String getFullName()
 	{
 		return fullName;

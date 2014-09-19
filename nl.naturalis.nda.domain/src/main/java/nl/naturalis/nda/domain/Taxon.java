@@ -13,6 +13,10 @@ public class Taxon extends NdaTraceableObject {
 	private List<Synonym> synonyms;
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
+
+	private List<Reference> references;
+	private List<Expert> experts;
+
 	private List<Specimen> specimens;
 
 
@@ -110,13 +114,13 @@ public class Taxon extends NdaTraceableObject {
 	}
 
 
-	public List<VernacularName> getCommonNames()
+	public List<VernacularName> getVernacularNames()
 	{
 		return vernacularNames;
 	}
 
 
-	public void setCommonNames(List<VernacularName> vernacularNames)
+	public void setVernacularNames(List<VernacularName> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
 	}
@@ -131,6 +135,30 @@ public class Taxon extends NdaTraceableObject {
 	public void setDescriptions(List<TaxonDescription> descriptions)
 	{
 		this.descriptions = descriptions;
+	}
+
+
+	public List<Expert> getExperts()
+	{
+		return experts;
+	}
+
+
+	public void setExperts(List<Expert> experts)
+	{
+		this.experts = experts;
+	}
+
+
+	public List<Reference> getReferences()
+	{
+		return references;
+	}
+
+
+	public void setReferences(List<Reference> references)
+	{
+		this.references = references;
 	}
 
 

@@ -1,41 +1,15 @@
 package nl.naturalis.nda.domain;
 
 /**
- * An {@code Expert} represents the person and/or organization on whose
- * authority a scientific name or common name was included in the source system
- * (e.g. the Catalogue of Life). Sometimes the expert is an anonymous person
- * within an organization, in which case only the name of the organization is
- * set; sometimes the agent does not work on behalf of an organization, or the
- * organization is not known.
- * 
+ * An {@code Expert} represents a person or organization who is regarded as an
+ * authority with respect to a particular species. An expert is not to be
+ * confused with the person who first described and named a species (for whom
+ * the term "author" is reserved). {@code Expert} is a subclass {@link Person}
+ * even though it has no properties of its known. This is because for an
+ * {@code Expert}, his/her name may be unknown ({@code null}), which would be
+ * dubious for a regular {@code Person}. With an {@code Expert} either his/her
+ * name or his/her organization may be unknown as long as at least one is known.
  */
-public class Expert {
-
-	private String fullName;
-	private String organization;
-
-
-	public String getFullName()
-	{
-		return fullName;
-	}
-
-
-	public void setFullName(String fullName)
-	{
-		this.fullName = fullName;
-	}
-
-
-	public String getOrganization()
-	{
-		return organization;
-	}
-
-
-	public void setOrganization(String organization)
-	{
-		this.organization = organization;
-	}
+public class Expert extends Person {
 
 }

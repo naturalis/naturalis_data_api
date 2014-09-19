@@ -3,50 +3,77 @@ package nl.naturalis.nda.domain;
 import java.util.Date;
 
 /**
- * A {@code Reference} represents a literature reference for a scientific name
- * or common name.
+ * A {@code Reference} represents a literature reference or common name.
+ * 
+ * @see http://wiki.tdwg.org/twiki/bin/view/ABCD/AbcdConcept0282
  * 
  */
 public class Reference {
 
-	private String title;
-	private String author;
-	private Date date;
+	private String titleCitation;
+	private String citationDetail;
+	private String uri;
+	private Person author;
+	private Date publicationDate;
 
 
-	public String getTitle()
+	public String getTitleCitation()
 	{
-		return title;
+		return titleCitation;
 	}
 
 
-	public void setTitle(String title)
+	public void setTitleCitation(String titleCitation)
 	{
-		this.title = title;
+		this.titleCitation = titleCitation;
 	}
 
 
-	public String getAuthor()
+	public String getCitationDetail()
+	{
+		return citationDetail;
+	}
+
+
+	public void setCitationDetail(String citationDetail)
+	{
+		this.citationDetail = citationDetail;
+	}
+
+
+	public String getUri()
+	{
+		return uri;
+	}
+
+
+	public void setUri(String uri)
+	{
+		this.uri = uri;
+	}
+
+
+	public Person getAuthor()
 	{
 		return author;
 	}
 
 
-	public void setAuthor(String author)
+	public void setAuthor(Person author)
 	{
 		this.author = author;
 	}
 
 
-	public Date getDate()
+	public Date getPublicationDate()
 	{
-		return date;
+		return publicationDate;
 	}
 
 
-	public void setDate(Date date)
+	public void setPublicationDate(Date publicationDate)
 	{
-		this.date = date;
+		this.publicationDate = publicationDate;
 	}
 
 }

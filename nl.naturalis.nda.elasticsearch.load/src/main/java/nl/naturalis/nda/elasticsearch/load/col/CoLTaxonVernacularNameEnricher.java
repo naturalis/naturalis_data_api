@@ -11,7 +11,7 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
-import nl.naturalis.nda.elasticsearch.load.col.CommonNamesImporter.CsvField;
+import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -19,7 +19,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaxonVernacularNamesEnricher {
+public class CoLTaxonVernacularNameEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -29,7 +29,7 @@ public class TaxonVernacularNamesEnricher {
 		}
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 		try {
-			TaxonVernacularNamesEnricher enricher = new TaxonVernacularNamesEnricher(index);
+			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
 			enricher.importCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {
@@ -37,7 +37,7 @@ public class TaxonVernacularNamesEnricher {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(TaxonVernacularNamesEnricher.class);
+	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonVernacularNameEnricher.class);
 	private static final int DEFAULT_BATCH_SIZE = 1000;
 
 	private static final String LUCENE_TYPE = "Taxon";
@@ -46,7 +46,7 @@ public class TaxonVernacularNamesEnricher {
 	private int batchSize = DEFAULT_BATCH_SIZE;
 
 
-	public TaxonVernacularNamesEnricher(Index index)
+	public CoLTaxonVernacularNameEnricher(Index index)
 	{
 		this.index = index;
 	}
@@ -81,7 +81,7 @@ public class TaxonVernacularNamesEnricher {
 				}
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String id = TaxaImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
+					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
 					String vernacular = record.get(CsvField.vernacularName.ordinal());
 					taxon = index.get(LUCENE_TYPE, id, ESTaxon.class);
 					if (taxon == null) {

@@ -5,7 +5,7 @@ import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.StringUtil;
 
-public class ImportAll {
+public class CoLImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -22,11 +22,11 @@ public class ImportAll {
 			index.addType("Taxon", mapping);
 		}
 		try {
-			TaxaImporter importer = new TaxaImporter(index);
+			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			importer.importCsv(dwcaDir + "/taxa.txt");
-			TaxonSynonymsEnricher enricher0 = new TaxonSynonymsEnricher(index);
+			CoLTaxonSynonymEnricher enricher0 = new CoLTaxonSynonymEnricher(index);
 			enricher0.importCsv(dwcaDir + "/taxa.txt");
-			TaxonVernacularNamesEnricher enricher1 = new TaxonVernacularNamesEnricher(index);
+			CoLTaxonVernacularNameEnricher enricher1 = new CoLTaxonVernacularNameEnricher(index);
 			enricher1.importCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {

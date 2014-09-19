@@ -1,16 +1,17 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 
-public class CommonNamesImporter {
+public class CoLReferenceImporter {
 
 	//@formatter:off
 	static enum CsvField {
 		taxonID
-		, vernacularName
-		, language
-		, countryCode
-		, locality
-		, transliteration
+		, creator
+		, date
+		, title
+		, description
+		, identifier
+		, type
 	}	
 	//@formatter:on
 

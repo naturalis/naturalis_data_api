@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 
-public class DistributionsImporter  {
+public class CoLDistributionImporter  {
 
 	//@formatter:off
 	static enum CsvField {

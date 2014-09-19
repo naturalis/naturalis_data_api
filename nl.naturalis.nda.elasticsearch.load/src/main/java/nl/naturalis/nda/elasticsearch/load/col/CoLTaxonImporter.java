@@ -17,7 +17,7 @@ import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
 
-public class TaxaImporter extends CSVImporter<ESTaxon> {
+public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -34,7 +34,7 @@ public class TaxaImporter extends CSVImporter<ESTaxon> {
 			index.addType(LUCENE_TYPE, mapping);
 		}
 		try {
-			TaxaImporter importer = new TaxaImporter(index);
+			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
@@ -82,7 +82,7 @@ public class TaxaImporter extends CSVImporter<ESTaxon> {
 	static final String ID_PREFIX = "COL-";
 
 
-	public TaxaImporter(Index index)
+	public CoLTaxonImporter(Index index)
 	{
 		super(index, LUCENE_TYPE);
 		setSpecifyId(true);

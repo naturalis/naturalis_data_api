@@ -11,7 +11,7 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
-import nl.naturalis.nda.elasticsearch.load.col.TaxaImporter.CsvField;
+import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -19,7 +19,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaxonSynonymsEnricher {
+public class CoLTaxonSynonymEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -29,7 +29,7 @@ public class TaxonSynonymsEnricher {
 		}
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 		try {
-			TaxonSynonymsEnricher enricher = new TaxonSynonymsEnricher(index);
+			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
 			enricher.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
@@ -37,7 +37,7 @@ public class TaxonSynonymsEnricher {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(TaxonSynonymsEnricher.class);
+	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonSynonymEnricher.class);
 	private static final int DEFAULT_BATCH_SIZE = 1000;
 
 	private static final String LUCENE_TYPE = "Taxon";
@@ -46,7 +46,7 @@ public class TaxonSynonymsEnricher {
 	private int batchSize = DEFAULT_BATCH_SIZE;
 
 
-	public TaxonSynonymsEnricher(Index index)
+	public CoLTaxonSynonymEnricher(Index index)
 	{
 		this.index = index;
 	}
@@ -80,11 +80,11 @@ public class TaxonSynonymsEnricher {
 				}
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					if (getInt(record, TaxaImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
+					if (getInt(record, CoLTaxonImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
 						++skipped;
 						continue;
 					}
-					String id = TaxaImporter.ID_PREFIX + record.get(CsvField.acceptedNameUsageID.ordinal());
+					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.acceptedNameUsageID.ordinal());
 					String synonym = record.get(CsvField.scientificName.ordinal());
 					taxon = index.get(LUCENE_TYPE, id, ESTaxon.class);
 					if (taxon == null) {

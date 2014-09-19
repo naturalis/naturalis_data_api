@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Expert;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.NdaTraceableObject;
+import nl.naturalis.nda.domain.Reference;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.VernacularName;
@@ -18,11 +20,13 @@ public class ESTaxon extends NdaTraceableObject {
 	private ScientificName acceptedName;
 
 	private DefaultClassification defaultClassification;
+	private List<Monomial> systemClassification;
 
 	private List<ScientificName> synonyms;
 	private List<VernacularName> vernacularNames;
-	private List<Monomial> systemClassification;
 	private List<TaxonDescription> descriptions;
+	private List<Reference> references;
+	private List<Expert> experts;
 
 
 	public void addSynonym(ScientificName synonym)
@@ -73,18 +77,6 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
-	public ScientificName getAcceptedName()
-	{
-		return acceptedName;
-	}
-
-
-	public void setAcceptedName(ScientificName acceptedName)
-	{
-		this.acceptedName = acceptedName;
-	}
-
-
 	public String getTaxonRank()
 	{
 		return taxonRank;
@@ -97,6 +89,18 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
+	public ScientificName getAcceptedName()
+	{
+		return acceptedName;
+	}
+
+
+	public void setAcceptedName(ScientificName acceptedName)
+	{
+		this.acceptedName = acceptedName;
+	}
+
+
 	public DefaultClassification getDefaultClassification()
 	{
 		return defaultClassification;
@@ -106,6 +110,18 @@ public class ESTaxon extends NdaTraceableObject {
 	public void setDefaultClassification(DefaultClassification defaultClassification)
 	{
 		this.defaultClassification = defaultClassification;
+	}
+
+
+	public List<Monomial> getSystemClassification()
+	{
+		return systemClassification;
+	}
+
+
+	public void setSystemClassification(List<Monomial> systemClassification)
+	{
+		this.systemClassification = systemClassification;
 	}
 
 
@@ -133,18 +149,6 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
-	public List<Monomial> getSystemClassification()
-	{
-		return systemClassification;
-	}
-
-
-	public void setSystemClassification(List<Monomial> systemClassification)
-	{
-		this.systemClassification = systemClassification;
-	}
-
-
 	public List<TaxonDescription> getDescriptions()
 	{
 		return descriptions;
@@ -154,6 +158,30 @@ public class ESTaxon extends NdaTraceableObject {
 	public void setDescriptions(List<TaxonDescription> descriptions)
 	{
 		this.descriptions = descriptions;
+	}
+
+
+	public List<Reference> getReferences()
+	{
+		return references;
+	}
+
+
+	public void setReferences(List<Reference> references)
+	{
+		this.references = references;
+	}
+
+
+	public List<Expert> getExperts()
+	{
+		return experts;
+	}
+
+
+	public void setExperts(List<Expert> experts)
+	{
+		this.experts = experts;
 	}
 
 }

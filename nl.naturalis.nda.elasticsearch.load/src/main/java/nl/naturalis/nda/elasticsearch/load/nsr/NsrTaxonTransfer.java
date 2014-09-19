@@ -48,9 +48,11 @@ class NsrTaxonTransfer {
 		taxon.setSourceSystemParentId(nl(DOMUtil.getValue(taxonElement, "nsr_id_parent")));
 		taxon.setTaxonRank(nl(DOMUtil.getValue(taxonElement, "rank")));
 		List<Monomial> monomials = getMonomials(taxonElement);
-		taxon.setSystemClassification(monomials);
-		DefaultClassification dc = getDefaultClassification(monomials);
-		taxon.setDefaultClassification(dc);
+		if (monomials != null) {
+			taxon.setSystemClassification(monomials);
+			DefaultClassification dc = getDefaultClassification(monomials);
+			taxon.setDefaultClassification(dc);
+		}
 		for (ScientificName sn : getScientificNames(taxonElement)) {
 			if (sn.getTaxonomicStatus() == TaxonomicStatus.ACCEPTED_NAME) {
 				if (taxon.getAcceptedName() != null) {
@@ -114,7 +116,7 @@ class NsrTaxonTransfer {
 	private static boolean isScientificNameElement(Element nameElement) throws Exception
 	{
 		String nameType = nl(DOMUtil.getValue(nameElement, "nametype"));
-		if(nameType == null) {
+		if (nameType == null) {
 			throw new Exception("Missing <nametype> element under <name> element");
 		}
 		return (!nameType.equals("isPreferredNameOf")) && (!nameType.equals("isAlternativeNameOf"));
@@ -172,7 +174,17 @@ class NsrTaxonTransfer {
 	private static List<Monomial> getMonomials(Element taxonElement)
 	{
 		Element classificationElement = DOMUtil.getChild(taxonElement, "classification");
+		if (classificationElement == null) {
+			String name = nl(DOMUtil.getValue(taxonElement, "name"));
+			logger.warn(String.format("No classification for taxon \"%s\"", name));
+			return null;
+		}
 		List<Element> taxonElements = DOMUtil.getChildren(classificationElement);
+		if(taxonElements == null) {
+			String name = nl(DOMUtil.getValue(taxonElement, "name"));
+			logger.warn(String.format("No classification for taxon \"%s\"", name));
+			return null;
+		}
 		List<Monomial> monomials = new ArrayList<Monomial>(taxonElements.size());
 		for (Element e : taxonElements) {
 			monomials.add(new Monomial(DOMUtil.getValue(e, "rank"), DOMUtil.getValue(e, "name")));

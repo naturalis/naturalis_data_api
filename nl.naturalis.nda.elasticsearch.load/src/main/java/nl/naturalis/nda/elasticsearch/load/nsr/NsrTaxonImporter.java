@@ -55,6 +55,9 @@ public class NsrTaxonImporter {
 
 	private final int bulkRequestSize;
 	private final boolean rename;
+	
+	private int totalProcessed = 0;
+	private int totalBad = 0;
 
 
 	public NsrTaxonImporter(Index index)
@@ -98,6 +101,8 @@ public class NsrTaxonImporter {
 				xmlFile.renameTo(new File(xmlFile.getCanonicalPath() + ".bak"));
 			}
 		}
+		logger.info("Total number of records processed: " + totalProcessed);
+		logger.info("Total number of bad records: " + totalBad);
 		logger.info("Ready");
 	}
 
@@ -115,6 +120,7 @@ public class NsrTaxonImporter {
 
 		ESTaxon taxon = null;
 		for (Element taxonElement : taxonElements) {
+			++totalProcessed;
 			if (++processed % 1000 == 0) {
 				logger.info("Records processed: " + processed);
 			}
@@ -123,10 +129,11 @@ public class NsrTaxonImporter {
 			}
 			catch (Throwable t) {
 				++bad;
+				++totalBad;
 				String name = DOMUtil.getValue(taxonElement, "name");
 				String msg = String.format("Error in record %s (\"%s\"): %s", (processed + 1), name, t.getMessage());
-				logger.debug(null, t);
 				logger.error(msg);
+				logger.debug("Stack trace:", t);
 			}
 			taxa.add(taxon);
 			ids.add(ID_PREFIX + taxon.getSourceSystemId());

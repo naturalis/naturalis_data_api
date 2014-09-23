@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 public abstract class CSVImporter<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
-	private static final int DEFAULT_BATCH_SIZE = 10000;
 
 
 	protected static int getInt(CSVRecord record, int fieldNo)
@@ -32,7 +31,7 @@ public abstract class CSVImporter<T> {
 	private final Index index;
 	private final String type;
 
-	private int batchSize = DEFAULT_BATCH_SIZE;
+	private int bulkRequestSize = 1000;
 	private boolean specifyId = false;
 	private boolean specifyParent = false;
 
@@ -58,9 +57,9 @@ public abstract class CSVImporter<T> {
 		int skipped = 0;
 		int bad = 0;
 
-		List<T> objects = new ArrayList<T>(batchSize);
-		List<String> ids = specifyId ? new ArrayList<String>(batchSize) : null;
-		List<String> parentIds = specifyParent ? new ArrayList<String>(batchSize) : null;
+		List<T> objects = new ArrayList<T>(bulkRequestSize);
+		List<String> ids = specifyId ? new ArrayList<String>(bulkRequestSize) : null;
+		List<String> parentIds = specifyParent ? new ArrayList<String>(bulkRequestSize) : null;
 
 		String line;
 		CSVRecord record;
@@ -88,7 +87,7 @@ public abstract class CSVImporter<T> {
 					if (specifyParent) {
 						parentIds.addAll(getParentIds(record));
 					}
-					if (objects.size() >= batchSize) {
+					if (objects.size() >= bulkRequestSize) {
 						index.saveObjects(type, objects, ids, parentIds);
 						objects.clear();
 						if (specifyId) {
@@ -145,15 +144,15 @@ public abstract class CSVImporter<T> {
 	}
 
 
-	public int getBatchSize()
+	public int getBulkRequestSize()
 	{
-		return batchSize;
+		return bulkRequestSize;
 	}
 
 
-	public void setBatchSize(int batchSize)
+	public void setBulkRequestSize(int bulkRequestSize)
 	{
-		this.batchSize = batchSize;
+		this.bulkRequestSize = bulkRequestSize;
 	}
 
 

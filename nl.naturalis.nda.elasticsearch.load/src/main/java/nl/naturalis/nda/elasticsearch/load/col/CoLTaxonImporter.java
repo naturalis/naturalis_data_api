@@ -40,7 +40,6 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		finally {
 			index.getClient().close();
 		}
-		System.out.println("Done");
 	}
 
 	//@formatter:off
@@ -87,6 +86,8 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		super(index, LUCENE_TYPE);
 		setSpecifyId(true);
 		setSpecifyParent(false);
+		String prop = System.getProperty("bulkRequestSize", "1000");
+		setBulkRequestSize(Integer.parseInt(prop));
 	}
 
 

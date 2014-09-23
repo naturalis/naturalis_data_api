@@ -4,6 +4,8 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CoLImportAll {
 
@@ -32,7 +34,8 @@ public class CoLImportAll {
 		finally {
 			index.getClient().close();
 		}
-		System.out.println("Done");
+		logger.info("Ready");
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(CoLImportAll.class);
 }

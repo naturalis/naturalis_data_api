@@ -42,7 +42,6 @@ public class CoLTaxonReferenceEnricher {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonReferenceEnricher.class);
-	private static final String LUCENE_TYPE = "Taxon";
 
 	private final Index index;
 	private final int bulkRequestSize;
@@ -92,7 +91,7 @@ public class CoLTaxonReferenceEnricher {
 					Date pubDate = TransferUtil.parseDate(record.get(CsvField.date.ordinal()));
 					reference.setPublicationDate(pubDate);
 					reference.setAuthor(new Person(record.get(CsvField.creator.ordinal())));
-					taxon = index.get(LUCENE_TYPE, id, ESTaxon.class);
+					taxon = index.get(CoLTaxonImporter.LUCENE_TYPE, id, ESTaxon.class);
 					if (taxon == null) {
 						logger.warn("Orphan reference: " + id);
 						continue;
@@ -101,7 +100,6 @@ public class CoLTaxonReferenceEnricher {
 						taxon.setReferences(new ArrayList<Reference>(Arrays.asList(reference)));
 					}
 					else if (!taxon.getReferences().contains(reference)) {
-						// TODO: implement equals method for Reference
 						taxon.getReferences().add(reference);
 					}
 					else {
@@ -110,7 +108,7 @@ public class CoLTaxonReferenceEnricher {
 					objects.add(taxon);
 					ids.add(id);
 					if (objects.size() >= bulkRequestSize) {
-						index.saveObjects(LUCENE_TYPE, objects, ids);
+						index.saveObjects(CoLTaxonImporter.LUCENE_TYPE, objects, ids);
 						objects.clear();
 						ids.clear();
 					}
@@ -121,7 +119,7 @@ public class CoLTaxonReferenceEnricher {
 				}
 			}
 			if (!objects.isEmpty()) {
-				index.saveObjects(LUCENE_TYPE, objects, ids);
+				index.saveObjects(CoLTaxonImporter.LUCENE_TYPE, objects, ids);
 			}
 		}
 		finally {

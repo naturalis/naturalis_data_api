@@ -38,17 +38,16 @@ public class CoLTaxonVernacularNameEnricher {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonVernacularNameEnricher.class);
-	private static final int DEFAULT_BATCH_SIZE = 1000;
-
-	private static final String LUCENE_TYPE = "Taxon";
 
 	private final Index index;
-	private int batchSize = DEFAULT_BATCH_SIZE;
+	private final int bulkRequestSize;
 
 
 	public CoLTaxonVernacularNameEnricher(Index index)
 	{
 		this.index = index;
+		String prop = System.getProperty("bulkRequestSize", "1000");
+		bulkRequestSize = Integer.parseInt(prop);
 	}
 
 
@@ -59,8 +58,8 @@ public class CoLTaxonVernacularNameEnricher {
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
-		List<ESTaxon> objects = new ArrayList<ESTaxon>(batchSize);
-		List<String> ids = new ArrayList<String>(batchSize);
+		List<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
+		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		int processed = 0;
 		int skipped = 0;
 		int bad = 0;
@@ -82,16 +81,15 @@ public class CoLTaxonVernacularNameEnricher {
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
-					String vernacular = record.get(CsvField.vernacularName.ordinal());
-					taxon = index.get(LUCENE_TYPE, id, ESTaxon.class);
+					taxon = index.get(CoLTaxonImporter.LUCENE_TYPE, id, ESTaxon.class);
+					vn = new VernacularName();
+					vn.setName(record.get(CsvField.vernacularName.ordinal()));
+					vn.setLanguage(record.get(CsvField.language.ordinal()));
 					if (taxon == null) {
-						logger.warn("Orphan name: " + vernacular);
+						logger.warn("Orphan name: " + vn.getName());
 						continue;
 					}
-					//logger.info("Adding synonym: " + synonym);
-					if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(vernacular)) {
-						vn = new VernacularName(vernacular);
-						vn.setLanguage(record.get(CsvField.language.ordinal()));
+					if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(vn)) {
 						taxon.addVernacularName(vn);
 					}
 					else {
@@ -99,8 +97,8 @@ public class CoLTaxonVernacularNameEnricher {
 					}
 					objects.add(taxon);
 					ids.add(id);
-					if (objects.size() == batchSize) {
-						index.saveObjects(LUCENE_TYPE, objects, ids);
+					if (objects.size() == bulkRequestSize) {
+						index.saveObjects(CoLTaxonImporter.LUCENE_TYPE, objects, ids);
 						objects.clear();
 						ids.clear();
 					}
@@ -111,7 +109,7 @@ public class CoLTaxonVernacularNameEnricher {
 				}
 			}
 			if (!objects.isEmpty()) {
-				index.saveObjects(LUCENE_TYPE, objects, ids);
+				index.saveObjects(CoLTaxonImporter.LUCENE_TYPE, objects, ids);
 			}
 		}
 		finally {

@@ -3,9 +3,7 @@ package nl.naturalis.nda.elasticsearch.dao.estypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.NdaTraceableObject;
-import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 
 public class ESSpecimen extends NdaTraceableObject {
@@ -26,7 +24,7 @@ public class ESSpecimen extends NdaTraceableObject {
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
 
-	private GatheringEvent gatheringEvent;
+	private ESGatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
 
 
@@ -219,13 +217,13 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public GatheringEvent getGatheringEvent()
+	public ESGatheringEvent getGatheringEvent()
 	{
 		return gatheringEvent;
 	}
 
 
-	public void setGatheringEvent(GatheringEvent gatheringEvent)
+	public void setGatheringEvent(ESGatheringEvent gatheringEvent)
 	{
 		this.gatheringEvent = gatheringEvent;
 	}

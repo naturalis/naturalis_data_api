@@ -51,7 +51,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		finally {
 			index.getClient().close();
 		}
-
 	}
 
 	//@formatter:off
@@ -239,7 +238,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 
 
-	private static ESGatheringEvent getGatheringEvent(CSVRecord record)
+	static ESGatheringEvent getGatheringEvent(CSVRecord record)
 	{
 		final ESGatheringEvent ge = new ESGatheringEvent();
 		ge.setWorldRegion(get(record, CsvField.CONTINENT.ordinal()));
@@ -265,7 +264,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 
 
-	private static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
+	static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
 	{
 		final SpecimenIdentification identification = new SpecimenIdentification();
 		String s = get(record, CsvField.DETBY.ordinal());
@@ -290,7 +289,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 
 
-	private static ScientificName getScientificName(CSVRecord record)
+	static ScientificName getScientificName(CSVRecord record)
 	{
 		final ScientificName sn = new ScientificName();
 		sn.setFullScientificName(get(record, CsvField.SPECIES.ordinal()));
@@ -299,6 +298,85 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		sn.setSpecificEpithet(get(record, CsvField.SP1.ordinal()));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
 		return sn;
+	}
+
+
+	static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
+	{
+		final DefaultClassification dc = new DefaultClassification();
+		dc.setKingdom("Plantae");
+		dc.setPhylum(null);
+		dc.setClassName(get(record, CsvField.FAMCLASS.ordinal()));
+		dc.setOrder(get(record, CsvField.ORDER.ordinal()));
+		dc.setFamily(get(record, CsvField.FAMILY.ordinal()));
+		dc.setGenus(sn.getGenusOrMonomial());
+		dc.setSpecificEpithet(sn.getSpecificEpithet());
+		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
+		return dc;
+	}
+
+
+	static List<Monomial> getSystemClassification(DefaultClassification dc)
+	{
+		final List<Monomial> sc = new ArrayList<Monomial>(8);
+		if (dc.getKingdom() != null) {
+			sc.add(new Monomial("kingdom", dc.getKingdom()));
+		}
+		if (dc.getPhylum() != null) {
+			sc.add(new Monomial("division", dc.getPhylum()));
+		}
+		if (dc.getOrder() != null) {
+			sc.add(new Monomial("order", dc.getOrder()));
+		}
+		if (dc.getFamily() != null) {
+			sc.add(new Monomial("family", dc.getFamily()));
+		}
+		if (dc.getGenus() != null) {
+			sc.add(new Monomial("genus", dc.getGenus()));
+		}
+		if (dc.getSpecificEpithet() != null) {
+			sc.add(new Monomial("species", dc.getSpecificEpithet()));
+		}
+		if (dc.getInfraspecificEpithet() != null) {
+			sc.add(new Monomial("subspecies", dc.getInfraspecificEpithet()));
+		}
+		return sc;
+	}
+
+
+	static Date getDate(String year, String month, String day)
+	{
+		year = year.trim();
+		if (year.length() == 0) {
+			return null;
+		}
+		try {
+			int yearInt = (int) Float.parseFloat(year);
+			if (yearInt == 0) {
+				return null;
+			}
+			month = month.trim();
+			if (month.length() == 0) {
+				month = "0";
+			}
+			int monthInt = (int) Float.parseFloat(month);
+			if (monthInt < 0 || monthInt > 11) {
+				monthInt = 0;
+			}
+			day = day.trim();
+			if (day.length() == 0) {
+				day = "1";
+			}
+			int dayInt = (int) Float.parseFloat(day);
+			if (dayInt <= 0 || dayInt > 31) {
+				dayInt = 1;
+			}
+			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
+		}
+		catch (Exception e) {
+			logger.warn(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
+			return null;
+		}
 	}
 
 
@@ -320,21 +398,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return get(record, CsvField.SP2.ordinal());
 		}
 		return null;
-	}
-
-
-	private static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
-	{
-		final DefaultClassification dc = new DefaultClassification();
-		dc.setKingdom("Plantae");
-		dc.setPhylum(null);
-		dc.setClassName(get(record, CsvField.FAMCLASS.ordinal()));
-		dc.setOrder(get(record, CsvField.ORDER.ordinal()));
-		dc.setFamily(get(record, CsvField.FAMILY.ordinal()));
-		dc.setGenus(sn.getGenusOrMonomial());
-		dc.setSpecificEpithet(sn.getSpecificEpithet());
-		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
-		return dc;
 	}
 
 
@@ -370,34 +433,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 
 
-	private static List<Monomial> getSystemClassification(DefaultClassification dc)
-	{
-		final List<Monomial> sc = new ArrayList<Monomial>(8);
-		if (dc.getKingdom() != null) {
-			sc.add(new Monomial("kingdom", dc.getKingdom()));
-		}
-		if (dc.getPhylum() != null) {
-			sc.add(new Monomial("division", dc.getPhylum()));
-		}
-		if (dc.getOrder() != null) {
-			sc.add(new Monomial("order", dc.getOrder()));
-		}
-		if (dc.getFamily() != null) {
-			sc.add(new Monomial("family", dc.getFamily()));
-		}
-		if (dc.getGenus() != null) {
-			sc.add(new Monomial("genus", dc.getGenus()));
-		}
-		if (dc.getSpecificEpithet() != null) {
-			sc.add(new Monomial("species", dc.getSpecificEpithet()));
-		}
-		if (dc.getInfraspecificEpithet() != null) {
-			sc.add(new Monomial("subspecies", dc.getInfraspecificEpithet()));
-		}
-		return sc;
-	}
-
-
 	private static String get(CSVRecord record, int field)
 	{
 		String s = record.get(field).trim();
@@ -420,39 +455,4 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		}
 	}
 
-
-	private static Date getDate(String year, String month, String day)
-	{
-		year = year.trim();
-		if (year.length() == 0) {
-			return null;
-		}
-		try {
-			int yearInt = (int) Float.parseFloat(year);
-			if (yearInt == 0) {
-				return null;
-			}
-			month = month.trim();
-			if (month.length() == 0) {
-				month = "0";
-			}
-			int monthInt = (int) Float.parseFloat(month);
-			if (monthInt < 0 || monthInt > 11) {
-				monthInt = 0;
-			}
-			day = day.trim();
-			if (day.length() == 0) {
-				day = "1";
-			}
-			int dayInt = (int) Float.parseFloat(day);
-			if (dayInt <= 0 || dayInt > 31) {
-				dayInt = 1;
-			}
-			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
-		}
-		catch (Exception e) {
-			logger.warn(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
-			return null;
-		}
-	}
 }

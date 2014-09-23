@@ -1,17 +1,25 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.BARCODE;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.DAYIDENT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.IMAGELIST;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.MONTHIDENT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.PLANTDESC;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.VERNACULAR;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.YEARIDENT;
+
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.ServiceAccessPoint;
 import nl.naturalis.nda.domain.ServiceAccessPoint.Variant;
@@ -31,80 +39,33 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
-		try {
-			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-
+		String rebuild = System.getProperty("rebuild", "false");
+		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
 			index.deleteType(LUCENE_TYPE);
-			Thread.sleep(2000);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
 			index.addType(LUCENE_TYPE, mapping);
-
+		}
+		else {
+			index.deleteWhere(LUCENE_TYPE, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+		}
+		Thread.sleep(2000);
+		try {
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
-			importer.importCsv("C:/brahms-dumps/20140704_U_DARWINCORE_21-05-2014_at_08-55-44.CSV");
+			importer.importCsvFiles();
 		}
 		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
+			index.getClient().close();
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
+	static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
 	static final String LUCENE_TYPE = "MultiMediaObject";
 	static final String ID_PREFIX = "BRAHMS-";
 
-	//@formatter:off
-	static enum CsvField {
-		tag,
-		del,
-		notonline,
-		datelastm,
-		institute,
-		catalogue,
-		barcode,
-		scientific,
-		basisofrec,
-		kingdom,
-		division,
-		order,
-		family,
-		genus,
-		species,
-		subspecies,
-		authorname,
-		ident_by,
-		yearident,
-		monthident,
-		dayident,
-		collnumber,
-		collector,
-		dcollected,
-		mcollected,
-		ycollected,
-		detstatus,
-		country,
-		stateprov,
-		continent,
-		county,
-		locality,
-		latitude,
-		longitude,
-		llres,
-		minelev,
-		maxelev,
-		notes,
-		habitattxt,
-		plantdesc,
-		notpublish,
-		typestatus,
-		vernacular,
-		spnumber,
-		brahms,
-		specid,
-		imagelist		
-	}
-	//@formatter:on
+	private final boolean rename;
+
+
 
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
@@ -112,14 +73,49 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		this.delimiter = ',';
 		setSpecifyId(true);
 		setSpecifyParent(false);
+		String prop = System.getProperty("bulkRequestSize", "1000");
+		setBulkRequestSize(Integer.parseInt(prop));
+		prop = System.getProperty("rename", "false");
+		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
 
+
+
+	public void importCsvFiles() throws Exception
+	{
+		String csvDir = System.getProperty("csvDir");
+		if (csvDir == null) {
+			throw new Exception("Missing -DcsvDir argument");
+		}
+		File file = new File(csvDir);
+		if (!file.isDirectory()) {
+			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
+		}
+		File[] xmlFiles = file.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name)
+			{
+				return name.toLowerCase().endsWith(".csv");
+			}
+		});
+		if (xmlFiles.length == 0) {
+			logger.info("No CSV files to process");
+			return;
+		}
+		for (File f : xmlFiles) {
+			importCsv(f.getCanonicalPath());
+			if (rename) {
+				String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
+				f.renameTo(new File(f.getCanonicalPath() + "." + now + ".bak"));
+			}
+		}
+	}
 
 	@Override
 	protected List<ESMultiMediaObject> transfer(CSVRecord record) throws Exception
 	{
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
-		String s = get(record, CsvField.imagelist.ordinal());
+		String s = get(record, IMAGELIST.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
@@ -133,9 +129,9 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String base = ID_PREFIX + get(record, CsvField.barcode.ordinal());
+		String base = ID_PREFIX + get(record, BARCODE.ordinal());
 		List<String> ids = new ArrayList<String>(4);
-		String s = get(record, CsvField.imagelist.ordinal());
+		String s = get(record, IMAGELIST.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
@@ -149,118 +145,43 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl) throws Exception
 	{
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
-		String s = get(record, CsvField.barcode.ordinal());
+		String s = get(record, BARCODE.ordinal());
 		if (s == null) {
 			throw new Exception("Missing barcode");
 		}
 		mmo.setSourceSystemId(s + "_" + imageNo);
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
-		mmo.setDescription(get(record, CsvField.plantdesc.ordinal()));
-		//mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
+		mmo.setDescription(get(record, PLANTDESC.ordinal()));
+		mmo.setGatheringEvents(Arrays.asList(BrahmsSpecimensImporter.getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		try {
 			URI uri = new URI(imageUrl);
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));
 		}
-		catch(URISyntaxException e) {
-			logger.error("Invalid URL: " + imageUrl);
-			mmo.addServiceAccessPoint(new ServiceAccessPoint("http://nda.naturalis.nl/notfound", null, Variant.MEDIUM_QUALITY));
+		catch (URISyntaxException e) {
+			throw new Exception("Invalid URL: " + imageUrl);
 		}
 		return mmo;
-	}
-
-
-	private static GatheringEvent getGatheringEvent(CSVRecord record)
-	{
-		final GatheringEvent ge = new GatheringEvent();
-		ge.setWorldRegion(get(record, CsvField.continent.ordinal()));
-		ge.setContinent(ge.getWorldRegion());
-		ge.setCountry(get(record, CsvField.country.ordinal()));
-		ge.setProvinceState(get(record, CsvField.stateprov.ordinal()));
-		String y = get(record, CsvField.ycollected.ordinal());
-		String m = get(record, CsvField.mcollected.ordinal());
-		String d = get(record, CsvField.dcollected.ordinal());
-		Date date = getDate(y, m, d);
-		ge.setDateTimeBegin(date);
-		ge.setDateTimeEnd(date);
-		Double longitude = dget(record, CsvField.longitude.ordinal());
-		Double latitude = dget(record, CsvField.latitude.ordinal());
-		ge.addSiteCoordinates(latitude, longitude);
-		return ge;
 	}
 
 
 	private static MultiMediaContentIdentification getIdentification(CSVRecord record)
 	{
 		final MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
-		String s = get(record, CsvField.vernacular.ordinal());
+		String s = get(record, VERNACULAR.ordinal());
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
-		String y = get(record, CsvField.yearident.ordinal());
-		String m = get(record, CsvField.monthident.ordinal());
-		String d = get(record, CsvField.dayident.ordinal());
-		identification.setDateIdentified(getDate(y, m, d));
-		ScientificName sn = getScientificName(record);
-		DefaultClassification dc = getDefaultClassification(record, sn);
+		String y = get(record, YEARIDENT.ordinal());
+		String m = get(record, MONTHIDENT.ordinal());
+		String d = get(record, DAYIDENT.ordinal());
+		identification.setDateIdentified(BrahmsSpecimensImporter.getDate(y, m, d));
+		ScientificName sn = BrahmsSpecimensImporter.getScientificName(record);
+		DefaultClassification dc = BrahmsSpecimensImporter.getDefaultClassification(record, sn);
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
-		identification.setSystemClassification(getSystemClassification(dc));
+		identification.setSystemClassification(BrahmsSpecimensImporter.getSystemClassification(dc));
 		return identification;
-	}
-
-
-	private static ScientificName getScientificName(CSVRecord record)
-	{
-		final ScientificName sn = new ScientificName();
-		sn.setFullScientificName(get(record, CsvField.scientific.ordinal()));
-		sn.setAuthorshipVerbatim(get(record, CsvField.authorname.ordinal()));
-		sn.setGenusOrMonomial(get(record, CsvField.genus.ordinal()));
-		sn.setSpecificEpithet(get(record, CsvField.species.ordinal()));
-		sn.setInfraspecificEpithet(get(record, CsvField.subspecies.ordinal()));
-		return sn;
-	}
-
-
-	private static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
-	{
-		final DefaultClassification dc = new DefaultClassification();
-		dc.setKingdom(get(record, CsvField.kingdom.ordinal()));
-		dc.setPhylum(get(record, CsvField.division.ordinal()));
-		dc.setOrder(get(record, CsvField.order.ordinal()));
-		dc.setFamily(get(record, CsvField.family.ordinal()));
-		dc.setGenus(sn.getGenusOrMonomial());
-		dc.setSpecificEpithet(sn.getSpecificEpithet());
-		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
-		return dc;
-	}
-
-
-	private static List<Monomial> getSystemClassification(DefaultClassification dc)
-	{
-		final List<Monomial> sc = new ArrayList<Monomial>(8);
-		if (dc.getKingdom() != null) {
-			sc.add(new Monomial("kingdom", dc.getKingdom()));
-		}
-		if (dc.getPhylum() != null) {
-			sc.add(new Monomial("division", dc.getPhylum()));
-		}
-		if (dc.getOrder() != null) {
-			sc.add(new Monomial("order", dc.getOrder()));
-		}
-		if (dc.getFamily() != null) {
-			sc.add(new Monomial("family", dc.getFamily()));
-		}
-		if (dc.getGenus() != null) {
-			sc.add(new Monomial("genus", dc.getGenus()));
-		}
-		if (dc.getSpecificEpithet() != null) {
-			sc.add(new Monomial("species", dc.getSpecificEpithet()));
-		}
-		if (dc.getInfraspecificEpithet() != null) {
-			sc.add(new Monomial("subspecies", dc.getInfraspecificEpithet()));
-		}
-		return sc;
 	}
 
 
@@ -271,54 +192,4 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	}
 
 
-	private static Double dget(CSVRecord record, int field)
-	{
-		String s = get(record, field);
-		if (s == null) {
-			return null;
-		}
-		try {
-			return Double.valueOf(s);
-		}
-		catch (NumberFormatException e) {
-			logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
-			return null;
-		}
-	}
-
-
-	private static Date getDate(String year, String month, String day)
-	{
-		year = year.trim();
-		if (year.length() == 0) {
-			return null;
-		}
-		try {
-			int yearInt = Integer.parseInt(year);
-			if (yearInt == 0) {
-				return null;
-			}
-			month = month.trim();
-			if (month.length() == 0) {
-				month = "0";
-			}
-			int monthInt = Integer.parseInt(month);
-			if (monthInt < 0 || monthInt > 11) {
-				monthInt = 0;
-			}
-			day = day.trim();
-			if (day.length() == 0) {
-				day = "1";
-			}
-			int dayInt = Integer.parseInt(day);
-			if (dayInt <= 0 || dayInt > 31) {
-				dayInt = 1;
-			}
-			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
-		}
-		catch (NumberFormatException e) {
-			logger.warn(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\"", year, month, day));
-			return null;
-		}
-	}
 }

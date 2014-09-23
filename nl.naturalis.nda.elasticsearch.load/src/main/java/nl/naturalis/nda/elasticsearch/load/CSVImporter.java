@@ -116,7 +116,6 @@ public abstract class CSVImporter<T> {
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
 		logger.info("Ready");
-
 	}
 
 

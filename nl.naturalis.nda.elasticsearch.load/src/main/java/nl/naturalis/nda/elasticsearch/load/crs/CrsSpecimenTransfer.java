@@ -6,14 +6,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.Monomial;
+import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.DOMUtil;
@@ -57,25 +57,25 @@ public class CrsSpecimenTransfer {
 	}
 
 
-	public static GatheringEvent transferGatheringEvent(Element recordElement)
+	public static ESGatheringEvent transferGatheringEvent(Element recordElement)
 	{
-		final GatheringEvent ge = new GatheringEvent();
+		final ESGatheringEvent ge = new ESGatheringEvent();
 		ge.setWorldRegion(val(recordElement, "WorldRegion"));
 		ge.setCountry(val(recordElement, "Country"));
 		ge.setProvinceState(val(recordElement, "ProvinceState"));
 		ge.setIsland(val(recordElement, "Island"));
 		ge.setLocality(val(recordElement, "Locality"));
 		ge.setLocalityText(val(recordElement, "LocalityText"));
-		ge.setDateTimeBegin(date(recordElement,"CollectingStartDate"));
-		ge.setDateTimeEnd(date(recordElement,"CollectingEndDate"));
+		ge.setDateTimeBegin(date(recordElement, "CollectingStartDate"));
+		ge.setDateTimeEnd(date(recordElement, "CollectingEndDate"));
 		String s = val(recordElement, "GatheringAgent");
 		if (s != null) {
-			ge.addGatheringAgent(new Agent(s));
+			ge.setGatheringPersons(Arrays.asList(new Person(s)));
 		}
 		Double lat = dval(recordElement, "LatitudeDecimal");
 		Double lon = dval(recordElement, "LongitudeDecimal");
 		if (lat != null || lon != null) {
-			ge.addSiteCoordinates(new GatheringSiteCoordinates(lat, lon));
+			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
 		}
 		return ge;
 	}

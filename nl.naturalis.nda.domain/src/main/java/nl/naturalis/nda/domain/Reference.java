@@ -17,6 +17,29 @@ public class Reference {
 	private Date publicationDate;
 
 
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || !(obj instanceof Reference)) {
+			return false;
+		}
+		Reference other = (Reference) obj;
+		// TODO: compare more properties
+		return titleCitation.equals(other.titleCitation);
+	}
+
+
+	public int hashCode()
+	{
+		int hash = 17;
+		hash = (hash * 31) + titleCitation.hashCode();
+		// TODO: add more properties
+		return hash;
+	}
+
+
 	public String getTitleCitation()
 	{
 		return titleCitation;

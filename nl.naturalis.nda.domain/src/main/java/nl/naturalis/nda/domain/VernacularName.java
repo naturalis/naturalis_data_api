@@ -17,6 +17,30 @@ public class VernacularName {
 	}
 
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || !(obj instanceof VernacularName)) {
+			return false;
+		}
+		VernacularName other = (VernacularName) obj;
+		return name.equals(other.name) && language.equals(other.language);
+	}
+
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 17;
+		hash = (hash * 31) + name.hashCode();
+		hash = (hash * 31) + language.hashCode();
+		return hash;
+	}
+
+
 	public VernacularName(String name)
 	{
 		this.name = name;

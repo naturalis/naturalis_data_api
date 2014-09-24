@@ -8,8 +8,8 @@
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<!--file>/var/log/nda-es-import.log</file-->
-		<file>C:/tmp/nda-es-import.log</file>
+		<file>/var/log/nda-es-import.log</file>
+		<!--file>C:/tmp/nda-es-import.log</file-->
 		<append>true</append>
 		<encoder>
 			<pattern>%d %5p | %t | %-55logger{55} | %m %n</pattern>
@@ -17,7 +17,7 @@
 	</appender>
 
 	<root>
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="FILE" />
 		<appender-ref ref="CONSOLE" />
 	</root>

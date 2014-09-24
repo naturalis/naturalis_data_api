@@ -144,13 +144,14 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl) throws Exception
 	{
-		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		String s = get(record, BARCODE.ordinal());
 		if (s == null) {
 			throw new Exception("Missing barcode");
 		}
+		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystemId(s + "_" + imageNo);
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
+		mmo.setAssociatedSpecimenReference(s);
 		mmo.setDescription(get(record, PLANTDESC.ordinal()));
 		mmo.setGatheringEvents(Arrays.asList(BrahmsSpecimensImporter.getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));

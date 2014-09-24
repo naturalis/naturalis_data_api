@@ -100,9 +100,9 @@ public abstract class CSVImporter<T> {
 				}
 				catch (Throwable t) {
 					++bad;
-					logger.debug(line, t);
 					logger.error("Error at line " + (processed + 1) + ": " + t.getMessage());
-
+					logger.error("Line: [[" + line + "]]");
+					logger.debug("Stack trace: ", t);
 				}
 			}
 			if (!objects.isEmpty()) {

@@ -1,10 +1,10 @@
 package nl.naturalis.nda.elasticsearch.client;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -29,6 +29,8 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
@@ -62,11 +64,14 @@ public class IndexNative implements Index {
 	{
 		if (localClient == null) {
 			logger.info("Initializing ElasticSearch session");
-			localClient = nodeBuilder().node().client();
-			//localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();	
-			//ClusterStatsRequest request = new ClusterStatsRequest();
-			//ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			//logger.debug("Cluster stats: " + response.toString());
+			
+			//localClient = nodeBuilder().node().client();
+			localClient= new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+			
+			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();	
+			ClusterStatsRequest request = new ClusterStatsRequest();
+			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
+			logger.debug("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}

@@ -14,6 +14,8 @@ import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -24,7 +26,8 @@ public class TaxonDao extends AbstractDao {
 
 	public static void main(String[] args)
 	{
-		Client esClient = nodeBuilder().node().client();
+		//Client esClient = nodeBuilder().node().client();
+		Client esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 		TaxonDao dao = new TaxonDao(esClient, "nda");
 		SearchResultSet<Taxon> result = dao.getTaxonDetail("Rhyncolus falsosus Hoffmann , 1965");
 		System.out.println("Done");

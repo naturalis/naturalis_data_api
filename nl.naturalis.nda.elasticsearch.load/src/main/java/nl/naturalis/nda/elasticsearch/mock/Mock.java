@@ -217,7 +217,7 @@ public class Mock {
 				Reference.class);
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.getAcceptedName().setFullScientificName("Malus sylvestris");
-		taxon.getSynonyms().get(0).getScientificName().setFullScientificName("Pyrus Malus L.");
+		//taxon.getSynonyms().get(0).getScientificName().setFullScientificName("Pyrus Malus L.");
 		result = new SearchResult<Taxon>(taxon);
 		resultGroup.addSearchResult(result);
 		matchInfo = new StringMatchInfo();

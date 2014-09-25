@@ -10,7 +10,7 @@ public class Taxon extends NdaTraceableObject {
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
 
-	private List<Synonym> synonyms;
+	private List<ScientificName> synonyms;
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
 	private List<Reference> references;
@@ -101,13 +101,13 @@ public class Taxon extends NdaTraceableObject {
 	}
 
 
-	public List<Synonym> getSynonyms()
+	public List<ScientificName> getSynonyms()
 	{
 		return synonyms;
 	}
 
 
-	public void setSynonyms(List<Synonym> synonyms)
+	public void setSynonyms(List<ScientificName> synonyms)
 	{
 		this.synonyms = synonyms;
 	}

@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,9 @@ public class SpecimenDao extends AbstractDao {
 
 	public static void main(String[] args)
 	{
-		SpecimenDao dao = new SpecimenDao("nda");
+		Client esClient = nodeBuilder().node().client();
+		esClient.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
+		SpecimenDao dao = new SpecimenDao(esClient, "nda");
 		QueryParams params = new QueryParams();
 		//params.add("offset", "10");
 		params.add("sex", "female");
@@ -38,12 +42,6 @@ public class SpecimenDao extends AbstractDao {
 		BeanPrinter.out(ssr);
 		System.out.println("Done");
 	}
-
-	public SpecimenDao(String ndaIndexName)
-	{
-		super(ndaIndexName);
-	}
-
 
 	public SpecimenDao(Client esClient, String ndaIndexName)
 	{

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  */
 public abstract class AbstractDao {
-
+	
 	private static ObjectMapper objectMapper;
 
 
@@ -26,16 +26,8 @@ public abstract class AbstractDao {
 		return objectMapper;
 	}
 
-	protected final Client esClient;
-	protected final String ndaIndexName;
-
-
-	public AbstractDao(String ndaIndexName)
-	{
-		esClient = nodeBuilder().node().client();
-		esClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
-		this.ndaIndexName = ndaIndexName;
-	}
+	protected Client esClient;
+	protected String ndaIndexName;
 
 
 	public AbstractDao(Client esClient, String ndaIndexName)

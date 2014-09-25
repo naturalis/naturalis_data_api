@@ -17,5 +17,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.debug"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

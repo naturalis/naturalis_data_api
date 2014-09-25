@@ -12,15 +12,13 @@ import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.ejb.service.SpecimenService;
-import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
-import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 
-@Path("/specimen")
+@Path("/multimedia")
 @Stateless
 @LocalBean
 /* only here so @EJB injection works in JBoss AS; remove when possible */
-public class SpecimenResource {
+public class MultiMediaObjectResource {
 
 	@EJB
 	SpecimenService service;
@@ -32,14 +30,11 @@ public class SpecimenResource {
 
 
 	@GET
-	@Path("/search")
+	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet search(@Context UriInfo request)
+	public SearchResultSet list(@Context UriInfo request)
 	{
-		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
-		QueryParams params = new QueryParams(request.getQueryParameters());
-		SearchResultSet rs = new SearchResultSet<Specimen>();
-		return rs;
+		return new SearchResultSet<Specimen>();
 	}
 	
 

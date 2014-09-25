@@ -66,7 +66,7 @@ public class IndexNative implements Index {
 			logger.info("Initializing ElasticSearch session");
 			
 			//localClient = nodeBuilder().node().client();
-			localClient= new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+			localClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 			
 			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();	
 			ClusterStatsRequest request = new ClusterStatsRequest();

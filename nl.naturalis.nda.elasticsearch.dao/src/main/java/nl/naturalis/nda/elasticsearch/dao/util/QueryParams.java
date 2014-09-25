@@ -1,6 +1,7 @@
 package nl.naturalis.nda.elasticsearch.dao.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,9 +10,9 @@ import java.util.Map;
  * A class capturing the input for an ElasticSearch query. This class mimicks
  * and is functionally equivalent to the {@code javax.ws.rs.core.MultiValuedMap}
  * interface within the JAX-RS framework. When passing URL query parameters in
- * bulk to a DAO, the REST resource classes copy them from a
- * {@code MultiValuedMap} to a {@code QueryParams} object. This way the DAOs in
- * this library can be used and tested independently of the NDA REST framework.
+ * to DAOs, the REST resource classes copy them from a {@code MultiValuedMap} to
+ * a {@code QueryParams} object. This way the DAO project can avoid an awkward
+ * dependency on the JAX-RS framework.
  * 
  * @author ayco_holleman
  * 
@@ -20,22 +21,62 @@ import java.util.Map;
 public class QueryParams extends HashMap<String, List<String>> {
 
 	/**
-	 * Instantiate a QueryParams instance from another map. Althoug the
+	 * Instantiate a {@code QueryParams} instance from another map. Although the
 	 * constructor argument does not specify any concrete type of {@code Map},
-	 * it is actually presumed to be a JAX-RS MultiValuedMap, or at least a
-	 * Map<String,List<String>>.
+	 * it really is presumed to be either a
+	 * {@code javax.ws.rs.core.MultiValuedMap<String,String>} or a
+	 * {@code Map<String,List<String>>} or a {@code Map<String,String>}. In the
+	 * latter case the values are converted to a {@code List<String>>}.
+	 * {@link ClassCastException}s are not trapped; the caller has to make sure
+	 * the constructor argument has the appropriate type.
 	 * 
-	 * @param multiValuedMap
+	 * @param map The {@code Map} to convert to a {@code QueryParams} object.
 	 */
-	public QueryParams(Map<?, ?> multiValuedMap)
+	public QueryParams(Map<?, ?> map)
 	{
-		for (Object key : multiValuedMap.keySet()) {
-			List<String> values = (List<String>) multiValuedMap.get(key);
-			put((String) key, values);
+		for (Object key : map.keySet()) {
+			Object val = map.get(key);
+			if (val instanceof String) {
+				put(key.toString(), Arrays.asList((String) val));
+			}
+			else {
+				put(key.toString(), (List<String>) map.get(key));
+			}
 		}
 	}
 
 
+	/**
+	 * Instantiate a {@code QueryParams} instance from two other maps. See
+	 * {@link #QueryParams(Map)}. This constructor can be used to construct the
+	 * instance from both query parameters and path parameters. See javadoc for
+	 * javax.ws.rs.core.MultiValuedMap.
+	 * 
+	 * @param map0
+	 * @param map1
+	 */
+	public QueryParams(Map<?, ?> map0, Map<?, ?> map1)
+	{
+		for (Object key : map0.keySet()) {
+			Object val = map0.get(key);
+			if (val instanceof String) {
+				put((String) key, Arrays.asList((String) val));
+			}
+			else {
+				put((String) key, (List<String>) map0.get(key));
+			}
+		}
+		for (Object key : map1.keySet()) {
+			Object val = map1.get(key);
+			if (val instanceof String) {
+				put((String) key, Arrays.asList((String) val));
+			}
+			else {
+				put((String) key, (List<String>) map1.get(key));
+			}
+		}
+	}
+	
 	public QueryParams()
 	{
 		super();
@@ -80,6 +121,25 @@ public class QueryParams extends HashMap<String, List<String>> {
 			return null;
 		}
 		return values.get(0);
+	}
+
+
+	public String getParam(String key)
+	{
+		List<String> values = get(key);
+		if (values == null || values.size() == 0) {
+			return null;
+		}
+		return values.get(0).length() == 0 ? null : values.get(0);
+	}
+
+	public String getParam(String key, String dfault)
+	{
+		List<String> values = get(key);
+		if (values == null || values.size() == 0) {
+			return null;
+		}
+		return values.get(0).length() == 0 ? dfault : values.get(0);
 	}
 
 

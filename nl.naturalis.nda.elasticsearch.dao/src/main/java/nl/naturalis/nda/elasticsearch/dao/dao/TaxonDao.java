@@ -1,12 +1,11 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-
 import java.util.Iterator;
 import java.util.Map;
 
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 
@@ -29,8 +28,9 @@ public class TaxonDao extends AbstractDao {
 		//Client esClient = nodeBuilder().node().client();
 		Client esClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 		TaxonDao dao = new TaxonDao(esClient, "nda");
-		SearchResultSet<Taxon> result = dao.getTaxonDetail("Rhyncolus falsosus Hoffmann , 1965");
-		System.out.println("Done");
+		QueryParams params = new QueryParams();
+		SearchResultSet<Taxon> result = dao.findByScientificName("Chionodes tragicella (von Heyden, 1865)");
+		BeanPrinter.out(result);
 	}
 
 
@@ -47,11 +47,17 @@ public class TaxonDao extends AbstractDao {
 	}
 
 
-	public SearchResultSet<Taxon> getTaxonDetail(String acceptedName)
+	public SearchResultSet<Taxon> findByIds(String ids)
+	{
+		return new SearchResultSet<Taxon>();
+	}
+
+
+	public SearchResultSet<Taxon> findByScientificName(String name)
 	{
 		SearchRequestBuilder request = esClient.prepareSearch();
 		request.setTypes(LuceneType.TAXON.toString());
-		TermFilterBuilder filter = FilterBuilders.termFilter("acceptedName.fullScientificName.raw", acceptedName);
+		TermFilterBuilder filter = FilterBuilders.termFilter("acceptedName.fullScientificName.raw", name);
 		FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
 		request.setQuery(query);
 		SearchResponse response = request.execute().actionGet();
@@ -62,7 +68,8 @@ public class TaxonDao extends AbstractDao {
 			SearchHit hit = iterator.next();
 			Map<String, Object> source = hit.getSource();
 			ESTaxon esTaxon = getObjectMapper().convertValue(source, ESTaxon.class);
-			BeanPrinter.out(esTaxon);
+			Taxon taxon = TaxonTransfer.transfer(esTaxon);
+			result.addSearchResult(taxon);
 		}
 		return result;
 	}

@@ -37,7 +37,12 @@
 			},
 			"acceptedName" : {
 				"properties" : {
-					"fullScientificName" : { "type" : "string" },
+					"fullScientificName" : { 
+						"type" : "string",
+						"fields" : {
+							"raw" : {"type" : "string", "index" : "not_analyzed" }
+						}
+					},
 					"taxonomicStatus" : { "type" : "string" },
 					"genusOrMonomial" : { "type" : "string" },
 					"subgenus" : { "type" : "string" },

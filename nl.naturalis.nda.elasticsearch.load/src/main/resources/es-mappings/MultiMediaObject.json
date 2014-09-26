@@ -9,7 +9,7 @@
 					"code" : { "type" : "string", "index" : "not_analyzed" },
 					"name" : { "type" : "string" }
 				}
-			},	
+			},
 			"sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
 			"title" : { "type" : "string" },
 			"caption" : { "type" : "string" },
@@ -128,31 +128,90 @@
 					"taxonRank" : { "type" : "string" },	
 					"scientificName" : {
 						"properties" : {
-							"fullScientificName" : { "type" : "string" },
-							"taxonomicStatus" : { "type" : "string" },
-							"genusOrMonomial" : { "type" : "string" },
-							"subgenus" : { "type" : "string" },
-							"specificEpithet" : { "type" : "string" },
-							"infraspecificEpithet" : { "type" : "string" },
+							"taxonomicStatus" : { "type" : "string", "index" : "not_analyzed" },
+							"fullScientificName" : { 
+								"type" : "string",
+								"fields" : {
+									"raw" : { "type" : "string", "index" : "not_analyzed" }
+								}
+							},
+							"genusOrMonomial" : { 
+								"type" : "string",
+								"fields" : {
+									"raw" : { "type" : "string", "index" : "not_analyzed" }
+								}
+							},
+							"subgenus" : { 
+								"type" : "string",
+								"fields" : {
+									"raw" : { "type" : "string", "index" : "not_analyzed" }
+								}
+							},
+							"specificEpithet" : { 
+								"type" : "string",
+								"fields" : {
+									"raw" : { "type" : "string", "index" : "not_analyzed" }
+								}
+							},
+							"infraspecificEpithet" : { 
+								"type" : "string",
+								"fields" : {
+									"raw" : { "type" : "string", "index" : "not_analyzed" }
+								}
+							},
 							"nameAddendum" : { "type" : "string" },
 							"authorshipVerbatim" : { "type" : "string" },
 							"author" : { "type" : "string" },
-							"year" : { "type" : "string" }							
+							"year" : { "type" : "string" },
+							"experts" : {
+								"type" : "nested",
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"fullName" : { "type" : "string" },
+									"organization" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"name" : { "type" : "string" }
+										}
+									}							
+								}
+							},
+							"references" : {
+								"type" : "nested",
+								"properties" : {
+									"titleCitation" : { "type" : "string" },
+									"citationDetail" : { "type" : "string" },
+									"uri" : { "type" : "string" },
+									"publicationDate" : { "type" : "date" },
+									"author" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"fullName" : { "type" : "string" },
+											"organization" : {
+												"properties" : {
+													"agentText" : { "type" : "string" },
+													"name" : { "type" : "string" }
+												}
+											}
+										}
+									}
+								}
+							}													
 						}
 					},
 					"defaultClassification" : {
 						"properties" : {
-							"kingdom" : { "type" : "string" },
-							"phylum" : { "type" : "string" },
-							"className" : { "type" : "string" },
-							"order" : { "type" : "string" },
-							"superFamily" : { "type" : "string" },
-							"family" : { "type" : "string" },
-							"genus" : { "type" : "string" },
-							"subgenus" : { "type" : "string" },
-							"specificEpithet" : { "type" : "string" },
-							"infraspecificEpithet" : { "type" : "string" },
-							"infraspecificRank" : { "type" : "string" }
+							"kingdom" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"phylum" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"className" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"order" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"superFamily" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"family" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"genus" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"subgenus" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"specificEpithet" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"infraspecificEpithet" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}},
+							"infraspecificRank" : { "type" : "string", "fields" : { "raw" : { "type" : "string", "index" : "not_analyzed" }}}
 						}
 					},
 					"systemClassification" : {
@@ -166,7 +225,41 @@
 						"properties" : {
 							"name" : { "type" : "string" },
 							"language" : { "type" : "string" },
-							"preferred" : { "type" : "boolean" }
+							"preferred" : { "type" : "boolean" },	
+							"experts" : {
+								"type" : "nested",
+								"properties" : {
+									"agentText" : { "type" : "string" },
+									"fullName" : { "type" : "string" },
+									"organization" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"name" : { "type" : "string" }
+										}
+									}							
+								}
+							},
+							"references" : {
+								"type" : "nested",
+								"properties" : {
+									"titleCitation" : { "type" : "string" },
+									"citationDetail" : { "type" : "string" },
+									"uri" : { "type" : "string" },
+									"publicationDate" : { "type" : "date" },
+									"author" : {
+										"properties" : {
+											"agentText" : { "type" : "string" },
+											"fullName" : { "type" : "string" },
+											"organization" : {
+												"properties" : {
+													"agentText" : { "type" : "string" },
+													"name" : { "type" : "string" }
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 					},
 					"dateIdentified" : { "type" : "date" },

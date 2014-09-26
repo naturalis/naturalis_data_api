@@ -72,7 +72,6 @@ class NsrTaxonTransfer {
 		return taxon;
 	}
 
-
 	private static List<ScientificName> getScientificNames(Element taxonElement) throws Exception
 	{
 		Element namesElement = DOMUtil.getChild(taxonElement, "names");

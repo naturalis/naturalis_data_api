@@ -16,8 +16,9 @@ public class TransferUtil {
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyy/MM/dd");
 	private static final SimpleDateFormat DATE_FORMAT2 = new SimpleDateFormat("yyyy-MM-dd");
-	private static final SimpleDateFormat DATE_FORMAT3 = new SimpleDateFormat("yyyy");
-	private static final SimpleDateFormat DATE_FORMAT4 = new SimpleDateFormat("yy");
+	private static final SimpleDateFormat DATE_FORMAT3 = new SimpleDateFormat("dd MMMM yyyy");
+	private static final SimpleDateFormat DATE_FORMAT4 = new SimpleDateFormat("yyyy");
+	private static final SimpleDateFormat DATE_FORMAT5 = new SimpleDateFormat("yy");
 
 	//@formatter:off
 	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(
@@ -25,7 +26,8 @@ public class TransferUtil {
 		DATE_FORMAT1,
 		DATE_FORMAT2,
 		DATE_FORMAT3,
-		DATE_FORMAT4
+		DATE_FORMAT4,
+		DATE_FORMAT5
 	);
 	//@formatter:on
 

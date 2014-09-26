@@ -42,7 +42,6 @@ public class CrsSpecimenTransfer {
 		specimen.setCollectionType(val(recordElement, "CollectionType"));
 		specimen.setSex(val(recordElement, "Sex"));
 		specimen.setPhaseOrStage(val(recordElement, "PhaseOrStage"));
-		specimen.setAccessionSpecimenNumbers(val(recordElement, "AccessionSpecimenNumbers"));
 		specimen.setTitle(val(recordElement, "Title"));
 		String s = val(recordElement, "ObjectPublic");
 		specimen.setObjectPublic(s != null && s.trim().equals("1"));

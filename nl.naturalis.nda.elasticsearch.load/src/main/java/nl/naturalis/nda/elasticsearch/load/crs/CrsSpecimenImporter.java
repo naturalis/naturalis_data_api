@@ -1,9 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +42,6 @@ public class CrsSpecimenImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String configFile = System.getProperty("config", null);
 		String rebuild = System.getProperty("rebuild", "false");
 
 		IndexNative index = null;
@@ -56,8 +53,8 @@ public class CrsSpecimenImporter {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
 				index.addType(LUCENE_TYPE, mapping);
 			}
-			CrsSpecimenImporter harvester = new CrsSpecimenImporter(index, configFile);
-			harvester.harvest();
+			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
+			importer.importOAI();
 		}
 		finally {
 			if (index != null) {
@@ -69,7 +66,6 @@ public class CrsSpecimenImporter {
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
 	private static final String LUCENE_TYPE = "Specimen";
 	private static final String ID_PREFIX = "CRS-";
-	private static final int ES_BULK_REQUEST_SIZE = 1000;
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
@@ -78,22 +74,27 @@ public class CrsSpecimenImporter {
 	private int bad;
 
 	private final Index index;
+	private final int bulkRequestSize;
 
 
-	@SuppressWarnings("resource")
-	public CrsSpecimenImporter(Index index, String configFile) throws FileNotFoundException
+	public CrsSpecimenImporter(Index index) throws Exception
 	{
 		this.index = index;
-		if (configFile == null) {
-			logger.info("No config file specified. Using default configuration.");
-			InputStream is = getClass().getResourceAsStream("/crs-import.properties");
-			config = new ConfigObject(is);
+		String prop = System.getProperty("bulkRequestSize", "1000");
+		bulkRequestSize = Integer.parseInt(prop);
+		
+		prop = System.getProperty("configFile");
+		if(prop == null) {
+			throw new Exception("Missing property -DconfigFile");
 		}
-		else {
-			config = new ConfigObject(configFile);
+		File f = new File(prop);
+		if(!f.isFile()) {
+			throw new Exception(String.format("Configuration file not found : \"%s\"", prop));
 		}
+		config = new ConfigObject(f);
+		
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-		builderFactory.setNamespaceAware(true);
+		builderFactory.setNamespaceAware(false);
 		try {
 			builder = builderFactory.newDocumentBuilder();
 		}
@@ -103,7 +104,7 @@ public class CrsSpecimenImporter {
 	}
 
 
-	public void harvest()
+	public void importOAI()
 	{
 
 		int batch = 0;
@@ -177,8 +178,8 @@ public class CrsSpecimenImporter {
 		int numRecords = records.getLength();
 		logger.info("Number of records in XML output: " + numRecords);
 
-		List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(ES_BULK_REQUEST_SIZE);
-		List<String> ids = new ArrayList<String>(ES_BULK_REQUEST_SIZE);
+		List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
+		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		for (int i = 0; i < numRecords; ++i) {
 			Element record = (Element) records.item(i);
 			String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
@@ -188,7 +189,7 @@ public class CrsSpecimenImporter {
 			else {
 				specimens.add(CrsSpecimenTransfer.transfer(record));
 				ids.add(id);
-				if (specimens.size() == ES_BULK_REQUEST_SIZE) {
+				if (specimens.size() >= bulkRequestSize) {
 					index.saveObjects(LUCENE_TYPE, specimens, ids);
 					specimens.clear();
 					ids.clear();

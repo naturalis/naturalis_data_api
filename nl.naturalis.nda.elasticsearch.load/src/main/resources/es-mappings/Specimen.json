@@ -23,6 +23,9 @@
 			"phaseOrStage" : { "type" : "string" },
 			"title" : { "type" : "string" },
 			"notes" : { "type" : "string" },
+			"preparationType" : { "type" : "string" },
+			"numberOfSpecimen" : { "type" : "integer" },
+			"fromCaptivity" : { "type" : "boolean" },
 			"objectPublic" : { "type" : "boolean" },
 			"multiMediaPublic" : { "type" : "boolean" },
 			"gatheringEvent" : {

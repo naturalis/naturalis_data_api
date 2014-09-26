@@ -15,6 +15,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
@@ -24,29 +25,27 @@ import org.w3c.dom.Element;
 public class CrsSpecimenTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
-	private static final String ABCD_NAMESPACE_URI = "http://rs.tdwg.org/abcd/2.06/b/";
-
-	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
-
-
 	public static ESSpecimen transfer(Element recordElement)
 	{
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.CRS);
-		specimen.setSourceSystemId(val(recordElement, "UnitID"));
-		specimen.setUnitID(val(recordElement, "UnitID"));
-		specimen.setUnitGUID(val(recordElement, "UnitGUID"));
-		specimen.setSourceInstitutionID(val(recordElement, "SourceInstitutionID"));
-		specimen.setRecordBasis(val(recordElement, "RecordBasis"));
-		specimen.setKindOfUnit(val(recordElement, "KindOfUnit"));
-		specimen.setCollectionType(val(recordElement, "CollectionType"));
-		specimen.setSex(val(recordElement, "Sex"));
-		specimen.setPhaseOrStage(val(recordElement, "PhaseOrStage"));
-		specimen.setTitle(val(recordElement, "Title"));
-		String s = val(recordElement, "ObjectPublic");
+		specimen.setSourceSystemId(val(recordElement, "abcd:UnitID"));
+		specimen.setUnitID(val(recordElement, "abcd:UnitID"));
+		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
+		specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));
+		specimen.setRecordBasis(val(recordElement, "abcd:RecordBasis"));
+		specimen.setKindOfUnit(val(recordElement, "abcd:KindOfUnit"));
+		specimen.setCollectionType(val(recordElement, "abcd:CollectionType"));
+		specimen.setSex(val(recordElement, "abcd:Sex"));
+		specimen.setPhaseOrStage(val(recordElement, "abcd:PhaseOrStage"));
+		specimen.setTitle(val(recordElement, "abcd:Title"));
+		specimen.setNumberOfSpecimen(ival(recordElement, "abcd:AccessionSpecimenNumbers"));
+		String s = val(recordElement, "abcd:ObjectPublic");
 		specimen.setObjectPublic(s != null && s.trim().equals("1"));
-		s = val(recordElement, "MultiMediaPublic");
+		s = val(recordElement, "abcd:MultiMediaPublic");
 		specimen.setMultiMediaPublic(s != null && s.trim().equals("1"));
+		s = val(recordElement, "abcd:FromCaptivity");
+		specimen.setFromCaptivity(s != null && s.trim().equals("1"));
 		List<Element> determinationElements = DOMUtil.getChildren(recordElement, "ncrsDetermination");
 		for (Element e : determinationElements) {
 			specimen.addIndentification(transferIdentification(e));
@@ -59,20 +58,21 @@ public class CrsSpecimenTransfer {
 	public static ESGatheringEvent transferGatheringEvent(Element recordElement)
 	{
 		final ESGatheringEvent ge = new ESGatheringEvent();
-		ge.setWorldRegion(val(recordElement, "WorldRegion"));
-		ge.setCountry(val(recordElement, "Country"));
-		ge.setProvinceState(val(recordElement, "ProvinceState"));
-		ge.setIsland(val(recordElement, "Island"));
-		ge.setLocality(val(recordElement, "Locality"));
-		ge.setLocalityText(val(recordElement, "LocalityText"));
-		ge.setDateTimeBegin(date(recordElement, "CollectingStartDate"));
-		ge.setDateTimeEnd(date(recordElement, "CollectingEndDate"));
-		String s = val(recordElement, "GatheringAgent");
+		ge.setProjectTitle(val(recordElement, "abcd:ProjectTitle"));
+		ge.setWorldRegion(val(recordElement, "abcd:WorldRegion"));
+		ge.setCountry(val(recordElement, "abcd:Country"));
+		ge.setProvinceState(val(recordElement, "abcd:ProvinceState"));
+		ge.setIsland(val(recordElement, "abcd:Island"));
+		ge.setLocality(val(recordElement, "abcd:Locality"));
+		ge.setLocalityText(val(recordElement, "abcd:LocalityText"));
+		ge.setDateTimeBegin(date(recordElement, "abcd:CollectingStartDate"));
+		ge.setDateTimeEnd(date(recordElement, "abcd:CollectingEndDate"));
+		String s = val(recordElement, "abcd:GatheringAgent");
 		if (s != null) {
 			ge.setGatheringPersons(Arrays.asList(new Person(s)));
 		}
-		Double lat = dval(recordElement, "LatitudeDecimal");
-		Double lon = dval(recordElement, "LongitudeDecimal");
+		Double lat = dval(recordElement, "abcd:LatitudeDecimal");
+		Double lon = dval(recordElement, "abcd:LongitudeDecimal");
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
 		}
@@ -83,14 +83,18 @@ public class CrsSpecimenTransfer {
 	public static SpecimenIdentification transferIdentification(Element determinationElement)
 	{
 		final SpecimenIdentification si = new SpecimenIdentification();
-		String s = val(determinationElement, "NameAddendum");
+		String s = val(determinationElement, "abcd:NameAddendum");
 		si.setPreferred(s != null && s.equals("1"));
-		si.setDateIdentified(date(determinationElement, "IdentificationDate"));
+		si.setDateIdentified(date(determinationElement, "abcd:IdentificationDate"));
+		si.setAssociatedFossilAssemblage(val(determinationElement, "abcd:AssociatedFossilAssemblage"));
+		si.setAssociatedMineralName(val(determinationElement, "abcd:AssociatedMineralName"));
+		si.setRockMineralUsage(val(determinationElement, "abcd:RockMineralUsage"));
+		si.setRockType(val(determinationElement, "abcd:RockType"));
 
 		ScientificName sn = transferScientificName(determinationElement);
 		si.setScientificName(sn);
 
-		String infraspecificRank = val(determinationElement, "InfrasubspecificRank");
+		String infraspecificRank = val(determinationElement, "abcd:InfrasubspecificRank");
 
 		if (infraspecificRank != null) {
 			si.setTaxonRank(infraspecificRank);
@@ -111,8 +115,8 @@ public class CrsSpecimenTransfer {
 		dc.setInfraspecificRank(infraspecificRank);
 		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
 
-		String taxonCoverage = val(determinationElement, "taxonCoverage");
-		String higherTaxonRank = val(determinationElement, "HigherTaxonRank");
+		String taxonCoverage = val(determinationElement, "abcd:taxonCoverage");
+		String higherTaxonRank = val(determinationElement, "abcd:HigherTaxonRank");
 
 		if (taxonCoverage != null && higherTaxonRank != null) {
 			Monomial monomial = new Monomial(higherTaxonRank, taxonCoverage);
@@ -130,35 +134,24 @@ public class CrsSpecimenTransfer {
 	private static ScientificName transferScientificName(Element determinationElement)
 	{
 		final ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(determinationElement, "FullScientificNameString"));
-		sn.setGenusOrMonomial(val(determinationElement, "GenusOrMonomial"));
-		sn.setSubgenus(val(determinationElement, "Subgenus"));
-		sn.setSpecificEpithet(val(determinationElement, "SpeciesEpithet"));
-		String s = val(determinationElement, "subspeciesepithet");
+		sn.setFullScientificName(val(determinationElement, "abcd:FullScientificNameString"));
+		sn.setGenusOrMonomial(val(determinationElement, "abcd:GenusOrMonomial"));
+		sn.setSubgenus(val(determinationElement, "abcd:Subgenus"));
+		sn.setSpecificEpithet(val(determinationElement, "abcd:SpeciesEpithet"));
+		String s = val(determinationElement, "abcd:subspeciesepithet");
 		if (s == null) {
-			s = val(determinationElement, "InfrasubspecificName");
+			s = val(determinationElement, "abcd:InfrasubspecificName");
 		}
 		sn.setInfraspecificEpithet(s);
-		sn.setNameAddendum(val(determinationElement, "NameAddendum"));
-		sn.setAuthorshipVerbatim(val(determinationElement, "AuthorTeamOriginalAndYear"));
+		sn.setNameAddendum(val(determinationElement, "abcd:NameAddendum"));
+		sn.setAuthorshipVerbatim(val(determinationElement, "abcd:AuthorTeamOriginalAndYear"));
 		return sn;
 	}
 
 
 	static Date date(Element e, String tag)
 	{
-		String s = val(e, tag);
-		if (s == null) {
-			return null;
-		}
-		try {
-			return DATE_FORMAT0.parse(s);
-		}
-		catch (ParseException e1) {
-			// TODO try another format
-			logger.warn(String.format("Invalid date in element %s: \"%s\"", tag, s));
-			return null;
-		}
+		return TransferUtil.parseDate(val(e, tag));
 	}
 
 
@@ -178,9 +171,26 @@ public class CrsSpecimenTransfer {
 	}
 
 
+	static int ival(Element e, String tag)
+	{
+		String s = DOMUtil.getDescendantValue(e, tag);
+		if (s == null) {
+			logger.debug(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
+			return 0;
+		}
+		try {
+			return Integer.parseInt(s);
+		}
+		catch (NumberFormatException exc) {
+			logger.warn(String.format("Invalid integer in element %s: \"%s\"", tag, s));
+			return 0;
+		}
+	}
+
+
 	static String val(Element e, String tag)
 	{
-		String s = DOMUtil.getDescendantValue(e, tag, ABCD_NAMESPACE_URI);
+		String s = DOMUtil.getDescendantValue(e, tag);
 		if (s == null) {
 			logger.debug(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
 			return null;

@@ -63,21 +63,22 @@ public class BrahmsImportAll {
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
 		}
-		File[] xmlFiles = file.listFiles(new FilenameFilter() {
+		File[] files = file.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{
 				return name.toLowerCase().endsWith(".csv");
 			}
 		});
-		if (xmlFiles.length == 0) {
+		if (files.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
+		
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
 		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
 
-		for (File f : xmlFiles) {
+		for (File f : files) {
 			specimenImporter.importCsv(f.getCanonicalPath());
 			mediaImporter.importCsv(f.getCanonicalPath());
 			if (rename) {

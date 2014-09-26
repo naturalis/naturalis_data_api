@@ -107,7 +107,7 @@ public class NsrTaxonImporter {
 	}
 
 
-	private void importXmlFile(Document doc)
+	public void importXmlFile(Document doc)
 	{
 		int processed = 0;
 		int bad = 0;

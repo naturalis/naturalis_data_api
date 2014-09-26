@@ -108,7 +108,7 @@ public class NsrMultiMediaImporter {
 	}
 
 
-	private void importXmlFile(Document doc)
+	public void importXmlFile(Document doc)
 	{
 		int numTaxa = 0;
 		int numImages = 0;

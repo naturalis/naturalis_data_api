@@ -11,6 +11,8 @@ public class CoLImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
+		logger.info("-----------------------------------------------------------------");
+		logger.info("-----------------------------------------------------------------");
 		String dwcaDir = System.getProperty("dwcaDir");
 		String rebuild = System.getProperty("rebuild", "false");
 		if (dwcaDir == null) {

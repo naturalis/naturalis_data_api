@@ -16,11 +16,15 @@ import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 	public static void main(String[] args) throws Exception
 	{
+		logger.info("-----------------------------------------------------------------");
+		logger.info("-----------------------------------------------------------------");
 		String dwcaDir = System.getProperty("dwcaDir");
 		String rebuild = System.getProperty("rebuild", "false");
 		if (dwcaDir == null) {
@@ -77,6 +81,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	}
 	//@formatter:on
 
+	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
 	static final String LUCENE_TYPE = "Taxon";
 	static final String ID_PREFIX = "COL-";
 

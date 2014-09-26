@@ -27,6 +27,8 @@ public class CoLTaxonReferenceEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
+		logger.info("-----------------------------------------------------------------");
+		logger.info("-----------------------------------------------------------------");
 		String dwcaDir = System.getProperty("dwcaDir");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");

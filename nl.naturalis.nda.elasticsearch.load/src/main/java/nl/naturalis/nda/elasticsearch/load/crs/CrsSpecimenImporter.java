@@ -41,6 +41,9 @@ public class CrsSpecimenImporter {
 	public static void main(String[] args) throws Exception
 	{
 
+		logger.info("-----------------------------------------------------------------");
+		logger.info("-----------------------------------------------------------------");
+
 		String configFile = System.getProperty("config", null);
 		String rebuild = System.getProperty("rebuild", "false");
 

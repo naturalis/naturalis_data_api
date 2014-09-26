@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.dao.estypes;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.NdaTraceableObject;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 
@@ -18,12 +19,15 @@ public class ESSpecimen extends NdaTraceableObject {
 	private String typeStatus;
 	private String sex;
 	private String phaseOrStage;
-	private String accessionSpecimenNumbers;
 	private String title;
 	private String notes;
+	private String preparationType;
+	private int numberOfSpecimen;
+	private boolean fromCaptivity;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
 
+	private Agent acquiredFrom;
 	private ESGatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
 
@@ -109,18 +113,6 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public String getTypeStatus()
-	{
-		return typeStatus;
-	}
-
-
-	public void setTypeStatus(String typeStatus)
-	{
-		this.typeStatus = typeStatus;
-	}
-
-
 	public String getCollectionType()
 	{
 		return collectionType;
@@ -130,6 +122,18 @@ public class ESSpecimen extends NdaTraceableObject {
 	public void setCollectionType(String collectionType)
 	{
 		this.collectionType = collectionType;
+	}
+
+
+	public String getTypeStatus()
+	{
+		return typeStatus;
+	}
+
+
+	public void setTypeStatus(String typeStatus)
+	{
+		this.typeStatus = typeStatus;
 	}
 
 
@@ -157,18 +161,6 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public String getAccessionSpecimenNumbers()
-	{
-		return accessionSpecimenNumbers;
-	}
-
-
-	public void setAccessionSpecimenNumbers(String accessionSpecimenNumbers)
-	{
-		this.accessionSpecimenNumbers = accessionSpecimenNumbers;
-	}
-
-
 	public String getTitle()
 	{
 		return title;
@@ -190,6 +182,42 @@ public class ESSpecimen extends NdaTraceableObject {
 	public void setNotes(String notes)
 	{
 		this.notes = notes;
+	}
+
+
+	public String getPreparationType()
+	{
+		return preparationType;
+	}
+
+
+	public void setPreparationType(String preparationType)
+	{
+		this.preparationType = preparationType;
+	}
+
+
+	public int getNumberOfSpecimen()
+	{
+		return numberOfSpecimen;
+	}
+
+
+	public void setNumberOfSpecimen(int numberOfSpecimen)
+	{
+		this.numberOfSpecimen = numberOfSpecimen;
+	}
+
+
+	public boolean isFromCaptivity()
+	{
+		return fromCaptivity;
+	}
+
+
+	public void setFromCaptivity(boolean fromCaptivity)
+	{
+		this.fromCaptivity = fromCaptivity;
 	}
 
 
@@ -217,6 +245,18 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
+	public Agent getAcquiredFrom()
+	{
+		return acquiredFrom;
+	}
+
+
+	public void setAcquiredFrom(Agent acquiredFrom)
+	{
+		this.acquiredFrom = acquiredFrom;
+	}
+
+
 	public ESGatheringEvent getGatheringEvent()
 	{
 		return gatheringEvent;
@@ -239,7 +279,5 @@ public class ESSpecimen extends NdaTraceableObject {
 	{
 		this.identifications = identifications;
 	}
-
-
 
 }

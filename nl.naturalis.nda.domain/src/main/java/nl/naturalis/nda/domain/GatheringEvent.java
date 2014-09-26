@@ -6,6 +6,7 @@ import java.util.List;
 
 public class GatheringEvent {
 
+	private String projectTitle;
 	private String worldRegion;
 	private String continent;
 	private String country;
@@ -48,6 +49,18 @@ public class GatheringEvent {
 	public void addSiteCoordinates(Double latitude, Double longitude)
 	{
 		addSiteCoordinates(new GatheringSiteCoordinates(latitude, longitude));
+	}
+
+
+	public String getProjectTitle()
+	{
+		return projectTitle;
+	}
+
+
+	public void setProjectTitle(String projectTitle)
+	{
+		this.projectTitle = projectTitle;
 	}
 
 
@@ -101,11 +114,13 @@ public class GatheringEvent {
 
 
 	/**
-	 * Get the ISO3166-1 or ISO3166-3 country code for the {@code GatheringEvent}.
+	 * Get the ISO3166-1 or ISO3166-3 country code for the
+	 * {@code GatheringEvent}.
 	 * 
 	 * @see http://wiki.tdwg.org/twiki/bin/view/ABCD/AbcdConcept0962
 	 * 
-	 * @return The ISO3166-1 or ISO3166-3 country code for the {@code GatheringEvent}
+	 * @return The ISO3166-1 or ISO3166-3 country code for the
+	 *         {@code GatheringEvent}
 	 */
 	public String getIso3166Code()
 	{

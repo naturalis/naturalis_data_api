@@ -7,7 +7,7 @@ public class Specimen extends NdaTraceableObject {
 
 	private String unitID;
 	private String unitGUID;
-	private String setID;
+	private String assemblageID;
 	private String sourceInstitutionID;
 	private String recordBasis;
 	private String kindOfUnit;
@@ -15,15 +15,18 @@ public class Specimen extends NdaTraceableObject {
 	private String typeStatus;
 	private String sex;
 	private String phaseOrStage;
-	private String accessionSpecimenNumbers;
 	private String title;
 	private String notes;
+	private String preparationType;
+	private int numberOfSpecimen;
+	private boolean fromCaptivity;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
 
+	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
-	private List<Specimen> otherSpecimensInSet;
+	private List<Specimen> otherSpecimensInAssemblage;
 	private List<Taxon> associatedTaxa;
 
 
@@ -33,15 +36,6 @@ public class Specimen extends NdaTraceableObject {
 			identifications = new ArrayList<SpecimenIdentification>();
 		}
 		identifications.add(identification);
-	}
-
-
-	public void addOtherSpecimenToSet(Specimen specimen)
-	{
-		if (otherSpecimensInSet == null) {
-			otherSpecimensInSet = new ArrayList<Specimen>();
-		}
-		otherSpecimensInSet.add(specimen);
 	}
 
 
@@ -69,15 +63,15 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public String getSetID()
+	public String getAssemblageID()
 	{
-		return setID;
+		return assemblageID;
 	}
 
 
-	public void setSetID(String setID)
+	public void setAssemblageID(String assemblageID)
 	{
-		this.setID = setID;
+		this.assemblageID = assemblageID;
 	}
 
 
@@ -165,18 +159,6 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public String getAccessionSpecimenNumbers()
-	{
-		return accessionSpecimenNumbers;
-	}
-
-
-	public void setAccessionSpecimenNumbers(String accessionSpecimenNumbers)
-	{
-		this.accessionSpecimenNumbers = accessionSpecimenNumbers;
-	}
-
-
 	public String getTitle()
 	{
 		return title;
@@ -198,6 +180,42 @@ public class Specimen extends NdaTraceableObject {
 	public void setNotes(String notes)
 	{
 		this.notes = notes;
+	}
+
+
+	public String getPreparationType()
+	{
+		return preparationType;
+	}
+
+
+	public void setPreparationType(String preparationType)
+	{
+		this.preparationType = preparationType;
+	}
+
+
+	public int getNumberOfSpecimen()
+	{
+		return numberOfSpecimen;
+	}
+
+
+	public void setNumberOfSpecimen(int numberOfSpecimen)
+	{
+		this.numberOfSpecimen = numberOfSpecimen;
+	}
+
+
+	public boolean isFromCaptivity()
+	{
+		return fromCaptivity;
+	}
+
+
+	public void setFromCaptivity(boolean fromCaptivity)
+	{
+		this.fromCaptivity = fromCaptivity;
 	}
 
 
@@ -225,6 +243,18 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
+	public Agent getAcquiredFrom()
+	{
+		return acquiredFrom;
+	}
+
+
+	public void setAcquiredFrom(Agent acquiredFrom)
+	{
+		this.acquiredFrom = acquiredFrom;
+	}
+
+
 	public GatheringEvent getGatheringEvent()
 	{
 		return gatheringEvent;
@@ -249,15 +279,15 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public List<Specimen> getOtherSpecimensInSet()
+	public List<Specimen> getOtherSpecimensInAssemblage()
 	{
-		return otherSpecimensInSet;
+		return otherSpecimensInAssemblage;
 	}
 
 
-	public void setOtherSpecimensInSet(List<Specimen> otherSpecimensInSet)
+	public void setOtherSpecimensInAssemblage(List<Specimen> otherSpecimensInAssemblage)
 	{
-		this.otherSpecimensInSet = otherSpecimensInSet;
+		this.otherSpecimensInAssemblage = otherSpecimensInAssemblage;
 	}
 
 

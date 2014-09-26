@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+	<timestamp key="date" datePattern="yyyyMMdd"/>
+
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d %5p | %t | %-55logger{55} | %m %n</pattern>
@@ -8,8 +10,8 @@
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>/var/log/nda-es-import.log</file>
-		<!--file>C:/tmp/nda-es-import.log</file-->
+		<file>/var/log/nda-es-import.${date}.log</file>
+		<!--file>C:/tmp/nda-es-import.${date}.log</file-->
 		<append>true</append>
 		<encoder>
 			<pattern>%d %5p | %t | %-55logger{55} | %m %n</pattern>

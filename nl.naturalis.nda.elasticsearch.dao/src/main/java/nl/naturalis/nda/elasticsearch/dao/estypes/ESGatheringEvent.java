@@ -9,6 +9,7 @@ import nl.naturalis.nda.domain.Person;
 
 public class ESGatheringEvent {
 
+	private String projectTitle;
 	private String worldRegion;
 	private String continent;
 	private String country;
@@ -29,6 +30,18 @@ public class ESGatheringEvent {
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
+
+
+	public String getProjectTitle()
+	{
+		return projectTitle;
+	}
+
+
+	public void setProjectTitle(String projectTitle)
+	{
+		this.projectTitle = projectTitle;
+	}
 
 
 	public String getWorldRegion()

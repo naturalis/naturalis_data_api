@@ -10,6 +10,7 @@ import nl.naturalis.nda.domain.ServiceAccessPoint;
 
 public class ESMultiMediaObject extends NdaTraceableObject {
 
+	private String unitID;
 	private String title;
 	private String caption;
 	private String description;
@@ -35,6 +36,18 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>(4);
 		}
 		serviceAccessPoints.add(sap);
+	}
+
+
+	public String getUnitID()
+	{
+		return unitID;
+	}
+
+
+	public void setUnitID(String unitID)
+	{
+		this.unitID = unitID;
 	}
 
 

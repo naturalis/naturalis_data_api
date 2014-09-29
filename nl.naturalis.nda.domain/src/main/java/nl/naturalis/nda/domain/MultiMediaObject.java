@@ -20,6 +20,7 @@ public class MultiMediaObject extends NdaTraceableObject {
 		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
 	}
 
+	private String unitID;
 	private String title;
 	private String caption;
 	private String description;
@@ -58,6 +59,18 @@ public class MultiMediaObject extends NdaTraceableObject {
 			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
 		}
 		serviceAccessPoints.put(sap.getVariant(), sap);
+	}
+
+
+	public String getUnitID()
+	{
+		return unitID;
+	}
+
+
+	public void setUnitID(String unitID)
+	{
+		this.unitID = unitID;
 	}
 
 

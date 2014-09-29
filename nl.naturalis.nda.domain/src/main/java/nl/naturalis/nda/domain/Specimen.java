@@ -12,7 +12,7 @@ public class Specimen extends NdaTraceableObject {
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
-	private String typeStatus;
+	private SpecimenTypeStatus typeStatus;
 	private String sex;
 	private String phaseOrStage;
 	private String title;
@@ -123,13 +123,13 @@ public class Specimen extends NdaTraceableObject {
 	}
 
 
-	public String getTypeStatus()
+	public SpecimenTypeStatus getTypeStatus()
 	{
 		return typeStatus;
 	}
 
 
-	public void setTypeStatus(String typeStatus)
+	public void setTypeStatus(SpecimenTypeStatus typeStatus)
 	{
 		this.typeStatus = typeStatus;
 	}

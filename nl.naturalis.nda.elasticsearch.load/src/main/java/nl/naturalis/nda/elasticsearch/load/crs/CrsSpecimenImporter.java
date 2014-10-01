@@ -54,7 +54,7 @@ public class CrsSpecimenImporter {
 				index.addType(LUCENE_TYPE, mapping);
 			}
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
-			importer.importOAI();
+			importer.importSpecimens();
 		}
 		finally {
 			if (index != null) {
@@ -75,6 +75,7 @@ public class CrsSpecimenImporter {
 
 	private final Index index;
 	private final int bulkRequestSize;
+	private final boolean forceRestart;
 
 
 	public CrsSpecimenImporter(Index index) throws Exception
@@ -82,17 +83,20 @@ public class CrsSpecimenImporter {
 		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		
+
+		prop = System.getProperty("forceRestart", "true");
+		forceRestart = Boolean.parseBoolean(prop);
+
 		prop = System.getProperty("configFile");
-		if(prop == null) {
+		if (prop == null) {
 			throw new Exception("Missing property -DconfigFile");
 		}
 		File f = new File(prop);
-		if(!f.isFile()) {
+		if (!f.isFile()) {
 			throw new Exception(String.format("Configuration file not found : \"%s\"", prop));
 		}
 		config = new ConfigObject(f);
-		
+
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
 		try {
@@ -104,7 +108,7 @@ public class CrsSpecimenImporter {
 	}
 
 
-	public void importOAI()
+	public void importSpecimens()
 	{
 
 		int batch = 0;
@@ -120,10 +124,18 @@ public class CrsSpecimenImporter {
 				batch = 0;
 			}
 			else {
-				String[] elements = FileUtil.getContents(resTokenFile).split(",");
-				batch = Integer.parseInt(elements[0]);
-				resToken = elements[1];
-				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
+				if (forceRestart) {
+					resTokenFile.delete();
+					logger.info("Resumption token file found but ignored and deleted (forceRestart=true). Will start from scratch");
+					resToken = null;
+					batch = 0;
+				}
+				else {
+					String[] elements = FileUtil.getContents(resTokenFile).split(",");
+					batch = Integer.parseInt(elements[0]);
+					resToken = elements[1];
+					logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
+				}
 			}
 
 			processed = 0;
@@ -160,7 +172,6 @@ public class CrsSpecimenImporter {
 			FileUtil.setContents(getResumptionTokenFile(), contents);
 		}
 
-		logger.info("Calling CRS OAI service");
 		String xml = getXML(resumptionToken);
 		Document doc;
 		logger.info("Parsing XML");
@@ -211,11 +222,23 @@ public class CrsSpecimenImporter {
 		if (config.getBoolean("test")) {
 			String key = resumptionToken == null ? "test.specimens.url.initial" : "test.specimens.url.resume";
 			String val = config.getString(key);
+			logger.info("Loading file: " + val);
 			return FileUtil.getContents(val);
 		}
-		String key = resumptionToken == null ? "specimens.url.initial" : "specimens.url.resume";
-		String val = config.getString(key);
-		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
+		String url;
+		if (resumptionToken == null) {
+			url = config.getString("specimens.url.initial");
+		}
+		else {
+			url = String.format(config.getString("specimens.url.resume"), resumptionToken);
+		}
+		logger.info("Calling service: " + url);
+		// Avoid "Content is not allowed in prolog"
+		String response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
+		if (!response.startsWith("<?xml")) {
+			response = response.substring(response.indexOf("<?xml"));
+		}
+		return response;
 	}
 
 

@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -73,6 +71,14 @@ public class CrsSpecimenTransfer {
 		}
 		Double lat = dval(recordElement, "abcd:LatitudeDecimal");
 		Double lon = dval(recordElement, "abcd:LongitudeDecimal");
+		if (lon != null && (lon < -180 || lon > 180)) {
+			logger.error("Invalid latitude: " + lon);
+			lon = null;
+		}
+		if (lat != null || lon != null) {
+			GatheringSiteCoordinates gsc = new GatheringSiteCoordinates(lat, lon);
+			ge.setSiteCoordinates(Arrays.asList(gsc));
+		}
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
 		}
@@ -173,7 +179,7 @@ public class CrsSpecimenTransfer {
 
 	static int ival(Element e, String tag)
 	{
-		String s = DOMUtil.getDescendantValue(e, tag);
+		String s = val(e, tag);
 		if (s == null) {
 			logger.debug(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
 			return 0;

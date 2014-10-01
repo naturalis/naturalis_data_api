@@ -11,6 +11,7 @@
 				}
 			},
 			"sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
+			"unitID" : { "type" : "string", "index" : "not_analyzed" },
 			"title" : { "type" : "string" },
 			"caption" : { "type" : "string" },
 			"description" : { "type" : "string" },
@@ -20,6 +21,7 @@
 			"copyrightText" : { "type" : "string" },
 			"associatedSpecimenReference" : { "type" : "string", "index" : "not_analyzed" },
 			"associatedTaxonReference" : { "type" : "string", "index" : "not_analyzed" },
+			"specimenTypeStatus" : { "type" : "string", "index" : "not_analyzed" },
 			"multiMediaPublic" : { "type" : "boolean" },
 			"subjectParts" : { "type" : "string" },
 			"subjectOrientations" : { "type" : "string" },

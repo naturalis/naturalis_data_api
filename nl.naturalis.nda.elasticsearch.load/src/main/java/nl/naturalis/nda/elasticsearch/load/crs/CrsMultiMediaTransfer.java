@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-public class CrsMediaTransfer {
+public class CrsMultiMediaTransfer {
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsMediaTransfer.class);
+	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
 
 
 	public static List<ESMultiMediaObject> transfer(Element recordElement)
@@ -39,22 +39,25 @@ public class CrsMediaTransfer {
 		List<String> lifeStages = s == null ? null : Arrays.asList(s);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
+			String title = val(mediaFileElement, "dc:title");
+			if (title == null) {
+				logger.error("Missing title for record with identifier " + val(recordElement, "identifier"));
+				continue;
+			}
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
 			mmo.setSourceSystem(SourceSystem.CRS);
-			String title = val(mediaFileElement, "dc:title");
-			if (title == null) {
-				logger.warn("Missing title for record with identifier " + val(recordElement, "identifier"));
-			}
 			mmo.setSourceSystemId(title);
+			mmo.setUnitID(title);
 			mmo.setTitle(title);
 			mmo.setCaption(title);
 			mmo.setAssociatedSpecimenReference(associatedSpecimenReference);
+			mmo.setSpecimenTypeStatus(val(dcElement, "abcd:TypeStatus"));
 			mmo.setGatheringEvents(Arrays.asList(gatheringEvent));
 			mmo.setIdentifications(identifications);
 			mmo.setSexes(sexes);
 			mmo.setPhasesOrStages(lifeStages);
-			mmo.setMultiMediaPublic(bool(mediaFileElement, "abcd:MultiMediaPublic"));
+			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
 		}
 		return mmos;
@@ -126,21 +129,11 @@ public class CrsMediaTransfer {
 
 	private static Double dval(Element e, String tag)
 	{
-		String s = val(e, tag);
-		if (s == null) {
-			return null;
-		}
-		try {
-			return Double.valueOf(s);
-		}
-		catch (NumberFormatException exc) {
-			logger.warn(String.format("Invalid number in element %s: \"%s\"", tag, s));
-			return null;
-		}
+		return CrsSpecimenTransfer.dval(e, tag);
 	}
 
 
-	private static boolean bool(Element e, String tag)
+	private static boolean bval(Element e, String tag)
 	{
 		String s = val(e, tag);
 		if (s == null || !s.equals("1")) {
@@ -152,12 +145,7 @@ public class CrsMediaTransfer {
 
 	private static String val(Element e, String tag)
 	{
-		String s = DOMUtil.getDescendantValue(e, tag);
-		if (s == null) {
-			return null;
-		}
-		s = s.trim();
-		return s.length() == 0 ? null : s;
+		return CrsSpecimenTransfer.val(e, tag);
 	}
 
 }

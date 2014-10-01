@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
  * @author ayco_holleman
  * 
  */
-public class CrsMediaImporter {
+public class CrsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -42,7 +42,6 @@ public class CrsMediaImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String configFile = System.getProperty("config", null);
 		String rebuild = System.getProperty("rebuild", "false");
 
 		IndexNative index = null;
@@ -54,8 +53,8 @@ public class CrsMediaImporter {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
 				index.addType(LUCENE_TYPE, mapping);
 			}
-			CrsMediaImporter harvester = new CrsMediaImporter(index, configFile);
-			harvester.harvest();
+			CrsMultiMediaImporter harvester = new CrsMultiMediaImporter(index);
+			harvester.importMultiMedia();
 		}
 		finally {
 			if (index != null) {
@@ -64,10 +63,9 @@ public class CrsMediaImporter {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsMediaImporter.class);
+	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
 	private static final String LUCENE_TYPE = "MultiMediaObject";
 	private static final String ID_PREFIX = "CRS-";
-	private static final int ES_BULK_REQUEST_SIZE = 1000;
 
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
@@ -76,17 +74,29 @@ public class CrsMediaImporter {
 	private int bad;
 
 	private final Index index;
+	private final int bulkRequestSize;
+	private final boolean forceRestart;
 
 
-	public CrsMediaImporter(Index index, String configFile)
+	public CrsMultiMediaImporter(Index index) throws Exception
 	{
 		this.index = index;
-		if (configFile == null) {
-			config = new ConfigObject(getClass().getResourceAsStream("/crs-import.properties"));
+		String prop = System.getProperty("bulkRequestSize", "1000");
+		bulkRequestSize = Integer.parseInt(prop);
+
+		prop = System.getProperty("forceRestart", "true");
+		forceRestart = Boolean.parseBoolean(prop);
+
+		prop = System.getProperty("configFile");
+		if (prop == null) {
+			throw new Exception("Missing property -DconfigFile");
 		}
-		else {
-			config = new ConfigObject(configFile);
+		File f = new File(prop);
+		if (!f.isFile()) {
+			throw new Exception(String.format("Configuration file not found : \"%s\"", prop));
 		}
+		config = new ConfigObject(f);
+
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
 		try {
@@ -98,7 +108,7 @@ public class CrsMediaImporter {
 	}
 
 
-	public void harvest()
+	public void importMultiMedia()
 	{
 
 		int batch = 0;
@@ -114,10 +124,18 @@ public class CrsMediaImporter {
 				batch = 0;
 			}
 			else {
-				String[] elements = FileUtil.getContents(resTokenFile).split(",");
-				batch = Integer.parseInt(elements[0]);
-				resToken = elements[1];
-				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
+				if (forceRestart) {
+					resTokenFile.delete();
+					logger.info("Resumption token file found but ignored and deleted (forceRestart=true). Will start from scratch");
+					resToken = null;
+					batch = 0;
+				}
+				else {
+					String[] elements = FileUtil.getContents(resTokenFile).split(",");
+					batch = Integer.parseInt(elements[0]);
+					resToken = elements[1];
+					logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
+				}
 			}
 
 			processed = 0;
@@ -172,8 +190,8 @@ public class CrsMediaImporter {
 		int numRecords = records.getLength();
 		logger.info("Number of records in XML output: " + numRecords);
 
-		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(ES_BULK_REQUEST_SIZE);
-		List<String> ids = new ArrayList<String>(ES_BULK_REQUEST_SIZE);
+		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(bulkRequestSize);
+		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		for (int i = 0; i < numRecords; ++i) {
 			try {
 				Element record = (Element) records.item(i);
@@ -181,14 +199,14 @@ public class CrsMediaImporter {
 					// TODO delete media from ES index
 				}
 				else {
-					List<ESMultiMediaObject> extractedMedia = CrsMediaTransfer.transfer(record);
+					List<ESMultiMediaObject> extractedMedia = CrsMultiMediaTransfer.transfer(record);
 					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
 					for (ESMultiMediaObject mo : extractedMedia) {
 						extractedIds.add(ID_PREFIX + mo.getSourceSystemId());
 					}
 					mediaObjects.addAll(extractedMedia);
 					ids.addAll(extractedIds);
-					if (mediaObjects.size() >= ES_BULK_REQUEST_SIZE) {
+					if (mediaObjects.size() >= bulkRequestSize) {
 						index.saveObjects(LUCENE_TYPE, mediaObjects, ids);
 						mediaObjects.clear();
 						ids.clear();
@@ -215,11 +233,23 @@ public class CrsMediaImporter {
 		if (config.getBoolean("test")) {
 			String key = resumptionToken == null ? "test.media.url.initial" : "test.media.url.resume";
 			String val = config.getString(key);
+			logger.info("Loading file: " + val);
 			return FileUtil.getContents(val);
 		}
-		String key = resumptionToken == null ? "media.url.initial" : "media.url.resume";
-		String val = config.getString(key);
-		return new SimpleHttpGet().setBaseUrl(val).execute().getResponse();
+		String url;
+		if (resumptionToken == null) {
+			url = config.getString("media.url.initial");
+		}
+		else {
+			url = String.format(config.getString("media.url.resume"), resumptionToken);
+		}
+		logger.info("Calling service: " + url);
+		// Avoid "Content is not allowed in prolog"
+		String response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
+		if (!response.startsWith("<?xml")) {
+			response = response.substring(response.indexOf("<?xml"));
+		}
+		return response;
 	}
 
 

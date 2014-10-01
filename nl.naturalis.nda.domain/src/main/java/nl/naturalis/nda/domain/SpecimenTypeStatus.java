@@ -9,9 +9,8 @@ public class SpecimenTypeStatus {
 	public static final SpecimenTypeStatus LECTOTYPE = new SpecimenTypeStatus("Lectotype");
 	public static final SpecimenTypeStatus PARALECTOTYPE = new SpecimenTypeStatus("Paralectotype");
 	/**
-	 * A type status assigned to a specimen if its exact type status is not
-	 * known, but it is known to be <i>some</i> type (either a Holotype or a
-	 * Paratype, or a Lectotype, etc.)
+	 * A type status assigned to a specimen if it is not known whether it's a
+	 * holotype, paratype, lectotype, etc., but it is known to be one of those.
 	 */
 	public static final SpecimenTypeStatus TYPE = new SpecimenTypeStatus("Type");
 

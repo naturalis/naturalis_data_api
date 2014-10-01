@@ -31,6 +31,7 @@ public class MultiMediaObject extends NdaTraceableObject {
 	private String copyrightText;
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
+	private SpecimenTypeStatus specimenTypeStatus;
 	private boolean multimediaPublic;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -191,6 +192,18 @@ public class MultiMediaObject extends NdaTraceableObject {
 	public void setAssociatedTaxonReference(String associatedTaxonReference)
 	{
 		this.associatedTaxonReference = associatedTaxonReference;
+	}
+
+
+	public SpecimenTypeStatus getSpecimenTypeStatus()
+	{
+		return specimenTypeStatus;
+	}
+
+
+	public void setSpecimenTypeStatus(SpecimenTypeStatus specimenTypeStatus)
+	{
+		this.specimenTypeStatus = specimenTypeStatus;
 	}
 
 

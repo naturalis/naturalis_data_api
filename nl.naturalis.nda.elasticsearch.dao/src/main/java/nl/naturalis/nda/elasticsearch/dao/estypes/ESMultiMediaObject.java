@@ -21,6 +21,7 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	private String copyrightText;
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
+	private String specimenTypeStatus;
 	private boolean multiMediaPublic;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -168,6 +169,18 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	public void setAssociatedTaxonReference(String associatedTaxonReference)
 	{
 		this.associatedTaxonReference = associatedTaxonReference;
+	}
+
+
+	public String getSpecimenTypeStatus()
+	{
+		return specimenTypeStatus;
+	}
+
+
+	public void setSpecimenTypeStatus(String specimenTypeStatus)
+	{
+		this.specimenTypeStatus = specimenTypeStatus;
 	}
 
 

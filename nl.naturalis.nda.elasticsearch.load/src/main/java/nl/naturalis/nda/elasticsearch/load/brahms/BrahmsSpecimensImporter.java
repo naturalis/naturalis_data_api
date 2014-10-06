@@ -224,7 +224,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setSourceSystemId(barcode);
 		specimen.setUnitID(barcode);
 		specimen.setRecordBasis("PreservedSpecimen");
-		specimen.setSetID(ID_PREFIX + get(record, CsvField.BRAHMS.ordinal()));
+		specimen.setAssemblageID(ID_PREFIX + get(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(get(record, CsvField.PLANTDESC.ordinal()));
 		specimen.setGatheringEvent(getGatheringEvent(record));
 		specimen.addIndentification(getSpecimenIdentification(record));

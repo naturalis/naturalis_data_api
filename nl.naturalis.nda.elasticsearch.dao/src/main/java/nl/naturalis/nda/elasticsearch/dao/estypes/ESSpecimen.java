@@ -11,7 +11,7 @@ public class ESSpecimen extends NdaTraceableObject {
 
 	private String unitID;
 	private String unitGUID;
-	private String setID;
+	private String assemblageID;
 	private String sourceInstitutionID;
 	private String recordBasis;
 	private String kindOfUnit;
@@ -65,15 +65,15 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public String getSetID()
+	public String getAssemblageID()
 	{
-		return setID;
+		return assemblageID;
 	}
 
 
-	public void setSetID(String setID)
+	public void setAssemblageID(String assemblageID)
 	{
-		this.setID = setID;
+		this.assemblageID = assemblageID;
 	}
 
 

@@ -9,7 +9,6 @@ import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 
-import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -30,7 +29,6 @@ public class TaxonDao extends AbstractDao {
 		TaxonDao dao = new TaxonDao(esClient, "nda");
 		QueryParams params = new QueryParams();
 		SearchResultSet<Taxon> result = dao.findByScientificName("Chionodes tragicella (von Heyden, 1865)");
-		BeanPrinter.out(result);
 	}
 
 

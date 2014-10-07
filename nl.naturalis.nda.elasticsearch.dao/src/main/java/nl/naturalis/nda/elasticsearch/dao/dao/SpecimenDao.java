@@ -12,7 +12,6 @@ import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 
-import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -39,7 +38,6 @@ public class SpecimenDao extends AbstractDao {
 		//params.add("locality", "San Paolo");
 		//params.add("country", "Suriname");
 		SearchResultSet<Specimen> ssr = dao.listSpecimens(params);
-		BeanPrinter.out(ssr);
 		System.out.println("Done");
 	}
 

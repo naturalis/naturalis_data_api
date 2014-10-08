@@ -47,8 +47,6 @@ public class NDASchemaManager {
 	{
 		index.delete();
 		index.create();
-		String mappings = StringUtil.getResourceAsString("/es-mappings/specimen.type.json");
-		index.addType("specimen", mappings);
 		logger.info(index.describe());
 	}
 }

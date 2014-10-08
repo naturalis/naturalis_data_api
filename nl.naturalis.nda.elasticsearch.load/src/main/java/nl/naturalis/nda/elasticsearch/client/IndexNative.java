@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
@@ -68,11 +69,11 @@ public class IndexNative implements Index {
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
-			logger.info("Initializing ElasticSearch session");		
+			logger.info("Initializing ElasticSearch session");
 			// localClient = nodeBuilder().node().client();
 			// TODO: softcode cluster name
-			// Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
-			localClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
+			localClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 			ClusterStatsRequest request = new ClusterStatsRequest();
 			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
 			logger.debug("Cluster stats: " + response.toString());
@@ -133,6 +134,7 @@ public class IndexNative implements Index {
 	{
 		logger.info(String.format("Verifying existence of type \"%s\"", type));
 		TypesExistsRequestBuilder terb = admin.prepareTypesExists();
+		terb.setIndices(new String[] { indexName });
 		terb.setTypes(type);
 		TypesExistsResponse response = terb.execute().actionGet();
 		return response.isExists();

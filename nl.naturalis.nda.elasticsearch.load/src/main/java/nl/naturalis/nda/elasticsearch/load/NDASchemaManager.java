@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.load;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +26,9 @@ public class NDASchemaManager {
 	 * The default name of the ElasticSearch index for the Naturalis Data API.
 	 */
 	public static final String DEFAULT_NDA_INDEX_NAME = "nda";
+	public static final String LUCENE_TYPE_TAXON = "Taxon";
+	public static final String LUCENE_TYPE_SPECIMEN = "Specimen";
+	public static final String LUCENE_TYPE_MULTIMEDIA_OBJECT = "MultiMediaObject";
 
 	private static final Logger logger = LoggerFactory.getLogger(NDASchemaManager.class);
 

@@ -10,7 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Elastic Search"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache httpclient"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jackson"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/slf4j"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>

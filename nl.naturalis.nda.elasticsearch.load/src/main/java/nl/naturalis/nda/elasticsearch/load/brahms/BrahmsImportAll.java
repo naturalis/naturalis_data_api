@@ -1,5 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_SPECIMEN;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
@@ -7,7 +11,6 @@ import java.util.Date;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -17,23 +20,38 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		
 		String rebuild = System.getProperty("rebuild", "false");
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-			index.deleteType("Specimen");
-			index.deleteType("MultiMediaObject");
+			index.deleteType(LUCENE_TYPE_SPECIMEN);
+			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-			index.addType("Specimen", mapping);
+			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 			mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-			index.addType("MultiMediaObject", mapping);
+			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
 		}
 		else {
-			index.deleteWhere("Specimen", "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-			index.deleteWhere("MultiMediaObject", "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			if (index.typeExists(LUCENE_TYPE_SPECIMEN)) {
+				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			}
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
+				index.addType(LUCENE_TYPE_SPECIMEN, mapping);				
+			}
+			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
+				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			}
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);				
+			}
 		}
-		Thread.sleep(2000);
+		
 		try {
 			BrahmsImportAll importer = new BrahmsImportAll(index);
 			importer.importCsvFiles();
@@ -42,11 +60,12 @@ public class BrahmsImportAll {
 			index.getClient().close();
 		}
 	}
-	
+
 	static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);
-	
+
 	private final IndexNative index;
 	private final boolean rename;
+
 
 	public BrahmsImportAll(IndexNative index)
 	{
@@ -54,6 +73,7 @@ public class BrahmsImportAll {
 		String prop = System.getProperty("rename", "false");
 		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
+
 
 	public void importCsvFiles() throws Exception
 	{
@@ -76,7 +96,7 @@ public class BrahmsImportAll {
 			logger.info("No CSV files to process");
 			return;
 		}
-		
+
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
 		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
 

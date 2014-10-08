@@ -72,12 +72,12 @@ public class CrsSpecimenTransfer {
 		Double lat = dval(recordElement, "abcd:LatitudeDecimal");
 		Double lon = dval(recordElement, "abcd:LongitudeDecimal");
 		if (lon != null && (lon < -180 || lon > 180)) {
-			logger.error("Invalid latitude: " + lon);
+			logger.error("Invalid longitude: " + lon);
 			lon = null;
 		}
-		if (lat != null || lon != null) {
-			GatheringSiteCoordinates gsc = new GatheringSiteCoordinates(lat, lon);
-			ge.setSiteCoordinates(Arrays.asList(gsc));
+		if (lat != null && (lat < -90 || lat > 90)) {
+			logger.error("Invalid latitude: " + lat);
+			lat = null;
 		}
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));

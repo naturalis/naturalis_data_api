@@ -255,6 +255,14 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		ge.setDateTimeEnd(date);
 		Double lat = dget(record, CsvField.LATITUDE.ordinal());
 		Double lon = dget(record, CsvField.LONGITUDE.ordinal());
+		if (lon != null && (lon < -180 || lon > 180)) {
+			logger.error("Invalid longitude: " + lon);
+			lon = null;
+		}
+		if (lat != null && (lat < -90 || lat > 90)) {
+			logger.error("Invalid latitude: " + lat);
+			lat = null;
+		}
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
 		}

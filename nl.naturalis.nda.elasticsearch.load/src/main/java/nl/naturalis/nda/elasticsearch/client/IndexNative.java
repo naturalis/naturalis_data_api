@@ -31,7 +31,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
 import org.slf4j.Logger;
@@ -298,7 +301,9 @@ public class IndexNative implements Index {
 	{
 		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
 		request.setTypes(type);
-		request.setQuery(QueryBuilders.termQuery(field, value));
+		TermFilterBuilder filter = FilterBuilders.termFilter(field, value);
+		FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
+		request.setQuery(query);
 		request.execute().actionGet();
 	}
 

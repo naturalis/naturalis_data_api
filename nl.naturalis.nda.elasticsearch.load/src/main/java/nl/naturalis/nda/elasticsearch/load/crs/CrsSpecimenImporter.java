@@ -9,10 +9,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
@@ -42,29 +43,34 @@ public class CrsSpecimenImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String rebuild = System.getProperty("rebuild", "false");
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
 
-		IndexNative index = null;
-		try {
-			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-			if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-				index.deleteType(LUCENE_TYPE);
-				Thread.sleep(2000);
-				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-				index.addType(LUCENE_TYPE, mapping);
+		String rebuild = System.getProperty("rebuild", "false");
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_SPECIMEN);
+			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
+			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
+		}
+		else {
+			if (index.typeExists(LUCENE_TYPE_SPECIMEN)) {
+				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			}
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
+				index.addType(LUCENE_TYPE_SPECIMEN, mapping);
+			}
+		}
+
+		try {
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
 			importer.importSpecimens();
 		}
 		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
+			index.getClient().close();
 		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
-	private static final String LUCENE_TYPE = "Specimen";
 	private static final String ID_PREFIX = "CRS-";
 
 	private final ConfigObject config;
@@ -195,13 +201,13 @@ public class CrsSpecimenImporter {
 			Element record = (Element) records.item(i);
 			String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
 			if (isDeletedRecord(record)) {
-				index.deleteDocument(LUCENE_TYPE, id);
+				index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
 			}
 			else {
 				specimens.add(CrsSpecimenTransfer.transfer(record));
 				ids.add(id);
 				if (specimens.size() >= bulkRequestSize) {
-					index.saveObjects(LUCENE_TYPE, specimens, ids);
+					index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
 					specimens.clear();
 					ids.clear();
 				}
@@ -211,7 +217,7 @@ public class CrsSpecimenImporter {
 			}
 		}
 		if (!specimens.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE, specimens, ids);
+			index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
 		}
 		return getResumptionToken(doc);
 	}

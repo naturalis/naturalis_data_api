@@ -1,5 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,10 +12,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
@@ -42,29 +45,34 @@ public class CrsMultiMediaImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String rebuild = System.getProperty("rebuild", "false");
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
 
-		IndexNative index = null;
-		try {
-			index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-			if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-				index.deleteType(LUCENE_TYPE);
-				Thread.sleep(2000);
-				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE, mapping);
+		String rebuild = System.getProperty("rebuild", "false");
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
+			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
+		}
+		else {
+			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
+				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			}
-			CrsMultiMediaImporter harvester = new CrsMultiMediaImporter(index);
-			harvester.importMultiMedia();
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
+			}
+		}
+
+		try {
+			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
+			importer.importSpecimens();
 		}
 		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
+			index.getClient().close();
 		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
-	private static final String LUCENE_TYPE = "MultiMediaObject";
 	private static final String ID_PREFIX = "CRS-";
 
 	private final ConfigObject config;
@@ -207,7 +215,7 @@ public class CrsMultiMediaImporter {
 					mediaObjects.addAll(extractedMedia);
 					ids.addAll(extractedIds);
 					if (mediaObjects.size() >= bulkRequestSize) {
-						index.saveObjects(LUCENE_TYPE, mediaObjects, ids);
+						index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
 						mediaObjects.clear();
 						ids.clear();
 					}
@@ -218,11 +226,11 @@ public class CrsMultiMediaImporter {
 			}
 			catch (Exception e) {
 				++bad;
-				logger.error(e.getMessage(),e);
+				logger.error(e.getMessage(), e);
 			}
 		}
 		if (!mediaObjects.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE, mediaObjects, ids);
+			index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
 		}
 		return getResumptionToken(doc);
 	}

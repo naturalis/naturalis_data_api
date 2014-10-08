@@ -1,11 +1,10 @@
 package nl.naturalis.nda.elasticsearch.dao.estypes;
 
-import java.util.Date;
-import java.util.List;
-
-import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.Organization;
 import nl.naturalis.nda.domain.Person;
+
+import java.util.Date;
+import java.util.List;
 
 public class ESGatheringEvent {
 
@@ -29,7 +28,7 @@ public class ESGatheringEvent {
 	private String deptUnitOfMeasurement;
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
-	private List<GatheringSiteCoordinates> siteCoordinates;
+	private List<ESGatheringSiteCoordinates> siteCoordinates;
 
 
 	public String getProjectTitle()
@@ -272,13 +271,13 @@ public class ESGatheringEvent {
 	}
 
 
-	public List<GatheringSiteCoordinates> getSiteCoordinates()
+	public List<ESGatheringSiteCoordinates> getSiteCoordinates()
 	{
 		return siteCoordinates;
 	}
 
 
-	public void setSiteCoordinates(List<GatheringSiteCoordinates> siteCoordinates)
+	public void setSiteCoordinates(List<ESGatheringSiteCoordinates> siteCoordinates)
 	{
 		this.siteCoordinates = siteCoordinates;
 	}

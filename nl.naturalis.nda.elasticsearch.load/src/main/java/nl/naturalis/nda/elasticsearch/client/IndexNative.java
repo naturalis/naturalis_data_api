@@ -69,10 +69,10 @@ public class IndexNative implements Index {
 	{
 		if (localClient == null) {
 			logger.info("Initializing ElasticSearch session");		
-			//localClient = nodeBuilder().node().client();
+			// localClient = nodeBuilder().node().client();
 			// TODO: softcode cluster name
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
-			localClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+			// Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
+			localClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 			ClusterStatsRequest request = new ClusterStatsRequest();
 			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
 			logger.debug("Cluster stats: " + response.toString());

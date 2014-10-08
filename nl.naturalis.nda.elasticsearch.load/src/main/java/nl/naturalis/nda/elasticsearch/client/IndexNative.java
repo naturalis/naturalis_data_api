@@ -30,6 +30,8 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
@@ -66,12 +68,11 @@ public class IndexNative implements Index {
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
-			logger.info("Initializing ElasticSearch session");
-			
+			logger.info("Initializing ElasticSearch session");		
 			//localClient = nodeBuilder().node().client();
-			localClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-			
-			localClient.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();	
+			// TODO: softcode cluster name
+			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
+			localClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 			ClusterStatsRequest request = new ClusterStatsRequest();
 			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
 			logger.debug("Cluster stats: " + response.toString());

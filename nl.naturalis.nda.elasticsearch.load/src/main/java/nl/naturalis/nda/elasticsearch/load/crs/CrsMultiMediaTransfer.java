@@ -10,6 +10,7 @@ import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
 import org.domainobject.util.DOMUtil;
@@ -82,8 +83,7 @@ public class CrsMultiMediaTransfer {
 			lon = null;
 		}
 		if (lat != null || lon != null) {
-			GatheringSiteCoordinates gsc = new GatheringSiteCoordinates(lat, lon);
-			ge.setSiteCoordinates(Arrays.asList(gsc));
+			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
 		String s = val(dcElement, "abcd:GatheringAgent");
 		if (s != null) {

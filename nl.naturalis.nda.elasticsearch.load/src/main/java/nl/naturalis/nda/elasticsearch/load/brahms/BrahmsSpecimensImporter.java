@@ -11,7 +11,6 @@ import java.util.List;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
@@ -20,6 +19,7 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
@@ -264,7 +264,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			lat = null;
 		}
 		if (lat != null || lon != null) {
-			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
+			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
 		String collector = get(record, CsvField.COLLECTOR.ordinal());
 		if (collector != null) {

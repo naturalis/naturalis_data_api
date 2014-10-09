@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
@@ -80,7 +80,7 @@ public class CrsSpecimenTransfer {
 			lat = null;
 		}
 		if (lat != null || lon != null) {
-			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
+			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
 		return ge;
 	}

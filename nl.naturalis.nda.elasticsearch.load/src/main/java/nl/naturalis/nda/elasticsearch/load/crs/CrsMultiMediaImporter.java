@@ -64,8 +64,8 @@ public class CrsMultiMediaImporter {
 		}
 
 		try {
-			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
-			importer.importSpecimens();
+			CrsMultiMediaImporter importer = new CrsMultiMediaImporter(index);
+			importer.importMultiMedia();
 		}
 		finally {
 			index.getClient().close();

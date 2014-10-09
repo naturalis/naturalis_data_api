@@ -43,7 +43,7 @@ public class NDASchemaManager {
 
 	/**
 	 * Creates the NDA schema from scratch. Will delete the entire index
-	 * (mappings and documents) and then re-create it. WATCH OUT!
+	 * (mappings and documents) and then re-create it. !!! WATCH OUT !!!
 	 */
 	public void bootstrap()
 	{

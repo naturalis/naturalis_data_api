@@ -55,7 +55,7 @@ public class CrsMultiMediaImporter {
 		}
 		else {
 			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
-				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");

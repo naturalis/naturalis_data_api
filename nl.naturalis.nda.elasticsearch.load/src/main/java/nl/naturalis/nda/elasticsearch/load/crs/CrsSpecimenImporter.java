@@ -53,7 +53,7 @@ public class CrsSpecimenImporter {
 		}
 		else {
 			if (index.typeExists(LUCENE_TYPE_SPECIMEN)) {
-				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.CRS.getCode());
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");

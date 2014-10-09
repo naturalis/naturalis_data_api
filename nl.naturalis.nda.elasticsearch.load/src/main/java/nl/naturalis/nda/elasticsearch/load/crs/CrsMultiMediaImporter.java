@@ -70,6 +70,8 @@ public class CrsMultiMediaImporter {
 		finally {
 			index.getClient().close();
 		}
+		logger.info("Ready");
+		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);

@@ -68,6 +68,8 @@ public class CrsSpecimenImporter {
 		finally {
 			index.getClient().close();
 		}
+		logger.info("Ready");
+		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);

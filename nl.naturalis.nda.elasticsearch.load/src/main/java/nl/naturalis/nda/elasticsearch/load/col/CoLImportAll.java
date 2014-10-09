@@ -1,7 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -11,20 +12,33 @@ public class CoLImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+
 		String dwcaDir = System.getProperty("dwcaDir");
 		String rebuild = System.getProperty("rebuild", "false");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-			index.deleteType("Taxon");
-			Thread.sleep(2000);
+
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_TAXON);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-			index.addType("Taxon", mapping);
+			index.addType(LUCENE_TYPE_TAXON, mapping);
 		}
+		else {
+			if (index.typeExists(LUCENE_TYPE_TAXON)) {
+				index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.COL.getCode());
+			}
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
+				index.addType(LUCENE_TYPE_TAXON, mapping);
+			}
+		}
+
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			importer.importCsv(dwcaDir + "/taxa.txt");

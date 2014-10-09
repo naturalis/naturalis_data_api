@@ -59,6 +59,7 @@ public class BrahmsImportAll {
 		finally {
 			index.getClient().close();
 		}
+		logger.info("Ready");
 	}
 
 	static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);

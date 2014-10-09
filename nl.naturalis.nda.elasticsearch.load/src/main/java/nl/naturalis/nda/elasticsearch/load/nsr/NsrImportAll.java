@@ -61,6 +61,7 @@ public class NsrImportAll {
 		finally {
 			index.getClient().close();
 		}
+		logger.info("Ready");
 		
 	}
 

@@ -16,12 +16,17 @@ import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
 import nl.naturalis.nda.search.SearchResultSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Path("/taxon")
 @Stateless
 @LocalBean
 /* only here so @EJB injection works in JBoss AS; remove when possible */
 public class TaxonResource {
 
+	private static final Logger logger = LoggerFactory.getLogger(TaxonResource.class);
+	
 	@EJB
 	SpecimenService service;
 

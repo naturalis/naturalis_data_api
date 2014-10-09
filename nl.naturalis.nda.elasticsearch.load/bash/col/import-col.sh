@@ -10,7 +10,7 @@ rename='false'
 # Number of ES index requests bundled together
 bulkRequestSize=1000
 
-libdir='/opt/nda-es-loaders/lib'
+libdir='/opt/nda-es-lib'
 
 # Put load.jar ahead of classpath, so logback settings are
 # picked up from there

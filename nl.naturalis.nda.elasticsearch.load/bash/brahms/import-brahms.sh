@@ -10,7 +10,7 @@ rename='false'
 # Number of ES index requests bundled together
 bulkRequestSize=1000
 
-libdir='/opt/nda-es-loaders/lib'
+libdir='/opt/nda-es-lib'
 
 classpath="${libdir}/nl.naturalis.nda.elasticsearch.load.jar"
 for file in `ls ${libdir}`

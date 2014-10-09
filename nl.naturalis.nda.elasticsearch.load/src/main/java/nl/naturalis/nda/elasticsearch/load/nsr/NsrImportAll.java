@@ -50,7 +50,7 @@ public class NsrImportAll {
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE_TAXON, mapping);				
+				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);				
 			}
 		}
 		

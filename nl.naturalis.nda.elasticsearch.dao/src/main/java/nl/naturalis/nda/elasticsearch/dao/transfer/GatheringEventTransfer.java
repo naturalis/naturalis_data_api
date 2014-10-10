@@ -37,8 +37,8 @@ public class GatheringEventTransfer {
         gatheringEvent.setMethod(esGatheringEvent.getMethod());
         gatheringEvent.setAltitude(esGatheringEvent.getAltitude());
         gatheringEvent.setAltitudeUnifOfMeasurement(esGatheringEvent.getAltitudeUnifOfMeasurement());
-        gatheringEvent.setDept(esGatheringEvent.getDept());
-        gatheringEvent.setDeptUnitOfMeasurement(esGatheringEvent.getDeptUnitOfMeasurement());
+        gatheringEvent.setDepth(esGatheringEvent.getDepth());
+        gatheringEvent.setDepthUnitOfMeasurement(esGatheringEvent.getDepthUnitOfMeasurement());
         gatheringEvent.setDateTimeBegin(esGatheringEvent.getDateTimeBegin());
         gatheringEvent.setDateTimeEnd(esGatheringEvent.getDateTimeEnd());
 

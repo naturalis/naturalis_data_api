@@ -24,8 +24,8 @@ public class ESGatheringEvent {
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;
-	private String dept;
-	private String deptUnitOfMeasurement;
+	private String depth;
+	private String depthUnitOfMeasurement;
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<ESGatheringSiteCoordinates> siteCoordinates;
@@ -223,27 +223,27 @@ public class ESGatheringEvent {
 	}
 
 
-	public String getDept()
+	public String getDepth()
 	{
-		return dept;
+		return depth;
 	}
 
 
-	public void setDept(String dept)
+	public void setDepth(String depth)
 	{
-		this.dept = dept;
+		this.depth = depth;
 	}
 
 
-	public String getDeptUnitOfMeasurement()
+	public String getDepthUnitOfMeasurement()
 	{
-		return deptUnitOfMeasurement;
+		return depthUnitOfMeasurement;
 	}
 
 
-	public void setDeptUnitOfMeasurement(String deptUnitOfMeasurement)
+	public void setDepthUnitOfMeasurement(String depthUnitOfMeasurement)
 	{
-		this.deptUnitOfMeasurement = deptUnitOfMeasurement;
+		this.depthUnitOfMeasurement = depthUnitOfMeasurement;
 	}
 
 

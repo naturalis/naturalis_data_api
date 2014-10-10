@@ -5,6 +5,7 @@ import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
+import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
@@ -14,17 +15,18 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class BioportalSpecimenDao extends AbstractDao {
@@ -46,25 +48,24 @@ public class BioportalSpecimenDao extends AbstractDao {
             "gatheringEvent.siteCoordinates.point"
     };
 
-    private static final String[] specimenSearchFieldNames = {
+    private static final Set<String> specimenSearchFieldNames = new HashSet<>(Arrays.asList(
             "unitID",
             "typeStatus",
             "phaseOrStage",
             "sex",
             "gatheringEvent.localityText",
             "gatheringEvent.gatheringPersons.fullName",
-            "gatheringEvent.siteCoordinates.point"
-    };
+            "gatheringEvent.siteCoordinates.point")
+    );
 
     public BioportalSpecimenDao(Client esClient, String ndaIndexName) {
         super(esClient, ndaIndexName);
     }
 
-
     public static void main(String[] args) throws JsonProcessingException {
         Settings settings = ImmutableSettings.settingsBuilder()
-                                             .put(CLUSTER_NAME_PROPERTY, CLUSTER_NAME_PROPERTY_VALUE)
-                                             .build();
+                .put(CLUSTER_NAME_PROPERTY, CLUSTER_NAME_PROPERTY_VALUE)
+                .build();
         Client esClient = new TransportClient(settings)
                 .addTransportAddress(new InetSocketTransportAddress(ES_HOST, ES_PORT));
 
@@ -85,6 +86,19 @@ public class BioportalSpecimenDao extends AbstractDao {
         logger.info("Searching specimens with term: '" + term + "' and ordering by field: '" + orderField + "'");
         specimenSearchResultSet = dao.specimenSearch(term, orderField);
         logger.info(getObjectMapper().writeValueAsString(specimenSearchResultSet));
+
+        logger.info("\n");
+        logger.info("------ Firing 'specimenExtendedNameSearch' query ------");
+        QueryParams params = new QueryParams();
+        params.add("unitID", "0191413");
+//        params.add("gatheringEvent.gatheringPersons.fullName", "Meijer, W.");
+        params.add("gatheringAgent", "Meijer, W.");
+        params.add("_andOr", "OR");
+        logger.info("Searching specimens with params: '" + params.toString() + "'");
+
+        ResultGroupSet<Specimen, String> specimenExtendedNameSearchResultSet = dao.specimenExtendedNameSearch(params);
+        logger.info("Found: " + specimenExtendedNameSearchResultSet.getTotalSize());
+        logger.info(getObjectMapper().writeValueAsString(specimenExtendedNameSearchResultSet));
     }
 
     /**
@@ -167,7 +181,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                 .setQuery(
                         multiMatchQuery(
                                 searchTerm,
-                                specimenSearchFieldNames
+                                specimenSearchFieldNames.toArray(new String[specimenSearchFieldNames.size()])
                         )
                 )
                 .addSort(fieldSort)
@@ -203,9 +217,33 @@ public class BioportalSpecimenDao extends AbstractDao {
     public ResultGroupSet<Specimen, String> specimenExtendedNameSearch(QueryParams params) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
-        //todo needs to be implemented
 
-        return responseToSpecimenResultGroupSet(null);
+        BoolQueryBuilder boolQueryBuilder = boolQuery();
+        Operator operator = getOperator(params);
+
+        Set<String> paramKeys = params.keySet();
+        for (String paramKey : paramKeys) {
+            String searchValue = params.getParam(paramKey);
+
+            if (specimenSearchFieldNames.contains(paramKey)) {
+                Float boostValueForField = getSearchParamFieldMapping().getBoostValueForField(paramKey);
+                addFieldQueryToBoolQuery(paramKey, boolQueryBuilder, operator, searchValue, boostValueForField);
+            } else {
+                List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForField(paramKey);
+                for (FieldMapping field : fields) {
+                    addFieldQueryToBoolQuery(field.getFieldName(), boolQueryBuilder, operator, searchValue, field.getBoostValue());
+                }
+            }
+
+            //TODO Geopoint afhandelen
+        }
+
+        SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
+                .setQuery(filteredQuery(boolQueryBuilder, null))
+                .addSort(fieldSort)
+                .execute().actionGet();
+
+        return responseToSpecimenResultGroupSet(searchResponse);
     }
 
     /**
@@ -279,6 +317,34 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
     // ==================================================== Helpers ====================================================
+
+    private void addFieldQueryToBoolQuery(String field, BoolQueryBuilder boolQueryBuilder, Operator operator, String searchValue, Float boostValue) {
+        MatchQueryBuilder queryBuilder = matchQuery(field, searchValue);
+        if (boostValue != null) {
+            queryBuilder.boost(boostValue);
+        }
+
+        if (operator == AND) {
+            boolQueryBuilder.must(queryBuilder);
+        } else {
+            boolQueryBuilder.should(queryBuilder);
+        }
+    }
+
+    /**
+     * Get the operator from the query params.
+     *
+     * @param params the query params
+     * @return the operator from the params, if not found {@link Operator#OR} is returned
+     */
+    private Operator getOperator(QueryParams params) {
+        String operatorValue = params.getParam("_andOr");
+        Operator operator = OR;
+        if (operatorValue != null && !operatorValue.isEmpty()) {
+            operator = valueOf(operatorValue);
+        }
+        return operator;
+    }
 
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();

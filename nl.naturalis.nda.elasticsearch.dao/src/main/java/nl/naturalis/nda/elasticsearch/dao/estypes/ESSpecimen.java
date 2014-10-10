@@ -11,6 +11,7 @@ public class ESSpecimen extends NdaTraceableObject {
 
 	private String unitID;
 	private String unitGUID;
+	private String collectorsFieldNumber;
 	private String assemblageID;
 	private String sourceInstitutionID;
 	private String recordBasis;
@@ -62,6 +63,18 @@ public class ESSpecimen extends NdaTraceableObject {
 	public void setUnitGUID(String unitGUID)
 	{
 		this.unitGUID = unitGUID;
+	}
+
+
+	public String getCollectorsFieldNumber()
+	{
+		return collectorsFieldNumber;
+	}
+
+
+	public void setCollectorsFieldNumber(String collectorsFieldNumber)
+	{
+		this.collectorsFieldNumber = collectorsFieldNumber;
 	}
 
 

@@ -5,255 +5,314 @@ import java.util.List;
 
 public class Specimen extends NdaTraceableObject {
 
-    private String unitID;
-    private String unitGUID;
-    private String assemblageID;
-    private String sourceInstitutionID;
-    private String recordBasis;
-    private String kindOfUnit;
-    private String collectionType;
-    private SpecimenTypeStatus typeStatus;
-    private String sex;
-    private String phaseOrStage;
-    private String title;
-    private String notes;
-    private String preparationType;
-    private int numberOfSpecimen;
-    private boolean fromCaptivity;
-    private boolean objectPublic;
-    private boolean multiMediaPublic;
+	private String unitID;
+	private String unitGUID;
+	private String collectorsFieldNumber;
+	private String assemblageID;
+	private String sourceInstitutionID;
+	private String recordBasis;
+	private String kindOfUnit;
+	private String collectionType;
+	private SpecimenTypeStatus typeStatus;
+	private String sex;
+	private String phaseOrStage;
+	private String title;
+	private String notes;
+	private String preparationType;
+	private int numberOfSpecimen;
+	private boolean fromCaptivity;
+	private boolean objectPublic;
+	private boolean multiMediaPublic;
 
-    private Agent acquiredFrom;
-    private GatheringEvent gatheringEvent;
-    private List<SpecimenIdentification> identifications;
-    private List<Specimen> otherSpecimensInAssemblage;
-    private List<Taxon> associatedTaxa;
+	private Agent acquiredFrom;
+	private GatheringEvent gatheringEvent;
+	private List<SpecimenIdentification> identifications;
+	private List<Specimen> otherSpecimensInAssemblage;
+	private List<Taxon> associatedTaxa;
 
 
-    public void addIndentification(SpecimenIdentification identification) {
-        if (identifications == null) {
-            identifications = new ArrayList<SpecimenIdentification>();
-        }
-        identifications.add(identification);
-    }
+	public void addIndentification(SpecimenIdentification identification)
+	{
+		if (identifications == null) {
+			identifications = new ArrayList<SpecimenIdentification>();
+		}
+		identifications.add(identification);
+	}
 
 
-    public String getUnitID() {
-        return unitID;
-    }
+	public String getUnitID()
+	{
+		return unitID;
+	}
 
 
-    public void setUnitID(String unitID) {
-        this.unitID = unitID;
-    }
+	public void setUnitID(String unitID)
+	{
+		this.unitID = unitID;
+	}
 
 
-    public String getUnitGUID() {
-        return unitGUID;
-    }
+	public String getUnitGUID()
+	{
+		return unitGUID;
+	}
 
 
-    public void setUnitGUID(String unitGUID) {
-        this.unitGUID = unitGUID;
-    }
+	public void setUnitGUID(String unitGUID)
+	{
+		this.unitGUID = unitGUID;
+	}
 
 
-    public String getAssemblageID() {
-        return assemblageID;
-    }
+	public String getCollectorsFieldNumber()
+	{
+		return collectorsFieldNumber;
+	}
 
 
-    public void setAssemblageID(String assemblageID) {
-        this.assemblageID = assemblageID;
-    }
+	public void setCollectorsFieldNumber(String collectorsFieldNumber)
+	{
+		this.collectorsFieldNumber = collectorsFieldNumber;
+	}
 
 
-    public String getSourceInstitutionID() {
-        return sourceInstitutionID;
-    }
+	public String getAssemblageID()
+	{
+		return assemblageID;
+	}
 
 
-    public void setSourceInstitutionID(String sourceInstitutionID) {
-        this.sourceInstitutionID = sourceInstitutionID;
-    }
+	public void setAssemblageID(String assemblageID)
+	{
+		this.assemblageID = assemblageID;
+	}
 
 
-    public String getRecordBasis() {
-        return recordBasis;
-    }
+	public String getSourceInstitutionID()
+	{
+		return sourceInstitutionID;
+	}
 
 
-    public void setRecordBasis(String recordBasis) {
-        this.recordBasis = recordBasis;
-    }
+	public void setSourceInstitutionID(String sourceInstitutionID)
+	{
+		this.sourceInstitutionID = sourceInstitutionID;
+	}
 
 
-    public String getKindOfUnit() {
-        return kindOfUnit;
-    }
+	public String getRecordBasis()
+	{
+		return recordBasis;
+	}
 
 
-    public void setKindOfUnit(String kindOfUnit) {
-        this.kindOfUnit = kindOfUnit;
-    }
+	public void setRecordBasis(String recordBasis)
+	{
+		this.recordBasis = recordBasis;
+	}
 
 
-    public String getCollectionType() {
-        return collectionType;
-    }
+	public String getKindOfUnit()
+	{
+		return kindOfUnit;
+	}
 
 
-    public void setCollectionType(String collectionType) {
-        this.collectionType = collectionType;
-    }
+	public void setKindOfUnit(String kindOfUnit)
+	{
+		this.kindOfUnit = kindOfUnit;
+	}
 
 
-    public SpecimenTypeStatus getTypeStatus() {
-        return typeStatus;
-    }
+	public String getCollectionType()
+	{
+		return collectionType;
+	}
 
 
-    public void setTypeStatus(SpecimenTypeStatus typeStatus) {
-        this.typeStatus = typeStatus;
-    }
+	public void setCollectionType(String collectionType)
+	{
+		this.collectionType = collectionType;
+	}
 
 
-    public String getSex() {
-        return sex;
-    }
+	public SpecimenTypeStatus getTypeStatus()
+	{
+		return typeStatus;
+	}
 
 
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
+	public void setTypeStatus(SpecimenTypeStatus typeStatus)
+	{
+		this.typeStatus = typeStatus;
+	}
 
 
-    public String getPhaseOrStage() {
-        return phaseOrStage;
-    }
+	public String getSex()
+	{
+		return sex;
+	}
 
 
-    public void setPhaseOrStage(String phaseOrStage) {
-        this.phaseOrStage = phaseOrStage;
-    }
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
 
 
-    public String getTitle() {
-        return title;
-    }
+	public String getPhaseOrStage()
+	{
+		return phaseOrStage;
+	}
 
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setPhaseOrStage(String phaseOrStage)
+	{
+		this.phaseOrStage = phaseOrStage;
+	}
 
 
-    public String getNotes() {
-        return notes;
-    }
+	public String getTitle()
+	{
+		return title;
+	}
 
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
 
 
-    public String getPreparationType() {
-        return preparationType;
-    }
+	public String getNotes()
+	{
+		return notes;
+	}
 
 
-    public void setPreparationType(String preparationType) {
-        this.preparationType = preparationType;
-    }
+	public void setNotes(String notes)
+	{
+		this.notes = notes;
+	}
 
 
-    public int getNumberOfSpecimen() {
-        return numberOfSpecimen;
-    }
+	public String getPreparationType()
+	{
+		return preparationType;
+	}
 
 
-    public void setNumberOfSpecimen(int numberOfSpecimen) {
-        this.numberOfSpecimen = numberOfSpecimen;
-    }
+	public void setPreparationType(String preparationType)
+	{
+		this.preparationType = preparationType;
+	}
 
 
-    public boolean isFromCaptivity() {
-        return fromCaptivity;
-    }
+	public int getNumberOfSpecimen()
+	{
+		return numberOfSpecimen;
+	}
 
 
-    public void setFromCaptivity(boolean fromCaptivity) {
-        this.fromCaptivity = fromCaptivity;
-    }
+	public void setNumberOfSpecimen(int numberOfSpecimen)
+	{
+		this.numberOfSpecimen = numberOfSpecimen;
+	}
 
 
-    public boolean isObjectPublic() {
-        return objectPublic;
-    }
+	public boolean isFromCaptivity()
+	{
+		return fromCaptivity;
+	}
 
 
-    public void setObjectPublic(boolean objectPublic) {
-        this.objectPublic = objectPublic;
-    }
+	public void setFromCaptivity(boolean fromCaptivity)
+	{
+		this.fromCaptivity = fromCaptivity;
+	}
 
 
-    public boolean isMultiMediaPublic() {
-        return multiMediaPublic;
-    }
+	public boolean isObjectPublic()
+	{
+		return objectPublic;
+	}
 
 
-    public void setMultiMediaPublic(boolean multiMediaPublic) {
-        this.multiMediaPublic = multiMediaPublic;
-    }
+	public void setObjectPublic(boolean objectPublic)
+	{
+		this.objectPublic = objectPublic;
+	}
 
 
-    public Agent getAcquiredFrom() {
-        return acquiredFrom;
-    }
+	public boolean isMultiMediaPublic()
+	{
+		return multiMediaPublic;
+	}
 
 
-    public void setAcquiredFrom(Agent acquiredFrom) {
-        this.acquiredFrom = acquiredFrom;
-    }
+	public void setMultiMediaPublic(boolean multiMediaPublic)
+	{
+		this.multiMediaPublic = multiMediaPublic;
+	}
 
 
-    public GatheringEvent getGatheringEvent() {
-        return gatheringEvent;
-    }
+	public Agent getAcquiredFrom()
+	{
+		return acquiredFrom;
+	}
 
 
-    public void setGatheringEvent(GatheringEvent gatheringEvent) {
-        this.gatheringEvent = gatheringEvent;
-    }
+	public void setAcquiredFrom(Agent acquiredFrom)
+	{
+		this.acquiredFrom = acquiredFrom;
+	}
 
 
-    public List<SpecimenIdentification> getIdentifications() {
-        return identifications;
-    }
+	public GatheringEvent getGatheringEvent()
+	{
+		return gatheringEvent;
+	}
 
 
-    public void setIdentifications(List<SpecimenIdentification> identifications) {
-        this.identifications = identifications;
-    }
+	public void setGatheringEvent(GatheringEvent gatheringEvent)
+	{
+		this.gatheringEvent = gatheringEvent;
+	}
 
 
-    public List<Specimen> getOtherSpecimensInAssemblage() {
-        return otherSpecimensInAssemblage;
-    }
+	public List<SpecimenIdentification> getIdentifications()
+	{
+		return identifications;
+	}
 
 
-    public void setOtherSpecimensInAssemblage(List<Specimen> otherSpecimensInAssemblage) {
-        this.otherSpecimensInAssemblage = otherSpecimensInAssemblage;
-    }
+	public void setIdentifications(List<SpecimenIdentification> identifications)
+	{
+		this.identifications = identifications;
+	}
 
 
-    public List<Taxon> getAssociatedTaxa() {
-        return associatedTaxa;
-    }
+	public List<Specimen> getOtherSpecimensInAssemblage()
+	{
+		return otherSpecimensInAssemblage;
+	}
 
 
-    public void setAssociatedTaxa(List<Taxon> associatedTaxa) {
-        this.associatedTaxa = associatedTaxa;
-    }
+	public void setOtherSpecimensInAssemblage(List<Specimen> otherSpecimensInAssemblage)
+	{
+		this.otherSpecimensInAssemblage = otherSpecimensInAssemblage;
+	}
+
+
+	public List<Taxon> getAssociatedTaxa()
+	{
+		return associatedTaxa;
+	}
+
+
+	public void setAssociatedTaxa(List<Taxon> associatedTaxa)
+	{
+		this.associatedTaxa = associatedTaxa;
+	}
+
 }

@@ -141,24 +141,6 @@ public class IndexREST implements Index {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see nl.naturalis.nda.elasticsearch.client.Index#create(java.lang.String)
-	 */
-	@Override
-	public void create(String mappings)
-	{
-		lastRequest = httpPut;
-		httpPut.setPath(indexName);
-		httpPut.setRequestBody(mappings);
-		execute();
-		if (!isSuccess()) {
-			throw createIndexException();
-		}
-	}
-
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * nl.naturalis.nda.elasticsearch.client.Index#createType(java.lang.String,
 	 * java.lang.String)
@@ -366,6 +348,14 @@ public class IndexREST implements Index {
 
 	@Override
 	public void deleteWhere(String type, String field, String value)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void create(int numShards, int numReplicas)
 	{
 		// TODO Auto-generated method stub
 		

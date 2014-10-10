@@ -1,12 +1,10 @@
 package nl.naturalis.nda.elasticsearch.client;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.domainobject.util.ExceptionUtil;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -31,8 +29,6 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
@@ -63,8 +59,8 @@ public class IndexNative implements Index {
 
 
 	/**
-	 * Returns {@code Client} configured using
-	 * /src/main/resources/elasticsearch.yml
+	 * Returns {@code Client} configured using elasticsearch.yml, which should
+	 * be on classpath.
 	 */
 	public static final Client getDefaultClient()
 	{
@@ -72,11 +68,11 @@ public class IndexNative implements Index {
 			logger.info("Initializing ElasticSearch session");
 			// localClient = nodeBuilder().node().client();
 			// TODO: softcode cluster name
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
-			localClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-			ClusterStatsRequest request = new ClusterStatsRequest();
-			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			logger.debug("Cluster stats: " + response.toString());
+			//Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
+			localClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+			//ClusterStatsRequest request = new ClusterStatsRequest();
+			//ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
+			//logger.debug("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}
@@ -103,7 +99,7 @@ public class IndexNative implements Index {
 
 
 	/**
-	 * reate an instance manipulating the specified index using the specified
+	 * Create an instance manipulating the specified index using the specified
 	 * client.
 	 * 
 	 * @param client The client
@@ -164,25 +160,23 @@ public class IndexNative implements Index {
 	}
 
 
+	@Override
 	public void create()
 	{
-		logger.info("Creating index " + indexName);
-		CreateIndexRequest request = new CreateIndexRequest(indexName);
-		CreateIndexResponse response = admin.create(request).actionGet();
-		if (!response.isAcknowledged()) {
-			throw new IndexException("Failed to create index " + indexName);
-		}
-		logger.info("Index created");
+		create(1, 0);
 	}
 
 
 	@Override
-	public void create(String mappings)
+	public void create(int numShards, int numReplicas)
 	{
 		logger.info("Creating index " + indexName);
-		CreateIndexRequest request = new CreateIndexRequest(indexName);
-		request.mapping(indexName, mappings);
-		CreateIndexResponse response = admin.create(request).actionGet();
+		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
+		HashMap<String, Object> settings = new HashMap<String, Object>();
+		settings.put("number_of_shards", numShards);
+		settings.put("number_of_replicas", numReplicas);
+		request.setSettings(settings);
+		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
 			throw new IndexException("Failed to create index " + indexName);
 		}

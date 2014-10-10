@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.load;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 
+import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,12 @@ public class NDASchemaManager {
 	{
 		index.delete();
 		index.create();
+		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
+		index.addType(LUCENE_TYPE_TAXON, mapping);
+		mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
+		index.addType(LUCENE_TYPE_SPECIMEN, mapping);
+		mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
 		logger.info(index.describe());
 	}
 }

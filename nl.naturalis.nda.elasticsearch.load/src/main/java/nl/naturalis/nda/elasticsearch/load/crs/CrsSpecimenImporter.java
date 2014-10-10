@@ -69,7 +69,7 @@ public class CrsSpecimenImporter {
 			index.getClient().close();
 		}
 		logger.info("Ready");
-		
+
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
@@ -83,6 +83,7 @@ public class CrsSpecimenImporter {
 
 	private final Index index;
 	private final int bulkRequestSize;
+	private final int maxNumBatches;
 	private final boolean forceRestart;
 
 
@@ -91,6 +92,9 @@ public class CrsSpecimenImporter {
 		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
+
+		prop = System.getProperty("maxNumBatches", "0");
+		maxNumBatches = Integer.parseInt(prop);
 
 		prop = System.getProperty("forceRestart", "true");
 		forceRestart = Boolean.parseBoolean(prop);
@@ -152,6 +156,9 @@ public class CrsSpecimenImporter {
 			do {
 				logger.info("Processing batch " + batch);
 				resToken = processXML(batch++, resToken);
+				if (batch > maxNumBatches) {
+					break;
+				}
 			} while (resToken != null);
 
 			logger.info("Deleting resumption token file");

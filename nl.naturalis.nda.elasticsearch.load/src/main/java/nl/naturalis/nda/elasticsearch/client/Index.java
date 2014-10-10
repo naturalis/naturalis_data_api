@@ -3,8 +3,8 @@ package nl.naturalis.nda.elasticsearch.client;
 import java.util.List;
 
 /**
- * Interface defining methods for classes representing an ElasticSearch index,
- * presumably by wrapping an ElasticSearch client.
+ * Interface defining methods for classes operating on a single ElasticSearch
+ * index.
  * 
  * @author ayco_holleman
  * 
@@ -19,7 +19,6 @@ public interface Index {
 	boolean exists();
 
 
-
 	/**
 	 * Whether or not a mapping exists for the specified document type.
 	 * 
@@ -28,6 +27,7 @@ public interface Index {
 	 * @return @return {@code true} if yes, {@code false} if not.
 	 */
 	boolean typeExists(String type);
+
 
 	/**
 	 * Describe the index (i.e. its mapping).
@@ -48,19 +48,18 @@ public interface Index {
 
 
 	/**
-	 * Create the index.
+	 * Creates an empty index with one shard and zero replicas.
 	 */
 	void create();
 
 
 	/**
-	 * Create the index along with the specified mappings
+	 * Creates an empty index with the specified number of shards and replicas
 	 * 
-	 * @param mappings The mappings to create in the index.
-	 * 
+	 * @param numShards The number of shards
+	 * @param numReplicas The number of replicas
 	 */
-	void create(String mappings);
-
+	void create(int numShards, int numReplicas);
 
 	/**
 	 * Delete the index and all its types and data from the cluster.
@@ -81,6 +80,13 @@ public interface Index {
 	void addType(String name, String mapping);
 
 
+	/**
+	 * Deletes the specified type (along with all documents of that type) from
+	 * the index.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	boolean deleteType(String name);
 
 
@@ -115,8 +121,16 @@ public interface Index {
 	boolean deleteDocument(String type, String id);
 
 
-
+	/**
+	 * Deletes all documents from the specified document type where the
+	 * specified field has the specified value.
+	 * 
+	 * @param type
+	 * @param field
+	 * @param value
+	 */
 	void deleteWhere(String type, String field, String value);
+
 
 	/**
 	 * Add a new document of the specified type to the index.
@@ -189,6 +203,5 @@ public interface Index {
 	 *            the objects do not have a relational parent.
 	 */
 	void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds);
-
 
 }

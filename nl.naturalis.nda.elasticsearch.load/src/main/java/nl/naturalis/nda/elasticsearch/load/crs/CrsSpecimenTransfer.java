@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 public class CrsSpecimenTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
+	
 	public static ESSpecimen transfer(Element recordElement)
 	{
 		final ESSpecimen specimen = new ESSpecimen();
@@ -30,6 +31,7 @@ public class CrsSpecimenTransfer {
 		specimen.setSourceSystemId(val(recordElement, "abcd:UnitID"));
 		specimen.setUnitID(val(recordElement, "abcd:UnitID"));
 		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
+		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));
 		specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));
 		specimen.setRecordBasis(val(recordElement, "abcd:RecordBasis"));
 		specimen.setKindOfUnit(val(recordElement, "abcd:KindOfUnit"));
@@ -44,6 +46,11 @@ public class CrsSpecimenTransfer {
 		specimen.setMultiMediaPublic(s != null && s.trim().equals("1"));
 		s = val(recordElement, "abcd:FromCaptivity");
 		specimen.setFromCaptivity(s != null && s.trim().equals("1"));
+		s = val(recordElement, "abcd:PreparationType");
+		if(s == null) {
+			s = val(recordElement, "abcd:SpecimenMount");
+		}
+		specimen.setPreparationType(s);
 		List<Element> determinationElements = DOMUtil.getChildren(recordElement, "ncrsDetermination");
 		for (Element e : determinationElements) {
 			specimen.addIndentification(transferIdentification(e));

@@ -33,8 +33,10 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public static void main(String[] args) throws Exception
 	{
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+		
 		String rebuild = System.getProperty("rebuild", "false");
 		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
 		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
@@ -45,7 +47,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		else {
 			index.deleteWhere(LUCENE_TYPE, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 		}
-		Thread.sleep(2000);
+		
 		try {
 			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
 			importer.importCsvFiles();
@@ -226,6 +228,13 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setRecordBasis("PreservedSpecimen");
 		specimen.setAssemblageID(ID_PREFIX + get(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(get(record, CsvField.PLANTDESC.ordinal()));
+		String notOnline = get(record, CsvField.NOTONLINE.ordinal());
+		if(notOnline == null || notOnline.equals("0")) {
+			specimen.setObjectPublic(true);
+		}
+		else {
+			specimen.setObjectPublic(false);
+		}
 		specimen.setGatheringEvent(getGatheringEvent(record));
 		specimen.addIndentification(getSpecimenIdentification(record));
 		return Arrays.asList(specimen);

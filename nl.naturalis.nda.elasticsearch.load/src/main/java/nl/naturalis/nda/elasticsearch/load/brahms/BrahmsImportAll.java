@@ -27,7 +27,7 @@ public class BrahmsImportAll {
 		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
 		
 		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_SPECIMEN);
 			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");

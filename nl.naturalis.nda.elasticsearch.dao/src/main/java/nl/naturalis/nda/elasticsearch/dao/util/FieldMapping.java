@@ -9,10 +9,12 @@ public class FieldMapping {
 
     private final String fieldName;
     private final Float boostValue;
+    private final String value;
 
-    public FieldMapping(String fieldName, Float boostValue) {
+    public FieldMapping(String fieldName, Float boostValue, String value) {
         this.fieldName = fieldName;
         this.boostValue = boostValue;
+        this.value = value;
     }
 
     public String getFieldName() {
@@ -21,5 +23,9 @@ public class FieldMapping {
 
     public Float getBoostValue() {
         return boostValue;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

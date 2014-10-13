@@ -106,17 +106,17 @@ public class BioportalSpecimenDao extends AbstractDao {
      * Specimen document. These are listed in the Remarks below. Name resolution is used to find additional specimens.
      * Search results must be grouped according to the scientific name of the specimen.
      * <p/>
-     * 1. identifications.defaultClassification.kingdom
-     * 2. identifications.defaultClassification.phylum
-     * 3. identifications.defaultClassification.className
-     * 4. identifications.defaultClassification.order
-     * 5. identifications.defaultClassification.family
-     * 6. identifications.systemClassification.name
-     * 7. identifications.scientificName.genusOrMonomial
-     * 8. identifications.scientificName.acceptedName.specificEpithet
-     * 9. identifications.scientificName.acceptedName.infraspecificEpithet
-     * 10. gatheringEvent.gatheringAgents.fullName
-     * 11. gatheringEvent.gatheringAgents.dateTimeBegin
+     * 1. identifications.defaultClassification.kingdom                          <br/>
+     * 2. identifications.defaultClassification.phylum                           <br/>
+     * 3. identifications.defaultClassification.className                        <br/>
+     * 4. identifications.defaultClassification.order                            <br/>
+     * 5. identifications.defaultClassification.family                           <br/>
+     * 6. identifications.systemClassification.name                              <br/>
+     * 7. identifications.scientificName.genusOrMonomial                         <br/>
+     * 8. identifications.scientificName.acceptedName.specificEpithet            <br/>
+     * 9. identifications.scientificName.acceptedName.infraspecificEpithet       <br/>
+     * 10. gatheringEvent.gatheringAgents.fullName                               <br/>
+     * 11. gatheringEvent.gatheringAgents.dateTimeBegin                          <br/>
      * 12. gatheringEvent.siteCoordinates.point
      *
      * @param searchTerm The search term to match
@@ -192,8 +192,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     /**
      * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
-     * of
-     * fields to match the search term against, the fields to query and the values to look for are specified as
+     * of fields to match the search term against, the fields to query and the values to look for are specified as
      * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
      * {@link #specimenNameSearch(String, String)} method. Name resolution is used to find additional specimens.
      * Specimens must be grouped
@@ -221,22 +220,22 @@ public class BioportalSpecimenDao extends AbstractDao {
         BoolQueryBuilder boolQueryBuilder = boolQuery();
         Operator operator = getOperator(params);
 
-        Set<String> paramKeys = params.keySet();
-        for (String paramKey : paramKeys) {
-            String searchValue = params.getParam(paramKey);
-
-            if (specimenSearchFieldNames.contains(paramKey)) {
-                Float boostValueForField = getSearchParamFieldMapping().getBoostValueForField(paramKey);
-                addFieldQueryToBoolQuery(paramKey, boolQueryBuilder, operator, searchValue, boostValueForField);
-            } else {
-                List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForField(paramKey);
-                for (FieldMapping field : fields) {
-                    addFieldQueryToBoolQuery(field.getFieldName(), boolQueryBuilder, operator, searchValue, field.getBoostValue());
-                }
+        List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
+        for (FieldMapping field : fields) {
+            Float boostValue = field.getBoostValue();
+            MatchQueryBuilder queryBuilder = matchQuery(field.getFieldName(), field.getValue());
+            if (boostValue != null) {
+                queryBuilder.boost(boostValue);
             }
 
-            //TODO Geopoint afhandelen
+            if (operator == AND) {
+                boolQueryBuilder.must(queryBuilder);
+            } else {
+                boolQueryBuilder.should(queryBuilder);
+            }
         }
+
+        //TODO Geopoint afhandelen
 
         SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
                 .setQuery(filteredQuery(boolQueryBuilder, null))
@@ -248,8 +247,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     /**
      * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
-     * of
-     * fields to match the search term against, the fields to query and the values to look for are specified as
+     * of fields to match the search term against, the fields to query and the values to look for are specified as
      * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
      * {@link #specimenSearch(String, String)} method.
      * N.B. Name resolution is not used in this method
@@ -274,14 +272,12 @@ public class BioportalSpecimenDao extends AbstractDao {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
         //todo needs to be implemented
-
-        return responseToSpecimenResultGroupSet(null);
+return null;
     }
 
     /**
      * Retrieves a single Specimen by its unitID. A specimen retrieved through this method is always retrieved through
-     * a
-     * REST link in the response from either {@link #specimenNameSearch(String, String)} or
+     * a REST link in the response from either {@link #specimenNameSearch(String, String)} or
      * {@link #specimenSearch(String, String)}. This method is aware of the result set generated by those methods and
      * is therefore capable of generating REST links to the previous and next
      * specimen in the result set. All parameters passed to specimenNameSearch or specimenSearch will also be passed to
@@ -317,19 +313,6 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
     // ==================================================== Helpers ====================================================
-
-    private void addFieldQueryToBoolQuery(String field, BoolQueryBuilder boolQueryBuilder, Operator operator, String searchValue, Float boostValue) {
-        MatchQueryBuilder queryBuilder = matchQuery(field, searchValue);
-        if (boostValue != null) {
-            queryBuilder.boost(boostValue);
-        }
-
-        if (operator == AND) {
-            boolQueryBuilder.must(queryBuilder);
-        } else {
-            boolQueryBuilder.should(queryBuilder);
-        }
-    }
 
     /**
      * Get the operator from the query params.

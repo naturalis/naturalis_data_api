@@ -36,8 +36,19 @@ public class SearchParamFieldMapping {
      * @param field a specimen field or alias
      * @return a list of all found mappings, including their boost value
      */
-    public List<FieldMapping> getSpecimenMappingForField(String field) {
-        return getMappingForField(field, specimenProperties);
+    public List<FieldMapping> getSpecimenMappingForField(String field, String value) {
+        return getMappingForField(field, value, specimenProperties);
+    }
+
+    /**
+     * Calls {@link #getSpecimenMappingForField(String, String)} for all given values and aggregates the results.
+     */
+    public List<FieldMapping> getSpecimenMappingForFields(QueryParams queryParams) {
+        List<FieldMapping> fieldMappings = new ArrayList<>();
+        for (String paramKey : queryParams.keySet()) {
+            fieldMappings.addAll(getMappingForField(paramKey, queryParams.getParam(paramKey), specimenProperties));
+        }
+        return fieldMappings;
     }
 
     /**
@@ -46,8 +57,8 @@ public class SearchParamFieldMapping {
      * @param field a taxon field or alias
      * @return a list of all found mappings, including their boost value
      */
-    public List<FieldMapping> getTaxonMappingForField(String field) {
-        return getMappingForField(field, taxonProperties);
+    public List<FieldMapping> getTaxonMappingForField(String field, String value) {
+        return getMappingForField(field, value, taxonProperties);
     }
 
     /**
@@ -56,8 +67,8 @@ public class SearchParamFieldMapping {
      * @param field a multimedia field or alias
      * @return a list of all found mappings, including their boost value
      */
-    public List<FieldMapping> getMultimediaMappingForField(String field) {
-        return getMappingForField(field, multimediaProperties);
+    public List<FieldMapping> getMultimediaMappingForField(String field, String value) {
+        return getMappingForField(field, value, multimediaProperties);
     }
 
     /**
@@ -75,14 +86,14 @@ public class SearchParamFieldMapping {
         return null;
     }
 
-    private List<FieldMapping> getMappingForField(String field, Properties properties) {
+    private List<FieldMapping> getMappingForField(String field, String value, Properties properties) {
         List<FieldMapping> mappings = new ArrayList<>();
 
         String property = properties.getProperty(field);
         if (property != null && !property.isEmpty()) {
             String[] esFields = property.split(",");
             for (String esField : esFields) {
-                mappings.add(new FieldMapping(esField, getBoostValueForField(esField)));
+                mappings.add(new FieldMapping(esField, getBoostValueForField(esField), value));
             }
         }
 

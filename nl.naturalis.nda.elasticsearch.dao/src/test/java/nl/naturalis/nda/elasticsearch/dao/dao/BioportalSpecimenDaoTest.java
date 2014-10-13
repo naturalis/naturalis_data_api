@@ -6,7 +6,6 @@ import nl.naturalis.nda.search.ResultGroupSet;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.test.ElasticsearchIntegrationTest;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,12 +32,6 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
     }
 
     @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    @Override
     public Settings indexSettings() {
         ImmutableSettings.Builder builder = ImmutableSettings.builder().loadFromClasspath("test-settings.json");
         return builder.build();
@@ -53,8 +46,8 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
                 .execute().actionGet();
 
         String name = "Meijer, W.";
-        String document1Source = documentCreator.createSource("L  0191413", name);
-        String document2Source = documentCreator.createSource("L  01914100", name);
+        String document1Source = documentCreator.createSpecimenSource("L  0191413", name);
+        String document2Source = documentCreator.createSpecimenSource("L  01914100", name);
         client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
         client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
 
@@ -79,8 +72,8 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
                 .execute().actionGet();
 
         String name = "Meijer, W.";
-        String document1Source = documentCreator.createSource("L  0191413", name);
-        String document2Source = documentCreator.createSource("L  01914100", name);
+        String document1Source = documentCreator.createSpecimenSource("L  0191413", name);
+        String document2Source = documentCreator.createSpecimenSource("L  01914100", name);
         client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
         client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
 

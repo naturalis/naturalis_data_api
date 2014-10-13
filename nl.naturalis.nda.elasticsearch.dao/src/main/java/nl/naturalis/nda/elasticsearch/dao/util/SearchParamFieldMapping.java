@@ -17,6 +17,7 @@ public class SearchParamFieldMapping {
     public static final String BOOST_SUFFIX = ".boost";
     public static final String NESTED_SUFFIX = ".nested";
     private static final List<String> EXCLUDED_PARAMS = new ArrayList<>();
+
     static {
         EXCLUDED_PARAMS.add("_search");
         EXCLUDED_PARAMS.add("_fields");
@@ -45,46 +46,37 @@ public class SearchParamFieldMapping {
     }
 
     /**
-     * Get the mapping for a specimen field or alias.
-     *
-     * @param field a specimen field or alias
-     * @return a list of all found mappings, including their boost value
+     * Calls {@link #getMappingsForFields(QueryParams, java.util.Properties)} with the specimen properties for all
+     * given values and aggregates the results.
      */
-    public List<FieldMapping> getSpecimenMappingForField(String field, String value) {
-        return getMappingForField(field, value, specimenProperties);
+    public List<FieldMapping> getSpecimenMappingForFields(QueryParams queryParams) {
+        return getMappingsForFields(queryParams, specimenProperties);
     }
 
     /**
-     * Calls {@link #getSpecimenMappingForField(String, String)} for all given values and aggregates the results.
+     * Calls {@link #getMappingsForFields(QueryParams, java.util.Properties)} with the taxon properties for all
+     * given values and aggregates the results.
      */
-    public List<FieldMapping> getSpecimenMappingForFields(QueryParams queryParams) {
+    public List<FieldMapping> getTaxonMappingForFields(QueryParams queryParams) {
+        return getMappingsForFields(queryParams, taxonProperties);
+    }
+
+    /**
+     * Calls {@link #getMappingsForFields(QueryParams, java.util.Properties)} with the multimedia properties for all
+     * given values and aggregates the results.
+     */
+    public List<FieldMapping> getMultimediaMappingForFields(QueryParams queryParams) {
+        return getMappingsForFields(queryParams, multimediaProperties);
+    }
+
+    private List<FieldMapping> getMappingsForFields(QueryParams queryParams, Properties properties) {
         List<FieldMapping> fieldMappings = new ArrayList<>();
         for (String paramKey : queryParams.keySet()) {
             if (!EXCLUDED_PARAMS.contains(paramKey)) {
-                fieldMappings.addAll(getMappingForField(paramKey, queryParams.getParam(paramKey), specimenProperties));
+                fieldMappings.addAll(getMappingForField(paramKey, queryParams.getParam(paramKey), properties));
             }
         }
         return fieldMappings;
-    }
-
-    /**
-     * Get the mapping for a taxon field or alias.
-     *
-     * @param field a taxon field or alias
-     * @return a list of all found mappings, including their boost value
-     */
-    public List<FieldMapping> getTaxonMappingForField(String field, String value) {
-        return getMappingForField(field, value, taxonProperties);
-    }
-
-    /**
-     * Get the mapping for a multimedia field or alias.
-     *
-     * @param field a multimedia field or alias
-     * @return a list of all found mappings, including their boost value
-     */
-    public List<FieldMapping> getMultimediaMappingForField(String field, String value) {
-        return getMappingForField(field, value, multimediaProperties);
     }
 
     /**

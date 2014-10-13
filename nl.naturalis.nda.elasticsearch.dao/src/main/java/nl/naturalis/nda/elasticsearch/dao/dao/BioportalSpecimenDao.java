@@ -19,6 +19,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
@@ -247,27 +248,9 @@ public class BioportalSpecimenDao extends AbstractDao {
      * @return
      */
     public ResultGroupSet<Specimen, String> specimenExtendedSearch(QueryParams params) {
-        String sortField = getScoreFieldFromQueryParams(params);
-        FieldSortBuilder fieldSort = fieldSort(sortField);
-
-        BoolQueryBuilder boolQueryBuilder = boolQuery();
-        Operator operator = getOperator(params);
-
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
-        for (FieldMapping field : fields) {
-            extendQueryWithField(boolQueryBuilder, operator, field);
-        }
 
-        //TODO Geopoint afhandelen
-
-        SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE)
-                .setQuery(filteredQuery(boolQueryBuilder, null))
-                .addSort(fieldSort);
-
-        logger.info(searchRequestBuilder.toString());
-
-        SearchResponse searchResponse = searchRequestBuilder
-                .execute().actionGet();
+        SearchResponse searchResponse = executeExtendedSearch(params, fields, SPECIMEN_TYPE);
 
         return responseToSpecimenResultGroupSet(searchResponse);
     }
@@ -311,40 +294,6 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     // ==================================================== Helpers ====================================================
 
-    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
-        Float boostValue = field.getBoostValue();
-        MatchQueryBuilder matchQueryBuilder = matchQuery(field.getFieldName(), field.getValue());
-        if (boostValue != null) {
-            matchQueryBuilder.boost(boostValue);
-        }
-
-        QueryBuilder builder = matchQueryBuilder;
-        if (field.isNested()) {
-            builder = nestedQuery(field.getNestedPath(), matchQueryBuilder);
-        }
-
-        if (operator == AND) {
-            boolQueryBuilder.must(builder);
-        } else {
-            boolQueryBuilder.should(builder);
-        }
-    }
-
-    /**
-     * Get the operator from the query params.
-     *
-     * @param params the query params
-     * @return the operator from the params, if not found {@link Operator#OR} is returned
-     */
-    private Operator getOperator(QueryParams params) {
-        String operatorValue = params.getParam("_andOr");
-        Operator operator = OR;
-        if (operatorValue != null && !operatorValue.isEmpty()) {
-            operator = valueOf(operatorValue);
-        }
-        return operator;
-    }
-
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
         HashMap<String, List<Specimen>> tempMap = new HashMap<>();
@@ -381,15 +330,4 @@ public class BioportalSpecimenDao extends AbstractDao {
         return specimenStringResultGroupSet;
     }
 
-    private String getScoreFieldFromQueryParams(QueryParams params) {
-        List<String> sortParam = params.get("_score");
-        String sortField = "_score";
-        if (sortParam != null && !sortParam.isEmpty()) {
-            String sort = sortParam.get(0);
-            if (sort == null || sort.trim().equalsIgnoreCase("")) {
-                sortField = "_score";
-            }
-        }
-        return sortField;
-    }
 }

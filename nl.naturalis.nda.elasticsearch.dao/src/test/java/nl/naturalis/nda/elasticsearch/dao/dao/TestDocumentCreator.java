@@ -7,7 +7,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
  */
 public class TestDocumentCreator {
 
-    public String createSource(String unitId, String fullname) {
+    public String createSpecimenSource(String unitId, String fullname) {
         return "{" +
                 "\"sourceSystem\" : {" +
                 "\"code\" : \"BRAHMS\"," +
@@ -53,7 +53,7 @@ public class TestDocumentCreator {
                 "\"depthUnitOfMeasurement\" : null," +
                 "\"gatheringPersons\" : [{" +
                 "\"agentText\" : null," +
-                "\"fullName\" : \"Meijer, W.\"," +
+                "\"fullName\" : \"" + fullname + "\"," +
                 "\"organization\" : null" +
                 "}" +
                 "]," +
@@ -134,6 +134,93 @@ public class TestDocumentCreator {
                 "\"remarks\" : null" +
                 "}" +
                 "]" +
+                "}";
+    }
+
+    public String createTaxonSource() {
+        return "{" +
+                "   \"sourceSystem\": {" +
+                "      \"code\": \"COL\"," +
+                "      \"name\": \"Catalogue Of Life\"" +
+                "   }," +
+                "   \"sourceSystemId\": \"4259353\"," +
+                "   \"sourceSystemParentId\": null," +
+                "   \"taxonRank\": null," +
+                "   \"acceptedName\": {" +
+                "      \"fullScientificName\": \"Hyphomonas oceanitis Weiner et al. 1985\"," +
+                "      \"taxonomicStatus\": null," +
+                "      \"genusOrMonomial\": \"Hyphomonas\"," +
+                "      \"subgenus\": null," +
+                "      \"specificEpithet\": \"oceanitis\"," +
+                "      \"infraspecificEpithet\": \"\"," +
+                "      \"infraspecificMarker\": null," +
+                "      \"nameAddendum\": null," +
+                "      \"authorshipVerbatim\": \"Weiner et al. 1985\"," +
+                "      \"author\": null," +
+                "      \"year\": null," +
+                "      \"references\": null," +
+                "      \"experts\": null" +
+                "   }," +
+                "   \"defaultClassification\": {" +
+                "      \"kingdom\": \"Bacteria\"," +
+                "      \"phylum\": \"Proteobacteria\"," +
+                "      \"className\": \"Alphaproteobacteria\"," +
+                "      \"order\": \"Rhodobacterales\"," +
+                "      \"superFamily\": \"\"," +
+                "      \"family\": \"Rhodobacteraceae\"," +
+                "      \"genus\": \"Hyphomonas\"," +
+                "      \"subgenus\": \"\"," +
+                "      \"specificEpithet\": \"oceanitis\"," +
+                "      \"infraspecificEpithet\": \"\"," +
+                "      \"infraspecificRank\": null" +
+                "   }," +
+                "   \"systemClassification\": [" +
+                "      {" +
+                "         \"rank\": \"kingdom\"," +
+                "         \"name\": \"Bacteria\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"phylum\"," +
+                "         \"name\": \"Proteobacteria\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"class\"," +
+                "         \"name\": \"Alphaproteobacteria\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"order\"," +
+                "         \"name\": \"Rhodobacterales\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"superfamily\"," +
+                "         \"name\": \"\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"family\"," +
+                "         \"name\": \"Rhodobacteraceae\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"genus\"," +
+                "         \"name\": \"Hyphomonas\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"subgenus\"," +
+                "         \"name\": \"\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"specificEpithet\"," +
+                "         \"name\": \"oceanitis\"" +
+                "      }," +
+                "      {" +
+                "         \"rank\": \"infraspecificEpithet\"," +
+                "         \"name\": \"\"" +
+                "      }" +
+                "   ]," +
+                "   \"synonyms\": null," +
+                "   \"vernacularNames\": null," +
+                "   \"descriptions\": null," +
+                "   \"references\": null," +
+                "   \"experts\": null" +
                 "}";
     }
 

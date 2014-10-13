@@ -205,9 +205,10 @@ public class BioportalSpecimenDao extends AbstractDao {
      * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
      * of fields to match the search term against, the fields to query and the values to look for are specified as
      * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
-     * {@link #specimenNameSearch(String, String)} method. Name resolution is used to find additional specimens.
-     * Specimens must be grouped
-     * according to their scientific name.
+     * {@link #specimenNameSearch(String, String)} method.
+     * <p/>
+     * Name resolution is used to find additional specimens. Specimens must be grouped according to their scientific
+     * name.
      *
      * @param params A {@link nl.naturalis.nda.elasticsearch.dao.util.QueryParams} object containing:
      *               1. fields ... . A variable number of filters for fields. For example, the
@@ -225,6 +226,36 @@ public class BioportalSpecimenDao extends AbstractDao {
      * @return
      */
     public ResultGroupSet<Specimen, String> specimenExtendedNameSearch(QueryParams params) {
+        // TODO: name resolution, i.e. searching taxons and extends params, OR do a second search with retrieved taxons
+        return specimenExtendedSearch(params);
+
+        // TODO: mark results from name resolution
+    }
+
+    /**
+     * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
+     * of fields to match the search term against, the fields to query and the values to look for are specified as
+     * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
+     * {@link #specimenSearch(String, String)} method.
+     * <p/>
+     * N.B. Name resolution is not used in this method
+     *
+     * @param params A {@link QueryParams} object containing:
+     *               1. fields ... . A variable number of filters for fields. For example, the
+     *               QueryParams object may contain a key “defaultClassification.genus” with a value of “Homo” and a key
+     *               “defaultClassification.specificEpithet” with a value of “sapiens”. Fields must be mapped according
+     *               to the mapping mechanism described above. Thus, if the QueryParams object contains a key “genus”,
+     *               that key must be mapped to the “defaultClassification.genus” field.
+     *               2. _andOr. An enumerated value with “AND” and “OR” as valid values. “AND” means all fields must
+     *               match. “OR” means some fields must match. This is an optional parameter. By default only some
+     *               fields must match.
+     *               3. _sort. The field to sort on. Fields must be mapped according to the mapping mechanism described
+     *               above. Special sort value: “_score” (sort by relevance). In practice sorting is only allowed on
+     *               _score and on identifications.scientificName.fullScientificName. This is an optional parameter. By
+     *               default sorting is done on _score.
+     * @return
+     */
+    public ResultGroupSet<Specimen, String> specimenExtendedSearch(QueryParams params) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
 
@@ -244,36 +275,6 @@ public class BioportalSpecimenDao extends AbstractDao {
                 .execute().actionGet();
 
         return responseToSpecimenResultGroupSet(searchResponse);
-    }
-
-    /**
-     * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
-     * of fields to match the search term against, the fields to query and the values to look for are specified as
-     * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
-     * {@link #specimenSearch(String, String)} method.
-     * N.B. Name resolution is not used in this method
-     *
-     * @param params A {@link QueryParams} object containing:
-     *               1. fields ... . A variable number of filters for fields. For example, the
-     *               QueryParams object may contain a key “defaultClassification.genus” with a value of “Homo” and a
-     *               key
-     *               “defaultClassification.specificEpithet” with a value of “sapiens”. Fields must be mapped according
-     *               to the mapping mechanism described above. Thus, if the QueryParams object contains a key “genus”,
-     *               that key must be mapped to the “defaultClassification.genus” field.
-     *               2. _andOr. An enumerated value with “AND” and “OR” as valid values. “AND” means all fields must
-     *               match. “OR” means some fields must match. This is an optional parameter. By default only some
-     *               fields must match.
-     *               3. _sort. The field to sort on. Fields must be mapped according to the mapping mechanism described
-     *               above. Special sort value: “_score” (sort by relevance). In practice sorting is only allowed on
-     *               _score and on identifications.scientificName.fullScientificName. This is an optional parameter. By
-     *               default sorting is done on _score.
-     * @return
-     */
-    public ResultGroupSet<Specimen, String> specimenExtendedSearch(QueryParams params) {
-        String sortField = getScoreFieldFromQueryParams(params);
-        FieldSortBuilder fieldSort = fieldSort(sortField);
-        //todo needs to be implemented
-return null;
     }
 
     /**

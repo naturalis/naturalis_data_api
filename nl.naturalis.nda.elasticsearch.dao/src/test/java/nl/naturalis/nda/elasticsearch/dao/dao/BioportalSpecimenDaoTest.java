@@ -45,7 +45,7 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
     }
 
     @Test
-    public void simpleSearch() throws Exception {
+    public void testExtendedNameSearch_AND_query() throws Exception {
         createIndex(INDEX_NAME);
 
         client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
@@ -69,6 +69,33 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
 
         assertEquals(1, result.getTotalSize());
     }
+
+    @Test
+    public void testExtendedNameSearch_OR_query() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping())
+                .execute().actionGet();
+
+        String name = "Meijer, W.";
+        String document1Source = documentCreator.createSource("L  0191413", name);
+        String document2Source = documentCreator.createSource("L  01914100", name);
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("unitID", "L  0191413");
+        params.add("gatheringEvent.gatheringPersons.fullName", name);
+        params.add("_andOr", "OR");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+
+        assertEquals(2, result.getTotalSize());
+    }
+
 
     private String getMapping() throws IOException {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();

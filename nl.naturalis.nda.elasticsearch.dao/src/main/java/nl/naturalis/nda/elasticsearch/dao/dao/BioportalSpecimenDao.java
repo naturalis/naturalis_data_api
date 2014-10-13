@@ -9,6 +9,7 @@ import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -17,27 +18,17 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class BioportalSpecimenDao extends AbstractDao {
@@ -269,9 +260,13 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         //TODO Geopoint afhandelen
 
-        SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
+        SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE)
                 .setQuery(filteredQuery(boolQueryBuilder, null))
-                .addSort(fieldSort)
+                .addSort(fieldSort);
+
+        logger.info(searchRequestBuilder.toString());
+
+        SearchResponse searchResponse = searchRequestBuilder
                 .execute().actionGet();
 
         return responseToSpecimenResultGroupSet(searchResponse);
@@ -318,15 +313,20 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
         Float boostValue = field.getBoostValue();
-        MatchQueryBuilder queryBuilder = matchQuery(field.getFieldName(), field.getValue());
+        MatchQueryBuilder matchQueryBuilder = matchQuery(field.getFieldName(), field.getValue());
         if (boostValue != null) {
-            queryBuilder.boost(boostValue);
+            matchQueryBuilder.boost(boostValue);
+        }
+
+        QueryBuilder builder = matchQueryBuilder;
+        if (field.isNested()) {
+            builder = nestedQuery(field.getNestedPath(), matchQueryBuilder);
         }
 
         if (operator == AND) {
-            boolQueryBuilder.must(queryBuilder);
+            boolQueryBuilder.must(builder);
         } else {
-            boolQueryBuilder.should(queryBuilder);
+            boolQueryBuilder.should(builder);
         }
     }
 

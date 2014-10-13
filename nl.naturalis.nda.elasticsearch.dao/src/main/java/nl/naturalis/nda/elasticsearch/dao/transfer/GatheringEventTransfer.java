@@ -23,36 +23,38 @@ public class GatheringEventTransfer {
     public static GatheringEvent transfer(ESGatheringEvent esGatheringEvent) {
         GatheringEvent gatheringEvent = new GatheringEvent();
 
-        gatheringEvent.setProjectTitle(esGatheringEvent.getProjectTitle());
-        gatheringEvent.setWorldRegion(esGatheringEvent.getWorldRegion());
-        gatheringEvent.setContinent(esGatheringEvent.getContinent());
-        gatheringEvent.setCountry(esGatheringEvent.getCountry());
-        gatheringEvent.setIso3166Code(esGatheringEvent.getIso3166Code());
-        gatheringEvent.setProvinceState(esGatheringEvent.getProvinceState());
-        gatheringEvent.setIsland(esGatheringEvent.getIsland());
-        gatheringEvent.setLocality(esGatheringEvent.getLocality());
-        gatheringEvent.setCity(esGatheringEvent.getCity());
-        gatheringEvent.setSublocality(esGatheringEvent.getSublocality());
-        gatheringEvent.setLocalityText(esGatheringEvent.getLocalityText());
-        gatheringEvent.setMethod(esGatheringEvent.getMethod());
-        gatheringEvent.setAltitude(esGatheringEvent.getAltitude());
-        gatheringEvent.setAltitudeUnifOfMeasurement(esGatheringEvent.getAltitudeUnifOfMeasurement());
-        gatheringEvent.setDepth(esGatheringEvent.getDepth());
-        gatheringEvent.setDepthUnitOfMeasurement(esGatheringEvent.getDepthUnitOfMeasurement());
-        gatheringEvent.setDateTimeBegin(esGatheringEvent.getDateTimeBegin());
-        gatheringEvent.setDateTimeEnd(esGatheringEvent.getDateTimeEnd());
+        if (esGatheringEvent != null) {
+            gatheringEvent.setProjectTitle(esGatheringEvent.getProjectTitle());
+            gatheringEvent.setWorldRegion(esGatheringEvent.getWorldRegion());
+            gatheringEvent.setContinent(esGatheringEvent.getContinent());
+            gatheringEvent.setCountry(esGatheringEvent.getCountry());
+            gatheringEvent.setIso3166Code(esGatheringEvent.getIso3166Code());
+            gatheringEvent.setProvinceState(esGatheringEvent.getProvinceState());
+            gatheringEvent.setIsland(esGatheringEvent.getIsland());
+            gatheringEvent.setLocality(esGatheringEvent.getLocality());
+            gatheringEvent.setCity(esGatheringEvent.getCity());
+            gatheringEvent.setSublocality(esGatheringEvent.getSublocality());
+            gatheringEvent.setLocalityText(esGatheringEvent.getLocalityText());
+            gatheringEvent.setMethod(esGatheringEvent.getMethod());
+            gatheringEvent.setAltitude(esGatheringEvent.getAltitude());
+            gatheringEvent.setAltitudeUnifOfMeasurement(esGatheringEvent.getAltitudeUnifOfMeasurement());
+            gatheringEvent.setDepth(esGatheringEvent.getDepth());
+            gatheringEvent.setDepthUnitOfMeasurement(esGatheringEvent.getDepthUnitOfMeasurement());
+            gatheringEvent.setDateTimeBegin(esGatheringEvent.getDateTimeBegin());
+            gatheringEvent.setDateTimeEnd(esGatheringEvent.getDateTimeEnd());
 
-        List<Agent> gatheringAgents = new ArrayList<>();
-        if (esGatheringEvent.getGatheringOrganizations() != null) {
-            gatheringAgents.addAll(esGatheringEvent.getGatheringOrganizations());
-        }
-        if (esGatheringEvent.getGatheringPersons() != null) {
-            gatheringAgents.addAll(esGatheringEvent.getGatheringPersons());
-        }
-        gatheringEvent.setGatheringAgents(gatheringAgents);
+            List<Agent> gatheringAgents = new ArrayList<>();
+            if (esGatheringEvent.getGatheringOrganizations() != null) {
+                gatheringAgents.addAll(esGatheringEvent.getGatheringOrganizations());
+            }
+            if (esGatheringEvent.getGatheringPersons() != null) {
+                gatheringAgents.addAll(esGatheringEvent.getGatheringPersons());
+            }
+            gatheringEvent.setGatheringAgents(gatheringAgents);
 
-        gatheringEvent.setSiteCoordinates(GatheringSiteCoordinatesTransfer.transfer(esGatheringEvent
-                                                                                            .getSiteCoordinates()));
+            gatheringEvent.setSiteCoordinates(GatheringSiteCoordinatesTransfer.transfer(esGatheringEvent
+                    .getSiteCoordinates()));
+        }
 
         return gatheringEvent;
     }

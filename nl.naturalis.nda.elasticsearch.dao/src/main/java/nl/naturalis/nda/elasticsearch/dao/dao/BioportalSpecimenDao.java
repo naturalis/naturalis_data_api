@@ -22,11 +22,22 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class BioportalSpecimenDao extends AbstractDao {
@@ -222,17 +233,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         for (FieldMapping field : fields) {
-            Float boostValue = field.getBoostValue();
-            MatchQueryBuilder queryBuilder = matchQuery(field.getFieldName(), field.getValue());
-            if (boostValue != null) {
-                queryBuilder.boost(boostValue);
-            }
-
-            if (operator == AND) {
-                boolQueryBuilder.must(queryBuilder);
-            } else {
-                boolQueryBuilder.should(queryBuilder);
-            }
+            extendQueryWithField(boolQueryBuilder, operator, field);
         }
 
         //TODO Geopoint afhandelen
@@ -313,6 +314,20 @@ return null;
     }
 
     // ==================================================== Helpers ====================================================
+
+    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
+        Float boostValue = field.getBoostValue();
+        MatchQueryBuilder queryBuilder = matchQuery(field.getFieldName(), field.getValue());
+        if (boostValue != null) {
+            queryBuilder.boost(boostValue);
+        }
+
+        if (operator == AND) {
+            boolQueryBuilder.must(queryBuilder);
+        } else {
+            boolQueryBuilder.should(queryBuilder);
+        }
+    }
 
     /**
      * Get the operator from the query params.

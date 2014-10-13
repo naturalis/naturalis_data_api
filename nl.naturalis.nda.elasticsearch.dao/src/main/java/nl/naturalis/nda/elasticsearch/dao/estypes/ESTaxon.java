@@ -56,6 +56,15 @@ public class ESTaxon extends NdaTraceableObject {
 	}
 
 
+	public void addReference(Reference reference)
+	{
+		if (references == null) {
+			references = new ArrayList<Reference>();
+		}
+		references.add(reference);
+	}
+
+
 	public void addDescription(TaxonDescription description)
 	{
 		if (descriptions == null) {

@@ -12,7 +12,7 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -23,19 +23,22 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 	public static void main(String[] args) throws Exception
 	{
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+		
 		String dwcaDir = System.getProperty("dwcaDir");
 		String rebuild = System.getProperty("rebuild", "false");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-			index.deleteType(LUCENE_TYPE);
+		
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_TAXON);
 			Thread.sleep(2000);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-			index.addType(LUCENE_TYPE, mapping);
+			index.addType(LUCENE_TYPE_TAXON, mapping);
 		}
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
@@ -82,17 +85,18 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	//@formatter:on
 
 	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
-	static final String LUCENE_TYPE = "Taxon";
 	static final String ID_PREFIX = "COL-";
 
 
 	public CoLTaxonImporter(Index index)
 	{
-		super(index, LUCENE_TYPE);
+		super(index, LUCENE_TYPE_TAXON);
 		setSpecifyId(true);
 		setSpecifyParent(false);
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		setBulkRequestSize(Integer.parseInt(prop));
+		prop = System.getProperty("maxRecords", "0");
+		setMaxRecords(Integer.parseInt(prop));
 	}
 
 

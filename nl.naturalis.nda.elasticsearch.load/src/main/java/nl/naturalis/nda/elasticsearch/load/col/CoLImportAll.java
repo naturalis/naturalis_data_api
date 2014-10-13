@@ -42,10 +42,12 @@ public class CoLImportAll {
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			importer.importCsv(dwcaDir + "/taxa.txt");
-			CoLTaxonSynonymEnricher enricher0 = new CoLTaxonSynonymEnricher(index);
-			enricher0.importCsv(dwcaDir + "/taxa.txt");
-			CoLTaxonVernacularNameEnricher enricher1 = new CoLTaxonVernacularNameEnricher(index);
-			enricher1.importCsv(dwcaDir + "/vernacular.txt");
+			CoLTaxonSynonymEnricher synonymEnricher = new CoLTaxonSynonymEnricher(index);
+			synonymEnricher.importCsv(dwcaDir + "/taxa.txt");
+			CoLTaxonVernacularNameEnricher vernacularNameEnricher = new CoLTaxonVernacularNameEnricher(index);
+			vernacularNameEnricher.importCsv(dwcaDir + "/vernacular.txt");
+			CoLTaxonReferenceEnricher referenceEnricher = new CoLTaxonReferenceEnricher(index);
+			referenceEnricher.importCsv(dwcaDir + "/reference.txt");
 		}
 		finally {
 			index.getClient().close();

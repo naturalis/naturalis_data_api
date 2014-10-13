@@ -10,7 +10,7 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
@@ -23,13 +23,16 @@ public class CoLTaxonVernacularNameEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+		
 		String dwcaDir = System.getProperty("dwcaDir");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
+		
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
 			enricher.importCsv(dwcaDir + "/vernacular.txt");
@@ -37,12 +40,14 @@ public class CoLTaxonVernacularNameEnricher {
 		finally {
 			index.getClient().close();
 		}
+		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonVernacularNameEnricher.class);
 
 	private final Index index;
 	private final int bulkRequestSize;
+	private final int maxRecords;
 
 
 	public CoLTaxonVernacularNameEnricher(Index index)
@@ -50,6 +55,8 @@ public class CoLTaxonVernacularNameEnricher {
 		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
+		prop = System.getProperty("maxRecords", "0");
+		maxRecords = Integer.parseInt(prop);
 	}
 
 
@@ -62,65 +69,75 @@ public class CoLTaxonVernacularNameEnricher {
 
 		List<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
+		
+		int lineNo = 0;
 		int processed = 0;
-		int skipped = 0;
+		int additions = 0;
 		int bad = 0;
 
 		String line;
 		CSVRecord record;
 
 		try {
-			lnr.readLine(); // Skip header		
+			
+			++lineNo;
+			lnr.readLine(); // Skip header				
+			
 			ESTaxon taxon;
 			VernacularName vn;
 			while ((line = lnr.readLine()) != null) {
-				if (++processed % 50000 == 0) {
-					logger.info("Records processed: " + processed);
-				}
+				++lineNo;
 				if (line.trim().length() == 0) {
-					logger.info("Ignoring empty line: " + (processed + 1));
+					logger.info("Ignoring empty line: " + lineNo);
+					continue;
 				}
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
-					taxon = index.get(CoLTaxonImporter.LUCENE_TYPE, id, ESTaxon.class);
+					taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
 					vn = new VernacularName();
 					vn.setName(record.get(CsvField.vernacularName.ordinal()));
 					vn.setLanguage(record.get(CsvField.language.ordinal()));
 					if (taxon == null) {
-						logger.warn("Orphan name: " + vn.getName());
-						continue;
+						logger.debug("Orphan vernacular name: " + vn.getName());
 					}
-					if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(vn)) {
+					else if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(vn)) {
 						taxon.addVernacularName(vn);
-					}
-					else {
-						continue;
-					}
-					objects.add(taxon);
-					ids.add(id);
-					if (objects.size() == bulkRequestSize) {
-						index.saveObjects(CoLTaxonImporter.LUCENE_TYPE, objects, ids);
-						objects.clear();
-						ids.clear();
+						objects.add(taxon);
+						ids.add(id);
+						if (objects.size() == bulkRequestSize) {
+							index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+							additions += bulkRequestSize;
+							objects.clear();
+							ids.clear();
+						}
 					}
 				}
 				catch (Throwable t) {
 					++bad;
-					logger.error("Error at line " + (processed + 1), t);
+					logger.error("Error at line " + lineNo + ": " + t.getMessage());
+					logger.error("Line: [[" + line + "]]");
+					logger.debug("Stack trace: ", t);
+				}
+				++processed;
+				if(maxRecords > 0  && processed >= maxRecords) {
+					break;
+				}
+				if (processed % 50000 == 0) {
+					logger.info("Records processed: " + processed);
 				}
 			}
 			if (!objects.isEmpty()) {
-				index.saveObjects(CoLTaxonImporter.LUCENE_TYPE, objects, ids);
+				index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+				additions += objects.size();
 			}
 		}
 		finally {
 			lnr.close();
 		}
 		logger.info("Records processed: " + processed);
-		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
-		logger.info("Ready");
+		logger.info("Vernacular names added: " + additions);
 	}
 
 }

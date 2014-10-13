@@ -97,9 +97,13 @@ public class BrahmsImportAll {
 			logger.info("No CSV files to process");
 			return;
 		}
+		
+		int maxRecords = Integer.parseInt(System.getProperty("maxRecords", "0"));
 
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
+		specimenImporter.setMaxRecords(maxRecords);
 		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
+		mediaImporter.setMaxRecords(maxRecords);
 
 		for (File f : files) {
 			specimenImporter.importCsv(f.getCanonicalPath());

@@ -1,5 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_SPECIMEN;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
@@ -22,7 +25,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -33,21 +35,21 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public static void main(String[] args) throws Exception
 	{
-		
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		String rebuild = System.getProperty("rebuild", "false");
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-			index.deleteType(LUCENE_TYPE);
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_SPECIMEN);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-			index.addType(LUCENE_TYPE, mapping);
+			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 		}
 		else {
-			index.deleteWhere(LUCENE_TYPE, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 		}
-		
+
 		try {
 			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
 			importer.importCsvFiles();
@@ -163,7 +165,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	//@formatter:on
 
 	static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
-	static final String LUCENE_TYPE = "Specimen";
 	static final String ID_PREFIX = "BRAHMS-";
 
 	private final boolean rename;
@@ -171,12 +172,14 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public BrahmsSpecimensImporter(IndexNative index)
 	{
-		super(index, LUCENE_TYPE);
+		super(index, LUCENE_TYPE_SPECIMEN);
 		this.delimiter = ',';
 		setSpecifyId(true);
 		setSpecifyParent(false);
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		setBulkRequestSize(Integer.parseInt(prop));
+		prop = System.getProperty("maxRecords", "0");
+		setMaxRecords(Integer.parseInt(prop));
 		prop = System.getProperty("rename", "false");
 		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
@@ -229,7 +232,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setAssemblageID(ID_PREFIX + get(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(get(record, CsvField.PLANTDESC.ordinal()));
 		String notOnline = get(record, CsvField.NOTONLINE.ordinal());
-		if(notOnline == null || notOnline.equals("0")) {
+		if (notOnline == null || notOnline.equals("0")) {
 			specimen.setObjectPublic(true);
 		}
 		else {

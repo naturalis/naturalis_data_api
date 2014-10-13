@@ -32,6 +32,7 @@ public abstract class CSVImporter<T> {
 	private final String type;
 
 	private int bulkRequestSize = 1000;
+	private int maxRecords = 0;
 	private boolean specifyId = false;
 	private boolean specifyParent = false;
 
@@ -53,6 +54,7 @@ public abstract class CSVImporter<T> {
 		format = format.withRecordSeparator("\r\n");
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
+		int lineNo = 0;
 		int processed = 0;
 		int skipped = 0;
 		int bad = 0;
@@ -65,14 +67,15 @@ public abstract class CSVImporter<T> {
 		CSVRecord record;
 
 		try {
-			lnr.readLine(); // Skip header		
-
+			
+			++lineNo;
+			lnr.readLine(); // Skip header; TODO: make configurable
+			
 			while ((line = lnr.readLine()) != null) {
-				if (++processed % 50000 == 0) {
-					logger.info("Records processed: " + processed);
-				}
+				++lineNo;
 				if (line.trim().length() == 0) {
-					logger.info("Ignoring empty line: " + (processed + 1));
+					logger.info("Ignoring empty line: " + lineNo);
+					continue;
 				}
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
@@ -100,9 +103,16 @@ public abstract class CSVImporter<T> {
 				}
 				catch (Throwable t) {
 					++bad;
-					logger.error("Error at line " + (processed + 1) + ": " + t.getMessage());
+					logger.error("Error at line " + lineNo + ": " + t.getMessage());
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
+				}
+				++processed;
+				if(maxRecords > 0  && processed >= maxRecords) {
+					break;
+				}
+				if (processed % 50000 == 0) {
+					logger.info("Records processed: " + processed);
 				}
 			}
 			if (!objects.isEmpty()) {
@@ -115,7 +125,6 @@ public abstract class CSVImporter<T> {
 		logger.info("Records processed: " + processed);
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
-		logger.info("Ready");
 	}
 
 
@@ -176,6 +185,18 @@ public abstract class CSVImporter<T> {
 	public void setSpecifyParent(boolean specifyParent)
 	{
 		this.specifyParent = specifyParent;
+	}
+
+
+	public int getMaxRecords()
+	{
+		return maxRecords;
+	}
+
+
+	public void setMaxRecords(int maxRecords)
+	{
+		this.maxRecords = maxRecords;
 	}
 
 }

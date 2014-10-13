@@ -23,6 +23,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -296,6 +297,7 @@ public class IndexNative implements Index {
 	@Override
 	public void deleteWhere(String type, String field, String value)
 	{
+		logger.info(String.format("Deleting %s documents where %s equals \"%s\"", type, field, value));
 		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
 		request.setTypes(type);
 		TermFilterBuilder filter = FilterBuilders.termFilter(field, value);

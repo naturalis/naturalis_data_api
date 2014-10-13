@@ -28,7 +28,7 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -39,19 +39,21 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+		
 		String rebuild = System.getProperty("rebuild", "false");
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-			index.deleteType(LUCENE_TYPE);
+		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-			index.addType(LUCENE_TYPE, mapping);
+			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
 		}
 		else {
-			index.deleteWhere(LUCENE_TYPE, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 		}
-		Thread.sleep(2000);
+		
 		try {
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsvFiles();
@@ -62,21 +64,20 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	}
 
 	static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
-	static final String LUCENE_TYPE = "MultiMediaObject";
 	static final String ID_PREFIX = "BRAHMS-";
 
 	private final boolean rename;
 
-
-
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
-		super(index, LUCENE_TYPE);
+		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
 		this.delimiter = ',';
 		setSpecifyId(true);
 		setSpecifyParent(false);
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		setBulkRequestSize(Integer.parseInt(prop));
+		prop = System.getProperty("maxRecords", "0");
+		setMaxRecords(Integer.parseInt(prop));
 		prop = System.getProperty("rename", "false");
 		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}

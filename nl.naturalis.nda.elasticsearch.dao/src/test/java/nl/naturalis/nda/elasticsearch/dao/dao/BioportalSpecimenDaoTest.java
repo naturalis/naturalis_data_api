@@ -3,22 +3,12 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.test.ElasticsearchIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import static org.hamcrest.Matchers.is;
 
-public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
-
-    private static final String INDEX_NAME = "nda";
+public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
 
     private BioportalSpecimenDao dao;
     private TestDocumentCreator documentCreator;
@@ -31,18 +21,12 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
         documentCreator = new TestDocumentCreator();
     }
 
-    @Override
-    public Settings indexSettings() {
-        ImmutableSettings.Builder builder = ImmutableSettings.builder().loadFromClasspath("test-settings.json");
-        return builder.build();
-    }
-
     @Test
     public void testExtendedNameSearch_AND_query() throws Exception {
         createIndex(INDEX_NAME);
 
         client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
-                .setSource(getMapping())
+                .setSource(getMapping("test-specimen-mapping.json"))
                 .execute().actionGet();
 
         String name = "Meijer, W.";
@@ -68,7 +52,7 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
         createIndex(INDEX_NAME);
 
         client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
-                .setSource(getMapping())
+                .setSource(getMapping("test-specimen-mapping.json"))
                 .execute().actionGet();
 
         String name = "Meijer, W.";
@@ -90,31 +74,5 @@ public class BioportalSpecimenDaoTest extends ElasticsearchIntegrationTest {
     }
 
 
-    private String getMapping() throws IOException {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream is = classloader.getResourceAsStream("test-specimen-mapping.json");
-
-        StringBuilder mappingBuilder = new StringBuilder();
-
-        BufferedReader br = null;
-
-        try {
-            InputStreamReader inputStreamReader = new InputStreamReader(is);
-            br = new BufferedReader(inputStreamReader);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                mappingBuilder.append(line);
-            }
-        } catch (IOException e) {
-            logger.error("Error while reading mapping file.");
-        } finally {
-            if (br != null) {
-                br.close();
-            }
-        }
-
-        return mappingBuilder.toString();
-    }
 }
 

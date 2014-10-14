@@ -7,7 +7,9 @@ import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,7 @@ import java.util.Map;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -39,9 +39,9 @@ public abstract class AbstractDao {
     protected static final String ES_HOST = "localhost";
     protected static final int ES_PORT = 9300;
     protected static final String CLUSTER_NAME_PROPERTY = "cluster.name";
-    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-roberto";
+    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-byron";
     //todo Aparte index maken voor specimen, taxon en multimedia. Deze property wijzigen
-    protected static final String SPECIMEN_INDEX_NAME = "nda";
+    protected static final String INDEX_NAME = "nda";
     //todo Type is na bovenstaande todo wijziginge niet meer nodig
     protected static final String SPECIMEN_TYPE = "Specimen";
     protected static final String TAXON_TYPE = "Taxon";

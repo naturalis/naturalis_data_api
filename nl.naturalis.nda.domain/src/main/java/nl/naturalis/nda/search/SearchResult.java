@@ -5,121 +5,103 @@ import java.util.List;
 
 public class SearchResult<T> {
 
-	private float score;
-	private String actualType;
-	private List<Link> links;
-	private List<MatchInfo<?>> matchInfo;
-	private List<NameResolutionInfo> nameResolutionInfo;
-	private T result;
+    private float score;
+    private String actualType;
+    private List<Link> links;
+    private List<MatchInfo<?>> matchInfo;
+    private List<NameResolutionInfo> nameResolutionInfo;
+    private T result;
 
 
-	public SearchResult()
-	{
-	}
+    public SearchResult() {
+    }
 
 
-	public SearchResult(T result)
-	{
-		this.result = result;
-	}
+    public SearchResult(T result) {
+        this.result = result;
+    }
 
 
-	public void addLink(String rel, String href)
-	{
-		if (links == null) {
-			links = new ArrayList<Link>();
-		}
-		links.add(new Link(rel, href));
-	}
+    public void addLink(String rel, String href) {
+        if (links == null) {
+            links = new ArrayList<Link>();
+        }
+        links.add(new Link(rel, href));
+    }
 
 
-	public void addLink(Link link)
-	{
-		if (links == null) {
-			links = new ArrayList<Link>();
-		}
-		links.add(link);
-	}
+    public void addLink(Link link) {
+        if (links == null) {
+            links = new ArrayList<Link>();
+        }
+        links.add(link);
+    }
 
 
-	public void addMatchInfo(MatchInfo<?> matchInfo)
-	{
-		if (this.matchInfo == null) {
-			this.matchInfo = new ArrayList<MatchInfo<?>>();
-		}
-		this.matchInfo.add(matchInfo);
-	}
+    public void addMatchInfo(MatchInfo<?> matchInfo) {
+        if (this.matchInfo == null) {
+            this.matchInfo = new ArrayList<MatchInfo<?>>();
+        }
+        this.matchInfo.add(matchInfo);
+    }
 
 
-	public float getScore()
-	{
-		return score;
-	}
+    public float getScore() {
+        return score;
+    }
 
 
-	public void setScore(float score)
-	{
-		this.score = score;
-	}
+    public void setScore(float score) {
+        this.score = score;
+    }
 
 
-	public String getActualType()
-	{
-		return actualType;
-	}
+    public String getActualType() {
+        return actualType;
+    }
 
 
-	public void setActualType(String actualType)
-	{
-		this.actualType = actualType;
-	}
+    public void setActualType(String actualType) {
+        this.actualType = actualType;
+    }
 
 
-	public List<MatchInfo<?>> getMatchInfo()
-	{
-		return matchInfo;
-	}
+    public List<MatchInfo<?>> getMatchInfo() {
+        return matchInfo;
+    }
 
 
-	public void setMatchInfo(List<MatchInfo<?>> matchInfo)
-	{
-		this.matchInfo = matchInfo;
-	}
+    public void setMatchInfo(List<MatchInfo<?>> matchInfo) {
+        this.matchInfo = matchInfo;
+    }
 
 
-	public T getResult()
-	{
-		return result;
-	}
+    public T getResult() {
+        return result;
+    }
 
 
-	public void setResult(T result)
-	{
-		this.result = result;
-	}
+    public void setResult(T result) {
+        this.result = result;
+    }
 
 
-	public List<Link> getLinks()
-	{
-		return links;
-	}
+    public List<Link> getLinks() {
+        return links;
+    }
 
 
-	public void setLinks(List<Link> links)
-	{
-		this.links = links;
-	}
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
 
 
-	public List<NameResolutionInfo> getNameResolutionInfo()
-	{
-		return nameResolutionInfo;
-	}
+    public List<NameResolutionInfo> getNameResolutionInfo() {
+        return nameResolutionInfo;
+    }
 
 
-	public void setNameResolutionInfo(List<NameResolutionInfo> nameResolutionInfo)
-	{
-		this.nameResolutionInfo = nameResolutionInfo;
-	}
-
+    public void setNameResolutionInfo(List<NameResolutionInfo> nameResolutionInfo) {
+        this.nameResolutionInfo = nameResolutionInfo;
+    }
 }

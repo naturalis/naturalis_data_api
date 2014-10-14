@@ -4,172 +4,159 @@ import java.util.List;
 
 public class Taxon extends NdaTraceableObject {
 
-	private String taxonRank;
-	private ScientificName acceptedName;
+    private String sourceSystemParentId;
 
-	private DefaultClassification defaultClassification;
-	private List<Monomial> systemClassification;
+    private String taxonRank;
+    private ScientificName acceptedName;
 
-	private List<ScientificName> synonyms;
-	private List<VernacularName> vernacularNames;
-	private List<TaxonDescription> descriptions;
-	private List<Reference> references;
-	private List<Expert> experts;
+    private DefaultClassification defaultClassification;
+    private List<Monomial> systemClassification;
 
-	private List<Specimen> specimens;
+    private List<ScientificName> synonyms;
+    private List<VernacularName> vernacularNames;
+    private List<TaxonDescription> descriptions;
+    private List<Reference> references;
+    private List<Expert> experts;
 
-
-	public String getTaxonRank()
-	{
-		return taxonRank;
-	}
+    private List<Specimen> specimens;
 
 
-	public void setTaxonRank(String taxonRank)
-	{
-		this.taxonRank = taxonRank;
-	}
+    public String getSourceSystemParentId() {
+        return sourceSystemParentId;
+    }
+
+    public void setSourceSystemParentId(String sourceSystemParentId) {
+        this.sourceSystemParentId = sourceSystemParentId;
+    }
+
+    public String getTaxonRank() {
+        return taxonRank;
+    }
 
 
-	/**
-	 * Botanical
-	 * 
-	 * @return
-	 */
-	public ScientificName getAcceptedName()
-	{
-		return acceptedName;
-	}
+    public void setTaxonRank(String taxonRank) {
+        this.taxonRank = taxonRank;
+    }
 
 
-	/**
-	 * Zoological
-	 * 
-	 * @return
-	 */
-	public ScientificName getValidName()
-	{
-		return acceptedName;
-	}
+    /**
+     * Botanical
+     *
+     * @return
+     */
+    public ScientificName getAcceptedName() {
+        return acceptedName;
+    }
 
 
-	/**
-	 * Botanical
-	 */
-	public void setAcceptedName(ScientificName scientificName)
-	{
-		this.acceptedName = scientificName;
-	}
+    /**
+     * Zoological
+     *
+     * @return
+     */
+    public ScientificName getValidName() {
+        return acceptedName;
+    }
 
 
-	/**
-	 * Zoological
-	 */
-	public void setValidName(ScientificName scientificName)
-	{
-		this.acceptedName = scientificName;
-	}
+    /**
+     * Botanical
+     */
+    public void setAcceptedName(ScientificName scientificName) {
+        this.acceptedName = scientificName;
+    }
 
 
-	public DefaultClassification getDefaultClassification()
-	{
-		return defaultClassification;
-	}
+    /**
+     * Zoological
+     */
+    public void setValidName(ScientificName scientificName) {
+        this.acceptedName = scientificName;
+    }
 
 
-	public void setDefaultClassification(DefaultClassification defaultClassification)
-	{
-		this.defaultClassification = defaultClassification;
-	}
+    public DefaultClassification getDefaultClassification() {
+        return defaultClassification;
+    }
 
 
-	/**
-	 * Get the system classification of this taxon, i.e. the as-is
-	 * classification of the source system.
-	 * 
-	 * @return The system classification of this taxon
-	 */
-	public List<Monomial> getSystemClassification()
-	{
-		return systemClassification;
-	}
+    public void setDefaultClassification(DefaultClassification defaultClassification) {
+        this.defaultClassification = defaultClassification;
+    }
 
 
-	public void setSystemClassification(List<Monomial> systemClassification)
-	{
-		this.systemClassification = systemClassification;
-	}
+    /**
+     * Get the system classification of this taxon, i.e. the as-is
+     * classification of the source system.
+     *
+     * @return The system classification of this taxon
+     */
+    public List<Monomial> getSystemClassification() {
+        return systemClassification;
+    }
 
 
-	public List<ScientificName> getSynonyms()
-	{
-		return synonyms;
-	}
+    public void setSystemClassification(List<Monomial> systemClassification) {
+        this.systemClassification = systemClassification;
+    }
 
 
-	public void setSynonyms(List<ScientificName> synonyms)
-	{
-		this.synonyms = synonyms;
-	}
+    public List<ScientificName> getSynonyms() {
+        return synonyms;
+    }
 
 
-	public List<VernacularName> getVernacularNames()
-	{
-		return vernacularNames;
-	}
+    public void setSynonyms(List<ScientificName> synonyms) {
+        this.synonyms = synonyms;
+    }
 
 
-	public void setVernacularNames(List<VernacularName> vernacularNames)
-	{
-		this.vernacularNames = vernacularNames;
-	}
+    public List<VernacularName> getVernacularNames() {
+        return vernacularNames;
+    }
 
 
-	public List<TaxonDescription> getDescriptions()
-	{
-		return descriptions;
-	}
+    public void setVernacularNames(List<VernacularName> vernacularNames) {
+        this.vernacularNames = vernacularNames;
+    }
 
 
-	public void setDescriptions(List<TaxonDescription> descriptions)
-	{
-		this.descriptions = descriptions;
-	}
+    public List<TaxonDescription> getDescriptions() {
+        return descriptions;
+    }
 
 
-	public List<Expert> getExperts()
-	{
-		return experts;
-	}
+    public void setDescriptions(List<TaxonDescription> descriptions) {
+        this.descriptions = descriptions;
+    }
 
 
-	public void setExperts(List<Expert> experts)
-	{
-		this.experts = experts;
-	}
+    public List<Expert> getExperts() {
+        return experts;
+    }
 
 
-	public List<Reference> getReferences()
-	{
-		return references;
-	}
+    public void setExperts(List<Expert> experts) {
+        this.experts = experts;
+    }
 
 
-	public void setReferences(List<Reference> references)
-	{
-		this.references = references;
-	}
+    public List<Reference> getReferences() {
+        return references;
+    }
 
 
-	public List<Specimen> getSpecimens()
-	{
-		return specimens;
-	}
+    public void setReferences(List<Reference> references) {
+        this.references = references;
+    }
 
 
-	public void setSpecimens(List<Specimen> specimens)
-	{
-		this.specimens = specimens;
-	}
+    public List<Specimen> getSpecimens() {
+        return specimens;
+    }
 
+
+    public void setSpecimens(List<Specimen> specimens) {
+        this.specimens = specimens;
+    }
 }

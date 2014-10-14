@@ -20,7 +20,13 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
@@ -65,7 +71,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         Client esClient = new TransportClient(settings)
                 .addTransportAddress(new InetSocketTransportAddress(ES_HOST, ES_PORT));
 
-        BioportalSpecimenDao dao = new BioportalSpecimenDao(esClient, SPECIMEN_INDEX_NAME);
+        BioportalSpecimenDao dao = new BioportalSpecimenDao(esClient, INDEX_NAME);
 
         logger.info("\n");
         String term = "euphorbiaceae";
@@ -125,6 +131,7 @@ public class BioportalSpecimenDao extends AbstractDao {
      */
     public ResultGroupSet<Specimen, String> specimenNameSearch(String searchTerm, String sortField) {
         //todo name resolution
+
         if (sortField == null || sortField.trim().equalsIgnoreCase("")) {
             sortField = "_score";
         }

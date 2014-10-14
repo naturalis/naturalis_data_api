@@ -130,6 +130,7 @@ public abstract class CSVImporter<T> {
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
 		logger.info("Documents indexed: " + indexed);
+		logger.info(getClass().getSimpleName() + " finished");
 	}
 
 

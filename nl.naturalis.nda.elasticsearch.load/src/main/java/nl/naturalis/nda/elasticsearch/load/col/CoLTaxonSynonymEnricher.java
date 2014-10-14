@@ -73,7 +73,7 @@ public class CoLTaxonSynonymEnricher {
 
 		int lineNo = 0;
 		int processed = 0;
-		int additions = 0;
+		int indexed = 0;
 		int skipped = 0;
 		int bad = 0;
 
@@ -92,28 +92,30 @@ public class CoLTaxonSynonymEnricher {
 					logger.info("Ignoring empty line: " + lineNo);
 					continue;
 				}
+				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					if (getInt(record, CoLTaxonImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
 						// This record contains an accepted name, not a synonym
 						++skipped;
-						continue;
 					}
-					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.acceptedNameUsageID.ordinal());
-					String synonym = record.get(CsvField.scientificName.ordinal());
-					taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
-					if (taxon == null) {
-						logger.debug("Orphan synonym: " + synonym);
-					}
-					else if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
-						taxon.addSynonym(transfer(record));
-						objects.add(taxon);
-						ids.add(id);
-						if (objects.size() == bulkRequestSize) {
-							index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
-							additions += bulkRequestSize;
-							objects.clear();
-							ids.clear();
+					else {
+						String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.acceptedNameUsageID.ordinal());
+						String synonym = record.get(CsvField.scientificName.ordinal());
+						taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
+						if (taxon == null) {
+							logger.debug("Orphan synonym: " + synonym);
+						}
+						else if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
+							taxon.addSynonym(transfer(record));
+							objects.add(taxon);
+							ids.add(id);
+							if (objects.size() == bulkRequestSize) {
+								index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+								indexed += bulkRequestSize;
+								objects.clear();
+								ids.clear();
+							}
 						}
 					}
 				}
@@ -123,7 +125,6 @@ public class CoLTaxonSynonymEnricher {
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
 				}
-				++processed;
 				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
 				}
@@ -133,7 +134,7 @@ public class CoLTaxonSynonymEnricher {
 			}
 			if (!objects.isEmpty()) {
 				index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
-				additions += objects.size();
+				indexed += objects.size();
 			}
 		}
 		finally {
@@ -142,7 +143,7 @@ public class CoLTaxonSynonymEnricher {
 		logger.info("Records processed: " + processed);
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
-		logger.info("Synonyms added: " + additions);
+		logger.info("Documents indexed: " + indexed);
 	}
 
 

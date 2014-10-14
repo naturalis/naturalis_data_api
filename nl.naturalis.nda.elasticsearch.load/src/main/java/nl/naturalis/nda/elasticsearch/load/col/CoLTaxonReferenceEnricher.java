@@ -75,7 +75,7 @@ public class CoLTaxonReferenceEnricher {
 		
 		int lineNo = 0;
 		int processed = 0;
-		int additions = 0;
+		int indexed = 0;
 		int bad = 0;
 
 		String line;
@@ -94,6 +94,7 @@ public class CoLTaxonReferenceEnricher {
 					logger.info("Ignoring empty line: " + lineNo);
 					continue;
 				}
+				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
@@ -113,7 +114,7 @@ public class CoLTaxonReferenceEnricher {
 						ids.add(id);
 						if (objects.size() >= bulkRequestSize) {
 							index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
-							additions += bulkRequestSize;
+							indexed += objects.size();
 							objects.clear();
 							ids.clear();
 						}
@@ -125,7 +126,6 @@ public class CoLTaxonReferenceEnricher {
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
 				}
-				++processed;
 				if(maxRecords > 0  && processed >= maxRecords) {
 					break;
 				}
@@ -135,7 +135,7 @@ public class CoLTaxonReferenceEnricher {
 			}
 			if (!objects.isEmpty()) {
 				index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
-				additions += objects.size();
+				indexed += objects.size();
 			}
 		}
 		finally {
@@ -143,7 +143,7 @@ public class CoLTaxonReferenceEnricher {
 		}
 		logger.info("Records processed: " + processed);
 		logger.info("Bad records: " + bad);
-		logger.info("References added: " + additions);
+		logger.info("Documents indexed: " + indexed);
 	}
 
 }

@@ -263,9 +263,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         QueryParams nameResTaxonQueryParams = new QueryParams();
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("vernacularNames.name", searchTerm);
-        nameResTaxonQueryParams.add("synonyms.scientificName.genusOrMonomial", searchTerm);
-        nameResTaxonQueryParams.add("synonyms.scientificName.specificEpithet", searchTerm);
-        nameResTaxonQueryParams.add("synonyms.scientificName.infraspecificEpithet", searchTerm);
+        nameResTaxonQueryParams.add("synonyms.genusOrMonomial", searchTerm);
+        nameResTaxonQueryParams.add("synonyms.specificEpithet", searchTerm);
+        nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", searchTerm);
         SearchResultSet<Taxon> nameResTaxons = taxonDao.taxonExtendedSearch(nameResTaxonQueryParams);
 
         BoolQueryBuilder nameResQueryBuilder = boolQuery();

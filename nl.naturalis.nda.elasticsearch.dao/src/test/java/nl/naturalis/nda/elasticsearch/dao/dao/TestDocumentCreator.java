@@ -7,7 +7,11 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
  */
 public class TestDocumentCreator {
 
-    public String createSpecimenSource(String unitId, String fullname, String kingdom, String genusOrMonomial) {
+    public String createSpecimenSource(String unitId, String fullname, String kingdom, final String genusOrMonomial,
+                                       final String specificEpithet, final String infraspecificEpithet) {
+        if ("".equals(genusOrMonomial) || "".equals(specificEpithet) || "".equals(infraspecificEpithet)) {
+            throw new IllegalArgumentException("no empty string allowed as argument values - use null");
+        }
         return "{\"sourceSystem\": {\n" +
                 "       \"code\": \"BRAHMS\",\n" +
                 "       \"name\": \"Brahms\"\n" +
@@ -80,8 +84,8 @@ public class TestDocumentCreator {
                 "             \"taxonomicStatus\": null,\n" +
                 "             \"genusOrMonomial\": \"" + genusOrMonomial + "\",\n" +
                 "             \"subgenus\": null,\n" +
-                "             \"specificEpithet\": \"ferruginea\",\n" +
-                "             \"infraspecificEpithet\": null,\n" +
+                "             \"specificEpithet\": \"" + specificEpithet + "\",\n" +
+                "             \"infraspecificEpithet\": \"" + infraspecificEpithet + "\",\n" +
                 "             \"infraspecificMarker\": null,\n" +
                 "             \"nameAddendum\": null,\n" +
                 "             \"authorshipVerbatim\": \"(Hook.f. & Thomson) Baill.\",\n" +
@@ -145,7 +149,11 @@ public class TestDocumentCreator {
                 " }";
     }
 
-    public String createTaxonSource() {
+    public String createTaxonSource(final String genusOrMonomial, final String specificEpithet,
+                                    final String infraspecificEpithet) {
+        if ("".equals(genusOrMonomial) || "".equals(specificEpithet) || "".equals(infraspecificEpithet)) {
+            throw new IllegalArgumentException("no empty string allowed as argument values - use null");
+        }
         return "{" +
                 "   \"sourceSystem\": {" +
                 "      \"code\": \"COL\"," +
@@ -157,10 +165,10 @@ public class TestDocumentCreator {
                 "   \"acceptedName\": {" +
                 "      \"fullScientificName\": \"Hyphomonas oceanitis Weiner et al. 1985\"," +
                 "      \"taxonomicStatus\": null," +
-                "      \"genusOrMonomial\": \"Hyphomonas\"," +
+                "      \"genusOrMonomial\": \"" + genusOrMonomial + "\"," +
                 "      \"subgenus\": null," +
-                "      \"specificEpithet\": \"oceanitis\"," +
-                "      \"infraspecificEpithet\": \"\"," +
+                "      \"specificEpithet\": \"" + specificEpithet + "\"," +
+                "      \"infraspecificEpithet\": \"" + infraspecificEpithet + "\"," +
                 "      \"infraspecificMarker\": null," +
                 "      \"nameAddendum\": null," +
                 "      \"authorshipVerbatim\": \"Weiner et al. 1985\"," +
@@ -224,8 +232,14 @@ public class TestDocumentCreator {
                 "         \"name\": \"\"" +
                 "      }" +
                 "   ]," +
-                "   \"synonyms\": null," +
-                "   \"vernacularNames\": null," +
+                "   \"synonyms\": {" +
+                "       \"genusOrMonomial\": \"genusOrMonomialSynonyms\"," +
+                "       \"specificEpithet\": \"specificEpithetSynonyms\"," +
+                "       \"infraspecificEpithet\": null" +
+                "   }," +
+                "   \"vernacularNames\": {" +
+                "       \"name\": \"henkie\"" +
+                "   }," +
                 "   \"descriptions\": null," +
                 "   \"references\": null," +
                 "   \"experts\": null" +

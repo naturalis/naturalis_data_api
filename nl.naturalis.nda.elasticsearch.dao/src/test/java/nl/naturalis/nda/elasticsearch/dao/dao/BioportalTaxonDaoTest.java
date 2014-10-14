@@ -31,7 +31,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
-        String document1Source = documentCreator.createTaxonSource();
+        String document1Source = documentCreator.createTaxonSource("Hyphomonas", "oceanitis", null);
         client().prepareIndex(INDEX_NAME, INDEX_TYPE, "1").setSource(document1Source).setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();

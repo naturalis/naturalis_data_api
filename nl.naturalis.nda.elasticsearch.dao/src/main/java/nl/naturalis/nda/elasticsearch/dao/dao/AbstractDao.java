@@ -10,6 +10,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -75,6 +81,19 @@ public abstract class AbstractDao {
     }
 
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type) {
+        return executeExtendedSearch(params, fields, type, null);
+    }
+
+    /**
+     *
+     * @param params
+     * @param fields
+     * @param type
+     * @param nameResolutionQuery ignored if null
+     * @return
+     */
+    protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
+                                                   QueryBuilder nameResolutionQuery) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
 
@@ -104,6 +123,10 @@ public abstract class AbstractDao {
 
         for (FieldMapping field : nonNestedFields) {
             extendQueryWithField(boolQueryBuilder, operator, field);
+        }
+
+        if (nameResolutionQuery != null) {
+            extendQueryWithQuery(boolQueryBuilder, operator, nameResolutionQuery);
         }
 
         //TODO Geopoint afhandelen
@@ -145,11 +168,8 @@ public abstract class AbstractDao {
         }
 
         NestedQueryBuilder nestedQueryBuilder = nestedQuery(nestedPath, nestedBoolQueryBuilder);
-        if (operator == AND) {
-            boolQueryBuilder.must(nestedQueryBuilder);
-        } else {
-            boolQueryBuilder.should(nestedQueryBuilder);
-        }
+
+        extendQueryWithQuery(boolQueryBuilder, operator, nestedQueryBuilder);
     }
 
     private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
@@ -159,10 +179,15 @@ public abstract class AbstractDao {
             matchQueryBuilder.boost(boostValue);
         }
 
+        extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+    }
+
+    private void extendQueryWithQuery(BoolQueryBuilder boolQueryBuilder, Operator operator,
+                                      QueryBuilder nameResolutionQuery) {
         if (operator == AND) {
-            boolQueryBuilder.must(matchQueryBuilder);
+            boolQueryBuilder.must(nameResolutionQuery);
         } else {
-            boolQueryBuilder.should(matchQueryBuilder);
+            boolQueryBuilder.should(nameResolutionQuery);
         }
     }
 

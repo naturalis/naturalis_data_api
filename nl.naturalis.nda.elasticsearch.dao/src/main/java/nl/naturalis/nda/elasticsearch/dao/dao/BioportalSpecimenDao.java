@@ -3,18 +3,23 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.slf4j.Logger;
@@ -28,7 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class BioportalSpecimenDao extends AbstractDao {
@@ -60,8 +68,11 @@ public class BioportalSpecimenDao extends AbstractDao {
             "gatheringEvent.siteCoordinates.point")
     );
 
-    public BioportalSpecimenDao(Client esClient, String ndaIndexName) {
+    private final BioportalTaxonDao taxonDao;
+
+    public BioportalSpecimenDao(Client esClient, String ndaIndexName, BioportalTaxonDao taxonDao) {
         super(esClient, ndaIndexName);
+        this.taxonDao = taxonDao;
     }
 
     public static void main(String[] args) throws JsonProcessingException {
@@ -71,7 +82,8 @@ public class BioportalSpecimenDao extends AbstractDao {
         Client esClient = new TransportClient(settings)
                 .addTransportAddress(new InetSocketTransportAddress(ES_HOST, ES_PORT));
 
-        BioportalSpecimenDao dao = new BioportalSpecimenDao(esClient, INDEX_NAME);
+        BioportalTaxonDao taxonDao = new BioportalTaxonDao(esClient, INDEX_NAME);
+        BioportalSpecimenDao dao = new BioportalSpecimenDao(esClient, INDEX_NAME, taxonDao);
 
         logger.info("\n");
         String term = "Meijer, W.";
@@ -201,7 +213,8 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, new ArrayList<>(specimenSearchFieldNames));
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE,
+                buildNameResolutionQuery(params.getParam("identifications.vernacularNames.name")));
 
         return responseToSpecimenResultGroupSet(searchResponse);
     }
@@ -244,6 +257,40 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
     // ==================================================== Helpers ====================================================
+
+    private NestedQueryBuilder buildNameResolutionQuery(String searchTerm) {
+        // nameRes = name resolution
+        QueryParams nameResTaxonQueryParams = new QueryParams();
+        nameResTaxonQueryParams.add("_andOr", "OR");
+        nameResTaxonQueryParams.add("vernacularNames.name", searchTerm);
+        nameResTaxonQueryParams.add("synonyms.scientificName.genusOrMonomial", searchTerm);
+        nameResTaxonQueryParams.add("synonyms.scientificName.specificEpithet", searchTerm);
+        nameResTaxonQueryParams.add("synonyms.scientificName.infraspecificEpithet", searchTerm);
+        SearchResultSet<Taxon> nameResTaxons = taxonDao.taxonExtendedSearch(nameResTaxonQueryParams);
+
+        BoolQueryBuilder nameResQueryBuilder = boolQuery();
+        for (SearchResult<Taxon> taxonSearchResult : nameResTaxons.getSearchResults()) {
+            Taxon taxon = taxonSearchResult.getResult();
+            BoolQueryBuilder scientificNameQuery = boolQuery();
+            scientificNameQuery.must(
+                    termQuery("identifications.scientificName.genusOrMonomial",
+                            taxon.getValidName().getGenusOrMonomial())
+            );
+            scientificNameQuery.must(
+                    termQuery("identifications.scientificName.specificEpithet",
+                            taxon.getValidName().getSpecificEpithet())
+            );
+            scientificNameQuery.must(
+                    termQuery("identifications.scientificName.infraspecificEpithet",
+                            taxon.getValidName().getInfraspecificEpithet())
+            );
+
+            nameResQueryBuilder.should(scientificNameQuery);
+        }
+        NestedQueryBuilder nestedNameResQuery = nestedQuery("identifications.scientificName", nameResQueryBuilder);
+        nestedNameResQuery.boost(0.5f);
+        return nestedNameResQuery;
+    }
 
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();

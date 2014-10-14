@@ -1,9 +1,14 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import org.domainobject.util.ExceptionUtil;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -23,13 +28,14 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
@@ -53,6 +59,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class IndexNative implements Index {
 
+	public static void main(String[] args)
+	{
+		getDefaultClient();
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -63,17 +74,40 @@ public class IndexNative implements Index {
 	 * Returns {@code Client} configured using elasticsearch.yml, which should
 	 * be on classpath.
 	 */
+	@SuppressWarnings("resource")
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
 			logger.info("Initializing ElasticSearch session");
-			// localClient = nodeBuilder().node().client();
-			// TODO: softcode cluster name
-			//Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "es-nda-a7e62f46").build();
-			localClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-			//ClusterStatsRequest request = new ClusterStatsRequest();
-			//ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			//logger.debug("Cluster stats: " + response.toString());
+			Properties props = new Properties();
+			InputStream is = IndexNative.class.getResourceAsStream("/nl.naturalis.nda.elasticsearch.load.properties");
+			if (is == null) {
+				throw new RuntimeException("Configuration file not found on classpath: nl.naturalis.nda.elasticsearch.load.properties");
+			}
+			try {
+				props.load(IndexNative.class.getResourceAsStream("/nl.naturalis.nda.elasticsearch.load.properties"));
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			String cluster = props.getProperty("elasticsearch.cluster.name");
+			if (cluster == null) {
+				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.cluster.name");
+			}
+			String host = props.getProperty("elasticsearch.transportaddress.host");
+			if (host == null) {
+				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.transportaddress.host");
+			}
+			String port = props.getProperty("elasticsearch.transportaddress.port");
+			if (port == null) {
+				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.transportaddress.port");
+			}
+			InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, Integer.parseInt(port));
+			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
+			localClient = new TransportClient(settings).addTransportAddress(transportAddress);
+			ClusterStatsRequest request = new ClusterStatsRequest();
+			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
+			logger.debug("Cluster stats: " + response.toString());
 		}
 		return localClient;
 	}

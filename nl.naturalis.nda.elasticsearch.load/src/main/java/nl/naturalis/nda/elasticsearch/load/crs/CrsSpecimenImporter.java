@@ -1,5 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_SPECIMEN;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +16,6 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
@@ -78,13 +80,13 @@ public class CrsSpecimenImporter {
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
 
-	private int processed;
-	private int bad;
-
 	private final Index index;
 	private final int bulkRequestSize;
-	private final int maxNumBatches;
+	private final int maxRecords;
 	private final boolean forceRestart;
+
+	private int processed;
+	private int bad;
 
 
 	public CrsSpecimenImporter(Index index) throws Exception
@@ -93,8 +95,8 @@ public class CrsSpecimenImporter {
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
 
-		prop = System.getProperty("maxNumBatches", "0");
-		maxNumBatches = Integer.parseInt(prop);
+		prop = System.getProperty("maxRecords", "0");
+		maxRecords = Integer.parseInt(prop);
 
 		prop = System.getProperty("forceRestart", "true");
 		forceRestart = Boolean.parseBoolean(prop);
@@ -156,9 +158,6 @@ public class CrsSpecimenImporter {
 			do {
 				logger.info("Processing batch " + batch);
 				resToken = processXML(batch++, resToken);
-				if (batch > maxNumBatches) {
-					break;
-				}
 			} while (resToken != null);
 
 			logger.info("Deleting resumption token file");
@@ -207,6 +206,7 @@ public class CrsSpecimenImporter {
 		List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		for (int i = 0; i < numRecords; ++i) {
+			++processed;
 			Element record = (Element) records.item(i);
 			String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
 			if (isDeletedRecord(record)) {
@@ -221,12 +221,18 @@ public class CrsSpecimenImporter {
 					ids.clear();
 				}
 			}
-			if (++processed % 1000 == 0) {
+			if (maxRecords > 0 && processed >= maxRecords) {
+				break;
+			}
+			if (processed % 1000 == 0) {
 				logger.info("Records processed: " + processed);
 			}
 		}
 		if (!specimens.isEmpty()) {
 			index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
+		}
+		if (maxRecords > 0 && processed >= maxRecords) {
+			return null;
 		}
 		return getResumptionToken(doc);
 	}

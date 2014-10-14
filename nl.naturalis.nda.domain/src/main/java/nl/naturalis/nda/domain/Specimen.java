@@ -26,7 +26,7 @@ public class Specimen extends NdaTraceableObject {
 
     private Agent acquiredFrom;
     private GatheringEvent gatheringEvent;
-    private List<SpecimenIdentification> identifications = new ArrayList<>();
+    private List<SpecimenIdentification> identifications;
     private List<Specimen> otherSpecimensInAssemblage;
     private List<Taxon> associatedTaxa;
 

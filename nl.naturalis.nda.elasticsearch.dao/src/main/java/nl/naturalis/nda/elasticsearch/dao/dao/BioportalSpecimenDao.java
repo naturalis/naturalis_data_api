@@ -253,17 +253,20 @@ public class BioportalSpecimenDao extends AbstractDao {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
             Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
 
-            for (SpecimenIdentification specimenIdentification : transfer.getIdentifications()) {
-                String scientificName = specimenIdentification.getScientificName().getFullScientificName();
+            List<SpecimenIdentification> identifications = transfer.getIdentifications();
+            if(identifications != null) {
+                for (SpecimenIdentification specimenIdentification : identifications) {
+                    String scientificName = specimenIdentification.getScientificName().getFullScientificName();
 
-                List<Specimen> specimens;
-                if (tempMap.containsKey(scientificName)) {
-                    specimens = tempMap.get(scientificName);
-                } else {
-                    specimens = new ArrayList<>();
+                    List<Specimen> specimens;
+                    if (tempMap.containsKey(scientificName)) {
+                        specimens = tempMap.get(scientificName);
+                    } else {
+                        specimens = new ArrayList<>();
+                    }
+                    specimens.add(transfer);
+                    tempMap.put(scientificName, specimens);
                 }
-                specimens.add(transfer);
-                tempMap.put(scientificName, specimens);
             }
         }
 

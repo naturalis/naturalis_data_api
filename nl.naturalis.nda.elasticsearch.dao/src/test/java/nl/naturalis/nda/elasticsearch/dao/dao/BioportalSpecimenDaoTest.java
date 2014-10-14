@@ -30,14 +30,14 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
                 .execute().actionGet();
 
         String name = "Meijer, W.";
-        String document1Source = documentCreator.createSpecimenSource("L  0191413", name);
-        String document2Source = documentCreator.createSpecimenSource("L  01914100", name);
+        String document1Source = documentCreator.createSpecimenSource("L  0191413", name, "Plantae", "Xylopia");
+        String document2Source = documentCreator.createSpecimenSource("L  01914100", name, "Fake", "Xylopia");
         client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
         client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
-        params.add("unitID", "L  0191413");
-        params.add("gatheringEvent.gatheringPersons.fullName", name);
+        params.add("kingdom", "Plantae");
+        params.add("identifications.scientificName.genusOrMonomial", "Xylopia");
         params.add("_andOr", "AND");
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
@@ -56,14 +56,14 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
                 .execute().actionGet();
 
         String name = "Meijer, W.";
-        String document1Source = documentCreator.createSpecimenSource("L  0191413", name);
-        String document2Source = documentCreator.createSpecimenSource("L  01914100", name);
+        String document1Source = documentCreator.createSpecimenSource("L  0191413", name, "Plantae", "Xylopia");
+        String document2Source = documentCreator.createSpecimenSource("L  01914100", name, "Fake", "Xylopia");
         client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
         client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
-        params.add("unitID", "L  0191413");
-        params.add("gatheringEvent.gatheringPersons.fullName", name);
+        params.add("kingdom", "Plantae");
+        params.add("identifications.scientificName.genusOrMonomial", "Xylopia");
         params.add("_andOr", "OR");
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));

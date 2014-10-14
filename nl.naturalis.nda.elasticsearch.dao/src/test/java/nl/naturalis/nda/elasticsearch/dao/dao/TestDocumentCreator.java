@@ -7,7 +7,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
  */
 public class TestDocumentCreator {
 
-    public String createSpecimenSource(String unitId, String fullname) {
+    public String createSpecimenSource(String unitId, String fullname, String kingdom, String genusOrMonomial) {
         return "{" +
                 "\"sourceSystem\" : {" +
                 "\"code\" : \"BRAHMS\"," +
@@ -76,7 +76,7 @@ public class TestDocumentCreator {
                 "\"scientificName\" : {" +
                 "\"fullScientificName\" : \"Xylopia ferruginea (Hook.f. & Thomson) Baill.\"," +
                 "\"taxonomicStatus\" : null," +
-                "\"genusOrMonomial\" : \"Xylopia\"," +
+                "\"genusOrMonomial\" : \"" + genusOrMonomial + "\"," +
                 "\"subgenus\" : null," +
                 "\"specificEpithet\" : \"ferruginea\"," +
                 "\"infraspecificEpithet\" : null," +
@@ -89,7 +89,7 @@ public class TestDocumentCreator {
                 "\"experts\" : null" +
                 "}," +
                 "\"defaultClassification\" : {" +
-                "\"kingdom\" : \"Plantae\"," +
+                "\"kingdom\" : \"" + kingdom + "\"," +
                 "\"phylum\" : null," +
                 "\"className\" : \"Magnoliopsida\"," +
                 "\"order\" : \"Magnoliales\"," +

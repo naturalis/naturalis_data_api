@@ -56,6 +56,7 @@ public abstract class CSVImporter<T> {
 
 		int lineNo = 0;
 		int processed = 0;
+		int indexed = 0;
 		int skipped = 0;
 		int bad = 0;
 
@@ -67,37 +68,40 @@ public abstract class CSVImporter<T> {
 		CSVRecord record;
 
 		try {
-			
+
 			++lineNo;
 			lnr.readLine(); // Skip header; TODO: make configurable
-			
+
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
 				if (line.trim().length() == 0) {
 					logger.info("Ignoring empty line: " + lineNo);
 					continue;
 				}
+				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					if (skipRecord(record)) {
 						++skipped;
-						continue;
 					}
-					objects.addAll(transfer(record));
-					if (specifyId) {
-						ids.addAll(getIds(record));
-					}
-					if (specifyParent) {
-						parentIds.addAll(getParentIds(record));
-					}
-					if (objects.size() >= bulkRequestSize) {
-						index.saveObjects(type, objects, ids, parentIds);
-						objects.clear();
+					else {
+						objects.addAll(transfer(record));
 						if (specifyId) {
-							ids.clear();
+							ids.addAll(getIds(record));
 						}
 						if (specifyParent) {
-							parentIds.clear();
+							parentIds.addAll(getParentIds(record));
+						}
+						if (objects.size() >= bulkRequestSize) {
+							index.saveObjects(type, objects, ids, parentIds);
+							indexed += objects.size();
+							objects.clear();
+							if (specifyId) {
+								ids.clear();
+							}
+							if (specifyParent) {
+								parentIds.clear();
+							}
 						}
 					}
 				}
@@ -107,8 +111,7 @@ public abstract class CSVImporter<T> {
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
 				}
-				++processed;
-				if(maxRecords > 0  && processed >= maxRecords) {
+				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
 				}
 				if (processed % 50000 == 0) {
@@ -117,6 +120,7 @@ public abstract class CSVImporter<T> {
 			}
 			if (!objects.isEmpty()) {
 				index.saveObjects(type, objects, ids, parentIds);
+				indexed += objects.size();
 			}
 		}
 		finally {
@@ -125,6 +129,7 @@ public abstract class CSVImporter<T> {
 		logger.info("Records processed: " + processed);
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
+		logger.info("Documents indexed: " + indexed);
 	}
 
 

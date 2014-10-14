@@ -59,11 +59,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class IndexNative implements Index {
 
-	public static void main(String[] args)
-	{
-		getDefaultClient();
-	}
-
 	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

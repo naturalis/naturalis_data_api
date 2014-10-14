@@ -42,7 +42,7 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
-        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
         assertEquals(1, result.getTotalSize());
     }
@@ -68,7 +68,7 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
-        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
         assertEquals(2, result.getTotalSize());
     }
@@ -92,7 +92,7 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
-        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
         assertEquals(2, result.getTotalSize());
     }
@@ -118,7 +118,7 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
-        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
         assertEquals(1, result.getTotalSize());
     }

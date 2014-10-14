@@ -74,23 +74,15 @@ public class BioportalSpecimenDao extends AbstractDao {
         BioportalSpecimenDao dao = new BioportalSpecimenDao(esClient, INDEX_NAME);
 
         logger.info("\n");
-        String term = "euphorbiaceae";
+        String term = "Meijer, W.";
         String orderField = "gatheringEvent.dateTimeBegin";
         logger.info("------ Firing 'specimenNameSearch' query ------");
         logger.info("Searching specimens with term: '" + term + "' and ordering by field: '" + orderField + "'");
-        ResultGroupSet<Specimen, String> specimenSearchResultSet = dao.specimenNameSearch(term, orderField);
+        ResultGroupSet<Specimen, String> specimenSearchResultSet = dao.specimenSearch(term, orderField);
         logger.info(getObjectMapper().writeValueAsString(specimenSearchResultSet));
 
         logger.info("\n");
-        term = "Meijer, W.";
-        orderField = "gatheringEvent.dateTimeBegin";
-        logger.info("------ Firing 'specimenSearch' query ------");
-        logger.info("Searching specimens with term: '" + term + "' and ordering by field: '" + orderField + "'");
-        specimenSearchResultSet = dao.specimenSearch(term, orderField);
-        logger.info(getObjectMapper().writeValueAsString(specimenSearchResultSet));
-
-        logger.info("\n");
-        logger.info("------ Firing 'specimenExtendedNameSearch' query ------");
+        logger.info("------ Firing 'specimenNameSearch' query ------");
         QueryParams params = new QueryParams();
         params.add("unitID", "0191413");
 //        params.add("gatheringEvent.gatheringPersons.fullName", "Meijer, W.");
@@ -98,56 +90,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         params.add("_andOr", "OR");
         logger.info("Searching specimens with params: '" + params.toString() + "'");
 
-        ResultGroupSet<Specimen, String> specimenExtendedNameSearchResultSet = dao.specimenExtendedNameSearch(params);
+        ResultGroupSet<Specimen, String> specimenExtendedNameSearchResultSet = dao.specimenNameSearch(params);
         logger.info("Found: " + specimenExtendedNameSearchResultSet.getTotalSize());
         logger.info(getObjectMapper().writeValueAsString(specimenExtendedNameSearchResultSet));
-    }
-
-    /**
-     * Retrieves specimens matching a search term. The search term is matched against a predefined set of fields in the
-     * Specimen document. These are listed in the Remarks below. Name resolution is used to find additional specimens.
-     * Search results must be grouped according to the scientific name of the specimen.
-     * <p/>
-     * 1. identifications.defaultClassification.kingdom                          <br/>
-     * 2. identifications.defaultClassification.phylum                           <br/>
-     * 3. identifications.defaultClassification.className                        <br/>
-     * 4. identifications.defaultClassification.order                            <br/>
-     * 5. identifications.defaultClassification.family                           <br/>
-     * 6. identifications.systemClassification.name                              <br/>
-     * 7. identifications.scientificName.genusOrMonomial                         <br/>
-     * 8. identifications.scientificName.acceptedName.specificEpithet            <br/>
-     * 9. identifications.scientificName.acceptedName.infraspecificEpithet       <br/>
-     * 10. gatheringEvent.gatheringAgents.fullName                               <br/>
-     * 11. gatheringEvent.gatheringAgents.dateTimeBegin                          <br/>
-     * 12. gatheringEvent.siteCoordinates.point
-     *
-     * @param searchTerm The search term to match
-     * @param sortField  The field to sort on. Fields must be mapped according to the mapping
-     *                   mechanism described above. Special sort value: “_score” (sort by relevance). In practice
-     *                   sorting is only allowed on _score and on identifications.scientificName.fullScientificName.
-     *                   This is an optional parameter. By default sorting is done on _score.
-     * @return {@link nl.naturalis.nda.search.ResultGroupSet} containing buckets of {@link
-     * nl.naturalis.nda.domain.Specimen} with the scientificName as the key
-     */
-    public ResultGroupSet<Specimen, String> specimenNameSearch(String searchTerm, String sortField) {
-        //todo name resolution
-
-        if (sortField == null || sortField.trim().equalsIgnoreCase("")) {
-            sortField = "_score";
-        }
-        FieldSortBuilder fieldSort = fieldSort(sortField);
-        SearchResponse response = newSearchRequest()
-                .setTypes(SPECIMEN_TYPE)
-                .setQuery(
-                        multiMatchQuery(
-                                searchTerm,
-                                specimenNameSearchFieldNames
-                        )
-                )
-                .addSort(fieldSort)
-                .execute().actionGet();
-
-        return responseToSpecimenResultGroupSet(response);
     }
 
     /**
@@ -197,12 +142,12 @@ public class BioportalSpecimenDao extends AbstractDao {
      * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
      * of fields to match the search term against, the fields to query and the values to look for are specified as
      * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
-     * {@link #specimenNameSearch(String, String)} method.
+     * {@link #specimenNameSearchFieldNames} method.
      * <p/>
      * Name resolution is used to find additional specimens. Specimens must be grouped according to their scientific
      * name.
      *
-     * @param params A {@link nl.naturalis.nda.elasticsearch.dao.util.QueryParams} object containing:
+     * @param params A {@link QueryParams} object containing:
      *               1. fields ... . A variable number of filters for fields. For example, the
      *               QueryParams object may contain a key “defaultClassification.genus” with a value of “Homo” and a
      *               key “defaultClassification.specificEpithet” with a value of “sapiens”. Fields must be mapped
@@ -217,7 +162,7 @@ public class BioportalSpecimenDao extends AbstractDao {
      *               default sorting is done on _score.
      * @return
      */
-    public ResultGroupSet<Specimen, String> specimenExtendedNameSearch(QueryParams params) {
+    public ResultGroupSet<Specimen, String> specimenNameSearch(QueryParams params) {
         // TODO: name resolution, i.e. searching taxons and extends params, OR do a second search with retrieved taxons
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, Arrays.asList(specimenNameSearchFieldNames));
@@ -263,12 +208,12 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     /**
      * Retrieves a single Specimen by its unitID. A specimen retrieved through this method is always retrieved through
-     * a REST link in the response from either {@link #specimenNameSearch(String, String)} or
+     * a REST link in the response from either {@link #specimenNameSearch(QueryParams)} or
      * {@link #specimenSearch(String, String)}. This method is aware of the result set generated by those methods and
      * is therefore capable of generating REST links to the previous and next
-     * specimen in the result set. All parameters passed to specimenNameSearch or specimenSearch will also be passed to
+     * specimen in the result set. All parameters passed to specimenNameSearch or specimenNameSearch will also be passed to
      * this method. Basically, this method has to re-execute the query executed by
-     * {@link #specimenNameSearch(String, String)} or {@link #specimenSearch(String, String)},
+     * {@link #specimenNameSearch(QueryParams)} or {@link #specimenSearch(String, String)},
      * pick out the specimen with the specified unitID, and generate REST links to the previous and next specimen in
      * the
      * result set.

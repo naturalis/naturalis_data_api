@@ -15,7 +15,7 @@ import java.util.Properties;
 public class SearchParamFieldMapping {
 
     public static final String BOOST_SUFFIX = ".boost";
-    public static final String NESTED_SUFFIX = ".nested";
+    public static final String NESTED_SUFFIX = ".nested.path";
     private static final List<String> EXCLUDED_PARAMS = new ArrayList<>();
 
     static {
@@ -85,13 +85,13 @@ public class SearchParamFieldMapping {
      * @param field the field to find the boost value for
      * @return the nested value if property found, null otherwise
      */
-    private boolean getNestedValueForField(String field, Properties properties) {
+    private String getNestedPathValueForField(String field, Properties properties) {
         String property = properties.getProperty(field + NESTED_SUFFIX);
-        if (property != null && !property.isEmpty()) {
-            return Boolean.valueOf(property);
+        if (property != null && !property.trim().isEmpty()) {
+            return property;
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -116,8 +116,8 @@ public class SearchParamFieldMapping {
 
         for (String esField : esFields) {
             Float boostValue = getBoostValueForField(esField, properties);
-            boolean nested = getNestedValueForField(esField, properties);
-            mappings.add(new FieldMapping(esField, boostValue, value, nested));
+            String nestedPath = getNestedPathValueForField(esField, properties);
+            mappings.add(new FieldMapping(esField, boostValue, value, nestedPath));
         }
 
         return mappings;

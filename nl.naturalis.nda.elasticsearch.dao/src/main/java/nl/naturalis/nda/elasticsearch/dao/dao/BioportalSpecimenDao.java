@@ -37,10 +37,10 @@ public class BioportalSpecimenDao extends AbstractDao {
             "identifications.defaultClassification.family",
             "identifications.systemClassification.name",
             "identifications.scientificName.genusOrMonomial",
-            "identifications.scientificName.acceptedName.specificEpithet",
-            "identifications.scientificName.acceptedName.infraspecificEpithet",
-            "gatheringEvent.gatheringAgents.fullName",
-            "gatheringEvent.gatheringAgents.dateTimeBegin",
+            "identifications.scientificName.specificEpithet",
+            "identifications.scientificName.infraspecificEpithet",
+            "gatheringEvent.gatheringPersons.fullName",
+            "gatheringEvent.dateTimeBegin",
             "gatheringEvent.siteCoordinates.point"
     };
 

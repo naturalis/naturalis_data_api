@@ -22,7 +22,7 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
     }
 
     @Test
-    public void testExtendedNameSearch_AND_query() throws Exception {
+    public void testExtendedNameSearch_nested_AND_query() throws Exception {
         createIndex(INDEX_NAME);
 
         client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
@@ -48,7 +48,7 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
     }
 
     @Test
-    public void testExtendedNameSearch_OR_query() throws Exception {
+    public void testExtendedNameSearch_nested_OR_query() throws Exception {
         createIndex(INDEX_NAME);
 
         client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
@@ -73,6 +73,55 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
         assertEquals(2, result.getTotalSize());
     }
 
+    @Test
+    public void testExtendedNameSearch_nonNested_query() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        String name = "Meijer, W.";
+        String document1Source = documentCreator.createSpecimenSource("L  0191413", name, "Plantae", "Xylopia");
+        String document2Source = documentCreator.createSpecimenSource("L  01914100", name, "Fake", "Xylopia");
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("gatheringEvent.dateTimeBegin", "-299725200000");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+
+        assertEquals(2, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_combined_query() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        String name = "Meijer, W.";
+        String document1Source = documentCreator.createSpecimenSource("L  0191413", name, "Plantae", "Xylopia");
+        String document2Source = documentCreator.createSpecimenSource("L  01914100", name, "Fake", "Xylopia");
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(document1Source).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(document2Source).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("gatheringEvent.dateTimeBegin", "-299725200000");
+        params.add("kingdom", "Plantae");
+        params.add("_andOr", "AND");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        ResultGroupSet<Specimen, String> result = dao.specimenExtendedNameSearch(params);
+
+        assertEquals(1, result.getTotalSize());
+    }
 
 }
 

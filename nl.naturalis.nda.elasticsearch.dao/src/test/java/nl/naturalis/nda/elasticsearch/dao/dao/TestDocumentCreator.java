@@ -1,140 +1,148 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 /**
- * TODO javadoc
+ * Class to create documents for testing purposes.
  *
  * @author Roberto van der Linden
  */
 public class TestDocumentCreator {
 
     public String createSpecimenSource(String unitId, String fullname, String kingdom, String genusOrMonomial) {
-        return "{" +
-                "\"sourceSystem\" : {" +
-                "\"code\" : \"BRAHMS\"," +
-                "\"name\" : \"Brahms\"" +
-                "}," +
-                "\"sourceSystemId\" : \"" + unitId + "\"," +
-                "\"unitID\" : \"" + unitId + "\"," +
-                "\"unitGUID\" : null," +
-                "\"assemblageID\" : \"BRAHMS-577339.000000\"," +
-                "\"sourceInstitutionID\" : null," +
-                "\"recordBasis\" : \"PreservedSpecimen\"," +
-                "\"kindOfUnit\" : null," +
-                "\"collectionType\" : null," +
-                "\"typeStatus\" : null," +
-                "\"sex\" : null," +
-                "\"phaseOrStage\" : null," +
-                "\"title\" : null," +
-                "\"notes\" : \"Tree, diameter 25 cm. bole 20 m. Crown silt roots on flat flying buttress 1.5 m. high. Inner bark redbrown 1 cm. fibrous. Sapwood white and yellow flush.\"," +
-                "\"preparationType\" : null," +
-                "\"numberOfSpecimen\" : 0," +
-                "\"fromCaptivity\" : false," +
-                "\"objectPublic\" : false," +
-                "\"multiMediaPublic\" : false," +
-                "\"acquiredFrom\" : null," +
-                "\"gatheringEvent\" : {" +
-                "\"projectTitle\" : null," +
-                "\"worldRegion\" : \"Asia\"," +
-                "\"continent\" : \"Asia\"," +
-                "\"country\" : \"Malaysia/Sabah\"," +
-                "\"iso3166Code\" : null," +
-                "\"provinceState\" : \"Borneo\"," +
-                "\"island\" : null," +
-                "\"locality\" : null," +
-                "\"city\" : null," +
-                "\"sublocality\" : null," +
-                "\"localityText\" : null," +
-                "\"dateTimeBegin\" : -299725200000," +
-                "\"dateTimeEnd\" : -299725200000," +
-                "\"method\" : null," +
-                "\"altitude\" : null," +
-                "\"altitudeUnifOfMeasurement\" : null," +
-                "\"depth\" : null," +
-                "\"depthUnitOfMeasurement\" : null," +
-                "\"gatheringPersons\" : [{" +
-                "\"agentText\" : null," +
-                "\"fullName\" : \"" + fullname + "\"," +
-                "\"organization\" : null" +
-                "}" +
-                "]," +
-                "\"gatheringOrganizations\" : null," +
-                "\"siteCoordinates\" : [{" +
-                "\"longitudeDecimal\" : 0," +
-                "\"latitudeDecimal\" : 0," +
-                "\"point\" : {" +
-                "\"type\" : \"POINT\"," +
-                "\"coordinates\" : [" +
-                "0," +
-                "0" +
-                "]" +
-                "}" +
-                "}" +
-                "]" +
-                "}," +
-                "\"identifications\" : [{" +
-                "\"taxonRank\" : \"species\"," +
-                "\"scientificName\" : {" +
-                "\"fullScientificName\" : \"Xylopia ferruginea (Hook.f. & Thomson) Baill.\"," +
-                "\"taxonomicStatus\" : null," +
-                "\"genusOrMonomial\" : \"" + genusOrMonomial + "\"," +
-                "\"subgenus\" : null," +
-                "\"specificEpithet\" : \"ferruginea\"," +
-                "\"infraspecificEpithet\" : null," +
-                "\"infraspecificMarker\" : null," +
-                "\"nameAddendum\" : null," +
-                "\"authorshipVerbatim\" : \"(Hook.f. & Thomson) Baill.\"," +
-                "\"author\" : null," +
-                "\"year\" : null," +
-                "\"references\" : null," +
-                "\"experts\" : null" +
-                "}," +
-                "\"defaultClassification\" : {" +
-                "\"kingdom\" : \"" + kingdom + "\"," +
-                "\"phylum\" : null," +
-                "\"className\" : \"Magnoliopsida\"," +
-                "\"order\" : \"Magnoliales\"," +
-                "\"superFamily\" : null," +
-                "\"family\" : \"Annonaceae\"," +
-                "\"genus\" : \"Xylopia\"," +
-                "\"subgenus\" : null," +
-                "\"specificEpithet\" : \"ferruginea\"," +
-                "\"infraspecificEpithet\" : null," +
-                "\"infraspecificRank\" : null" +
-                "}," +
-                "\"systemClassification\" : [{" +
-                "\"rank\" : \"kingdom\"," +
-                "\"name\" : \"Plantae\"" +
-                "}, {" +
-                "\"rank\" : \"order\"," +
-                "\"name\" : \"Magnoliales\"" +
-                "}, {" +
-                "\"rank\" : \"family\"," +
-                "\"name\" : \"Annonaceae\"" +
-                "}, {" +
-                "\"rank\" : \"genus\"," +
-                "\"name\" : \"Xylopia\"" +
-                "}, {" +
-                "\"rank\" : \"species\"," +
-                "\"name\" : \"ferruginea\"" +
-                "}" +
-                "]," +
-                "\"vernacularNames\" : null," +
-                "\"identificationQualifiers\" : null," +
-                "\"dateIdentified\" : 1398895200000," +
-                "\"identifiers\" : [{" +
-                "\"agentText\" : \"Johnson, D.M.\"" +
-                "}" +
-                "]," +
-                "\"preferred\" : false," +
-                "\"verificationStatus\" : null," +
-                "\"rockType\" : null," +
-                "\"associatedFossilAssemblage\" : null," +
-                "\"rockMineralUsage\" : null," +
-                "\"associatedMineralName\" : null," +
-                "\"remarks\" : null" +
-                "}" +
-                "]" +
-                "}";
+        return "{\"sourceSystem\": {\n" +
+                "       \"code\": \"BRAHMS\",\n" +
+                "       \"name\": \"Brahms\"\n" +
+                "    },\n" +
+                "    \"sourceSystemId\": \"" + unitId + "\",\n" +
+                "    \"unitID\": \"" + unitId + "\",\n" +
+                "    \"unitGUID\": null,\n" +
+                "    \"assemblageID\": \"BRAHMS-577339.000000\",\n" +
+                "    \"sourceInstitutionID\": null,\n" +
+                "    \"recordBasis\": \"PreservedSpecimen\",\n" +
+                "    \"kindOfUnit\": null,\n" +
+                "    \"collectionType\": null,\n" +
+                "    \"typeStatus\": null,\n" +
+                "    \"sex\": null,\n" +
+                "    \"phaseOrStage\": null,\n" +
+                "    \"title\": null,\n" +
+                "    \"notes\": \"Tree, diameter 25 cm. bole 20 m. Crown silt roots on flat flying buttress 1.5 m. high. Inner bark redbrown 1 cm. fibrous. Sapwood white and yellow flush.\",\n" +
+                "    \"preparationType\": null,\n" +
+                "    \"numberOfSpecimen\": 0,\n" +
+                "    \"fromCaptivity\": false,\n" +
+                "    \"objectPublic\": false,\n" +
+                "    \"multiMediaPublic\": false,\n" +
+                "    \"acquiredFrom\": null,\n" +
+                "    \"gatheringEvent\": {\n" +
+                "       \"projectTitle\": null,\n" +
+                "       \"worldRegion\": \"Asia\",\n" +
+                "       \"continent\": \"Asia\",\n" +
+                "       \"country\": \"Malaysia/Sabah\",\n" +
+                "       \"iso3166Code\": null,\n" +
+                "       \"provinceState\": \"Borneo\",\n" +
+                "       \"island\": null,\n" +
+                "       \"locality\": null,\n" +
+                "       \"city\": null,\n" +
+                "       \"sublocality\": null,\n" +
+                "       \"localityText\": null,\n" +
+                "       \"dateTimeBegin\": -299725200000,\n" +
+                "       \"dateTimeEnd\": -299725200000,\n" +
+                "       \"method\": null,\n" +
+                "       \"altitude\": null,\n" +
+                "       \"altitudeUnifOfMeasurement\": null,\n" +
+                "       \"depth\": null,\n" +
+                "       \"depthUnitOfMeasurement\": null,\n" +
+                "       \"gatheringPersons\": [\n" +
+                "          {\n" +
+                "             \"agentText\": null,\n" +
+                "             \"fullName\": \"" + fullname + "\",\n" +
+                "             \"organization\": null\n" +
+                "          }\n" +
+                "       ],\n" +
+                "       \"gatheringOrganizations\": null,\n" +
+                "       \"siteCoordinates\": [\n" +
+                "          {\n" +
+                "             \"longitudeDecimal\": 0,\n" +
+                "             \"latitudeDecimal\": 0,\n" +
+                "             \"point\": {\n" +
+                "                \"type\": \"POINT\",\n" +
+                "                \"coordinates\": [\n" +
+                "                   0,\n" +
+                "                   0\n" +
+                "                ]\n" +
+                "             }\n" +
+                "          }\n" +
+                "       ]\n" +
+                "    },\n" +
+                "    \"identifications\": [\n" +
+                "       {\n" +
+                "          \"taxonRank\": \"species\",\n" +
+                "          \"scientificName\": {\n" +
+                "             \"fullScientificName\": \"Xylopia ferruginea (Hook.f. & Thomson) Baill.\",\n" +
+                "             \"taxonomicStatus\": null,\n" +
+                "             \"genusOrMonomial\": \"" + genusOrMonomial + "\",\n" +
+                "             \"subgenus\": null,\n" +
+                "             \"specificEpithet\": \"ferruginea\",\n" +
+                "             \"infraspecificEpithet\": null,\n" +
+                "             \"infraspecificMarker\": null,\n" +
+                "             \"nameAddendum\": null,\n" +
+                "             \"authorshipVerbatim\": \"(Hook.f. & Thomson) Baill.\",\n" +
+                "             \"author\": null,\n" +
+                "             \"year\": null,\n" +
+                "             \"references\": null,\n" +
+                "             \"experts\": null\n" +
+                "          },\n" +
+                "          \"defaultClassification\": {\n" +
+                "             \"kingdom\": \"" + kingdom + "\",\n" +
+                "             \"phylum\": null,\n" +
+                "             \"className\": \"Magnoliopsida\",\n" +
+                "             \"order\": \"Magnoliales\",\n" +
+                "             \"superFamily\": null,\n" +
+                "             \"family\": \"Annonaceae\",\n" +
+                "             \"genus\": \"Xylopia\",\n" +
+                "             \"subgenus\": null,\n" +
+                "             \"specificEpithet\": \"ferruginea\",\n" +
+                "             \"infraspecificEpithet\": null,\n" +
+                "             \"infraspecificRank\": null\n" +
+                "          },\n" +
+                "          \"systemClassification\": [\n" +
+                "             {\n" +
+                "                \"rank\": \"kingdom\",\n" +
+                "                \"name\": \"Plantae\"\n" +
+                "             },\n" +
+                "             {\n" +
+                "                \"rank\": \"order\",\n" +
+                "                \"name\": \"Magnoliales\"\n" +
+                "             },\n" +
+                "             {\n" +
+                "                \"rank\": \"family\",\n" +
+                "                \"name\": \"Annonaceae\"\n" +
+                "             },\n" +
+                "             {\n" +
+                "                \"rank\": \"genus\",\n" +
+                "                \"name\": \"Xylopia\"\n" +
+                "             },\n" +
+                "             {\n" +
+                "                \"rank\": \"species\",\n" +
+                "                \"name\": \"ferruginea\"\n" +
+                "             }\n" +
+                "          ],\n" +
+                "          \"vernacularNames\": null,\n" +
+                "          \"identificationQualifiers\": null,\n" +
+                "          \"dateIdentified\": 1398895200000,\n" +
+                "          \"identifiers\": [\n" +
+                "             {\n" +
+                "                \"agentText\": \"Johnson, D.M.\"\n" +
+                "             }\n" +
+                "          ],\n" +
+                "          \"preferred\": false,\n" +
+                "          \"verificationStatus\": null,\n" +
+                "          \"rockType\": null,\n" +
+                "          \"associatedFossilAssemblage\": null,\n" +
+                "          \"rockMineralUsage\": null,\n" +
+                "          \"associatedMineralName\": null,\n" +
+                "          \"remarks\": null\n" +
+                "       }\n" +
+                "    ]\n" +
+                " }";
     }
 
     public String createTaxonSource() {

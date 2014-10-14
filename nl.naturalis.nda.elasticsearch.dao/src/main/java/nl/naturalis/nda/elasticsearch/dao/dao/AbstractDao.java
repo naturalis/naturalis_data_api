@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
@@ -78,13 +79,13 @@ public abstract class AbstractDao {
         FieldSortBuilder fieldSort = fieldSort(sortField);
 
         BoolQueryBuilder boolQueryBuilder = boolQuery();
-        SimpleQueryStringBuilder.Operator operator = getOperator(params);
+        Operator operator = getOperator(params);
 
         Map<String, List<FieldMapping>> nestedFields = new HashMap<>();
         List<FieldMapping> nonNestedFields = new ArrayList<>();
         for (FieldMapping field : fields) {
             String nestedPath = field.getNestedPath();
-            if (nestedPath != null && nestedPath.length() > 0) {
+            if (nestedPath != null && nestedPath.trim().length() > 0) {
                 List<FieldMapping> fieldMappings = new ArrayList<>();
                 if (nestedFields.containsKey(nestedPath)){
                     fieldMappings = nestedFields.get(nestedPath);
@@ -95,7 +96,6 @@ public abstract class AbstractDao {
             } else {
                 nonNestedFields.add(field);
             }
-
         }
 
         for (String nestedPath : nestedFields.keySet()) {
@@ -138,7 +138,7 @@ public abstract class AbstractDao {
 
     //================================================ Helper methods ==================================================
 
-    private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, SimpleQueryStringBuilder.Operator operator, String nestedPath, List<FieldMapping> fields) {
+    private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator, String nestedPath, List<FieldMapping> fields) {
         BoolQueryBuilder nestedBoolQueryBuilder = boolQuery();
         for (FieldMapping field : fields) {
             extendQueryWithField (nestedBoolQueryBuilder, operator, field);
@@ -152,7 +152,7 @@ public abstract class AbstractDao {
         }
     }
 
-    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, SimpleQueryStringBuilder.Operator operator, FieldMapping field) {
+    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
         Float boostValue = field.getBoostValue();
         MatchQueryBuilder matchQueryBuilder = matchQuery(field.getFieldName(), field.getValue());
         if (boostValue != null) {
@@ -170,11 +170,11 @@ public abstract class AbstractDao {
      * Get the operator from the query params.
      *
      * @param params the query params
-     * @return the operator from the params, if not found {@link org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator#OR} is returned
+     * @return the operator from the params, if not found {@link Operator#OR} is returned
      */
-    private SimpleQueryStringBuilder.Operator getOperator(QueryParams params) {
+    private Operator getOperator(QueryParams params) {
         String operatorValue = params.getParam("_andOr");
-        SimpleQueryStringBuilder.Operator operator = OR;
+        Operator operator = OR;
         if (operatorValue != null && !operatorValue.isEmpty()) {
             operator = valueOf(operatorValue);
         }

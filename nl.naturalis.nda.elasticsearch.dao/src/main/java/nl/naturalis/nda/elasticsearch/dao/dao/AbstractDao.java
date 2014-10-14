@@ -135,6 +135,8 @@ public abstract class AbstractDao {
                 .setQuery(filteredQuery(boolQueryBuilder, null))
                 .addSort(fieldSort);
 
+        setSize(params, searchRequestBuilder);
+
         logger.info(searchRequestBuilder.toString());
 
         return searchRequestBuilder
@@ -160,6 +162,19 @@ public abstract class AbstractDao {
     }
 
     //================================================ Helper methods ==================================================
+
+    private void setSize(QueryParams params, SearchRequestBuilder searchRequestBuilder) {
+        if (params.containsKey("_maxResults")) {
+            String maxResultsAsString = params.getFirst("_maxResults");
+            try {
+                Integer maxResults = Integer.valueOf(maxResultsAsString);
+                searchRequestBuilder.setSize(maxResults);
+            } catch (NumberFormatException e) {
+                logger.debug("Could not parse _maxResults value '" + maxResultsAsString + "'. Using 50.");
+                searchRequestBuilder.setSize(50);
+            }
+        }
+    }
 
     private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator, String nestedPath, List<FieldMapping> fields) {
         BoolQueryBuilder nestedBoolQueryBuilder = boolQuery();

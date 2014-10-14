@@ -45,13 +45,14 @@ public class SpecimenResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SearchResultSet<Specimen> getSpecimenDetail(@PathParam("id") String unitID)
 	{
-		logger.debug(String.format("getSpecimenDetail(\"%s\")", unitID));
-		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
-		SearchResultSet<Specimen> rs = dao.getDetail(unitID);
-		if (rs == null) {
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-		return rs;
+//		logger.debug(String.format("getSpecimenDetail(\"%s\")", unitID));
+//		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
+//		SearchResultSet<Specimen> rs = dao.getDetail(unitID);
+//		if (rs == null) {
+//			throw new WebApplicationException(Status.NOT_FOUND);
+//		}
+//		return rs;
+		return null;
 	}
 
 
@@ -61,9 +62,9 @@ public class SpecimenResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResultGroupSet<Specimen, String> nameSearch(@Context UriInfo request)
 	{
-		QueryParams params = new QueryParams(request.getPathParameters(), request.getQueryParameters());
-		BioportalSpecimenDao dao = new BioportalSpecimenDao(registry.getESClient(), "nda");
-		ResultGroupSet<Specimen,String> result = dao.specimenNameSearch("", "");
+//		QueryParams params = new QueryParams(request.getPathParameters(), request.getQueryParameters());
+//		BioportalSpecimenDao dao = new BioportalSpecimenDao(registry.getESClient(), "nda");
+//		ResultGroupSet<Specimen,String> result = dao.specimenNameSearch("", "");
 		return null;
 	}
 

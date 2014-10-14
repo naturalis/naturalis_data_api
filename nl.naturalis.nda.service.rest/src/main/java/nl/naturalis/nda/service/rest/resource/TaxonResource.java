@@ -49,8 +49,8 @@ public class TaxonResource {
 	public SearchResultSet<Taxon> findByScientificName(@PathParam("name") String name)
 	{
 		TaxonDao dao = new TaxonDao(registry.getESClient(), "nda");
-		SearchResultSet<Taxon> result = dao.findByScientificName(name);
-		return result;
+		//SearchResultSet<Taxon> result = dao.findByScientificName(name);
+		return null;
 	}
 
 }

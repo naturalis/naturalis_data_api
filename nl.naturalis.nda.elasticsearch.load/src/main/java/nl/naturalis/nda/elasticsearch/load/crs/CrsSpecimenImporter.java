@@ -207,19 +207,25 @@ public class CrsSpecimenImporter {
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		for (int i = 0; i < numRecords; ++i) {
 			++processed;
-			Element record = (Element) records.item(i);
-			String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
-			if (isDeletedRecord(record)) {
-				index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
-			}
-			else {
-				specimens.add(CrsSpecimenTransfer.transfer(record));
-				ids.add(id);
-				if (specimens.size() >= bulkRequestSize) {
-					index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
-					specimens.clear();
-					ids.clear();
+			try {
+				Element record = (Element) records.item(i);
+				String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
+				if (isDeletedRecord(record)) {
+					index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
 				}
+				else {
+					specimens.add(CrsSpecimenTransfer.transfer(record));
+					ids.add(id);
+					if (specimens.size() >= bulkRequestSize) {
+						index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
+						specimens.clear();
+						ids.clear();
+					}
+				}
+			}
+			catch (Throwable t) {
+				++bad;
+				logger.error(t.getMessage(), t);
 			}
 			if (maxRecords > 0 && processed >= maxRecords) {
 				break;

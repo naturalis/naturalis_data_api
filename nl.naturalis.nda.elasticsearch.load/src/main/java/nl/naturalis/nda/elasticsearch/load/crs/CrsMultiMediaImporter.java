@@ -80,13 +80,13 @@ public class CrsMultiMediaImporter {
 	private final ConfigObject config;
 	private final DocumentBuilder builder;
 
-	private int processed;
-	private int bad;
-
 	private final Index index;
 	private final int bulkRequestSize;
-	private final int maxNumBatches;
+	private final int maxRecords;
 	private final boolean forceRestart;
+
+	private int processed;
+	private int bad;
 
 
 	public CrsMultiMediaImporter(Index index) throws Exception
@@ -95,8 +95,8 @@ public class CrsMultiMediaImporter {
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
 
-		prop = System.getProperty("maxNumBatches", "0");
-		maxNumBatches = Integer.parseInt(prop);
+		prop = System.getProperty("maxRecords", "0");
+		maxRecords = Integer.parseInt(prop);
 
 		prop = System.getProperty("forceRestart", "true");
 		forceRestart = Boolean.parseBoolean(prop);
@@ -158,9 +158,6 @@ public class CrsMultiMediaImporter {
 			do {
 				logger.info("Processing batch " + batch);
 				resToken = processXML(batch++, resToken);
-				if (batch > maxNumBatches) {
-					break;
-				}
 			} while (resToken != null);
 
 			logger.info("Deleting resumption token file");
@@ -210,6 +207,7 @@ public class CrsMultiMediaImporter {
 		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		for (int i = 0; i < numRecords; ++i) {
+			++processed;
 			try {
 				Element record = (Element) records.item(i);
 				if (isDeletedRecord(record)) {
@@ -229,17 +227,23 @@ public class CrsMultiMediaImporter {
 						ids.clear();
 					}
 				}
-				if (++processed % 1000 == 0) {
-					logger.info("Records processed: " + processed);
-				}
 			}
-			catch (Exception e) {
+			catch (Throwable t) {
 				++bad;
-				logger.error(e.getMessage(), e);
+				logger.error(t.getMessage(), t);
+			}
+			if (maxRecords > 0 && processed >= maxRecords) {
+				break;
+			}
+			if (processed % 1000 == 0) {
+				logger.info("Records processed: " + processed);
 			}
 		}
 		if (!mediaObjects.isEmpty()) {
 			index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
+		}
+		if (maxRecords > 0 && processed >= maxRecords) {
+			return null;
 		}
 		return getResumptionToken(doc);
 	}

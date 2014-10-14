@@ -153,8 +153,8 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
         params.add("kingdom", "wrong value");
         params.add("vernacularNames.name", "henkie");
 
-        ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(params);
-        assertEquals(1, resultWithoutName.getTotalSize());
+        ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
+        assertEquals(1, resultWithName.getTotalSize());
     }
 
 }

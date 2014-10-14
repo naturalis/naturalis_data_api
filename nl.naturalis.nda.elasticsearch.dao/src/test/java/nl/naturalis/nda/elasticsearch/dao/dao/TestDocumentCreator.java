@@ -64,13 +64,13 @@ public class TestDocumentCreator {
                 "       \"gatheringOrganizations\": null,\n" +
                 "       \"siteCoordinates\": [\n" +
                 "          {\n" +
-                "             \"longitudeDecimal\": 0,\n" +
-                "             \"latitudeDecimal\": 0,\n" +
+                "             \"longitudeDecimal\": 12.746355,\n" +
+                "             \"latitudeDecimal\": 14.584877,\n" +
                 "             \"point\": {\n" +
                 "                \"type\": \"POINT\",\n" +
                 "                \"coordinates\": [\n" +
-                "                   0,\n" +
-                "                   0\n" +
+                "                   14.584877,\n" +
+                "                   12.746355\n" +
                 "                ]\n" +
                 "             }\n" +
                 "          }\n" +

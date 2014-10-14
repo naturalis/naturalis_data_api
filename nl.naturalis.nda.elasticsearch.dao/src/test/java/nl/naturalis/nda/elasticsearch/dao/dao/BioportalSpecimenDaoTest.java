@@ -3,8 +3,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import static org.hamcrest.Matchers.is;
 
@@ -157,5 +156,27 @@ public class BioportalSpecimenDaoTest extends DaoIntegrationTest {
         assertEquals(1, resultWithName.getTotalSize());
     }
 
+    @Test
+    public void testGeoShapeQuery() throws Exception {
+        createIndex(INDEX_NAME);
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        String specimenSource = documentCreator.createSpecimenSource("L  0191413", "Meijer, W.", "Plantae", "Xylopia", "ferruginea", null);
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(specimenSource).setRefresh(true).execute()
+                .actionGet();
+
+        String geoShapeString = "{\"type\" : \"MultiPolygon\",\"coordinates\" : [[[[14,12], [14,13], [15,13], [15,12], [14,12]]]]}";
+
+        QueryParams params = new QueryParams();
+        params.add("_geoShape", geoShapeString);
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+
+        assertEquals(1, result.getTotalSize());
+    }
 }
 

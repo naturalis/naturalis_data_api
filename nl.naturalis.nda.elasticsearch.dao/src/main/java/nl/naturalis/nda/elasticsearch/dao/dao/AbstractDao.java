@@ -1,33 +1,37 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vividsolutions.jts.geom.Coordinate;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.geojson.GeoJsonObject;
+import org.geojson.LngLatAlt;
+import org.geojson.MultiPolygon;
+import org.geojson.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
+import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -85,7 +89,6 @@ public abstract class AbstractDao {
     }
 
     /**
-     *
      * @param params
      * @param fields
      * @param type
@@ -106,7 +109,7 @@ public abstract class AbstractDao {
             String nestedPath = field.getNestedPath();
             if (nestedPath != null && nestedPath.trim().length() > 0) {
                 List<FieldMapping> fieldMappings = new ArrayList<>();
-                if (nestedFields.containsKey(nestedPath)){
+                if (nestedFields.containsKey(nestedPath)) {
                     fieldMappings = nestedFields.get(nestedPath);
                 }
 
@@ -118,7 +121,8 @@ public abstract class AbstractDao {
         }
 
         for (String nestedPath : nestedFields.keySet()) {
-            extendQueryWithNestedFieldsWithSameNestedPath(boolQueryBuilder, operator, nestedPath, nestedFields.get(nestedPath));
+            extendQueryWithNestedFieldsWithSameNestedPath(boolQueryBuilder, operator, nestedPath, nestedFields.get(
+                    nestedPath));
         }
 
         for (FieldMapping field : nonNestedFields) {
@@ -129,28 +133,71 @@ public abstract class AbstractDao {
             extendQueryWithQuery(boolQueryBuilder, operator, nameResolutionQuery);
         }
 
-        //TODO Geopoint afhandelen
+        if (params.containsKey("_geoShape")) {
+            extendQueryWithGeoShapeFilter(boolQueryBuilder, params.getParam("_geoShape"));
+        }
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
-                .setQuery(filteredQuery(boolQueryBuilder, null))
-                .addSort(fieldSort);
+                                                                      .setQuery(filteredQuery(boolQueryBuilder, null))
+                                                                      .addSort(fieldSort);
 
         setSize(params, searchRequestBuilder);
 
         logger.info(searchRequestBuilder.toString());
 
-        return searchRequestBuilder
-                .execute().actionGet();
+        return searchRequestBuilder.execute().actionGet();
+    }
+
+    private void extendQueryWithGeoShapeFilter(BoolQueryBuilder boolQueryBuilder, String geoShape) {
+        GeoJsonObject geo;
+        List<Coordinate> coordinates = new ArrayList<>();
+        try {
+            geo = getObjectMapper().readValue(geoShape, GeoJsonObject.class);
+            if (geo instanceof MultiPolygon) {
+                List<List<List<LngLatAlt>>> coordinatesMultiPolygon = ((MultiPolygon) geo).getCoordinates();
+                if (coordinatesMultiPolygon != null) {
+                    for (List<List<LngLatAlt>> lists : coordinatesMultiPolygon) {
+                        getCoordinatesFromPolygon(coordinates, lists);
+                    }
+                }
+            } else if (geo instanceof Polygon) {
+                List<List<LngLatAlt>> coordinatesPolygon = ((Polygon) geo).getCoordinates();
+                if (coordinatesPolygon != null) {
+                    getCoordinatesFromPolygon(coordinates, coordinatesPolygon);
+                }
+            }
+        } catch (IOException e) {
+            //todo replace stacktrace
+            e.printStackTrace();
+        }
+
+        boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
+                                          geoShapeFilter(
+                                                  "gatheringEvent.siteCoordinates.point",
+                                                  newPolygon().points(
+                                                          coordinates.toArray(
+                                                                  new Coordinate[coordinates.size()])),
+                                                  ShapeRelation.WITHIN)));
+    }
+
+    private void getCoordinatesFromPolygon(List<Coordinate> coordinates, List<List<LngLatAlt>> coordinatesPolygon) {
+        for (List<LngLatAlt> lngLatAlts : coordinatesPolygon) {
+            for (LngLatAlt lngLatAlt : lngLatAlts) {
+                double longitude = lngLatAlt.getLongitude();
+                double latitude = lngLatAlt.getLatitude();
+                coordinates.add(new Coordinate(latitude, longitude));
+            }
+        }
     }
 
     /**
      * Checks if the given fields are allowed based on the provided list of allowed fields.
      *
-     * @param fields the field to check
+     * @param fields        the field to check
      * @param allowedFields list of allowed fields
      * @return a new list with the allowed fields
      */
-    protected List<FieldMapping> filterAllowedFieldMappings(List<FieldMapping> fields, List<String> allowedFields){
+    protected List<FieldMapping> filterAllowedFieldMappings(List<FieldMapping> fields, List<String> allowedFields) {
         List<FieldMapping> approvedFields = new ArrayList<>();
         for (FieldMapping field : fields) {
             if (allowedFields.contains(field.getFieldName())) {
@@ -176,10 +223,11 @@ public abstract class AbstractDao {
         }
     }
 
-    private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator, String nestedPath, List<FieldMapping> fields) {
+    private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator,
+                                                               String nestedPath, List<FieldMapping> fields) {
         BoolQueryBuilder nestedBoolQueryBuilder = boolQuery();
         for (FieldMapping field : fields) {
-            extendQueryWithField (nestedBoolQueryBuilder, operator, field);
+            extendQueryWithField(nestedBoolQueryBuilder, operator, field);
         }
 
         NestedQueryBuilder nestedQueryBuilder = nestedQuery(nestedPath, nestedBoolQueryBuilder);

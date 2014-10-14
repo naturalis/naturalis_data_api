@@ -10,13 +10,13 @@ public class FieldMapping {
     private final String fieldName;
     private final Float boostValue;
     private final String value;
-    private final boolean nested;
+    private final String nestedPath;
 
-    public FieldMapping(String fieldName, Float boostValue, String value, boolean nested) {
+    public FieldMapping(String fieldName, Float boostValue, String value, String nestedPath) {
         this.fieldName = fieldName;
         this.boostValue = boostValue;
         this.value = value;
-        this.nested = nested;
+        this.nestedPath = nestedPath;
     }
 
     public String getFieldName() {
@@ -31,16 +31,11 @@ public class FieldMapping {
         return value;
     }
 
-    public boolean isNested() {
-        return nested;
-    }
-
     /**
      * Get the nested path of the property.
      */
     public String getNestedPath(){
-        int lastPathIndex = fieldName.lastIndexOf(".");
-        return fieldName.substring(0, lastPathIndex);
+        return nestedPath;
     }
 
 }

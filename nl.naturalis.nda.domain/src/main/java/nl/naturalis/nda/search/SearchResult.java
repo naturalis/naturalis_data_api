@@ -9,6 +9,7 @@ public class SearchResult<T> {
 	private String actualType;
 	private List<Link> links;
 	private List<MatchInfo<?>> matchInfo;
+	private List<NameResolutionInfo> nameResolutionInfo;
 	private T result;
 
 
@@ -107,6 +108,18 @@ public class SearchResult<T> {
 	public void setLinks(List<Link> links)
 	{
 		this.links = links;
+	}
+
+
+	public List<NameResolutionInfo> getNameResolutionInfo()
+	{
+		return nameResolutionInfo;
+	}
+
+
+	public void setNameResolutionInfo(List<NameResolutionInfo> nameResolutionInfo)
+	{
+		this.nameResolutionInfo = nameResolutionInfo;
 	}
 
 }

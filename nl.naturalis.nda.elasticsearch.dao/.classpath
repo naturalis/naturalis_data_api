@@ -17,5 +17,10 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/elasticsearch-1.3.4-tests.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-all-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-test-framework-4.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/randomizedtesting-runner-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/geojson-jackson-1.2.jar"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

@@ -83,8 +83,8 @@ public class CoLTaxonSynonymEnricher {
 		try {
 
 			++lineNo;
-			lnr.readLine(); // Skip header	
-
+			lnr.readLine(); // Skip header
+			
 			ESTaxon taxon;
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
@@ -116,6 +116,9 @@ public class CoLTaxonSynonymEnricher {
 								objects.clear();
 								ids.clear();
 							}
+						}
+						else {
+							logger.debug("Synonym already exists: " + synonym);
 						}
 					}
 				}

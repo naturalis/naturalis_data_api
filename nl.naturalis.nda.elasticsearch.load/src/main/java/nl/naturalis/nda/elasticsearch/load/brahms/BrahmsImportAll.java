@@ -25,7 +25,7 @@ public class BrahmsImportAll {
 		logger.info("-----------------------------------------------------------------");
 
 		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
-		
+
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_SPECIMEN);
@@ -41,17 +41,17 @@ public class BrahmsImportAll {
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-				index.addType(LUCENE_TYPE_SPECIMEN, mapping);				
+				index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 			}
 			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
 				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);				
+				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
 			}
 		}
-		
+
 		try {
 			BrahmsImportAll importer = new BrahmsImportAll(index);
 			importer.importCsvFiles();
@@ -97,7 +97,7 @@ public class BrahmsImportAll {
 			logger.info("No CSV files to process");
 			return;
 		}
-		
+
 		int maxRecords = Integer.parseInt(System.getProperty("maxRecords", "0"));
 
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);

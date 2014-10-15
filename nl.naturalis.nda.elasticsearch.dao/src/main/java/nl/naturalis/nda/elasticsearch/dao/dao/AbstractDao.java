@@ -9,6 +9,10 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.geo.ShapeRelation;
+import org.elasticsearch.common.geo.builders.BasePolygonBuilder;
+import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
+import org.elasticsearch.common.geo.builders.PolygonBuilder;
+import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
@@ -27,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -49,7 +54,7 @@ public abstract class AbstractDao {
     protected static final String ES_HOST = "localhost";
     protected static final int ES_PORT = 9300;
     protected static final String CLUSTER_NAME_PROPERTY = "cluster.name";
-    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-byron";
+    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-roberto";
     //todo Aparte index maken voor specimen, taxon en multimedia. Deze property wijzigen
     protected static final String INDEX_NAME = "nda";
     //todo Type is na bovenstaande todo wijziginge niet meer nodig
@@ -150,37 +155,43 @@ public abstract class AbstractDao {
 
     private void extendQueryWithGeoShapeFilter(BoolQueryBuilder boolQueryBuilder, String geoShape) {
         GeoJsonObject geo;
-        List<Coordinate> coordinates = new ArrayList<>();
+        ShapeBuilder shapeBuilder = null;
         try {
             geo = getObjectMapper().readValue(geoShape, GeoJsonObject.class);
             if (geo instanceof MultiPolygon) {
                 List<List<List<LngLatAlt>>> coordinatesMultiPolygon = ((MultiPolygon) geo).getCoordinates();
                 if (coordinatesMultiPolygon != null) {
+                    MultiPolygonBuilder multiPolygonBuilder = newMultiPolygon();
                     for (List<List<LngLatAlt>> lists : coordinatesMultiPolygon) {
-                        getCoordinatesFromPolygon(coordinates, lists);
+                        Coordinate[] polygon = getCoordinatesFromPolygon(lists);
+                        BasePolygonBuilder basePolygonBuilder = new PolygonBuilder();
+                        basePolygonBuilder.points(polygon);
+                        multiPolygonBuilder.polygon(basePolygonBuilder);
                     }
+                    shapeBuilder = multiPolygonBuilder;
                 }
             } else if (geo instanceof Polygon) {
-                List<List<LngLatAlt>> coordinatesPolygon = ((Polygon) geo).getCoordinates();
-                if (coordinatesPolygon != null) {
-                    getCoordinatesFromPolygon(coordinates, coordinatesPolygon);
+                List<List<LngLatAlt>> coordinates = ((Polygon) geo).getCoordinates();
+                if (coordinates != null) {
+                    Coordinate[] polygon = getCoordinatesFromPolygon(coordinates);
+                    shapeBuilder = newPolygon().points(polygon);
                 }
             }
         } catch (IOException e) {
-            //todo replace stacktrace
-            e.printStackTrace();
+            logger.info(String.format("Could not get coordinates from provided geoShape %s", geoShape), e);
         }
 
-        boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
-                                          geoShapeFilter(
-                                                  "gatheringEvent.siteCoordinates.point",
-                                                  newPolygon().points(
-                                                          coordinates.toArray(
-                                                                  new Coordinate[coordinates.size()])),
-                                                  ShapeRelation.WITHIN)));
+        if (shapeBuilder != null) {
+            boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
+                    geoShapeFilter(
+                            "gatheringEvent.siteCoordinates.point",
+                            shapeBuilder,
+                            ShapeRelation.WITHIN)));
+        }
     }
 
-    private void getCoordinatesFromPolygon(List<Coordinate> coordinates, List<List<LngLatAlt>> coordinatesPolygon) {
+    private Coordinate[] getCoordinatesFromPolygon(List<List<LngLatAlt>> coordinatesPolygon) {
+        List<Coordinate> coordinates = new ArrayList<>();
         for (List<LngLatAlt> lngLatAlts : coordinatesPolygon) {
             for (LngLatAlt lngLatAlt : lngLatAlts) {
                 double longitude = lngLatAlt.getLongitude();
@@ -188,6 +199,7 @@ public abstract class AbstractDao {
                 coordinates.add(new Coordinate(latitude, longitude));
             }
         }
+        return coordinates.toArray(new Coordinate[coordinates.size()]);
     }
 
     /**

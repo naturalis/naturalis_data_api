@@ -1,6 +1,7 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import org.junit.Test;
@@ -33,8 +34,9 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
-        String specimenSource = documentCreator.createSpecimenSource("L  0191413", "Meijer, W.", "Plantae", "Xylopia", "ferruginea", null);
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(specimenSource).setRefresh(true).execute().actionGet();
+        ESSpecimen esSpecimen = createSpecimen();
+
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
         String taxonSource = documentCreator.createTaxonSource("Xylopia", "ferruginea", null);
         client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(taxonSource).setRefresh(true).execute().actionGet();
 

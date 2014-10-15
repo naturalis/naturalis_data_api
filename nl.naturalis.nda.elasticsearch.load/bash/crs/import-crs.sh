@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Rebuild Specimen and MultiMediaObject document types?
 rebuild='false'
 if [ "${1}" == 'rebuild' ]
@@ -17,17 +19,12 @@ forceRestart=true
 # Number of ES index requests bundled together
 bulkRequestSize=1000
 
+confdir='/opt/nda-es-conf'
 libdir='/opt/nda-es-lib'
 
-# Put load.jar ahead of classpath, so logback settings are
-# picked up from there
-classpath="${libdir}/nl.naturalis.nda.elasticsearch.load.jar"
+classpath="${confdir}"
 for file in `ls ${libdir}`
 do
-  if [ "${file}" == "nl.naturalis.nda.elasticsearch.load.jar" ]
-  then
-    continue
-  fi
   classpath="${classpath}:${libdir}/${file}"
 done
 #echo $classpath

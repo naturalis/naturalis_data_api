@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.test.ElasticsearchIntegrationTest;
@@ -17,6 +18,10 @@ import java.io.InputStreamReader;
 public class DaoIntegrationTest extends ElasticsearchIntegrationTest {
 
     public static final String INDEX_NAME = "nda";
+    protected static final String SPECIMEN_INDEX_TYPE = "Specimen";
+    protected static final String TAXON_INDEX_TYPE = "Taxon";
+    protected TestDocumentCreator documentCreator;
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Settings indexSettings() {

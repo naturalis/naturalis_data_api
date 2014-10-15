@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
@@ -17,11 +16,8 @@ import static java.util.Arrays.asList;
  * @author Quinten Krijger
  */
 public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
-    protected static final String SPECIMEN_TYPE = "Specimen";
-    protected static final String TAXON_TYPE = "Taxon";
+
     protected BioportalSpecimenDao dao;
-    protected TestDocumentCreator documentCreator;
-    protected ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @Before
@@ -47,16 +43,19 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
         esSpecimen.setGatheringEvent(gatheringEvent);
 
         SpecimenIdentification specimenIdentification = new SpecimenIdentification();
-        ScientificName scientificName = new ScientificName();
-        scientificName.setGenusOrMonomial("Xylopia");
-        scientificName.setSpecificEpithet("ferruginea");
 
         DefaultClassification defaultClassification = new DefaultClassification();
         defaultClassification.setKingdom("Plantae");
-
-        specimenIdentification.setScientificName(scientificName);
         specimenIdentification.setDefaultClassification(defaultClassification);
+
+        ScientificName scientificName = new ScientificName();
+        scientificName.setGenusOrMonomial("Xylopia");
+        scientificName.setSpecificEpithet("ferruginea");
+        specimenIdentification.setScientificName(scientificName);
+
         esSpecimen.setIdentifications(asList(specimenIdentification));
 
         return esSpecimen;
-    }}
+    }
+
+}

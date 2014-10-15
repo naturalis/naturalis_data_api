@@ -97,11 +97,11 @@ public abstract class AbstractDao {
      * @param params
      * @param fields
      * @param type
-     * @param nameResolutionQuery ignored if null
+     * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
      * @return
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   QueryBuilder nameResolutionQuery) {
+                                                   QueryBuilder prebuiltQuery) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
 
@@ -134,8 +134,8 @@ public abstract class AbstractDao {
             extendQueryWithField(boolQueryBuilder, operator, field);
         }
 
-        if (nameResolutionQuery != null) {
-            extendQueryWithQuery(boolQueryBuilder, operator, nameResolutionQuery);
+        if (prebuiltQuery != null) {
+            extendQueryWithQuery(boolQueryBuilder, operator, prebuiltQuery);
         }
 
         if (params.containsKey("_geoShape")) {

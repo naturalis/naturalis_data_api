@@ -175,11 +175,13 @@ public class BioportalSpecimenDao extends AbstractDao {
      * @return
      */
     public ResultGroupSet<Specimen, String> specimenNameSearch(QueryParams params) {
-        // TODO: name resolution, i.e. searching taxons and extends params, OR do a second search with retrieved taxons
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, Arrays.asList(specimenNameSearchFieldNames));
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE);
+        String vernacularName = params.getFirst("vernacularNames.name");
+        SearchResponse searchResponse = (vernacularName == null || vernacularName.isEmpty())
+                ? executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE)
+                : executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, buildNameResolutionQuery(vernacularName));
 
         return responseToSpecimenResultGroupSet(searchResponse);
 
@@ -213,8 +215,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, new ArrayList<>(specimenSearchFieldNames));
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE,
-                buildNameResolutionQuery(params.getParam("identifications.vernacularNames.name")));
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE);
 
         return responseToSpecimenResultGroupSet(searchResponse);
     }
@@ -264,31 +265,36 @@ public class BioportalSpecimenDao extends AbstractDao {
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("_maxResults", "50");
         nameResTaxonQueryParams.add("vernacularNames.name", searchTerm);
-        nameResTaxonQueryParams.add("synonyms.genusOrMonomial", searchTerm);
-        nameResTaxonQueryParams.add("synonyms.specificEpithet", searchTerm);
-        nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", searchTerm);
+//        nameResTaxonQueryParams.add("synonyms.genusOrMonomial", searchTerm);
+//        nameResTaxonQueryParams.add("synonyms.specificEpithet", searchTerm);
+//        nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", searchTerm);
         SearchResultSet<Taxon> nameResTaxons = taxonDao.taxonExtendedSearch(nameResTaxonQueryParams);
 
         BoolQueryBuilder nameResQueryBuilder = boolQuery();
         for (SearchResult<Taxon> taxonSearchResult : nameResTaxons.getSearchResults()) {
             Taxon taxon = taxonSearchResult.getResult();
             BoolQueryBuilder scientificNameQuery = boolQuery();
-            scientificNameQuery.must(
-                    termQuery("identifications.scientificName.genusOrMonomial",
-                            taxon.getValidName().getGenusOrMonomial())
-            );
-            scientificNameQuery.must(
-                    termQuery("identifications.scientificName.specificEpithet",
-                            taxon.getValidName().getSpecificEpithet())
-            );
-            scientificNameQuery.must(
-                    termQuery("identifications.scientificName.infraspecificEpithet",
-                            taxon.getValidName().getInfraspecificEpithet())
-            );
-
+            if (taxon.getValidName().getGenusOrMonomial() != null) {
+                scientificNameQuery.must(
+                        termQuery("identifications.scientificName.genusOrMonomial",
+                                taxon.getValidName().getGenusOrMonomial())
+                );
+            }
+            if (taxon.getValidName().getSpecificEpithet() != null) {
+                scientificNameQuery.must(
+                        termQuery("identifications.scientificName.specificEpithet",
+                                taxon.getValidName().getSpecificEpithet())
+                );
+            }
+            if (taxon.getValidName().getInfraspecificEpithet() != null) {
+                scientificNameQuery.must(
+                        termQuery("identifications.scientificName.infraspecificEpithet",
+                                taxon.getValidName().getInfraspecificEpithet())
+                );
+            }
             nameResQueryBuilder.should(scientificNameQuery);
         }
-        NestedQueryBuilder nestedNameResQuery = nestedQuery("identifications.scientificName", nameResQueryBuilder);
+        NestedQueryBuilder nestedNameResQuery = nestedQuery("identifications", nameResQueryBuilder);
         nestedNameResQuery.boost(0.5f);
         return nestedNameResQuery;
     }

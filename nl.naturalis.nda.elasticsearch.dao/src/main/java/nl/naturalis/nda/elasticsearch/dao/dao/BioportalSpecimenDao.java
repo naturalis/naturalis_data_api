@@ -8,10 +8,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -21,27 +18,17 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
+import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 public class BioportalSpecimenDao extends AbstractDao {
-
-    private static final Logger logger = LoggerFactory.getLogger(BioportalSpecimenDao.class);
 
     private static final String[] specimenNameSearchFieldNames = {
             "identifications.defaultClassification.kingdom",
@@ -49,11 +36,16 @@ public class BioportalSpecimenDao extends AbstractDao {
             "identifications.defaultClassification.className",
             "identifications.defaultClassification.order",
             "identifications.defaultClassification.family",
+            "identifications.defaultClassification.genus",
+            "identifications.defaultClassification.subgenus",
+            "identifications.defaultClassification.specificEpithet",
+            "identifications.defaultClassification.infraspecificEpithet",
             "identifications.systemClassification.name",
             "identifications.scientificName.genusOrMonomial",
+            "identifications.scientificName.subgenus",
             "identifications.scientificName.specificEpithet",
             "identifications.scientificName.infraspecificEpithet",
-            "gatheringEvent.gatheringPersons.fullName",
+            "identifications.vernacularNames.name",
             "gatheringEvent.dateTimeBegin",
             "gatheringEvent.siteCoordinates.point"
     };
@@ -63,8 +55,11 @@ public class BioportalSpecimenDao extends AbstractDao {
             "typeStatus",
             "phaseOrStage",
             "sex",
+            "collectorsFieldNumber",
             "gatheringEvent.localityText",
             "gatheringEvent.gatheringPersons.fullName",
+            "gatheringEvent.gatheringOrganisations.name",
+            "gatheringEvent.dateTimeBegin",
             "gatheringEvent.siteCoordinates.point")
     );
 
@@ -73,38 +68,6 @@ public class BioportalSpecimenDao extends AbstractDao {
     public BioportalSpecimenDao(Client esClient, String ndaIndexName, BioportalTaxonDao taxonDao) {
         super(esClient, ndaIndexName);
         this.taxonDao = taxonDao;
-    }
-
-    public static void main(String[] args) throws JsonProcessingException {
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put(CLUSTER_NAME_PROPERTY, CLUSTER_NAME_PROPERTY_VALUE)
-                .build();
-        Client esClient = new TransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress(ES_HOST, ES_PORT));
-
-        BioportalTaxonDao taxonDao = new BioportalTaxonDao(esClient, INDEX_NAME);
-        BioportalSpecimenDao dao = new BioportalSpecimenDao(esClient, INDEX_NAME, taxonDao);
-
-        logger.info("\n");
-        String term = "Meijer, W.";
-        String orderField = "gatheringEvent.dateTimeBegin";
-        logger.info("------ Firing 'specimenNameSearch' query ------");
-        logger.info("Searching specimens with term: '" + term + "' and ordering by field: '" + orderField + "'");
-        ResultGroupSet<Specimen, String> specimenSearchResultSet = dao.specimenSearch(term, orderField);
-        logger.info(getObjectMapper().writeValueAsString(specimenSearchResultSet));
-
-        logger.info("\n");
-        logger.info("------ Firing 'specimenNameSearch' query ------");
-        QueryParams params = new QueryParams();
-        params.add("unitID", "0191413");
-//        params.add("gatheringEvent.gatheringPersons.fullName", "Meijer, W.");
-        params.add("gatheringAgent", "Meijer, W.");
-        params.add("_andOr", "OR");
-        logger.info("Searching specimens with params: '" + params.toString() + "'");
-
-        ResultGroupSet<Specimen, String> specimenExtendedNameSearchResultSet = dao.specimenNameSearch(params);
-        logger.info("Found: " + specimenExtendedNameSearchResultSet.getTotalSize());
-        logger.info(getObjectMapper().writeValueAsString(specimenExtendedNameSearchResultSet));
     }
 
     /**
@@ -122,32 +85,29 @@ public class BioportalSpecimenDao extends AbstractDao {
      * 6. gatheringEvent.gatheringPersons.fullName
      * 7. gatheringEvent.siteCoordinates.point (= geo search)
      *
-     * @param searchTerm The search term to match
-     * @param sortField  The field to sort on. Fields must be mapped according to the mapping
-     *                   mechanism described above. Special sort value: “_score” (sort by relevance). In practice
-     *                   sorting is only allowed on _score and on identifications.scientificName.fullScientificName.
-     *                   This is an optional parameter. By default sorting is done on _score.
+     * @param params A {@link QueryParams} object containing:
+     *               1. fields ... . A variable number of filters for fields. For example, the
+     *               QueryParams object may contain a key “defaultClassification.genus” with a value of “Homo” and a
+     *               key “defaultClassification.specificEpithet” with a value of “sapiens”. Fields must be mapped
+     *               according to the mapping mechanism described above. Thus, if the QueryParams object contains a key
+     *               “genus”, that key must be mapped to the “defaultClassification.genus” field.
+     *               2. _andOr. An enumerated value with “AND” and “OR” as valid values. “AND” means all fields must
+     *               match. “OR” means some fields must match. This is an optional parameter. By default only some
+     *               fields must match.
+     *               3. _sort. The field to sort on. Fields must be mapped according to the mapping mechanism described
+     *               above. Special sort value: “_score” (sort by relevance). In practice sorting is only allowed on
+     *               _score and on identifications.scientificName.fullScientificName. This is an optional parameter. By
+     *               default sorting is done on _score.
      * @return {@link nl.naturalis.nda.search.ResultGroupSet} containing buckets of {@link
      * nl.naturalis.nda.domain.Specimen} with the scientificName as the key
      */
-    public ResultGroupSet<Specimen, String> specimenSearch(String searchTerm, String sortField) {
-        //todo geo search on field:
-        if (sortField == null || sortField.trim().equalsIgnoreCase("")) {
-            sortField = "_score";
-        }
-        FieldSortBuilder fieldSort = fieldSort(sortField);
-        SearchResponse response = newSearchRequest()
-                .setTypes(SPECIMEN_TYPE)
-                .setQuery(
-                        multiMatchQuery(
-                                searchTerm,
-                                specimenSearchFieldNames.toArray(new String[specimenSearchFieldNames.size()])
-                        )
-                )
-                .addSort(fieldSort)
-                .execute().actionGet();
+    public ResultGroupSet<Specimen, String> specimenSearch(QueryParams params) {
+        List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
+        List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, new ArrayList<>(specimenSearchFieldNames));
 
-        return responseToSpecimenResultGroupSet(response);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE);
+
+        return responseToSpecimenResultGroupSet(searchResponse);
     }
 
     /**
@@ -189,45 +149,13 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
     /**
-     * Retrieves specimens matching a variable number of criteria. Rather than having one search term and a fixed set
-     * of fields to match the search term against, the fields to query and the values to look for are specified as
-     * parameters to this method. Nevertheless, the fields will always belong to the list specified in the
-     * {@link #specimenSearch(String, String)} method.
-     * <p/>
-     * N.B. Name resolution is not used in this method
-     *
-     * @param params A {@link QueryParams} object containing:
-     *               1. fields ... . A variable number of filters for fields. For example, the
-     *               QueryParams object may contain a key “defaultClassification.genus” with a value of “Homo” and a key
-     *               “defaultClassification.specificEpithet” with a value of “sapiens”. Fields must be mapped according
-     *               to the mapping mechanism described above. Thus, if the QueryParams object contains a key “genus”,
-     *               that key must be mapped to the “defaultClassification.genus” field.
-     *               2. _andOr. An enumerated value with “AND” and “OR” as valid values. “AND” means all fields must
-     *               match. “OR” means some fields must match. This is an optional parameter. By default only some
-     *               fields must match.
-     *               3. _sort. The field to sort on. Fields must be mapped according to the mapping mechanism described
-     *               above. Special sort value: “_score” (sort by relevance). In practice sorting is only allowed on
-     *               _score and on identifications.scientificName.fullScientificName. This is an optional parameter. By
-     *               default sorting is done on _score.
-     * @return
-     */
-    public ResultGroupSet<Specimen, String> specimenExtendedSearch(QueryParams params) {
-        List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
-        List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, new ArrayList<>(specimenSearchFieldNames));
-
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE);
-
-        return responseToSpecimenResultGroupSet(searchResponse);
-    }
-
-    /**
      * Retrieves a single Specimen by its unitID. A specimen retrieved through this method is always retrieved through
      * a REST link in the response from either {@link #specimenNameSearch(QueryParams)} or
-     * {@link #specimenSearch(String, String)}. This method is aware of the result set generated by those methods and
+     * {@link #specimenSearch(QueryParams)}. This method is aware of the result set generated by those methods and
      * is therefore capable of generating REST links to the previous and next
      * specimen in the result set. All parameters passed to specimenNameSearch or specimenNameSearch will also be passed to
      * this method. Basically, this method has to re-execute the query executed by
-     * {@link #specimenNameSearch(QueryParams)} or {@link #specimenSearch(String, String)},
+     * {@link #specimenNameSearch(QueryParams)} or {@link #specimenSearch(QueryParams)},
      * pick out the specimen with the specified unitID, and generate REST links to the previous and next specimen in
      * the
      * result set.
@@ -249,15 +177,76 @@ public class BioportalSpecimenDao extends AbstractDao {
      *               default sorting is done on _score.
      * @return
      */
-    public ResultGroupSet<Specimen, String> getSpecimenDetailWithinSearchResult(QueryParams params) {
-        String sortField = getScoreFieldFromQueryParams(params);
-        FieldSortBuilder fieldSort = fieldSort(sortField);
-        //todo needs to be implemented
+    public SearchResultSet<Specimen> getSpecimenDetailWithinSearchResult(QueryParams params) {
+        String source = params.getParam("_source");
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = new ResultGroupSet<>();
+        if (source.equals("SPECIMEN_NAME_SEARCH")) {
+            specimenResultGroupSet = specimenNameSearch(params);
+        } else if (source.equals("SPECIMEN_SEARCH")) {
+            specimenResultGroupSet = specimenSearch(params);
+        }
 
-        return responseToSpecimenResultGroupSet(null);
+        return createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
     }
 
     // ==================================================== Helpers ====================================================
+
+    protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params, ResultGroupSet<Specimen, String> specimenResultGroupSet) {
+        SearchResultSet<Specimen> searchResultSet = new SearchResultSet<>();
+        List<Link> links = new ArrayList<>();
+
+        String unitID = params.getParam("unitID");
+
+        Specimen foundSpecimenForUnitId = null;
+        SearchResult<Specimen> previousSpecimen = null;
+        SearchResult<Specimen> nextSpecimen = null;
+
+        List<ResultGroup<Specimen, String>> allBuckets = specimenResultGroupSet.getResultGroups();
+        for (int currentBucketIndex = 0; currentBucketIndex < allBuckets.size(); currentBucketIndex++) {
+            ResultGroup<Specimen, String> bucket = allBuckets.get(currentBucketIndex);
+            List<SearchResult<Specimen>> resultsInBucket = bucket.getSearchResults();
+            for (int indexInCurrentBucket = 0; indexInCurrentBucket < resultsInBucket.size(); indexInCurrentBucket++) {
+                SearchResult searchResult = resultsInBucket.get(indexInCurrentBucket);
+                Specimen specimen = (Specimen) searchResult.getResult();
+                if (unitID.equals(specimen.getUnitID())) {
+                    foundSpecimenForUnitId = specimen;
+                    if (indexInCurrentBucket == 0) {
+                        if (currentBucketIndex != 0) {
+                            List<SearchResult<Specimen>> previousBucket = allBuckets.get(currentBucketIndex - 1).getSearchResults();
+                            previousSpecimen = previousBucket.get(previousBucket.size() - 1);
+                        }
+                    } else {
+                        previousSpecimen = bucket.getSearchResults().get(indexInCurrentBucket - 1);
+                    }
+
+                    if (indexInCurrentBucket == resultsInBucket.size() - 1) {
+                        if (currentBucketIndex != allBuckets.size() - 1) {
+                            List<SearchResult<Specimen>> nextBucket = allBuckets.get(currentBucketIndex + 1).getSearchResults();
+                            nextSpecimen = nextBucket.get(0);
+                        }
+                    } else {
+                        nextSpecimen = bucket.getSearchResults().get(indexInCurrentBucket + 1);
+                    }
+                    break;
+                }
+            }
+            if (foundSpecimenForUnitId != null) {
+                break;
+            }
+        }
+
+        //TODO Change links to correct url and href
+        if (previousSpecimen != null) {
+            links.add(new Link("http://test.nl?unitId=" + previousSpecimen.getResult().getUnitID(), "_previous"));
+        }
+        if (nextSpecimen != null) {
+            links.add(new Link("http://test.nl?unitId=" + nextSpecimen.getResult().getUnitID(), "_next"));
+        }
+
+        searchResultSet.addSearchResult(foundSpecimenForUnitId);
+        searchResultSet.setLinks(links);
+        return searchResultSet;
+    }
 
     private NestedQueryBuilder buildNameResolutionQuery(String searchTerm) {
         // nameRes = name resolution
@@ -300,6 +289,8 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response) {
+        // TODO links
+        // TODO searchTerms
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
         HashMap<String, List<Specimen>> tempMap = new HashMap<>();
 
@@ -307,8 +298,11 @@ public class BioportalSpecimenDao extends AbstractDao {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
             Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
 
+            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer);
+            transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
+
             List<SpecimenIdentification> identifications = transfer.getIdentifications();
-            if(identifications != null) {
+            if (identifications != null) {
                 for (SpecimenIdentification specimenIdentification : identifications) {
                     String scientificName = specimenIdentification.getScientificName().getFullScientificName();
 
@@ -326,7 +320,11 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         for (Map.Entry<String, List<Specimen>> stringListEntry : tempMap.entrySet()) {
             ResultGroup<Specimen, String> resultGroup = new ResultGroup<>();
-            resultGroup.setSharedValue(stringListEntry.getKey());
+            String scientificName = stringListEntry.getKey();
+            resultGroup.setSharedValue(scientificName);
+
+            //todo lookup in Taxon and add link
+
             List<Specimen> value = stringListEntry.getValue();
             for (Specimen specimen : value) {
                 resultGroup.addSearchResult(specimen);
@@ -336,6 +334,21 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
         return specimenStringResultGroupSet;
+    }
+
+    protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer) {
+        List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
+        SearchResponse searchResponse = newSearchRequest()
+                .setQuery(filteredQuery(matchAllQuery(), boolFilter()
+                        .must(termFilter("assemblageID", transfer.getAssemblageID()))
+                        .mustNot(termFilter("unitID", transfer.getUnitID()))))
+                .execute().actionGet();
+        SearchHits hits = searchResponse.getHits();
+        for (SearchHit searchHitFields : hits) {
+            ESSpecimen esSpecimenWithSameAssemblageId = getObjectMapper().convertValue(searchHitFields.getSource(), ESSpecimen.class);
+            specimensWithSameAssemblageId.add(SpecimenTransfer.transfer(esSpecimenWithSameAssemblageId));
+        }
+        return specimensWithSameAssemblageId;
     }
 
 }

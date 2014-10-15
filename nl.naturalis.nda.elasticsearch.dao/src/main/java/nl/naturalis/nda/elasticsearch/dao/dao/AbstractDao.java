@@ -142,6 +142,8 @@ public abstract class AbstractDao {
             extendQueryWithGeoShapeFilter(boolQueryBuilder, params.getParam("_geoShape"));
         }
 
+        //TODO dateTimeBegin as rangeQuery?
+
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                                                                       .setQuery(filteredQuery(boolQueryBuilder, null))
                                                                       .addSort(fieldSort);

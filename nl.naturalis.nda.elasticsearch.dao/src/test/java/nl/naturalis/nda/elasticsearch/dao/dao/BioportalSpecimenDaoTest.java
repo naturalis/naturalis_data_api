@@ -5,14 +5,42 @@ import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
+import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.SearchResultSet;
 import org.junit.Test;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 
 public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
+
+    @Test
+    public void testSpecimenSearch() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        ESSpecimen esSpecimen = createSpecimen();
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("gatheringEvent.gatheringPersons.fullName", "Meijer, W.");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+
+        assertEquals(2, specimenStringResultGroupSet.getTotalSize());
+    }
 
     @Test
     public void testExtendedNameSearch_nested_AND_query() throws Exception {
@@ -125,6 +153,32 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     }
 
     @Test
+    public void testGetOtherSpecimensWithSameAssemblageId() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        ESSpecimen esSpecimen = createSpecimen();
+        Specimen specimen = SpecimenTransfer.transfer(esSpecimen);
+
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+        esSpecimen.setUnitID("2");
+        client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+        esSpecimen.setUnitID("3");
+        esSpecimen.setAssemblageID("other");
+        client().prepareIndex(INDEX_NAME, "Specimen", "3").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(3l));
+
+        List<Specimen> otherSpecimensWithSameAssemblageId = dao.getOtherSpecimensWithSameAssemblageId(specimen);
+
+        assertEquals(1, otherSpecimensWithSameAssemblageId.size());
+        assertEquals("2", otherSpecimensWithSameAssemblageId.get(0).getUnitID());
+    }
+
+    @Test
     public void testGeoShapeMultiPolygonQuery() throws Exception {
         createIndex(INDEX_NAME);
         client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
@@ -174,6 +228,124 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testPreviousAndNextLinks() {
+        QueryParams params = new QueryParams();
+        params.add("unitID", "2");
+
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
+
+        SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
+        SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
+        assertEquals("2", specimenSearchResult.getResult().getUnitID());
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("1"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getRel().contains("3"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getHref().equals("_next"));
+    }
+
+    @Test
+    public void testPreviousAndNextLinks_lastItemInSecondBucket() {
+        QueryParams params = new QueryParams();
+        params.add("unitID", "6");
+
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
+
+        SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
+        SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
+        assertEquals("6", specimenSearchResult.getResult().getUnitID());
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("5"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getRel().contains("7"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getHref().equals("_next"));
+    }
+
+    @Test
+    public void testPreviousAndNextLinks_firstItemInSecondBucket() {
+        QueryParams params = new QueryParams();
+        params.add("unitID", "4");
+
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
+
+        SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
+        SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
+        assertEquals("4", specimenSearchResult.getResult().getUnitID());
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("3"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getRel().contains("5"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getHref().equals("_next"));
+    }
+
+    @Test
+    public void testPreviousAndNextLinks_noPrevious() {
+        QueryParams params = new QueryParams();
+        params.add("unitID", "1");
+
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
+
+        SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
+        SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
+        assertEquals("1", specimenSearchResult.getResult().getUnitID());
+        assertEquals(1, specimenDetailSearchResultSet.getLinks().size());
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("2"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_next"));
+    }
+
+    @Test
+    public void testPreviousAndNextLinks_noNext() {
+        QueryParams params = new QueryParams();
+        params.add("unitID", "9");
+
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
+
+        SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
+        SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
+        assertEquals("9", specimenSearchResult.getResult().getUnitID());
+        assertEquals(1, specimenDetailSearchResultSet.getLinks().size());
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("8"));
+        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
+    }
+
+    private ResultGroupSet<Specimen, String> createSpecimenResultGroupSet() {
+        ResultGroupSet<Specimen, String> specimenResultGroupSet = new ResultGroupSet<>();
+        ResultGroup<Specimen, String> group1 = new ResultGroup<>();
+        Specimen specimen1 = newSpecimentWithUnitId("1");
+        Specimen specimen2 = newSpecimentWithUnitId("2");
+        Specimen specimen3 = newSpecimentWithUnitId("3");
+        group1.addSearchResult(specimen1);
+        group1.addSearchResult(specimen2);
+        group1.addSearchResult(specimen3);
+
+        specimenResultGroupSet.addGroup(group1);
+
+        ResultGroup<Specimen, String> group2 = new ResultGroup<>();
+        Specimen specimen4 = newSpecimentWithUnitId("4");
+        Specimen specimen5 = newSpecimentWithUnitId("5");
+        Specimen specimen6 = newSpecimentWithUnitId("6");
+        group2.addSearchResult(specimen4);
+        group2.addSearchResult(specimen5);
+        group2.addSearchResult(specimen6);
+
+        specimenResultGroupSet.addGroup(group2);
+
+        ResultGroup<Specimen, String> group3 = new ResultGroup<>();
+        Specimen specimen7 = newSpecimentWithUnitId("7");
+        Specimen specimen8 = newSpecimentWithUnitId("8");
+        Specimen specimen9 = newSpecimentWithUnitId("9");
+        group3.addSearchResult(specimen7);
+        group3.addSearchResult(specimen8);
+        group3.addSearchResult(specimen9);
+
+        specimenResultGroupSet.addGroup(group3);
+        return specimenResultGroupSet;
+    }
+
+    private Specimen newSpecimentWithUnitId(String unitId) {
+        Specimen specimen = new Specimen();
+        specimen.setUnitID(unitId);
+        return specimen;
     }
 }
 

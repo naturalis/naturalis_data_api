@@ -19,26 +19,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 public class SpecimenDao extends AbstractDao {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpecimenDao.class);
-
-
-    public static void main(String[] args) throws JsonProcessingException {
-        Settings settings = ImmutableSettings.settingsBuilder().put(CLUSTER_NAME_PROPERTY, CLUSTER_NAME_PROPERTY_VALUE)
-                                             .build();
-        Client esClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(ES_HOST,
-                                                                                                           ES_PORT));
-
-        SpecimenDao dao = new SpecimenDao(esClient, INDEX_NAME);
-
-        logger.info("\n");
-        String unitID = "L  0191413";
-        logger.info("------ Firing 'getSpecimenDetail' query ------");
-        logger.info("Retrieving specimen with unitID: '" + unitID + "'");
-        SearchResultSet<Specimen> specimenDetail = dao.getSpecimenDetail(unitID);
-        logger.info(getObjectMapper().writeValueAsString(specimenDetail.getSearchResults().get(0).getResult()));
-    }
-
-
     public SpecimenDao(Client esClient, String ndaIndexName) {
         super(esClient, ndaIndexName);
     }

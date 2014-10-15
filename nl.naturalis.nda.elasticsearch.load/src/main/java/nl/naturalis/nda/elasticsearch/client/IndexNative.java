@@ -1,7 +1,8 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -75,15 +76,20 @@ public class IndexNative implements Index {
 		if (localClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			Properties props = new Properties();
-			InputStream is = IndexNative.class.getResourceAsStream("/nl.naturalis.nda.elasticsearch.load.properties");
-			if (is == null) {
-				throw new RuntimeException("Configuration file not found on classpath: nl.naturalis.nda.elasticsearch.load.properties");
+			String ndaConfDir = System.getProperty("ndaConfDir");
+			if (ndaConfDir == null) {
+				throw new RuntimeException("Missing system property: \"ndaConfDir\"");
+			}
+			File dir = new File(ndaConfDir);
+			if (!dir.isDirectory()) {
+				throw new RuntimeException(String.format("Invalid path specified for system property \"ndaConfDir\": \"%s\"", ndaConfDir));
 			}
 			try {
-				props.load(IndexNative.class.getResourceAsStream("/nl.naturalis.nda.elasticsearch.load.properties"));
+				File file = new File(dir.getCanonicalPath() + "/nda-es-loaders.properties");
+				props.load(new FileInputStream(file));
 			}
-			catch (IOException e) {
-				throw new RuntimeException(e);
+			catch (IOException e1) {
+				throw new RuntimeException("Missing file \"nda-es-loaders.properties\" under directory " + ndaConfDir);
 			}
 			String cluster = props.getProperty("elasticsearch.cluster.name");
 			if (cluster == null) {

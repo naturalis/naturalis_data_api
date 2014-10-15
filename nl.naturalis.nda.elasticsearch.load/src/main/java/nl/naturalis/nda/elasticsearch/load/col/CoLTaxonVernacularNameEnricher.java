@@ -1,5 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_TAXON;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -10,7 +14,6 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
@@ -23,15 +26,15 @@ public class CoLTaxonVernacularNameEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		String dwcaDir = System.getProperty("dwcaDir");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
-		
+
 		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
@@ -40,7 +43,7 @@ public class CoLTaxonVernacularNameEnricher {
 		finally {
 			index.getClient().close();
 		}
-		
+
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonVernacularNameEnricher.class);
@@ -69,7 +72,7 @@ public class CoLTaxonVernacularNameEnricher {
 
 		List<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
-		
+
 		int lineNo = 0;
 		int processed = 0;
 		int indexed = 0;
@@ -79,10 +82,10 @@ public class CoLTaxonVernacularNameEnricher {
 		CSVRecord record;
 
 		try {
-			
+
 			++lineNo;
 			lnr.readLine(); // Skip header				
-			
+
 			ESTaxon taxon;
 			VernacularName vn;
 			while ((line = lnr.readLine()) != null) {
@@ -94,11 +97,11 @@ public class CoLTaxonVernacularNameEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
+					String id = CoLTaxonImporter.ID_PREFIX + val(record,CsvField.taxonID.ordinal());
 					taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
 					vn = new VernacularName();
-					vn.setName(record.get(CsvField.vernacularName.ordinal()));
-					vn.setLanguage(record.get(CsvField.language.ordinal()));
+					vn.setName(val(record,CsvField.vernacularName.ordinal()));
+					vn.setLanguage(val(record, CsvField.language.ordinal()));
 					if (taxon == null) {
 						logger.debug("Orphan vernacular name: " + vn.getName());
 					}
@@ -120,7 +123,7 @@ public class CoLTaxonVernacularNameEnricher {
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
 				}
-				if(maxRecords > 0  && processed >= maxRecords) {
+				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
 				}
 				if (processed % 50000 == 0) {

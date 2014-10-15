@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_TAXON;
 
@@ -28,10 +29,10 @@ public class CoLTaxonReferenceEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		String dwcaDir = System.getProperty("dwcaDir");
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");
@@ -72,7 +73,7 @@ public class CoLTaxonReferenceEnricher {
 
 		List<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
-		
+
 		int lineNo = 0;
 		int processed = 0;
 		int indexed = 0;
@@ -82,10 +83,10 @@ public class CoLTaxonReferenceEnricher {
 		CSVRecord record;
 
 		try {
-			
+
 			++lineNo;
 			lnr.readLine(); // Skip header			
-			
+
 			ESTaxon taxon;
 			Reference reference;
 			while ((line = lnr.readLine()) != null) {
@@ -97,13 +98,13 @@ public class CoLTaxonReferenceEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.taxonID.ordinal());
+					String id = CoLTaxonImporter.ID_PREFIX + val(record, CsvField.taxonID.ordinal());
 					reference = new Reference();
-					reference.setTitleCitation(record.get(CsvField.title.ordinal()));
-					reference.setCitationDetail(record.get(CsvField.description.ordinal()));
-					Date pubDate = TransferUtil.parseDate(record.get(CsvField.date.ordinal()));
+					reference.setTitleCitation(val(record, CsvField.title.ordinal()));
+					reference.setCitationDetail(val(record, CsvField.description.ordinal()));
+					Date pubDate = TransferUtil.parseDate(val(record, CsvField.date.ordinal()));
 					reference.setPublicationDate(pubDate);
-					reference.setAuthor(new Person(record.get(CsvField.creator.ordinal())));
+					reference.setAuthor(new Person(val(record, CsvField.creator.ordinal())));
 					taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
 					if (taxon == null) {
 						logger.debug("Orphan reference: " + id);
@@ -126,7 +127,7 @@ public class CoLTaxonReferenceEnricher {
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
 				}
-				if(maxRecords > 0  && processed >= maxRecords) {
+				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
 				}
 				if (processed % 50000 == 0) {

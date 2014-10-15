@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import static nl.naturalis.nda.elasticsearch.load.CSVImporter.ival;
+import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_TAXON;
 
@@ -84,7 +86,7 @@ public class CoLTaxonSynonymEnricher {
 
 			++lineNo;
 			lnr.readLine(); // Skip header
-			
+
 			ESTaxon taxon;
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
@@ -95,13 +97,13 @@ public class CoLTaxonSynonymEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					if (getInt(record, CoLTaxonImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
+					if (ival(record, CoLTaxonImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
 						// This record contains an accepted name, not a synonym
 						++skipped;
 					}
 					else {
-						String id = CoLTaxonImporter.ID_PREFIX + record.get(CsvField.acceptedNameUsageID.ordinal());
-						String synonym = record.get(CsvField.scientificName.ordinal());
+						String id = CoLTaxonImporter.ID_PREFIX + val(record, CsvField.acceptedNameUsageID.ordinal());
+						String synonym = val(record, CsvField.scientificName.ordinal());
 						taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
 						if (taxon == null) {
 							logger.debug("Orphan synonym: " + synonym);
@@ -153,22 +155,12 @@ public class CoLTaxonSynonymEnricher {
 	private static ScientificName transfer(CSVRecord record)
 	{
 		final ScientificName sn = new ScientificName();
-		sn.setFullScientificName(record.get(CsvField.scientificName.ordinal()));
-		sn.setGenusOrMonomial(record.get(CsvField.genus.ordinal()));
-		sn.setSpecificEpithet(record.get(CsvField.specificEpithet.ordinal()));
-		sn.setInfraspecificEpithet(record.get(CsvField.infraspecificEpithet.ordinal()));
-		sn.setAuthorshipVerbatim(record.get(CsvField.scientificNameAuthorship.ordinal()));
+		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
+		sn.setGenusOrMonomial(val(record, CsvField.genus.ordinal()));
+		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
+		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
+		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
 		return sn;
-	}
-
-
-	private static int getInt(CSVRecord record, int fieldNo)
-	{
-		String s = record.get(fieldNo);
-		if (s.trim().length() == 0) {
-			return 0;
-		}
-		return Integer.parseInt(s);
 	}
 
 }

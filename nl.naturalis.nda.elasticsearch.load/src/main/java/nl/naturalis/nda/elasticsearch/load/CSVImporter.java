@@ -19,7 +19,16 @@ public abstract class CSVImporter<T> {
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
 
 
-	protected static int getInt(CSVRecord record, int fieldNo)
+	public static String val(CSVRecord record, int fieldNo)
+	{
+		String s = record.get(fieldNo);
+		if (s.trim().length() == 0) {
+			return null;
+		}
+		return s;
+	}
+
+	public static int ival(CSVRecord record, int fieldNo)
 	{
 		String s = record.get(fieldNo);
 		if (s.trim().length() == 0) {

@@ -297,6 +297,21 @@ public class BioportalSpecimenDao extends AbstractDao {
                 case IDENTIFICATIONS_VERNACULAR_NAMES_NAME:
                     nameResTaxonQueryParams.add("vernacularNames.name", field.getValue());
                     break;
+                case IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM:
+                    nameResTaxonQueryParams.add("defaultClassification.kingdom", field.getValue());
+                    break;
+                case IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME:
+                    nameResTaxonQueryParams.add("defaultClassification.className", field.getValue());
+                    break;
+                case IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY:
+                    nameResTaxonQueryParams.add("defaultClassification.family", field.getValue());
+                    break;
+                case IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER:
+                    nameResTaxonQueryParams.add("defaultClassification.order", field.getValue());
+                    break;
+                case IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM:
+                    nameResTaxonQueryParams.add("defaultClassification.phylum", field.getValue());
+                    break;
             }
         }
         if (nameResTaxonQueryParams.size() == 0) {

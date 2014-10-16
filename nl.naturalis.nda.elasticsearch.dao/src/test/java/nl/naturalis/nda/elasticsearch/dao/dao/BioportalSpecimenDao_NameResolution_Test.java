@@ -100,15 +100,109 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
     @Test
     public void testExtendedNameSearch_nameResolution_kingdom() throws Exception {
+
+        // GIVEN
         setupNameResolutionTest();
 
-        QueryParams paramsWithNameResolution = new QueryParams();
-        paramsWithNameResolution.add("kingdom", "wrong value");
-        paramsWithNameResolution.add("defaultClassification.kingdom", "Plantae");
+        QueryParams paramsWithoutNameResolution = new QueryParams();
+        paramsWithoutNameResolution.add("kingdom", "wrong value");
 
+        ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
+        assertEquals(0, preResult.getTotalSize());
+
+        // WHEN
+        QueryParams paramsWithNameResolution = new QueryParams();
+        paramsWithNameResolution.add("kingdom", "Bacteria");
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
+
+        // THEN
         assertEquals(1, resultWithName.getTotalSize());
     }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_phylum() throws Exception {
+
+        // GIVEN
+        setupNameResolutionTest();
+
+        QueryParams paramsWithoutNameResolution = new QueryParams();
+        paramsWithoutNameResolution.add("phylum", "wrong value");
+
+        ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
+        assertEquals(0, preResult.getTotalSize());
+
+        // WHEN
+        QueryParams paramsWithNameResolution = new QueryParams();
+        paramsWithNameResolution.add("phylum", "Proteobacteria");
+        ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
+
+        // THEN
+        assertEquals(1, resultWithName.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_class() throws Exception {
+
+        // GIVEN
+        setupNameResolutionTest();
+
+        QueryParams paramsWithoutNameResolution = new QueryParams();
+        paramsWithoutNameResolution.add("class", "wrong value");
+
+        ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
+        assertEquals(0, preResult.getTotalSize());
+
+        // WHEN
+        QueryParams paramsWithNameResolution = new QueryParams();
+        paramsWithNameResolution.add("class", "Alphaproteobacteria");
+        ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
+
+        // THEN
+        assertEquals(1, resultWithName.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_order() throws Exception {
+
+        // GIVEN
+        setupNameResolutionTest();
+
+        QueryParams paramsWithoutNameResolution = new QueryParams();
+        paramsWithoutNameResolution.add("order", "wrong value");
+
+        ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
+        assertEquals(0, preResult.getTotalSize());
+
+        // WHEN
+        QueryParams paramsWithNameResolution = new QueryParams();
+        paramsWithNameResolution.add("order", "Rhodobacterales");
+        ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
+
+        // THEN
+        assertEquals(1, resultWithName.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_family() throws Exception {
+
+        // GIVEN
+        setupNameResolutionTest();
+
+        QueryParams paramsWithoutNameResolution = new QueryParams();
+        paramsWithoutNameResolution.add("family", "wrong value");
+
+        ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
+        assertEquals(0, preResult.getTotalSize());
+
+        // WHEN
+        QueryParams paramsWithNameResolution = new QueryParams();
+        paramsWithNameResolution.add("family", "Rhodobacteraceae");
+        ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
+
+        // THEN
+        assertEquals(1, resultWithName.getTotalSize());
+    }
+
 
     private void setupNameResolutionTest() throws IOException {
         createIndex(INDEX_NAME);
@@ -144,12 +238,6 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
                 .setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
-
-        QueryParams params = new QueryParams();
-        params.add("kingdom", "wrong value");
-
-        ResultGroupSet<Specimen, String> resultWithoutName = dao.specimenNameSearch(params);
-        assertEquals(0, resultWithoutName.getTotalSize());
     }
 
 }

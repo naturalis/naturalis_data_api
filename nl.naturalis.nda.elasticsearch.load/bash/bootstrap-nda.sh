@@ -10,6 +10,9 @@ do
 done
 #echo $classpath
 
-java -cp ${classpath} nl.naturalis.nda.elasticsearch.load.NDASchemaManager
+JAVA_OPTS="-server -Xms256m -Xmx1024m"
+JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${confDir}"
+
+java -cp ${classpath} $JAVA_OPTS nl.naturalis.nda.elasticsearch.load.NDASchemaManager
 
 

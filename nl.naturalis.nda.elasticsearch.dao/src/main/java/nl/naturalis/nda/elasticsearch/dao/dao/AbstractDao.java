@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,19 +90,22 @@ public abstract class AbstractDao {
         return searchParamFieldMapping;
     }
 
-    protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type) {
-        return executeExtendedSearch(params, fields, type, null);
+    protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
+                                                   boolean highlighting) {
+        return executeExtendedSearch(params, fields, type, highlighting, null, Collections.<String>emptyList());
     }
 
     /**
      * @param params
      * @param fields
      * @param type
+     * @param highlighting
      * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
      * @return
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   QueryBuilder prebuiltQuery) {
+                                                   boolean highlighting, QueryBuilder prebuiltQuery,
+                                                   List<String> extraHighlightFields) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
 
@@ -147,6 +151,14 @@ public abstract class AbstractDao {
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                                                                       .setQuery(filteredQuery(boolQueryBuilder, null))
                                                                       .addSort(fieldSort);
+        if (highlighting) {
+            for (FieldMapping field : fields) {
+                searchRequestBuilder.addHighlightedField(field.getFieldName());
+            }
+            for (String fieldName : extraHighlightFields) {
+                searchRequestBuilder.addHighlightedField(fieldName);
+            }
+        }
 
         setSize(params, searchRequestBuilder);
 

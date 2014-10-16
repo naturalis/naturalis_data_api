@@ -21,7 +21,7 @@ public class BioportalTaxonDao extends AbstractDao {
     public SearchResultSet<Taxon> taxonExtendedSearch(QueryParams params) {
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fields, TAXON_TYPE);
+        SearchResponse searchResponse = executeExtendedSearch(params, fields, TAXON_TYPE, false);
 
         SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {

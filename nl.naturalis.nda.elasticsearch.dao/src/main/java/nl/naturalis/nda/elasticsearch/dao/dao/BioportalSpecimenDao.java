@@ -33,18 +33,24 @@ import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.Specim
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
     private static final String SIMPLE_SEARCH_PARAM_KEY = "_search";
+    public static final String TAXON_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
+    public static final String TAXON_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
+    public static final String TAXON_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
 
     public static class SpecimenFields {
         public static final String IDENTIFICATIONS_VERNACULAR_NAMES_NAME = "identifications.vernacularNames.name";
@@ -53,6 +59,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME = "identifications.defaultClassification.className";
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER = "identifications.defaultClassification.order";
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY = "identifications.defaultClassification.family";
+        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
+        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
+        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
     }
 
     private static final String[] specimenNameSearchFieldNames = {
@@ -66,10 +75,10 @@ public class BioportalSpecimenDao extends AbstractDao {
             "identifications.defaultClassification.specificEpithet",
             "identifications.defaultClassification.infraspecificEpithet",
             "identifications.systemClassification.name",
-            "identifications.scientificName.genusOrMonomial",
+            IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
             "identifications.scientificName.subgenus",
-            "identifications.scientificName.specificEpithet",
-            "identifications.scientificName.infraspecificEpithet",
+            IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
             IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
             "gatheringEvent.dateTimeBegin",
             "gatheringEvent.siteCoordinates.point"
@@ -130,7 +139,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, new ArrayList<>(specimenSearchFieldNames));
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, false);
 
         return responseToSpecimenResultGroupSet(searchResponse);
     }
@@ -164,7 +173,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, Arrays.asList(specimenNameSearchFieldNames));
 
         QueryBuilder nameResQuery = buildNameResolutionQuery(fieldMappings);
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, nameResQuery);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, true, nameResQuery,
+                Arrays.asList(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
+                        IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
+                        IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
 
         return responseToSpecimenResultGroupSet(searchResponse);
         // TODO: mark results from name resolution
@@ -330,19 +342,19 @@ public class BioportalSpecimenDao extends AbstractDao {
             BoolQueryBuilder scientificNameQuery = boolQuery();
             if (taxon.getValidName().getGenusOrMonomial() != null) {
                 scientificNameQuery.must(
-                        termQuery("identifications.scientificName.genusOrMonomial",
+                        matchQuery(TAXON_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
                                 taxon.getValidName().getGenusOrMonomial())
                 );
             }
             if (taxon.getValidName().getSpecificEpithet() != null) {
                 scientificNameQuery.must(
-                        termQuery("identifications.scientificName.specificEpithet",
+                        matchQuery(TAXON_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
                                 taxon.getValidName().getSpecificEpithet())
                 );
             }
             if (taxon.getValidName().getInfraspecificEpithet() != null) {
                 scientificNameQuery.must(
-                        termQuery("identifications.scientificName.infraspecificEpithet",
+                        matchQuery(TAXON_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
                                 taxon.getValidName().getInfraspecificEpithet())
                 );
             }

@@ -19,6 +19,8 @@ forceRestart=true
 # Number of ES index requests bundled together
 bulkRequestSize=1000
 
+# Directory containing all required config files. Must be
+# passed as system property, and must also be on classpath
 confdir='/opt/nda-es-conf'
 libdir='/opt/nda-es-lib'
 
@@ -30,6 +32,7 @@ done
 #echo $classpath
 
 JAVA_OPTS="-server -Xms256m -Xmx1024m"
+JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${confDir}"
 JAVA_OPTS="$JAVA_OPTS -Drebuild=${rebuild}"
 JAVA_OPTS="$JAVA_OPTS -DbulkRequestSize=${bulkRequestSize}"
 JAVA_OPTS="$JAVA_OPTS -DconfigFile=${configFile}"

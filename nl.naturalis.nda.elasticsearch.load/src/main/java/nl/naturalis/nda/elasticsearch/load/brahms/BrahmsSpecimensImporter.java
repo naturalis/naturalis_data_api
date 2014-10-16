@@ -195,18 +195,18 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
 		}
-		File[] xmlFiles = file.listFiles(new FilenameFilter() {
+		File[] csvFiles = file.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{
 				return name.toLowerCase().endsWith(".csv");
 			}
 		});
-		if (xmlFiles.length == 0) {
+		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
-		for (File f : xmlFiles) {
+		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 			if (rename) {
 				String now = new SimpleDateFormat("yyyyMMdd").format(new Date());

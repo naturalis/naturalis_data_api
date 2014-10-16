@@ -1,7 +1,11 @@
 #!/bin/sh
 
-. ./setup.sh
-echo $classpath
-#java -cp ${classpath} $JAVA_OPTS nl.naturalis.nda.elasticsearch.load.NDASchemaManager
+# WATCH OUT! Running this script will delete the entire NDA ElasticSearch
+# index and all its contents. Afterwards an empty index is created with the
+# mappings for the Taxon, Specimen and MultiMediaObject document types.
+
+. ./include.sh
+
+java -cp ${classpath} $JAVA_OPTS ${load_package}.NDASchemaManager
 
 

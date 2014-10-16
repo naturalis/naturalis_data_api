@@ -23,7 +23,7 @@ public class LoadUtil {
 	private static final Logger logger = LoggerFactory.getLogger(LoadUtil.class);
 	private static final String PROPERTY_FILE_NAME = "nda-es-loaders.properties";
 
-
+	private static ConfigObject config;
 	private static Client localClient;
 
 
@@ -41,38 +41,41 @@ public class LoadUtil {
 
 	public static ConfigObject getConfig()
 	{
-		String ndaConfDir = System.getProperty("ndaConfDir");
-		if (ndaConfDir != null) {
-			File dir = new File(ndaConfDir);
-			if (!dir.isDirectory()) {
-				throw new RuntimeException(String.format("Invalid directory specified for property \"ndaConfDir\": \"%s\"", ndaConfDir));
-			}
-			try {
-				File file = new File(dir.getCanonicalPath() + "/" + PROPERTY_FILE_NAME);
-				if (!file.isFile()) {
-					throw new RuntimeException(String.format("Configuration file missing: %s", file.getCanonicalPath()));
+		if (config == null) {
+			String ndaConfDir = System.getProperty("ndaConfDir");
+			if (ndaConfDir != null) {
+				File dir = new File(ndaConfDir);
+				if (!dir.isDirectory()) {
+					throw new RuntimeException(String.format("Invalid directory specified for property \"ndaConfDir\": \"%s\"", ndaConfDir));
 				}
-				logger.debug(String.format("Using configuration file %s", file.getCanonicalPath()));
-				return new ConfigObject(file);
+				try {
+					File file = new File(dir.getCanonicalPath() + "/" + PROPERTY_FILE_NAME);
+					if (!file.isFile()) {
+						throw new RuntimeException(String.format("Configuration file missing: %s", file.getCanonicalPath()));
+					}
+					logger.debug(String.format("Using configuration file %s", file.getCanonicalPath()));
+					return new ConfigObject(file);
+				}
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			logger.debug("Searching classpath for configuration file " + PROPERTY_FILE_NAME);
+			InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME);
+			if (is == null) {
+				throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
+			}
+			config = new ConfigObject(is);
+			try {
+				is.close();
 			}
 			catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		logger.debug("Searching classpath for configuration file " + PROPERTY_FILE_NAME);
-		InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME);
-		if (is == null) {
-			throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
-		}
-		ConfigObject result = new ConfigObject(is);
-		try {
-			is.close();
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return result;
+		return config;
 	}
+
 
 	/**
 	 * Returns {@code Client} configured using elasticsearch.yml, which should
@@ -83,34 +86,10 @@ public class LoadUtil {
 	{
 		if (localClient == null) {
 			logger.info("Initializing ElasticSearch session");
-			Properties props = new Properties();
-			String ndaConfDir = System.getProperty("ndaConfDir");
-			if (ndaConfDir == null) {
-				throw new RuntimeException("Missing system property: \"ndaConfDir\"");
-			}
-			File dir = new File(ndaConfDir);
-			if (!dir.isDirectory()) {
-				throw new RuntimeException(String.format("Invalid path specified for system property \"ndaConfDir\": \"%s\"", ndaConfDir));
-			}
-			try {
-				File file = new File(dir.getCanonicalPath() + "/nda-es-loaders.properties");
-				props.load(new FileInputStream(file));
-			}
-			catch (IOException e1) {
-				throw new RuntimeException("Missing file \"nda-es-loaders.properties\" under directory " + ndaConfDir);
-			}
-			String cluster = props.getProperty("elasticsearch.cluster.name");
-			if (cluster == null) {
-				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.cluster.name");
-			}
-			String host = props.getProperty("elasticsearch.transportaddress.host");
-			if (host == null) {
-				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.transportaddress.host");
-			}
-			String port = props.getProperty("elasticsearch.transportaddress.port");
-			if (port == null) {
-				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.transportaddress.port");
-			}
+			ConfigObject config = getConfig();
+			String cluster = config.required("elasticsearch.cluster.name");
+			String host = config.required("elasticsearch.transportaddress.host");
+			String port = config.required("elasticsearch.transportaddress.port");
 			InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, Integer.parseInt(port));
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
 			localClient = new TransportClient(settings).addTransportAddress(transportAddress);

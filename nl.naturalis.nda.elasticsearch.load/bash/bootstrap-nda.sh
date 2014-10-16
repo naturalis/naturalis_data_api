@@ -11,7 +11,7 @@ done
 #echo $classpath
 
 JAVA_OPTS="-server -Xms256m -Xmx1024m"
-JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${confDir}"
+JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${confdir}"
 
 java -cp ${classpath} $JAVA_OPTS nl.naturalis.nda.elasticsearch.load.NDASchemaManager
 

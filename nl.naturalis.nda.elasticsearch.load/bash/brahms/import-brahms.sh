@@ -25,7 +25,7 @@ done
 #echo $classpath
 
 JAVA_OPTS="-server -Xms256m -Xmx1024m"
-JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${confDir}"
+JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${confdir}"
 JAVA_OPTS="$JAVA_OPTS -DcsvDir=/opt/nda-es-data/brahms"
 JAVA_OPTS="$JAVA_OPTS -Drebuild=${rebuild}"
 JAVA_OPTS="$JAVA_OPTS -DbulkRequestSize=${bulkRequestSize}"

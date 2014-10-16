@@ -1,21 +1,20 @@
 #!/bin/sh
 
-conf_dir=/opt/nda-import/conf
-lib_dir=/opt/nda-import/lib
-load_package=nl.naturalis.nda.elasticsearch.load
+ndaConfDir=/opt/nda-import/conf
+libDir=/opt/nda-import/lib
+dataDir=/opt/nda-import/data
+loadPackage=nl.naturalis.nda.elasticsearch.load
 
-# Make ${conf_dir} the first entry on the classpath so
+# Make ${ndaConfDir} the first entry on the classpath so
 # that libraries like logback will search here first for
 # configuration files
-classpath="${conf_dir}"
+classpath="${ndaConfDir}"
 
-for file in `find ${lib_dir} -type f`
+for file in `find ${libDir} -type f`
 do
   classpath="${classpath}:${file}"
 done
 
 JAVA_OPTS="-server -Xms256m -Xmx1024m"
-# Also pass ${conf_dir} as a system property to the
-# program
-JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${conf_dir}"
+JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${ndaConfDir}"
 

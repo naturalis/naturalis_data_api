@@ -18,7 +18,7 @@ public class NDASchemaManager {
 
 	public static void main(String[] args)
 	{
-		Index index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		Index index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		NDASchemaManager nsm = new NDASchemaManager(index);
 		nsm.bootstrap();
 	}

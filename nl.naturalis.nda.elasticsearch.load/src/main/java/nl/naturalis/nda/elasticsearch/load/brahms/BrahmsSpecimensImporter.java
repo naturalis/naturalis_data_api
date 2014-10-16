@@ -25,6 +25,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -40,7 +41,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		logger.info("-----------------------------------------------------------------");
 
 		String rebuild = System.getProperty("rebuild", "false");
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_SPECIMEN);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");

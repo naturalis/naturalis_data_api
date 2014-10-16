@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load.col;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.domainobject.util.StringUtil;
@@ -22,7 +23,7 @@ public class CoLImportAll {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
 
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_TAXON);

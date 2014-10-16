@@ -14,6 +14,7 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
@@ -35,7 +36,7 @@ public class CoLTaxonVernacularNameEnricher {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
 
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
 			enricher.importCsv(dwcaDir + "/vernacular.txt");

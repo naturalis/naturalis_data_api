@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class NsrImportAll {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 		
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {

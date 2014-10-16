@@ -63,75 +63,10 @@ public class IndexNative implements Index {
 	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-	private static Client localClient;
-
-
-	/**
-	 * Returns {@code Client} configured using elasticsearch.yml, which should
-	 * be on classpath.
-	 */
-	@SuppressWarnings("resource")
-	public static final Client getDefaultClient()
-	{
-		if (localClient == null) {
-			logger.info("Initializing ElasticSearch session");
-			Properties props = new Properties();
-			String ndaConfDir = System.getProperty("ndaConfDir");
-			if (ndaConfDir == null) {
-				throw new RuntimeException("Missing system property: \"ndaConfDir\"");
-			}
-			File dir = new File(ndaConfDir);
-			if (!dir.isDirectory()) {
-				throw new RuntimeException(String.format("Invalid path specified for system property \"ndaConfDir\": \"%s\"", ndaConfDir));
-			}
-			try {
-				File file = new File(dir.getCanonicalPath() + "/nda-es-loaders.properties");
-				props.load(new FileInputStream(file));
-			}
-			catch (IOException e1) {
-				throw new RuntimeException("Missing file \"nda-es-loaders.properties\" under directory " + ndaConfDir);
-			}
-			String cluster = props.getProperty("elasticsearch.cluster.name");
-			if (cluster == null) {
-				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.cluster.name");
-			}
-			String host = props.getProperty("elasticsearch.transportaddress.host");
-			if (host == null) {
-				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.transportaddress.host");
-			}
-			String port = props.getProperty("elasticsearch.transportaddress.port");
-			if (port == null) {
-				throw new RuntimeException("Missing property in nl.naturalis.nda.elasticsearch.load.properties: elasticsearch.transportaddress.port");
-			}
-			InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, Integer.parseInt(port));
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
-			localClient = new TransportClient(settings).addTransportAddress(transportAddress);
-			ClusterStatsRequest request = new ClusterStatsRequest();
-			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			logger.debug("Cluster stats: " + response.toString());
-		}
-		return localClient;
-	}
 
 	final Client esClient;
 	final IndicesAdminClient admin;
 	final String indexName;
-
-
-	/**
-	 * Create an instance manipulating the specified index using a default ES
-	 * Java Client.
-	 * 
-	 * @param indexName The Lucene index that this instance will operate upon.
-	 * 
-	 * @see #getDefaultClient()
-	 */
-	public IndexNative(String indexName)
-	{
-		this.indexName = indexName;
-		this.esClient = getDefaultClient();
-		admin = esClient.admin().indices();
-	}
 
 
 	/**

@@ -28,6 +28,7 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.apache.commons.csv.CSVRecord;
@@ -44,7 +45,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		logger.info("-----------------------------------------------------------------");
 		
 		String rebuild = System.getProperty("rebuild", "false");
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");

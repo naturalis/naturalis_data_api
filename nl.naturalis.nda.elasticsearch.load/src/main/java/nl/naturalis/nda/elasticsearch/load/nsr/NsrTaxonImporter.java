@@ -1,5 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_TAXON;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -12,7 +15,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.load.NDASchemaManager;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.StringUtil;
@@ -25,17 +28,20 @@ public class NsrTaxonImporter {
 
 	public static void main(String[] args) throws Exception
 	{
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
+
 		String rebuild = System.getProperty("rebuild", "false");
-		IndexNative index = new IndexNative(NDASchemaManager.DEFAULT_NDA_INDEX_NAME);
-		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
-			index.deleteType(LUCENE_TYPE);
+		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
+			index.deleteType(LUCENE_TYPE_TAXON);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-			index.addType(LUCENE_TYPE, mapping);
+			index.addType(LUCENE_TYPE_TAXON, mapping);
 		}
 		else {
-			index.deleteWhere(LUCENE_TYPE, "sourceSystem.code", SourceSystem.NSR.getCode());
+			index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.NSR.getCode());
 		}
 		Thread.sleep(2000);
 		try {
@@ -43,21 +49,18 @@ public class NsrTaxonImporter {
 			importer.importXmlFiles();
 		}
 		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
+			index.getClient().close();
 		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonImporter.class);
 	private static final String ID_PREFIX = "NSR-";
-	private static final String LUCENE_TYPE = "Taxon";
 
 	private final Index index;
 
 	private final int bulkRequestSize;
 	private final boolean rename;
-	
+
 	private int totalProcessed = 0;
 	private int totalBad = 0;
 
@@ -99,7 +102,7 @@ public class NsrTaxonImporter {
 			logger.info("Processing file " + xmlFile.getCanonicalPath());
 			Document document = builder.parse(xmlFile);
 			importXmlFile(document);
-			if(rename) {
+			if (rename) {
 				xmlFile.renameTo(new File(xmlFile.getCanonicalPath() + ".bak"));
 			}
 		}
@@ -113,7 +116,7 @@ public class NsrTaxonImporter {
 	{
 		int processed = 0;
 		int bad = 0;
-		
+
 		Element taxaElement = DOMUtil.getChild(doc.getDocumentElement());
 		List<Element> taxonElements = DOMUtil.getChildren(taxaElement);
 
@@ -140,15 +143,15 @@ public class NsrTaxonImporter {
 			taxa.add(taxon);
 			ids.add(ID_PREFIX + taxon.getSourceSystemId());
 			if (taxa.size() >= bulkRequestSize) {
-				index.saveObjects(LUCENE_TYPE, taxa, ids);
+				index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
 				taxa.clear();
 				ids.clear();
 			}
 		}
 		if (!taxa.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE, taxa, ids);
+			index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
 		}
-		
+
 		logger.info("Records processed: " + processed);
 		logger.info("Bad records: " + bad);
 	}

@@ -16,6 +16,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
@@ -45,7 +46,7 @@ public class CrsSpecimenImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
@@ -248,16 +249,16 @@ public class CrsSpecimenImporter {
 	{
 		if (config.getBoolean("test")) {
 			String key = resumptionToken == null ? "test.specimens.url.initial" : "test.specimens.url.resume";
-			String val = config.getString(key);
+			String val = config.get(key);
 			logger.info("Loading file: " + val);
 			return FileUtil.getContents(val);
 		}
 		String url;
 		if (resumptionToken == null) {
-			url = config.getString("specimens.url.initial");
+			url = config.get("specimens.url.initial");
 		}
 		else {
-			url = String.format(config.getString("specimens.url.resume"), resumptionToken);
+			url = String.format(config.get("specimens.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
 		// Avoid "Content is not allowed in prolog"

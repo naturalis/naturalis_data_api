@@ -15,6 +15,7 @@ import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
@@ -36,7 +37,7 @@ public class CoLTaxonSynonymEnricher {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
 
-		IndexNative index = new IndexNative(DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
 			enricher.importCsv(dwcaDir + "/taxa.txt");

@@ -21,14 +21,12 @@ import static org.hamcrest.Matchers.is;
 public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
     private BioportalTaxonDao dao;
-    private TestDocumentCreator documentCreator;
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         dao = new BioportalTaxonDao(client(), INDEX_NAME);
-        documentCreator = new TestDocumentCreator();
     }
 
     @Test
@@ -67,20 +65,22 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
         client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
+
         QueryParams params = new QueryParams();
 
         params.add("_andOr", "OR");
         params.add("_maxResults", "50");
         params.add("vernacularNames.name", "henkie");
-//        params.add("synonyms.genusOrMonomial", "");
+        assertEquals(1, dao.taxonExtendedSearch(params).getSearchResults().size());
+
+        params.remove("vernacularNames.name");
+        params.add("synonyms.genusOrMonomial", "genusOrMonomialSynonyms");
+        assertEquals(1, dao.taxonExtendedSearch(params).getSearchResults().size());
+
 //        params.add("synonyms.specificEpithet", "");
 //        params.add("synonyms.infraspecificEpithet", "");
-
-        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
-
-        SearchResultSet<Taxon> result = dao.taxonExtendedSearch(params);
-
-        assertEquals(1, result.getSearchResults().size());
     }
 
     public static ESTaxon createTestTaxon() {

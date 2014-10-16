@@ -24,7 +24,6 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
     public void setUp() throws Exception {
         super.setUp();
         dao = new BioportalSpecimenDao(client(), INDEX_NAME, new BioportalTaxonDao(client(), INDEX_NAME));
-        documentCreator = new TestDocumentCreator();
     }
 
     //=================================================== Helpers ======================================================

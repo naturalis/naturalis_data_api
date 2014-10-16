@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
@@ -19,25 +18,93 @@ import static org.hamcrest.Matchers.is;
 public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalSpecimenDaoTest {
 
     @Test
-    public void testExtendedNameSearch_nameResolution() throws Exception {
+    public void testExtendedNameSearch_nameResolution_simpleSearch_vernacularName() throws Exception {
         setupNameResolutionTest();
 
         QueryParams params = new QueryParams();
-        params.add("_andOr", "OR");
-        params.add("kingdom", "wrong value");
-        params.add("vernacularNames.name", "henkie");
+        params.add("_search", "henkie");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
     }
 
     @Test
-    public void testExtendedNameSearch_orderClassificationResolution_() throws Exception {
+    public void testExtendedNameSearch_nameResolution_simpleSearch_synonymGenusOrMonomial() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("_search", "geslacht");
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+        assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_simpleSearch_synonymsSpecificEpithet() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("_search", "specifiek");
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+        assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_simpleSearch_synonymsInfraspecificEpithet() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("_search", "infra");
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+        assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_vernacularName() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("vernacularName", "henkie");
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+        assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_vernacularName_OR() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("_andOr", "OR");
+        params.add("kingdom", "wrong value"); // has no results
+        params.add("vernacularName", "henkie");
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+        assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_vernacularName_AND() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("_andOr", "AND");
+        params.add("kingdom", "wrong value"); // leads to no results
+        params.add("vernacularName", "henkie");
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+        assertEquals(0, result.getTotalSize());
+    }
+
+    @Test
+    public void testExtendedNameSearch_nameResolution_kingdom() throws Exception {
         setupNameResolutionTest();
 
         QueryParams paramsWithNameResolution = new QueryParams();
         paramsWithNameResolution.add("kingdom", "wrong value");
-        paramsWithNameResolution.add("vernacularNames.name", "henkie");
+        paramsWithNameResolution.add("defaultClassification.kingdom", "Plantae");
 
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
         assertEquals(1, resultWithName.getTotalSize());
@@ -55,25 +122,24 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
         ESSpecimen esSpecimen = createSpecimen();
         SpecimenIdentification specimenIdentification = new SpecimenIdentification();
-        {
-            DefaultClassification defaultClassification = new DefaultClassification();
-            defaultClassification.setKingdom("Plantae");
-            specimenIdentification.setDefaultClassification(defaultClassification);
 
-            ScientificName scientificName = new ScientificName();
-            scientificName.setGenusOrMonomial("geslacht");
-            scientificName.setSpecificEpithet("speciek");
-            specimenIdentification.setScientificName(scientificName);
+        ScientificName scientificName = new ScientificName();
+        scientificName.setGenusOrMonomial("geslacht");
+        scientificName.setSpecificEpithet("specifiek");
+        scientificName.setInfraspecificEpithet("infra");
 
-            esSpecimen.setIdentifications(asList(specimenIdentification));
-        }
+        // no default classification to avoid direct hit in name resolution via taxons
+        specimenIdentification.setScientificName(scientificName);
+        esSpecimen.setIdentifications(asList(specimenIdentification));
+
         client().prepareIndex(INDEX_NAME, SPECIMEN_INDEX_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
 
         ESTaxon esTaxon = createTestTaxon();
-        esTaxon.getAcceptedName().setGenusOrMonomial("geslacht");
-        esTaxon.getAcceptedName().setSpecificEpithet("speciek");
-        esTaxon.getAcceptedName().setInfraspecificEpithet(null);
+        esTaxon.setAcceptedName(scientificName);
+        esTaxon.getSynonyms().get(0).setGenusOrMonomial("geslacht");
+        esTaxon.getSynonyms().get(0).setSpecificEpithet("specifiek");
+        esTaxon.getSynonyms().get(0).setInfraspecificEpithet("infra");
         client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
@@ -85,5 +151,6 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> resultWithoutName = dao.specimenNameSearch(params);
         assertEquals(0, resultWithoutName.getTotalSize());
     }
+
 }
 

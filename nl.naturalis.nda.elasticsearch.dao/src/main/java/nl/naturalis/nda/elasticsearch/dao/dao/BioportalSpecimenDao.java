@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
@@ -8,34 +7,60 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
-import nl.naturalis.nda.search.*;
+import nl.naturalis.nda.search.Link;
+import nl.naturalis.nda.search.ResultGroup;
+import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
+    private static final String SIMPLE_SEARCH_PARAM_KEY = "_search";
+
+    public static class SpecimenFields {
+        public static final String IDENTIFICATIONS_VERNACULAR_NAMES_NAME = "identifications.vernacularNames.name";
+        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM = "identifications.defaultClassification.kingdom";
+        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM = "identifications.defaultClassification.phylum";
+        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME = "identifications.defaultClassification.className";
+        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER = "identifications.defaultClassification.order";
+        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY = "identifications.defaultClassification.family";
+    }
+
     private static final String[] specimenNameSearchFieldNames = {
-            "identifications.defaultClassification.kingdom",
-            "identifications.defaultClassification.phylum",
-            "identifications.defaultClassification.className",
-            "identifications.defaultClassification.order",
-            "identifications.defaultClassification.family",
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
             "identifications.defaultClassification.genus",
             "identifications.defaultClassification.subgenus",
             "identifications.defaultClassification.specificEpithet",
@@ -45,7 +70,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             "identifications.scientificName.subgenus",
             "identifications.scientificName.specificEpithet",
             "identifications.scientificName.infraspecificEpithet",
-            "identifications.vernacularNames.name",
+            IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
             "gatheringEvent.dateTimeBegin",
             "gatheringEvent.siteCoordinates.point"
     };
@@ -138,13 +163,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, Arrays.asList(specimenNameSearchFieldNames));
 
-        String vernacularName = params.getFirst("vernacularNames.name");
-        SearchResponse searchResponse = (vernacularName == null || vernacularName.isEmpty())
-                ? executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE)
-                : executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, buildNameResolutionQuery(vernacularName));
+        QueryBuilder nameResQuery = buildNameResolutionQuery(fieldMappings);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, nameResQuery);
 
         return responseToSpecimenResultGroupSet(searchResponse);
-
         // TODO: mark results from name resolution
     }
 
@@ -191,7 +213,8 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     // ==================================================== Helpers ====================================================
 
-    protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params, ResultGroupSet<Specimen, String> specimenResultGroupSet) {
+    protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params,
+                                                                            ResultGroupSet<Specimen, String> specimenResultGroupSet) {
         SearchResultSet<Specimen> searchResultSet = new SearchResultSet<>();
         List<Link> links = new ArrayList<>();
 
@@ -248,16 +271,43 @@ public class BioportalSpecimenDao extends AbstractDao {
         return searchResultSet;
     }
 
-    private NestedQueryBuilder buildNameResolutionQuery(String searchTerm) {
+    /**
+     * @param fields parameters for the query
+     * @return null in case of no valid param_keys or no taxons matching the supplied values
+     */
+    private NestedQueryBuilder buildNameResolutionQuery(List<FieldMapping> fields) {
+        if (!hasFieldWithTextWithOneOfNames(fields, SIMPLE_SEARCH_PARAM_KEY, IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY)) {
+            return null;
+        }
+
         // nameRes = name resolution
         QueryParams nameResTaxonQueryParams = new QueryParams();
+        for (FieldMapping field : fields) {
+            switch (field.getFieldName()) {
+                case SIMPLE_SEARCH_PARAM_KEY:
+                    String searchTerm = field.getValue();
+                    nameResTaxonQueryParams.add("vernacularNames.name", searchTerm);
+                    nameResTaxonQueryParams.add("synonyms.genusOrMonomial", searchTerm);
+                    nameResTaxonQueryParams.add("synonyms.specificEpithet", searchTerm);
+                    nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", searchTerm);
+                    break;
+                case IDENTIFICATIONS_VERNACULAR_NAMES_NAME:
+                    nameResTaxonQueryParams.add("vernacularNames.name", field.getValue());
+                    break;
+            }
+        }
+        if (nameResTaxonQueryParams.size() == 0) {
+            return null; // otherwise we would get an all-query
+        }
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("_maxResults", "50");
-        nameResTaxonQueryParams.add("vernacularNames.name", searchTerm);
-//        nameResTaxonQueryParams.add("synonyms.genusOrMonomial", searchTerm);
-//        nameResTaxonQueryParams.add("synonyms.specificEpithet", searchTerm);
-//        nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", searchTerm);
         SearchResultSet<Taxon> nameResTaxons = taxonDao.taxonExtendedSearch(nameResTaxonQueryParams);
+        if (nameResTaxons.getTotalSize() == 0) {
+            return null;
+        }
 
         BoolQueryBuilder nameResQueryBuilder = boolQuery();
         for (SearchResult<Taxon> taxonSearchResult : nameResTaxons.getSearchResults()) {
@@ -349,6 +399,20 @@ public class BioportalSpecimenDao extends AbstractDao {
             specimensWithSameAssemblageId.add(SpecimenTransfer.transfer(esSpecimenWithSameAssemblageId));
         }
         return specimensWithSameAssemblageId;
+    }
+
+    private static boolean hasText(String string) {
+        return string != null && !string.trim().isEmpty();
+    }
+
+    private static boolean hasFieldWithTextWithOneOfNames(List<FieldMapping> fields, String... names) {
+        List<String> nameList = Arrays.asList(names);
+        for (FieldMapping field : fields) {
+            if (hasText(field.getFieldName()) && nameList.contains(field.getFieldName()) && hasText(field.getValue())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

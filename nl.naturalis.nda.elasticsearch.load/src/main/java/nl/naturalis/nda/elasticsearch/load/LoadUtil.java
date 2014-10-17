@@ -1,10 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.StringUtil;
@@ -54,20 +52,18 @@ public class LoadUtil {
 						throw new RuntimeException(String.format("Configuration file missing: %s", file.getCanonicalPath()));
 					}
 					logger.debug(String.format("Using configuration file %s", file.getCanonicalPath()));
-					return new ConfigObject(file);
+					config = new ConfigObject(file);
 				}
 				catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
 			logger.debug("Searching classpath for configuration file " + PROPERTY_FILE_NAME);
-			InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME);
-			if (is == null) {
-				throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
-			}
-			config = new ConfigObject(is);
-			try {
-				is.close();
+			try (InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME)) {
+				if (is == null) {
+					throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
+				}
+				config = new ConfigObject(is);
 			}
 			catch (IOException e) {
 				throw new RuntimeException(e);
@@ -85,8 +81,8 @@ public class LoadUtil {
 	public static final Client getDefaultClient()
 	{
 		if (localClient == null) {
-			logger.info("Initializing ElasticSearch session");
 			ConfigObject config = getConfig();
+			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");
 			String host = config.required("elasticsearch.transportaddress.host");
 			String port = config.required("elasticsearch.transportaddress.port");

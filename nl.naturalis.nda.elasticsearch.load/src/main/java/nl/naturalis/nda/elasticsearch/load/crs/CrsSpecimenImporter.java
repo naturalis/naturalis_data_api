@@ -78,7 +78,6 @@ public class CrsSpecimenImporter {
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
 	private static final String ID_PREFIX = "CRS-";
 
-	private final ConfigObject config;
 	private final DocumentBuilder builder;
 
 	private final Index index;
@@ -101,16 +100,6 @@ public class CrsSpecimenImporter {
 
 		prop = System.getProperty("forceRestart", "true");
 		forceRestart = Boolean.parseBoolean(prop);
-
-		prop = System.getProperty("configFile");
-		if (prop == null) {
-			throw new Exception("Missing property -DconfigFile");
-		}
-		File f = new File(prop);
-		if (!f.isFile()) {
-			throw new Exception(String.format("Configuration file not found : \"%s\"", prop));
-		}
-		config = new ConfigObject(f);
 
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
@@ -245,28 +234,38 @@ public class CrsSpecimenImporter {
 	}
 
 
-	private String getXML(String resumptionToken)
+	private static String getXML(String resumptionToken)
 	{
-		if (config.getBoolean("test")) {
-			String key = resumptionToken == null ? "test.specimens.url.initial" : "test.specimens.url.resume";
-			String val = config.get(key);
+		String xml;
+		ConfigObject config = LoadUtil.getConfig();
+		if (config.getBoolean("crs.is_test")) {
+			String prop;
+			if (resumptionToken == null) {
+				prop = "crs.specimens.url.initial";
+			}
+			else {
+				prop = "crs.specimens.url.resume";
+			}
+			String val = config.required(prop);
 			logger.info("Loading file: " + val);
-			return FileUtil.getContents(val);
-		}
-		String url;
-		if (resumptionToken == null) {
-			url = config.get("specimens.url.initial");
+			xml = FileUtil.getContents(val);
 		}
 		else {
-			url = String.format(config.get("specimens.url.resume"), resumptionToken);
+			String url;
+			if (resumptionToken == null) {
+				url = config.get("crs.media.url.initial");
+			}
+			else {
+				url = String.format(config.get("crs.media.url.resume"), resumptionToken);
+			}
+			logger.info("Calling service: " + url);
+			// Avoid "Content is not allowed in prolog"
+			xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
+			if (!xml.startsWith("<?xml")) {
+				xml = xml.substring(xml.indexOf("<?xml"));
+			}
 		}
-		logger.info("Calling service: " + url);
-		// Avoid "Content is not allowed in prolog"
-		String response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
-		if (!response.startsWith("<?xml")) {
-			response = response.substring(response.indexOf("<?xml"));
-		}
-		return response;
+		return xml;
 	}
 
 

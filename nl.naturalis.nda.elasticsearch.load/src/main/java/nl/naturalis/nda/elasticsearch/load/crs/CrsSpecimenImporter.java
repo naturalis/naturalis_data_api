@@ -115,7 +115,7 @@ public class CrsSpecimenImporter {
 	public void importSpecimens()
 	{
 
-		int batch = 0;
+		int batch;
 
 		try {
 
@@ -177,15 +177,17 @@ public class CrsSpecimenImporter {
 		}
 
 		String xml = getXML(resumptionToken);
+		if (xml == null) {
+			// Missing local file
+			return null;
+		}
+
 		Document doc;
 		logger.info("Parsing XML");
 		try {
 			doc = builder.parse(StringUtil.asInputStream(xml));
 		}
-		catch (SAXException e) {
-			throw ExceptionUtil.smash(e);
-		}
-		catch (IOException e) {
+		catch (SAXException | IOException e) {
 			throw ExceptionUtil.smash(e);
 		}
 		doc.normalize();
@@ -230,25 +232,25 @@ public class CrsSpecimenImporter {
 		if (maxRecords > 0 && processed >= maxRecords) {
 			return null;
 		}
-		return getResumptionToken(doc);
+		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 
 
-	private static String getXML(String resumptionToken)
+	static String getXML(String resumptionToken)
 	{
 		String xml;
 		ConfigObject config = LoadUtil.getConfig();
-		if (config.getBoolean("crs.is_test")) {
-			String prop;
-			if (resumptionToken == null) {
-				prop = "crs.specimens.url.initial";
+		if (config.getBoolean("crs.use_local")) {
+			String path = getLocalFile(resumptionToken);
+			File f = new File(path);
+			if (!f.isFile()) {
+				logger.warn(String.format("Missing local file: \"%s\"", path));
+				xml = null;
 			}
 			else {
-				prop = "crs.specimens.url.resume";
+				logger.info("Loading file: " + path);
+				xml = FileUtil.getContents(path);
 			}
-			String val = config.required(prop);
-			logger.info("Loading file: " + val);
-			xml = FileUtil.getContents(val);
 		}
 		else {
 			String url;
@@ -269,6 +271,13 @@ public class CrsSpecimenImporter {
 	}
 
 
+	static String getLocalFile(String resumptionToken)
+	{
+		String testDir = LoadUtil.getConfig().required("crs.local_dir");
+		return String.format("%s/specimens.%s.oai.xml", testDir, resumptionToken);
+	}
+
+
 	private static boolean isDeletedRecord(Element record)
 	{
 		if (!DOMUtil.getChild(record, "header").hasAttribute("status")) {
@@ -278,19 +287,9 @@ public class CrsSpecimenImporter {
 	}
 
 
-	private static String getResumptionToken(Document doc)
-	{
-		NodeList nl = doc.getElementsByTagName("resumptionToken");
-		if (nl.getLength() == 0) {
-			return null;
-		}
-		return nl.item(0).getTextContent();
-	}
-
-
 	private static File getResumptionTokenFile()
 	{
-		return new File(System.getProperty("java.io.tmpdir") + "/resumption-token");
+		return new File(System.getProperty("java.io.tmpdir") + "/crs-specimens.resumption-token");
 	}
 
 }

@@ -42,6 +42,7 @@ public class LoadUtil {
 		if (config == null) {
 			String ndaConfDir = System.getProperty("ndaConfDir");
 			if (ndaConfDir != null) {
+				logger.debug("Using system property \"ndaConfDir\" to locate configuration file " + PROPERTY_FILE_NAME);
 				File dir = new File(ndaConfDir);
 				if (!dir.isDirectory()) {
 					throw new RuntimeException(String.format("Invalid directory specified for property \"ndaConfDir\": \"%s\"", ndaConfDir));
@@ -58,15 +59,17 @@ public class LoadUtil {
 					throw new RuntimeException(e);
 				}
 			}
-			logger.debug("Searching classpath for configuration file " + PROPERTY_FILE_NAME);
-			try (InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME)) {
-				if (is == null) {
-					throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
+			else {
+				logger.debug("Searching classpath for configuration file " + PROPERTY_FILE_NAME);
+				try (InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME)) {
+					if (is == null) {
+						throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
+					}
+					config = new ConfigObject(is);
 				}
-				config = new ConfigObject(is);
-			}
-			catch (IOException e) {
-				throw new RuntimeException(e);
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		return config;

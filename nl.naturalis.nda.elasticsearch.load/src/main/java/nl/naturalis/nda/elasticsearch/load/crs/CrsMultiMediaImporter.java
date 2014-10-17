@@ -78,7 +78,6 @@ public class CrsMultiMediaImporter {
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
 	private static final String ID_PREFIX = "CRS-";
 
-	private final ConfigObject config;
 	private final DocumentBuilder builder;
 
 	private final Index index;
@@ -101,16 +100,6 @@ public class CrsMultiMediaImporter {
 
 		prop = System.getProperty("forceRestart", "true");
 		forceRestart = Boolean.parseBoolean(prop);
-
-		prop = System.getProperty("configFile");
-		if (prop == null) {
-			throw new Exception("Missing property -DconfigFile");
-		}
-		File f = new File(prop);
-		if (!f.isFile()) {
-			throw new Exception(String.format("Configuration file not found : \"%s\"", prop));
-		}
-		config = new ConfigObject(f);
 
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
@@ -187,17 +176,18 @@ public class CrsMultiMediaImporter {
 			FileUtil.setContents(getResumptionTokenFile(), contents);
 		}
 
-		logger.info("Calling CRS OAI service");
 		String xml = getXML(resumptionToken);
+		if (xml == null) {
+			// Missing local file
+			return null;
+		}
+
 		Document doc;
 		logger.info("Parsing XML");
 		try {
 			doc = builder.parse(StringUtil.asInputStream(xml));
 		}
-		catch (SAXException e) {
-			throw ExceptionUtil.smash(e);
-		}
-		catch (IOException e) {
+		catch (SAXException | IOException e) {
 			throw ExceptionUtil.smash(e);
 		}
 		doc.normalize();
@@ -246,32 +236,49 @@ public class CrsMultiMediaImporter {
 		if (maxRecords > 0 && processed >= maxRecords) {
 			return null;
 		}
-		return getResumptionToken(doc);
+		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 
 
-	private String getXML(String resumptionToken)
+	static String getXML(String resumptionToken)
 	{
-		if (config.getBoolean("test")) {
-			String key = resumptionToken == null ? "test.media.url.initial" : "test.media.url.resume";
-			String val = config.get(key);
-			logger.info("Loading file: " + val);
-			return FileUtil.getContents(val);
-		}
-		String url;
-		if (resumptionToken == null) {
-			url = config.get("media.url.initial");
+		String xml;
+		ConfigObject config = LoadUtil.getConfig();
+		if (config.getBoolean("crs.use_local")) {
+			String path = getLocalFile(resumptionToken);
+			File f = new File(path);
+			if (!f.isFile()) {
+				logger.warn(String.format("Missing local file: \"%s\"", path));
+				xml = null;
+			}
+			else {
+				logger.info("Loading file: " + path);
+				xml = FileUtil.getContents(path);
+			}
 		}
 		else {
-			url = String.format(config.get("media.url.resume"), resumptionToken);
+			String url;
+			if (resumptionToken == null) {
+				url = config.get("crs.multimedia.url.initial");
+			}
+			else {
+				url = String.format(config.get("crs.multimedia.url.resume"), resumptionToken);
+			}
+			logger.info("Calling service: " + url);
+			// Avoid "Content is not allowed in prolog"
+			xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
+			if (!xml.startsWith("<?xml")) {
+				xml = xml.substring(xml.indexOf("<?xml"));
+			}
 		}
-		logger.info("Calling service: " + url);
-		// Avoid "Content is not allowed in prolog"
-		String response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
-		if (!response.startsWith("<?xml")) {
-			response = response.substring(response.indexOf("<?xml"));
-		}
-		return response;
+		return xml;
+	}
+
+
+	static String getLocalFile(String resToken)
+	{
+		String testDir = LoadUtil.getConfig().required("crs.local_dir");
+		return String.format("%s/multimedia.%s.oai.xml", testDir, resToken);
 	}
 
 
@@ -284,19 +291,9 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	private static String getResumptionToken(Document doc)
-	{
-		NodeList nl = doc.getElementsByTagName("resumptionToken");
-		if (nl.getLength() == 0) {
-			return null;
-		}
-		return nl.item(0).getTextContent();
-	}
-
-
 	private static File getResumptionTokenFile()
 	{
-		return new File(System.getProperty("java.io.tmpdir") + "/crs-oai-media-resumption-token");
+		return new File(System.getProperty("java.io.tmpdir") + "/crs-multimedia.resumption-token");
 	}
 
 }

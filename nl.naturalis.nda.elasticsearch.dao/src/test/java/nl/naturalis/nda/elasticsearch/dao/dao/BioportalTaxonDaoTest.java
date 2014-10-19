@@ -20,13 +20,13 @@ import static org.hamcrest.Matchers.is;
 
 public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
-    private BioportalTaxonDao dao;
+    private BioportalTaxonDao taxonDao;
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        dao = new BioportalTaxonDao(client(), INDEX_NAME);
+        taxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
 
-        SearchResultSet<Taxon> result = dao.taxonExtendedSearch(params);
+        SearchResultSet<Taxon> result = taxonDao.taxonSearch(params);
 
         assertEquals(1, result.getSearchResults().size());
         //TODO enable when implemented setSearchTerms
@@ -73,11 +73,11 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("_andOr", "OR");
         params.add("_maxResults", "50");
         params.add("vernacularNames.name", "henkie");
-        assertEquals(1, dao.taxonExtendedSearch(params).getSearchResults().size());
+        assertEquals(1, taxonDao.search(params, null).getSearchResults().size());
 
         params.remove("vernacularNames.name");
         params.add("synonyms.genusOrMonomial", "genusOrMonomialSynonyms");
-        assertEquals(1, dao.taxonExtendedSearch(params).getSearchResults().size());
+        assertEquals(1, taxonDao.search(params, null).getSearchResults().size());
 
 //        params.add("synonyms.specificEpithet", "");
 //        params.add("synonyms.infraspecificEpithet", "");

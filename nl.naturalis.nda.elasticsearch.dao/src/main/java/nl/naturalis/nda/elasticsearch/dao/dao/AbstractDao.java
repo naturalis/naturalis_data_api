@@ -31,13 +31,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -223,7 +229,7 @@ public abstract class AbstractDao {
      * @param allowedFields list of allowed fields
      * @return a new list with the allowed fields
      */
-    protected List<FieldMapping> filterAllowedFieldMappings(List<FieldMapping> fields, List<String> allowedFields) {
+    protected List<FieldMapping> filterAllowedFieldMappings(List<FieldMapping> fields, Set<String> allowedFields) {
         List<FieldMapping> approvedFields = new ArrayList<>();
         for (FieldMapping field : fields) {
             if (allowedFields.contains(field.getFieldName())) {

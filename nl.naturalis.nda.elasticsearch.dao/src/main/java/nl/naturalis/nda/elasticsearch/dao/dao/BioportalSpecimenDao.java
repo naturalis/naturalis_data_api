@@ -64,7 +64,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
     }
 
-    private static final String[] specimenNameSearchFieldNames = {
+    private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
@@ -82,7 +82,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
             "gatheringEvent.dateTimeBegin",
             "gatheringEvent.siteCoordinates.point"
-    };
+    ));
 
     private static final Set<String> specimenSearchFieldNames = new HashSet<>(Arrays.asList(
             "unitID",
@@ -137,7 +137,7 @@ public class BioportalSpecimenDao extends AbstractDao {
      */
     public ResultGroupSet<Specimen, String> specimenSearch(QueryParams params) {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
-        List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, new ArrayList<>(specimenSearchFieldNames));
+        List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
 
         SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, false);
 
@@ -170,10 +170,10 @@ public class BioportalSpecimenDao extends AbstractDao {
      */
     public ResultGroupSet<Specimen, String> specimenNameSearch(QueryParams params) {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
-        List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, Arrays.asList(specimenNameSearchFieldNames));
+        List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
-        QueryBuilder nameResQuery = buildNameResolutionQuery(fieldMappings);
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, true, nameResQuery,
+        QueryBuilder nameResQuery = buildNameResolutionQuery(allowedFields);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, true, nameResQuery,
                 Arrays.asList(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
                         IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
                         IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
@@ -331,7 +331,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("_maxResults", "50");
-        SearchResultSet<Taxon> nameResTaxons = taxonDao.taxonExtendedSearch(nameResTaxonQueryParams);
+        SearchResultSet<Taxon> nameResTaxons = taxonDao.search(nameResTaxonQueryParams, null); // no field filtering
         if (nameResTaxons.getTotalSize() == 0) {
             return null;
         }

@@ -8,6 +8,7 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
+import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,6 +82,81 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
 //        params.add("synonyms.specificEpithet", "");
 //        params.add("synonyms.infraspecificEpithet", "");
+    }
+
+    @Test
+    public void testCreateTaxonDetailSearchResultSet_firstResult_noPrevious() throws Exception {
+        QueryParams params = new QueryParams();
+        params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
+
+        SearchResultSet<Taxon> searchResultSet = new SearchResultSet<>();
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
+
+        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params, searchResultSet);
+
+        List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
+        assertEquals(1, searchResults.size());
+        assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
+        assertEquals(1, taxonDetailSearchResultSet.getLinks().size());
+        assertEquals("_next", taxonDetailSearchResultSet.getLinks().get(0).getHref());
+    }
+
+    @Test
+    public void testCreateTaxonDetailSearchResultSet_lastResult_noNext() throws Exception {
+        QueryParams params = new QueryParams();
+        params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
+
+        SearchResultSet<Taxon> searchResultSet = new SearchResultSet<>();
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+
+        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params, searchResultSet);
+
+        List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
+        assertEquals(1, searchResults.size());
+        assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
+        assertEquals(1, taxonDetailSearchResultSet.getLinks().size());
+        assertEquals("_previous", taxonDetailSearchResultSet.getLinks().get(0).getHref());
+    }
+
+    @Test
+    public void testCreateTaxonDetailSearchResultSet_middleResult() throws Exception {
+        QueryParams params = new QueryParams();
+        params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
+
+        SearchResultSet<Taxon> searchResultSet = new SearchResultSet<>();
+        searchResultSet.addSearchResult(createTaxonWithScientificName("first item", "diep in de zee", ""));
+        searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+        searchResultSet.addSearchResult(createTaxonWithScientificName("last item", "geen idee", ""));
+
+        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params, searchResultSet);
+
+        List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
+        assertEquals(1, searchResults.size());
+        assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
+        assertEquals(2, taxonDetailSearchResultSet.getLinks().size());
+        assertEquals("_previous", taxonDetailSearchResultSet.getLinks().get(0).getHref());
+        assertTrue(taxonDetailSearchResultSet.getLinks().get(0).getRel().contains("first"));
+        assertEquals("_next", taxonDetailSearchResultSet.getLinks().get(1).getHref());
+        assertTrue(taxonDetailSearchResultSet.getLinks().get(1).getRel().contains("last"));
+    }
+
+    //================================================ Helper methods ==================================================
+
+    private Taxon createTaxonWithScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
+        Taxon taxon = new Taxon();
+        ScientificName scientificName = new ScientificName();
+        scientificName.setGenusOrMonomial(genusOrMonomial);
+        scientificName.setSpecificEpithet(specificEpithet);
+        scientificName.setInfraspecificEpithet(infraspecificEpithet);
+        taxon.setAcceptedName(scientificName);
+        return taxon;
     }
 
     public static ESTaxon createTestTaxon() {

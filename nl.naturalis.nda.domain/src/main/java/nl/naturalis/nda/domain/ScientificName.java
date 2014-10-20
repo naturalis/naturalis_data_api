@@ -7,192 +7,193 @@ import java.util.List;
  * is composed of. Only the full scientific name will always be set. Individual
  * name components will only be set if they were provided separately by the
  * source system.
- * 
  */
 public class ScientificName {
 
-	//@formatter:off
-	public static enum TaxonomicStatus {
-		ACCEPTED_NAME,
-		AMBIGUOUS_SYNONYM,
-		MISAPPLIED_NAME,
-		MISSPELLED_NAME,
-		PROVISIONALLY_ACCEPTED,
-		SYNONYM,
-		BASIONYM,
-		HOMONYM
-	}
-	//@formatter:on
+    //@formatter:off
+    public static enum TaxonomicStatus {
+        ACCEPTED_NAME,
+        AMBIGUOUS_SYNONYM,
+        MISAPPLIED_NAME,
+        MISSPELLED_NAME,
+        PROVISIONALLY_ACCEPTED,
+        SYNONYM,
+        BASIONYM,
+        HOMONYM
+    }
+    //@formatter:on
 
-	private String fullScientificName;
-	private TaxonomicStatus taxonomicStatus;
-	private String genusOrMonomial;
-	private String subgenus;
-	private String specificEpithet;
-	private String infraspecificEpithet;
-	private String infraspecificMarker;
-	private String nameAddendum;
-	private String authorshipVerbatim;
-	private String author;
-	private String year;
+    private String fullScientificName;
+    private TaxonomicStatus taxonomicStatus;
+    private String genusOrMonomial;
+    private String subgenus;
+    private String specificEpithet;
+    private String infraspecificEpithet;
+    private String infraspecificMarker;
+    private String nameAddendum;
+    private String authorshipVerbatim;
+    private String author;
+    private String year;
 
-	private List<Reference> references;
-	private List<Expert> experts;
-
-
-	public String getFullScientificName()
-	{
-		return fullScientificName;
-	}
+    private List<Reference> references;
+    private List<Expert> experts;
 
 
-	public void setFullScientificName(String fullScientificName)
-	{
-		this.fullScientificName = fullScientificName;
-	}
+    public String getFullScientificName() {
+        return fullScientificName;
+    }
 
 
-	public TaxonomicStatus getTaxonomicStatus()
-	{
-		return taxonomicStatus;
-	}
+    public void setFullScientificName(String fullScientificName) {
+        this.fullScientificName = fullScientificName;
+    }
 
 
-	public void setTaxonomicStatus(TaxonomicStatus taxonomicStatus)
-	{
-		this.taxonomicStatus = taxonomicStatus;
-	}
+    public TaxonomicStatus getTaxonomicStatus() {
+        return taxonomicStatus;
+    }
 
 
-	public String getGenusOrMonomial()
-	{
-		return genusOrMonomial;
-	}
+    public void setTaxonomicStatus(TaxonomicStatus taxonomicStatus) {
+        this.taxonomicStatus = taxonomicStatus;
+    }
 
 
-	public void setGenusOrMonomial(String genusOrMonomial)
-	{
-		this.genusOrMonomial = genusOrMonomial;
-	}
+    public String getGenusOrMonomial() {
+        return genusOrMonomial;
+    }
 
 
-	public String getSubgenus()
-	{
-		return subgenus;
-	}
+    public void setGenusOrMonomial(String genusOrMonomial) {
+        this.genusOrMonomial = genusOrMonomial;
+    }
 
 
-	public void setSubgenus(String subgenus)
-	{
-		this.subgenus = subgenus;
-	}
+    public String getSubgenus() {
+        return subgenus;
+    }
 
 
-	public String getSpecificEpithet()
-	{
-		return specificEpithet;
-	}
+    public void setSubgenus(String subgenus) {
+        this.subgenus = subgenus;
+    }
 
 
-	public void setSpecificEpithet(String specificEpithet)
-	{
-		this.specificEpithet = specificEpithet;
-	}
+    public String getSpecificEpithet() {
+        return specificEpithet;
+    }
 
 
-	public String getInfraspecificEpithet()
-	{
-		return infraspecificEpithet;
-	}
+    public void setSpecificEpithet(String specificEpithet) {
+        this.specificEpithet = specificEpithet;
+    }
 
 
-	public void setInfraspecificEpithet(String infraspecificEpithet)
-	{
-		this.infraspecificEpithet = infraspecificEpithet;
-	}
+    public String getInfraspecificEpithet() {
+        return infraspecificEpithet;
+    }
 
 
-	public String getInfraspecificMarker()
-	{
-		return infraspecificMarker;
-	}
+    public void setInfraspecificEpithet(String infraspecificEpithet) {
+        this.infraspecificEpithet = infraspecificEpithet;
+    }
 
 
-	public void setInfraspecificMarker(String infraspecificMarker)
-	{
-		this.infraspecificMarker = infraspecificMarker;
-	}
+    public String getInfraspecificMarker() {
+        return infraspecificMarker;
+    }
 
 
-	public String getNameAddendum()
-	{
-		return nameAddendum;
-	}
+    public void setInfraspecificMarker(String infraspecificMarker) {
+        this.infraspecificMarker = infraspecificMarker;
+    }
 
 
-	public void setNameAddendum(String nameAddendum)
-	{
-		this.nameAddendum = nameAddendum;
-	}
+    public String getNameAddendum() {
+        return nameAddendum;
+    }
 
 
-	public String getAuthorshipVerbatim()
-	{
-		return authorshipVerbatim;
-	}
+    public void setNameAddendum(String nameAddendum) {
+        this.nameAddendum = nameAddendum;
+    }
 
 
-	public void setAuthorshipVerbatim(String authorshipVerbatim)
-	{
-		this.authorshipVerbatim = authorshipVerbatim;
-	}
+    public String getAuthorshipVerbatim() {
+        return authorshipVerbatim;
+    }
 
 
-	public String getAuthor()
-	{
-		return author;
-	}
+    public void setAuthorshipVerbatim(String authorshipVerbatim) {
+        this.authorshipVerbatim = authorshipVerbatim;
+    }
 
 
-	public void setAuthor(String author)
-	{
-		this.author = author;
-	}
+    public String getAuthor() {
+        return author;
+    }
 
 
-	public String getYear()
-	{
-		return year;
-	}
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
 
-	public void setYear(String year)
-	{
-		this.year = year;
-	}
+    public String getYear() {
+        return year;
+    }
 
 
-	public List<Reference> getReferences()
-	{
-		return references;
-	}
+    public void setYear(String year) {
+        this.year = year;
+    }
 
 
-	public void setReferences(List<Reference> references)
-	{
-		this.references = references;
-	}
+    public List<Reference> getReferences() {
+        return references;
+    }
 
 
-	public List<Expert> getExperts()
-	{
-		return experts;
-	}
+    public void setReferences(List<Reference> references) {
+        this.references = references;
+    }
 
 
-	public void setExperts(List<Expert> experts)
-	{
-		this.experts = experts;
-	}
+    public List<Expert> getExperts() {
+        return experts;
+    }
+
+
+    public void setExperts(List<Expert> experts) {
+        this.experts = experts;
+    }
+
+    /**
+     * Check if the given scientific name is the same as this one. An object is equal if the following fields have the
+     * same value:
+     * <ul>
+     * <li>genusOrMonomial</li>
+     * <li>specificEpithet</li>
+     * <li>infraspecificEpithet</li>
+     * </ul>
+     *
+     * @param scientificName the scientificName to check
+     * @return true if fields have the same value
+     */
+    public boolean isSameScientificName(ScientificName scientificName) {
+        if (this == scientificName) return true;
+        if (scientificName == null) {
+            return false;
+        }
+
+        if (genusOrMonomial != null ? !genusOrMonomial.equals(scientificName.genusOrMonomial) : scientificName.genusOrMonomial != null)
+            return false;
+        if (infraspecificEpithet != null ? !infraspecificEpithet.equals(scientificName.infraspecificEpithet) : scientificName.infraspecificEpithet != null)
+            return false;
+        if (specificEpithet != null ? !specificEpithet.equals(scientificName.specificEpithet) : scientificName.specificEpithet != null)
+            return false;
+
+        return true;
+    }
 
 }

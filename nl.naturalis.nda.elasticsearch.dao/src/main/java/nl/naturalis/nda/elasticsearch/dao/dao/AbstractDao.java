@@ -102,7 +102,7 @@ public abstract class AbstractDao {
         return objectMapper;
     }
 
-    private static boolean hasText(String string) {
+    public static boolean hasText(String string) {
         return string != null && !string.trim().isEmpty();
     }
 

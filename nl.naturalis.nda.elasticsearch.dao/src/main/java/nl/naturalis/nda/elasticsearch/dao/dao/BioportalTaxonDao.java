@@ -1,21 +1,15 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
-import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class BioportalTaxonDao extends AbstractDao {
+public class BioportalTaxonDao extends AbstractTaxonDao {
 
     private static final Set<String> allowedFieldNamesForSearch = new HashSet<>(Arrays.asList(
             "acceptedName.genusOrMonomial",
@@ -52,40 +46,32 @@ public class BioportalTaxonDao extends AbstractDao {
         super(esClient, ndaIndexName);
     }
 
+    /**
+     * Retrieves taxa matching a variable number of criteria.
+     *
+     * @param params A {@link QueryParams} object containing:
+     *               1. fields ... . A variable number of filters for fields. For example, the
+     *               QueryParams object may contain a key “defaultClassification.genus” with a
+     *               value of “Homo” and a key “defaultClassification.specificEpithet” with a
+     *               value of “sapiens”. Fields must be mapped according to the mapping
+     *               mechanism described above. Thus, if the QueryParams object contains a
+     *               key “genus”, that key must be mapped to the “defaultClassification.genus”
+     *               field.
+     *               2. _andOr. An enumerated value with “AND” and “OR” as valid values. “AND”
+     *               means all fields must match. “OR” means some fields must match. This is
+     *               an optional parameter. By default only some fields must match. Will only
+     *               be set if _source equals “SPECIMEN_EXTENDED_NAME_SEARCH”. This value
+     *               represents the DAO method whose query logic to re-execute.
+     *               3. _sort. The field to sort on. Fields must be mapped according to the
+     *               mapping mechanism described above. Special sort value: “_score” (sort by
+     *               relevance). In practice sorting is only allowed on _score and on
+     *               identifications.scientificName.fullScientificName. This is an optional
+     *               parameter. By default sorting is done on _score.
+     *
+     * @return search results
+     */
     public SearchResultSet<Taxon> taxonSearch(QueryParams params) {
         return search(params, allowedFieldNamesForSearch);
     }
 
-    /**
-     * Method as generic as possible for internal use
-     *
-     * @param params search parameters
-     * @param allowedFieldNames may be null if you don't want filtering
-     * @return search results
-     */
-    SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames) {
-        List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
-        List<FieldMapping> allowedFields = (allowedFieldNames == null)
-                                           ? fields
-                                           : filterAllowedFieldMappings(fields, allowedFieldNames);
-
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, true);
-        return responseToTaxonSearchResultSet(searchResponse);
-    }
-
-    private SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse) {
-        SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
-        for (SearchHit hit : searchResponse.getHits()) {
-            ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
-            Taxon taxon = TaxonTransfer.transfer(esTaxon);
-
-            taxonSearchResultSet.addSearchResult(taxon);
-        }
-
-        // TODO links
-        // TODO searchTerms
-        taxonSearchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
-
-        return taxonSearchResultSet;
-    }
 }

@@ -106,11 +106,12 @@ public class QueryParams extends HashMap<String, List<String>> {
     }
 
     public String getParam(String key) {
-        List<String> values = get(key);
-        if (values == null || values.size() == 0) {
-            return null;
+        String value = getFirst(key);
+        if (value != null) {
+            return value.length() == 0 ? null : value;
         }
-        return values.get(0).length() == 0 ? null : values.get(0);
+
+        return null;
     }
 
     public String getParam(String key, String dfault) {

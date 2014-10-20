@@ -15,10 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
-
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 
     private static final Set<String> multiMediaSearchFields = new HashSet<>(Arrays.asList(

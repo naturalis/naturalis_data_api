@@ -63,9 +63,9 @@ import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
  */
 public abstract class AbstractDao {
 
-    public static final String TAXON_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
-    public static final String TAXON_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
-    public static final String TAXON_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
+    public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
+    public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
+    public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
     /**
@@ -297,13 +297,15 @@ public abstract class AbstractDao {
     }
 
     private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
-        Float boostValue = field.getBoostValue();
-        MatchQueryBuilder matchQueryBuilder = matchQuery(field.getFieldName(), field.getValue());
-        if (boostValue != null) {
-            matchQueryBuilder.boost(boostValue);
-        }
+        if (field.getValue() != null) {
+            Float boostValue = field.getBoostValue();
+            MatchQueryBuilder matchQueryBuilder = matchQuery(field.getFieldName(), field.getValue());
+            if (boostValue != null) {
+                matchQueryBuilder.boost(boostValue);
+            }
 
-        extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+            extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+        }
     }
 
     private void extendQueryWithQuery(BoolQueryBuilder boolQueryBuilder, Operator operator,
@@ -402,19 +404,19 @@ public abstract class AbstractDao {
             BoolQueryBuilder scientificNameQuery = boolQuery();
             if (taxon.getValidName().getGenusOrMonomial() != null) {
                 scientificNameQuery.must(
-                        matchQuery(TAXON_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
+                        matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
                                 taxon.getValidName().getGenusOrMonomial())
                 );
             }
             if (taxon.getValidName().getSpecificEpithet() != null) {
                 scientificNameQuery.must(
-                        matchQuery(TAXON_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
+                        matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
                                 taxon.getValidName().getSpecificEpithet())
                 );
             }
             if (taxon.getValidName().getInfraspecificEpithet() != null) {
                 scientificNameQuery.must(
-                        matchQuery(TAXON_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
+                        matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
                                 taxon.getValidName().getInfraspecificEpithet())
                 );
             }

@@ -3,9 +3,9 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import org.junit.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link nl.naturalis.nda.elasticsearch.dao.dao.AbstractDao}.
@@ -28,12 +28,14 @@ public class AbstractDaoTest {
         fields.add(new FieldMapping("field2", 0f, "value2", ""));
         fields.add(new FieldMapping("field3", 0f, "value3", ""));
 
-        List<String> allowedFields = Arrays.asList("field1", "field3");
+        Set<String> allowedFields = new HashSet<>();
+        allowedFields.add("field1");
+        allowedFields.add("field3");
 
-//        List<FieldMapping> fieldMappings = abstractDao.filterAllowedFieldMappings(fields, allowedFields);
+        List<FieldMapping> fieldMappings = abstractDao.filterAllowedFieldMappings(fields, allowedFields);
 
-//        assertEquals(2, fieldMappings.size());
-//        assertEquals("field1", fieldMappings.get(0).getFieldName());
-//        assertEquals("field3", fieldMappings.get(1).getFieldName());
+        assertEquals(2, fieldMappings.size());
+        assertEquals("field1", fieldMappings.get(0).getFieldName());
+        assertEquals("field3", fieldMappings.get(1).getFieldName());
     }
 }

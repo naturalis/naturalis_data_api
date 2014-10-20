@@ -2,38 +2,21 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.*;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
@@ -48,9 +31,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME = "identifications.defaultClassification.className";
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER = "identifications.defaultClassification.order";
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY = "identifications.defaultClassification.family";
-        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
-        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
-        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
     }
 
     private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
@@ -86,10 +66,12 @@ public class BioportalSpecimenDao extends AbstractDao {
             "gatheringEvent.siteCoordinates.point")
     );
 
-    private final BioportalTaxonDao taxonDao;
+    private final BioportalTaxonDao bioportalTaxonDao;
+    private final TaxonDao taxonDao;
 
-    public BioportalSpecimenDao(Client esClient, String ndaIndexName, BioportalTaxonDao taxonDao) {
+    public BioportalSpecimenDao(Client esClient, String ndaIndexName, BioportalTaxonDao bioportalTaxonDao, TaxonDao taxonDao) {
         super(esClient, ndaIndexName);
+        this.bioportalTaxonDao = bioportalTaxonDao;
         this.taxonDao = taxonDao;
     }
 
@@ -161,7 +143,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
-        QueryBuilder nameResQuery = buildNameResolutionQuery(allowedFields, taxonDao);
+        QueryBuilder nameResQuery = buildNameResolutionQuery(allowedFields, bioportalTaxonDao);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, true, nameResQuery,
                 Arrays.asList(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
                         IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
@@ -306,12 +288,27 @@ public class BioportalSpecimenDao extends AbstractDao {
             ResultGroup<Specimen, String> resultGroup = new ResultGroup<>();
             String scientificName = stringListEntry.getKey();
             resultGroup.setSharedValue(scientificName);
+            List<Specimen> specimens = stringListEntry.getValue();
 
-            //todo lookup in Taxon and add link
-
-            List<Specimen> value = stringListEntry.getValue();
-            for (Specimen specimen : value) {
+            for (Specimen specimen : specimens) {
                 resultGroup.addSearchResult(specimen);
+                List<SpecimenIdentification> identifications = specimen.getIdentifications();
+                if (identifications != null) {
+                    for (SpecimenIdentification identification : identifications) {
+                        String genusOrMonomial = identification.getScientificName().getGenusOrMonomial();
+                        String specificEpithet = identification.getScientificName().getSpecificEpithet();
+                        String infraspecificEpithet = identification.getScientificName().getInfraspecificEpithet();
+                        SearchResultSet<Taxon> taxonSearchResultSet = lookupTaxonForScientificName(genusOrMonomial, specificEpithet, infraspecificEpithet);
+                        List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
+                        if (searchResults != null) {
+                            for (SearchResult<Taxon> taxonSearchResult : searchResults) {
+                                Taxon taxon = taxonSearchResult.getResult();
+                                // TODO fix correct link
+                                resultGroup.addLink(new Link("http://test.nl?fullScientificName=" + taxon.getAcceptedName().getFullScientificName(), "taxon"));
+                            }
+                        }
+                    }
+                }
             }
             specimenStringResultGroupSet.addGroup(resultGroup);
         }
@@ -320,9 +317,17 @@ public class BioportalSpecimenDao extends AbstractDao {
         return specimenStringResultGroupSet;
     }
 
+    private SearchResultSet<Taxon> lookupTaxonForScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
+        QueryParams queryParams = new QueryParams();
+        queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL, genusOrMonomial);
+        queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET, specificEpithet);
+        queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET, infraspecificEpithet);
+        return taxonDao.getTaxonDetail(queryParams);
+    }
+
     protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer) {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
-        SearchResponse searchResponse = newSearchRequest()
+        SearchResponse searchResponse = newSearchRequest().setTypes("Specimen")
                 .setQuery(filteredQuery(matchAllQuery(), boolFilter()
                         .must(termFilter("assemblageID", transfer.getAssemblageID()))
                         .mustNot(termFilter("unitID", transfer.getUnitID()))))

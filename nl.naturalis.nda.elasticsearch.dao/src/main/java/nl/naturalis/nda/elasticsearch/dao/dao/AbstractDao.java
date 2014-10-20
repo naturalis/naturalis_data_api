@@ -346,28 +346,28 @@ public abstract class AbstractDao {
 
     /**
      * @param fields parameters for the query
-     * @param taxonDao
-     * @return null in case of no valid param_keys or no taxons matching the supplied values
+     * @param simpleSearch
+     *@param taxonDao  @return null in case of no valid param_keys or no taxons matching the supplied values
      */
-    protected NestedQueryBuilder buildNameResolutionQuery(List<FieldMapping> fields, BioportalTaxonDao taxonDao) {
-        if (!hasFieldWithTextWithOneOfNames(fields, SIMPLE_SEARCH_PARAM_KEY, IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+    protected NestedQueryBuilder buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
+                                                          BioportalTaxonDao taxonDao) {
+        if (!hasFieldWithTextWithOneOfNames(fields, IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
                 IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
                 IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
-                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY)) {
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
             return null;
         }
 
         // nameRes = name resolution
         QueryParams nameResTaxonQueryParams = new QueryParams();
+        if (hasText(simpleSearch)) {
+            nameResTaxonQueryParams.add("vernacularNames.name", simpleSearch);
+            nameResTaxonQueryParams.add("synonyms.genusOrMonomial", simpleSearch);
+            nameResTaxonQueryParams.add("synonyms.specificEpithet", simpleSearch);
+            nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", simpleSearch);
+        }
         for (FieldMapping field : fields) {
             switch (field.getFieldName()) {
-                case SIMPLE_SEARCH_PARAM_KEY:
-                    String searchTerm = field.getValue();
-                    nameResTaxonQueryParams.add("vernacularNames.name", searchTerm);
-                    nameResTaxonQueryParams.add("synonyms.genusOrMonomial", searchTerm);
-                    nameResTaxonQueryParams.add("synonyms.specificEpithet", searchTerm);
-                    nameResTaxonQueryParams.add("synonyms.infraspecificEpithet", searchTerm);
-                    break;
                 case IDENTIFICATIONS_VERNACULAR_NAMES_NAME:
                     nameResTaxonQueryParams.add("vernacularNames.name", field.getValue());
                     break;

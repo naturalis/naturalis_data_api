@@ -229,6 +229,9 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         client().prepareIndex(INDEX_NAME, SPECIMEN_INDEX_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
 
+        client().prepareIndex(INDEX_NAME, SPECIMEN_INDEX_TYPE, "2")
+                .setSource(objectMapper.writeValueAsString(new ESSpecimen())).setRefresh(true).execute().actionGet();
+
         ESTaxon esTaxon = createTestTaxon();
         esTaxon.setAcceptedName(scientificName);
         esTaxon.getSynonyms().get(0).setGenusOrMonomial("geslacht");
@@ -237,7 +240,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
-        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(3l));
     }
 
 }

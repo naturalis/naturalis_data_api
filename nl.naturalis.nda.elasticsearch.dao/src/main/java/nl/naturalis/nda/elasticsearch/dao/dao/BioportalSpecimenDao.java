@@ -327,7 +327,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {
                                 Taxon taxon = taxonSearchResult.getResult();
-                                // TODO fix correct link
+                                //TODO Change links to correct url and href
                                 resultGroup.addLink(new Link(
                                         "http://test.nl?fullScientificName=" + taxon.getAcceptedName()
                                                                                     .getFullScientificName(), "taxon"));

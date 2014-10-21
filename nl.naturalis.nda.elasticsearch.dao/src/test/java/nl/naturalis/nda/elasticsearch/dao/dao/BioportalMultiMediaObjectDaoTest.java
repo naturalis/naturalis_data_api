@@ -71,8 +71,8 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
     public void testGetTaxonMultiMediaObjectDetailWithinResultSet() throws Exception {
         QueryParams params = new QueryParams();
         params.add("unitID", "unit1");
-        SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet = bioportalMultiMediaObjectDao
-                .getTaxonMultiMediaObjectDetailWithinResultSet(params);
+        SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet =
+                bioportalMultiMediaObjectDao.getTaxonMultiMediaObjectDetailWithinResultSet(params);
 
         assertEquals(1, multiMediaObjectSearchResultSet.getSearchResults().size());
         MultiMediaObject result = multiMediaObjectSearchResultSet.getSearchResults().get(0).getResult();
@@ -141,6 +141,6 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
         assertEquals("unit1", result.getUnitID());
         assertNotNull(result.getAssociatedSpecimen());
         assertEquals("spec1", result.getAssociatedSpecimen().getUnitID());
-        assertEquals(3, results.getLinks().size());
+        assertEquals(5, results.getSearchResults().get(0).getLinks().size());
     }
 }

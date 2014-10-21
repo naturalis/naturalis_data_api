@@ -118,7 +118,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         List<Link> links = resultSetWithPreviousAndNextLinks.getLinks();
         List<SearchResult<MultiMediaObject>> searchResults = resultSetWithPreviousAndNextLinks.getSearchResults();
         if (searchResults != null && searchResults.size() >= 1) {
-            addAssociatedTaxonLink(links, searchResults.get(0).getResult());
+            addAssociatedTaxonLink(searchResults.get(0).getLinks(), searchResults.get(0).getResult());
         }
 
         return resultSetWithPreviousAndNextLinks;
@@ -144,10 +144,11 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
         SearchResultSet<MultiMediaObject> resultSetWithPreviousAndNextLinks =
                 createMultiMediaObjectDetailSearchResultSet(params, multiMediaObjectSearchResultSet);
-        List<Link> links = resultSetWithPreviousAndNextLinks.getLinks();
         List<SearchResult<MultiMediaObject>> searchResults = resultSetWithPreviousAndNextLinks.getSearchResults();
         if (searchResults != null && searchResults.size() >= 1) {
-            addAssociatedSpecimenLink(links, searchResults.get(0).getResult());
+            SearchResult<MultiMediaObject> multiMediaObjectSearchResult = searchResults.get(0);
+            addTaxonLinksByScientificName(multiMediaObjectSearchResult.getLinks(),
+                    multiMediaObjectSearchResult.getResult().getAssociatedSpecimen());
         }
 
         return resultSetWithPreviousAndNextLinks;
@@ -200,6 +201,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             List<SearchResult<MultiMediaObject>> searchResults = searchResultSet.getSearchResults();
             for (SearchResult<MultiMediaObject> searchResult : searchResults) {
                 List<Link> links = new ArrayList<>();
+                if (searchResult.getLinks() != null) {
+                    links = searchResult.getLinks();
+                }
 
                 MultiMediaObject multiMediaObject = searchResult.getResult();
                 if (multiMediaObject.getUnitID().equals(unitID)) {
@@ -228,8 +232,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                                            "_next"));
                     }
 
-                    detailResultSet.addSearchResult(multiMediaObject);
-                    detailResultSet.setLinks(links);
+                    searchResult.setLinks(links);
+                    detailResultSet.addSearchResult(searchResult);
                 }
             }
         }
@@ -245,38 +249,42 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (taxonDetail.getSearchResults() != null && taxonDetail.getSearchResults().get(0) != null) {
             multiMediaObject.setAssociatedTaxon(taxonDetail.getSearchResults().get(0).getResult());
             //TODO Change links to correct url and href
-            links.add(new Link(
-                    "http://test.nl?taxon=" + taxonDetail.getSearchResults().get(0).getResult().getSourceSystemId(),
-                    "_next"));
+            links.add(new Link("http://test.nl?taxon=" + taxonDetail.getSearchResults().get(0).getResult().getSourceSystemId(), "_associatedTaxon"));
         }
     }
 
-    private void addAssociatedSpecimenLink(List<Link> links, MultiMediaObject multiMediaObject) {
+    private void addAssociatedSpecimenLink(List<Link> links, MultiMediaObject multiMediaObject, boolean addTaxonLinksByScientificName) {
         String associatedSpecimenReference = multiMediaObject.getAssociatedSpecimenReference();
         if (hasText(associatedSpecimenReference)) {
             SearchResultSet<Specimen> specimenDetail = specimenDao.getSpecimenDetail(associatedSpecimenReference);
-            if (specimenDetail.getSearchResults() != null && specimenDetail.getSearchResults().get(0) != null) {
-                Specimen specimen = specimenDetail.getSearchResults().get(0).getResult();
-                multiMediaObject.setAssociatedSpecimen(specimen);
-                //TODO Change links to correct url and href
-                links.add(new Link("http://test.nl?specimen=" + specimen.getUnitID(), "_next"));
+            if (specimenDetail != null) {
+                if (specimenDetail.getSearchResults() != null && specimenDetail.getSearchResults().get(0) != null) {
+                    Specimen specimen = specimenDetail.getSearchResults().get(0).getResult();
+                    multiMediaObject.setAssociatedSpecimen(specimen);
+                    //TODO Change links to correct url and href
+                    links.add(new Link("http://test.nl?specimen=" + specimen.getUnitID(), "_specimen"));
 
-                if (specimen.getIdentifications() != null) {
-                    for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
-                        ScientificName scientificName = specimenIdentification.getScientificName();
-                        SearchResultSet<Taxon> taxonSearchResultSet =
-                                taxonDao.lookupTaxonForScientificName(scientificName.getGenusOrMonomial(),
-                                                                      scientificName.getSpecificEpithet(),
-                                                                      scientificName.getInfraspecificEpithet());
-
-                        List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                        for (SearchResult<Taxon> searchResult : searchResults) {
-                            //TODO Change links to correct url and href
-                            links.add(new Link("http://test.nl?taxon=" + searchResult.getResult().getAcceptedName()
-                                                                                     .getFullScientificName(),
-                                               "_taxon"));
-                        }
+                    if (specimen.getIdentifications() != null && addTaxonLinksByScientificName) {
+                        addTaxonLinksByScientificName(links, specimen);
                     }
+                }
+            }
+        }
+    }
+
+    private void addTaxonLinksByScientificName(List<Link> links, Specimen specimen) {
+        if (specimen != null && specimen.getIdentifications() != null) {
+            for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
+                ScientificName scientificName = specimenIdentification.getScientificName();
+                SearchResultSet<Taxon> taxonSearchResultSet =
+                        taxonDao.lookupTaxonForScientificName(scientificName.getGenusOrMonomial(),
+                                scientificName.getSpecificEpithet(),
+                                scientificName.getInfraspecificEpithet());
+
+                List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
+                for (SearchResult<Taxon> searchResult : searchResults) {
+                    //TODO Change links to correct url and href
+                    links.add(new Link("http://test.nl?taxon=" + searchResult.getResult().getAcceptedName().getFullScientificName(), "_taxonByScientificName"));
                 }
             }
         }
@@ -288,11 +296,23 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         for (SearchHit hit : searchResponse.getHits()) {
             ESMultiMediaObject esObject = getObjectMapper().convertValue(hit.getSource(), ESMultiMediaObject.class);
             MultiMediaObject multiMediaObject = MultiMediaObjectTransfer.transfer(esObject);
+            SearchResult<MultiMediaObject> multiMediaObjectSearchResult = new SearchResult<>();
+            List<Link> links = new ArrayList<>();
+            multiMediaObjectSearchResult.setResult(multiMediaObject);
 
-            searchResultSet.addSearchResult(multiMediaObject);
+            if (hasText(multiMediaObject.getAssociatedTaxonReference())) {
+                addAssociatedTaxonLink(links, multiMediaObject);
+            }
+            if (hasText(multiMediaObject.getAssociatedSpecimenReference())) {
+                addAssociatedSpecimenLink(links, multiMediaObject, false);
+            }
+
+            //TODO Change links to correct url and href
+            links.add(new Link("http://test.nl?multimedia=" + multiMediaObject.getUnitID(), "_multimedia"));
+            multiMediaObjectSearchResult.setLinks(links);
+            searchResultSet.addSearchResult(multiMediaObjectSearchResult);
         }
 
-        // TODO links
         searchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
         searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
 

@@ -77,8 +77,16 @@ public class CrsDownloader {
 		logger.info("Downloading " + s);
 		String resToken = null;
 		do {
-			String xml = type == Type.SPECIMEN ? CrsSpecimenImporter.getXML(resToken) : CrsMultiMediaImporter.getXML(resToken);
-			String saveTo = type == Type.SPECIMEN ? CrsSpecimenImporter.getLocalFile(resToken) : CrsMultiMediaImporter.getLocalFile(resToken);
+			String xml;
+			String saveTo;
+			if (type == Type.SPECIMEN) {
+				xml = CrsSpecimenImporter.callOaiService(resToken);
+				saveTo = CrsSpecimenImporter.getLocalPath(resToken);
+			}
+			else {
+				xml = CrsMultiMediaImporter.callOaiService(resToken);
+				saveTo = CrsMultiMediaImporter.getLocalPath(resToken);
+			}
 			logger.info("Saving output to file " + saveTo);
 			FileUtil.setContents(saveTo, xml);
 			logger.info("Extracting resumption token from output");

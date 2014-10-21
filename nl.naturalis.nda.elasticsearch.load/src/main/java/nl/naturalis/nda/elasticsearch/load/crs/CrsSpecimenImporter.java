@@ -4,8 +4,11 @@ import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_I
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -114,74 +117,99 @@ public class CrsSpecimenImporter {
 
 	public void importSpecimens()
 	{
-
-		int batch;
-
 		try {
-
-			String resToken;
-			File resTokenFile = getResumptionTokenFile();
-			logger.info(String.format("Looking for resumption token file: %s", resTokenFile.getCanonicalPath()));
-			if (!resTokenFile.exists()) {
-				logger.info("Resumption token file not found. Will start from scratch");
-				resToken = null;
-				batch = 0;
+			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
+				importLocal();
 			}
 			else {
-				if (forceRestart) {
-					resTokenFile.delete();
-					logger.info("Resumption token file found but ignored and deleted (forceRestart=true). Will start from scratch");
-					resToken = null;
-					batch = 0;
-				}
-				else {
-					String[] elements = FileUtil.getContents(resTokenFile).split(",");
-					batch = Integer.parseInt(elements[0]);
-					resToken = elements[1];
-					logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
-				}
+				importRemote();
 			}
-
-			processed = 0;
-			bad = 0;
-
-			do {
-				logger.info("Processing batch " + batch);
-				resToken = processXML(batch++, resToken);
-			} while (resToken != null);
-
-			logger.info("Deleting resumption token file");
-			if (resTokenFile.exists()) {
-				resTokenFile.delete();
-			}
-
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
 			logger.info(getClass().getSimpleName() + " finished successfully");
-
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
 		}
+	}
 
+	private void importRemote() throws IOException
+	{
+		int batch = 0;
+		String resToken;
+		File resTokenFile = getResumptionTokenFile();
+		logger.info(String.format("Looking for resumption token file: %s", resTokenFile.getCanonicalPath()));
+		if (!resTokenFile.exists()) {
+			logger.info("Resumption token file not found. Will start from scratch");
+			resToken = null;
+			batch = 0;
+		}
+		else {
+			if (forceRestart) {
+				resTokenFile.delete();
+				logger.info("Resumption token file found but ignored and deleted (forceRestart=true). Will start from scratch");
+				resToken = null;
+				batch = 0;
+			}
+			else {
+				String[] elements = FileUtil.getContents(resTokenFile).split(",");
+				batch = Integer.parseInt(elements[0]);
+				resToken = elements[1];
+				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
+			}
+		}
+		processed = 0;
+		bad = 0;
+		do {
+			logger.info("Processing batch " + batch++);
+			String xml = callOaiService(resToken);
+			resToken = index(xml);
+		} while (resToken != null);
+		logger.info("Deleting resumption token file");
+		if (resTokenFile.exists()) {
+			resTokenFile.delete();
+		}
+	}
+	
+	private void importLocal() throws IOException
+	{
+		processed = 0;
+		bad = 0;
+		Iterator<File> localFileIterator = getLocalFileIterator();
+		for (File f = localFileIterator.next(); f != null; f = localFileIterator.next()) {
+			logger.info("Processing file " + f.getCanonicalPath());
+			index(FileUtil.getContents(f));
+		}
+		logger.info("Records processed: " + processed);
+		logger.info("Bad records: " + bad);
+		logger.info(getClass().getSimpleName() + " finished successfully");
+	}
+
+	static String callOaiService(String resumptionToken)
+	{
+		String url;
+		ConfigObject config = LoadUtil.getConfig();
+		if (resumptionToken == null) {
+			url = config.required("crs.specimens.url.initial");
+		}
+		else {
+			url = String.format(config.required("crs.specimens.url.resume"), resumptionToken);
+		}
+		logger.info("Calling service: " + url);
+		// Avoid "Content is not allowed in prolog"
+		String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
+		if (!xml.startsWith("<?xml")) {
+			xml = xml.substring(xml.indexOf("<?xml"));
+		}
+		String path = getLocalPath(resumptionToken);
+		logger.info("Saving XML to local file system: " + path);
+		FileUtil.setContents(path, xml);
+		return xml;
 	}
 
 
-	private String processXML(int batch, String resumptionToken)
+	private String index(String xml)
 	{
-
-		if (resumptionToken != null) {
-			logger.info("Saving resumption token");
-			String contents = String.valueOf(batch) + "," + resumptionToken;
-			FileUtil.setContents(getResumptionTokenFile(), contents);
-		}
-
-		String xml = getXML(resumptionToken);
-		if (xml == null) {
-			// Missing local file
-			return null;
-		}
-
 		Document doc;
 		logger.info("Parsing XML");
 		try {
@@ -194,7 +222,6 @@ public class CrsSpecimenImporter {
 		NodeList records = doc.getElementsByTagName("record");
 		int numRecords = records.getLength();
 		logger.info("Number of records in XML output: " + numRecords);
-
 		List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
 		for (int i = 0; i < numRecords; ++i) {
@@ -236,45 +263,32 @@ public class CrsSpecimenImporter {
 	}
 
 
-	static String getXML(String resumptionToken)
-	{
-		String xml;
-		ConfigObject config = LoadUtil.getConfig();
-		if (config.getBoolean("crs.use_local")) {
-			String path = getLocalFile(resumptionToken);
-			File f = new File(path);
-			if (!f.isFile()) {
-				logger.warn(String.format("Missing local file: \"%s\"", path));
-				xml = null;
-			}
-			else {
-				logger.info("Loading file: " + path);
-				xml = FileUtil.getContents(path);
-			}
-		}
-		else {
-			String url;
-			if (resumptionToken == null) {
-				url = config.get("crs.media.url.initial");
-			}
-			else {
-				url = String.format(config.get("crs.media.url.resume"), resumptionToken);
-			}
-			logger.info("Calling service: " + url);
-			// Avoid "Content is not allowed in prolog"
-			xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
-			if (!xml.startsWith("<?xml")) {
-				xml = xml.substring(xml.indexOf("<?xml"));
-			}
-		}
-		return xml;
-	}
 
 
-	static String getLocalFile(String resumptionToken)
+	static String getLocalPath(String resumptionToken)
 	{
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
 		return String.format("%s/specimens.%s.oai.xml", testDir, resumptionToken);
+	}
+
+
+	static Iterator<File> getLocalFileIterator()
+	{
+		String path = LoadUtil.getConfig().required("crs.local_dir");
+		File[] files = new File(path).listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name)
+			{
+				if (!name.startsWith("specimens.")) {
+					return false;
+				}
+				if (!name.endsWith(".oai.xml")) {
+					return false;
+				}
+				return true;
+			}
+		});
+		return Arrays.asList(files).iterator();
 	}
 
 

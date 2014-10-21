@@ -12,7 +12,9 @@ import org.elasticsearch.search.SearchHit;
 import java.util.Collections;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class SpecimenDao extends AbstractDao {
 
@@ -28,32 +30,33 @@ public class SpecimenDao extends AbstractDao {
      * {@link nl.naturalis.nda.domain.Specimen}
      */
     public SearchResultSet<Specimen> getSpecimenDetail(String unitID) {
-        //todo Huidige query werkt met match query. Dit is inefficient.
-        //todo Mapping aanpassen, data herindexeren en dan deze query weggooien en gecommente versie weer gebruiken
-        SearchResponse response = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(matchQuery("unitID", unitID))
-                                                    .execute().actionGet();
-        //        SearchResponse response = newSearchRequest()
-        //                .setTypes(SPECIMEN_TYPE)
-        //                .setQuery(filteredQuery(
-        //                                  matchAllQuery(),
-        //                                  termFilter(
-        //                                          "unitID",
-        //                                          unitID
-        //                                  )
-        //                          )
-        //                )
-        //                .execute().actionGet();
+        SearchResponse response = newSearchRequest()
+                .setTypes(SPECIMEN_TYPE)
+                .setQuery(filteredQuery(
+                                  matchAllQuery(),
+                                  termFilter(
+                                          "unitID",
+                                          unitID
+                                  )
+                          )
+                )
+                .execute().actionGet();
+
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
-        SearchHit hit = response.getHits().getHits()[0];
-        if (hit != null) {
-            ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
-            Specimen specimen = SpecimenTransfer.transfer(esSpecimen);
-            resultSet.addSearchResult(specimen);
+
+        if (response.getHits().getHits().length != 0) {
+            SearchHit hit = response.getHits().getHits()[0];
+            if (hit != null) {
+                ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
+                Specimen specimen = SpecimenTransfer.transfer(esSpecimen);
+                resultSet.addSearchResult(specimen);
+            }
+            resultSet.setTotalSize(response.getHits().getTotalHits());
+            QueryParams queryParams = new QueryParams();
+            queryParams.put("unitID", Collections.singletonList(unitID));
+            resultSet.setQueryParameters(queryParams);
+            return resultSet;
         }
-        resultSet.setTotalSize(response.getHits().getTotalHits());
-        QueryParams queryParams = new QueryParams();
-        queryParams.put("unitID", Collections.singletonList(unitID));
-        resultSet.setQueryParameters(queryParams);
-        return resultSet;
+        return null;
     }
 }

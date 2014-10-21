@@ -3,7 +3,7 @@ package nl.naturalis.nda.search;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResultGroupSet<T, U> {
+public class ResultGroupSet<T, U> implements ResultSet {
 
 	private long totalSize;
 	private List<Link> links;
@@ -73,11 +73,13 @@ public class ResultGroupSet<T, U> {
 		this.resultGroups = resultGroups;
 	}
 
-    public QueryParams getSearchParameters() {
+    @Override
+    public QueryParams getQueryParameters() {
         return searchParameters;
     }
 
-    public void setSearchParameters(QueryParams searchParameters) {
+    @Override
+    public void setQueryParameters(QueryParams searchParameters) {
         this.searchParameters = searchParameters;
     }
 }

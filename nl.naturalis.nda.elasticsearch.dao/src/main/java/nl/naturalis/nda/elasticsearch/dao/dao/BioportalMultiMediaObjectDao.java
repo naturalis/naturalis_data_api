@@ -99,10 +99,11 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                         IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
                         IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
 
-        return responseToMultiMediaObjectSearchResultSet(searchResponse);
+        return responseToMultiMediaObjectSearchResultSet(searchResponse, params);
     }
 
-    private SearchResultSet<MultiMediaObject> responseToMultiMediaObjectSearchResultSet(SearchResponse searchResponse) {
+    private SearchResultSet<MultiMediaObject> responseToMultiMediaObjectSearchResultSet(SearchResponse searchResponse,
+                                                                                        QueryParams params) {
         SearchResultSet<MultiMediaObject> searchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
             ESMultiMediaObject esObject = getObjectMapper().convertValue(hit.getSource(), ESMultiMediaObject.class);
@@ -112,8 +113,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         }
 
         // TODO links
-        // TODO searchTerms
         searchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
+        searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         return searchResultSet;
     }

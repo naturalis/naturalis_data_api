@@ -37,10 +37,10 @@ public class AbstractTaxonDao extends AbstractDao {
                                            : filterAllowedFieldMappings(fields, allowedFieldNames);
 
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, true);
-        return responseToTaxonSearchResultSet(searchResponse);
+        return responseToTaxonSearchResultSet(searchResponse, params);
     }
 
-    private SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse) {
+    private SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse, QueryParams params) {
         SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
@@ -50,8 +50,8 @@ public class AbstractTaxonDao extends AbstractDao {
         }
 
         // TODO links
-        // TODO searchTerms
         taxonSearchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
+        taxonSearchResultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         return taxonSearchResultSet;
     }

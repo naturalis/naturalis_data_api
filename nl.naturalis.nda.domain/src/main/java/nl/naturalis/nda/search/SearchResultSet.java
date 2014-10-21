@@ -3,7 +3,7 @@ package nl.naturalis.nda.search;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchResultSet<T> {
+public class SearchResultSet<T> implements ResultSet {
 
 	private long totalSize;
 	private List<Link> links;
@@ -23,7 +23,7 @@ public class SearchResultSet<T> {
 	public void addSearchResult(T result)
 	{
 		if (searchResults == null) {
-			searchResults = new ArrayList<SearchResult<T>>();
+			searchResults = new ArrayList<>();
 		}
 		searchResults.add(new SearchResult<T>(result));
 	}
@@ -32,7 +32,7 @@ public class SearchResultSet<T> {
 	public void addLink(String rel, String href)
 	{
 		if (links == null) {
-			links = new ArrayList<Link>();
+			links = new ArrayList<>();
 		}
 		links.add(new Link(rel, href));
 	}
@@ -41,7 +41,7 @@ public class SearchResultSet<T> {
 	public void addLink(Link link)
 	{
 		if (links == null) {
-			links = new ArrayList<Link>();
+			links = new ArrayList<>();
 		}
 		links.add(link);
 	}
@@ -70,10 +70,12 @@ public class SearchResultSet<T> {
 		this.links = links;
 	}
 
+    @Override
     public QueryParams getQueryParameters() {
         return queryParameters;
     }
 
+    @Override
     public void setQueryParameters(QueryParams queryParameters) {
         this.queryParameters = queryParameters;
     }

@@ -83,7 +83,7 @@ public class QueryParams extends HashMap<String, List<String>> {
     }
 
     public void putSingle(String key, String value) {
-        List<String> list = new ArrayList<String>(4);
+        List<String> list = new ArrayList<>(4);
         list.add(value);
         put(key, list);
     }
@@ -91,7 +91,7 @@ public class QueryParams extends HashMap<String, List<String>> {
     public void add(String key, String value) {
         List<String> values = get(key);
         if (values == null) {
-            values = new ArrayList<String>(4);
+            values = new ArrayList<>(4);
             put(key, values);
         }
         values.add(value);
@@ -132,4 +132,15 @@ public class QueryParams extends HashMap<String, List<String>> {
         }
         return pairs;
     }
+
+    public QueryParams copyWithoutGeoShape() {
+        QueryParams copy = new QueryParams();
+        for (Map.Entry<String, List<String>> entry : entrySet()) {
+            if (!"_geoShape".equals(entry.getKey())) {
+                copy.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return copy;
+    }
+
 }

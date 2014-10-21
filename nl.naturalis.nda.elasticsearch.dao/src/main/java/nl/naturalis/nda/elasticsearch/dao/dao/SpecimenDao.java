@@ -1,19 +1,15 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.search.SearchHit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
@@ -54,6 +50,9 @@ public class SpecimenDao extends AbstractDao {
             resultSet.addSearchResult(specimen);
         }
         resultSet.setTotalSize(response.getHits().getTotalHits());
+        QueryParams queryParams = new QueryParams();
+        queryParams.put("unitID", Collections.singletonList(unitID));
+        resultSet.setQueryParameters(queryParams);
         return resultSet;
     }
 }

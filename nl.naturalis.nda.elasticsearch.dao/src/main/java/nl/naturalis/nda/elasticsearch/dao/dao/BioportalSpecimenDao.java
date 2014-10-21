@@ -112,7 +112,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, false);
 
-        return responseToSpecimenResultGroupSet(searchResponse);
+        return responseToSpecimenResultGroupSet(searchResponse, params);
     }
 
     /**
@@ -149,7 +149,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
                         IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
 
-        return responseToSpecimenResultGroupSet(searchResponse);
+        return responseToSpecimenResultGroupSet(searchResponse, params);
         // TODO: mark results from name resolution (also do this for MultiMediaObjectDao)
     }
 
@@ -251,12 +251,13 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
         searchResultSet.setLinks(links);
+        searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return searchResultSet;
     }
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response,
+                                                                              QueryParams params) {
         // TODO links
-        // TODO searchTerms
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
         HashMap<String, List<Specimen>> tempMap = new HashMap<>();
 
@@ -314,6 +315,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
+        specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
     }
 

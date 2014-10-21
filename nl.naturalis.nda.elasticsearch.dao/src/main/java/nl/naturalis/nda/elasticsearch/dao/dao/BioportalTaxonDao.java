@@ -137,6 +137,7 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
                 }
 
                 detailResultSet.setLinks(links);
+                detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
             }
         }
 

@@ -74,7 +74,7 @@ public class GatheringEventTransfer {
             gatheringEvent.setGatheringAgents(gatheringAgents);
 
             gatheringEvent.setSiteCoordinates(GatheringSiteCoordinatesTransfer.transfer(esGatheringEvent
-                    .getSiteCoordinates()));
+                                                                                                .getSiteCoordinates()));
         }
     }
 }

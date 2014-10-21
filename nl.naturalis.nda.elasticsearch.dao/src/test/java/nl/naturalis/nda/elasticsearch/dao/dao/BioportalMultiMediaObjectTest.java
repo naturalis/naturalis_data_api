@@ -40,7 +40,8 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
                 .execute().actionGet();
         BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
         dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao,
-                new TaxonDao(client(), INDEX_NAME), new SpecimenDao(client(), INDEX_NAME));
+                                               new TaxonDao(client(), INDEX_NAME), new SpecimenDao(client(),
+                                                                                                   INDEX_NAME));
 
         client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(createTestMultiMediaObject()))
@@ -92,7 +93,6 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         esTaxon.getSynonyms().get(0).setSpecificEpithet("epithet_synoniem");
         client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
-
     }
 
     public static ESMultiMediaObject createTestMultiMediaObject() {
@@ -170,5 +170,4 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
 
         return multiMedia;
     }
-
 }

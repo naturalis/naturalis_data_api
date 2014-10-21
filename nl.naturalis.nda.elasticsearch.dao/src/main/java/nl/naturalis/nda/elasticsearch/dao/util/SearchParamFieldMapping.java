@@ -32,6 +32,7 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_maxResults");
         EXCLUDED_PARAMS.add("_offset");
     }
+
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();
 
     private Properties multimediaProperties;
@@ -160,6 +161,4 @@ public class SearchParamFieldMapping {
 
         return properties;
     }
-
-
 }

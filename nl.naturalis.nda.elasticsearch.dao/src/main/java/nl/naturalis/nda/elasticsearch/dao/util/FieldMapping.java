@@ -36,7 +36,7 @@ public class FieldMapping {
     /**
      * Get the nested path of the property.
      */
-    public String getNestedPath(){
+    public String getNestedPath() {
         return nestedPath;
     }
 

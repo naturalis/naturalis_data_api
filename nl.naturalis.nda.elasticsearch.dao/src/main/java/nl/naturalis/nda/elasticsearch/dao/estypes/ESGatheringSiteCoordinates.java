@@ -6,52 +6,44 @@ import nl.naturalis.nda.domain.GeoPoint;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ESGatheringSiteCoordinates {
 
-	private Double longitudeDecimal;
-	private Double latitudeDecimal;
+    private Double longitudeDecimal;
+    private Double latitudeDecimal;
 
 
-	public ESGatheringSiteCoordinates()
-	{
-	}
+    public ESGatheringSiteCoordinates() {
+    }
 
 
-	public ESGatheringSiteCoordinates(Double latitude, Double longitude)
-	{
-		this.longitudeDecimal = longitude;
-		this.latitudeDecimal = latitude;
-	}
+    public ESGatheringSiteCoordinates(Double latitude, Double longitude) {
+        this.longitudeDecimal = longitude;
+        this.latitudeDecimal = latitude;
+    }
 
 
-	public GeoPoint getPoint()
-	{
-		if (longitudeDecimal == null || latitudeDecimal == null) {
-			return null;
-		}
-		return new GeoPoint(longitudeDecimal, latitudeDecimal);
-	}
+    public GeoPoint getPoint() {
+        if (longitudeDecimal == null || latitudeDecimal == null) {
+            return null;
+        }
+        return new GeoPoint(longitudeDecimal, latitudeDecimal);
+    }
 
 
-	public Double getLongitudeDecimal()
-	{
-		return longitudeDecimal;
-	}
+    public Double getLongitudeDecimal() {
+        return longitudeDecimal;
+    }
 
 
-	public void setLongitudeDecimal(Double longitudeDecimal)
-	{
-		this.longitudeDecimal = longitudeDecimal;
-	}
+    public void setLongitudeDecimal(Double longitudeDecimal) {
+        this.longitudeDecimal = longitudeDecimal;
+    }
 
 
-	public Double getLatitudeDecimal()
-	{
-		return latitudeDecimal;
-	}
+    public Double getLatitudeDecimal() {
+        return latitudeDecimal;
+    }
 
 
-	public void setLatitudeDecimal(Double latitudeDecimal)
-	{
-		this.latitudeDecimal = latitudeDecimal;
-	}
-
+    public void setLatitudeDecimal(Double latitudeDecimal) {
+        this.latitudeDecimal = latitudeDecimal;
+    }
 }

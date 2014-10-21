@@ -21,6 +21,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
  * @author Roberto van der Linden
  */
 public class AbstractTaxonDao extends AbstractDao {
+
     public AbstractTaxonDao(Client esClient, String ndaIndexName) {
         super(esClient, ndaIndexName);
     }
@@ -28,15 +29,15 @@ public class AbstractTaxonDao extends AbstractDao {
     /**
      * Method as generic as possible for internal use
      *
-     * @param params search parameters
+     * @param params            search parameters
      * @param allowedFieldNames may be null if you don't want filtering
      * @return search results
      */
     SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames) {
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
-                                           ? fields
-                                           : filterAllowedFieldMappings(fields, allowedFieldNames);
+                ? fields
+                : filterAllowedFieldMappings(fields, allowedFieldNames);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, true);
         return responseToTaxonSearchResultSet(searchResponse, params);
     }

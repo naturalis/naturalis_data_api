@@ -51,5 +51,4 @@ public class DaoIntegrationTest extends ElasticsearchIntegrationTest {
 
         return mappingBuilder.toString();
     }
-
 }

@@ -42,7 +42,8 @@ public class TaxonDao extends AbstractTaxonDao {
      * @param infraspecificEpithet
      * @return
      */
-    public SearchResultSet<Taxon> lookupTaxonForScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
+    public SearchResultSet<Taxon> lookupTaxonForScientificName(String genusOrMonomial, String specificEpithet,
+                                                               String infraspecificEpithet) {
         QueryParams queryParams = new QueryParams();
         queryParams.add("_andOr", "AND"); //Operator is always AND to make sure all fields are matched.
         queryParams.add("acceptedName.genusOrMonomial", genusOrMonomial);
@@ -50,5 +51,4 @@ public class TaxonDao extends AbstractTaxonDao {
         queryParams.add("acceptedName.infraspecificEpithet", infraspecificEpithet);
         return getTaxonDetail(queryParams);
     }
-
 }

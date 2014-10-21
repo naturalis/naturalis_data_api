@@ -2,13 +2,17 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.Link;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.client.Client;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BioportalTaxonDao extends AbstractTaxonDao {
 
@@ -94,7 +98,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         return createTaxonDetailSearchResultSet(params, searchResultSet);
     }
 
-    protected SearchResultSet<Taxon> createTaxonDetailSearchResultSet(QueryParams params, SearchResultSet<Taxon> searchResultSet) {
+    protected SearchResultSet<Taxon> createTaxonDetailSearchResultSet(QueryParams params,
+                                                                      SearchResultSet<Taxon> searchResultSet) {
         SearchResultSet<Taxon> detailResultSet = new SearchResultSet<>();
 
         SearchResult<Taxon> previousTaxon = null;
@@ -110,7 +115,9 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
 
             ScientificName acceptedName = searchResult.getResult().getAcceptedName();
             if (acceptedName != null
-                    && acceptedName.isSameScientificName(createScientificName(genusOrMonomial, specificEpithet, infraspecificEpithet))) {
+                    && acceptedName.isSameScientificName(createScientificName(genusOrMonomial,
+                                                                              specificEpithet,
+                                                                              infraspecificEpithet))) {
                 Taxon foundTaxonForAcceptedName = searchResult.getResult();
                 detailResultSet.addSearchResult(foundTaxonForAcceptedName);
                 int indexFoundTaxon = searchResults.indexOf(searchResult);
@@ -130,10 +137,13 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
 
                 //TODO Change links to correct url and href
                 if (previousTaxon != null) {
-                    links.add(new Link("http://test.nl?acceptedName=" + previousTaxon.getResult().getAcceptedName().getGenusOrMonomial(), "_previous"));
+                    links.add(new Link("http://test.nl?acceptedName=" + previousTaxon.getResult().getAcceptedName()
+                                                                                     .getGenusOrMonomial(),
+                                       "_previous"));
                 }
                 if (nextTaxon != null) {
-                    links.add(new Link("http://test.nl?acceptedName=" + nextTaxon.getResult().getAcceptedName().getGenusOrMonomial(), "_next"));
+                    links.add(new Link("http://test.nl?acceptedName=" + nextTaxon.getResult().getAcceptedName()
+                                                                                 .getGenusOrMonomial(), "_next"));
                 }
 
                 detailResultSet.setLinks(links);
@@ -144,12 +154,12 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         return detailResultSet;
     }
 
-    private ScientificName createScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
+    private ScientificName createScientificName(String genusOrMonomial, String specificEpithet,
+                                                String infraspecificEpithet) {
         ScientificName scientificName = new ScientificName();
         scientificName.setGenusOrMonomial(genusOrMonomial);
         scientificName.setSpecificEpithet(specificEpithet);
         scientificName.setInfraspecificEpithet(infraspecificEpithet);
         return scientificName;
     }
-
 }

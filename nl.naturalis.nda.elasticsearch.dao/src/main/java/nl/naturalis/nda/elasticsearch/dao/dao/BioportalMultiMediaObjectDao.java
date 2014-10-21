@@ -233,7 +233,6 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 }
             }
         }
-
         detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return detailResultSet;
     }

@@ -55,25 +55,15 @@ import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
  */
 public abstract class AbstractDao {
 
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
+
     public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
     public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
     public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
-    private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
-    /**
-     * ES Config
-     */
-    protected static final String ES_HOST = "localhost";
-    protected static final int ES_PORT = 9300;
-    protected static final String CLUSTER_NAME_PROPERTY = "cluster.name";
-    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-byron";
-    //todo Aparte index maken voor specimen, taxon en multimedia. Deze property wijzigen
-    //todo Type is na bovenstaande todo wijziginge niet meer nodig
-    private static final String SIMPLE_SEARCH_PARAM_KEY = "_search";
-
+    protected Client esClient;
     private static ObjectMapper objectMapper;
     private SearchParamFieldMapping searchParamFieldMapping;
-    protected Client esClient;
     private String ndaIndexName;
 
     public AbstractDao(Client esClient, String ndaIndexName) {
@@ -81,7 +71,6 @@ public abstract class AbstractDao {
         this.ndaIndexName = ndaIndexName;
         this.searchParamFieldMapping = SearchParamFieldMapping.getInstance();
     }
-
 
     protected static ObjectMapper getObjectMapper() {
         if (objectMapper == null) {

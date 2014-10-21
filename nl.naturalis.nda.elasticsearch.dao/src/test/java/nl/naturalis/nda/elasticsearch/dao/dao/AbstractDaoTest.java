@@ -3,9 +3,12 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import org.junit.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link nl.naturalis.nda.elasticsearch.dao.dao.AbstractDao}.
@@ -18,7 +21,8 @@ public class AbstractDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        abstractDao = new AbstractDao(null, "fakeIndex") {};
+        abstractDao = new AbstractDao(null, "fakeIndex") {
+        };
     }
 
     @Test

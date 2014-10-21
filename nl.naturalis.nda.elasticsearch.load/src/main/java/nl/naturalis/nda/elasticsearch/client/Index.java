@@ -61,6 +61,9 @@ public interface Index {
 	 */
 	void create(int numShards, int numReplicas);
 
+
+	void create(String settings);
+
 	/**
 	 * Delete the index and all its types and data from the cluster.
 	 * 
@@ -203,5 +206,6 @@ public interface Index {
 	 *            the objects do not have a relational parent.
 	 */
 	void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds);
+
 
 }

@@ -1,15 +1,10 @@
 package nl.naturalis.nda.elasticsearch.client;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import org.domainobject.util.ExceptionUtil;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
-import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
+import org.domainobject.util.StringUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -34,10 +29,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -62,7 +54,6 @@ public class IndexNative implements Index {
 
 	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
-
 
 	final Client esClient;
 	final IndicesAdminClient admin;
@@ -147,6 +138,20 @@ public class IndexNative implements Index {
 		settings.put("number_of_shards", numShards);
 		settings.put("number_of_replicas", numReplicas);
 		request.setSettings(settings);
+		CreateIndexResponse response = request.execute().actionGet();
+		if (!response.isAcknowledged()) {
+			throw new IndexException("Failed to create index " + indexName);
+		}
+		logger.info("Index created");
+	}
+
+
+	@Override
+	public void create(String settings)
+	{
+		logger.info("Creating index " + indexName);
+		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
+		request.setSettings(ImmutableSettings.settingsBuilder().loadFromSource(settings).build());
 		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
 			throw new IndexException("Failed to create index " + indexName);

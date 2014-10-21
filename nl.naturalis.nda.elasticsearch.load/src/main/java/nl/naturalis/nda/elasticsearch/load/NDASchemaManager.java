@@ -49,7 +49,8 @@ public class NDASchemaManager {
 	public void bootstrap()
 	{
 		index.delete();
-		index.create();
+		String settings = StringUtil.getResourceAsString("/es-settings.json");
+		index.create(settings);
 		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
 		index.addType(LUCENE_TYPE_TAXON, mapping);
 		mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");

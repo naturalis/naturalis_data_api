@@ -361,4 +361,12 @@ public class IndexREST implements Index {
 		
 	}
 
+
+	@Override
+	public void create(String settings)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

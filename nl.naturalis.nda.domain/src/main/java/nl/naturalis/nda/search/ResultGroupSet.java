@@ -7,14 +7,14 @@ public class ResultGroupSet<T, U> {
 
 	private long totalSize;
 	private List<Link> links;
-	private List<String> searchTerms;
+	private QueryParams searchParameters;
 	private List<ResultGroup<T, U>> resultGroups;
 
 
 	public void addLink(String rel, String href)
 	{
 		if (links == null) {
-			links = new ArrayList<Link>();
+			links = new ArrayList<>();
 		}
 		links.add(new Link(rel, href));
 	}
@@ -23,7 +23,7 @@ public class ResultGroupSet<T, U> {
 	public void addLink(Link link)
 	{
 		if (links == null) {
-			links = new ArrayList<Link>();
+			links = new ArrayList<>();
 		}
 		links.add(link);
 	}
@@ -32,7 +32,7 @@ public class ResultGroupSet<T, U> {
 	public void addGroup(ResultGroup<T, U> group)
 	{
 		if (resultGroups == null) {
-			resultGroups = new ArrayList<ResultGroup<T, U>>();
+			resultGroups = new ArrayList<>();
 		}
 		resultGroups.add(group);
 	}
@@ -62,18 +62,6 @@ public class ResultGroupSet<T, U> {
 	}
 
 
-	public List<String> getSearchTerms()
-	{
-		return searchTerms;
-	}
-
-
-	public void setSearchTerms(List<String> searchTerms)
-	{
-		this.searchTerms = searchTerms;
-	}
-
-
 	public List<ResultGroup<T, U>> getResultGroups()
 	{
 		return resultGroups;
@@ -85,4 +73,11 @@ public class ResultGroupSet<T, U> {
 		this.resultGroups = resultGroups;
 	}
 
+    public QueryParams getSearchParameters() {
+        return searchParameters;
+    }
+
+    public void setSearchParameters(QueryParams searchParameters) {
+        this.searchParameters = searchParameters;
+    }
 }

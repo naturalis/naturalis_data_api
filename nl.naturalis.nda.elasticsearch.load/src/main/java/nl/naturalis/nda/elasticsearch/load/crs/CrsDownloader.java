@@ -16,9 +16,13 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * Harvests the CRS OAI interface and saves its output to local files. Since the
- * CRS OAI service is very slow, it pays to first store its output into files,
- * and then process those, if we often need to do a full harvest.
+ * Harvests the CRS OAI service and saves its output to local files. Since the
+ * OAI service is very slow, it pays to first store its output into files, and
+ * then process those, if we often need to do a full harvest. You can also
+ * instruct the {@link CrsSpecimenImporter} and the
+ * {@link CrsMultiMediaImporter} to save local copies of the XML output from the
+ * OAI service by setting the "crs.save_local" property in the configuration
+ * file to "true".
  * 
  * @author ayco_holleman
  * 

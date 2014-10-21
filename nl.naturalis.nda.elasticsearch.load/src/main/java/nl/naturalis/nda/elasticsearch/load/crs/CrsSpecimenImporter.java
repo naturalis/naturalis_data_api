@@ -133,6 +133,7 @@ public class CrsSpecimenImporter {
 		}
 	}
 
+
 	private void importRemote() throws IOException
 	{
 		int batch = 0;
@@ -170,7 +171,8 @@ public class CrsSpecimenImporter {
 			resTokenFile.delete();
 		}
 	}
-	
+
+
 	private void importLocal() throws IOException
 	{
 		processed = 0;
@@ -184,6 +186,7 @@ public class CrsSpecimenImporter {
 		logger.info("Bad records: " + bad);
 		logger.info(getClass().getSimpleName() + " finished successfully");
 	}
+
 
 	static String callOaiService(String resumptionToken)
 	{
@@ -201,9 +204,11 @@ public class CrsSpecimenImporter {
 		if (!xml.startsWith("<?xml")) {
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
-		String path = getLocalPath(resumptionToken);
-		logger.info("Saving XML to local file system: " + path);
-		FileUtil.setContents(path, xml);
+		if (config.getBoolean("crs.save_local")) {
+			String path = getLocalPath(resumptionToken);
+			logger.info("Saving XML to local file system: " + path);
+			FileUtil.setContents(path, xml);
+		}
 		return xml;
 	}
 
@@ -261,8 +266,6 @@ public class CrsSpecimenImporter {
 		}
 		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
-
-
 
 
 	static String getLocalPath(String resumptionToken)

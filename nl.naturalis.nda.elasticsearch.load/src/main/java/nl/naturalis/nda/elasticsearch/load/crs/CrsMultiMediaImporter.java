@@ -264,9 +264,11 @@ public class CrsMultiMediaImporter {
 		if (!xml.startsWith("<?xml")) {
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
-		String path = getLocalPath(resumptionToken);
-		logger.info("Saving XML to local file system: " + path);
-		FileUtil.setContents(path, xml);
+		if (config.getBoolean("crs.save_local")) {
+			String path = getLocalPath(resumptionToken);
+			logger.info("Saving XML to local file system: " + path);
+			FileUtil.setContents(path, xml);
+		}
 		return xml;
 	}
 

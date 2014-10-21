@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.client.Client;
 

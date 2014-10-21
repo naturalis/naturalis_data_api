@@ -7,14 +7,14 @@ public class SearchResultSet<T> {
 
 	private long totalSize;
 	private List<Link> links;
-	private List<String> searchTerms;
+	private QueryParams queryParameters;
 	private List<SearchResult<T>> searchResults;
 
 
 	public void addSearchResult(SearchResult<T> result)
 	{
 		if (searchResults == null) {
-			searchResults = new ArrayList<SearchResult<T>>();
+			searchResults = new ArrayList<>();
 		}
 		searchResults.add(result);
 	}
@@ -70,20 +70,15 @@ public class SearchResultSet<T> {
 		this.links = links;
 	}
 
+    public QueryParams getQueryParameters() {
+        return queryParameters;
+    }
 
-	public List<String> getSearchTerms()
-	{
-		return searchTerms;
-	}
+    public void setQueryParameters(QueryParams queryParameters) {
+        this.queryParameters = queryParameters;
+    }
 
-
-	public void setSearchTerms(List<String> searchTerms)
-	{
-		this.searchTerms = searchTerms;
-	}
-
-
-	public List<SearchResult<T>> getSearchResults()
+    public List<SearchResult<T>> getSearchResults()
 	{
 		return searchResults;
 	}

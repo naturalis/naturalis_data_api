@@ -2,7 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;

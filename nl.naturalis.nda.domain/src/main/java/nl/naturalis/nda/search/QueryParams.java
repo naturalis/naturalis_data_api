@@ -1,4 +1,4 @@
-package nl.naturalis.nda.elasticsearch.dao.util;
+package nl.naturalis.nda.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;

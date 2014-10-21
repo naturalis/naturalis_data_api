@@ -6,7 +6,7 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
-import nl.naturalis.nda.elasticsearch.dao.util.QueryParams;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -150,7 +150,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
 
         return responseToSpecimenResultGroupSet(searchResponse);
-        // TODO: mark results from name resolution
+        // TODO: mark results from name resolution (also do this for MultiMediaObjectDao)
     }
 
     /**

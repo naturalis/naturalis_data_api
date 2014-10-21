@@ -14,6 +14,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,9 +26,8 @@ import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.creat
  */
 public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
 
-    private final String genus_tricholomopsis = "Tricholomopsis";
-    private final String epithet_rutilans = "rutilans";
-    private BioportalTaxonDao taxonDao;
+    private static final String GENUS_TRICHOLOMOPSIS = "Tricholomopsis";
+    private static final String EPITHET_RUTILANS = "rutilans";
     private BioportalMultiMediaObjectDao dao;
 
     @Override
@@ -38,8 +38,8 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         client().admin().indices().preparePutMapping(INDEX_NAME).setType(MULTI_MEDIA_OBJECT_INDEX_TYPE)
                 .setSource(getMapping("test-multimedia-mapping.json"))
                 .execute().actionGet();
-        taxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
-        dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, taxonDao);
+        BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
+        dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao, new TaxonDao(client(), INDEX_NAME));
 
         client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_INDEX_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(createTestMultiMediaObject()))
@@ -49,6 +49,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
                 .setRefresh(true).execute().actionGet();
     }
 
+    @Test
     public void testMultiMediaObjectSearch() {
         // WHEN
         QueryParams params = new QueryParams();
@@ -60,6 +61,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         assertEquals(1, searchResultSet.getTotalSize());
     }
 
+    @Test
     public void testMultiMediaObjectSearch_nameResolution() throws IOException {
         // GIVEN
         setupTaxonForNameResolution();
@@ -74,16 +76,14 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         assertEquals(1, searchResultSet.getTotalSize());
     }
 
-
-
     private void setupTaxonForNameResolution() throws IOException {
         client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
         ScientificName scientificName = new ScientificName();
-        scientificName.setGenusOrMonomial(genus_tricholomopsis);
-        scientificName.setSpecificEpithet(epithet_rutilans);
+        scientificName.setGenusOrMonomial(GENUS_TRICHOLOMOPSIS);
+        scientificName.setSpecificEpithet(EPITHET_RUTILANS);
 
         ESTaxon esTaxon = createTestTaxon();
         esTaxon.setAcceptedName(scientificName);
@@ -94,7 +94,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
 
     }
 
-    public ESMultiMediaObject createTestMultiMediaObject() {
+    public static ESMultiMediaObject createTestMultiMediaObject() {
         ESMultiMediaObject multiMedia = new ESMultiMediaObject();
 
         SourceSystem sourceSystem = new SourceSystem(); {
@@ -132,8 +132,8 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
 
             ScientificName scientificName = new ScientificName(); {
                 scientificName.setTaxonomicStatus(ScientificName.TaxonomicStatus.ACCEPTED_NAME);
-                scientificName.setGenusOrMonomial(genus_tricholomopsis);
-                scientificName.setSpecificEpithet(epithet_rutilans);
+                scientificName.setGenusOrMonomial(GENUS_TRICHOLOMOPSIS);
+                scientificName.setSpecificEpithet(EPITHET_RUTILANS);
                 scientificName.setAuthor("(Schaeff.:Fr.) Singer");
                 Reference reference = new Reference(); {
                     reference.setTitleCitation("Overzicht van de paddestoelen in Nederland");

@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.transfer;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.GatheringEvent;
+import nl.naturalis.nda.domain.MultiMediaGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 
 import java.util.ArrayList;
@@ -23,6 +24,26 @@ public class GatheringEventTransfer {
     public static GatheringEvent transfer(ESGatheringEvent esGatheringEvent) {
         GatheringEvent gatheringEvent = new GatheringEvent();
 
+        doTransfer(esGatheringEvent, gatheringEvent);
+
+        return gatheringEvent;
+    }
+
+    /**
+     * Static method to transfer a {@link ESGatheringEvent} to a {@link MultiMediaGatheringEvent}
+     *
+     * @param esGatheringEvent the object to transfer
+     * @return the newly created {@link MultiMediaGatheringEvent}
+     */
+    public static MultiMediaGatheringEvent transferToMultiMedia(ESGatheringEvent esGatheringEvent) {
+        MultiMediaGatheringEvent gatheringEvent = new MultiMediaGatheringEvent();
+
+        doTransfer(esGatheringEvent, gatheringEvent);
+
+        return gatheringEvent;
+    }
+
+    private static void doTransfer(ESGatheringEvent esGatheringEvent, GatheringEvent gatheringEvent) {
         if (esGatheringEvent != null) {
             gatheringEvent.setProjectTitle(esGatheringEvent.getProjectTitle());
             gatheringEvent.setWorldRegion(esGatheringEvent.getWorldRegion());
@@ -55,7 +76,5 @@ public class GatheringEventTransfer {
             gatheringEvent.setSiteCoordinates(GatheringSiteCoordinatesTransfer.transfer(esGatheringEvent
                     .getSiteCoordinates()));
         }
-
-        return gatheringEvent;
     }
 }

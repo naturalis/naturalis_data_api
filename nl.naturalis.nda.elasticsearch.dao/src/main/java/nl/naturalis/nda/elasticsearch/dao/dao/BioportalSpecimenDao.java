@@ -321,6 +321,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     private SearchResultSet<Taxon> lookupTaxonForScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
         QueryParams queryParams = new QueryParams();
+        queryParams.add("_andOr", "AND"); //Operator is always AND to make sure all fields are matched.
         queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL, genusOrMonomial);
         queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET, specificEpithet);
         queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET, infraspecificEpithet);

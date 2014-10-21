@@ -12,10 +12,11 @@ import static java.util.Arrays.asList;
 
 public class TaxonDao extends AbstractTaxonDao {
 
-    private static final Set<String> scienticNameFields = new HashSet<>(asList(
+    private static final Set<String> allowedTaxonFields = new HashSet<>(asList(
             "acceptedName.genusOrMonomial",
             "acceptedName.specificEpithet",
-            "acceptedName.infraspecificEpithet")
+            "acceptedName.infraspecificEpithet",
+            "sourceSystemId")
     );
 
     public TaxonDao(Client esClient, String ndaIndexName) {
@@ -30,7 +31,6 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
-        params.add("_andOr", "AND"); //Operator is always AND to make sure all fields are matched.
-        return search(params, scienticNameFields);
+        return search(params, allowedTaxonFields);
     }
 }

@@ -42,6 +42,7 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         indexRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
+        params.add("_andOr", "AND");
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
 
         SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(params);
@@ -71,6 +72,7 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         indexRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
+        params.add("_andOr", "AND");
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
         params.add("acceptedName.infraspecificEpithet", "someValue");

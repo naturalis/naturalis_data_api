@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,7 +50,6 @@ public class CrsDownloader {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsDownloader.class);
 
-	private final DecimalFormat decimalFormat;
 	private final DocumentBuilder builder;
 
 
@@ -65,9 +63,6 @@ public class CrsDownloader {
 		catch (ParserConfigurationException e) {
 			throw ExceptionUtil.smash(e);
 		}
-		decimalFormat = new DecimalFormat();
-		decimalFormat.setMinimumIntegerDigits(6);
-		decimalFormat.setGroupingUsed(false);
 	}
 
 

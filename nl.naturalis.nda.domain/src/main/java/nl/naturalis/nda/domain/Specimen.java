@@ -1,6 +1,5 @@
 package nl.naturalis.nda.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Specimen extends NdaTraceableObject {

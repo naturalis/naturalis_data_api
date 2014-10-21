@@ -9,11 +9,12 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import org.elasticsearch.common.joda.time.DateTime;
-import org.junit.Before;
+import org.junit.*;
 
 import java.util.Arrays;
 
 import static java.util.Arrays.asList;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
 
 /**
  * @author Quinten Krijger
@@ -27,7 +28,7 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
     public void setUp() throws Exception {
         super.setUp();
         dao = new BioportalSpecimenDao(client(), INDEX_NAME, new BioportalTaxonDao(client(), INDEX_NAME),
-                new TaxonDao(client(), INDEX_NAME));
+                                       new TaxonDao(client(), INDEX_NAME));
     }
 
     //=================================================== Helpers ======================================================
@@ -65,5 +66,4 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
 
         return esSpecimen;
     }
-
 }

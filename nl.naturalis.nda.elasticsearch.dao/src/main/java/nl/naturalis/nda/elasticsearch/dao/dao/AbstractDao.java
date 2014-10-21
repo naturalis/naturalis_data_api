@@ -68,11 +68,7 @@ public abstract class AbstractDao {
     protected static final String CLUSTER_NAME_PROPERTY = "cluster.name";
     protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-byron";
     //todo Aparte index maken voor specimen, taxon en multimedia. Deze property wijzigen
-    protected static final String INDEX_NAME = "nda";
     //todo Type is na bovenstaande todo wijziginge niet meer nodig
-    protected static final String SPECIMEN_TYPE = "Specimen";
-    protected static final String MULTI_MEDIA_OBJECT_TYPE = "MultiMediaObject";
-    protected static final String TAXON_TYPE = "Taxon";
     private static final String SIMPLE_SEARCH_PARAM_KEY = "_search";
 
     private static ObjectMapper objectMapper;

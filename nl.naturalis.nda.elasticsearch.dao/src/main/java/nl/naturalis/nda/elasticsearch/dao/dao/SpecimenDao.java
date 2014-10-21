@@ -11,6 +11,7 @@ import org.elasticsearch.search.SearchHit;
 
 import java.util.Collections;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 public class SpecimenDao extends AbstractDao {
@@ -32,7 +33,7 @@ public class SpecimenDao extends AbstractDao {
         SearchResponse response = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(matchQuery("unitID", unitID))
                                                     .execute().actionGet();
         //        SearchResponse response = newSearchRequest()
-        //                .setTypes("Specimen")
+        //                .setTypes(SPECIMEN_TYPE)
         //                .setQuery(filteredQuery(
         //                                  matchAllQuery(),
         //                                  termFilter(

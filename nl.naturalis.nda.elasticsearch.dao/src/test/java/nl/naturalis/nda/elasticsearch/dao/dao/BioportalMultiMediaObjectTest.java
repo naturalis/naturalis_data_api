@@ -1,17 +1,25 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.*;
+import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Expert;
+import nl.naturalis.nda.domain.MultiMediaContentIdentification;
+import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.Reference;
+import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.Collections;
 
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
 
 /**
  * @author Quinten Krijger
@@ -27,17 +35,17 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
     public void setUp() throws Exception {
         super.setUp();
         createIndex(INDEX_NAME);
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(MULTI_MEDIA_OBJECT_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(MULTI_MEDIA_OBJECT_TYPE)
                 .setSource(getMapping("test-multimedia-mapping.json"))
                 .execute().actionGet();
         BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
         dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao,
                 new TaxonDao(client(), INDEX_NAME), new SpecimenDao(client(), INDEX_NAME));
 
-        client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_INDEX_TYPE, "1")
+        client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(createTestMultiMediaObject()))
                 .setRefresh(true).execute().actionGet();
-        client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_INDEX_TYPE, "2")
+        client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_TYPE, "2")
                 .setSource(objectMapper.writeValueAsString(new ESMultiMediaObject()))
                 .setRefresh(true).execute().actionGet();
     }
@@ -70,7 +78,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
     }
 
     private void setupTaxonForNameResolution() throws IOException {
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
@@ -82,7 +90,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         esTaxon.setAcceptedName(scientificName);
         esTaxon.getSynonyms().get(0).setGenusOrMonomial("genus_synoniem");
         esTaxon.getSynonyms().get(0).setSpecificEpithet("epithet_synoniem");
-        client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1")
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
     }

@@ -17,10 +17,6 @@ import java.io.InputStreamReader;
  */
 public class DaoIntegrationTest extends ElasticsearchIntegrationTest {
 
-    public static final String INDEX_NAME = "nda";
-    protected static final String SPECIMEN_INDEX_TYPE = "Specimen";
-    protected static final String MULTI_MEDIA_OBJECT_INDEX_TYPE = "MultiMediaObject";
-    protected static final String TAXON_INDEX_TYPE = "Taxon";
     protected ObjectMapper objectMapper = new ObjectMapper();
 
     @Override

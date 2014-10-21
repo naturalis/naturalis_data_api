@@ -10,13 +10,14 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 import static org.hamcrest.Matchers.is;
 
 public class BioportalTaxonDaoTest extends DaoIntegrationTest {
@@ -34,12 +35,13 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     public void testExtendedSearch() throws Exception {
         createIndex(INDEX_NAME);
 
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
         ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
-        client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
@@ -52,19 +54,21 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         //TODO enable when implemented setSearchTerms
 //        assertEquals(1, result.getSearchTerms().size());
 //        assertEquals("Hyphomonas", result.getSearchTerms().get(0));
-        assertEquals("Rhodobacteraceae", result.getSearchResults().get(0).getResult().getDefaultClassification().getFamily());
+        assertEquals("Rhodobacteraceae",
+                     result.getSearchResults().get(0).getResult().getDefaultClassification().getFamily());
     }
 
     @Test
     public void testExtendedSearch_someFieldsThatAreUsedInNameResolution() throws Exception {
         createIndex(INDEX_NAME);
 
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
         ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
-        client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
 
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
@@ -95,7 +99,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         searchResultSet.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
         searchResultSet.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
 
-        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params, searchResultSet);
+        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
+                                                                                                      searchResultSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -115,7 +120,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         searchResultSet.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
         searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
 
-        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params, searchResultSet);
+        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
+                                                                                                      searchResultSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -135,7 +141,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
         searchResultSet.addSearchResult(createTaxonWithScientificName("last item", "geen idee", ""));
 
-        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params, searchResultSet);
+        SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
+                                                                                                      searchResultSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -149,7 +156,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
     //================================================ Helper methods ==================================================
 
-    private Taxon createTaxonWithScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
+    private Taxon createTaxonWithScientificName(String genusOrMonomial, String specificEpithet,
+                                                String infraspecificEpithet) {
         Taxon taxon = new Taxon();
         ScientificName scientificName = new ScientificName();
         scientificName.setGenusOrMonomial(genusOrMonomial);
@@ -206,5 +214,4 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
         return esTaxon;
     }
-
 }

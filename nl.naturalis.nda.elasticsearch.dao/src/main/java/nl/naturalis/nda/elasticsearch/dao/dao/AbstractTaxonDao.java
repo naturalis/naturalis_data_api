@@ -13,6 +13,8 @@ import org.elasticsearch.search.SearchHit;
 import java.util.List;
 import java.util.Set;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
+
 /**
  * Abstract class for Taxon functionality.
  *
@@ -35,7 +37,6 @@ public class AbstractTaxonDao extends AbstractDao {
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                                            ? fields
                                            : filterAllowedFieldMappings(fields, allowedFieldNames);
-
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, true);
         return responseToTaxonSearchResultSet(searchResponse, params);
     }

@@ -6,13 +6,14 @@ import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.List;
 
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 import static org.hamcrest.Matchers.is;
 
 public class TaxonDaoTest extends DaoIntegrationTest {
@@ -30,12 +31,12 @@ public class TaxonDaoTest extends DaoIntegrationTest {
     public final void testTaxonSearch_singleValue() throws IOException {
         createIndex(INDEX_NAME);
 
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
         ESTaxon esTaxon = createTestTaxon();
-        IndexRequestBuilder indexRequestBuilder = client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE);
+        IndexRequestBuilder indexRequestBuilder = client().prepareIndex(INDEX_NAME, TAXON_TYPE);
         indexRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
         esTaxon.getAcceptedName().setGenusOrMonomial("otherValue");
@@ -59,13 +60,13 @@ public class TaxonDaoTest extends DaoIntegrationTest {
     public final void testTaxonSearch_multiValue() throws IOException {
         createIndex(INDEX_NAME);
 
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
         ESTaxon esTaxon = createTestTaxon();
         esTaxon.getAcceptedName().setInfraspecificEpithet("someValue");
-        IndexRequestBuilder indexRequestBuilder = client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE);
+        IndexRequestBuilder indexRequestBuilder = client().prepareIndex(INDEX_NAME, TAXON_TYPE);
         indexRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
         esTaxon.getAcceptedName().setGenusOrMonomial("otherValue");
@@ -86,6 +87,4 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
     }
-
-
 }

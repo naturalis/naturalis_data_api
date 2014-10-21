@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import static java.util.Arrays.asList;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
 import static org.hamcrest.Matchers.is;
 
 public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalSpecimenDaoTest {
@@ -42,7 +43,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         assertEquals(1, specimenStringResultGroupSet.getTotalSize());
     }
 
-@Test
+    @Test
     public void testSpecimenSearch_ngram_nameRes() throws Exception {
         setupNameResolutionTest();
 
@@ -234,10 +235,10 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
     private void setupNameResolutionTest() throws IOException {
         createIndex(INDEX_NAME);
 
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE)
                 .setSource(getMapping("test-specimen-mapping.json"))
                 .execute().actionGet();
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_INDEX_TYPE)
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
@@ -257,10 +258,10 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         specimenIdentification.setScientificName(scientificName);
         esSpecimen.setIdentifications(asList(specimenIdentification));
 
-        client().prepareIndex(INDEX_NAME, SPECIMEN_INDEX_TYPE, "1")
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
 
-        client().prepareIndex(INDEX_NAME, SPECIMEN_INDEX_TYPE, "2")
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2")
                 .setSource(objectMapper.writeValueAsString(new ESSpecimen())).setRefresh(true).execute().actionGet();
 
         ESTaxon esTaxon = createTestTaxon();
@@ -268,11 +269,10 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         esTaxon.getSynonyms().get(0).setGenusOrMonomial("geslacht");
         esTaxon.getSynonyms().get(0).setSpecificEpithet("specifiek");
         esTaxon.getSynonyms().get(0).setInfraspecificEpithet("infra");
-        client().prepareIndex(INDEX_NAME, TAXON_INDEX_TYPE, "1")
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(3l));
     }
-
 }
 

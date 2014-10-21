@@ -3,9 +3,9 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Naturalis Data API | REST</title>
+		<title>NBA Up &amp; Running!</title>
 	</head>
 	<body>
-		<h1>Naturalis Data API | REST Service up and running!</h1>
+		<h1>Netherlands Biodiversity API | REST Service up and running!</h1>
 	</body>
 </html>

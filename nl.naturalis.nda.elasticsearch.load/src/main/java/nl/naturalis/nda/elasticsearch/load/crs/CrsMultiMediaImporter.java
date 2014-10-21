@@ -259,10 +259,10 @@ public class CrsMultiMediaImporter {
 		else {
 			String url;
 			if (resumptionToken == null) {
-				url = config.get("crs.multimedia.url.initial");
+				url = config.required("crs.multimedia.url.initial");
 			}
 			else {
-				url = String.format(config.get("crs.multimedia.url.resume"), resumptionToken);
+				url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
 			}
 			logger.info("Calling service: " + url);
 			// Avoid "Content is not allowed in prolog"

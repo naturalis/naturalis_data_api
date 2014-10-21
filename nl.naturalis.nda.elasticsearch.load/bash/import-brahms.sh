@@ -13,7 +13,5 @@ JAVA_OPTS="$JAVA_OPTS -DcsvDir=${csvDir}"
 JAVA_OPTS="$JAVA_OPTS -DbulkRequestSize=${bulkRequestSize}"
 JAVA_OPTS="$JAVA_OPTS -Drename=${rename}"
 
-java -cp ${classpath} $JAVA_OPTS nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll
-
-
+java -cp ${classpath} $JAVA_OPTS ${loadPackage}.brahms.BrahmsImportAll
 

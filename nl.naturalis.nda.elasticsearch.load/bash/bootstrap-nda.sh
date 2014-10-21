@@ -6,6 +6,6 @@
 
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${load_package}.NDASchemaManager
+java -cp ${classpath} $JAVA_OPTS ${loadPackage}.NDASchemaManager
 
 

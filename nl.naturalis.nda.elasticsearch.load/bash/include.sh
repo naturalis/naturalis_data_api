@@ -14,7 +14,7 @@ for file in `find ${libDir} -type f`
 do
   classpath="${classpath}:${file}"
 done
+# echo CLASSPATH: $classpath
 
 JAVA_OPTS="-server -Xms256m -Xmx1024m"
 JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${ndaConfDir}"
-

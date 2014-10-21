@@ -33,4 +33,22 @@ public class TaxonDao extends AbstractTaxonDao {
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
         return search(params, allowedTaxonFields);
     }
+
+    /**
+     * Method that provides
+     *
+     * @param genusOrMonomial
+     * @param specificEpithet
+     * @param infraspecificEpithet
+     * @return
+     */
+    public SearchResultSet<Taxon> lookupTaxonForScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
+        QueryParams queryParams = new QueryParams();
+        queryParams.add("_andOr", "AND"); //Operator is always AND to make sure all fields are matched.
+        queryParams.add("acceptedName.genusOrMonomial", genusOrMonomial);
+        queryParams.add("acceptedName.specificEpithet", specificEpithet);
+        queryParams.add("acceptedName.infraspecificEpithet", infraspecificEpithet);
+        return getTaxonDetail(queryParams);
+    }
+
 }

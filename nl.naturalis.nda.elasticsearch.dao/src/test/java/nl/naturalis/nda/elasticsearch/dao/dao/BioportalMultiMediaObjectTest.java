@@ -1,14 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Expert;
-import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.Reference;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
@@ -39,7 +31,8 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
                 .setSource(getMapping("test-multimedia-mapping.json"))
                 .execute().actionGet();
         BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
-        dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao, new TaxonDao(client(), INDEX_NAME));
+        dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao,
+                new TaxonDao(client(), INDEX_NAME), new SpecimenDao(client(), INDEX_NAME));
 
         client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_INDEX_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(createTestMultiMediaObject()))
@@ -97,7 +90,8 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
     public static ESMultiMediaObject createTestMultiMediaObject() {
         ESMultiMediaObject multiMedia = new ESMultiMediaObject();
 
-        SourceSystem sourceSystem = new SourceSystem(); {
+        SourceSystem sourceSystem = new SourceSystem();
+        {
             sourceSystem.setCode("NSR");
             sourceSystem.setName("Nationaal Soortenregister");
             multiMedia.setSourceSystem(sourceSystem);
@@ -115,29 +109,35 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
                   }
                ], */
 
-        MultiMediaContentIdentification multiMediaContentIdentification = new MultiMediaContentIdentification(); {
+        MultiMediaContentIdentification multiMediaContentIdentification = new MultiMediaContentIdentification();
+        {
 
             multiMediaContentIdentification.setTaxonRank("species");
 
-            VernacularName vernacularName = new VernacularName(); {
+            VernacularName vernacularName = new VernacularName();
+            {
                 vernacularName.setName("Koningsmantel");
                 vernacularName.setLanguage("Dutch");
                 vernacularName.setPreferred(Boolean.TRUE);
-                Expert expert = new Expert(); {
+                Expert expert = new Expert();
+                {
                     expert.setFullName("Stalpers, J.");
                 }
                 vernacularName.setExperts(Collections.singletonList(expert));
             }
             multiMediaContentIdentification.setVernacularNames(Collections.singletonList(vernacularName));
 
-            ScientificName scientificName = new ScientificName(); {
+            ScientificName scientificName = new ScientificName();
+            {
                 scientificName.setTaxonomicStatus(ScientificName.TaxonomicStatus.ACCEPTED_NAME);
                 scientificName.setGenusOrMonomial(GENUS_TRICHOLOMOPSIS);
                 scientificName.setSpecificEpithet(EPITHET_RUTILANS);
                 scientificName.setAuthor("(Schaeff.:Fr.) Singer");
-                Reference reference = new Reference(); {
+                Reference reference = new Reference();
+                {
                     reference.setTitleCitation("Overzicht van de paddestoelen in Nederland");
-                    Person person = new Person(); {
+                    Person person = new Person();
+                    {
                         person.setFullName("Arnolds, E., Kuyper, Th.W. & M.E. Noordeloos.");
                     }
                     reference.setAuthor(person);
@@ -147,7 +147,8 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
             }
             multiMediaContentIdentification.setScientificName(scientificName);
 
-            DefaultClassification defaultClassification = new DefaultClassification(); {
+            DefaultClassification defaultClassification = new DefaultClassification();
+            {
                 defaultClassification.setKingdom("Fungi");
                 defaultClassification.setPhylum("Basidiomycota");
                 defaultClassification.setClassName("Basidiomycetes");

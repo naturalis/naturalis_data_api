@@ -299,7 +299,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         String genusOrMonomial = identification.getScientificName().getGenusOrMonomial();
                         String specificEpithet = identification.getScientificName().getSpecificEpithet();
                         String infraspecificEpithet = identification.getScientificName().getInfraspecificEpithet();
-                        SearchResultSet<Taxon> taxonSearchResultSet = lookupTaxonForScientificName(genusOrMonomial, specificEpithet, infraspecificEpithet);
+                        SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(genusOrMonomial, specificEpithet, infraspecificEpithet);
                         List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {
@@ -319,14 +319,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         return specimenStringResultGroupSet;
     }
 
-    private SearchResultSet<Taxon> lookupTaxonForScientificName(String genusOrMonomial, String specificEpithet, String infraspecificEpithet) {
-        QueryParams queryParams = new QueryParams();
-        queryParams.add("_andOr", "AND"); //Operator is always AND to make sure all fields are matched.
-        queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL, genusOrMonomial);
-        queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET, specificEpithet);
-        queryParams.add(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET, infraspecificEpithet);
-        return taxonDao.getTaxonDetail(queryParams);
-    }
 
     protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer) {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();

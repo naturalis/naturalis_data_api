@@ -20,6 +20,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
@@ -37,23 +38,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.*;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -74,7 +66,7 @@ public abstract class AbstractDao {
     protected static final String ES_HOST = "localhost";
     protected static final int ES_PORT = 9300;
     protected static final String CLUSTER_NAME_PROPERTY = "cluster.name";
-    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-roberto";
+    protected static final String CLUSTER_NAME_PROPERTY_VALUE = "naturalis-byron";
     //todo Aparte index maken voor specimen, taxon en multimedia. Deze property wijzigen
     protected static final String INDEX_NAME = "nda";
     //todo Type is na bovenstaande todo wijziginge niet meer nodig
@@ -181,7 +173,11 @@ public abstract class AbstractDao {
             extendQueryWithGeoShapeFilter(boolQueryBuilder, params.getParam("_geoShape"));
         }
 
-        //TODO dateTimeBegin as rangeQuery?
+        if (params.containsKey("gatheringEvent.dateTimeBegin") || params.containsKey("gatheringEvent.dateTimeEnd")) {
+            extendQueryWithRangeFilter(boolQueryBuilder,
+                                       params.getParam("gatheringEvent.dateTimeBegin"),
+                                       params.getParam("gatheringEvent.dateTimeEnd"));
+        }
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                                                                       .setQuery(filteredQuery(boolQueryBuilder, null))
@@ -200,6 +196,22 @@ public abstract class AbstractDao {
         logger.info(searchRequestBuilder.toString());
 
         return searchRequestBuilder.execute().actionGet();
+    }
+
+    //================================================ Helper methods ==================================================
+
+    private void extendQueryWithRangeFilter(BoolQueryBuilder boolQueryBuilder, String dateTimeBegin,
+                                            String dateTimeEnd) {
+        if (dateTimeBegin != null) {
+            RangeFilterBuilder dateTimeBeginRangeFilterBuilder = rangeFilter("gatheringEvent.dateTimeBegin").from(
+                    dateTimeBegin);
+            boolQueryBuilder.must(filteredQuery(matchAllQuery(), dateTimeBeginRangeFilterBuilder));
+        }
+        if (dateTimeEnd != null) {
+            RangeFilterBuilder dateTimeEndRangeFilterBuilder = rangeFilter("gatheringEvent.dateTimeEnd")
+                    .to(dateTimeEnd);
+            boolQueryBuilder.must(filteredQuery(matchAllQuery(), dateTimeEndRangeFilterBuilder));
+        }
     }
 
     private void extendQueryWithGeoShapeFilter(BoolQueryBuilder boolQueryBuilder, String geoShape) {
@@ -232,10 +244,10 @@ public abstract class AbstractDao {
 
         if (shapeBuilder != null) {
             boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
-                    geoShapeFilter(
-                            "gatheringEvent.siteCoordinates.point",
-                            shapeBuilder,
-                            ShapeRelation.WITHIN)));
+                                              geoShapeFilter(
+                                                      "gatheringEvent.siteCoordinates.point",
+                                                      shapeBuilder,
+                                                      ShapeRelation.WITHIN)));
         }
     }
 
@@ -268,8 +280,6 @@ public abstract class AbstractDao {
 
         return approvedFields;
     }
-
-    //================================================ Helper methods ==================================================
 
     private void setSize(QueryParams params, SearchRequestBuilder searchRequestBuilder) {
         if (params.containsKey("_maxResults")) {
@@ -345,16 +355,19 @@ public abstract class AbstractDao {
     }
 
     /**
-     * @param fields parameters for the query
+     * @param fields       parameters for the query
      * @param simpleSearch
-     *@param taxonDao  @return null in case of no valid param_keys or no taxons matching the supplied values
+     * @param taxonDao     @return null in case of no valid param_keys or no taxons matching the supplied values
      */
     protected NestedQueryBuilder buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
                                                           BioportalTaxonDao taxonDao) {
-        if (!hasFieldWithTextWithOneOfNames(fields, IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
-                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
-                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
-                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
+        if (!hasFieldWithTextWithOneOfNames(fields,
+                                            IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
+                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
+                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
             return null;
         }
 
@@ -405,19 +418,19 @@ public abstract class AbstractDao {
             if (taxon.getValidName().getGenusOrMonomial() != null) {
                 scientificNameQuery.must(
                         matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
-                                taxon.getValidName().getGenusOrMonomial())
+                                   taxon.getValidName().getGenusOrMonomial())
                 );
             }
             if (taxon.getValidName().getSpecificEpithet() != null) {
                 scientificNameQuery.must(
                         matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
-                                taxon.getValidName().getSpecificEpithet())
+                                   taxon.getValidName().getSpecificEpithet())
                 );
             }
             if (taxon.getValidName().getInfraspecificEpithet() != null) {
                 scientificNameQuery.must(
                         matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
-                                taxon.getValidName().getInfraspecificEpithet())
+                                   taxon.getValidName().getInfraspecificEpithet())
                 );
             }
             nameResQueryBuilder.should(scientificNameQuery);

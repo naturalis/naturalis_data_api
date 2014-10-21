@@ -9,5 +9,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/admin.ayco.holleman/.m2/repository/junit/junit/4.8.1/junit-4.8.1.jar"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

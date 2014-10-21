@@ -7,7 +7,9 @@ import java.util.List;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.Sex;
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.SpecimenTypeStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
@@ -33,10 +35,12 @@ public class CrsMultiMediaTransfer {
 		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
-		String s = val(dcElement, "dwc:sex");
-		List<String> sexes = s == null ? null : Arrays.asList(s);
-		s = val(recordElement, "dwc:lifeStage");
+		String s = val(recordElement, "dwc:lifeStage");
 		List<String> lifeStages = s == null ? null : Arrays.asList(s);
+		s = val(recordElement,"abcd:TypeStatus");
+		SpecimenTypeStatus typeStatus = SpecimenTypeStatus.forName(s);
+		s = val(recordElement, "abcd:Sex");
+		List<String> sexes = s == null? null : Arrays.asList(Sex.forName(s).toString());
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
 			String title = val(mediaFileElement, "dc:title");
@@ -56,6 +60,7 @@ public class CrsMultiMediaTransfer {
 			mmo.setGatheringEvents(Arrays.asList(gatheringEvent));
 			mmo.setIdentifications(identifications);
 			mmo.setSexes(sexes);
+			mmo.setSpecimenTypeStatus(typeStatus.toString());
 			mmo.setPhasesOrStages(lifeStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));

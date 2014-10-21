@@ -8,8 +8,10 @@ import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.Sex;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.SpecimenTypeStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -36,7 +38,6 @@ public class CrsSpecimenTransfer {
 		specimen.setRecordBasis(val(recordElement, "abcd:RecordBasis"));
 		specimen.setKindOfUnit(val(recordElement, "abcd:KindOfUnit"));
 		specimen.setCollectionType(val(recordElement, "abcd:CollectionType"));
-		specimen.setSex(val(recordElement, "abcd:Sex"));
 		specimen.setPhaseOrStage(val(recordElement, "abcd:PhaseOrStage"));
 		specimen.setTitle(val(recordElement, "abcd:Title"));
 		specimen.setNumberOfSpecimen(ival(recordElement, "abcd:AccessionSpecimenNumbers"));
@@ -51,6 +52,11 @@ public class CrsSpecimenTransfer {
 			s = val(recordElement, "abcd:SpecimenMount");
 		}
 		specimen.setPreparationType(s);
+		s = val(recordElement,"abcd:TypeStatus");
+		SpecimenTypeStatus typeStatus = SpecimenTypeStatus.forName(s);
+		specimen.setTypeStatus(typeStatus.toString());
+		s = val(recordElement, "abcd:Sex");
+		specimen.setSex(Sex.forName(s).toString());
 		List<Element> determinationElements = DOMUtil.getChildren(recordElement, "ncrsDetermination");
 		for (Element e : determinationElements) {
 			specimen.addIndentification(transferIdentification(e));

@@ -24,9 +24,9 @@ public class AbstractDaoTest {
     @Test
     public void testFilterAllowedFieldMappings() throws Exception {
         List<FieldMapping> fields = new ArrayList<>();
-        fields.add(new FieldMapping("field1", 0f, "value1", ""));
-        fields.add(new FieldMapping("field2", 0f, "value2", ""));
-        fields.add(new FieldMapping("field3", 0f, "value3", ""));
+        fields.add(new FieldMapping("field1", 0f, "value1", "", false));
+        fields.add(new FieldMapping("field2", 0f, "value2", "", false));
+        fields.add(new FieldMapping("field3", 0f, "value3", "", false));
 
         Set<String> allowedFields = new HashSet<>();
         allowedFields.add("field1");

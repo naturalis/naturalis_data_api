@@ -3,13 +3,15 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static java.util.Arrays.asList;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
@@ -27,6 +29,31 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
     }
+
+    @Test
+    public void testSpecimenSearch_ngram_specimenDirectly() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("vernacularName", "aap");
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
+
+        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+    }
+
+@Test
+    public void testSpecimenSearch_ngram_nameRes() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("vernacularName", "henk");
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
+
+        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+    }
+
 
     @Test
     public void testExtendedNameSearch_nameResolution_simpleSearch_synonymGenusOrMonomial() throws Exception {
@@ -222,7 +249,11 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         scientificName.setSpecificEpithet("specifiek");
         scientificName.setInfraspecificEpithet("infra");
 
+        VernacularName vernacularName = new VernacularName();
+        vernacularName.setName("bosaap");
+
         // no default classification to avoid direct hit in name resolution via taxons
+        specimenIdentification.setVernacularNames(Arrays.asList(vernacularName));
         specimenIdentification.setScientificName(scientificName);
         esSpecimen.setIdentifications(asList(specimenIdentification));
 

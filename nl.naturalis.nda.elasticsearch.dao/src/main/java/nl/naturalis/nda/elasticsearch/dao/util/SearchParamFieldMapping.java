@@ -18,6 +18,8 @@ public class SearchParamFieldMapping {
 
     public static final String BOOST_SUFFIX = ".boost";
     public static final String NESTED_SUFFIX = ".nested.path";
+    private static final String NGRAM_SUFFIX = ".ngram";
+
     private static final List<String> EXCLUDED_PARAMS = new ArrayList<>();
 
     static {
@@ -30,7 +32,6 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_maxResults");
         EXCLUDED_PARAMS.add("_offset");
     }
-
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();
 
     private Properties multimediaProperties;
@@ -119,10 +120,20 @@ public class SearchParamFieldMapping {
         for (String esField : esFields) {
             Float boostValue = getBoostValueForField(esField, properties);
             String nestedPath = getNestedPathValueForField(esField, properties);
-            mappings.add(new FieldMapping(esField, boostValue, value, nestedPath));
+            Boolean hasNGramField = getNGramValueForField(esField, properties);
+            mappings.add(new FieldMapping(esField, boostValue, value, nestedPath, hasNGramField));
         }
 
         return mappings;
+    }
+
+    private Boolean getNGramValueForField(String field, Properties properties) {
+        String property = properties.getProperty(field + NGRAM_SUFFIX);
+        if (property != null && !property.isEmpty()) {
+            return Boolean.valueOf(property);
+        }
+
+        return null;
     }
 
     private List<String> extractPropertyForField(String field, Properties properties) {

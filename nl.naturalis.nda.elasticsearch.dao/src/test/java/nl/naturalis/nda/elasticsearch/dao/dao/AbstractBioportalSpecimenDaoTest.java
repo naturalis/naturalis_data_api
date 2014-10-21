@@ -4,11 +4,14 @@ import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import org.elasticsearch.common.joda.time.DateTime;
 import org.junit.Before;
+
+import java.util.Arrays;
 
 import static java.util.Arrays.asList;
 
@@ -53,6 +56,10 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
         scientificName.setGenusOrMonomial("Xylopia");
         scientificName.setSpecificEpithet("ferruginea");
         specimenIdentification.setScientificName(scientificName);
+
+        VernacularName vernacularName = new VernacularName();
+        vernacularName.setName("bosaap");
+        specimenIdentification.setVernacularNames(Arrays.asList(vernacularName));
 
         esSpecimen.setIdentifications(asList(specimenIdentification));
 

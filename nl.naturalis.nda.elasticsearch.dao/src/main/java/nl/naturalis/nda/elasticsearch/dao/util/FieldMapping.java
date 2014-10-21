@@ -11,12 +11,14 @@ public class FieldMapping {
     private final Float boostValue;
     private final String value;
     private final String nestedPath;
+    private final Boolean hasNGramField;
 
-    public FieldMapping(String fieldName, Float boostValue, String value, String nestedPath) {
+    public FieldMapping(String fieldName, Float boostValue, String value, String nestedPath, Boolean hasNGram) {
         this.fieldName = fieldName;
         this.boostValue = boostValue;
         this.value = value;
         this.nestedPath = nestedPath;
+        this.hasNGramField = hasNGram;
     }
 
     public String getFieldName() {
@@ -38,4 +40,7 @@ public class FieldMapping {
         return nestedPath;
     }
 
+    public Boolean hasNGram() {
+        return hasNGramField;
+    }
 }

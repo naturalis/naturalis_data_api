@@ -20,6 +20,10 @@ public class GatheringSiteCoordinatesTransfer {
      * @return the newly created {@link GatheringSiteCoordinates}
      */
     public static List<GatheringSiteCoordinates> transfer(List<ESGatheringSiteCoordinates> esSiteCoordinates) {
+        if (esSiteCoordinates == null) {
+            return null;
+        }
+
         List<GatheringSiteCoordinates> gatheringSiteCoordinates = new ArrayList<>();
 
         for (ESGatheringSiteCoordinates esSiteCoordinate : esSiteCoordinates) {

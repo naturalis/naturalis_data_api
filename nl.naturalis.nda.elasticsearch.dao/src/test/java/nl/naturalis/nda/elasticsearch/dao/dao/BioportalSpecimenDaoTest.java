@@ -11,7 +11,7 @@ import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +43,34 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         assertEquals(2, specimenStringResultGroupSet.getTotalSize());
     }
+
+    @Test
+    public void testSpecimenSearch_ngram_localityText() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType("Specimen")
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        ESSpecimen esSpecimen = createSpecimen();
+        ESGatheringEvent gatheringEvent = new ESGatheringEvent();
+        gatheringEvent.setLocalityText("Hallo lieve vrienden");
+        esSpecimen.setGatheringEvent(gatheringEvent);
+
+        client().prepareIndex(INDEX_NAME, "Specimen", "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+        esSpecimen = createSpecimen();
+        client().prepareIndex(INDEX_NAME, "Specimen", "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("gatheringEvent.localityText", "Hal");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+
+        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+    }
+
 
     @Test
     public void testExtendedNameSearch_nested_AND_query() throws Exception {

@@ -171,7 +171,12 @@
                             "raw": {
                                 "type": "string",
                                 "index": "not_analyzed"
+                            },
+                            "ngram": {
+                                "type": "string",
+                                "index_analyzer": "nda_ngram_analyzer"
                             }
+
                         }
                     },
                     "dateTimeBegin": {
@@ -508,7 +513,13 @@
                         "type": "nested",
                         "properties": {
                             "name": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "ngram": {
+                                        "type": "string",
+                                        "index_analyzer": "nda_ngram_analyzer"
+                                    }
+                                }
                             },
                             "language": {
                                 "type": "string"

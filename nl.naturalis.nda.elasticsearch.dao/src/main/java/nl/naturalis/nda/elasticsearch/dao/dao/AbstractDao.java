@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
-import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -315,6 +315,11 @@ public abstract class AbstractDao {
             }
 
             extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+
+            if (field.hasNGram() != null && field.hasNGram()) {
+                matchQueryBuilder = matchQuery(field.getFieldName() + ".ngram", field.getValue());
+                extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+            }
         }
     }
 

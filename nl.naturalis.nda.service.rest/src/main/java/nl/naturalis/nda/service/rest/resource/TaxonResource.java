@@ -4,16 +4,15 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.ejb.service.SpecimenService;
-import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 
 import org.slf4j.Logger;
@@ -26,31 +25,60 @@ import org.slf4j.LoggerFactory;
 public class TaxonResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(TaxonResource.class);
-	
-	@EJB
-	SpecimenService service;
 
 	@EJB
 	Registry registry;
 
 
 	@GET
-	@Path("/")
+	@POST
+	@Path("/detail")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<Taxon> list(@Context UriInfo request)
+	public SearchResultSet<Taxon> getTaxonDetail(@Context UriInfo request)
 	{
-		return new SearchResultSet<Taxon>();
+		logger.debug("getTaxonDetail");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		SearchResultSet<Taxon> result = registry.getTaxonDao().getTaxonDetail(params);
+		return result;
 	}
 
 
 	@GET
-	@Path("/scientific-name/{name}")
+	@POST
+	@Path("/within-result-set")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<Taxon> findByScientificName(@PathParam("name") String name)
+	public SearchResultSet<Taxon> getTaxonDetailWithinResultSet(@Context UriInfo request)
 	{
-		TaxonDao dao = new TaxonDao(registry.getESClient(), "nda");
-		//SearchResultSet<Taxon> result = dao.findByScientificName(name);
-		return null;
+		logger.debug("getTaxonDetailWithinResultSet");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().getTaxonDetailWithinResultSet(params);
+		return result;
+	}
+
+
+	@GET
+	@POST
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public SearchResultSet<Taxon> search(@Context UriInfo request)
+	{
+		logger.debug("getTaxonDetailWithinResultSet");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().taxonSearch(params);
+		return result;
+	}
+
+
+	@GET
+	@POST
+	@Path("/extended-search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public SearchResultSet<Taxon> extendedSearch(@Context UriInfo request)
+	{
+		logger.debug("getTaxonDetailWithinResultSet");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().taxonSearch(params);
+		return result;
 	}
 
 }

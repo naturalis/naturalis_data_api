@@ -7,5 +7,14 @@
 	</head>
 	<body>
 		<h1>Netherlands Biodiversity API | REST Service up and running!</h1>
+<pre>
+<%
+/*
+for(Object s : System.getProperties().keySet()) {
+	out.println("" + s + ": " + System.getProperty(s.toString()) + "<br/>");
+}
+*/
+%>
+</pre>
 	</body>
 </html>

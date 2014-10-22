@@ -115,7 +115,6 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
         SearchResultSet<MultiMediaObject> resultSetWithPreviousAndNextLinks =
                 createMultiMediaObjectDetailSearchResultSet(params, multiMediaObjectSearchResultSet);
-        List<Link> links = resultSetWithPreviousAndNextLinks.getLinks();
         List<SearchResult<MultiMediaObject>> searchResults = resultSetWithPreviousAndNextLinks.getSearchResults();
         if (searchResults != null && searchResults.size() >= 1) {
             addAssociatedTaxonLink(searchResults.get(0).getLinks(), searchResults.get(0).getResult());

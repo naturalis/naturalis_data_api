@@ -15,6 +15,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFi
 public class TaxonDao extends AbstractTaxonDao {
 
     private static final Set<String> allowedTaxonFields = new HashSet<>(asList(
+            ACCEPTEDNAME_FULL_SCIENTIFIC_NAME,
             ACCEPTEDNAME_GENUS_OR_MONOMIAL,
             ACCEPTEDNAME_SPECIFIC_EPITHET,
             ACCEPTEDNAME_INFRASPECIFIC_EPITHET,

@@ -16,12 +16,9 @@ import org.elasticsearch.common.geo.builders.BasePolygonBuilder;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.NestedQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.highlight.HighlightBuilder;
+import org.elasticsearch.search.internal.InternalSearchResponse;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.geojson.GeoJsonObject;
@@ -32,12 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
@@ -59,9 +51,9 @@ public abstract class AbstractDao {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
     public static final String BASE_URL = "http://10.42.1.149:8080/nl.naturalis.nda.service.rest/api";
-    public static final String TAXON_DETAIL_BASE_URL= BASE_URL + "/taxon/detail/?acceptedName=";
-    public static final String SPECIMEN_DETAIL_BASE_URL= BASE_URL + "/specimen/detail/?unitID=";
-    public static final String MULTIMEDIA_DETAIL_BASE_URL= BASE_URL + "/multimedia/detail/?unitID=";
+    public static final String TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/detail/?acceptedName=";
+    public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/detail/?unitID=";
+    public static final String MULTIMEDIA_DETAIL_BASE_URL = BASE_URL + "/multimedia/detail/?unitID=";
 
     protected Client esClient;
     private static ObjectMapper objectMapper;
@@ -113,7 +105,7 @@ public abstract class AbstractDao {
      * @param params
      * @param fields
      * @param type
-     * @param highlighting whether to use highlighting
+     * @param highlighting  whether to use highlighting
      * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
      * @return
      */
@@ -147,26 +139,32 @@ public abstract class AbstractDao {
             }
         }
 
+        boolean atLeastOneFieldToQuery = false;
+
         for (String nestedPath : nestedFields.keySet()) {
             extendQueryWithNestedFieldsWithSameNestedPath(boolQueryBuilder, operator, nestedPath, nestedFields.get(
                     nestedPath));
+            atLeastOneFieldToQuery = true;
         }
 
         for (FieldMapping field : nonNestedFields) {
             if (!field.getFieldName().contains("dateTime")) {
                 extendQueryWithField(boolQueryBuilder, operator, field);
+                atLeastOneFieldToQuery = true;
             }
         }
 
         if (prebuiltQuery != null && prebuiltQuery.getQuery() != null) {
             extendQueryWithQuery(boolQueryBuilder, operator, prebuiltQuery.getQuery());
+            atLeastOneFieldToQuery = true;
         }
 
         if (params.containsKey("_geoShape")) {
             extendQueryWithGeoShapeFilter(boolQueryBuilder, params.getParam("_geoShape"));
+            atLeastOneFieldToQuery = true;
         }
 
-        extractRangeQuery(params, boolQueryBuilder);
+        atLeastOneFieldToQuery = extractRangeQuery(params, boolQueryBuilder, atLeastOneFieldToQuery);
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                                                                       .setQuery(filteredQuery(boolQueryBuilder, null))
@@ -175,6 +173,7 @@ public abstract class AbstractDao {
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);
         }
+        setSize(params, searchRequestBuilder);
 
         if (highlighting) {
             for (FieldMapping fieldMapping : fields) {
@@ -191,21 +190,23 @@ public abstract class AbstractDao {
             }
         }
 
-        setSize(params, searchRequestBuilder);
+        if (!atLeastOneFieldToQuery) {
+            return new SearchResponse(InternalSearchResponse.empty(), "", 0, 0, 0, null);
+        }
 
         logger.info(searchRequestBuilder.toString());
-
         return searchRequestBuilder.execute().actionGet();
     }
 
     //================================================ Helper methods ==================================================
 
-    private void extractRangeQuery(QueryParams params, BoolQueryBuilder boolQueryBuilder) {
+    private boolean extractRangeQuery(QueryParams params, BoolQueryBuilder boolQueryBuilder, boolean atLeastOneFieldToQuery) {
         if (params.containsKey("gatheringEvent.dateTimeBegin") || params.containsKey("gatheringEvent.dateTimeEnd")) {
             extendQueryWithRangeFilter(boolQueryBuilder,
                                        params,
                                        "gatheringEvent.dateTimeBegin",
                                        "gatheringEvent.dateTimeEnd");
+            atLeastOneFieldToQuery = true;
         }
 
         if (params.containsKey("gatheringEvents.dateTimeBegin") || params.containsKey("gatheringEvents.dateTimeEnd")) {
@@ -213,7 +214,10 @@ public abstract class AbstractDao {
                                        params,
                                        "gatheringEvents.dateTimeBegin",
                                        "gatheringEvents.dateTimeEnd");
+            atLeastOneFieldToQuery = true;
         }
+
+        return atLeastOneFieldToQuery;
     }
 
     private void extendQueryWithRangeFilter(BoolQueryBuilder boolQueryBuilder, QueryParams params, String dateTimeBegin,

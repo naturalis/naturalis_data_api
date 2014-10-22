@@ -7,6 +7,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
@@ -103,8 +104,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
-        assertEquals(1, taxonDetailSearchResultSet.getLinks().size());
-        assertEquals("_next", taxonDetailSearchResultSet.getLinks().get(0).getHref());
+        assertEquals(1, searchResults.get(0).getLinks().size());
+        assertEquals("_next", searchResults.get(0).getLinks().get(0).getHref());
     }
 
     @Test
@@ -124,8 +125,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
-        assertEquals(1, taxonDetailSearchResultSet.getLinks().size());
-        assertEquals("_previous", taxonDetailSearchResultSet.getLinks().get(0).getHref());
+        assertEquals(1, searchResults.get(0).getLinks().size());
+        assertEquals("_previous", searchResults.get(0).getLinks().get(0).getHref());
     }
 
     @Test
@@ -145,11 +146,12 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
-        assertEquals(2, taxonDetailSearchResultSet.getLinks().size());
-        assertEquals("_previous", taxonDetailSearchResultSet.getLinks().get(0).getHref());
-        assertTrue(taxonDetailSearchResultSet.getLinks().get(0).getRel().contains("first"));
-        assertEquals("_next", taxonDetailSearchResultSet.getLinks().get(1).getHref());
-        assertTrue(taxonDetailSearchResultSet.getLinks().get(1).getRel().contains("last"));
+        List<Link> links = searchResults.get(0).getLinks();
+        assertEquals(2, links.size());
+        assertEquals("_previous", links.get(0).getHref());
+        assertTrue(links.get(0).getRel().contains("first"));
+        assertEquals("_next", links.get(1).getHref());
+        assertTrue(links.get(1).getRel().contains("last"));
     }
 
     //================================================ Helper methods ==================================================

@@ -111,15 +111,15 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
 
         List<SearchResult<Taxon>> searchResults = searchResultSet.getSearchResults();
         for (SearchResult<Taxon> searchResult : searchResults) {
-            List<Link> links = new ArrayList<>();
-
             ScientificName acceptedName = searchResult.getResult().getAcceptedName();
             if (acceptedName != null
                     && acceptedName.isSameScientificName(createScientificName(genusOrMonomial,
                                                                               specificEpithet,
                                                                               infraspecificEpithet))) {
-                Taxon foundTaxonForAcceptedName = searchResult.getResult();
-                detailResultSet.addSearchResult(foundTaxonForAcceptedName);
+                SearchResult<Taxon> result = new SearchResult<>();
+                result.setResult(searchResult.getResult());
+//                Taxon foundTaxonForAcceptedName = searchResult.getResult();
+//                detailResultSet.addSearchResult(foundTaxonForAcceptedName);
                 int indexFoundTaxon = searchResults.indexOf(searchResult);
                 int searchResultSize = searchResults.size();
                 if (searchResultSize > 1) {
@@ -137,16 +137,16 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
 
                 //TODO Change links to correct url and href
                 if (previousTaxon != null) {
-                    links.add(new Link("http://test.nl?acceptedName=" + previousTaxon.getResult().getAcceptedName()
-                                                                                     .getGenusOrMonomial(),
-                                       "_previous"));
+                    result.addLink(new Link("http://test.nl?acceptedName=" + previousTaxon.getResult().getAcceptedName()
+                            .getGenusOrMonomial(),
+                            "_previous"));
                 }
                 if (nextTaxon != null) {
-                    links.add(new Link("http://test.nl?acceptedName=" + nextTaxon.getResult().getAcceptedName()
-                                                                                 .getGenusOrMonomial(), "_next"));
+                    result.addLink(new Link("http://test.nl?acceptedName=" + nextTaxon.getResult().getAcceptedName()
+                            .getGenusOrMonomial(), "_next"));
                 }
 
-                detailResultSet.setLinks(links);
+                detailResultSet.addSearchResult(result);
                 detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
             }
         }

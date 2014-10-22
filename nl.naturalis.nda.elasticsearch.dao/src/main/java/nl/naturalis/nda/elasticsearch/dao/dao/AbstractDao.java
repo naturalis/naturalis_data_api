@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
 import nl.naturalis.nda.search.QueryParams;
@@ -17,12 +16,9 @@ import org.elasticsearch.common.geo.builders.BasePolygonBuilder;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.NestedQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
 import org.geojson.MultiPolygon;
@@ -31,13 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
@@ -117,6 +107,10 @@ public abstract class AbstractDao {
                                                    List<String> extraHighlightFields) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
+        SortOrder sortOrder = getSortOrderFromQueryParams(params);
+        if (sortOrder != null) {
+            fieldSort.order(sortOrder);
+        }
 
         BoolQueryBuilder boolQueryBuilder = boolQuery();
         Operator operator = getOperator(params);
@@ -157,13 +151,18 @@ public abstract class AbstractDao {
 
         if (params.containsKey("gatheringEvent.dateTimeBegin") || params.containsKey("gatheringEvent.dateTimeEnd")) {
             extendQueryWithRangeFilter(boolQueryBuilder,
-                                       params.getParam("gatheringEvent.dateTimeBegin"),
-                                       params.getParam("gatheringEvent.dateTimeEnd"));
+                    params.getParam("gatheringEvent.dateTimeBegin"),
+                    params.getParam("gatheringEvent.dateTimeEnd"));
         }
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
-                                                                      .setQuery(filteredQuery(boolQueryBuilder, null))
-                                                                      .addSort(fieldSort);
+                .setQuery(filteredQuery(boolQueryBuilder, null))
+                .addSort(fieldSort);
+        Integer offSet = getOffSetFromParams(params);
+        if (offSet != null) {
+            searchRequestBuilder.setFrom(offSet);
+        }
+
         if (highlighting) {
             for (FieldMapping field : fields) {
                 searchRequestBuilder.addHighlightedField(field.getFieldName());
@@ -226,10 +225,10 @@ public abstract class AbstractDao {
 
         if (shapeBuilder != null) {
             boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
-                                              geoShapeFilter(
-                                                      "gatheringEvent.siteCoordinates.point",
-                                                      shapeBuilder,
-                                                      ShapeRelation.WITHIN)));
+                    geoShapeFilter(
+                            "gatheringEvent.siteCoordinates.point",
+                            shapeBuilder,
+                            ShapeRelation.WITHIN)));
         }
     }
 
@@ -342,6 +341,41 @@ public abstract class AbstractDao {
     }
 
     /**
+     * Get the offSet from the params. If no offSet is provided, null will be returned.
+     *
+     * @param params the query params
+     * @return the offSet if available, null otherwise
+     */
+    private Integer getOffSetFromParams(QueryParams params) {
+        String offSetParam = params.getParam("_offSet");
+        if (hasText(offSetParam)) {
+            return Integer.parseInt(offSetParam);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the sort order from the params. If no order is provided, null will be returned.
+     *
+     * @param params the query params
+     * @return the sort order if available, null otherwise
+     */
+    private SortOrder getSortOrderFromQueryParams(QueryParams params) {
+        String sortOrderParam = params.getParam("_sortDirection");
+        SortOrder sortOrder = null;
+        if (hasText(sortOrderParam)) {
+            if (SortOrder.ASC.name().equals(sortOrderParam)) {
+                sortOrder = SortOrder.ASC;
+            }
+            if (SortOrder.DESC.name().equals(sortOrderParam)) {
+                sortOrder = SortOrder.DESC;
+            }
+        }
+        return sortOrder;
+    }
+
+    /**
      * @param fields       parameters for the query
      * @param simpleSearch
      * @param taxonDao     @return null in case of no valid param_keys or no taxons matching the supplied values
@@ -349,12 +383,12 @@ public abstract class AbstractDao {
     protected NestedQueryBuilder buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
                                                           BioportalTaxonDao taxonDao) {
         if (!hasFieldWithTextWithOneOfNames(fields,
-                                            IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
+                IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
             return null;
         }
 
@@ -405,19 +439,19 @@ public abstract class AbstractDao {
             if (taxon.getValidName().getGenusOrMonomial() != null) {
                 scientificNameQuery.must(
                         matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
-                                   taxon.getValidName().getGenusOrMonomial())
+                                taxon.getValidName().getGenusOrMonomial())
                 );
             }
             if (taxon.getValidName().getSpecificEpithet() != null) {
                 scientificNameQuery.must(
                         matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
-                                   taxon.getValidName().getSpecificEpithet())
+                                taxon.getValidName().getSpecificEpithet())
                 );
             }
             if (taxon.getValidName().getInfraspecificEpithet() != null) {
                 scientificNameQuery.must(
                         matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
-                                   taxon.getValidName().getInfraspecificEpithet())
+                                taxon.getValidName().getInfraspecificEpithet())
                 );
             }
             nameResQueryBuilder.should(scientificNameQuery);

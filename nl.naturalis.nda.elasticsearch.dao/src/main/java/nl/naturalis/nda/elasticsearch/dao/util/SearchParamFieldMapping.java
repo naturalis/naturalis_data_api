@@ -30,7 +30,7 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_sort");
         EXCLUDED_PARAMS.add("_sortDirection");
         EXCLUDED_PARAMS.add("_maxResults");
-        EXCLUDED_PARAMS.add("_offset");
+        EXCLUDED_PARAMS.add("_offSet");
     }
 
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();

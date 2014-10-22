@@ -118,8 +118,6 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
                                                                               infraspecificEpithet))) {
                 SearchResult<Taxon> result = new SearchResult<>();
                 result.setResult(searchResult.getResult());
-//                Taxon foundTaxonForAcceptedName = searchResult.getResult();
-//                detailResultSet.addSearchResult(foundTaxonForAcceptedName);
                 int indexFoundTaxon = searchResults.indexOf(searchResult);
                 int searchResultSize = searchResults.size();
                 if (searchResultSize > 1) {
@@ -147,10 +145,10 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
                 }
 
                 detailResultSet.addSearchResult(result);
-                detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
             }
         }
 
+        detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return detailResultSet;
     }
 

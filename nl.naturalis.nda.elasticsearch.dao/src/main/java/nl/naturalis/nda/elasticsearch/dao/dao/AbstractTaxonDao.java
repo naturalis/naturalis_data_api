@@ -45,7 +45,7 @@ public class AbstractTaxonDao extends AbstractDao {
         return responseToTaxonSearchResultSet(searchResponse, params);
     }
 
-    private SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse, QueryParams params) {
+    protected SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse, QueryParams params) {
         SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
             SearchResult<Taxon> searchResult = new SearchResult<>();

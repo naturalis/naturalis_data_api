@@ -267,10 +267,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (specimen != null && specimen.getIdentifications() != null) {
             for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
                 ScientificName scientificName = specimenIdentification.getScientificName();
-                SearchResultSet<Taxon> taxonSearchResultSet =
-                        taxonDao.lookupTaxonForScientificName(scientificName.getGenusOrMonomial(),
-                                scientificName.getSpecificEpithet(),
-                                scientificName.getInfraspecificEpithet());
+                SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName);
 
                 List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                 for (SearchResult<Taxon> searchResult : searchResults) {

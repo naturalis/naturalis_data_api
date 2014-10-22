@@ -115,7 +115,6 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
         List<SpecimenIdentification> identifications = new ArrayList<>();
         SpecimenIdentification specimenIdentification = new SpecimenIdentification();
         ScientificName scientificName = new ScientificName();
-        scientificName.setFullScientificName("Hyphomonas oceanitis Weiner et al. 1985");
         scientificName.setGenusOrMonomial("Hyphomonas");
         scientificName.setSpecificEpithet("oceanitis");
         specimenIdentification.setScientificName(scientificName);
@@ -129,6 +128,41 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
         esSpecimen.setUnitID("spec2");
         specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
                               .setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add(UNIT_ID, "unit1");
+
+        SearchResultSet<MultiMediaObject> results = bioportalMultiMediaObjectDao
+                .getSpecimenMultiMediaObjectDetailWithinResultSet(
+                        params);
+
+        assertEquals(1, results.getSearchResults().size());
+        MultiMediaObject result = results.getSearchResults().get(0).getResult();
+        assertEquals("unit1", result.getUnitID());
+        assertNotNull(result.getAssociatedSpecimen());
+        assertEquals("spec1", result.getAssociatedSpecimen().getUnitID());
+        assertEquals(5, results.getSearchResults().get(0).getLinks().size());
+    }
+
+    @Test
+    public void testGetSpecimenMultiMediaObjectDetailWithinResultSet_withTaxonFoundByFullScientificName() throws Exception {
+        ESSpecimen esSpecimen = new ESSpecimen();
+        esSpecimen.setUnitID("spec1");
+        List<SpecimenIdentification> identifications = new ArrayList<>();
+        SpecimenIdentification specimenIdentification = new SpecimenIdentification();
+        ScientificName scientificName = new ScientificName();
+        scientificName.setFullScientificName("Hyphomonas oceanitis Weiner et al. 1985");
+        specimenIdentification.setScientificName(scientificName);
+        identifications.add(specimenIdentification);
+        esSpecimen.setIdentifications(identifications);
+
+        IndexRequestBuilder specimenRequestBuilder = client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE);
+        specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
+
+        esSpecimen.setUnitID("spec2");
+        specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
         params.add(UNIT_ID, "unit1");

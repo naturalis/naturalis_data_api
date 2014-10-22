@@ -313,13 +313,8 @@ public class BioportalSpecimenDao extends AbstractDao {
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {
                     for (SpecimenIdentification identification : identifications) {
-                        String genusOrMonomial = identification.getScientificName().getGenusOrMonomial();
-                        String specificEpithet = identification.getScientificName().getSpecificEpithet();
-                        String infraspecificEpithet = identification.getScientificName().getInfraspecificEpithet();
-                        SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(
-                                genusOrMonomial,
-                                specificEpithet,
-                                infraspecificEpithet); // FIXME: should not result in highlighting
+                        SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(identification.getScientificName());
+                        // FIXME: should not result in highlighting
                         List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {

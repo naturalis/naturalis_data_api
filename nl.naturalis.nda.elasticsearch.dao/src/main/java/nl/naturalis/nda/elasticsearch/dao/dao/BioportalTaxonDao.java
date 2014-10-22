@@ -13,37 +13,39 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
+
 public class BioportalTaxonDao extends AbstractTaxonDao {
 
     private static final Set<String> allowedFieldNamesForSearch = new HashSet<>(Arrays.asList(
-            "acceptedName.genusOrMonomial",
-            "acceptedName.subgenus",
-            "acceptedName.specificEpithet",
-            "acceptedName.infraspecificEpithet",
-            "acceptedName.experts.fullName",
-            "acceptedName.experts.organization.name",
-            "acceptedName.taxonomicStatus",
-            "vernacularNames.name",
-            "vernacularNames.experts.fullName",
-            "vernacularNames.experts.organization.name",
-            "synonyms.scientificName.genusOrMonomial",
-            "synonyms.subgenus",
-            "synonyms.scientificName.specificEpithet",
-            "synonyms.scientificName.infraspecificEpithet",
-            "synonyms.scientificName.expert.fullName",
-            "synonyms.scientificName.expert.organization.name",
-            "synonyms.taxonomicStatus",
-            "defaultClassification.kingdom",
-            "defaultClassification.phylum",
-            "defaultClassification.className",
-            "defaultClassification.order",
-            "defaultClassification.family",
-            "defaultClassification.genus",
-            "defaultClassification.subgenus",
-            "defaultClassification.specificEpithet",
-            "defaultClassification.infraspecificEpithet",
-            "systemClassification.name",
-            "experts.fullName"
+            ACCEPTEDNAME_GENUS_OR_MONOMIAL,
+            ACCEPTEDNAME_SUBGENUS,
+            ACCEPTEDNAME_SPECIFIC_EPITHET,
+            ACCEPTEDNAME_INFRASPECIFIC_EPITHET,
+            ACCEPTEDNAME_EXPERTS_FULLNAME,
+            ACCEPTEDNAME_EXPERTS_ORGANIZATION_NAME,
+            ACCEPTEDNAME_TAXONOMIC_STATUS,
+            VERNACULARNAMES_NAME,
+            VERNACULARNAMES_EXPERTS_FULLNAME,
+            VERNACULARNAMES_EXPERTS_ORGANIZATION_NAME,
+            SYNONYMS_SCIENTIFICNAME_GENUSORMONOMIAL,
+            SYNONYMS_SUBGENUS,
+            SYNONYMS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
+            SYNONYMS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
+            SYNONYMS_SCIENTIFIC_NAME_EXPERT_FULLNAME,
+            SYNONYMS_SCIENTIFIC_NAME_EXPERT_ORGANIZATION_NAME,
+            SYNONYMS_TAXONOMIC_STATUS,
+            DEFAULT_CLASSIFICATION_KINGDOM,
+            DEFAULT_CLASSIFICATION_PHYLUM,
+            DEFAULT_CLASSIFICATION_CLASS_NAME,
+            DEFAULT_CLASSIFICATION_ORDER,
+            DEFAULT_CLASSIFICATION_FAMILY,
+            DEFAULT_CLASSIFICATION_GENUS,
+            DEFAULT_CLASSIFICATION_SUBGENUS,
+            DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
+            DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
+            SYSTEM_CLASSIFICATION_NAME,
+            EXPERTS_FULLNAME
     ));
 
     public BioportalTaxonDao(Client esClient, String ndaIndexName) {
@@ -104,17 +106,17 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         SearchResult<Taxon> previousTaxon = null;
         SearchResult<Taxon> nextTaxon = null;
 
-        String genusOrMonomial = params.getParam("acceptedName.genusOrMonomial");
-        String specificEpithet = params.getParam("acceptedName.specificEpithet");
-        String infraspecificEpithet = params.getParam("acceptedName.infraspecificEpithet");
+        String genusOrMonomial = params.getParam(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
+        String specificEpithet = params.getParam(ACCEPTEDNAME_SPECIFIC_EPITHET);
+        String infraspecificEpithet = params.getParam(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
 
         List<SearchResult<Taxon>> searchResults = searchResultSet.getSearchResults();
         for (SearchResult<Taxon> searchResult : searchResults) {
             ScientificName acceptedName = searchResult.getResult().getAcceptedName();
             if (acceptedName != null
                     && acceptedName.isSameScientificName(createScientificName(genusOrMonomial,
-                                                                              specificEpithet,
-                                                                              infraspecificEpithet))) {
+                    specificEpithet,
+                    infraspecificEpithet))) {
                 SearchResult<Taxon> result = new SearchResult<>();
                 result.setResult(searchResult.getResult());
                 int indexFoundTaxon = searchResults.indexOf(searchResult);

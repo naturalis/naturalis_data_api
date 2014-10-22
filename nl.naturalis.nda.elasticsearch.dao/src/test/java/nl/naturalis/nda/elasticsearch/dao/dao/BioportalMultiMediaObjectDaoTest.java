@@ -17,6 +17,7 @@ import java.util.List;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectTest.createTestMultiMediaObject;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static org.hamcrest.Matchers.is;
 
 public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
@@ -70,7 +71,7 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
     @Test
     public void testGetTaxonMultiMediaObjectDetailWithinResultSet() throws Exception {
         QueryParams params = new QueryParams();
-        params.add("unitID", "unit1");
+        params.add(UNIT_ID, "unit1");
         SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet =
                 bioportalMultiMediaObjectDao.getTaxonMultiMediaObjectDetailWithinResultSet(params);
 
@@ -95,7 +96,7 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
                               .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
-        params.add("unitID", "unit1");
+        params.add(UNIT_ID, "unit1");
 
         SearchResultSet<MultiMediaObject> results = bioportalMultiMediaObjectDao
                 .getSpecimenMultiMediaObjectDetailWithinResultSet(params);
@@ -130,7 +131,7 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
                               .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
-        params.add("unitID", "unit1");
+        params.add(UNIT_ID, "unit1");
 
         SearchResultSet<MultiMediaObject> results = bioportalMultiMediaObjectDao
                 .getSpecimenMultiMediaObjectDetailWithinResultSet(

@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
 import nl.naturalis.nda.search.QueryParams;
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
@@ -56,10 +57,6 @@ import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 public abstract class AbstractDao {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
-
-    public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
-    public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";
-    public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET = "identifications.scientificName.infraspecificEpithet";
 
     protected Client esClient;
     private static ObjectMapper objectMapper;

@@ -11,6 +11,7 @@ import org.elasticsearch.search.SearchHit;
 
 import java.util.Collections;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
@@ -35,7 +36,7 @@ public class SpecimenDao extends AbstractDao {
                 .setQuery(filteredQuery(
                                   matchAllQuery(),
                                   termFilter(
-                                          "unitID",
+                                          UNIT_ID,
                                           unitID
                                   )
                           )
@@ -53,7 +54,7 @@ public class SpecimenDao extends AbstractDao {
             }
             resultSet.setTotalSize(response.getHits().getTotalHits());
             QueryParams queryParams = new QueryParams();
-            queryParams.put("unitID", Collections.singletonList(unitID));
+            queryParams.put(UNIT_ID, Collections.singletonList(unitID));
             resultSet.setQueryParameters(queryParams);
             return resultSet;
         }

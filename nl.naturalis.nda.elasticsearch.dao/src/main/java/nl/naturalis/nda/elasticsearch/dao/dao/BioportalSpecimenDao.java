@@ -5,6 +5,7 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
+import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
@@ -26,7 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao.SpecimenFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
@@ -35,47 +37,37 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
-    public static class SpecimenFields {
-
-        public static final String IDENTIFICATIONS_VERNACULAR_NAMES_NAME = "identifications.vernacularNames.name";
-        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM = "identifications.defaultClassification.kingdom";
-        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM = "identifications.defaultClassification.phylum";
-        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME = "identifications.defaultClassification.className";
-        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER = "identifications.defaultClassification.order";
-        public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY = "identifications.defaultClassification.family";
-    }
-
     private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
-            "identifications.defaultClassification.genus",
-            "identifications.defaultClassification.subgenus",
-            "identifications.defaultClassification.specificEpithet",
-            "identifications.defaultClassification.infraspecificEpithet",
-            "identifications.systemClassification.name",
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
+            IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME,
             IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
-            "identifications.scientificName.subgenus",
+            IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS,
             IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
             IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
             IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
-            "gatheringEvent.dateTimeBegin",
-            "gatheringEvent.siteCoordinates.point"
+            GATHERINGEVENT_DATE_TIME_BEGIN,
+            GATHERINGEVENT_SITECOORDINATES_POINT
     ));
 
     private static final Set<String> specimenSearchFieldNames = new HashSet<>(Arrays.asList(
-            "unitID",
-            "typeStatus",
-            "phaseOrStage",
-            "sex",
-            "collectorsFieldNumber",
-            "gatheringEvent.localityText",
-            "gatheringEvent.gatheringPersons.fullName",
-            "gatheringEvent.gatheringOrganisations.name",
-            "gatheringEvent.dateTimeBegin",
-            "gatheringEvent.siteCoordinates.point")
+            UNIT_ID,
+            TYPE_STATUS,
+            PHASE_OR_STAGE,
+            SEX,
+            COLLECTORS_FIELD_NUMBER,
+            GATHERINGEVENT_LOCALITY_TEXT,
+            GATHERINGEVENT_GATHERING_PERSONS_FULLNAME,
+            GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME,
+            GATHERINGEVENT_DATE_TIME_BEGIN,
+            GATHERINGEVENT_SITECOORDINATES_POINT)
     );
 
     private final BioportalTaxonDao bioportalTaxonDao;
@@ -217,7 +209,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params,
                                                                             ResultGroupSet<Specimen, String> specimenResultGroupSet) {
         SearchResultSet<Specimen> searchResultSet = new SearchResultSet<>();
-        String unitID = params.getParam("unitID");
+        String unitID = params.getParam(UNIT_ID);
 
         SearchResult<Specimen> foundSpecimenForUnitId = null;
         SearchResult<Specimen> previousSpecimen = null;
@@ -350,9 +342,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
         SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
                                                           .setQuery(filteredQuery(matchAllQuery(), boolFilter()
-                                                                  .must(termFilter("assemblageID",
+                                                                  .must(termFilter(ASSEMBLAGE_ID,
                                                                           transfer.getAssemblageID()))
-                                                                  .mustNot(termFilter("unitID", transfer.getUnitID()))))
+                                                                  .mustNot(termFilter(UNIT_ID, transfer.getUnitID()))))
                                                           .execute().actionGet();
         SearchHits hits = searchResponse.getHits();
         for (SearchHit searchHitFields : hits) {

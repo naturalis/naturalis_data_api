@@ -7,6 +7,7 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
+import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
@@ -22,30 +23,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
 
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 
     private static final Set<String> multiMediaSearchFields = new HashSet<>(Arrays.asList(
-            "unitID",
-            "sexes",
-            "specimenTypeStatus",
-            "phasesOrStages",
-            "identifications.vernacularNames.name",
-            "identifications.defaultClassification.kingdom",
-            "identifications.defaultClassification.phylum",
-            "identifications.defaultClassification.className",
-            "identifications.defaultClassification.order",
-            "identifications.defaultClassification.family",
-            "identifications.defaultClassification.genusOrMonomial",
-            "identifications.defaultClassification.subgenus",
-            "identifications.defaultClassification.specificEpithet",
-            "identifications.defaultClassification.infraspecificEpithet",
-            "identifications.scientificName.genusOrMonomial",
-            "identifications.scientificName.subgenus",
-            "identifications.scientificName.specificEpithet",
-            "identifications.scientificName.infraspecificEpithet",
-            "gatheringEvents.siteCoordinates.point"
+            UNIT_ID,
+            SEXES,
+            SPECIMEN_TYPE_STATUS,
+            PHASES_OR_STAGES,
+            IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS_OR_MONOMIAL,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
+            GATHERINGEVENTS_SITECOORDINATES_POINT
     ));
 
     private final BioportalTaxonDao bioportalTaxonDao;
@@ -195,7 +198,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         SearchResult<MultiMediaObject> previousMultiMediaObject = null;
         SearchResult<MultiMediaObject> nextMultiMediaObject = null;
 
-        String unitID = params.getParam("unitID");
+        String unitID = params.getParam(UNIT_ID);
         if (hasText(unitID)) {
             List<SearchResult<MultiMediaObject>> searchResults = searchResultSet.getSearchResults();
             for (SearchResult<MultiMediaObject> searchResult : searchResults) {
@@ -219,11 +222,11 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                     //TODO Change links to correct url and href
                     if (previousMultiMediaObject != null) {
                         searchResult.addLink(new Link("http://test.nl?unitID=" + previousMultiMediaObject.getResult().getUnitID(),
-                                           "_previous"));
+                                "_previous"));
                     }
                     if (nextMultiMediaObject != null) {
                         searchResult.addLink(new Link("http://test.nl?unitID=" + nextMultiMediaObject.getResult().getUnitID(),
-                                           "_next"));
+                                "_next"));
                     }
 
                     detailResultSet.addSearchResult(searchResult);
@@ -236,7 +239,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
     private void addAssociatedTaxonLink(List<Link> links, MultiMediaObject multiMediaObject) {
         QueryParams taxonParams = new QueryParams();
-        taxonParams.add("sourceSystemId", multiMediaObject.getAssociatedTaxonReference());
+        taxonParams.add(SOURCE_SYSTEM_ID, multiMediaObject.getAssociatedTaxonReference());
 
         SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(taxonParams);
         if (taxonDetail.getSearchResults() != null && taxonDetail.getSearchResults().get(0) != null) {

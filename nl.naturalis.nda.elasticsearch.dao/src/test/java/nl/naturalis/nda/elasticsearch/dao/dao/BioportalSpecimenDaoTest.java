@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.hamcrest.Matchers.is;
@@ -303,7 +304,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     @Test
     public void testPreviousAndNextLinks() {
         QueryParams params = new QueryParams();
-        params.add("unitID", "2");
+        params.add(UNIT_ID, "2");
 
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
@@ -321,7 +322,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     public void testDetailQuery_returnedParams() {
         // GIVEN
         QueryParams params = new QueryParams();
-        params.add("unitID", "2");
+        params.add(UNIT_ID, "2");
         String geoShapeString = "{\"type\" : \"Polygon\",\"coordinates\" : [[[14,12], [14,13], [15,13], [15,12], [14,12]]]}";
         params.add("_geoShape", geoShapeString);
 
@@ -333,14 +334,14 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         // THEN
         QueryParams returnedParams = specimenDetailSearchResultSet.getQueryParameters();
-        assertThat(returnedParams.getParam("unitID"), is("2"));
+        assertThat(returnedParams.getParam(UNIT_ID), is("2"));
         assertFalse(returnedParams.containsKey("_geoShape"));
     }
 
     @Test
     public void testPreviousAndNextLinks_lastItemInSecondBucket() {
         QueryParams params = new QueryParams();
-        params.add("unitID", "6");
+        params.add(UNIT_ID, "6");
 
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
@@ -357,7 +358,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     @Test
     public void testPreviousAndNextLinks_firstItemInSecondBucket() {
         QueryParams params = new QueryParams();
-        params.add("unitID", "4");
+        params.add(UNIT_ID, "4");
 
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
@@ -374,7 +375,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     @Test
     public void testPreviousAndNextLinks_noPrevious() {
         QueryParams params = new QueryParams();
-        params.add("unitID", "1");
+        params.add(UNIT_ID, "1");
 
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
@@ -390,7 +391,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     @Test
     public void testPreviousAndNextLinks_noNext() {
         QueryParams params = new QueryParams();
-        params.add("unitID", "9");
+        params.add(UNIT_ID, "9");
 
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 

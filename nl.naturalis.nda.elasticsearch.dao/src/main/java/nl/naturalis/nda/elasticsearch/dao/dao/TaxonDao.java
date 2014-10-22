@@ -9,14 +9,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SOURCE_SYSTEM_ID;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
 
 public class TaxonDao extends AbstractTaxonDao {
 
     private static final Set<String> allowedTaxonFields = new HashSet<>(asList(
-            "acceptedName.genusOrMonomial",
-            "acceptedName.specificEpithet",
-            "acceptedName.infraspecificEpithet",
-            "sourceSystemId")
+            ACCEPTEDNAME_GENUS_OR_MONOMIAL,
+            ACCEPTEDNAME_SPECIFIC_EPITHET,
+            ACCEPTEDNAME_INFRASPECIFIC_EPITHET,
+            SOURCE_SYSTEM_ID)
     );
 
     public TaxonDao(Client esClient, String ndaIndexName) {
@@ -46,9 +48,9 @@ public class TaxonDao extends AbstractTaxonDao {
                                                                String infraspecificEpithet) {
         QueryParams queryParams = new QueryParams();
         queryParams.add("_andOr", "AND"); //Operator is always AND to make sure all fields are matched.
-        queryParams.add("acceptedName.genusOrMonomial", genusOrMonomial);
-        queryParams.add("acceptedName.specificEpithet", specificEpithet);
-        queryParams.add("acceptedName.infraspecificEpithet", infraspecificEpithet);
+        queryParams.add(ACCEPTEDNAME_GENUS_OR_MONOMIAL, genusOrMonomial);
+        queryParams.add(ACCEPTEDNAME_SPECIFIC_EPITHET, specificEpithet);
+        queryParams.add(ACCEPTEDNAME_INFRASPECIFIC_EPITHET, infraspecificEpithet);
         return getTaxonDetail(queryParams);
     }
 }

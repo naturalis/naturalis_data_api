@@ -12,6 +12,7 @@ import nl.naturalis.nda.domain.Sex;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.SpecimenTypeStatus;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -150,6 +151,11 @@ public class CrsSpecimenTransfer {
 			if (rank != null) {
 				dc.set(rank, taxonCoverage);
 			}
+		}
+
+		s = val(determinationElement, "abcd:InformalNameString");
+		if (s != null) {
+			si.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
 
 		return si;

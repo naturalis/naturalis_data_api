@@ -76,10 +76,6 @@ public class LoadUtil {
 	}
 
 
-	/**
-	 * Returns {@code Client} configured using elasticsearch.yml, which should
-	 * be on classpath.
-	 */
 	@SuppressWarnings("resource")
 	public static final Client getDefaultClient()
 	{

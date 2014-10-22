@@ -5,6 +5,8 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+import org.elasticsearch.action.get.GetRequestBuilder;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.junit.*;
 
@@ -86,5 +88,35 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         assertNotNull(searchResults);
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
+    }
+
+    @Test
+    public final void testOffSet() throws IOException {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
+                .setSource(getMapping("test-taxon-mapping.json"))
+                .execute().actionGet();
+
+        ESTaxon esTaxon = createTestTaxon();
+        esTaxon.getAcceptedName().setInfraspecificEpithet("someValue");
+
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
+
+        esTaxon.getAcceptedName().setInfraspecificEpithet("otherValue");
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "2").setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("_offSet", "1");
+
+        SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(params);
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        List<SearchResult<Taxon>> searchResults = taxonDetail.getSearchResults();
+        assertNotNull(searchResults);
+        assertEquals(1, searchResults.size());
+        assertEquals("otherValue", searchResults.get(0).getResult().getAcceptedName().getInfraspecificEpithet());
     }
 }

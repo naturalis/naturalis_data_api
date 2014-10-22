@@ -134,15 +134,13 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
                     }
                 }
 
-                //TODO Change links to correct url and href
                 if (previousTaxon != null) {
-                    result.addLink(new Link("http://test.nl?acceptedName=" + previousTaxon.getResult().getAcceptedName()
-                            .getGenusOrMonomial(),
-                            "_previous"));
+                    result.addLink(new Link(TAXON_DETAIL_BASE_URL + previousTaxon.getResult().getAcceptedName()
+                            .getFullScientificName(), "_previous"));
                 }
                 if (nextTaxon != null) {
-                    result.addLink(new Link("http://test.nl?acceptedName=" + nextTaxon.getResult().getAcceptedName()
-                            .getGenusOrMonomial(), "_next"));
+                    result.addLink(new Link(TAXON_DETAIL_BASE_URL + nextTaxon.getResult().getAcceptedName()
+                            .getFullScientificName(), "_next"));
                 }
 
                 detailResultSet.addSearchResult(result);

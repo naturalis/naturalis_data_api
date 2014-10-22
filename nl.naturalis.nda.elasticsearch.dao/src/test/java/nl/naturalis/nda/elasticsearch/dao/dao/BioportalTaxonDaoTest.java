@@ -160,6 +160,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
                                                 String infraspecificEpithet) {
         Taxon taxon = new Taxon();
         ScientificName scientificName = new ScientificName();
+        scientificName.setFullScientificName(genusOrMonomial + " " + specificEpithet + " " + infraspecificEpithet);
         scientificName.setGenusOrMonomial(genusOrMonomial);
         scientificName.setSpecificEpithet(specificEpithet);
         scientificName.setInfraspecificEpithet(infraspecificEpithet);

@@ -258,12 +258,11 @@ public class BioportalSpecimenDao extends AbstractDao {
             }
         }
 
-        //TODO Change links to correct url and href
         if (previousSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("http://test.nl?unitId=" + previousSpecimen.getResult().getUnitID(), "_previous"));
+            foundSpecimenForUnitId.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + previousSpecimen.getResult().getUnitID(), "_previous"));
         }
         if (nextSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("http://test.nl?unitId=" + nextSpecimen.getResult().getUnitID(), "_next"));
+            foundSpecimenForUnitId.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + nextSpecimen.getResult().getUnitID(), "_next"));
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
@@ -309,8 +308,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             for (Specimen specimen : specimens) {
                 SearchResult<Specimen> searchResult = new SearchResult<>();
                 searchResult.setResult(specimen);
-                //TODO Change links to correct url and href
-                searchResult.addLink(new Link("http://test.nl?fullScientificName=" + specimen.getUnitID(), "_specimen"));
+                searchResult.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID(), "_specimen"));
 
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {
@@ -326,10 +324,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {
                                 Taxon taxon = taxonSearchResult.getResult();
-                                //TODO Change links to correct url and href
-                                searchResult.addLink(new Link(
-                                        "http://test.nl?fullScientificName=" + taxon.getAcceptedName()
-                                                                                    .getFullScientificName(), "_taxon"));
+                                searchResult.addLink(new Link(TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName(), "_taxon"));
                             }
                         }
                     }

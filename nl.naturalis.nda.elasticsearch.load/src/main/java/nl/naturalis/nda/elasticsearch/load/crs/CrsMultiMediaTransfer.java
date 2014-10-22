@@ -37,10 +37,11 @@ public class CrsMultiMediaTransfer {
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
 		String s = val(recordElement, "dwc:lifeStage");
 		List<String> lifeStages = s == null ? null : Arrays.asList(s);
-		s = val(recordElement,"abcd:TypeStatus");
+		s = val(recordElement, "abcd:TypeStatus");
 		SpecimenTypeStatus typeStatus = SpecimenTypeStatus.forName(s);
 		s = val(recordElement, "abcd:Sex");
-		List<String> sexes = s == null? null : Arrays.asList(Sex.forName(s).toString());
+		Sex sex = Sex.forName(s);
+		List<String> sexes = sex == null ? null : Arrays.asList(Sex.forName(s).toString());
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
 			String title = val(mediaFileElement, "dc:title");
@@ -60,7 +61,9 @@ public class CrsMultiMediaTransfer {
 			mmo.setGatheringEvents(Arrays.asList(gatheringEvent));
 			mmo.setIdentifications(identifications);
 			mmo.setSexes(sexes);
-			mmo.setSpecimenTypeStatus(typeStatus.toString());
+			if (typeStatus != null) {
+				mmo.setSpecimenTypeStatus(typeStatus.toString());
+			}
 			mmo.setPhasesOrStages(lifeStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));

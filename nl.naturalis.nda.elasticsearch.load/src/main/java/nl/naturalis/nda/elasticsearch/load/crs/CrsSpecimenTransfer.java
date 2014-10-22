@@ -25,7 +25,8 @@ import org.w3c.dom.Element;
 public class CrsSpecimenTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
-	
+
+
 	public static ESSpecimen transfer(Element recordElement)
 	{
 		final ESSpecimen specimen = new ESSpecimen();
@@ -48,15 +49,20 @@ public class CrsSpecimenTransfer {
 		s = val(recordElement, "abcd:FromCaptivity");
 		specimen.setFromCaptivity(s != null && s.trim().equals("1"));
 		s = val(recordElement, "abcd:PreparationType");
-		if(s == null) {
+		if (s == null) {
 			s = val(recordElement, "abcd:SpecimenMount");
 		}
 		specimen.setPreparationType(s);
-		s = val(recordElement,"abcd:TypeStatus");
+		s = val(recordElement, "abcd:TypeStatus");
 		SpecimenTypeStatus typeStatus = SpecimenTypeStatus.forName(s);
-		specimen.setTypeStatus(typeStatus.toString());
+		if (typeStatus != null) {
+			specimen.setTypeStatus(typeStatus.toString());
+		}
 		s = val(recordElement, "abcd:Sex");
-		specimen.setSex(Sex.forName(s).toString());
+		Sex sex = Sex.forName(s);
+		if (sex != null) {
+			specimen.setSex(Sex.forName(s).toString());
+		}
 		List<Element> determinationElements = DOMUtil.getChildren(recordElement, "ncrsDetermination");
 		for (Element e : determinationElements) {
 			specimen.addIndentification(transferIdentification(e));

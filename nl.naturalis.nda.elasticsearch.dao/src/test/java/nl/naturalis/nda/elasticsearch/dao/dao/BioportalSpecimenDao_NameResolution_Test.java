@@ -20,6 +20,17 @@ import static org.hamcrest.Matchers.is;
 
 public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalSpecimenDaoTest {
 
+//    @Test
+//    public void test() throws Exception {
+//        setupNameResolutionTest();
+//
+//        QueryParams params = new QueryParams();
+//        params.add("unitID", "L  0191413");
+//
+//        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+//        assertEquals(1, result.getTotalSize());
+//    }
+
     @Test
     public void testExtendedNameSearch_nameResolution_simpleSearch_vernacularName() throws Exception {
         setupNameResolutionTest();

@@ -7,7 +7,6 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
-import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
@@ -24,7 +23,10 @@ import java.util.List;
 import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.GATHERINGEVENTS_SITECOORDINATES_POINT;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.PHASES_OR_STAGES;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SEXES;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SPECIMEN_TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
 
 public class BioportalMultiMediaObjectDao extends AbstractDao {
@@ -171,15 +173,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
 
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields,
-                                                              MULTI_MEDIA_OBJECT_TYPE, true,
-                                                              buildNameResolutionQuery(fields,
-                                                                                       params.getParam("_search"),
-                                                                                       bioportalTaxonDao),
-                                                              Arrays.asList(
-                                                                      IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
-                                                                      IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
-                                                                      IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
+        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"),
+                                                                               bioportalTaxonDao, false);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true,
+                                                              nameResolutionQuery);
 
         return responseToMultiMediaObjectSearchResultSet(searchResponse, params);
     }

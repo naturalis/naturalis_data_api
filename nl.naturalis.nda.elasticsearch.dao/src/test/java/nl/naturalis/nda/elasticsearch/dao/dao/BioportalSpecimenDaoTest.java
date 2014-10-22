@@ -6,8 +6,13 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nda.search.*;
-import org.junit.*;
+import nl.naturalis.nda.search.Link;
+import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nda.search.ResultGroup;
+import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.SearchResultSet;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -73,7 +78,6 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         assertEquals(1, specimenStringResultGroupSet.getTotalSize());
     }
-
 
     @Test
     public void testExtendedNameSearch_nested_AND_query() throws Exception {

@@ -16,7 +16,12 @@ import org.elasticsearch.common.geo.builders.BasePolygonBuilder;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.geojson.GeoJsonObject;
@@ -27,16 +32,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
 import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -91,20 +115,20 @@ public abstract class AbstractDao {
 
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
                                                    boolean highlighting) {
-        return executeExtendedSearch(params, fields, type, highlighting, null, Collections.<String>emptyList());
+        return executeExtendedSearch(params, fields, type, highlighting, null);
     }
 
     /**
      * @param params
      * @param fields
      * @param type
-     * @param highlighting
+     * @param highlighting whether to use highlighting
      * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
      * @return
      */
+    // TODO: remove extraHighlightFields
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   boolean highlighting, QueryBuilder prebuiltQuery,
-                                                   List<String> extraHighlightFields) {
+                                                   boolean highlighting, QueryAndHighlightFields prebuiltQuery) {
         String sortField = getScoreFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
         SortOrder sortOrder = getSortOrderFromQueryParams(params);
@@ -141,8 +165,8 @@ public abstract class AbstractDao {
             extendQueryWithField(boolQueryBuilder, operator, field);
         }
 
-        if (prebuiltQuery != null) {
-            extendQueryWithQuery(boolQueryBuilder, operator, prebuiltQuery);
+        if (prebuiltQuery != null && prebuiltQuery.getQuery() != null) {
+            extendQueryWithQuery(boolQueryBuilder, operator, prebuiltQuery.getQuery());
         }
 
         if (params.containsKey("_geoShape")) {
@@ -164,11 +188,17 @@ public abstract class AbstractDao {
         }
 
         if (highlighting) {
-            for (FieldMapping field : fields) {
-                searchRequestBuilder.addHighlightedField(field.getFieldName());
+            for (FieldMapping fieldMapping : fields) {
+                String fieldValue = fieldMapping.getValue();
+                if (fieldValue != null) {
+                    String fieldName = fieldMapping.getFieldName();
+                    searchRequestBuilder.addHighlightedField(createHighlightField(fieldName, fieldValue));
+                }
             }
-            for (String fieldName : extraHighlightFields) {
-                searchRequestBuilder.addHighlightedField(fieldName);
+            if (prebuiltQuery != null) {
+                for (HighlightBuilder.Field highlightField : prebuiltQuery.getHighlightFields()) {
+                    searchRequestBuilder.addHighlightedField(highlightField);
+                }
             }
         }
 
@@ -379,9 +409,10 @@ public abstract class AbstractDao {
      * @param fields       parameters for the query
      * @param simpleSearch
      * @param taxonDao     @return null in case of no valid param_keys or no taxons matching the supplied values
+     * @param highlight
      */
-    protected NestedQueryBuilder buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
-                                                          BioportalTaxonDao taxonDao) {
+    protected QueryAndHighlightFields buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
+                                                               BioportalTaxonDao taxonDao, boolean highlight) {
         if (!hasFieldWithTextWithOneOfNames(fields,
                 IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
                 IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
@@ -432,32 +463,48 @@ public abstract class AbstractDao {
             return null;
         }
 
+        QueryAndHighlightFields queryAndHighlightFields = new QueryAndHighlightFields();
         BoolQueryBuilder nameResQueryBuilder = boolQuery();
         for (SearchResult<Taxon> taxonSearchResult : nameResTaxons.getSearchResults()) {
             Taxon taxon = taxonSearchResult.getResult();
             BoolQueryBuilder scientificNameQuery = boolQuery();
-            if (taxon.getValidName().getGenusOrMonomial() != null) {
-                scientificNameQuery.must(
-                        matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
-                                taxon.getValidName().getGenusOrMonomial())
-                );
-            }
-            if (taxon.getValidName().getSpecificEpithet() != null) {
-                scientificNameQuery.must(
-                        matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
-                                taxon.getValidName().getSpecificEpithet())
-                );
-            }
-            if (taxon.getValidName().getInfraspecificEpithet() != null) {
-                scientificNameQuery.must(
-                        matchQuery(IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
-                                taxon.getValidName().getInfraspecificEpithet())
-                );
-            }
+
+            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight,
+                    taxon.getValidName().getGenusOrMonomial(),
+                    IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL);
+            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight,
+                    taxon.getValidName().getSpecificEpithet(),
+                    IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET);
+            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight,
+                    taxon.getValidName().getInfraspecificEpithet(),
+                    IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET);
+
             nameResQueryBuilder.should(scientificNameQuery);
         }
         NestedQueryBuilder nestedNameResQuery = nestedQuery("identifications", nameResQueryBuilder);
         nestedNameResQuery.boost(0.5f);
-        return nestedNameResQuery;
+
+        queryAndHighlightFields.setQuery(nestedNameResQuery);
+        return queryAndHighlightFields;
+    }
+
+    private void addMustQueryWithHighlightSupport(QueryAndHighlightFields highlightFieldsContainer,
+                                                  BoolQueryBuilder query,
+                                                  boolean highlight,
+                                                  String fieldValue,
+                                                  String fieldName) {
+        if (fieldValue != null) {
+            MatchQueryBuilder localQuery = matchQuery(fieldName, fieldValue);
+            query.must(localQuery);
+            if (highlight) {
+                highlightFieldsContainer.addHighlightField(createHighlightField(fieldName, fieldValue));
+            }
+        }
+    }
+
+    private HighlightBuilder.Field createHighlightField(String fieldName, String fieldValue) {
+        HighlightBuilder.Field field = new HighlightBuilder.Field(fieldName);
+        field.highlightQuery(matchQuery(fieldName, fieldValue));
+        return field;
     }
 }

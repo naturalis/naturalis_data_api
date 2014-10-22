@@ -5,7 +5,6 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
@@ -15,7 +14,6 @@ import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 
@@ -28,7 +26,17 @@ import java.util.Map;
 import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.ASSEMBLAGE_ID;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.COLLECTORS_FIELD_NUMBER;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_DATE_TIME_BEGIN;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_GATHERING_PERSONS_FULLNAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_LOCALITY_TEXT;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_SITECOORDINATES_POINT;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.PHASE_OR_STAGE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.SEX;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
@@ -148,17 +156,16 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
-        QueryBuilder nameResQuery = buildNameResolutionQuery(allowedFields,
-                                                             params.getParam("_search"),
-                                                             bioportalTaxonDao);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, true, nameResQuery,
-                                                              Arrays.asList(
-                                                                      IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
-                                                                      IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
-                                                                      IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET));
+        QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"),
+                                                                        bioportalTaxonDao, true);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, true, nameResQuery);
+
+        // TODO: mark results from name resolution (also do this for MultiMediaObjectDao)
+        if (searchResponse.getHits().totalHits() > 0) {
+            System.out.println("HIGHLIGHT_FIELDS : " + searchResponse.getHits().hits()[0].getHighlightFields());
+        }
 
         return responseToSpecimenResultGroupSet(searchResponse, params);
-        // TODO: mark results from name resolution (also do this for MultiMediaObjectDao)
     }
 
     /**
@@ -314,7 +321,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(
                                 genusOrMonomial,
                                 specificEpithet,
-                                infraspecificEpithet);
+                                infraspecificEpithet); // FIXME: should not result in highlighting
                         List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {

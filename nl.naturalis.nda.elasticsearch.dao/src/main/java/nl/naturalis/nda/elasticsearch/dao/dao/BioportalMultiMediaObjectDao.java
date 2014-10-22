@@ -199,11 +199,6 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (hasText(unitID)) {
             List<SearchResult<MultiMediaObject>> searchResults = searchResultSet.getSearchResults();
             for (SearchResult<MultiMediaObject> searchResult : searchResults) {
-                List<Link> links = new ArrayList<>();
-                if (searchResult.getLinks() != null) {
-                    links = searchResult.getLinks();
-                }
-
                 MultiMediaObject multiMediaObject = searchResult.getResult();
                 if (multiMediaObject.getUnitID().equals(unitID)) {
                     int indexFoundMultiMediaObject = searchResults.indexOf(searchResult);
@@ -223,15 +218,14 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
                     //TODO Change links to correct url and href
                     if (previousMultiMediaObject != null) {
-                        links.add(new Link("http://test.nl?unitID=" + previousMultiMediaObject.getResult().getUnitID(),
+                        searchResult.addLink(new Link("http://test.nl?unitID=" + previousMultiMediaObject.getResult().getUnitID(),
                                            "_previous"));
                     }
                     if (nextMultiMediaObject != null) {
-                        links.add(new Link("http://test.nl?unitID=" + nextMultiMediaObject.getResult().getUnitID(),
+                        searchResult.addLink(new Link("http://test.nl?unitID=" + nextMultiMediaObject.getResult().getUnitID(),
                                            "_next"));
                     }
 
-                    searchResult.setLinks(links);
                     detailResultSet.addSearchResult(searchResult);
                 }
             }

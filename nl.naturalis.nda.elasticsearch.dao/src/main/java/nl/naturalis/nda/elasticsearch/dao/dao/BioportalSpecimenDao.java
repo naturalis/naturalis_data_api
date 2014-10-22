@@ -217,11 +217,9 @@ public class BioportalSpecimenDao extends AbstractDao {
     protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params,
                                                                             ResultGroupSet<Specimen, String> specimenResultGroupSet) {
         SearchResultSet<Specimen> searchResultSet = new SearchResultSet<>();
-        List<Link> links = new ArrayList<>();
-
         String unitID = params.getParam("unitID");
 
-        Specimen foundSpecimenForUnitId = null;
+        SearchResult<Specimen> foundSpecimenForUnitId = null;
         SearchResult<Specimen> previousSpecimen = null;
         SearchResult<Specimen> nextSpecimen = null;
 
@@ -230,10 +228,10 @@ public class BioportalSpecimenDao extends AbstractDao {
             ResultGroup<Specimen, String> bucket = allBuckets.get(currentBucketIndex);
             List<SearchResult<Specimen>> resultsInBucket = bucket.getSearchResults();
             for (int indexInCurrentBucket = 0; indexInCurrentBucket < resultsInBucket.size(); indexInCurrentBucket++) {
-                SearchResult searchResult = resultsInBucket.get(indexInCurrentBucket);
-                Specimen specimen = (Specimen) searchResult.getResult();
+                SearchResult<Specimen> searchResult = resultsInBucket.get(indexInCurrentBucket);
+                Specimen specimen = searchResult.getResult();
                 if (unitID.equals(specimen.getUnitID())) {
-                    foundSpecimenForUnitId = specimen;
+                    foundSpecimenForUnitId = searchResult;
                     if (indexInCurrentBucket == 0) {
                         if (currentBucketIndex != 0) {
                             List<SearchResult<Specimen>> previousBucket = allBuckets.get(currentBucketIndex - 1)
@@ -263,14 +261,13 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         //TODO Change links to correct url and href
         if (previousSpecimen != null) {
-            links.add(new Link("http://test.nl?unitId=" + previousSpecimen.getResult().getUnitID(), "_previous"));
+            foundSpecimenForUnitId.addLink(new Link("http://test.nl?unitId=" + previousSpecimen.getResult().getUnitID(), "_previous"));
         }
         if (nextSpecimen != null) {
-            links.add(new Link("http://test.nl?unitId=" + nextSpecimen.getResult().getUnitID(), "_next"));
+            foundSpecimenForUnitId.addLink(new Link("http://test.nl?unitId=" + nextSpecimen.getResult().getUnitID(), "_next"));
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
-        searchResultSet.setLinks(links);
         searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return searchResultSet;
     }

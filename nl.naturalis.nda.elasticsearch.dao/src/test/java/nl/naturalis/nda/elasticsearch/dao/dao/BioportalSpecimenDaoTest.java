@@ -6,11 +6,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.junit.*;
 
 import java.io.IOException;
@@ -315,10 +311,10 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                                                                                                           specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("2", specimenSearchResult.getResult().getUnitID());
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("1"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getRel().contains("3"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getHref().equals("_next"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getRel().contains("1"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getHref().equals("_previous"));
+        assertTrue(specimenSearchResult.getLinks().get(1).getRel().contains("3"));
+        assertTrue(specimenSearchResult.getLinks().get(1).getHref().equals("_next"));
     }
 
     @Test
@@ -352,10 +348,10 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                                                                                                           specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("6", specimenSearchResult.getResult().getUnitID());
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("5"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getRel().contains("7"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getHref().equals("_next"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getRel().contains("5"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getHref().equals("_previous"));
+        assertTrue(specimenSearchResult.getLinks().get(1).getRel().contains("7"));
+        assertTrue(specimenSearchResult.getLinks().get(1).getHref().equals("_next"));
     }
 
     @Test
@@ -369,10 +365,10 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                                                                                                           specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("4", specimenSearchResult.getResult().getUnitID());
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("3"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getRel().contains("5"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(1).getHref().equals("_next"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getRel().contains("3"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getHref().equals("_previous"));
+        assertTrue(specimenSearchResult.getLinks().get(1).getRel().contains("5"));
+        assertTrue(specimenSearchResult.getLinks().get(1).getHref().equals("_next"));
     }
 
     @Test
@@ -386,9 +382,9 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                                                                                                           specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("1", specimenSearchResult.getResult().getUnitID());
-        assertEquals(1, specimenDetailSearchResultSet.getLinks().size());
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("2"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_next"));
+        assertEquals(1, specimenSearchResult.getLinks().size());
+        assertTrue(specimenSearchResult.getLinks().get(0).getRel().contains("2"));
+        assertTrue(specimenSearchResult.getLinks().get(0).getHref().equals("_next"));
     }
 
     @Test
@@ -402,9 +398,10 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                                                                                                           specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("9", specimenSearchResult.getResult().getUnitID());
-        assertEquals(1, specimenDetailSearchResultSet.getLinks().size());
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getRel().contains("8"));
-        assertTrue(specimenDetailSearchResultSet.getLinks().get(0).getHref().equals("_previous"));
+        List<Link> links = specimenSearchResult.getLinks();
+        assertEquals(1, links.size());
+        assertTrue(links.get(0).getRel().contains("8"));
+        assertTrue(links.get(0).getHref().equals("_previous"));
     }
 
     private ResultGroupSet<Specimen, String> createSpecimenResultGroupSet() {

@@ -134,12 +134,8 @@ public class QueryParams extends HashMap<String, List<String>> {
     }
 
     public QueryParams copyWithoutGeoShape() {
-        QueryParams copy = new QueryParams();
-        for (Map.Entry<String, List<String>> entry : entrySet()) {
-            if (!"_geoShape".equals(entry.getKey())) {
-                copy.put(entry.getKey(), entry.getValue());
-            }
-        }
+        QueryParams copy = new QueryParams(this);
+        copy.remove("_geoShape");
         return copy;
     }
 

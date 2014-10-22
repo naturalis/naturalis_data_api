@@ -25,6 +25,7 @@ public class QueryParamsTest {
         // THEN
         assertThat(copyWithoutGeoShape.get("key").get(0), is("val"));
         assertFalse(copyWithoutGeoShape.containsKey("_geoShape"));
+        assertTrue(queryParams.containsKey("_geoShape"));
     }
 
     @Test

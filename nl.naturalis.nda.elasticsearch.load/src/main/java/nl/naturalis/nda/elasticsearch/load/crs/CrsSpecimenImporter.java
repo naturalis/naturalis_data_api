@@ -178,7 +178,9 @@ public class CrsSpecimenImporter {
 		processed = 0;
 		bad = 0;
 		Iterator<File> localFileIterator = getLocalFileIterator();
-		for (File f = localFileIterator.next(); f != null; f = localFileIterator.next()) {
+		File f;
+		while (localFileIterator.hasNext()) {
+			f = localFileIterator.next();
 			logger.info("Processing file " + f.getCanonicalPath());
 			index(FileUtil.getContents(f));
 		}

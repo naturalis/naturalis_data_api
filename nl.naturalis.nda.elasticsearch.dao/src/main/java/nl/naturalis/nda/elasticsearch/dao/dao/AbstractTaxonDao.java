@@ -12,7 +12,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -34,14 +33,15 @@ public class AbstractTaxonDao extends AbstractDao {
      *
      * @param params            search parameters
      * @param allowedFieldNames may be null if you don't want filtering
+     * @param highlighting
      * @return search results
      */
-    SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames) {
+    SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames, boolean highlighting) {
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, true);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
         return responseToTaxonSearchResultSet(searchResponse, params);
     }
 

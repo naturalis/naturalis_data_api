@@ -396,7 +396,7 @@ public abstract class AbstractDao {
         }
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("_maxResults", "50");
-        SearchResultSet<Taxon> nameResTaxons = taxonDao.search(nameResTaxonQueryParams, null); // no field filtering
+        SearchResultSet<Taxon> nameResTaxons = taxonDao.search(nameResTaxonQueryParams, null, false); // no field filtering
         if (nameResTaxons.getTotalSize() == 0) {
             return null;
         }

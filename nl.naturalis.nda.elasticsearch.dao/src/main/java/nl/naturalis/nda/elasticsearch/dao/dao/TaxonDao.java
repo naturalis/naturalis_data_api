@@ -31,7 +31,7 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
-        return search(params, allowedTaxonFields);
+        return search(params, allowedTaxonFields, true);
     }
 
     /**

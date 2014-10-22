@@ -4,12 +4,15 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
+import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -45,13 +48,20 @@ public class AbstractTaxonDao extends AbstractDao {
     private SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse, QueryParams params) {
         SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
+            SearchResult<Taxon> searchResult = new SearchResult<>();
+            List<Link> links = new ArrayList<>();
+
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
 
-            taxonSearchResultSet.addSearchResult(taxon);
+            links.add(new Link("http://test.nl?taxon=" + taxon.getSourceSystemId(), "_taxon"));
+
+            searchResult.setResult(taxon);
+            searchResult.setLinks(links);
+
+            taxonSearchResultSet.addSearchResult(searchResult);
         }
 
-        // TODO links
         taxonSearchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
         taxonSearchResultSet.setQueryParameters(params.copyWithoutGeoShape());
 

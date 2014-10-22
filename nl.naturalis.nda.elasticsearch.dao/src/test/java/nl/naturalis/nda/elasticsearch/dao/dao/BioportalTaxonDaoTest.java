@@ -51,11 +51,9 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         SearchResultSet<Taxon> result = taxonDao.taxonSearch(params);
 
         assertEquals(1, result.getSearchResults().size());
-        //TODO enable when implemented setSearchTerms
-//        assertEquals(1, result.getSearchTerms().size());
-//        assertEquals("Hyphomonas", result.getSearchTerms().get(0));
         assertEquals("Rhodobacteraceae",
                      result.getSearchResults().get(0).getResult().getDefaultClassification().getFamily());
+        assertEquals(1, result.getSearchResults().get(0).getLinks().size());
     }
 
     @Test

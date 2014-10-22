@@ -49,15 +49,12 @@ public class AbstractTaxonDao extends AbstractDao {
         SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
             SearchResult<Taxon> searchResult = new SearchResult<>();
-            List<Link> links = new ArrayList<>();
 
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
-
-            links.add(new Link("http://test.nl?taxon=" + taxon.getSourceSystemId(), "_taxon"));
-
+            //TODO Change links to correct url and href
+            searchResult.addLink((new Link("http://test.nl?taxon=" + taxon.getSourceSystemId(), "_taxon")));
             searchResult.setResult(taxon);
-            searchResult.setLinks(links);
 
             taxonSearchResultSet.addSearchResult(searchResult);
         }

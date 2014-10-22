@@ -277,9 +277,8 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response,
                                                                               QueryParams params) {
-        // TODO links
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
-        HashMap<String, List<Specimen>> tempMap = new HashMap<>();
+        Map<String, List<Specimen>> tempMap = new HashMap<>();
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
@@ -312,7 +311,11 @@ public class BioportalSpecimenDao extends AbstractDao {
             List<Specimen> specimens = stringListEntry.getValue();
 
             for (Specimen specimen : specimens) {
-                resultGroup.addSearchResult(specimen);
+                SearchResult<Specimen> searchResult = new SearchResult<>();
+                searchResult.setResult(specimen);
+                //TODO Change links to correct url and href
+                searchResult.addLink(new Link("http://test.nl?fullScientificName=" + specimen.getUnitID(), "_specimen"));
+
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {
                     for (SpecimenIdentification identification : identifications) {
@@ -328,13 +331,14 @@ public class BioportalSpecimenDao extends AbstractDao {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {
                                 Taxon taxon = taxonSearchResult.getResult();
                                 //TODO Change links to correct url and href
-                                resultGroup.addLink(new Link(
+                                searchResult.addLink(new Link(
                                         "http://test.nl?fullScientificName=" + taxon.getAcceptedName()
-                                                                                    .getFullScientificName(), "taxon"));
+                                                                                    .getFullScientificName(), "_taxon"));
                             }
                         }
                     }
                 }
+                resultGroup.addSearchResult(searchResult);
             }
             specimenStringResultGroupSet.addGroup(resultGroup);
         }
@@ -350,7 +354,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
                                                           .setQuery(filteredQuery(matchAllQuery(), boolFilter()
                                                                   .must(termFilter("assemblageID",
-                                                                                   transfer.getAssemblageID()))
+                                                                          transfer.getAssemblageID()))
                                                                   .mustNot(termFilter("unitID", transfer.getUnitID()))))
                                                           .execute().actionGet();
         SearchHits hits = searchResponse.getHits();

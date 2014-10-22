@@ -163,6 +163,8 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
         assertEquals(2, result.getTotalSize());
+        assertEquals(1, result.getResultGroups().get(0).getSearchResults().get(0).getLinks().size());
+        assertEquals(1, result.getResultGroups().get(0).getSearchResults().get(1).getLinks().size());
     }
 
     @Test

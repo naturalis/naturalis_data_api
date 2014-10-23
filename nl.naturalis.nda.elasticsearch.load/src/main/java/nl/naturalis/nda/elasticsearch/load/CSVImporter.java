@@ -16,25 +16,56 @@ import org.slf4j.LoggerFactory;
 
 public abstract class CSVImporter<T> {
 
+	@SuppressWarnings("serial")
+	public static class NoSuchFieldException extends RuntimeException {
+		public NoSuchFieldException(CSVRecord record, int fieldNo)
+		{
+			super(String.format("Specified field number (%s) exceeds number of fields in CSV record(%s)", fieldNo, record.size()));
+		}
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
 
 
 	public static String val(CSVRecord record, int fieldNo)
 	{
-		String s = record.get(fieldNo);
-		if (s.trim().length() == 0) {
-			return null;
+		if (fieldNo < record.size()) {
+			String s = record.get(fieldNo).trim();
+			return s.length() == 0 ? null : s;
 		}
-		return s;
+		throw new NoSuchFieldException(record, fieldNo);
 	}
+
 
 	public static int ival(CSVRecord record, int fieldNo)
 	{
-		String s = record.get(fieldNo);
-		if (s.trim().length() == 0) {
+		String s = val(record, fieldNo);
+		if (s == null) {
 			return 0;
 		}
-		return Integer.parseInt(s);
+		try {
+			return Integer.parseInt(val(record, fieldNo));
+		}
+		catch (NumberFormatException e) {
+			logger.warn(String.format("Invalid integer in field %s: \"%s\" (value set to 0)", fieldNo, s));
+			return 0;
+		}
+	}
+
+
+	public static double dval(CSVRecord record, int fieldNo)
+	{
+		String s = val(record, fieldNo);
+		if (s == null) {
+			return 0;
+		}
+		try {
+			return Double.parseDouble(val(record, fieldNo));
+		}
+		catch (NumberFormatException e) {
+			logger.warn(String.format("Invalid number in field %s: \"%s\" (value set to 0)", fieldNo, s));
+			return 0;
+		}
 	}
 
 	private final Index index;

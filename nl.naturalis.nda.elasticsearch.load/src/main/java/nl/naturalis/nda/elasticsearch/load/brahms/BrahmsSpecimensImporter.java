@@ -220,7 +220,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	@Override
 	protected List<ESSpecimen> transfer(CSVRecord record) throws Exception
 	{
-		String barcode = get(record, CsvField.BARCODE.ordinal());
+		String barcode = val(record, CsvField.BARCODE.ordinal());
 		if (barcode == null) {
 			throw new Exception("Missing barcode");
 		}
@@ -230,9 +230,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setSourceSystemId(barcode);
 		specimen.setUnitID(barcode);
 		specimen.setRecordBasis("PreservedSpecimen");
-		specimen.setAssemblageID(ID_PREFIX + get(record, CsvField.BRAHMS.ordinal()));
-		specimen.setNotes(get(record, CsvField.PLANTDESC.ordinal()));
-		String notOnline = get(record, CsvField.NOTONLINE.ordinal());
+		specimen.setAssemblageID(ID_PREFIX + val(record, CsvField.BRAHMS.ordinal()));
+		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
+		String notOnline = val(record, CsvField.NOTONLINE.ordinal());
 		if (notOnline == null || notOnline.equals("0")) {
 			specimen.setObjectPublic(true);
 		}
@@ -248,7 +248,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String id = ID_PREFIX + get(record, CsvField.BARCODE.ordinal());
+		String id = ID_PREFIX + val(record, CsvField.BARCODE.ordinal());
 		return Arrays.asList(id);
 	}
 
@@ -256,13 +256,13 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	static ESGatheringEvent getGatheringEvent(CSVRecord record)
 	{
 		final ESGatheringEvent ge = new ESGatheringEvent();
-		ge.setWorldRegion(get(record, CsvField.CONTINENT.ordinal()));
+		ge.setWorldRegion(val(record, CsvField.CONTINENT.ordinal()));
 		ge.setContinent(ge.getWorldRegion());
-		ge.setCountry(get(record, CsvField.COUNTRY.ordinal()));
-		ge.setProvinceState(get(record, CsvField.MAJORAREA.ordinal()));
-		String y = get(record, CsvField.YEAR.ordinal());
-		String m = get(record, CsvField.MONTH.ordinal());
-		String d = get(record, CsvField.DAY.ordinal());
+		ge.setCountry(val(record, CsvField.COUNTRY.ordinal()));
+		ge.setProvinceState(val(record, CsvField.MAJORAREA.ordinal()));
+		String y = val(record, CsvField.YEAR.ordinal());
+		String m = val(record, CsvField.MONTH.ordinal());
+		String d = val(record, CsvField.DAY.ordinal());
 		Date date = getDate(y, m, d);
 		ge.setDateTimeBegin(date);
 		ge.setDateTimeEnd(date);
@@ -279,7 +279,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
-		String collector = get(record, CsvField.COLLECTOR.ordinal());
+		String collector = val(record, CsvField.COLLECTOR.ordinal());
 		if (collector != null) {
 			ge.setGatheringPersons(Arrays.asList(new Person(collector)));
 		}
@@ -290,17 +290,17 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
 	{
 		final SpecimenIdentification identification = new SpecimenIdentification();
-		String s = get(record, CsvField.DETBY.ordinal());
+		String s = val(record, CsvField.DETBY.ordinal());
 		if (s != null) {
 			identification.addIdentifier(new Agent(s));
 		}
-		s = get(record, CsvField.VERNACULAR.ordinal());
+		s = val(record, CsvField.VERNACULAR.ordinal());
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
-		String y = get(record, CsvField.YEARIDENT.ordinal());
-		String m = get(record, CsvField.MONTHIDENT.ordinal());
-		String d = get(record, CsvField.DAYIDENT.ordinal());
+		String y = val(record, CsvField.YEARIDENT.ordinal());
+		String m = val(record, CsvField.MONTHIDENT.ordinal());
+		String d = val(record, CsvField.DAYIDENT.ordinal());
 		identification.setDateIdentified(getDate(y, m, d));
 		ScientificName sn = getScientificName(record);
 		DefaultClassification dc = getDefaultClassification(record, sn);
@@ -315,10 +315,10 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	static ScientificName getScientificName(CSVRecord record)
 	{
 		final ScientificName sn = new ScientificName();
-		sn.setFullScientificName(get(record, CsvField.SPECIES.ordinal()));
+		sn.setFullScientificName(val(record, CsvField.SPECIES.ordinal()));
 		sn.setAuthorshipVerbatim(getAuthor(record));
-		sn.setGenusOrMonomial(get(record, CsvField.GENUS.ordinal()));
-		sn.setSpecificEpithet(get(record, CsvField.SP1.ordinal()));
+		sn.setGenusOrMonomial(val(record, CsvField.GENUS.ordinal()));
+		sn.setSpecificEpithet(val(record, CsvField.SP1.ordinal()));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
 		return sn;
 	}
@@ -329,9 +329,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		final DefaultClassification dc = new DefaultClassification();
 		dc.setKingdom("Plantae");
 		dc.setPhylum(null);
-		dc.setClassName(get(record, CsvField.FAMCLASS.ordinal()));
-		dc.setOrder(get(record, CsvField.ORDER.ordinal()));
-		dc.setFamily(get(record, CsvField.FAMILY.ordinal()));
+		dc.setClassName(val(record, CsvField.FAMCLASS.ordinal()));
+		dc.setOrder(val(record, CsvField.ORDER.ordinal()));
+		dc.setFamily(val(record, CsvField.FAMILY.ordinal()));
 		dc.setGenus(sn.getGenusOrMonomial());
 		dc.setSpecificEpithet(sn.getSpecificEpithet());
 		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
@@ -405,20 +405,20 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	private static String getAuthor(CSVRecord record)
 	{
-		if (get(record, CsvField.SP3.ordinal()) == null) {
-			if (get(record, CsvField.SP2.ordinal()) == null) {
-				return get(record, CsvField.AUTHOR1.ordinal());
+		if (val(record, CsvField.SP3.ordinal()) == null) {
+			if (val(record, CsvField.SP2.ordinal()) == null) {
+				return val(record, CsvField.AUTHOR1.ordinal());
 			}
-			return get(record, CsvField.AUTHOR2.ordinal());
+			return val(record, CsvField.AUTHOR2.ordinal());
 		}
-		return get(record, CsvField.AUTHOR3.ordinal());
+		return val(record, CsvField.AUTHOR3.ordinal());
 	}
 
 
 	private static String getInfraspecificEpithet(CSVRecord record)
 	{
-		if (get(record, CsvField.RANK1.ordinal()) == "subspecies") {
-			return get(record, CsvField.SP2.ordinal());
+		if (val(record, CsvField.RANK1.ordinal()) == "subspecies") {
+			return val(record, CsvField.SP2.ordinal());
 		}
 		return null;
 	}
@@ -426,46 +426,38 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	private static String getTaxonRank(CSVRecord record)
 	{
-		if (get(record, CsvField.SP3.ordinal()) == null) {
-			if (get(record, CsvField.SP2.ordinal()) == null) {
-				if (get(record, CsvField.SP1.ordinal()) == null) {
+		if (val(record, CsvField.SP3.ordinal()) == null) {
+			if (val(record, CsvField.SP2.ordinal()) == null) {
+				if (val(record, CsvField.SP1.ordinal()) == null) {
 					// TODO: replace literal with DefaultClassification.Rank
 					return "genus";
 				}
 				return "species";
 			}
-			return get(record, CsvField.RANK1.ordinal());
+			return val(record, CsvField.RANK1.ordinal());
 		}
-		return get(record, CsvField.RANK2.ordinal());
+		return val(record, CsvField.RANK2.ordinal());
 
 	}
 
 
 	private static void checkSpData(CSVRecord record) throws Exception
 	{
-		String r = get(record, CsvField.RANK1.ordinal());
-		String s = get(record, CsvField.SP2.ordinal());
+		String r = val(record, CsvField.RANK1.ordinal());
+		String s = val(record, CsvField.SP2.ordinal());
 		if ((r == null && s != null) || (r != null && s == null)) {
 			throw new Exception("If rank1 is provided, sp2 must also be provided and vice versa");
 		}
-		r = get(record, CsvField.RANK2.ordinal());
-		s = get(record, CsvField.SP3.ordinal());
+		r = val(record, CsvField.RANK2.ordinal());
+		s = val(record, CsvField.SP3.ordinal());
 		if ((r == null && s != null) || (r != null && s == null)) {
 			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
 		}
 	}
 
-
-	private static String get(CSVRecord record, int field)
-	{
-		String s = record.get(field).trim();
-		return s.length() == 0 ? null : s;
-	}
-
-
 	private static Double dget(CSVRecord record, int field)
 	{
-		String s = get(record, field);
+		String s = val(record, field);
 		if (s == null) {
 			return null;
 		}

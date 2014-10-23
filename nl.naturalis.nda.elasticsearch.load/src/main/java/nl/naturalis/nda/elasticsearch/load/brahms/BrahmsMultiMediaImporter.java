@@ -119,7 +119,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	protected List<ESMultiMediaObject> transfer(CSVRecord record) throws Exception
 	{
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
-		String s = get(record, IMAGELIST.ordinal());
+		String s = val(record, IMAGELIST.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
@@ -133,9 +133,9 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String base = ID_PREFIX + get(record, BARCODE.ordinal());
+		String base = ID_PREFIX + val(record, BARCODE.ordinal());
 		List<String> ids = new ArrayList<String>(4);
-		String s = get(record, IMAGELIST.ordinal());
+		String s = val(record, IMAGELIST.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
@@ -148,7 +148,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl) throws Exception
 	{
-		String s = get(record, BARCODE.ordinal());
+		String s = val(record, BARCODE.ordinal());
 		if (s == null) {
 			throw new Exception("Missing barcode");
 		}
@@ -156,7 +156,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setSourceSystemId(s + "_" + imageNo);
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
 		mmo.setAssociatedSpecimenReference(s);
-		mmo.setDescription(get(record, PLANTDESC.ordinal()));
+		mmo.setDescription(val(record, PLANTDESC.ordinal()));
 		mmo.setGatheringEvents(Arrays.asList(BrahmsSpecimensImporter.getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		try {
@@ -173,13 +173,13 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	private static MultiMediaContentIdentification getIdentification(CSVRecord record)
 	{
 		final MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
-		String s = get(record, VERNACULAR.ordinal());
+		String s = val(record, VERNACULAR.ordinal());
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
-		String y = get(record, YEARIDENT.ordinal());
-		String m = get(record, MONTHIDENT.ordinal());
-		String d = get(record, DAYIDENT.ordinal());
+		String y = val(record, YEARIDENT.ordinal());
+		String m = val(record, MONTHIDENT.ordinal());
+		String d = val(record, DAYIDENT.ordinal());
 		identification.setDateIdentified(BrahmsSpecimensImporter.getDate(y, m, d));
 		ScientificName sn = BrahmsSpecimensImporter.getScientificName(record);
 		DefaultClassification dc = BrahmsSpecimensImporter.getDefaultClassification(record, sn);
@@ -189,12 +189,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		return identification;
 	}
 
-
-	private static String get(CSVRecord record, int field)
-	{
-		String s = record.get(field).trim();
-		return s.length() == 0 ? null : s;
-	}
 
 
 }

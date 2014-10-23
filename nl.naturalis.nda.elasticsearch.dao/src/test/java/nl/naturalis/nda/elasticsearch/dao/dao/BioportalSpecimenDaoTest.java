@@ -409,6 +409,30 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         assertTrue(links.get(0).getHref().equals("_previous"));
     }
 
+    @Test
+    public void testGetSpecimenDetailWithinSearchResult() throws IOException {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE)
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        ESSpecimen esSpecimen = createSpecimen();
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
+        esSpecimen.setUnitID(esSpecimen.getUnitID() + "_diff");
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
+
+        QueryParams queryParams = new QueryParams();
+        queryParams.add("_source", "SPECIMEN_SEARCH");
+        queryParams.add("unitID", "L  0191413");
+        queryParams.add("gatheringEvent.gatheringPersons.fullName", "Meijer, W.");
+
+        SearchResultSet<Specimen> specimenStringResultGroupSet = dao.getSpecimenDetailWithinSearchResult(queryParams);
+        System.out.println("temp");
+    }
+
     private ResultGroupSet<Specimen, String> createSpecimenResultGroupSet() {
         ResultGroupSet<Specimen, String> specimenResultGroupSet = new ResultGroupSet<>();
         ResultGroup<Specimen, String> group1 = new ResultGroup<>();

@@ -61,6 +61,7 @@ public class ESConstants {
             public static final String PHASE_OR_STAGE = "phaseOrStage";
             public static final String IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME = "identifications.systemClassification.name";
             public static final String GATHERINGEVENT_DATE_TIME_BEGIN = "gatheringEvent.dateTimeBegin";
+            public static final String GATHERINGEVENT_DATE_TIME_END = "gatheringEvent.dateTimeEnd";
             public static final String GATHERINGEVENT_SITECOORDINATES_POINT = "gatheringEvent.siteCoordinates.point";
             public static final String GATHERINGEVENT_LOCALITY_TEXT = "gatheringEvent.localityText";
             public static final String GATHERINGEVENT_GATHERING_PERSONS_FULLNAME = "gatheringEvent.gatheringPersons.fullName";

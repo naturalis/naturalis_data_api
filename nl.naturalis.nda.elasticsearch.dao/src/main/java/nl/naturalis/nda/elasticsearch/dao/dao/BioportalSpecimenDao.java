@@ -12,10 +12,12 @@ import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.StringMatchInfo;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.highlight.HighlightField;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,12 @@ import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
+
+    // TODO: mark results in Taxon
+    // TODO: mark results in BioportalTaxon
+    // TODO: mark results in BioportalMultiMediaObjectDao
+    // TODO: mark results in SpecimenDao
+    // TODO: write test for BioportalSpecimenDao and some others
 
     private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
@@ -160,11 +168,6 @@ public class BioportalSpecimenDao extends AbstractDao {
                                                                         bioportalTaxonDao, true);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, true, nameResQuery);
 
-        // TODO: mark results from name resolution (also do this for MultiMediaObjectDao)
-        if (searchResponse.getHits().totalHits() > 0) {
-            System.out.println("HIGHLIGHT_FIELDS : " + searchResponse.getHits().hits()[0].getHighlightFields());
-        }
-
         return responseToSpecimenResultGroupSet(searchResponse, params);
     }
 
@@ -200,6 +203,9 @@ public class BioportalSpecimenDao extends AbstractDao {
      * @return
      */
     public SearchResultSet<Specimen> getSpecimenDetailWithinSearchResult(QueryParams params) {
+        if (!hasText(params.getParam(UNIT_ID))) {
+            throw new IllegalArgumentException("unitId required");
+        }
         String source = params.getParam("_source");
         ResultGroupSet<Specimen, String> specimenResultGroupSet = new ResultGroupSet<>();
         if (source.equals("SPECIMEN_NAME_SEARCH")) {
@@ -221,6 +227,8 @@ public class BioportalSpecimenDao extends AbstractDao {
         SearchResult<Specimen> foundSpecimenForUnitId = null;
         SearchResult<Specimen> previousSpecimen = null;
         SearchResult<Specimen> nextSpecimen = null;
+
+        // TODO: specimenResultGroupSet already contains MatchInfo. Make sure this get persisted in this method
 
         List<ResultGroup<Specimen, String>> allBuckets = specimenResultGroupSet.getResultGroups();
         for (int currentBucketIndex = 0; currentBucketIndex < allBuckets.size(); currentBucketIndex++) {
@@ -273,11 +281,13 @@ public class BioportalSpecimenDao extends AbstractDao {
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response,
                                                                               QueryParams params) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
-        Map<String, List<Specimen>> tempMap = new HashMap<>();
+        Map<String, List<Specimen>> tempMapSpecimens = new HashMap<>();
+        Map<Specimen, SearchHit> tempMapSearchHits = new HashMap<>();
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
             Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
+            tempMapSearchHits.put(transfer, hit);
 
             List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer);
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
@@ -288,18 +298,18 @@ public class BioportalSpecimenDao extends AbstractDao {
                     String scientificName = specimenIdentification.getScientificName().getFullScientificName();
 
                     List<Specimen> specimens;
-                    if (tempMap.containsKey(scientificName)) {
-                        specimens = tempMap.get(scientificName);
+                    if (tempMapSpecimens.containsKey(scientificName)) {
+                        specimens = tempMapSpecimens.get(scientificName);
                     } else {
                         specimens = new ArrayList<>();
                     }
                     specimens.add(transfer);
-                    tempMap.put(scientificName, specimens);
+                    tempMapSpecimens.put(scientificName, specimens);
                 }
             }
         }
 
-        for (Map.Entry<String, List<Specimen>> stringListEntry : tempMap.entrySet()) {
+        for (Map.Entry<String, List<Specimen>> stringListEntry : tempMapSpecimens.entrySet()) {
             ResultGroup<Specimen, String> resultGroup = new ResultGroup<>();
             String scientificName = stringListEntry.getKey();
             resultGroup.setSharedValue(scientificName);
@@ -309,6 +319,19 @@ public class BioportalSpecimenDao extends AbstractDao {
                 SearchResult<Specimen> searchResult = new SearchResult<>();
                 searchResult.setResult(specimen);
                 searchResult.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID(), "_specimen"));
+
+                SearchHit hit = tempMapSearchHits.get(specimen);
+                if (hit.getHighlightFields() != null) {
+                    List<StringMatchInfo> stringMatchInfos = new ArrayList<>();
+                    for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {
+                        StringMatchInfo stringMatchInfo = new StringMatchInfo();
+                        stringMatchInfo.setPath(highlightFieldEntry.getKey());
+                        stringMatchInfo.setValueHighlighted(" " + Arrays.asList(highlightFieldEntry.getValue().fragments()));
+                        // TODO: setValue
+                        stringMatchInfos.add(stringMatchInfo);
+                    }
+                    searchResult.setMatchInfo(stringMatchInfos);
+                }
 
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {

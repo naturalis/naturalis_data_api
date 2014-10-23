@@ -8,7 +8,11 @@ public class SearchResult<T> {
     private float score;
     private String actualType;
     private List<Link> links;
-    private List<MatchInfo<?>> matchInfo;
+
+    // TODO: this was changed from commented version to get BioportalDaos compiling. Maybe change back.
+    // private List<MatchInfo<?>> matchInfo;
+    private List<StringMatchInfo> matchInfo;
+
     private List<NameResolutionInfo> nameResolutionInfo;
     private T result;
 
@@ -24,7 +28,7 @@ public class SearchResult<T> {
 
     public void addLink(String rel, String href) {
         if (links == null) {
-            links = new ArrayList<Link>();
+            links = new ArrayList<>();
         }
         links.add(new Link(rel, href));
     }
@@ -32,15 +36,15 @@ public class SearchResult<T> {
 
     public void addLink(Link link) {
         if (links == null) {
-            links = new ArrayList<Link>();
+            links = new ArrayList<>();
         }
         links.add(link);
     }
 
 
-    public void addMatchInfo(MatchInfo<?> matchInfo) {
+    public void addMatchInfo(StringMatchInfo matchInfo) {
         if (this.matchInfo == null) {
-            this.matchInfo = new ArrayList<MatchInfo<?>>();
+            this.matchInfo = new ArrayList<>();
         }
         this.matchInfo.add(matchInfo);
     }
@@ -66,12 +70,12 @@ public class SearchResult<T> {
     }
 
 
-    public List<MatchInfo<?>> getMatchInfo() {
+    public List<StringMatchInfo> getMatchInfo() {
         return matchInfo;
     }
 
 
-    public void setMatchInfo(List<MatchInfo<?>> matchInfo) {
+    public void setMatchInfo(List<StringMatchInfo> matchInfo) {
         this.matchInfo = matchInfo;
     }
 

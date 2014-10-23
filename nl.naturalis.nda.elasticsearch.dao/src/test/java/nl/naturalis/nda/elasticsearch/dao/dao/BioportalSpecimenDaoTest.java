@@ -51,7 +51,8 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         SearchResult result1 = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
         List<StringMatchInfo> matchInfo = result1.getMatchInfo();
         assertThat(matchInfo.size(), is(1));
-        assertThat(matchInfo.get(0).getValueHighlighted(), is("[<span class=\"search_hit\">Hyphomonas</span>]"));
+        assertThat(matchInfo.get(0).getValueHighlighted(),
+                is("Van der <span class=\"search_hit\">Meijer</span> Tussennaam <span class=\"search_hit\">W</span>."));
 
         assertEquals(2, specimenStringResultGroupSet.getTotalSize());
     }

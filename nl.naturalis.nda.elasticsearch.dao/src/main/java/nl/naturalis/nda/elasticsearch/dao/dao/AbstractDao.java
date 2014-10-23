@@ -17,6 +17,7 @@ import org.elasticsearch.common.geo.builders.BasePolygonBuilder;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
@@ -584,8 +585,15 @@ public abstract class AbstractDao {
             List<StringMatchInfo> stringMatchInfos = new ArrayList<>();
             for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {
                 StringMatchInfo stringMatchInfo = new StringMatchInfo();
+
                 stringMatchInfo.setPath(highlightFieldEntry.getKey());
-                stringMatchInfo.setValueHighlighted(" " + Arrays.asList(highlightFieldEntry.getValue().fragments()));
+
+                StringBuilder match = new StringBuilder();
+                for (Text matchText : highlightFieldEntry.getValue().fragments()) {
+                    match.append(matchText.string());
+                }
+                stringMatchInfo.setValueHighlighted(match.toString());
+
                 // TODO: setValue
                 stringMatchInfos.add(stringMatchInfo);
             }

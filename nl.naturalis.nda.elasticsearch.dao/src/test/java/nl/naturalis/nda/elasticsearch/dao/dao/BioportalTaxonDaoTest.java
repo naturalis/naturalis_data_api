@@ -59,7 +59,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         assertThat(result.getQueryParameters().getParam("acceptedName.genusOrMonomial"), is("Hyphomonas"));
 
         assertThat(result1.getMatchInfo().size(), is(1));
-        assertThat(result1.getMatchInfo().get(0).getValueHighlighted(), is("[<span class=\"search_hit\">Hyphomonas</span>]"));
+        assertThat(result1.getMatchInfo().get(0).getValueHighlighted(), is("<span class=\"search_hit\">Hyphomonas</span>"));
     }
 
     @Test

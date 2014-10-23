@@ -1,16 +1,25 @@
 package nl.naturalis.nda.search;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class Link {
 
 	private String rel;
 	private String href;
 
-
-	public Link(String rel, String href)
-	{
-		super();
+    /**
+     * URL encodes the href. In case that fails, uses original href value.
+     * @param rel
+     * @param href not encoded !
+     */
+	public Link(String rel, String href) {
 		this.rel = rel;
-		this.href = href;
+        try {
+            this.href = URLEncoder.encode(href, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            this.href = href;
+        }
 	}
 
 
@@ -26,15 +35,20 @@ public class Link {
 	}
 
 
-	public String getHref()
-	{
+	public String getHref() {
 		return href;
 	}
 
-
-	public void setHref(String href)
-	{
-		this.href = href;
-	}
+    /**
+     * URL encodes the href. In case that fails, uses original href value.
+     * @param href not encoded !
+     */
+	public void setHref(String href) {
+        try {
+            this.href = URLEncoder.encode(href, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            this.href = href;
+        }
+    }
 
 }

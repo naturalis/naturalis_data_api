@@ -278,10 +278,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         if (previousSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + previousSpecimen.getResult().getUnitID(), "_previous"));
+            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL + previousSpecimen.getResult().getUnitID()));
         }
         if (nextSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + nextSpecimen.getResult().getUnitID(), "_next"));
+            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL + nextSpecimen.getResult().getUnitID()));
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
@@ -329,7 +329,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             for (Specimen specimen : specimens) {
                 SearchResult<Specimen> searchResult = new SearchResult<>();
                 searchResult.setResult(specimen);
-                searchResult.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID(), "_specimen"));
+                searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
 
                 enhanceSearchResultWithMatchInfo(searchResult, tempMapSearchHits.get(specimen));
 
@@ -341,7 +341,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {
                                 Taxon taxon = taxonSearchResult.getResult();
-                                searchResult.addLink(new Link(TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName(), "_taxon"));
+                                searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName()));
                             }
                         }
                     }

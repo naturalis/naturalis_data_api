@@ -56,7 +56,7 @@ public class AbstractTaxonDao extends AbstractDao {
 
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
-            searchResult.addLink((new Link(TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName(), "_taxon")));
+            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName()));
             searchResult.setResult(taxon);
 
             enhanceSearchResultWithMatchInfo(searchResult, hit);

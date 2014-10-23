@@ -1,10 +1,10 @@
 package nl.naturalis.nda.search;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.Taxon;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@code ResultGroup} is a group of {@link SearchResult} that have a value in
@@ -20,7 +20,11 @@ public class ResultGroup<T, U> {
 	List<Link> links;
 	List<SearchResult<T>> searchResults;
 
-
+    /**
+     * URL encodes the href. In case that fails, uses original href value.
+     * @param rel
+     * @param href not encoded !
+     */
 	public void addLink(String rel, String href)
 	{
 		if (links == null) {

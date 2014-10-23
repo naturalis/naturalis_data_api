@@ -138,12 +138,12 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
                 }
 
                 if (previousTaxon != null) {
-                    result.addLink(new Link(TAXON_DETAIL_BASE_URL + previousTaxon.getResult().getAcceptedName()
-                            .getFullScientificName(), "_previous"));
+                    result.addLink(new Link("_previous", TAXON_DETAIL_BASE_URL + previousTaxon.getResult().getAcceptedName()
+                            .getFullScientificName()));
                 }
                 if (nextTaxon != null) {
-                    result.addLink(new Link(TAXON_DETAIL_BASE_URL + nextTaxon.getResult().getAcceptedName()
-                            .getFullScientificName(), "_next"));
+                    result.addLink(new Link("_next", TAXON_DETAIL_BASE_URL + nextTaxon.getResult().getAcceptedName()
+                            .getFullScientificName()));
                 }
 
                 detailResultSet.addSearchResult(result);

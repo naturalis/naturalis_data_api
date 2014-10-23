@@ -28,7 +28,11 @@ public class SearchResultSet<T> implements ResultSet {
 		searchResults.add(new SearchResult<T>(result));
 	}
 
-
+    /**
+     * URL encodes the href. In case that fails, uses original href value.
+     * @param rel
+     * @param href not encoded !
+     */
 	public void addLink(String rel, String href)
 	{
 		if (links == null) {

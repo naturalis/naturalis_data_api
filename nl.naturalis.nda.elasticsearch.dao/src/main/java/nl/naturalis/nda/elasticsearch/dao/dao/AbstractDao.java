@@ -140,7 +140,6 @@ public abstract class AbstractDao {
      * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
      * @return
      */
-    // TODO: remove extraHighlightFields
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
                                                    boolean highlighting, QueryAndHighlightFields prebuiltQuery) {
         String sortField = getScoreFieldFromQueryParams(params);

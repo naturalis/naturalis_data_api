@@ -54,8 +54,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     ));
 
     private final BioportalTaxonDao bioportalTaxonDao;
-    private TaxonDao taxonDao;
-    private SpecimenDao specimenDao;
+    private final TaxonDao taxonDao;
+    private final SpecimenDao specimenDao;
 
     public BioportalMultiMediaObjectDao(Client esClient, String ndaIndexName, BioportalTaxonDao bioportalTaxonDao,
                                         TaxonDao taxonDao, SpecimenDao specimenDao) {

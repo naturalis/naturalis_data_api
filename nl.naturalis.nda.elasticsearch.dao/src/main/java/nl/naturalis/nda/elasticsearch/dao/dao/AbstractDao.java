@@ -55,10 +55,11 @@ public abstract class AbstractDao {
     public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/detail/?unitID=";
     public static final String MULTIMEDIA_DETAIL_BASE_URL = BASE_URL + "/multimedia/detail/?unitID=";
 
-    protected Client esClient;
     private static ObjectMapper objectMapper;
     private SearchParamFieldMapping searchParamFieldMapping;
-    private String ndaIndexName;
+    
+    protected final Client esClient;
+    protected final String ndaIndexName;
 
     public AbstractDao(Client esClient, String ndaIndexName) {
         this.esClient = esClient;

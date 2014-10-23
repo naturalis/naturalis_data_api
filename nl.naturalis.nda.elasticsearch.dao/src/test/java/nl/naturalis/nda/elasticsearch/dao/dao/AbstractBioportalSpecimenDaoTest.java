@@ -41,7 +41,7 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
         esSpecimen.setAssemblageID("BRAHMS-577339.000000");
 
         ESGatheringEvent gatheringEvent = new ESGatheringEvent();
-        gatheringEvent.setGatheringPersons(asList(new Person("Meijer, W.")));
+        gatheringEvent.setGatheringPersons(asList(new Person("Van der Meijer Tussennaam W.")));
         gatheringEvent.setSiteCoordinates(asList(new ESGatheringSiteCoordinates(9.6373151, 55.7958149)));
         gatheringEvent.setDateTimeBegin(new DateTime().withMillis(-299725200000L).toDate());
         gatheringEvent.setDateTimeEnd(new DateTime().withMillis(-299725200000L).toDate());

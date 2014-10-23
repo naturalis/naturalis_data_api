@@ -12,6 +12,7 @@ import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.StringMatchInfo;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -46,6 +47,11 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+
+        SearchResult result1 = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
+        List<StringMatchInfo> matchInfo = result1.getMatchInfo();
+        assertThat(matchInfo.size(), is(1));
+        assertThat(matchInfo.get(0).getValueHighlighted(), is("[<span class=\"search_hit\">Hyphomonas</span>]"));
 
         assertEquals(2, specimenStringResultGroupSet.getTotalSize());
     }

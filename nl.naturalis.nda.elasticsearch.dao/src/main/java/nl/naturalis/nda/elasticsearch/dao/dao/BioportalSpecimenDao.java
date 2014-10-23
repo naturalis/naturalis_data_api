@@ -45,11 +45,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
-    // TODO: mark results in BioportalTaxon
-    // TODO: mark results in BioportalMultiMediaObjectDao
-    // TODO: mark results in SpecimenDao
-    // TODO: write test for BioportalSpecimenDao and some others
-
     private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,

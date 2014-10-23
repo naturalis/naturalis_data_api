@@ -220,6 +220,7 @@ public abstract class AbstractDao {
                     searchRequestBuilder.addHighlightedField(highlightField);
                 }
             }
+            searchRequestBuilder.setHighlighterPreTags("<span class=\"search_hit\">").setHighlighterPostTags("</span>");
             // TODO: add NGRAM query to highlighting
         }
 

@@ -18,6 +18,7 @@ import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +53,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
             GATHERINGEVENTS_SITECOORDINATES_POINT
     ));
+
+    private static final Set<String> multiMediaSearchFields_simpleSearchExceptions
+            = Collections.singleton(GATHERINGEVENTS_SITECOORDINATES_POINT);
 
     private final BioportalTaxonDao bioportalTaxonDao;
     private final TaxonDao taxonDao;
@@ -97,7 +101,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      * @return
      */
     public SearchResultSet<MultiMediaObject> multiMediaObjectSearch(QueryParams params) {
-        return search(params, multiMediaSearchFields);
+        return search(params, multiMediaSearchFields, multiMediaSearchFields_simpleSearchExceptions);
     }
 
     /**
@@ -161,13 +165,18 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     //================================================= Helper methods =================================================
 
     /**
-     * Method as generic as possible for internal use
+     * Method as generic as possible for internal use.
+     * <p/>
+     * Evaluates simple search parameter.
      *
      * @param params            search parameters
      * @param allowedFieldNames may be null if you don't want filtering
+     * @param simpleSearchFieldNameExceptions
      * @return search results
      */
-    SearchResultSet<MultiMediaObject> search(QueryParams params, Set<String> allowedFieldNames) {
+    SearchResultSet<MultiMediaObject> search(QueryParams params, Set<String> allowedFieldNames,
+                                             Set<String> simpleSearchFieldNameExceptions) {
+        evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getMultimediaMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields

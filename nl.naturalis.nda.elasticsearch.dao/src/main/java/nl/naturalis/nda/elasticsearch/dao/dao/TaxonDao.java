@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +29,8 @@ public class TaxonDao extends AbstractTaxonDao {
             SOURCE_SYSTEM_ID)
     );
 
+    private static final Set<String> allowedTaxonFields_simpleSearchExceptions = Collections.emptySet();
+
     public TaxonDao(Client esClient, String ndaIndexName) {
         super(esClient, ndaIndexName);
     }
@@ -40,7 +43,7 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
-        return search(params, allowedTaxonFields, true);
+        return search(params, allowedTaxonFields, allowedTaxonFields_simpleSearchExceptions, true);
     }
 
     /**

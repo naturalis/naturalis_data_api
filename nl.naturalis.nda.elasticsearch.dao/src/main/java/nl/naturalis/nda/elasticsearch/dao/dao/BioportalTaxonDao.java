@@ -9,6 +9,7 @@ import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.client.Client;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
             EXPERTS_FULLNAME
     ));
 
+    private static final Set<String> allowedFieldNamesForSearch_simpleSearchExceptions = Collections.emptySet();
+
     public BioportalTaxonDao(Client esClient, String ndaIndexName) {
         super(esClient, ndaIndexName);
     }
@@ -76,7 +79,7 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
      * @return search results
      */
     public SearchResultSet<Taxon> taxonSearch(QueryParams params) {
-        return search(params, allowedFieldNamesForSearch, true);
+        return search(params, allowedFieldNamesForSearch, allowedFieldNamesForSearch_simpleSearchExceptions, true);
     }
 
     /**

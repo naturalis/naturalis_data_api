@@ -73,6 +73,12 @@ public class BioportalSpecimenDao extends AbstractDao {
             GATHERINGEVENT_SITECOORDINATES_POINT
     ));
 
+    private static final Set<String> specimenNameSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(
+            GATHERINGEVENT_DATE_TIME_BEGIN,
+            GATHERINGEVENT_SITECOORDINATES_POINT
+    ));
+
+
     private static final Set<String> specimenSearchFieldNames = new HashSet<>(Arrays.asList(
             UNIT_ID,
             TYPE_STATUS,
@@ -82,6 +88,11 @@ public class BioportalSpecimenDao extends AbstractDao {
             GATHERINGEVENT_LOCALITY_TEXT,
             GATHERINGEVENT_GATHERING_PERSONS_FULLNAME,
             GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME,
+            GATHERINGEVENT_DATE_TIME_BEGIN,
+            GATHERINGEVENT_SITECOORDINATES_POINT)
+    );
+
+    private static final Set<String> specimenSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(
             GATHERINGEVENT_DATE_TIME_BEGIN,
             GATHERINGEVENT_SITECOORDINATES_POINT)
     );
@@ -128,6 +139,7 @@ public class BioportalSpecimenDao extends AbstractDao {
      * nl.naturalis.nda.domain.Specimen} with the scientificName as the key
      */
     public ResultGroupSet<Specimen, String> specimenSearch(QueryParams params) {
+        evaluateSimpleSearch(params, specimenSearchFieldNames, specimenSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
 
@@ -161,6 +173,7 @@ public class BioportalSpecimenDao extends AbstractDao {
      * @return
      */
     public ResultGroupSet<Specimen, String> specimenNameSearch(QueryParams params) {
+        evaluateSimpleSearch(params, specimenNameSearchFieldNames, specimenNameSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 

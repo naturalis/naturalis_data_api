@@ -29,14 +29,18 @@ public class AbstractTaxonDao extends AbstractDao {
     }
 
     /**
-     * Method as generic as possible for internal use
+     * Method as generic as possible for internal use.
+     * <p/>
+     * Evaluates simple search parameter.
      *
      * @param params            search parameters
      * @param allowedFieldNames may be null if you don't want filtering
-     * @param highlighting
-     * @return search results
+     * @param simpleSearchFieldNameExceptions
+     *@param highlighting  @return search results
      */
-    SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames, boolean highlighting) {
+    SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames,
+                                  Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
+        evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields

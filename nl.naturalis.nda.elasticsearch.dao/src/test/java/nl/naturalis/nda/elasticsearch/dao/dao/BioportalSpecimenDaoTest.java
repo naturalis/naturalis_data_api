@@ -51,6 +51,28 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     }
 
     @Test
+    public void testSpecimenSearch_noResultsOnFalseValue() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE)
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
+        ESSpecimen esSpecimen = createSpecimen();
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("gatheringEvent.gatheringPersons.fullName", "fsad_Meijer, W.");
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+
+        assertEquals(0, specimenStringResultGroupSet.getTotalSize());
+    }
+
+    @Test
     public void testSpecimenSearch_ngram_localityText() throws Exception {
         createIndex(INDEX_NAME);
 

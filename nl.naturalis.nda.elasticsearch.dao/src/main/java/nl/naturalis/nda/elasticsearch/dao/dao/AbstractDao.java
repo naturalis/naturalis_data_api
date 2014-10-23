@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -499,9 +500,7 @@ public abstract class AbstractDao {
         }
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("_maxResults", "50");
-        SearchResultSet<Taxon> nameResTaxons = taxonDao.search(nameResTaxonQueryParams,
-                                                               null,
-                                                               false); // no field filtering
+        SearchResultSet<Taxon> nameResTaxons = taxonDao.search(nameResTaxonQueryParams, null, null, false); // no field filtering
         if (nameResTaxons.getTotalSize() == 0) {
             return null;
         }
@@ -549,5 +548,30 @@ public abstract class AbstractDao {
         HighlightBuilder.Field field = new HighlightBuilder.Field(fieldName);
         field.highlightQuery(matchQuery(fieldName, fieldValue));
         return field;
+    }
+
+    /**
+     *
+     * @param params parameters as passed to dao, may or may not include a _search entry
+     * @param searchFieldNames all fields on which can be search in (extended) search
+     * @param simpleSearchFieldNameExceptions do no use these in simple search
+     */
+    protected void evaluateSimpleSearch(QueryParams params,
+                                        Set<String> searchFieldNames,
+                                        Set<String> simpleSearchFieldNameExceptions) {
+        String simpleSearchTerm = params.getParam("_search");
+        if (searchFieldNames == null || searchFieldNames.isEmpty()) {
+            return;
+        }
+        if (simpleSearchFieldNameExceptions == null) {
+            simpleSearchFieldNameExceptions = Collections.emptySet();
+        }
+        if (hasText(simpleSearchTerm)) {
+            for (String searchField : searchFieldNames) {
+                if (!simpleSearchFieldNameExceptions.contains(searchField)) {
+                    params.add(searchField, simpleSearchTerm);
+                }
+            }
+        }
     }
 }

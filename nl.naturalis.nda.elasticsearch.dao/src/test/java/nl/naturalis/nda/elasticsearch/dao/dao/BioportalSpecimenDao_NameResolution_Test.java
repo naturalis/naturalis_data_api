@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
@@ -40,6 +41,33 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
+    public void testSpecimenNameSearch_simpleSearch_directHit_ie_noNameResolutionHere() throws Exception {
+
+        // GIVEN
+        setupNameResolutionTest();
+
+        ESSpecimen esSpecimen = createSpecimen(); {
+            SpecimenIdentification specimenIdentification = new SpecimenIdentification(); {
+                DefaultClassification defaultClassification = new DefaultClassification(); {
+                    defaultClassification.setKingdom("Plantae");
+                    specimenIdentification.setDefaultClassification(defaultClassification);
+                }
+            }
+        }
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "3")
+                .setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        // WHEN
+        QueryParams params = new QueryParams();
+        params.add("_search", "Plantae");
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
+
+        // THEN
+        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
     }
 
     @Test

@@ -8,6 +8,7 @@ import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.StringMatchInfo;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -21,7 +22,9 @@ import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.highlight.HighlightBuilder;
+import org.elasticsearch.search.highlight.HighlightField;
 import org.elasticsearch.search.internal.InternalSearchResponse;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -572,6 +575,20 @@ public abstract class AbstractDao {
                     params.add(searchField, simpleSearchTerm);
                 }
             }
+        }
+    }
+
+    protected void enhanceSearchResultWithMatchInfo(SearchResult<?> searchResult, SearchHit hit) {
+        if (hit.getHighlightFields() != null) {
+            List<StringMatchInfo> stringMatchInfos = new ArrayList<>();
+            for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {
+                StringMatchInfo stringMatchInfo = new StringMatchInfo();
+                stringMatchInfo.setPath(highlightFieldEntry.getKey());
+                stringMatchInfo.setValueHighlighted(" " + Arrays.asList(highlightFieldEntry.getValue().fragments()));
+                // TODO: setValue
+                stringMatchInfos.add(stringMatchInfo);
+            }
+            searchResult.setMatchInfo(stringMatchInfos);
         }
     }
 }

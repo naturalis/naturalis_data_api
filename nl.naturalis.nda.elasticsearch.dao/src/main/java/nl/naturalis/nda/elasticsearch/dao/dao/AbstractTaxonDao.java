@@ -36,7 +36,7 @@ public class AbstractTaxonDao extends AbstractDao {
      * @param params            search parameters
      * @param allowedFieldNames may be null if you don't want filtering
      * @param simpleSearchFieldNameExceptions
-     *@param highlighting  @return search results
+     * @param highlighting  @return search results
      */
     SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames,
                                   Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
@@ -59,6 +59,8 @@ public class AbstractTaxonDao extends AbstractDao {
             searchResult.addLink((new Link(TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName(), "_taxon")));
             searchResult.setResult(taxon);
 
+            enhanceSearchResultWithMatchInfo(searchResult, hit);
+
             taxonSearchResultSet.addSearchResult(searchResult);
         }
 
@@ -67,4 +69,5 @@ public class AbstractTaxonDao extends AbstractDao {
 
         return taxonSearchResultSet;
     }
+
 }

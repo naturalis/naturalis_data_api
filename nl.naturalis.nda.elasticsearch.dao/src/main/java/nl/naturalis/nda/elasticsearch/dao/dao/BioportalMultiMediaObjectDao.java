@@ -303,6 +303,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
             links.add(new Link(MULTIMEDIA_DETAIL_BASE_URL + multiMediaObject.getUnitID(), "_multimedia"));
             multiMediaObjectSearchResult.setLinks(links);
+
+            enhanceSearchResultWithMatchInfo(multiMediaObjectSearchResult, hit);
+
             searchResultSet.addSearchResult(multiMediaObjectSearchResult);
         }
 

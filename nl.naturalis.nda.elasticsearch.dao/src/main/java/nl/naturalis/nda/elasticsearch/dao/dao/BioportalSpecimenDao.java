@@ -12,12 +12,10 @@ import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
-import nl.naturalis.nda.search.StringMatchInfo;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.highlight.HighlightField;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +45,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
-    // TODO: mark results in Taxon
     // TODO: mark results in BioportalTaxon
     // TODO: mark results in BioportalMultiMediaObjectDao
     // TODO: mark results in SpecimenDao
@@ -339,18 +336,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                 searchResult.setResult(specimen);
                 searchResult.addLink(new Link(SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID(), "_specimen"));
 
-                SearchHit hit = tempMapSearchHits.get(specimen);
-                if (hit.getHighlightFields() != null) {
-                    List<StringMatchInfo> stringMatchInfos = new ArrayList<>();
-                    for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {
-                        StringMatchInfo stringMatchInfo = new StringMatchInfo();
-                        stringMatchInfo.setPath(highlightFieldEntry.getKey());
-                        stringMatchInfo.setValueHighlighted(" " + Arrays.asList(highlightFieldEntry.getValue().fragments()));
-                        // TODO: setValue
-                        stringMatchInfos.add(stringMatchInfo);
-                    }
-                    searchResult.setMatchInfo(stringMatchInfos);
-                }
+                enhanceSearchResultWithMatchInfo(searchResult, tempMapSearchHits.get(specimen));
 
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {

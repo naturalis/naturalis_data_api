@@ -331,7 +331,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                 searchResult.setResult(specimen);
                 searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
 
-                enhanceSearchResultWithMatchInfo(searchResult, tempMapSearchHits.get(specimen));
+                enhanceSearchResultWithMatchInfoAndScore(searchResult, tempMapSearchHits.get(specimen));
 
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {

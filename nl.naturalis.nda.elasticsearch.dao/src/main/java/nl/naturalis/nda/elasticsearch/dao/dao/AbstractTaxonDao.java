@@ -59,7 +59,7 @@ public class AbstractTaxonDao extends AbstractDao {
             searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName()));
             searchResult.setResult(taxon);
 
-            enhanceSearchResultWithMatchInfo(searchResult, hit);
+            enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
             taxonSearchResultSet.addSearchResult(searchResult);
         }

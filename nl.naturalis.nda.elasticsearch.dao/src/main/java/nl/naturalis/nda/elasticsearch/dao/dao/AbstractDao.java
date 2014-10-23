@@ -580,7 +580,8 @@ public abstract class AbstractDao {
         }
     }
 
-    protected void enhanceSearchResultWithMatchInfo(SearchResult<?> searchResult, SearchHit hit) {
+    protected void enhanceSearchResultWithMatchInfoAndScore(SearchResult<?> searchResult, SearchHit hit) {
+        searchResult.setScore(hit.getScore());
         if (hit.getHighlightFields() != null) {
             List<StringMatchInfo> stringMatchInfos = new ArrayList<>();
             for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {

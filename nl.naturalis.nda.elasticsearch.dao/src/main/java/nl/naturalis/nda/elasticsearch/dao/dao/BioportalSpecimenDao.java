@@ -139,11 +139,15 @@ public class BioportalSpecimenDao extends AbstractDao {
      * nl.naturalis.nda.domain.Specimen} with the scientificName as the key
      */
     public ResultGroupSet<Specimen, String> specimenSearch(QueryParams params) {
+        return doSpecimenSearch(params, true);
+    }
+
+    private ResultGroupSet<Specimen, String> doSpecimenSearch(QueryParams params, boolean highlighting) {
         evaluateSimpleSearch(params, specimenSearchFieldNames, specimenSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, false);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting);
 
         return responseToSpecimenResultGroupSet(searchResponse, params);
     }
@@ -173,13 +177,17 @@ public class BioportalSpecimenDao extends AbstractDao {
      * @return
      */
     public ResultGroupSet<Specimen, String> specimenNameSearch(QueryParams params) {
+        return doSpecimenNameSearch(params, true);
+    }
+
+    private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
         evaluateSimpleSearch(params, specimenNameSearchFieldNames, specimenNameSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"),
-                                                                        bioportalTaxonDao, true);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, true, nameResQuery);
+                                                                        bioportalTaxonDao, highlighting);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery);
 
         return responseToSpecimenResultGroupSet(searchResponse, params);
     }
@@ -222,9 +230,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         String source = params.getParam("_source");
         ResultGroupSet<Specimen, String> specimenResultGroupSet = new ResultGroupSet<>();
         if (source.equals("SPECIMEN_NAME_SEARCH")) {
-            specimenResultGroupSet = specimenNameSearch(params);
+            specimenResultGroupSet = doSpecimenNameSearch(params, false);
         } else if (source.equals("SPECIMEN_SEARCH")) {
-            specimenResultGroupSet = specimenSearch(params);
+            specimenResultGroupSet = doSpecimenSearch(params, false);
         }
 
         return createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
@@ -240,8 +248,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         SearchResult<Specimen> foundSpecimenForUnitId = null;
         SearchResult<Specimen> previousSpecimen = null;
         SearchResult<Specimen> nextSpecimen = null;
-
-        // TODO: specimenResultGroupSet already contains MatchInfo. Make sure this get persisted in this method
 
         List<ResultGroup<Specimen, String>> allBuckets = specimenResultGroupSet.getResultGroups();
         for (int currentBucketIndex = 0; currentBucketIndex < allBuckets.size(); currentBucketIndex++) {

@@ -65,7 +65,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                 .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
-        params.add("gatheringEvent.gatheringPersons.fullName", "fsad_Meijer, W.");
+        params.add("gatheringEvent.gatheringPersons.fullName", "fsad_Meijer");
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
 

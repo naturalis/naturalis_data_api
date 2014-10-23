@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 public class SpecimenTypeStatus {
 
-    public static final SpecimenTypeStatus HOLOTYPE = new SpecimenTypeStatus("Holotype");
-    public static final SpecimenTypeStatus PARATYPE = new SpecimenTypeStatus("Paratype");
-    public static final SpecimenTypeStatus LECTOTYPE = new SpecimenTypeStatus("Lectotype");
-    public static final SpecimenTypeStatus PARALECTOTYPE = new SpecimenTypeStatus("Paralectotype");
+    public static final SpecimenTypeStatus HOLOTYPE = new SpecimenTypeStatus("holotype");
+    public static final SpecimenTypeStatus PARATYPE = new SpecimenTypeStatus("paratype");
+    public static final SpecimenTypeStatus LECTOTYPE = new SpecimenTypeStatus("lectotype");
+    public static final SpecimenTypeStatus PARALECTOTYPE = new SpecimenTypeStatus("paralectotype");
     /**
      * A type status assigned to a specimen if it is not known whether it's a
      * holotype, paratype, lectotype, etc., but it is known to be one of those.

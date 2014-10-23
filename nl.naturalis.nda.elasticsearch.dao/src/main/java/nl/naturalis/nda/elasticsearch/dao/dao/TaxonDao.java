@@ -11,25 +11,17 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SOURCE_SYSTEM_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_FULL_SCIENTIFIC_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_SPECIFIC_EPITHET;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 public class TaxonDao extends AbstractTaxonDao {
-
-    private static final Set<String> allowedTaxonFields = new HashSet<>(asList(
-            ACCEPTEDNAME_FULL_SCIENTIFIC_NAME,
-            ACCEPTEDNAME_GENUS_OR_MONOMIAL,
-            ACCEPTEDNAME_SPECIFIC_EPITHET,
-            ACCEPTEDNAME_INFRASPECIFIC_EPITHET,
-            SOURCE_SYSTEM_ID)
-    );
-
-    private static final Set<String> allowedTaxonFields_simpleSearchExceptions = Collections.emptySet();
 
     public TaxonDao(Client esClient, String ndaIndexName) {
         super(esClient, ndaIndexName);
@@ -43,7 +35,32 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
-        return search(params, allowedTaxonFields, allowedTaxonFields_simpleSearchExceptions, true);
+        String fullScientificName = params.getParam(ACCEPTEDNAME_FULL_SCIENTIFIC_NAME);
+        String genus = params.getParam(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
+        String specificEpithet = params.getParam(ACCEPTEDNAME_SPECIFIC_EPITHET);
+        String infraSpecificEpithet = params.getParam(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
+
+        boolean validArgument = hasText(fullScientificName) || (hasText(genus) && hasText(specificEpithet));
+        if (!validArgument) {
+            throw new IllegalArgumentException("In accepted name, there should be a full scientific name or a" +
+                    " genus and specific epithet.");
+        }
+
+        ScientificName scientificName = new ScientificName();
+        scientificName.setFullScientificName(fullScientificName);
+        scientificName.setGenusOrMonomial(genus);
+        scientificName.setSpecificEpithet(specificEpithet);
+        scientificName.setInfraspecificEpithet(infraSpecificEpithet);
+        return lookupTaxonForScientificName(scientificName);
+    }
+
+    SearchResultSet<Taxon> lookupTaxonForSystemSourceId(String sourceSystemId) {
+        if (!hasText(sourceSystemId)) {
+            return new SearchResultSet<>();
+        }
+        QueryParams params = new QueryParams();
+        params.add(SOURCE_SYSTEM_ID, sourceSystemId);
+        return search(params, Collections.singleton(SOURCE_SYSTEM_ID), Collections.<String>emptySet(), false);
     }
 
     /**
@@ -52,7 +69,7 @@ public class TaxonDao extends AbstractTaxonDao {
      * @param scientificName scientificName containing the information for the lookup
      * @return a SearchResultSet with the taxon if found
      */
-    public SearchResultSet<Taxon> lookupTaxonForScientificName(ScientificName scientificName) {
+    SearchResultSet<Taxon> lookupTaxonForScientificName(ScientificName scientificName) {
         String fullScientificName = scientificName.getFullScientificName();
         String genusOrMonomial = scientificName.getGenusOrMonomial();
         String specificEpithet = scientificName.getSpecificEpithet();
@@ -62,14 +79,10 @@ public class TaxonDao extends AbstractTaxonDao {
         if (hasText(fullScientificName)) {
             boolQueryBuilder.should(matchQuery(ACCEPTEDNAME_FULL_SCIENTIFIC_NAME, fullScientificName));
         }
-        if (hasText(genusOrMonomial) || hasText(specificEpithet) || hasText(infraspecificEpithet)) {
+        if (hasText(genusOrMonomial) && hasText(specificEpithet)) {
             BoolQueryBuilder acceptNameBoolQueryBuilder = boolQuery();
-            if (hasText(genusOrMonomial)) {
-                acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_GENUS_OR_MONOMIAL, genusOrMonomial));
-            }
-            if (hasText(specificEpithet)) {
-                acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_SPECIFIC_EPITHET, specificEpithet));
-            }
+            acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_GENUS_OR_MONOMIAL, genusOrMonomial));
+            acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_SPECIFIC_EPITHET, specificEpithet));
             if (hasText(infraspecificEpithet)) {
                 acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_INFRASPECIFIC_EPITHET, infraspecificEpithet));
             }

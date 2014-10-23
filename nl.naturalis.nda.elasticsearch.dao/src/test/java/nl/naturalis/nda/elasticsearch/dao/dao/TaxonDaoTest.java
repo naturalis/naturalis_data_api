@@ -5,10 +5,9 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
-import org.elasticsearch.action.get.GetRequestBuilder;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,6 +46,7 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         QueryParams params = new QueryParams();
         params.add("_andOr", "AND");
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
 
         SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(params);
 
@@ -108,6 +108,8 @@ public class TaxonDaoTest extends DaoIntegrationTest {
 
         QueryParams params = new QueryParams();
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
+        params.add("acceptedName.infraspecificEpithet", "otherValue");
         params.add("_offSet", "1");
 
         SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(params);

@@ -356,7 +356,6 @@ public class BioportalSpecimenDao extends AbstractDao {
                 if (identifications != null) {
                     for (SpecimenIdentification identification : identifications) {
                         SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(identification.getScientificName());
-                        // FIXME: should not result in highlighting
                         List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {

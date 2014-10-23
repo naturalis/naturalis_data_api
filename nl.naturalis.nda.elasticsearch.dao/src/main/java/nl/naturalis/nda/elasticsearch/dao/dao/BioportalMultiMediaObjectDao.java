@@ -243,10 +243,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     }
 
     private void addAssociatedTaxonLink(List<Link> links, MultiMediaObject multiMediaObject) {
-        QueryParams taxonParams = new QueryParams();
-        taxonParams.add(SOURCE_SYSTEM_ID, multiMediaObject.getAssociatedTaxonReference());
-
-        SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(taxonParams);
+        String sourceSystemId = multiMediaObject.getAssociatedTaxonReference();
+        SearchResultSet<Taxon> taxonDetail = taxonDao.lookupTaxonForSystemSourceId(sourceSystemId);
         if (taxonDetail.getSearchResults() != null && taxonDetail.getSearchResults().get(0) != null) {
             Taxon taxon = taxonDetail.getSearchResults().get(0).getResult();
             multiMediaObject.setAssociatedTaxon(taxon);

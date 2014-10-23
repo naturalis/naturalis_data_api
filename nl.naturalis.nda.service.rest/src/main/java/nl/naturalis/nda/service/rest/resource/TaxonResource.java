@@ -32,7 +32,7 @@ public class TaxonResource {
 
 	@GET
 	@POST
-	@Path("/detail")
+	@Path("/get-taxon")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SearchResultSet<Taxon> getTaxonDetail(@Context UriInfo request)
 	{
@@ -45,7 +45,7 @@ public class TaxonResource {
 
 	@GET
 	@POST
-	@Path("/within-result-set")
+	@Path("/get-taxon-within-result-set")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SearchResultSet<Taxon> getTaxonDetailWithinResultSet(@Context UriInfo request)
 	{
@@ -62,7 +62,7 @@ public class TaxonResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SearchResultSet<Taxon> search(@Context UriInfo request)
 	{
-		logger.debug("getTaxonDetailWithinResultSet");
+		logger.debug("search");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().taxonSearch(params);
 		return result;
@@ -75,7 +75,7 @@ public class TaxonResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SearchResultSet<Taxon> extendedSearch(@Context UriInfo request)
 	{
-		logger.debug("getTaxonDetailWithinResultSet");
+		logger.debug("extendedSearch");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().taxonSearch(params);
 		return result;

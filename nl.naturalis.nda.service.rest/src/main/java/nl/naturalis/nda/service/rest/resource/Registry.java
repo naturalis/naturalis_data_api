@@ -8,11 +8,12 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
+import nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectDao;
+import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
+import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
 import nl.naturalis.nda.service.rest.util.NDA;
-
-import org.elasticsearch.client.Client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConcurrencyManagement(BEAN)
 public class Registry {
 
-	private Client esClient;
 	private ObjectMapper objectMapper;
 	private NDA nda;
 
@@ -44,12 +44,21 @@ public class Registry {
 	}
 
 
-	public Client getESClient()
+	public SpecimenDao getSpecimenDao()
 	{
-		if (esClient == null) {
-			//esClient = NDA.getESClient();
-		}
-		return esClient;
+		return new SpecimenDao(nda.getESClient(), nda.getIndexName());
+	}
+
+
+	public BioportalSpecimenDao getBioportalSpecimenDao()
+	{
+		return new BioportalSpecimenDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(), getTaxonDao());
+	}
+
+
+	public BioportalMultiMediaObjectDao getBioportalMultiMediaObjectDao()
+	{
+		return new BioportalMultiMediaObjectDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(), getTaxonDao(), getSpecimenDao());
 	}
 
 

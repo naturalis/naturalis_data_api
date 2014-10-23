@@ -6,7 +6,6 @@ import javax.ejb.Stateless;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -14,6 +13,7 @@ import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.ejb.service.SpecimenService;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResultSet;
 
@@ -36,18 +36,54 @@ public class SpecimenResource {
 
 
 	@GET
-	@Path("/detail/{id}")
+	@POST
+	@Path("/get-specimen")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<Specimen> getSpecimenDetail(@PathParam("id") String unitID)
+	public SearchResultSet<Specimen> getSpecimenDetail(@Context UriInfo request)
 	{
-//		logger.debug(String.format("getSpecimenDetail(\"%s\")", unitID));
-//		SpecimenDao dao = new SpecimenDao(registry.getESClient(), "nda");
-//		SearchResultSet<Specimen> rs = dao.getDetail(unitID);
-//		if (rs == null) {
-//			throw new WebApplicationException(Status.NOT_FOUND);
-//		}
-//		return rs;
-		return null;
+		logger.debug("getSpecimenDetail");
+		String unitID = request.getQueryParameters().getFirst("unitID");
+		SearchResultSet<Specimen> result = registry.getSpecimenDao().getSpecimenDetail(unitID);
+		return result;
+	}
+
+
+	@GET
+	@POST
+	@Path("/get-specimen-within-result-set")
+	@Produces(MediaType.APPLICATION_JSON)
+	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSet(@Context UriInfo request)
+	{
+		logger.debug("getSpecimenDetailWithinResultSet");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
+		return result;
+	}
+
+
+	@GET
+	@POST
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultGroupSet<Specimen, String> search(@Context UriInfo request)
+	{
+		logger.debug("search");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+		return result;
+	}
+
+
+	@GET
+	@POST
+	@Path("/extended-search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultGroupSet<Specimen, String> extendedSearch(@Context UriInfo request)
+	{
+		logger.debug("extendedSearch");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+		return result;
 	}
 
 
@@ -57,10 +93,23 @@ public class SpecimenResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResultGroupSet<Specimen, String> nameSearch(@Context UriInfo request)
 	{
-//		QueryParams params = new QueryParams(request.getPathParameters(), request.getQueryParameters());
-//		BioportalSpecimenDao dao = new BioportalSpecimenDao(registry.getESClient(), "nda");
-//		ResultGroupSet<Specimen,String> result = dao.specimenNameSearch("", "");
-		return null;
+		logger.debug("nameSearch");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
+		return result;
+	}
+
+
+	@GET
+	@POST
+	@Path("/extended-name-search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultGroupSet<Specimen, String> extendedNameSearch(@Context UriInfo request)
+	{
+		logger.debug("extendedNameSearch");
+		QueryParams params = new QueryParams(request.getQueryParameters());
+		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
+		return result;
 	}
 
 }

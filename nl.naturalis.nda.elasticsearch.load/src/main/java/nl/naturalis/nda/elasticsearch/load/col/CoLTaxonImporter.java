@@ -108,6 +108,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.setSourceSystemId(val(record, CsvField.taxonID.ordinal()));
+		taxon.setTaxonRank(val(record, CsvField.taxonRank.ordinal()));
 
 		final ScientificName sn = new ScientificName();
 		taxon.setAcceptedName(sn);

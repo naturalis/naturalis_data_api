@@ -110,7 +110,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
         assertEquals(1, searchResults.get(0).getLinks().size());
-        assertEquals("_next", searchResults.get(0).getLinks().get(0).getHref());
+        assertEquals("_next", searchResults.get(0).getLinks().get(0).getRel());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         assertEquals(1, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
         assertEquals(1, searchResults.get(0).getLinks().size());
-        assertEquals("_previous", searchResults.get(0).getLinks().get(0).getHref());
+        assertEquals("_previous", searchResults.get(0).getLinks().get(0).getRel());
     }
 
     @Test
@@ -153,10 +153,10 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
         List<Link> links = searchResults.get(0).getLinks();
         assertEquals(2, links.size());
-        assertEquals("_previous", links.get(0).getHref());
-        assertTrue(links.get(0).getRel().contains("first"));
-        assertEquals("_next", links.get(1).getHref());
-        assertTrue(links.get(1).getRel().contains("last"));
+        assertEquals("_previous", links.get(0).getRel());
+        assertTrue(links.get(0).getHref().contains("first"));
+        assertEquals("_next", links.get(1).getRel());
+        assertTrue(links.get(1).getHref().contains("last"));
     }
 
     //================================================ Helper methods ==================================================

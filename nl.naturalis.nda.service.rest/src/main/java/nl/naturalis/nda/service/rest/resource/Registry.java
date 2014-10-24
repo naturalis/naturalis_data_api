@@ -13,6 +13,7 @@ import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
+import nl.naturalis.nda.service.rest.util.LogUtil;
 import nl.naturalis.nda.service.rest.util.NDA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,6 +75,7 @@ public class Registry {
 	@PostConstruct
 	public void init()
 	{
+		LogUtil.configureLogging();
 		nda = new NDA();
 	}
 

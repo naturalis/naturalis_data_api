@@ -17,8 +17,9 @@ import org.slf4j.LoggerFactory;
 
 public class NDA {
 
+	public static final String SYSPROP_CONFIG_DIR = "nl.naturalis.nda.conf.dir";
+	
 	private static final Logger logger = LoggerFactory.getLogger(NDA.class);
-	private static final String SYSPROP_CONFIG_DIR = "nl.naturalis.nda.conf.dir";
 	private static final String CONFIG_FILE_NAME = "nda.properties";
 
 	private final ConfigObject config;

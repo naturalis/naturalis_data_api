@@ -18,7 +18,7 @@ public class SearchParamFieldMapping {
 
     public static final String BOOST_SUFFIX = ".boost";
     public static final String NESTED_SUFFIX = ".nested.path";
-    private static final String NGRAM_SUFFIX = ".ngram";
+    public static final String NGRAM_SUFFIX = ".ngram";
 
     private static final List<String> EXCLUDED_PARAMS = new ArrayList<>();
 

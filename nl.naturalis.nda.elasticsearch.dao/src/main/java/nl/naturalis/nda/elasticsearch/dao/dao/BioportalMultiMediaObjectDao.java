@@ -8,6 +8,7 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
+import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;

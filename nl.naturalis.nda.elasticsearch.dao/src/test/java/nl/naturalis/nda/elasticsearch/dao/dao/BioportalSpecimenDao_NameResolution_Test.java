@@ -9,10 +9,13 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.StringMatchInfo;
 import org.junit.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
@@ -80,6 +83,42 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
         assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+    }
+
+    @Test
+    public void testSpecimenSearch_ngram_specimenDirectly_matchInfo() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("vernacularName", "aap");
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
+
+        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+
+        SearchResult<Specimen> searchResult = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
+        List<StringMatchInfo> matchInfos = searchResult.getMatchInfo();
+        assertEquals(1, matchInfos.size());
+        assertEquals("identifications.vernacularNames.name", matchInfos.get(0).getPath());
+        assertEquals("bos<span class=\"search_hit\">aap</span>", matchInfos.get(0).getValueHighlighted());
+    }
+
+    @Test
+    public void testSpecimenSearch_ngram_specimenDirectly_matchInfo_noDoubleHitOnFullTerm() throws Exception {
+        setupNameResolutionTest();
+
+        QueryParams params = new QueryParams();
+        params.add("vernacularName", "bosaap");
+
+        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
+
+        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+
+        SearchResult<Specimen> searchResult = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
+        List<StringMatchInfo> matchInfos = searchResult.getMatchInfo();
+        assertEquals(1, matchInfos.size());
+        assertEquals("identifications.vernacularNames.name", matchInfos.get(0).getPath());
+        assertEquals("<span class=\"search_hit\">bosaap</span>", matchInfos.get(0).getValueHighlighted());
     }
 
     @Test

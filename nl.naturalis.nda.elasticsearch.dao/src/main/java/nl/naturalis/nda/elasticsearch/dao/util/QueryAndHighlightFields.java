@@ -1,4 +1,4 @@
-package nl.naturalis.nda.elasticsearch.dao.dao;
+package nl.naturalis.nda.elasticsearch.dao.util;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;

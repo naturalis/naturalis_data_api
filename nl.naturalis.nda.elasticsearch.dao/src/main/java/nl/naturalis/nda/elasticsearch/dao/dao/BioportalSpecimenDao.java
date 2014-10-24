@@ -6,6 +6,7 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
+import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroup;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
+import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
 import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
@@ -54,8 +55,6 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIF
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_DATE_TIME_BEGIN;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_DATE_TIME_END;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
@@ -171,15 +170,21 @@ public abstract class AbstractDao {
 
         boolean atLeastOneFieldToQuery = false;
 
+        List<HighlightBuilder.Field> highlightFields =
+                prebuiltQuery == null || prebuiltQuery.getHighlightFields() == null
+                        || prebuiltQuery.getHighlightFields().isEmpty()
+                ? new ArrayList<HighlightBuilder.Field>()
+                : prebuiltQuery.getHighlightFields();
+
         for (String nestedPath : nestedFields.keySet()) {
             extendQueryWithNestedFieldsWithSameNestedPath(boolQueryBuilder, operator, nestedPath, nestedFields.get(
-                    nestedPath));
+                    nestedPath), highlightFields, highlighting);
             atLeastOneFieldToQuery = true;
         }
 
         for (FieldMapping field : nonNestedFields) {
             if (!field.getFieldName().contains("dateTime")) {
-                extendQueryWithField(boolQueryBuilder, operator, field);
+                extendQueryWithField(boolQueryBuilder, operator, field, highlightFields, highlighting);
                 atLeastOneFieldToQuery = true;
             }
         }
@@ -206,22 +211,10 @@ public abstract class AbstractDao {
         setSize(params, searchRequestBuilder);
 
         if (highlighting) {
-            for (FieldMapping fieldMapping : fields) {
-                String fieldValue = fieldMapping.getValue();
-                String fieldName = fieldMapping.getFieldName();
-                if (fieldValue != null
-                        && !GATHERINGEVENT_DATE_TIME_BEGIN.equals(fieldName)
-                        && !GATHERINGEVENT_DATE_TIME_END.equals(fieldName)) {
-                    searchRequestBuilder.addHighlightedField(createHighlightField(fieldName, fieldValue));
-                }
-            }
-            if (prebuiltQuery != null) {
-                for (HighlightBuilder.Field highlightField : prebuiltQuery.getHighlightFields()) {
-                    searchRequestBuilder.addHighlightedField(highlightField);
-                }
+            for (HighlightBuilder.Field highlightField : highlightFields) {
+                searchRequestBuilder.addHighlightedField(highlightField);
             }
             searchRequestBuilder.setHighlighterPreTags("<span class=\"search_hit\">").setHighlighterPostTags("</span>");
-            // TODO: add NGRAM query to highlighting
         }
 
         if (!atLeastOneFieldToQuery) {
@@ -350,11 +343,13 @@ public abstract class AbstractDao {
     }
 
     private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator,
-                                                               String nestedPath, List<FieldMapping> fields) {
+                                                               String nestedPath, List<FieldMapping> fields,
+                                                               List<HighlightBuilder.Field> highlightFields,
+                                                               boolean highlight) {
         BoolQueryBuilder nestedBoolQueryBuilder = boolQuery();
         for (FieldMapping field : fields) {
             if (!field.getFieldName().contains("dateTime")) {
-                extendQueryWithField(nestedBoolQueryBuilder, operator, field);
+                extendQueryWithField(nestedBoolQueryBuilder, operator, field, highlightFields, highlight);
             }
         }
 
@@ -363,19 +358,29 @@ public abstract class AbstractDao {
         extendQueryWithQuery(boolQueryBuilder, operator, nestedQueryBuilder);
     }
 
-    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field) {
+    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
+                                      List<HighlightBuilder.Field> highlightFields, boolean highlight) {
         if (field.getValue() != null) {
+            MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());
             Float boostValue = field.getBoostValue();
-            MatchQueryBuilder matchQueryBuilder = matchQuery(field.getFieldName(), field.getValue());
             if (boostValue != null) {
-                matchQueryBuilder.boost(boostValue);
+                fieldMatchQuery.boost(boostValue);
             }
+            extendQueryWithQuery(boolQueryBuilder, operator, fieldMatchQuery);
 
-            extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+            highlightFields.add(createHighlightField(field.getFieldName(),
+                    matchQuery(field.getFieldName(), field.getValue())));
 
             if (field.hasNGram() != null && field.hasNGram()) {
-                matchQueryBuilder = matchQuery(field.getFieldName() + ".ngram", field.getValue());
-                extendQueryWithQuery(boolQueryBuilder, operator, matchQueryBuilder);
+                MatchQueryBuilder ngramFieldMatchQuery = matchQuery(field.getFieldName() + ".ngram", field.getValue());
+                if (boostValue != null) {
+                    ngramFieldMatchQuery.boost(boostValue);
+                }
+                extendQueryWithQuery(boolQueryBuilder, operator, ngramFieldMatchQuery);
+                if (highlight) {
+                    highlightFields.add(createHighlightField(field.getFieldName() + ".ngram",
+                            matchQuery(field.getFieldName() + ".ngram", field.getValue())));
+                }
             }
         }
     }
@@ -543,14 +548,14 @@ public abstract class AbstractDao {
             MatchQueryBuilder localQuery = matchQuery(fieldName, fieldValue);
             query.must(localQuery);
             if (highlight) {
-                highlightFieldsContainer.addHighlightField(createHighlightField(fieldName, fieldValue));
+                highlightFieldsContainer.addHighlightField(createHighlightField(fieldName, localQuery));
             }
         }
     }
 
-    private HighlightBuilder.Field createHighlightField(String fieldName, String fieldValue) {
+    private HighlightBuilder.Field createHighlightField(String fieldName, QueryBuilder highlightQuery) {
         HighlightBuilder.Field field = new HighlightBuilder.Field(fieldName);
-        field.highlightQuery(matchQuery(fieldName, fieldValue));
+        field.highlightQuery(highlightQuery);
         return field;
     }
 
@@ -580,13 +585,16 @@ public abstract class AbstractDao {
     }
 
     protected void enhanceSearchResultWithMatchInfoAndScore(SearchResult<?> searchResult, SearchHit hit) {
+
         searchResult.setScore(hit.getScore());
+
         if (hit.getHighlightFields() != null) {
-            List<StringMatchInfo> stringMatchInfos = new ArrayList<>();
+            Map<String, StringMatchInfo> stringMatchInfos = new HashMap<>();
             for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {
                 StringMatchInfo stringMatchInfo = new StringMatchInfo();
 
-                stringMatchInfo.setPath(highlightFieldEntry.getKey());
+                String fieldName = getFieldName(highlightFieldEntry);
+                stringMatchInfo.setPath(fieldName);
 
                 StringBuilder match = new StringBuilder();
                 for (Text matchText : highlightFieldEntry.getValue().fragments()) {
@@ -595,9 +603,21 @@ public abstract class AbstractDao {
                 stringMatchInfo.setValueHighlighted(match.toString());
 
                 // TODO: setValue
-                stringMatchInfos.add(stringMatchInfo);
+                stringMatchInfos.put(fieldName, stringMatchInfo);
             }
-            searchResult.setMatchInfo(stringMatchInfos);
+            List<StringMatchInfo> stringMatchInfoList = new ArrayList<>(stringMatchInfos.size());
+            stringMatchInfoList.addAll(stringMatchInfos.values());
+            searchResult.setMatchInfo(stringMatchInfoList);
         }
+    }
+
+    private String getFieldName(Map.Entry<String, HighlightField> highlightFieldEntry) {
+        String key = highlightFieldEntry.getKey();
+
+        int lastIndexOfNgramSuffix = key.lastIndexOf(SearchParamFieldMapping.NGRAM_SUFFIX);
+        if (lastIndexOfNgramSuffix > 0) {
+            return key.substring(0, lastIndexOfNgramSuffix);
+        }
+        return key;
     }
 }

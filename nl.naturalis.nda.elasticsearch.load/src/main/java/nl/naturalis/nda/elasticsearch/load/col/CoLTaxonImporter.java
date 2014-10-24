@@ -113,7 +113,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		final ScientificName sn = new ScientificName();
 		taxon.setAcceptedName(sn);
 		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
-		sn.setGenusOrMonomial(val(record, CsvField.genus.ordinal()));
+		sn.setGenusOrMonomial(val(record, CsvField.genericName.ordinal()));
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
 		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
@@ -127,7 +127,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		dc.setOrder(val(record, CsvField.order.ordinal()));
 		dc.setSuperFamily(val(record, CsvField.superfamily.ordinal()));
 		dc.setFamily(val(record, CsvField.family.ordinal()));
-		dc.setGenus(val(record, CsvField.genus.ordinal()));
+		dc.setGenus(val(record, CsvField.genericName.ordinal()));
 		dc.setSubgenus(val(record, CsvField.subgenus.ordinal()));
 		dc.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		dc.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));

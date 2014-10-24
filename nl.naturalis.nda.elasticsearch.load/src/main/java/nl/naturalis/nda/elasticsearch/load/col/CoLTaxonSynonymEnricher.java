@@ -157,7 +157,7 @@ public class CoLTaxonSynonymEnricher {
 	{
 		final ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
-		sn.setGenusOrMonomial(val(record, CsvField.genus.ordinal()));
+		sn.setGenusOrMonomial(val(record, CsvField.genericName.ordinal()));
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
 		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));

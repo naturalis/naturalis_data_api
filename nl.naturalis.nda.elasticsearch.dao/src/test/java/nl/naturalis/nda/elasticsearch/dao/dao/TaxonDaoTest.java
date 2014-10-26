@@ -37,11 +37,14 @@ public class TaxonDaoTest extends DaoIntegrationTest {
                 .execute().actionGet();
 
         ESTaxon esTaxon = createTestTaxon();
-        IndexRequestBuilder indexRequestBuilder = client().prepareIndex(INDEX_NAME, TAXON_TYPE);
-        indexRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1")
+                .setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
 
         esTaxon.getAcceptedName().setGenusOrMonomial("otherValue");
-        indexRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "2")
+                .setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
         params.add("_andOr", "AND");
@@ -55,6 +58,38 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         List<SearchResult<Taxon>> searchResults = taxonDetail.getSearchResults();
         assertNotNull(searchResults);
         assertEquals(1, searchResults.size());
+        assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
+    }
+
+    @Test
+    public final void testTaxonSearch_singleValue_multipleResults() throws IOException {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
+                .setSource(getMapping("test-taxon-mapping.json"))
+                .execute().actionGet();
+
+        ESTaxon esTaxon = createTestTaxon();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1")
+                .setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
+
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "2")
+                .setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("_andOr", "AND");
+        params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
+
+        SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(params);
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        List<SearchResult<Taxon>> searchResults = taxonDetail.getSearchResults();
+        assertNotNull(searchResults);
+        assertEquals(2, searchResults.size());
         assertEquals("Hyphomonas", searchResults.get(0).getResult().getAcceptedName().getGenusOrMonomial());
     }
 

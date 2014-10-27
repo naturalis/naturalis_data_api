@@ -10,19 +10,6 @@ import java.util.List;
  */
 public class ScientificName {
 
-    //@formatter:off
-    public static enum TaxonomicStatus {
-        ACCEPTED_NAME,
-        AMBIGUOUS_SYNONYM,
-        MISAPPLIED_NAME,
-        MISSPELLED_NAME,
-        PROVISIONALLY_ACCEPTED,
-        SYNONYM,
-        BASIONYM,
-        HOMONYM
-    }
-    //@formatter:on
-
     private String fullScientificName;
     private TaxonomicStatus taxonomicStatus;
     private String genusOrMonomial;

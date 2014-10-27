@@ -12,9 +12,9 @@ import nl.naturalis.nda.domain.Organization;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.Reference;
 import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.ScientificName.TaxonomicStatus;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.TaxonDescription;
+import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
@@ -30,13 +30,13 @@ class NsrTaxonTransfer {
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<String, TaxonomicStatus>();
 
 	static {
-		translations.put("isValidNameOf", ScientificName.TaxonomicStatus.ACCEPTED_NAME);
-		translations.put("isSynonymOf", ScientificName.TaxonomicStatus.SYNONYM);
-		translations.put("isSynonymSLOf", ScientificName.TaxonomicStatus.SYNONYM);
-		translations.put("isBasionymOf", ScientificName.TaxonomicStatus.BASIONYM);
-		translations.put("isHomonymOf", ScientificName.TaxonomicStatus.HOMONYM);
-		translations.put("isMisspelledNameOf", ScientificName.TaxonomicStatus.MISSPELLED_NAME);
-		translations.put("isInvalidNameOf", ScientificName.TaxonomicStatus.MISAPPLIED_NAME);
+		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);
+		translations.put("isSynonymOf", TaxonomicStatus.SYNONYM);
+		translations.put("isSynonymSLOf", TaxonomicStatus.SYNONYM);
+		translations.put("isBasionymOf", TaxonomicStatus.BASIONYM);
+		translations.put("isHomonymOf", TaxonomicStatus.HOMONYM);
+		translations.put("isMisspelledNameOf", TaxonomicStatus.MISSPELLED_NAME);
+		translations.put("isInvalidNameOf", TaxonomicStatus.MISAPPLIED_NAME);
 	}
 
 

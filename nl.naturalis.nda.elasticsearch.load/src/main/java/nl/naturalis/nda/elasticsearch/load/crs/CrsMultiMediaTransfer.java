@@ -7,12 +7,13 @@ import java.util.List;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.Sex;
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.SpecimenTypeStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
+import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
@@ -20,6 +21,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class CrsMultiMediaTransfer {
+
+	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
+	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
 
@@ -35,13 +40,11 @@ public class CrsMultiMediaTransfer {
 		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
-		String s = val(recordElement, "dwc:lifeStage");
-		List<String> lifeStages = s == null ? null : Arrays.asList(s);
-		s = val(recordElement, "abcd:TypeStatus");
-		SpecimenTypeStatus typeStatus = SpecimenTypeStatus.forName(s);
-		s = val(recordElement, "abcd:Sex");
-		Sex sex = Sex.forName(s);
-		List<String> sexes = sex == null ? null : Arrays.asList(Sex.forName(s).toString());
+		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
+		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
+		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
+		String sex  = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
+		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
 			String title = val(mediaFileElement, "dc:title");
@@ -57,14 +60,11 @@ public class CrsMultiMediaTransfer {
 			mmo.setTitle(title);
 			mmo.setCaption(title);
 			mmo.setAssociatedSpecimenReference(associatedSpecimenReference);
-			mmo.setSpecimenTypeStatus(val(dcElement, "abcd:TypeStatus"));
+			mmo.setSpecimenTypeStatus(typeStatus);
 			mmo.setGatheringEvents(Arrays.asList(gatheringEvent));
 			mmo.setIdentifications(identifications);
 			mmo.setSexes(sexes);
-			if (typeStatus != null) {
-				mmo.setSpecimenTypeStatus(typeStatus.toString());
-			}
-			mmo.setPhasesOrStages(lifeStages);
+			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
 		}

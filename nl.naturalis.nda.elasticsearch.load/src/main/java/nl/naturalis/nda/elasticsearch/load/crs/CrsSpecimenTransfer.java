@@ -8,15 +8,16 @@ import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.Sex;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.SpecimenTypeStatus;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
+import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
@@ -24,6 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class CrsSpecimenTransfer {
+
+	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
+	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
 
@@ -40,13 +45,12 @@ public class CrsSpecimenTransfer {
 		specimen.setRecordBasis(val(recordElement, "abcd:RecordBasis"));
 		specimen.setKindOfUnit(val(recordElement, "abcd:KindOfUnit"));
 		specimen.setCollectionType(val(recordElement, "abcd:CollectionType"));
-		specimen.setPhaseOrStage(val(recordElement, "abcd:PhaseOrStage"));
 		specimen.setTitle(val(recordElement, "abcd:Title"));
 		specimen.setNumberOfSpecimen(ival(recordElement, "abcd:AccessionSpecimenNumbers"));
 		String s = val(recordElement, "abcd:ObjectPublic");
-		specimen.setObjectPublic(s != null && s.trim().equals("1"));
+		specimen.setObjectPublic(s == null || s.trim().equals("1"));
 		s = val(recordElement, "abcd:MultiMediaPublic");
-		specimen.setMultiMediaPublic(s != null && s.trim().equals("1"));
+		specimen.setMultiMediaPublic(s == null || s.trim().equals("1"));
 		s = val(recordElement, "abcd:FromCaptivity");
 		specimen.setFromCaptivity(s != null && s.trim().equals("1"));
 		s = val(recordElement, "abcd:PreparationType");
@@ -54,16 +58,9 @@ public class CrsSpecimenTransfer {
 			s = val(recordElement, "abcd:SpecimenMount");
 		}
 		specimen.setPreparationType(s);
-		s = val(recordElement, "abcd:TypeStatus");
-		SpecimenTypeStatus typeStatus = SpecimenTypeStatus.forName(s);
-		if (typeStatus != null) {
-			specimen.setTypeStatus(typeStatus.toString());
-		}
-		s = val(recordElement, "abcd:Sex");
-		Sex sex = Sex.forName(s);
-		if (sex != null) {
-			specimen.setSex(Sex.forName(s).toString());
-		}
+		specimen.setPhaseOrStage(phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "abcd:PhaseOrStage")));
+		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus")));
+		specimen.setSex(sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex")));
 		List<Element> determinationElements = DOMUtil.getChildren(recordElement, "ncrsDetermination");
 		for (Element e : determinationElements) {
 			specimen.addIndentification(transferIdentification(e));

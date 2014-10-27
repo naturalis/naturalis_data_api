@@ -3,6 +3,6 @@ homonym;homonym
 synonym;synonym
 ambiguous synonym;synonym
 misapplied name;synonym
-accepted name;valid name
-accepted name;valid name
-provisionally accepted name;valid name
+accepted name;accepted name
+valid name;valid name
+provisionally accepted name;accepted name

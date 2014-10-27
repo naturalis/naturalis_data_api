@@ -8,11 +8,13 @@ import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.Reference;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
+
 import org.junit.*;
 
 import java.io.IOException;
@@ -137,7 +139,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
 
             ScientificName scientificName = new ScientificName();
             {
-                scientificName.setTaxonomicStatus(ScientificName.TaxonomicStatus.ACCEPTED_NAME);
+                scientificName.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
                 scientificName.setGenusOrMonomial(GENUS_TRICHOLOMOPSIS);
                 scientificName.setSpecificEpithet(EPITHET_RUTILANS);
                 scientificName.setAuthor("(Schaeff.:Fr.) Singer");

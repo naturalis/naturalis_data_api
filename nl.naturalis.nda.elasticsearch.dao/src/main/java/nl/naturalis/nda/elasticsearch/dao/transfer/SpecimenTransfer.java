@@ -37,7 +37,6 @@ public class SpecimenTransfer {
 		specimen.setAcquiredFrom(esSpecimen.getAcquiredFrom());
 		specimen.setIdentifications(esSpecimen.getIdentifications());
 		specimen.setGatheringEvent(GatheringEventTransfer.transfer(esSpecimen.getGatheringEvent()));
-
 		return specimen;
 	}
 }

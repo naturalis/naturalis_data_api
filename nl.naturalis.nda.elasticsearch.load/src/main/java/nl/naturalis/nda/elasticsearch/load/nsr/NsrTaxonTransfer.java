@@ -28,6 +28,7 @@ class NsrTaxonTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonTransfer.class);
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<String, TaxonomicStatus>();
+	
 /*
 	static {
 		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);
@@ -38,6 +39,10 @@ class NsrTaxonTransfer {
 		translations.put("isMisspelledNameOf", TaxonomicStatus.MISSPELLED_NAME);
 		translations.put("isInvalidNameOf", TaxonomicStatus.MISAPPLIED_NAME);
 	}
+	
+	TaxonomicStatus has a richer set of possible statuses than actually used
+	when importing (misspelled names and invalid names are simply mapped to
+	synonym)
 */
 	static {
 		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);

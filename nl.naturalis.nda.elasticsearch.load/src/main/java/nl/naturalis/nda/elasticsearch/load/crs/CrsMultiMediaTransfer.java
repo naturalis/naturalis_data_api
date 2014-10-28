@@ -49,6 +49,11 @@ public class CrsMultiMediaTransfer {
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
+			String url = val(mediaFileElement, "abcd:fileuri");
+			if(url == null) {
+				logger.info("No Image URL for record with identifier " + val(recordElement, "identifier"));
+				continue;
+			}
 			String title = val(mediaFileElement, "dc:title");
 			if (title == null) {
 				logger.error("Missing title for record with identifier " + val(recordElement, "identifier"));
@@ -69,7 +74,6 @@ public class CrsMultiMediaTransfer {
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
-			String url = val(mediaFileElement, "abcd:url");
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 		}
 		return mmos;

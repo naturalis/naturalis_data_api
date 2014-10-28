@@ -8,6 +8,7 @@ import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.TaxonDescription;
+import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
@@ -117,6 +118,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
 		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
+		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
 
 		final DefaultClassification dc = new DefaultClassification();
 		taxon.setDefaultClassification(dc);

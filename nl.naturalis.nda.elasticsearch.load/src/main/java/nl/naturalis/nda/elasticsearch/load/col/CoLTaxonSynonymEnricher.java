@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter.CsvField;
+import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -47,6 +49,7 @@ public class CoLTaxonSynonymEnricher {
 		}
 	}
 
+	private static final TaxonomicStatusNormalizer statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonSynonymEnricher.class);
 
 	private final Index index;
@@ -161,6 +164,8 @@ public class CoLTaxonSynonymEnricher {
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
 		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
+		TaxonomicStatus status = statusNormalizer.getEnumConstant(val(record, CsvField.scientificNameAuthorship.ordinal()));
+		sn.setTaxonomicStatus(status);
 		return sn;
 	}
 

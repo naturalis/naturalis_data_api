@@ -164,7 +164,7 @@ public class CoLTaxonSynonymEnricher {
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
 		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
-		TaxonomicStatus status = statusNormalizer.getEnumConstant(val(record, CsvField.scientificNameAuthorship.ordinal()));
+		TaxonomicStatus status = statusNormalizer.getEnumConstant(val(record, CsvField.taxonomicStatus.ordinal()));
 		sn.setTaxonomicStatus(status);
 		return sn;
 	}

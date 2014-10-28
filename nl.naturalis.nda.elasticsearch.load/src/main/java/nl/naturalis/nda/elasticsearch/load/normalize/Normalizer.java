@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.io.StringReader;
 import java.util.HashMap;
 
 public class Normalizer<T extends Enum<T>> {
@@ -21,9 +22,9 @@ public class Normalizer<T extends Enum<T>> {
 	}
 
 
-	public void loadMappings(File mappingFile)
+	public void loadMappings(File translationFile)
 	{
-		try (LineNumberReader lnr = new LineNumberReader(new FileReader(mappingFile))) {
+		try (LineNumberReader lnr = new LineNumberReader(new FileReader(translationFile))) {
 			if (skipHeader) {
 				lnr.readLine();
 			}
@@ -31,7 +32,28 @@ public class Normalizer<T extends Enum<T>> {
 			while ((line = lnr.readLine()) != null) {
 				String[] parts = line.split(delimiter);
 				if (parts.length != 2) {
-					throw new RuntimeException(String.format("Invalid mapping in file %s: \"%s\"", mappingFile.getAbsolutePath(), line));
+					throw new RuntimeException(String.format("Invalid mapping in file %s: \"%s\"", translationFile.getAbsolutePath(), line));
+				}
+				mappings.put(parts[0].toLowerCase(), parts[1]);
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void loadMappings(String translations)
+	{
+		try {
+			LineNumberReader lnr = new LineNumberReader(new StringReader(translations));
+			if (skipHeader) {
+				lnr.readLine();
+			}
+			String line;
+			while ((line = lnr.readLine()) != null) {
+				String[] parts = line.split(delimiter);
+				if (parts.length != 2) {
+					throw new RuntimeException(String.format("Invalid mapping: \"%s\"", line));
 				}
 				mappings.put(parts[0].toLowerCase(), parts[1]);
 			}

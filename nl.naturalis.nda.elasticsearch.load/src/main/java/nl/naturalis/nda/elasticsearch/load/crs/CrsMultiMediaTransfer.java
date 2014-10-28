@@ -7,7 +7,9 @@ import java.util.List;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.ServiceAccessPoint;
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.ServiceAccessPoint.Variant;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
@@ -67,6 +69,8 @@ public class CrsMultiMediaTransfer {
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
+			String url = val(mediaFileElement, "abcd:url");
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 		}
 		return mmos;
 	}

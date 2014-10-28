@@ -29,7 +29,7 @@ public class ServiceAccessPoint {
 
 	public ServiceAccessPoint(String uri, String format, Variant variant)
 	{
-		this.accessUri = URI.create("file://" + uri);
+		this.accessUri = URI.create(uri);
 		this.format = format;
 		this.variant = variant;
 	}

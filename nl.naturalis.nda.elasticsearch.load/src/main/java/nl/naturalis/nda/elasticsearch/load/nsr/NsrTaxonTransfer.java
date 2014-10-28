@@ -28,7 +28,7 @@ class NsrTaxonTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonTransfer.class);
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<String, TaxonomicStatus>();
-
+/*
 	static {
 		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);
 		translations.put("isSynonymOf", TaxonomicStatus.SYNONYM);
@@ -37,6 +37,16 @@ class NsrTaxonTransfer {
 		translations.put("isHomonymOf", TaxonomicStatus.HOMONYM);
 		translations.put("isMisspelledNameOf", TaxonomicStatus.MISSPELLED_NAME);
 		translations.put("isInvalidNameOf", TaxonomicStatus.MISAPPLIED_NAME);
+	}
+*/
+	static {
+		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);
+		translations.put("isSynonymOf", TaxonomicStatus.SYNONYM);
+		translations.put("isSynonymSLOf", TaxonomicStatus.SYNONYM);
+		translations.put("isBasionymOf", TaxonomicStatus.BASIONYM);
+		translations.put("isHomonymOf", TaxonomicStatus.HOMONYM);
+		translations.put("isMisspelledNameOf", TaxonomicStatus.SYNONYM);
+		translations.put("isInvalidNameOf", TaxonomicStatus.SYNONYM);
 	}
 
 

@@ -26,6 +26,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -165,8 +166,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 	//@formatter:on
 
-	static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
-	static final String ID_PREFIX = "BRAHMS-";
+	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
+	private static final String ID_PREFIX = "BRAHMS-";
 
 	private final boolean rename;
 
@@ -232,6 +234,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setRecordBasis("PreservedSpecimen");
 		specimen.setAssemblageID(ID_PREFIX + val(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
+		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		String notOnline = val(record, CsvField.NOTONLINE.ordinal());
 		if (notOnline == null || notOnline.equals("0")) {
 			specimen.setObjectPublic(true);
@@ -454,6 +457,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
 		}
 	}
+
 
 	private static Double dget(CSVRecord record, int field)
 	{

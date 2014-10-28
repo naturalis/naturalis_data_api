@@ -29,6 +29,8 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.apache.commons.csv.CSVRecord;
@@ -64,8 +66,9 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		}
 	}
 
-	static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
-	static final String ID_PREFIX = "BRAHMS-";
+	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
+	private static final String ID_PREFIX = "BRAHMS-";
 
 	private final boolean rename;
 
@@ -159,6 +162,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setDescription(val(record, PLANTDESC.ordinal()));
 		mmo.setGatheringEvents(Arrays.asList(BrahmsSpecimensImporter.getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
+		mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		try {
 			URI uri = new URI(imageUrl);
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));

@@ -80,9 +80,9 @@ public abstract class AbstractDao {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
     public static final String BASE_URL = "http://10.42.1.149:8080/nl.naturalis.nda.service.rest/api";
-    public static final String TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/detail/?acceptedName=";
-    public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/detail/?unitID=";
-    public static final String MULTIMEDIA_DETAIL_BASE_URL = BASE_URL + "/multimedia/detail/?unitID=";
+    public static final String TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/get-taxon/?acceptedName.fullScientificName=";
+    public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/get-specimen/?unitID=";
+    public static final String MULTIMEDIA_DETAIL_BASE_URL = BASE_URL + "/multimedia/get-multimedia/?unitID=";
 
     private static ObjectMapper objectMapper;
     private SearchParamFieldMapping searchParamFieldMapping;

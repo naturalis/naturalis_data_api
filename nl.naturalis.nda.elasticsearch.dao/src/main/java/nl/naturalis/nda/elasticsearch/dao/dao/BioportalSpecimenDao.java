@@ -360,17 +360,20 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer) {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
-        SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
-                                                          .setQuery(filteredQuery(matchAllQuery(), boolFilter()
-                                                                  .must(termFilter(ASSEMBLAGE_ID,
-                                                                          transfer.getAssemblageID()))
-                                                                  .mustNot(termFilter(UNIT_ID, transfer.getUnitID()))))
-                                                          .execute().actionGet();
-        SearchHits hits = searchResponse.getHits();
-        for (SearchHit searchHitFields : hits) {
-            ESSpecimen esSpecimenWithSameAssemblageId = getObjectMapper().convertValue(searchHitFields.getSource(),
-                                                                                       ESSpecimen.class);
-            specimensWithSameAssemblageId.add(SpecimenTransfer.transfer(esSpecimenWithSameAssemblageId));
+        String assemblageID = transfer.getAssemblageID();
+        if(assemblageID != null) {
+            SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
+                    .setQuery(filteredQuery(matchAllQuery(), boolFilter()
+                            .must(termFilter(ASSEMBLAGE_ID,
+                                    assemblageID))
+                            .mustNot(termFilter(UNIT_ID, transfer.getUnitID()))))
+                    .execute().actionGet();
+            SearchHits hits = searchResponse.getHits();
+            for (SearchHit searchHitFields : hits) {
+                ESSpecimen esSpecimenWithSameAssemblageId = getObjectMapper().convertValue(searchHitFields.getSource(),
+                        ESSpecimen.class);
+                specimensWithSameAssemblageId.add(SpecimenTransfer.transfer(esSpecimenWithSameAssemblageId));
+            }
         }
         return specimensWithSameAssemblageId;
     }

@@ -24,7 +24,7 @@
             "taxonRank": {
                 "type": "string"
             },
-            "identifyingEpithets" {
+            "identifyingEpithets" : {
             	"type": "string",
             	"index": "not_analyzed"
             },

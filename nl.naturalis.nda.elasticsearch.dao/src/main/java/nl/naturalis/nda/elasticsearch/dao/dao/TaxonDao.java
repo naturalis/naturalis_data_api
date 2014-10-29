@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
+import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -11,6 +12,9 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SOURCE_SYSTEM_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_FULL_SCIENTIFIC_NAME;
@@ -35,10 +39,11 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
-        String fullScientificName = params.getParam(ACCEPTEDNAME_FULL_SCIENTIFIC_NAME);
-        String genus = params.getParam(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
-        String specificEpithet = params.getParam(ACCEPTEDNAME_SPECIFIC_EPITHET);
-        String infraSpecificEpithet = params.getParam(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
+        Map<String, String> fields = fieldNamesToValues(params);
+        String fullScientificName = fields.get(ACCEPTEDNAME_FULL_SCIENTIFIC_NAME);
+        String genus = fields.get(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
+        String specificEpithet = fields.get(ACCEPTEDNAME_SPECIFIC_EPITHET);
+        String infraSpecificEpithet = fields.get(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
 
         boolean validArgument = hasText(fullScientificName) || (hasText(genus) && hasText(specificEpithet));
         if (!validArgument) {
@@ -95,5 +100,18 @@ public class TaxonDao extends AbstractTaxonDao {
 
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
         return responseToTaxonSearchResultSet(searchResponse, new QueryParams());
+    }
+
+    private Map<String, String> fieldNamesToValues(QueryParams params) {
+        List<FieldMapping> mappingsForFields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
+        Map<String, String> map = new HashMap<>();
+        for (FieldMapping fieldMapping : mappingsForFields) {
+            String fieldName = fieldMapping.getFieldName();
+            String value = fieldMapping.getValue();
+            if (hasText(fieldName) && hasText(value)) {
+                map.put(fieldName, value);
+            }
+        }
+        return map;
     }
 }

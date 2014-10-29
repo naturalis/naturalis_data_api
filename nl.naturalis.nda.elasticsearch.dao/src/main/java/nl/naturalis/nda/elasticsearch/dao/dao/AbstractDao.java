@@ -415,7 +415,7 @@ public abstract class AbstractDao {
         if (sortParam != null && !sortParam.isEmpty()) {
             String sort = sortParam.get(0);
             if (sort == null || sort.trim().equalsIgnoreCase("")) {
-                sortField = "_score";
+                sortField = sort;
             }
         }
         return sortField;

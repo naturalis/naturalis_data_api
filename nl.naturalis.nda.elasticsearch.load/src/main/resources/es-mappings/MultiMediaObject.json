@@ -124,6 +124,10 @@
                     }
                 }
             },
+            "identifyingEpithets" : {
+                "type": "string",
+                "index": "not_analyzed"            	
+            },
             "identifications" : {
                 "type" : "nested",
                 "properties" : {

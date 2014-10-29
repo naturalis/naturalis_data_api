@@ -15,10 +15,12 @@ import java.util.List;
 import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
 
 public class BioportalTaxonDao extends AbstractTaxonDao {
 
     private static final Set<String> allowedFieldNamesForSearch = new HashSet<>(Arrays.asList(
+            IDENTIFYING_EPITHETS,
             ACCEPTEDNAME_GENUS_OR_MONOMIAL,
             ACCEPTEDNAME_SUBGENUS,
             ACCEPTEDNAME_SPECIFIC_EPITHET,
@@ -138,12 +140,14 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
                 }
 
                 if (previousTaxon != null) {
-                    result.addLink(new Link("_previous", TAXON_DETAIL_BASE_URL + previousTaxon.getResult().getAcceptedName()
-                            .getFullScientificName()));
+                    result.addLink(new Link("_previous", TAXON_DETAIL_BASE_URL_IN_RESULT_SET +
+                            createIdentifyingEpithet(previousTaxon.getResult()) +
+                            queryParamsToUrl(params)));
                 }
                 if (nextTaxon != null) {
-                    result.addLink(new Link("_next", TAXON_DETAIL_BASE_URL + nextTaxon.getResult().getAcceptedName()
-                            .getFullScientificName()));
+                    result.addLink(new Link("_next", TAXON_DETAIL_BASE_URL_IN_RESULT_SET +
+                            createIdentifyingEpithet(nextTaxon.getResult()) +
+                            queryParamsToUrl(params)));
                 }
 
                 detailResultSet.addSearchResult(result);
@@ -161,5 +165,15 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         scientificName.setSpecificEpithet(specificEpithet);
         scientificName.setInfraspecificEpithet(infraspecificEpithet);
         return scientificName;
+    }
+
+    private String createIdentifyingEpithet(Taxon taxon) {
+        return taxon.getAcceptedName().getGenusOrMonomial() +
+                IDENTIFYING_EPITHETS_DELIMITER +
+                taxon.getAcceptedName().getSubgenus() +
+                IDENTIFYING_EPITHETS_DELIMITER +
+                taxon.getAcceptedName().getSpecificEpithet() +
+                IDENTIFYING_EPITHETS_DELIMITER +
+                taxon.getAcceptedName().getInfraspecificEpithet();
     }
 }

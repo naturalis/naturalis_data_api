@@ -13,6 +13,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
@@ -33,10 +34,10 @@ public class AbstractTaxonDao extends AbstractDao {
      * <p/>
      * Evaluates simple search parameter.
      *
-     * @param params            search parameters
-     * @param allowedFieldNames may be null if you don't want filtering
+     * @param params                          search parameters
+     * @param allowedFieldNames               may be null if you don't want filtering
      * @param simpleSearchFieldNameExceptions
-     * @param highlighting  @return search results
+     * @param highlighting                    @return search results
      */
     SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames,
                                   Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
@@ -56,7 +57,8 @@ public class AbstractTaxonDao extends AbstractDao {
 
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
-            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName()));
+            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL_IN_RESULT_SET + esTaxon.getIdentifyingEpithets() +
+                            queryParamsToUrl(params)));
             searchResult.setResult(taxon);
 
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);

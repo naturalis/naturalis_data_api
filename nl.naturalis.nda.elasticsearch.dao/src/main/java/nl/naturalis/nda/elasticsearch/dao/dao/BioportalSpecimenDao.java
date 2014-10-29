@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static nl.naturalis.nda.elasticsearch.dao.dao.AbstractDao.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.ASSEMBLAGE_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.COLLECTORS_FIELD_NUMBER;
@@ -179,7 +180,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"),
-                                                                        bioportalTaxonDao, highlighting);
+                bioportalTaxonDao, highlighting);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery);
 
         return responseToSpecimenResultGroupSet(searchResponse, params);
@@ -254,7 +255,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                     if (indexInCurrentBucket == 0) {
                         if (currentBucketIndex != 0) {
                             List<SearchResult<Specimen>> previousBucket = allBuckets.get(currentBucketIndex - 1)
-                                                                                    .getSearchResults();
+                                    .getSearchResults();
                             previousSpecimen = previousBucket.get(previousBucket.size() - 1);
                         }
                     } else {
@@ -264,7 +265,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                     if (indexInCurrentBucket == resultsInBucket.size() - 1) {
                         if (currentBucketIndex != allBuckets.size() - 1) {
                             List<SearchResult<Specimen>> nextBucket = allBuckets.get(currentBucketIndex + 1)
-                                                                                .getSearchResults();
+                                    .getSearchResults();
                             nextSpecimen = nextBucket.get(0);
                         }
                     } else {
@@ -279,10 +280,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         if (previousSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL + previousSpecimen.getResult().getUnitID()));
+            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
         }
         if (nextSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL + nextSpecimen.getResult().getUnitID()));
+            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
@@ -361,7 +362,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer) {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
         String assemblageID = transfer.getAssemblageID();
-        if(assemblageID != null) {
+        if (assemblageID != null) {
             SearchResponse searchResponse = newSearchRequest().setTypes(SPECIMEN_TYPE)
                     .setQuery(filteredQuery(matchAllQuery(), boolFilter()
                             .must(termFilter(ASSEMBLAGE_ID,

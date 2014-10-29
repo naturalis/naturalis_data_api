@@ -71,6 +71,7 @@ public class ESConstants {
         }
 
         public static class TaxonFields {
+            public static final String IDENTIFYING_EPITHETS = "identifyingEpithets";
             public static final String ACCEPTEDNAME_FULL_SCIENTIFIC_NAME = "acceptedName.fullScientificName";
             public static final String ACCEPTEDNAME_GENUS_OR_MONOMIAL = "acceptedName.genusOrMonomial";
             public static final String ACCEPTEDNAME_SUBGENUS = "acceptedName.subgenus";

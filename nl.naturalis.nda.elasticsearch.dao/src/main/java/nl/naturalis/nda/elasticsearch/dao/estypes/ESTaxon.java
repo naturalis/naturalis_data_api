@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.estypes;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Expert;
 import nl.naturalis.nda.domain.Monomial;
@@ -14,157 +15,201 @@ import java.util.List;
 
 public class ESTaxon extends NdaTraceableObject {
 
-    private String sourceSystemParentId;
+	private String sourceSystemParentId;
 
-    private String taxonRank;
-    private ScientificName acceptedName;
+	private String taxonRank;
+	private ScientificName acceptedName;
+	private String identifyingEpithets;
 
-    private DefaultClassification defaultClassification;
-    private List<Monomial> systemClassification;
+	private DefaultClassification defaultClassification;
+	private List<Monomial> systemClassification;
 
-    private List<ScientificName> synonyms;
-    private List<VernacularName> vernacularNames;
-    private List<TaxonDescription> descriptions;
-    private List<Reference> references;
-    private List<Expert> experts;
-
-
-    public void addSynonym(ScientificName synonym) {
-        if (synonyms == null) {
-            synonyms = new ArrayList<>();
-        }
-        synonyms.add(synonym);
-    }
+	private List<ScientificName> synonyms;
+	private List<VernacularName> vernacularNames;
+	private List<TaxonDescription> descriptions;
+	private List<Reference> references;
+	private List<Expert> experts;
 
 
-    public void addMonomial(Monomial monomial) {
-        if (systemClassification == null) {
-            systemClassification = new ArrayList<>();
-        }
-        systemClassification.add(monomial);
-    }
+	public void addSynonym(ScientificName synonym)
+	{
+		if (synonyms == null) {
+			synonyms = new ArrayList<>();
+		}
+		synonyms.add(synonym);
+	}
 
 
-    public void addVernacularName(VernacularName name) {
-        if (vernacularNames == null) {
-            vernacularNames = new ArrayList<>();
-        }
-        vernacularNames.add(name);
-    }
+	public void addMonomial(Monomial monomial)
+	{
+		if (systemClassification == null) {
+			systemClassification = new ArrayList<>();
+		}
+		systemClassification.add(monomial);
+	}
 
 
-    public void addReference(Reference reference) {
-        if (references == null) {
-            references = new ArrayList<>();
-        }
-        references.add(reference);
-    }
+	public void addVernacularName(VernacularName name)
+	{
+		if (vernacularNames == null) {
+			vernacularNames = new ArrayList<>();
+		}
+		vernacularNames.add(name);
+	}
 
 
-    public void addDescription(TaxonDescription description) {
-        if (descriptions == null) {
-            descriptions = new ArrayList<>();
-        }
-        descriptions.add(description);
-    }
+	public void addReference(Reference reference)
+	{
+		if (references == null) {
+			references = new ArrayList<>();
+		}
+		references.add(reference);
+	}
 
 
-    public String getSourceSystemParentId() {
-        return sourceSystemParentId;
-    }
+	public void addDescription(TaxonDescription description)
+	{
+		if (descriptions == null) {
+			descriptions = new ArrayList<>();
+		}
+		descriptions.add(description);
+	}
 
 
-    public void setSourceSystemParentId(String sourceSystemParentId) {
-        this.sourceSystemParentId = sourceSystemParentId;
-    }
+	public String getSourceSystemParentId()
+	{
+		return sourceSystemParentId;
+	}
 
 
-    public String getTaxonRank() {
-        return taxonRank;
-    }
+	public void setSourceSystemParentId(String sourceSystemParentId)
+	{
+		this.sourceSystemParentId = sourceSystemParentId;
+	}
 
 
-    public void setTaxonRank(String taxonRank) {
-        this.taxonRank = taxonRank;
-    }
+	public String getTaxonRank()
+	{
+		return taxonRank;
+	}
 
 
-    public ScientificName getAcceptedName() {
-        return acceptedName;
-    }
+	public void setTaxonRank(String taxonRank)
+	{
+		this.taxonRank = taxonRank;
+	}
 
 
-    public void setAcceptedName(ScientificName acceptedName) {
-        this.acceptedName = acceptedName;
-    }
+	public ScientificName getAcceptedName()
+	{
+		return acceptedName;
+	}
 
 
-    public DefaultClassification getDefaultClassification() {
-        return defaultClassification;
-    }
+	public void setAcceptedName(ScientificName acceptedName)
+	{
+		this.acceptedName = acceptedName;
+		//@formatter:off
+        String identifier = 
+        		acceptedName.getGenusOrMonomial() +
+        		IDENTIFYING_EPITHETS_DELIMITER +
+        		acceptedName.getSubgenus() +
+        		IDENTIFYING_EPITHETS_DELIMITER +
+        		acceptedName.getSpecificEpithet() +
+        		IDENTIFYING_EPITHETS_DELIMITER +
+        		acceptedName.getInfraspecificEpithet();
+        //@formatter:on
+		this.identifyingEpithets = identifier;
+	}
 
 
-    public void setDefaultClassification(DefaultClassification defaultClassification) {
-        this.defaultClassification = defaultClassification;
-    }
+	public String getIdentifyingEpithets()
+	{
+		return identifyingEpithets;
+	}
 
 
-    public List<Monomial> getSystemClassification() {
-        return systemClassification;
-    }
+	public DefaultClassification getDefaultClassification()
+	{
+		return defaultClassification;
+	}
 
 
-    public void setSystemClassification(List<Monomial> systemClassification) {
-        this.systemClassification = systemClassification;
-    }
+	public void setDefaultClassification(DefaultClassification defaultClassification)
+	{
+		this.defaultClassification = defaultClassification;
+	}
 
 
-    public List<ScientificName> getSynonyms() {
-        return synonyms;
-    }
+	public List<Monomial> getSystemClassification()
+	{
+		return systemClassification;
+	}
 
 
-    public void setSynonyms(List<ScientificName> synonyms) {
-        this.synonyms = synonyms;
-    }
+	public void setSystemClassification(List<Monomial> systemClassification)
+	{
+		this.systemClassification = systemClassification;
+	}
 
 
-    public List<VernacularName> getVernacularNames() {
-        return vernacularNames;
-    }
+	public List<ScientificName> getSynonyms()
+	{
+		return synonyms;
+	}
 
 
-    public void setVernacularNames(List<VernacularName> vernacularNames) {
-        this.vernacularNames = vernacularNames;
-    }
+	public void setSynonyms(List<ScientificName> synonyms)
+	{
+		this.synonyms = synonyms;
+	}
 
 
-    public List<TaxonDescription> getDescriptions() {
-        return descriptions;
-    }
+	public List<VernacularName> getVernacularNames()
+	{
+		return vernacularNames;
+	}
 
 
-    public void setDescriptions(List<TaxonDescription> descriptions) {
-        this.descriptions = descriptions;
-    }
+	public void setVernacularNames(List<VernacularName> vernacularNames)
+	{
+		this.vernacularNames = vernacularNames;
+	}
 
 
-    public List<Reference> getReferences() {
-        return references;
-    }
+	public List<TaxonDescription> getDescriptions()
+	{
+		return descriptions;
+	}
 
 
-    public void setReferences(List<Reference> references) {
-        this.references = references;
-    }
+	public void setDescriptions(List<TaxonDescription> descriptions)
+	{
+		this.descriptions = descriptions;
+	}
 
 
-    public List<Expert> getExperts() {
-        return experts;
-    }
+	public List<Reference> getReferences()
+	{
+		return references;
+	}
 
 
-    public void setExperts(List<Expert> experts) {
-        this.experts = experts;
-    }
+	public void setReferences(List<Reference> references)
+	{
+		this.references = references;
+	}
+
+
+	public List<Expert> getExperts()
+	{
+		return experts;
+	}
+
+
+	public void setExperts(List<Expert> experts)
+	{
+		this.experts = experts;
+	}
+
 }

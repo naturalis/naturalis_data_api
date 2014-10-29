@@ -24,6 +24,8 @@ public class ESConstants {
      * The Taxon type
      */
     public static final String TAXON_TYPE = "Taxon";
+    
+    public static final String IDENTIFYING_EPITHETS_DELIMITER = "||";
 
     public static class Fields {
         public static final String UNIT_ID = "unitID";

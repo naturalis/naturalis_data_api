@@ -21,6 +21,8 @@ public class MultiMediaObjectTransfer {
 
     public static MultiMediaObject transfer(ESMultiMediaObject esMmo) {
         MultiMediaObject mmo = new MultiMediaObject();
+        mmo.setSourceSystem(esMmo.getSourceSystem());
+        mmo.setSourceSystemId(esMmo.getSourceSystemId());
         mmo.setUnitID(esMmo.getUnitID());
         mmo.setIdentifications(esMmo.getIdentifications());
         mmo.setAssociatedTaxonReference(esMmo.getAssociatedTaxonReference());

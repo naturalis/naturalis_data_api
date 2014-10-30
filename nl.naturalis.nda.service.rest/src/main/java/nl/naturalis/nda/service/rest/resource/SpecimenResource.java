@@ -65,11 +65,11 @@ public class SpecimenResource {
 	@POST
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResultGroupSet<Specimen, String> search(@Context UriInfo request)
+	public SearchResultSet<Specimen> search(@Context UriInfo request)
 	{
 		logger.debug("search");
 		QueryParams params = new QueryParams(request.getQueryParameters());
-		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+		SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
 		return result;
 	}
 
@@ -78,11 +78,11 @@ public class SpecimenResource {
 	@POST
 	@Path("/extended-search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResultGroupSet<Specimen, String> extendedSearch(@Context UriInfo request)
+	public SearchResultSet<Specimen> extendedSearch(@Context UriInfo request)
 	{
 		logger.debug("extendedSearch");
 		QueryParams params = new QueryParams(request.getQueryParameters());
-		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+		SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
 		return result;
 	}
 

@@ -1,7 +1,5 @@
 package nl.naturalis.nda.search;
 
-import org.apache.http.client.utils.URIUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 

@@ -1,5 +1,15 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import static java.util.Arrays.asList;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+import java.io.IOException;
+import java.util.List;
+
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
@@ -13,17 +23,8 @@ import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import nl.naturalis.nda.search.StringMatchInfo;
+
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
@@ -46,15 +47,15 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
-        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+        SearchResultSet<Specimen> resultSet = dao.specimenSearch(params);
 
-        SearchResult result1 = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
+        SearchResult result1 = resultSet.getSearchResults().get(0);
         List<StringMatchInfo> matchInfo = result1.getMatchInfo();
         assertThat(matchInfo.size(), is(1));
         assertThat(matchInfo.get(0).getValueHighlighted(),
                 is("Van der <span class=\"search_hit\">Meijer</span> Tussennaam <span class=\"search_hit\">W</span>."));
 
-        assertEquals(2, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(2, resultSet.getTotalSize());
     }
 
     @Test
@@ -74,9 +75,9 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         QueryParams params = new QueryParams();
         params.add("gatheringEvent.gatheringPersons.fullName", "fsad_Meijer");
 
-        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+        SearchResultSet<Specimen> resultSet = dao.specimenSearch(params);
 
-        assertEquals(0, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(0, resultSet.getTotalSize());
     }
 
     @Test
@@ -103,9 +104,9 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
 
-        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+        SearchResultSet<Specimen> resultSet = dao.specimenSearch(params);
 
-        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(1, resultSet.getTotalSize());
     }
 
     @Test
@@ -242,7 +243,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         params.add("_geoShape", "{\"type\":\"MultiPolygon\",\"coordinates\":[[fake]]} ");
 
         // WHEN
-        ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenSearch(params);
+        SearchResultSet<Specimen> specimenStringResultGroupSet = dao.specimenSearch(params);
 
         // THEN
         QueryParams searchParameters = specimenStringResultGroupSet.getQueryParameters();

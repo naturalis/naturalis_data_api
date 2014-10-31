@@ -263,6 +263,30 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		ge.setContinent(ge.getWorldRegion());
 		ge.setCountry(val(record, CsvField.COUNTRY.ordinal()));
 		ge.setProvinceState(val(record, CsvField.MAJORAREA.ordinal()));
+		StringBuilder sb = new StringBuilder(50);
+		if(ge.getWorldRegion() != null) {
+			sb.append("continent: " + ge.getWorldRegion());
+		}
+		if(ge.getCountry() != null) {
+			if(sb.length() != 0) {
+				sb.append("; ");
+			}
+			sb.append("country: " + ge.getCountry());
+		}
+		if(ge.getProvinceState() != null) {
+			if(sb.length() != 0) {
+				sb.append("; ");
+			}
+			sb.append("province/state: " + ge.getProvinceState());	
+		}
+		String locNotes = val(record, CsvField.LOCNOTES.ordinal());
+		if(locNotes !=null) {
+			if(sb.length() != 0) {
+				sb.append("; ");
+			}
+			sb.append(locNotes);
+		}
+		ge.setLocalityText(sb.toString());
 		String y = val(record, CsvField.YEAR.ordinal());
 		String m = val(record, CsvField.MONTH.ordinal());
 		String d = val(record, CsvField.DAY.ordinal());

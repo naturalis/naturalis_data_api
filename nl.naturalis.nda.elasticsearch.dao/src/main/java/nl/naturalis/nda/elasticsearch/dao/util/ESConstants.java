@@ -58,6 +58,7 @@ public class ESConstants {
         public static class SpecimenFields {
             public static final String ASSEMBLAGE_ID = "assemblageID";
             public static final String SEX = "sex";
+            public static final String THEMES = "themes";
             public static final String TYPE_STATUS = "typeStatus";
             public static final String COLLECTORS_FIELD_NUMBER = "collectorsFieldNumber";
             public static final String PHASE_OR_STAGE = "phaseOrStage";

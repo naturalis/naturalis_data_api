@@ -34,6 +34,7 @@ public class ESSpecimen extends NdaTraceableObject {
     private ESGatheringEvent gatheringEvent;
     private List<SpecimenIdentification> identifications;
     private List<String> identifyingEpithets;
+    private List<String> themes;
 
 
     public void addIndentification(SpecimenIdentification identification) {
@@ -285,6 +286,18 @@ public class ESSpecimen extends NdaTraceableObject {
     public List<String> getIdentifyingEpithets() {
         return identifyingEpithets;
     }
+
+
+	public List<String> getThemes()
+	{
+		return themes;
+	}
+
+
+	public void setThemes(List<String> themes)
+	{
+		this.themes = themes;
+	}
 
 
 }

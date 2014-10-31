@@ -48,7 +48,7 @@ public class CrsSpecimenImporter {
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 
 		String rebuild = System.getProperty("rebuild", "false");
@@ -217,56 +217,57 @@ public class CrsSpecimenImporter {
 
 	private String index(String xml)
 	{
-		Document doc;
-		logger.info("Parsing XML");
 		try {
+			Document doc;
+			logger.info("Parsing XML");
 			doc = builder.parse(StringUtil.asInputStream(xml));
-		}
-		catch (SAXException | IOException e) {
-			throw ExceptionUtil.smash(e);
-		}
-		doc.normalize();
-		NodeList records = doc.getElementsByTagName("record");
-		int numRecords = records.getLength();
-		logger.info("Number of records in XML output: " + numRecords);
-		List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
-		List<String> ids = new ArrayList<String>(bulkRequestSize);
-		for (int i = 0; i < numRecords; ++i) {
-			++processed;
-			try {
-				Element record = (Element) records.item(i);
-				String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
-				if (isDeletedRecord(record)) {
-					index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
-				}
-				else {
-					specimens.add(CrsSpecimenTransfer.transfer(record));
-					ids.add(id);
-					if (specimens.size() >= bulkRequestSize) {
-						index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
-						specimens.clear();
-						ids.clear();
+			doc.normalize();
+			NodeList records = doc.getElementsByTagName("record");
+			int numRecords = records.getLength();
+			logger.info("Number of records in XML output: " + numRecords);
+			List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
+			List<String> ids = new ArrayList<String>(bulkRequestSize);
+			for (int i = 0; i < numRecords; ++i) {
+				++processed;
+				try {
+					Element record = (Element) records.item(i);
+					String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
+					if (isDeletedRecord(record)) {
+						index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
+					}
+					else {
+						specimens.add(CrsSpecimenTransfer.transfer(record));
+						ids.add(id);
+						if (specimens.size() >= bulkRequestSize) {
+							index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
+							specimens.clear();
+							ids.clear();
+						}
 					}
 				}
+				catch (Throwable t) {
+					++bad;
+					logger.error(t.getMessage(), t);
+				}
+				if (maxRecords > 0 && processed >= maxRecords) {
+					break;
+				}
+				if (processed % 1000 == 0) {
+					logger.info("Records processed: " + processed);
+				}
 			}
-			catch (Throwable t) {
-				++bad;
-				logger.error(t.getMessage(), t);
+			if (!specimens.isEmpty()) {
+				index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
 			}
 			if (maxRecords > 0 && processed >= maxRecords) {
-				break;
+				return null;
 			}
-			if (processed % 1000 == 0) {
-				logger.info("Records processed: " + processed);
-			}
+			return DOMUtil.getDescendantValue(doc, "resumptionToken");
 		}
-		if (!specimens.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
-		}
-		if (maxRecords > 0 && processed >= maxRecords) {
+		catch (Throwable t) {
+			logger.error(t.getMessage(), t);
 			return null;
 		}
-		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 
 

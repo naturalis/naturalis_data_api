@@ -71,9 +71,15 @@ public class CrsSpecimenTransfer {
 		specimen.setPhaseOrStage(phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "abcd:PhaseOrStage")));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus")));
 		specimen.setSex(sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex")));
-		List<Element> determinationElements = DOMUtil.getChildren(recordElement, "ncrsDetermination");
-		for (Element e : determinationElements) {
-			specimen.addIndentification(transferIdentification(e));
+		List<Element> determinationElements = DOMUtil.getDescendants(recordElement, "ncrsDetermination");
+
+		if (determinationElements == null) {
+			logger.warn("No determinations for specimen with unitID " + specimen.getUnitID());
+		}
+		else {
+			for (Element e : determinationElements) {
+				specimen.addIndentification(transferIdentification(e));
+			}
 		}
 		specimen.setGatheringEvent(transferGatheringEvent(recordElement));
 		return specimen;
@@ -213,7 +219,6 @@ public class CrsSpecimenTransfer {
 	{
 		String s = val(e, tag);
 		if (s == null) {
-			logger.debug(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
 			return 0;
 		}
 		try {
@@ -230,7 +235,7 @@ public class CrsSpecimenTransfer {
 	{
 		String s = DOMUtil.getDescendantValue(e, tag);
 		if (s == null) {
-			logger.debug(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
+			logger.trace(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
 			return null;
 		}
 		s = s.trim();

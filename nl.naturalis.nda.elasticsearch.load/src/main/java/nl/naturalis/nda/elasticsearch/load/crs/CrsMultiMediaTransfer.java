@@ -112,7 +112,7 @@ public class CrsMultiMediaTransfer {
 
 	private static List<MultiMediaContentIdentification> getIdentifications(Element dcElement)
 	{
-		List<Element> elems = DOMUtil.getChildren(dcElement, "ncrsDetermination");
+		List<Element> elems = DOMUtil.getDescendants(dcElement, "ncrsDetermination");
 		List<MultiMediaContentIdentification> identifications = new ArrayList<MultiMediaContentIdentification>(elems.size());
 		for (Element e : elems) {
 			MultiMediaContentIdentification identification = new MultiMediaContentIdentification();

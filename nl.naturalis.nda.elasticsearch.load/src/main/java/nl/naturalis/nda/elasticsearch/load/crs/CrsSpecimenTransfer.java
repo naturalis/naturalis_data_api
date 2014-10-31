@@ -14,6 +14,8 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.load.DocumentType;
+import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -34,6 +36,7 @@ public class CrsSpecimenTransfer {
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
+	private static final ThematicSearchConfig thematicSearchConfig = ThematicSearchConfig.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
 
@@ -42,8 +45,10 @@ public class CrsSpecimenTransfer {
 	{
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.CRS);
-		specimen.setSourceSystemId(val(recordElement, "abcd:UnitID"));
 		specimen.setUnitID(val(recordElement, "abcd:UnitID"));
+		specimen.setSourceSystemId(specimen.getUnitID());
+		List<String> themes = thematicSearchConfig.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN);
+		specimen.setThemes(themes);
 		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));
 		specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));

@@ -14,19 +14,19 @@ import org.slf4j.LoggerFactory;
 
 public class ThematicSearchConfig {
 
-	private class ThematicCollection {
+	private class Theme {
 		String code;
 		String file;
-		String type;
+		DocumentType type;
 		String identifier;
 		List<String> ids;
 	}
 
-	private static final String SYSPROP_CONFIG_DIR = "nl.naturalis.nda.conf.dir";
+	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
 	private static final Logger logger = LoggerFactory.getLogger(ThematicSearchConfig.class);
 	private static ThematicSearchConfig instance;
 
-	private final ArrayList<ThematicCollection> collections = new ArrayList<>();
+	private final ArrayList<Theme> themes = new ArrayList<>();
 
 
 	public static ThematicSearchConfig getInstance()
@@ -40,54 +40,67 @@ public class ThematicSearchConfig {
 
 	private ThematicSearchConfig()
 	{
-		loadCollections();
+		loadThemes();
 	}
 
 
-	public List<String> getCollectionsIdentifiersForObject(String objectId, String objectType)
+	/**
+	 * Establish which theme the specified object is included in.
+	 * 
+	 * @param id The
+	 * @param type
+	 * @return
+	 */
+	public List<String> getThemesForDocument(String id, DocumentType type)
 	{
-		List<String> identifiers = new ArrayList<String>(collections.size());
-		for (ThematicCollection collection : collections) {
-			if (!collection.type.equalsIgnoreCase(objectType)) {
+		List<String> identifiers = null;
+		for (Theme theme : themes) {
+			if (theme.type != type) {
 				continue;
 			}
-			if (Collections.binarySearch(collection.ids, objectId) >= 0) {
-				identifiers.add(collection.identifier);
+			if (Collections.binarySearch(theme.ids, id) >= 0) {
+				if (identifiers == null) {
+					identifiers = new ArrayList<String>(themes.size());
+				}
+				identifiers.add(theme.identifier);
 			}
 		}
-		return identifiers.size() == 0 ? null : identifiers;
+		return identifiers;
 	}
 
 
-	private void loadCollections()
+	private void loadThemes()
 	{
 		File thematicSearchDir = getThematicSearchDir();
 		Properties props = loadConfig(thematicSearchDir);
-		for (Object prop : props.keySet()) {
-			String s = (String) prop;
-			String collectionCode = s.substring(0, s.indexOf('.'));
-			if (isCollectionLoaded(collectionCode)) {
-				continue;
+		if (props != null) {
+			for (Object prop : props.keySet()) {
+				String s = (String) prop;
+				String code = s.substring(0, s.indexOf('.'));
+				if (isThemeLoaded(code)) {
+					continue;
+				}
+				logger.info(String.format("Retrieving information for theme \"%s\"", code));
+				Theme theme = new Theme();
+				themes.add(theme);
+				String type = props.getProperty(code + ".type");
+				if (type == null) {
+					throw new RuntimeException(String.format("Missing property \"%s.type\"", code));
+				}
+				theme.code = code;
+				theme.type = DocumentType.forName(type);
+				theme.file = props.getProperty(code + ".file");
+				theme.identifier = props.getProperty(code + ".identifier");
+				loadIdsForTheme(theme, thematicSearchDir);
 			}
-			ThematicCollection map = new ThematicCollection();
-			collections.add(map);
-			String type = props.getProperty(collectionCode + ".type");
-			if (type == null) {
-				throw new RuntimeException(String.format("Missing property \"%s.type\"", collectionCode));
-			}
-			map.code = collectionCode;
-			map.type = type;
-			map.file = props.getProperty(collectionCode + ".file");
-			map.identifier = props.getProperty(collectionCode + ".identifier");
-			loadIdsForCollection(map, thematicSearchDir);
 		}
 	}
 
 
-	private boolean isCollectionLoaded(String collectionCode)
+	private boolean isThemeLoaded(String themeCode)
 	{
-		for (ThematicCollection collection : collections) {
-			if (collection.code.equals(collectionCode)) {
+		for (Theme theme : themes) {
+			if (theme.code.equals(themeCode)) {
 				return true;
 			}
 		}
@@ -95,16 +108,16 @@ public class ThematicSearchConfig {
 	}
 
 
-	private static void loadIdsForCollection(ThematicCollection collection, File thematicSearchDir)
+	private static void loadIdsForTheme(Theme theme, File thematicSearchDir)
 	{
-		String fileName = collection.file;
-		if (fileName == null) {
-			fileName = thematicSearchDir.getAbsolutePath() + "/" + collection.code + ".txt";
+		logger.info(String.format("Caching IDs for theme \"%s\"", theme.code));
+		String fileName = theme.file;
+		if (fileName == null || fileName.trim().length() == 0) {
+			fileName = thematicSearchDir.getAbsolutePath() + "/" + theme.code + ".txt";
 		}
 		File file = new File(fileName);
 		if (!file.isFile()) {
-			String fmt = "Missing file \"%s\". Thematic search information for collection \"%s\" will not be indexed";
-			logger.error(String.format(fmt, file.getAbsolutePath(), collection.code));
+			throw new RuntimeException(String.format("Missing file \"%s\"", file.getAbsolutePath(), theme.code));
 		}
 		List<String> ids = new ArrayList<String>(255);
 		try {
@@ -120,6 +133,7 @@ public class ThematicSearchConfig {
 					continue;
 				}
 				ids.add(line);
+
 			}
 			lnr.close();
 		}
@@ -127,19 +141,28 @@ public class ThematicSearchConfig {
 			throw new RuntimeException(e);
 		}
 		Collections.sort(ids);
-		collection.ids = ids;
+		logger.info("Number of IDs cached: " + ids.size());
+		theme.ids = ids;
 	}
 
 
 	private static Properties loadConfig(File thematicSearchDir)
 	{
+		logger.info("Loading configuration for thematic search");
 		if (!thematicSearchDir.isDirectory()) {
-			String fmt = "Missing directory \"%s\". Thematic search information will not be indexed";
+			String fmt = "Missing directory \"%s\". Themes will not be indexed!";
 			String msg = String.format(fmt, thematicSearchDir.getAbsolutePath());
 			logger.warn(msg);
 			return null;
 		}
 		File propertyFile = new File(thematicSearchDir.getAbsolutePath() + "/thematic-search.properties");
+		if (!propertyFile.isFile()) {
+			String fmt = "Missing file \"%s\". Themes will not be indexed!";
+			String msg = String.format(fmt, propertyFile.getAbsolutePath());
+			logger.warn(msg);
+			return null;
+		}
+		logger.info("Configuration file: " + propertyFile.getAbsolutePath());
 		Properties props = new Properties();
 		try (FileReader fr = new FileReader(propertyFile)) {
 			props.load(fr);
@@ -156,13 +179,11 @@ public class ThematicSearchConfig {
 		String confDir = System.getProperty(SYSPROP_CONFIG_DIR);
 		if (confDir == null) {
 			String msg = String.format("Missing system property \"%s\"", SYSPROP_CONFIG_DIR);
-			logger.error(msg);
 			throw new RuntimeException(msg);
 		}
 		File dir = new File(confDir);
 		if (!dir.isDirectory()) {
 			String msg = String.format("Invalid directory specified for system property \"%s\": \"%s\"", SYSPROP_CONFIG_DIR, confDir);
-			logger.error(msg);
 			throw new RuntimeException(msg);
 		}
 		try {

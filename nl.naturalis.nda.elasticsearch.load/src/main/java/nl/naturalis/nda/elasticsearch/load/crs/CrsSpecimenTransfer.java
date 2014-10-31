@@ -48,7 +48,7 @@ public class CrsSpecimenTransfer {
 		specimen.setUnitID(val(recordElement, "abcd:UnitID"));
 		specimen.setSourceSystemId(specimen.getUnitID());
 		List<String> themes = thematicSearchConfig.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN);
-		specimen.setThemes(themes);
+		specimen.setTheme(themes);
 		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));
 		specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));

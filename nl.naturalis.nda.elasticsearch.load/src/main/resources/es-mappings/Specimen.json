@@ -27,7 +27,7 @@
                 "type": "string",
                 "index": "not_analyzed"
             },
-            "themes" : {
+            "theme" : {
             	"type" : "string",
             	"index": "not_analyzed"
             },

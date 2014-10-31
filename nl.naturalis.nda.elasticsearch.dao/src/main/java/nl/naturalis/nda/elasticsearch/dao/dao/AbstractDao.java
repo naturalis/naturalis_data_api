@@ -430,7 +430,7 @@ public abstract class AbstractDao {
      * @return the offSet if available, null otherwise
      */
     private Integer getOffSetFromParams(QueryParams params) {
-        String offSetParam = params.getParam("_offSet");
+        String offSetParam = params.getParam("_offset");
         if (hasText(offSetParam)) {
             return Integer.parseInt(offSetParam);
         }

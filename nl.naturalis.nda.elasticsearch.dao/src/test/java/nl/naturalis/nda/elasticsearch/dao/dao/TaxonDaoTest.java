@@ -175,7 +175,7 @@ public class TaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
         params.add("acceptedName.infraspecificEpithet", "otherValue");
-        params.add("_offSet", "1");
+        params.add("_offset", "1");
 
         SearchResultSet<Taxon> taxonDetail = taxonDao.getTaxonDetail(params);
 

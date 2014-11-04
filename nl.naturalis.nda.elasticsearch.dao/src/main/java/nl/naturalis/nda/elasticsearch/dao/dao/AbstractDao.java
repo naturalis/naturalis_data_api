@@ -144,7 +144,7 @@ public abstract class AbstractDao {
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
                                                    boolean highlighting, QueryAndHighlightFields prebuiltQuery) {
-        String sortField = getScoreFieldFromQueryParams(params);
+        String sortField = getSortFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
         SortOrder sortOrder = getSortOrderFromQueryParams(params);
         if (sortOrder != null) {
@@ -412,14 +412,11 @@ public abstract class AbstractDao {
         return operator;
     }
 
-    protected String getScoreFieldFromQueryParams(QueryParams params) {
-        List<String> sortParam = params.get("_score");
+    protected String getSortFieldFromQueryParams(QueryParams params) {
+        String sortParam = params.getParam("_sort");
         String sortField = "_score";
         if (sortParam != null && !sortParam.isEmpty()) {
-            String sort = sortParam.get(0);
-            if (sort == null || sort.trim().equalsIgnoreCase("")) {
-                sortField = sort;
-            }
+            sortField = sortParam;
         }
         return sortField;
     }

@@ -30,6 +30,36 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     }
 
     @Test
+    public void testSort() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
+                .setSource(getMapping("test-taxon-mapping.json"))
+                .execute().actionGet();
+
+
+        ESTaxon testTaxon = createTestTaxon();
+        testTaxon.setSourceSystemId("12345");
+        ESTaxon testTaxon1 = createTestTaxon();
+        testTaxon1.setSourceSystemId("54321");
+
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(testTaxon))
+                .setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "2").setSource(objectMapper.writeValueAsString(testTaxon1))
+                .setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("_sort", "sourceSystemId");
+        params.add("_sortDirection", "DESC");
+        params.add("genus", "Hyphomonas");
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = taxonDao.taxonSearch(params);
+        List<SearchResult<Taxon>> searchResults = taxonStringResultGroupSet.getResultGroups().get(0).getSearchResults();
+
+        assertTrue(searchResults.get(1).getResult().getSourceSystemId().equals("54321"));
+        assertTrue(searchResults.get(0).getResult().getSourceSystemId().equals("12345"));
+    }
+
+    @Test
     public void testExtendedSearch() throws Exception {
         createIndex(INDEX_NAME);
 
@@ -119,7 +149,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
 
-        ResultGroupSet<Taxon,String> resultGroupSet = new ResultGroupSet<>();
+        ResultGroupSet<Taxon, String> resultGroupSet = new ResultGroupSet<>();
         ResultGroup<Taxon, String> group = new ResultGroup<>();
         group.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
         group.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
@@ -127,7 +157,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         resultGroupSet.addGroup(group);
 
         SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
-                                                                                                      resultGroupSet);
+                resultGroupSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -142,7 +172,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
 
-        ResultGroupSet<Taxon,String> resultGroupSet = new ResultGroupSet<>();
+        ResultGroupSet<Taxon, String> resultGroupSet = new ResultGroupSet<>();
         ResultGroup<Taxon, String> group = new ResultGroup<>();
         group.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
         group.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
@@ -165,7 +195,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
 
-        ResultGroupSet<Taxon,String> resultGroupSet = new ResultGroupSet<>();
+        ResultGroupSet<Taxon, String> resultGroupSet = new ResultGroupSet<>();
         ResultGroup<Taxon, String> group = new ResultGroup<>();
         group.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", "first"));
         group.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));

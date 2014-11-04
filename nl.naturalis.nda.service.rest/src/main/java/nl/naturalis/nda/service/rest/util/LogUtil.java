@@ -11,7 +11,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 
 public class LogUtil {
-	
+
 	public static void configureLogging()
 	{
 		String confDir = System.getProperty(NDA.SYSPROP_CONFIG_DIR);
@@ -31,7 +31,8 @@ public class LogUtil {
 			return;
 		}
 		if (!(LoggerFactory.getILoggerFactory() instanceof LoggerContext)) {
-			FileUtil.log("Failed to set up NBA logging. Non-logback implementation used for slf4j: " + LoggerFactory.getILoggerFactory().getClass().getName());
+			FileUtil.log("Failed to set up NBA logging. Non-logback implementation used for slf4j: "
+					+ LoggerFactory.getILoggerFactory().getClass().getName());
 			return;
 		}
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();

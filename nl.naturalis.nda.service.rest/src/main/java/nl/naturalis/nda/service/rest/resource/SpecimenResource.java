@@ -44,6 +44,7 @@ public class SpecimenResource {
 		logger.debug("getSpecimenDetail");
 		String unitID = request.getQueryParameters().getFirst("unitID");
 		SearchResultSet<Specimen> result = registry.getSpecimenDao().getSpecimenDetail(unitID);
+		result.addLink("_self", request.getRequestUri().toString());
 		return result;
 	}
 
@@ -57,6 +58,7 @@ public class SpecimenResource {
 		logger.debug("getSpecimenDetailWithinResultSet");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
+		result.addLink("_self", request.getRequestUri().toString());
 		return result;
 	}
 
@@ -70,6 +72,7 @@ public class SpecimenResource {
 		logger.debug("search");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+		result.addLink("_self", request.getRequestUri().toString());
 		return result;
 	}
 
@@ -83,6 +86,7 @@ public class SpecimenResource {
 		logger.debug("extendedSearch");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+		result.addLink("_self", request.getRequestUri().toString());
 		return result;
 	}
 
@@ -96,6 +100,7 @@ public class SpecimenResource {
 		logger.debug("nameSearch");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
+		result.addLink("_self", request.getRequestUri().toString());
 		return result;
 	}
 
@@ -109,6 +114,7 @@ public class SpecimenResource {
 		logger.debug("extendedNameSearch");
 		QueryParams params = new QueryParams(request.getQueryParameters());
 		ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
+		result.addLink("_self", request.getRequestUri().toString());
 		return result;
 	}
 

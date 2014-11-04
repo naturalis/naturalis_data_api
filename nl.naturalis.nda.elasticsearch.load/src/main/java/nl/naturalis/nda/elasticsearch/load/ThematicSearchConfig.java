@@ -90,8 +90,14 @@ public class ThematicSearchConfig {
 				theme.code = code;
 				theme.type = DocumentType.forName(type);
 				theme.file = props.getProperty(code + ".file");
+				if (theme.file == null || theme.file.length() == 0) {
+					theme.file = thematicSearchDir.getAbsolutePath() + "/" + theme.code + ".txt";
+				}
 				theme.identifier = props.getProperty(code + ".identifier");
-				loadIdsForTheme(theme, thematicSearchDir);
+				if (theme.identifier == null || theme.identifier.length() == 0) {
+					theme.identifier = theme.code;
+				}
+				loadIdsForTheme(theme);
 			}
 		}
 	}
@@ -108,14 +114,10 @@ public class ThematicSearchConfig {
 	}
 
 
-	private static void loadIdsForTheme(Theme theme, File thematicSearchDir)
+	private static void loadIdsForTheme(Theme theme)
 	{
 		logger.info(String.format("Caching IDs for theme \"%s\"", theme.code));
-		String fileName = theme.file;
-		if (fileName == null || fileName.trim().length() == 0) {
-			fileName = thematicSearchDir.getAbsolutePath() + "/" + theme.code + ".txt";
-		}
-		File file = new File(fileName);
+		File file = new File(theme.file);
 		if (!file.isFile()) {
 			throw new RuntimeException(String.format("Missing file \"%s\"", file.getAbsolutePath(), theme.code));
 		}

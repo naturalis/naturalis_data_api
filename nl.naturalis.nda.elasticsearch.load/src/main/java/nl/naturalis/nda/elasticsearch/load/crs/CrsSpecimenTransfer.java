@@ -36,7 +36,6 @@ public class CrsSpecimenTransfer {
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
-	private static final ThematicSearchConfig thematicSearchConfig = ThematicSearchConfig.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
 
@@ -47,7 +46,8 @@ public class CrsSpecimenTransfer {
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setUnitID(val(recordElement, "abcd:UnitID"));
 		specimen.setSourceSystemId(specimen.getUnitID());
-		List<String> themes = thematicSearchConfig.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN);
+		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN);
 		specimen.setTheme(themes);
 		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));

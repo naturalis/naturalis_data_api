@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.*;
 import org.elasticsearch.client.Client;
 
@@ -102,15 +103,30 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
 
     protected SearchResultSet<Taxon> createTaxonDetailSearchResultSet(QueryParams params,
                                                                       ResultGroupSet<Taxon, String> searchResultSet) {
+        List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
+        List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, allowedFieldNamesForSearch);
+
         SearchResultSet<Taxon> detailResultSet = new SearchResultSet<>();
 
         SearchResult<Taxon> previousTaxon = null;
         SearchResult<Taxon> nextTaxon = null;
         SearchResult<Taxon> foundTaxonForAcceptedName = null;
 
-        String genusOrMonomial = params.getParam(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
-        String specificEpithet = params.getParam(ACCEPTEDNAME_SPECIFIC_EPITHET);
-        String infraspecificEpithet = params.getParam(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
+        String genusOrMonomial = null;
+        String specificEpithet = null;
+        String infraspecificEpithet = null;
+
+        for (FieldMapping allowedField : allowedFields) {
+            if (allowedField.getFieldName().equals(ACCEPTEDNAME_GENUS_OR_MONOMIAL)){
+                genusOrMonomial = allowedField.getValue();
+            }
+            if (allowedField.getFieldName().equals(ACCEPTEDNAME_SPECIFIC_EPITHET)){
+                specificEpithet = allowedField.getValue();
+            }
+            if (allowedField.getFieldName().equals(ACCEPTEDNAME_INFRASPECIFIC_EPITHET)) {
+                infraspecificEpithet = allowedField.getValue();
+            }
+        }
 
         List<ResultGroup<Taxon, String>> allBuckets = searchResultSet.getResultGroups();
 

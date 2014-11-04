@@ -624,6 +624,7 @@ public abstract class AbstractDao {
     }
 
     public static String queryParamsToUrl(QueryParams params) {
+        params.remove("_search");
         String url = "";
         for (Map.Entry<String, List<String>> parameters : params.entrySet()) {
             url = url + "&" + parameters.getKey() + "=" + parameters.getValue();

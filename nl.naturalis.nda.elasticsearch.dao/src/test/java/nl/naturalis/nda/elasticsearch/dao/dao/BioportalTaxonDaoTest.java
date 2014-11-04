@@ -60,6 +60,30 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     }
 
     @Test
+    public void testTaxonInResultSet() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
+                .setSource(getMapping("test-taxon-mapping.json"))
+                .execute().actionGet();
+
+        ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("genus", "Hyphomonas");
+        params.add("specificEpithet", "oceanitis");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
+
+        SearchResultSet<Taxon> result = taxonDao.getTaxonDetailWithinResultSet(params);
+
+        assertEquals(1, result.getSearchResults().size());
+        assertEquals(1, result.getTotalSize());
+    }
+
+    @Test
     public void testExtendedSearch_someFieldsThatAreUsedInNameResolution() throws Exception {
         createIndex(INDEX_NAME);
 

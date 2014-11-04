@@ -150,6 +150,8 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting);
 
+        logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
+
         SearchResultSet<Specimen> searchResultSet = responseToSpecimenSearchResultSet(searchResponse, params);
         logger.info("*** SearchResult size = " + searchResultSet.getSearchResults().size());
         return searchResultSet;

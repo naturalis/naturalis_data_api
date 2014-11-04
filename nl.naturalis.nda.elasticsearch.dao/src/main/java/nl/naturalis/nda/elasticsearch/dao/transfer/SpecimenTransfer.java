@@ -17,6 +17,7 @@ public class SpecimenTransfer {
 	public static Specimen transfer(ESSpecimen esSpecimen)
 	{
 		Specimen specimen = new Specimen();
+        specimen.setCollectorsFieldNumber(esSpecimen.getCollectorsFieldNumber());
 		specimen.setSourceSystem(esSpecimen.getSourceSystem());
 		specimen.setSourceSystemId(esSpecimen.getSourceSystemId());
 		specimen.setUnitID(esSpecimen.getUnitID());

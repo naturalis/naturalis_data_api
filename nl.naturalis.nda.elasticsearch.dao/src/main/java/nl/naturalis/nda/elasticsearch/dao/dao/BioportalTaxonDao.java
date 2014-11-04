@@ -150,11 +150,11 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         }
         if (previousTaxon != null) {
             //TODO NDA-66 taxon link must be to detail base url in result set
-            foundTaxonForAcceptedName.addLink(new Link("_previous", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(previousTaxon.getResult().getAcceptedName()) + queryParamsToUrl(params)));
+            foundTaxonForAcceptedName.addLink(new Link("_previous", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(previousTaxon.getResult().getAcceptedName())));
         }
         if (nextTaxon != null) {
             //TODO NDA-66 taxon link must be to detail base url in result set
-            foundTaxonForAcceptedName.addLink(new Link("_next", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(nextTaxon.getResult().getAcceptedName()) + queryParamsToUrl(params)));
+            foundTaxonForAcceptedName.addLink(new Link("_next", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(nextTaxon.getResult().getAcceptedName())));
         }
 
         detailResultSet.addSearchResult(foundTaxonForAcceptedName);

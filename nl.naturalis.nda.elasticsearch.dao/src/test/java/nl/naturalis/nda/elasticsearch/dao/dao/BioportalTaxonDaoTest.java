@@ -7,10 +7,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.junit.*;
 
 import java.util.ArrayList;
@@ -49,10 +46,10 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
 
-        SearchResultSet<Taxon> result = taxonDao.taxonSearch(params);
+        ResultGroupSet<Taxon, String> result = taxonDao.taxonSearch(params);
 
-        assertEquals(1, result.getSearchResults().size());
-        SearchResult<Taxon> result1 = result.getSearchResults().get(0);
+        assertEquals(1, result.getResultGroups().size());
+        SearchResult<Taxon> result1 = result.getResultGroups().get(0).getSearchResults().get(0);
         assertEquals("Rhodobacteraceae", result1.getResult().getDefaultClassification().getFamily());
         assertEquals(1, result1.getLinks().size());
 
@@ -82,11 +79,11 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("_andOr", "OR");
         params.add("_maxResults", "50");
         params.add("vernacularNames.name", "henkie");
-        assertEquals(1, taxonDao.search(params, null, null, true).getSearchResults().size());
+        assertEquals(1, taxonDao.search(params, null, null, true).getResultGroups().size());
 
         params.remove("vernacularNames.name");
         params.add("synonyms.genusOrMonomial", "genusOrMonomialSynonyms");
-        assertEquals(1, taxonDao.search(params, null, null, true).getSearchResults().size());
+        assertEquals(1, taxonDao.search(params, null, null, true).getResultGroups().size());
 
 //        params.add("synonyms.specificEpithet", "");
 //        params.add("synonyms.infraspecificEpithet", "");
@@ -98,13 +95,15 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
 
-        SearchResultSet<Taxon> searchResultSet = new SearchResultSet<>();
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
+        ResultGroupSet<Taxon,String> resultGroupSet = new ResultGroupSet<>();
+        ResultGroup<Taxon, String> group = new ResultGroup<>();
+        group.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+        group.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
+        group.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
+        resultGroupSet.addGroup(group);
 
         SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
-                                                                                                      searchResultSet);
+                                                                                                      resultGroupSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -119,13 +118,15 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
 
-        SearchResultSet<Taxon> searchResultSet = new SearchResultSet<>();
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+        ResultGroupSet<Taxon,String> resultGroupSet = new ResultGroupSet<>();
+        ResultGroup<Taxon, String> group = new ResultGroup<>();
+        group.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", ""));
+        group.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", ""));
+        group.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+        resultGroupSet.addGroup(group);
 
         SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
-                                                                                                      searchResultSet);
+                resultGroupSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -140,13 +141,15 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
         params.add("acceptedName.specificEpithet", "oceanitis");
 
-        SearchResultSet<Taxon> searchResultSet = new SearchResultSet<>();
-        searchResultSet.addSearchResult(createTaxonWithScientificName("first item", "diep in de zee", ""));
-        searchResultSet.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
-        searchResultSet.addSearchResult(createTaxonWithScientificName("last item", "geen idee", ""));
+        ResultGroupSet<Taxon,String> resultGroupSet = new ResultGroupSet<>();
+        ResultGroup<Taxon, String> group = new ResultGroup<>();
+        group.addSearchResult(createTaxonWithScientificName("Other", "diep in de zee", "first"));
+        group.addSearchResult(createTaxonWithScientificName("Hyphomonas", "oceanitis", null));
+        group.addSearchResult(createTaxonWithScientificName("Other 2", "geen idee", "last"));
+        resultGroupSet.addGroup(group);
 
         SearchResultSet<Taxon> taxonDetailSearchResultSet = taxonDao.createTaxonDetailSearchResultSet(params,
-                                                                                                      searchResultSet);
+                resultGroupSet);
 
         List<SearchResult<Taxon>> searchResults = taxonDetailSearchResultSet.getSearchResults();
         assertEquals(1, searchResults.size());
@@ -158,6 +161,41 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         assertEquals("_next", links.get(1).getRel());
         assertTrue(links.get(1).getHref().contains("last"));
     }
+
+    @Test
+    public void testName() throws Exception {
+        ScientificName acceptedName = new ScientificName();
+        acceptedName.setGenusOrMonomial("Hyphomonas");
+        acceptedName.setSpecificEpithet("oceanitis");
+        acceptedName.setInfraspecificEpithet("test");
+
+        ESTaxon testTaxon = createTestTaxon();
+        ESTaxon testTaxon1 = createTestTaxon();
+        ESTaxon testTaxon2 = createTestTaxon();
+        ESTaxon testTaxon3 = createTestTaxon();
+        testTaxon2.setAcceptedName(acceptedName);
+        testTaxon3.setAcceptedName(acceptedName);
+
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(testTaxon))
+                .setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "2").setSource(objectMapper.writeValueAsString(testTaxon1))
+                .setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "3").setSource(objectMapper.writeValueAsString(testTaxon2))
+                .setRefresh(true).execute().actionGet();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "4").setSource(objectMapper.writeValueAsString(testTaxon3))
+                .setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("acceptedName.genusOrMonomial", "Hyphomonas");
+        params.add("acceptedName.specificEpithet", "oceanitis");
+
+        ResultGroupSet<Taxon, String> taxonDetailWithinResultSet = taxonDao.taxonSearch(params);
+
+        assertTrue(taxonDetailWithinResultSet.getResultGroups().size() == 2);
+
+
+    }
+
 
     //================================================ Helper methods ==================================================
 

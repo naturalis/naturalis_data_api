@@ -1,21 +1,26 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nda.search.ResultGroup;
+import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 
 /**
@@ -39,37 +44,115 @@ public class AbstractTaxonDao extends AbstractDao {
      * @param simpleSearchFieldNameExceptions
      * @param highlighting                    @return search results
      */
-    SearchResultSet<Taxon> search(QueryParams params, Set<String> allowedFieldNames,
-                                  Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
+    ResultGroupSet<Taxon, String> search(QueryParams params, Set<String> allowedFieldNames,
+                                         Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
-        return responseToTaxonSearchResultSet(searchResponse, params);
+        return responseToTaxonSearchResultGroupSet(searchResponse, params);
     }
 
-    protected SearchResultSet<Taxon> responseToTaxonSearchResultSet(SearchResponse searchResponse, QueryParams params) {
-        SearchResultSet<Taxon> taxonSearchResultSet = new SearchResultSet<>();
+    SearchResultSet<Taxon> searchReturnsResultSet(QueryParams params, Set<String> allowedFieldNames,
+                                                  Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
+        evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
+        List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
+        List<FieldMapping> allowedFields = (allowedFieldNames == null)
+                ? fields
+                : filterAllowedFieldMappings(fields, allowedFieldNames);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
+
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, params);
+        return resultGroupSetToResultSet(taxonStringResultGroupSet);
+    }
+
+    private SearchResultSet<Taxon> resultGroupSetToResultSet(ResultGroupSet<Taxon, String> taxonStringResultGroupSet) {
+        SearchResultSet<Taxon> resultSet = new SearchResultSet<>();
+        List<ResultGroup<Taxon, String>> resultGroups = taxonStringResultGroupSet.getResultGroups();
+        if (resultGroups != null && !resultGroups.isEmpty()) {
+            List<SearchResult<Taxon>> searchResults = resultGroups.get(0).getSearchResults();
+            if (searchResults != null && !searchResults.isEmpty()) {
+                for (SearchResult<Taxon> searchResult : searchResults) {
+                    resultSet.addSearchResult(searchResult);
+                }
+            }
+        }
+        resultSet.setTotalSize(taxonStringResultGroupSet.getTotalSize());
+        resultSet.setQueryParameters(taxonStringResultGroupSet.getQueryParameters());
+        return resultSet;
+    }
+
+    protected ResultGroupSet<Taxon, String> responseToTaxonSearchResultGroupSet(SearchResponse searchResponse, QueryParams params) {
+        ResultGroupSet<Taxon, String> taxonSearchResultGroupSet = new ResultGroupSet<>();
+
+        Map<String, SearchResultSet<Taxon>> nameToTaxons = new HashMap<>();
+
         for (SearchHit hit : searchResponse.getHits()) {
             SearchResult<Taxon> searchResult = new SearchResult<>();
 
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
+            String taxonName = createSharedValue(esTaxon);
+            if (!nameToTaxons.containsKey(taxonName)) {
+                nameToTaxons.put(taxonName, new SearchResultSet<Taxon>());
+            }
+            SearchResultSet<Taxon> taxonsForName = nameToTaxons.get(taxonName);
+
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
             searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL_IN_RESULT_SET + esTaxon.getIdentifyingEpithets() +
-                            queryParamsToUrl(params)));
+                    queryParamsToUrl(params)));
             searchResult.setResult(taxon);
-
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
-            taxonSearchResultSet.addSearchResult(searchResult);
+            taxonsForName.addSearchResult(searchResult);
         }
 
-        taxonSearchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
-        taxonSearchResultSet.setQueryParameters(params.copyWithoutGeoShape());
+        for (Map.Entry<String, SearchResultSet<Taxon>> nameSearchResultSetEntry : nameToTaxons.entrySet()) {
+            ResultGroup<Taxon, String> group = new ResultGroup<>();
+            group.setSharedValue(nameSearchResultSetEntry.getKey());
+            for (SearchResult<Taxon> searchResult : nameSearchResultSetEntry.getValue().getSearchResults()) {
+                group.addSearchResult(searchResult);
+            }
+            taxonSearchResultGroupSet.addGroup(group);
+        }
 
-        return taxonSearchResultSet;
+        taxonSearchResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
+        taxonSearchResultGroupSet.setTotalSize(searchResponse.getHits().getTotalHits());
+
+        return taxonSearchResultGroupSet;
+    }
+
+    private String createSharedValue(ESTaxon esTaxon) {
+        ScientificName acceptedName = esTaxon.getAcceptedName();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean found = false;
+        if (hasText(acceptedName.getGenusOrMonomial())) {
+            found = true;
+            stringBuilder.append("genus=").append(acceptedName.getGenusOrMonomial());
+        }
+        if (hasText(acceptedName.getSubgenus())) {
+            if (found) {
+                stringBuilder.append("&");
+            }
+            stringBuilder.append("subgenus=").append(acceptedName.getSubgenus());
+            found = true;
+        }
+        if (hasText(acceptedName.getSpecificEpithet())) {
+            if (found) {
+                stringBuilder.append("&");
+            }
+            stringBuilder.append("specificEpithet=").append(acceptedName.getSpecificEpithet());
+            found = true;
+        }
+        if (hasText(acceptedName.getInfraspecificEpithet())) {
+            if (found) {
+                stringBuilder.append("&");
+            }
+            stringBuilder.append("infraspecificEpithet=").append(acceptedName.getInfraspecificEpithet());
+        }
+        return stringBuilder.toString();
     }
 
 }

@@ -152,9 +152,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
 
-        SearchResultSet<Specimen> searchResultSet = responseToSpecimenSearchResultSet(searchResponse, params);
-        logger.info("*** SearchResult size = " + searchResultSet.getSearchResults().size());
-        return searchResultSet;
+        return responseToSpecimenSearchResultSet(searchResponse, params);
     }
 
     /**
@@ -228,64 +226,61 @@ public class BioportalSpecimenDao extends AbstractDao {
      *               default sorting is done on _score.
      * @return
      */
-	public SearchResultSet<Specimen> getSpecimenDetailWithinSearchResult(QueryParams params)
-	{
-		if (!hasText(params.getParam(UNIT_ID))) {
-			throw new IllegalArgumentException("unitId required");
-		}
-		String source = params.getParam("_source");
-		if (source.equals("SPECIMEN_NAME_SEARCH")) {
-			ResultGroupSet<Specimen, String> specimenResultGroupSet = doSpecimenNameSearch(params, false);
-			return createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
-		}
-		else if (source.equals("SPECIMEN_SEARCH")) {
-			SearchResultSet<Specimen> specimenSearchResultSet = doSpecimenSearch(params, false);
-			return createSpecimenDetailSearchResultSet(params, specimenSearchResultSet);
-		}
-		throw new RuntimeException(String.format("Invalid value for query parameter \"_source\": \"%s\"", source));
-	}
+    public SearchResultSet<Specimen> getSpecimenDetailWithinSearchResult(QueryParams params) {
+        if (!hasText(params.getParam(UNIT_ID))) {
+            throw new IllegalArgumentException("unitId required");
+        }
+        String source = params.getParam("_source");
+        if (source.equals("SPECIMEN_NAME_SEARCH")) {
+            ResultGroupSet<Specimen, String> specimenResultGroupSet = doSpecimenNameSearch(params, false);
+            return createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
+        } else if (source.equals("SPECIMEN_SEARCH")) {
+            SearchResultSet<Specimen> specimenSearchResultSet = doSpecimenSearch(params, false);
+            return createSpecimenDetailSearchResultSet(params, specimenSearchResultSet);
+        }
+        throw new RuntimeException(String.format("Invalid value for query parameter \"_source\": \"%s\"", source));
+    }
 
 
     // ==================================================== Helpers ====================================================
-    
-    
-	protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params,
-			SearchResultSet<Specimen> specimenSearchResultSet)
-	{
-		SearchResultSet<Specimen> searchResultSet = new SearchResultSet<>();
-		String unitID = params.getParam(UNIT_ID);
 
-		SearchResult<Specimen> foundSpecimenForUnitId = null;
-		SearchResult<Specimen> previousSpecimen = null;
-		SearchResult<Specimen> nextSpecimen = null;
-		
-		for(int i=0;i<specimenSearchResultSet.getSearchResults().size();++i) {
-			SearchResult<Specimen> sr = specimenSearchResultSet.getSearchResults().get(i);
-			if(sr.getResult().getUnitID().equals(unitID)) {
-				foundSpecimenForUnitId = sr;
-				if(i > 0) {
-					previousSpecimen = specimenSearchResultSet.getSearchResults().get(i-1);
-				}
-				if(i < specimenSearchResultSet.getSearchResults().size()-2) {
-					nextSpecimen = specimenSearchResultSet.getSearchResults().get(i+1);
-				}
-				break;
-			}
-		}
 
-		if (previousSpecimen != null) {
-			foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID()
-					+ queryParamsToUrl(params)));
-		}
-		if (nextSpecimen != null) {
-			foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID()
-					+ queryParamsToUrl(params)));
-		}
+    protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params,
+                                                                            SearchResultSet<Specimen> specimenSearchResultSet) {
+        SearchResultSet<Specimen> searchResultSet = new SearchResultSet<>();
+        String unitID = params.getParam(UNIT_ID);
 
-		searchResultSet.addSearchResult(foundSpecimenForUnitId);
-		searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
-		return searchResultSet;
-	}
+        SearchResult<Specimen> foundSpecimenForUnitId = null;
+        SearchResult<Specimen> previousSpecimen = null;
+        SearchResult<Specimen> nextSpecimen = null;
+
+        for (int i = 0; i < specimenSearchResultSet.getSearchResults().size(); ++i) {
+            SearchResult<Specimen> sr = specimenSearchResultSet.getSearchResults().get(i);
+            if (sr.getResult().getUnitID().equals(unitID)) {
+                foundSpecimenForUnitId = sr;
+                if (i > 0) {
+                    previousSpecimen = specimenSearchResultSet.getSearchResults().get(i - 1);
+                }
+                if (i < specimenSearchResultSet.getSearchResults().size() - 2) {
+                    nextSpecimen = specimenSearchResultSet.getSearchResults().get(i + 1);
+                }
+                break;
+            }
+        }
+
+        if (previousSpecimen != null) {
+            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID()
+                    + queryParamsToUrl(params)));
+        }
+        if (nextSpecimen != null) {
+            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID()
+                    + queryParamsToUrl(params)));
+        }
+
+        searchResultSet.addSearchResult(foundSpecimenForUnitId);
+        searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
+        return searchResultSet;
+    }
 
     protected SearchResultSet<Specimen> createSpecimenDetailSearchResultSet(QueryParams params,
                                                                             ResultGroupSet<Specimen, String> specimenResultGroupSet) {
@@ -344,27 +339,26 @@ public class BioportalSpecimenDao extends AbstractDao {
         return searchResultSet;
     }
 
-	private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, QueryParams params)
-	{
+    private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, QueryParams params) {
 
-		SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
-		resultSet.setTotalSize(response.getHits().getTotalHits());
-		resultSet.setQueryParameters(params.copyWithoutGeoShape());
+        SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
+        resultSet.setTotalSize(response.getHits().getTotalHits());
+        resultSet.setQueryParameters(params.copyWithoutGeoShape());
 
-		for (SearchHit hit : response.getHits()) {
-			ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
-			Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
-			List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer);
-			transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
-			SearchResult<Specimen> searchResult = new SearchResult<Specimen>(transfer);
-			resultSet.addSearchResult(searchResult);
-			searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
-			enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
-		}
-		
-		return resultSet;
-	}   
-    
+        for (SearchHit hit : response.getHits()) {
+            ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
+            Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
+            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer);
+            transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
+            SearchResult<Specimen> searchResult = new SearchResult<Specimen>(transfer);
+            resultSet.addSearchResult(searchResult);
+            searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
+            enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
+        }
+
+        return resultSet;
+    }
+
 
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response,
                                                                               QueryParams params) {

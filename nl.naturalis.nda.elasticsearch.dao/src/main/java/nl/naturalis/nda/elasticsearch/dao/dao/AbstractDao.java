@@ -88,7 +88,7 @@ public abstract class AbstractDao {
 
     private static ObjectMapper objectMapper;
     private SearchParamFieldMapping searchParamFieldMapping;
-    
+
     protected final Client esClient;
     protected final String ndaIndexName;
 
@@ -175,8 +175,8 @@ public abstract class AbstractDao {
         List<HighlightBuilder.Field> highlightFields =
                 prebuiltQuery == null || prebuiltQuery.getHighlightFields() == null
                         || prebuiltQuery.getHighlightFields().isEmpty()
-                ? new ArrayList<HighlightBuilder.Field>()
-                : prebuiltQuery.getHighlightFields();
+                        ? new ArrayList<HighlightBuilder.Field>()
+                        : prebuiltQuery.getHighlightFields();
 
         for (String nestedPath : nestedFields.keySet()) {
             extendQueryWithNestedFieldsWithSameNestedPath(boolQueryBuilder, operator, nestedPath, nestedFields.get(
@@ -204,8 +204,8 @@ public abstract class AbstractDao {
         atLeastOneFieldToQuery = extractRangeQuery(params, boolQueryBuilder, atLeastOneFieldToQuery);
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
-                                                                      .setQuery(filteredQuery(boolQueryBuilder, null))
-                                                                      .addSort(fieldSort);
+                .setQuery(filteredQuery(boolQueryBuilder, null))
+                .addSort(fieldSort);
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);
@@ -232,17 +232,17 @@ public abstract class AbstractDao {
     private boolean extractRangeQuery(QueryParams params, BoolQueryBuilder boolQueryBuilder, boolean atLeastOneFieldToQuery) {
         if (params.containsKey("gatheringEvent.dateTimeBegin") || params.containsKey("gatheringEvent.dateTimeEnd")) {
             extendQueryWithRangeFilter(boolQueryBuilder,
-                                       params,
-                                       "gatheringEvent.dateTimeBegin",
-                                       "gatheringEvent.dateTimeEnd");
+                    params,
+                    "gatheringEvent.dateTimeBegin",
+                    "gatheringEvent.dateTimeEnd");
             atLeastOneFieldToQuery = true;
         }
 
         if (params.containsKey("gatheringEvents.dateTimeBegin") || params.containsKey("gatheringEvents.dateTimeEnd")) {
             extendQueryWithRangeFilter(boolQueryBuilder,
-                                       params,
-                                       "gatheringEvents.dateTimeBegin",
-                                       "gatheringEvents.dateTimeEnd");
+                    params,
+                    "gatheringEvents.dateTimeBegin",
+                    "gatheringEvents.dateTimeEnd");
             atLeastOneFieldToQuery = true;
         }
 
@@ -294,10 +294,10 @@ public abstract class AbstractDao {
 
         if (shapeBuilder != null) {
             boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
-                                              geoShapeFilter(
-                                                      "gatheringEvent.siteCoordinates.point",
-                                                      shapeBuilder,
-                                                      ShapeRelation.WITHIN)));
+                    geoShapeFilter(
+                            "gatheringEvent.siteCoordinates.point",
+                            shapeBuilder,
+                            ShapeRelation.WITHIN)));
         }
     }
 
@@ -467,12 +467,12 @@ public abstract class AbstractDao {
     protected QueryAndHighlightFields buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
                                                                BioportalTaxonDao taxonDao, boolean highlight) {
         if (!hasFieldWithTextWithOneOfNames(fields,
-                                            IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
-                                            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
+                IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+                IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY) && !hasText(simpleSearch)) {
             return null;
         }
 
@@ -511,7 +511,7 @@ public abstract class AbstractDao {
         }
         nameResTaxonQueryParams.add("_andOr", "OR");
         nameResTaxonQueryParams.add("_maxResults", "50");
-        SearchResultSet<Taxon> nameResTaxons = taxonDao.search(nameResTaxonQueryParams, null, null, false); // no field filtering
+        SearchResultSet<Taxon> nameResTaxons = taxonDao.searchReturnsResultSet(nameResTaxonQueryParams, null, null, false); // no field filtering
         if (nameResTaxons.getTotalSize() == 0) {
             return null;
         }
@@ -562,9 +562,8 @@ public abstract class AbstractDao {
     }
 
     /**
-     *
-     * @param params parameters as passed to dao, may or may not include a _search entry
-     * @param searchFieldNames all fields on which can be search in (extended) search
+     * @param params                          parameters as passed to dao, may or may not include a _search entry
+     * @param searchFieldNames                all fields on which can be search in (extended) search
      * @param simpleSearchFieldNameExceptions do no use these in simple search
      */
     protected void evaluateSimpleSearch(QueryParams params,

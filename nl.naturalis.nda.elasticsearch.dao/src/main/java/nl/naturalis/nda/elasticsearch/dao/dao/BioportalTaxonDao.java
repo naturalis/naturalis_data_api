@@ -2,10 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.elasticsearch.client.Client;
 
 import java.util.Arrays;
@@ -80,7 +77,7 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
      *               parameter. By default sorting is done on _score.
      * @return search results
      */
-    public SearchResultSet<Taxon> taxonSearch(QueryParams params) {
+    public ResultGroupSet<Taxon, String> taxonSearch(QueryParams params) {
         return search(params, allowedFieldNamesForSearch, allowedFieldNamesForSearch_simpleSearchExceptions, true);
     }
 
@@ -99,62 +96,69 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
      * @return search result with previous and next link
      */
     public SearchResultSet<Taxon> getTaxonDetailWithinResultSet(QueryParams params) {
-        SearchResultSet<Taxon> searchResultSet = taxonSearch(params);
+        ResultGroupSet<Taxon, String> searchResultSet = taxonSearch(params);
 
         return createTaxonDetailSearchResultSet(params, searchResultSet);
     }
 
     protected SearchResultSet<Taxon> createTaxonDetailSearchResultSet(QueryParams params,
-                                                                      SearchResultSet<Taxon> searchResultSet) {
+                                                                      ResultGroupSet<Taxon, String> searchResultSet) {
         SearchResultSet<Taxon> detailResultSet = new SearchResultSet<>();
 
         SearchResult<Taxon> previousTaxon = null;
         SearchResult<Taxon> nextTaxon = null;
+        SearchResult<Taxon> foundTaxonForAcceptedName = null;
 
         String genusOrMonomial = params.getParam(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
         String specificEpithet = params.getParam(ACCEPTEDNAME_SPECIFIC_EPITHET);
         String infraspecificEpithet = params.getParam(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
 
-        List<SearchResult<Taxon>> searchResults = searchResultSet.getSearchResults();
-        for (SearchResult<Taxon> searchResult : searchResults) {
-            ScientificName acceptedName = searchResult.getResult().getAcceptedName();
-            if (acceptedName != null
-                    && acceptedName.isSameScientificName(createScientificName(genusOrMonomial,
-                    specificEpithet,
-                    infraspecificEpithet))) {
-                SearchResult<Taxon> result = new SearchResult<>();
-                result.setResult(searchResult.getResult());
-                int indexFoundTaxon = searchResults.indexOf(searchResult);
-                int searchResultSize = searchResults.size();
-                if (searchResultSize > 1) {
-                    if (indexFoundTaxon == 0) {
-                        // first item, no previous
-                        nextTaxon = searchResults.get(1);
-                    } else if (indexFoundTaxon == (searchResultSize - 1)) {
-                        // last item, no next
-                        previousTaxon = searchResults.get(indexFoundTaxon - 1);
+        List<ResultGroup<Taxon, String>> allBuckets = searchResultSet.getResultGroups();
+
+        for (int currentBucket = 0; currentBucket < allBuckets.size(); currentBucket++) {
+            ResultGroup<Taxon, String> bucket = allBuckets.get(currentBucket);
+
+            List<SearchResult<Taxon>> resultsInBucket = bucket.getSearchResults();
+            for (int indexInCurrentBucket = 0; indexInCurrentBucket < resultsInBucket.size(); indexInCurrentBucket++) {
+                SearchResult<Taxon> searchResult = resultsInBucket.get(indexInCurrentBucket);
+                ScientificName acceptedName = searchResult.getResult().getAcceptedName();
+                if (acceptedName != null && acceptedName.isSameScientificName(createScientificName(genusOrMonomial, specificEpithet, infraspecificEpithet))) {
+
+                    foundTaxonForAcceptedName = searchResult;
+                    if (indexInCurrentBucket == 0) {
+                        if (currentBucket != 0) {
+                            List<SearchResult<Taxon>> previousBucket = allBuckets.get(currentBucket - 1)
+                                    .getSearchResults();
+                            previousTaxon = previousBucket.get(previousBucket.size() - 1);
+                        }
                     } else {
-                        nextTaxon = searchResults.get(indexFoundTaxon + 1);
-                        previousTaxon = searchResults.get(indexFoundTaxon - 1);
+                        previousTaxon = bucket.getSearchResults().get(indexInCurrentBucket - 1);
                     }
-                }
 
-                if (previousTaxon != null) {
-                    result.addLink(new Link("_previous", TAXON_DETAIL_BASE_URL_IN_RESULT_SET +
-                            createIdentifyingEpithet(previousTaxon.getResult()) +
-                            queryParamsToUrl(params)));
+                    if (indexInCurrentBucket == resultsInBucket.size() - 1) {
+                        if (currentBucket != allBuckets.size() - 1) {
+                            List<SearchResult<Taxon>> nextBucket = allBuckets.get(currentBucket + 1)
+                                    .getSearchResults();
+                            nextTaxon = nextBucket.get(0);
+                        }
+                    } else {
+                        nextTaxon = bucket.getSearchResults().get(indexInCurrentBucket + 1);
+                    }
+                    break;
                 }
-                if (nextTaxon != null) {
-                    result.addLink(new Link("_next", TAXON_DETAIL_BASE_URL_IN_RESULT_SET +
-                            createIdentifyingEpithet(nextTaxon.getResult()) +
-                            queryParamsToUrl(params)));
-                }
-
-                detailResultSet.addSearchResult(result);
             }
+
+        }
+        if (previousTaxon != null) {
+            foundTaxonForAcceptedName.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + createIdentifyingEpithet(previousTaxon.getResult()) + queryParamsToUrl(params)));
+        }
+        if (nextTaxon != null) {
+            foundTaxonForAcceptedName.addLink(new Link("_next", TAXON_DETAIL_BASE_URL_IN_RESULT_SET + createIdentifyingEpithet(nextTaxon.getResult()) + queryParamsToUrl(params)));
         }
 
+        detailResultSet.addSearchResult(foundTaxonForAcceptedName);
         detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
+
         return detailResultSet;
     }
 

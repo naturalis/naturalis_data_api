@@ -4,8 +4,7 @@ import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.ESConstants;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -65,7 +64,7 @@ public class TaxonDao extends AbstractTaxonDao {
         }
         QueryParams params = new QueryParams();
         params.add(SOURCE_SYSTEM_ID, sourceSystemId);
-        return search(params, Collections.singleton(SOURCE_SYSTEM_ID), Collections.<String>emptySet(), false);
+        return searchReturnsResultSet(params, Collections.singleton(SOURCE_SYSTEM_ID), Collections.<String>emptySet(), false);
     }
 
     /**
@@ -99,7 +98,18 @@ public class TaxonDao extends AbstractTaxonDao {
         );
 
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-        return responseToTaxonSearchResultSet(searchResponse, new QueryParams());
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams());
+        SearchResultSet<Taxon> resultSet = new SearchResultSet<>();
+        List<ResultGroup<Taxon, String>> resultGroups = taxonStringResultGroupSet.getResultGroups();
+        if (resultGroups != null && !resultGroups.isEmpty()) {
+            List<SearchResult<Taxon>> searchResults = resultGroups.get(0).getSearchResults();
+            if (searchResults != null && !searchResults.isEmpty()) {
+                for (SearchResult<Taxon> searchResult : searchResults) {
+                    resultSet.addSearchResult(searchResult);
+                }
+            }
+        }
+        return resultSet;
     }
 
     private Map<String, String> fieldNamesToValues(QueryParams params) {

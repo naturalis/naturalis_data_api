@@ -40,7 +40,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         setupNameResolutionTest();
 
         QueryParams params = new QueryParams();
-        params.add("_search", "henkie");
+        params.add("_search", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
@@ -126,7 +126,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         setupNameResolutionTest();
 
         QueryParams params = new QueryParams();
-        params.add("vernacularName", "henk");
+        params.add("vernacularName", "bos");
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
@@ -172,7 +172,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         setupNameResolutionTest();
 
         QueryParams params = new QueryParams();
-        params.add("vernacularName", "henkie");
+        params.add("vernacularName", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
@@ -185,7 +185,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         QueryParams params = new QueryParams();
         params.add("_andOr", "OR");
         params.add("kingdom", "wrong value"); // has no results
-        params.add("vernacularName", "henkie");
+        params.add("vernacularName", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(1, result.getTotalSize());
@@ -198,7 +198,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         QueryParams params = new QueryParams();
         params.add("_andOr", "AND");
         params.add("kingdom", "wrong value"); // leads to no results
-        params.add("vernacularName", "henkie");
+        params.add("vernacularName", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
         assertEquals(0, result.getTotalSize());
@@ -332,6 +332,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         vernacularName.setName("bosaap");
 
         // no default classification to avoid direct hit in name resolution via taxons
+
         specimenIdentification.setVernacularNames(Arrays.asList(vernacularName));
         specimenIdentification.setScientificName(scientificName);
         esSpecimen.setIdentifications(asList(specimenIdentification));

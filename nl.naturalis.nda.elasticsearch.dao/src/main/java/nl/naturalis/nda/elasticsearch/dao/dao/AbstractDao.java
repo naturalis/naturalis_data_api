@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
+import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
@@ -80,8 +81,8 @@ public abstract class AbstractDao {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
     public static final String BASE_URL = "http://10.42.1.149:8080/nl.naturalis.nda.service.rest/api";
-    public static final String TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/get-taxon/?identifyingEpithets=";
-    public static final String TAXON_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/taxon/get-taxon-within-result-set/?identifyingEpithets=";
+    public static final String TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/get-taxon/?";
+    public static final String TAXON_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/taxon/get-taxon-within-result-set/?";
     public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/get-specimen/?unitID=";
     public static final String SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/specimen/get-specimen-within-result-set/?unitID=";
     public static final String MULTIMEDIA_DETAIL_BASE_URL = BASE_URL + "/multimedia/get-multimedia/?unitID=";
@@ -628,5 +629,38 @@ public abstract class AbstractDao {
             url = url + "&" + parameters.getKey() + "=" + parameters.getValue();
         }
         return url;
+    }
+
+    protected String createAcceptedNameParams(ScientificName acceptedName) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (acceptedName != null) {
+            boolean found = false;
+            if (hasText(acceptedName.getGenusOrMonomial())) {
+                found = true;
+                stringBuilder.append("genus=").append(acceptedName.getGenusOrMonomial());
+            }
+            if (hasText(acceptedName.getSubgenus())) {
+                if (found) {
+                    stringBuilder.append("&");
+                }
+                stringBuilder.append("subgenus=").append(acceptedName.getSubgenus());
+                found = true;
+            }
+            if (hasText(acceptedName.getSpecificEpithet())) {
+                if (found) {
+                    stringBuilder.append("&");
+                }
+                stringBuilder.append("specificEpithet=").append(acceptedName.getSpecificEpithet());
+                found = true;
+            }
+            if (hasText(acceptedName.getInfraspecificEpithet())) {
+                if (found) {
+                    stringBuilder.append("&");
+                }
+                stringBuilder.append("infraspecificEpithet=").append(acceptedName.getInfraspecificEpithet());
+            }
+        }
+        return stringBuilder.toString();
     }
 }

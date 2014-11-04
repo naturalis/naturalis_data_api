@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 
 /**
@@ -93,14 +92,15 @@ public class AbstractTaxonDao extends AbstractDao {
             SearchResult<Taxon> searchResult = new SearchResult<>();
 
             ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
-            String taxonName = createSharedValue(esTaxon);
+            String taxonName = createAcceptedNameParams(esTaxon.getAcceptedName());
             if (!nameToTaxons.containsKey(taxonName)) {
                 nameToTaxons.put(taxonName, new SearchResultSet<Taxon>());
             }
             SearchResultSet<Taxon> taxonsForName = nameToTaxons.get(taxonName);
 
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
-            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL_IN_RESULT_SET + esTaxon.getIdentifyingEpithets() +
+            //TODO NDA-66 taxon link must be to detail base url in result set
+            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(esTaxon.getAcceptedName()) +
                     queryParamsToUrl(params)));
             searchResult.setResult(taxon);
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
@@ -121,38 +121,6 @@ public class AbstractTaxonDao extends AbstractDao {
         taxonSearchResultGroupSet.setTotalSize(searchResponse.getHits().getTotalHits());
 
         return taxonSearchResultGroupSet;
-    }
-
-    private String createSharedValue(ESTaxon esTaxon) {
-        ScientificName acceptedName = esTaxon.getAcceptedName();
-
-        StringBuilder stringBuilder = new StringBuilder();
-        boolean found = false;
-        if (hasText(acceptedName.getGenusOrMonomial())) {
-            found = true;
-            stringBuilder.append("genus=").append(acceptedName.getGenusOrMonomial());
-        }
-        if (hasText(acceptedName.getSubgenus())) {
-            if (found) {
-                stringBuilder.append("&");
-            }
-            stringBuilder.append("subgenus=").append(acceptedName.getSubgenus());
-            found = true;
-        }
-        if (hasText(acceptedName.getSpecificEpithet())) {
-            if (found) {
-                stringBuilder.append("&");
-            }
-            stringBuilder.append("specificEpithet=").append(acceptedName.getSpecificEpithet());
-            found = true;
-        }
-        if (hasText(acceptedName.getInfraspecificEpithet())) {
-            if (found) {
-                stringBuilder.append("&");
-            }
-            stringBuilder.append("infraspecificEpithet=").append(acceptedName.getInfraspecificEpithet());
-        }
-        return stringBuilder.toString();
     }
 
 }

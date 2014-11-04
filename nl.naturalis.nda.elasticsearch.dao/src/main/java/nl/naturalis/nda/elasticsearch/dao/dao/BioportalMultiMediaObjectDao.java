@@ -247,7 +247,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (taxonDetail.getSearchResults() != null && taxonDetail.getSearchResults().get(0) != null) {
             Taxon taxon = taxonDetail.getSearchResults().get(0).getResult();
             multiMediaObject.setAssociatedTaxon(taxon);
-            links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName()));
+            links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
         }
     }
 
@@ -277,7 +277,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
                 List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                 for (SearchResult<Taxon> searchResult : searchResults) {
-                    links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + searchResult.getResult().getAcceptedName().getFullScientificName()));
+                    links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
                 }
             }
         }

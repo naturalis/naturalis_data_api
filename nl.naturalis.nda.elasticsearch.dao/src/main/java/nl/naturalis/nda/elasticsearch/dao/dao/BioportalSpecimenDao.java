@@ -269,12 +269,14 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         if (previousSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID()
-                    + queryParamsToUrl(params)));
+            //TODO NDA-66 specimen link must be to detail base url in result set
+//            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
+            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL + previousSpecimen.getResult().getUnitID()));
         }
         if (nextSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID()
-                    + queryParamsToUrl(params)));
+            //TODO NDA-66 specimen link must be to detail base url in result set
+//            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
+            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL + nextSpecimen.getResult().getUnitID()));
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
@@ -328,10 +330,14 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         if (previousSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
+            //TODO NDA-66 specimen link must be to detail base url in result set
+//            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + previousSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
+            foundSpecimenForUnitId.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL + previousSpecimen.getResult().getUnitID()));
         }
         if (nextSpecimen != null) {
-            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
+            //TODO NDA-66 specimen link must be to detail base url in result set
+//            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET + nextSpecimen.getResult().getUnitID() + queryParamsToUrl(params)));
+            foundSpecimenForUnitId.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL + nextSpecimen.getResult().getUnitID()));
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
@@ -412,7 +418,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                         if (searchResults != null) {
                             for (SearchResult<Taxon> taxonSearchResult : searchResults) {
                                 Taxon taxon = taxonSearchResult.getResult();
-                                searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + taxon.getAcceptedName().getFullScientificName()));
+                                searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
                             }
                         }
                     }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
 
 public class BioportalTaxonDao extends AbstractTaxonDao {
 
@@ -171,15 +170,5 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         scientificName.setSpecificEpithet(specificEpithet);
         scientificName.setInfraspecificEpithet(infraspecificEpithet);
         return scientificName;
-    }
-
-    private String createIdentifyingEpithet(Taxon taxon) {
-        return taxon.getAcceptedName().getGenusOrMonomial() +
-                IDENTIFYING_EPITHETS_DELIMITER +
-                taxon.getAcceptedName().getSubgenus() +
-                IDENTIFYING_EPITHETS_DELIMITER +
-                taxon.getAcceptedName().getSpecificEpithet() +
-                IDENTIFYING_EPITHETS_DELIMITER +
-                taxon.getAcceptedName().getInfraspecificEpithet();
     }
 }

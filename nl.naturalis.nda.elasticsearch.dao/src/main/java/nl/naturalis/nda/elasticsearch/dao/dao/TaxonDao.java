@@ -109,6 +109,7 @@ public class TaxonDao extends AbstractTaxonDao {
                 }
             }
         }
+        resultSet.setTotalSize(taxonStringResultGroupSet.getTotalSize());
         return resultSet;
     }
 

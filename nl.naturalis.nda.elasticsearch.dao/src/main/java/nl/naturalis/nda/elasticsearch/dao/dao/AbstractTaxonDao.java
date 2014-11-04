@@ -100,8 +100,7 @@ public class AbstractTaxonDao extends AbstractDao {
 
             Taxon taxon = TaxonTransfer.transfer(esTaxon);
             //TODO NDA-66 taxon link must be to detail base url in result set
-            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(esTaxon.getAcceptedName()) +
-                    queryParamsToUrl(params)));
+            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(esTaxon.getAcceptedName())));
             searchResult.setResult(taxon);
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 

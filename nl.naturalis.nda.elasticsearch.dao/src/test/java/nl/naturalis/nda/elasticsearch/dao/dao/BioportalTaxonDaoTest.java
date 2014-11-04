@@ -163,7 +163,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     }
 
     @Test
-    public void testName() throws Exception {
+    public void testTaxonSearchGrouping() throws Exception {
         ScientificName acceptedName = new ScientificName();
         acceptedName.setGenusOrMonomial("Hyphomonas");
         acceptedName.setSpecificEpithet("oceanitis");
@@ -192,8 +192,6 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         ResultGroupSet<Taxon, String> taxonDetailWithinResultSet = taxonDao.taxonSearch(params);
 
         assertTrue(taxonDetailWithinResultSet.getResultGroups().size() == 2);
-
-
     }
 
 

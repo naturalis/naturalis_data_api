@@ -227,10 +227,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                     }
 
                     if (previousMultiMediaObject != null) {
-                        searchResult.addLink(new Link("_previous", SPECIMEN_DETAIL_BASE_URL + previousMultiMediaObject.getResult().getUnitID()));
+                        searchResult.addLink(new Link("_previous", MULTIMEDIA_DETAIL_BASE_URL + previousMultiMediaObject.getResult().getUnitID()));
                     }
                     if (nextMultiMediaObject != null) {
-                        searchResult.addLink(new Link("_next", SPECIMEN_DETAIL_BASE_URL + nextMultiMediaObject.getResult().getUnitID()));
+                        searchResult.addLink(new Link("_next", MULTIMEDIA_DETAIL_BASE_URL + nextMultiMediaObject.getResult().getUnitID()));
                     }
 
                     detailResultSet.addSearchResult(searchResult);
@@ -251,7 +251,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         }
     }
 
-    private void addAssociatedSpecimenLink(List<Link> links, MultiMediaObject multiMediaObject, boolean addTaxonLinksByScientificName) {
+    private void addAssociatedSpecimenLink(List<Link> links, MultiMediaObject multiMediaObject, boolean addTaxonLinksByAcceptedName) {
         String associatedSpecimenReference = multiMediaObject.getAssociatedSpecimenReference();
         if (hasText(associatedSpecimenReference)) {
             SearchResultSet<Specimen> specimenDetail = specimenDao.getSpecimenDetail(associatedSpecimenReference);
@@ -261,7 +261,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                     multiMediaObject.setAssociatedSpecimen(specimen);
                     links.add(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
 
-                    if (specimen.getIdentifications() != null && addTaxonLinksByScientificName) {
+                    if (specimen.getIdentifications() != null && addTaxonLinksByAcceptedName) {
                         addTaxonLinksByScientificName(links, specimen);
                     }
                 }

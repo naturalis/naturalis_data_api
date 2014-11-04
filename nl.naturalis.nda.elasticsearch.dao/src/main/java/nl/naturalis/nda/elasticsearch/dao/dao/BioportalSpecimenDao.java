@@ -18,6 +18,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +50,8 @@ import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class BioportalSpecimenDao extends AbstractDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(BioportalSpecimenDao.class);
 
     private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
@@ -146,7 +150,9 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting);
 
-        return responseToSpecimenSearchResultSet(searchResponse, params);
+        SearchResultSet<Specimen> searchResultSet = responseToSpecimenSearchResultSet(searchResponse, params);
+        logger.info("*** SearchResult size = " + searchResultSet.getSearchResults().size());
+        return searchResultSet;
     }
 
     /**

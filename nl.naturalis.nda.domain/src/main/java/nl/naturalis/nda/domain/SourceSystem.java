@@ -50,14 +50,14 @@ public class SourceSystem {
 	@Override
 	public boolean equals(Object obj)
 	{
-		return code.equals(((SourceSystem) obj).code);
+		return this == obj;
 	}
 
 
 	@Override
 	public int hashCode()
 	{
-		return code.hashCode();
+		return System.identityHashCode(this);
 	}
 
 

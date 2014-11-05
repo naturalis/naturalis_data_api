@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import nl.naturalis.nda.domain.SourceSystem;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,7 @@ public class ThematicSearchConfig {
 		DocumentType type;
 		String identifier;
 		List<String> ids;
+		List<SourceSystem> systems;
 		int matches = 0;
 	}
 
@@ -52,11 +55,17 @@ public class ThematicSearchConfig {
 	 * @param type
 	 * @return
 	 */
-	public List<String> getThemesForDocument(String id, DocumentType type)
+	public List<String> getThemesForDocument(String id, DocumentType type, SourceSystem system)
 	{
+		if (id == null) {
+			return null;
+		}
 		List<String> identifiers = null;
 		for (Theme theme : themes) {
 			if (theme.type != type) {
+				continue;
+			}
+			if (theme.systems != null && !theme.systems.contains(system)) {
 				continue;
 			}
 			if (Collections.binarySearch(theme.ids, id) >= 0) {
@@ -106,6 +115,31 @@ public class ThematicSearchConfig {
 				theme.identifier = props.getProperty(code + ".identifier");
 				if (theme.identifier == null || theme.identifier.length() == 0) {
 					theme.identifier = theme.code;
+				}
+				String systemProperty = props.getProperty(code + ".systems");
+				if (systemProperty != null && systemProperty.trim().length() != 0) {
+					String[] systemCodes = systemProperty.split(",");
+					theme.systems = new ArrayList<SourceSystem>(systemCodes.length);
+					for (String systemCode : systemCodes) {
+						switch (systemCode.trim().toUpperCase()) {
+							case "CRS":
+								theme.systems.add(SourceSystem.CRS);
+								break;
+							case "BRAHMS":
+								theme.systems.add(SourceSystem.BRAHMS);
+								break;
+							case "NSR":
+								theme.systems.add(SourceSystem.NSR);
+								break;
+							case "COL":
+								theme.systems.add(SourceSystem.COL);
+								break;
+							default: {
+								String fmt = "Unknown system in \"%s.systems\": \"%s\" (allowed: CRS, BRAHMS, NSR, COL)";
+								throw new RuntimeException(String.format(fmt, code, systemCode));
+							}
+						}
+					}
 				}
 				loadIdsForTheme(theme);
 			}

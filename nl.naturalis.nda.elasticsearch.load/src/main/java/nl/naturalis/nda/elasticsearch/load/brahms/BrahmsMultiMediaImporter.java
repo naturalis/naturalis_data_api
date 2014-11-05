@@ -156,8 +156,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			throw new Exception("Missing barcode");
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
-		mmo.setUnitID(s);
-		mmo.setSourceSystemId(s + "_" + imageNo);
+		mmo.setUnitID(s + ":" + imageNo);
+		mmo.setSourceSystemId(mmo.getUnitID());
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
 		mmo.setAssociatedSpecimenReference(s);
 		mmo.setDescription(val(record, PLANTDESC.ordinal()));

@@ -25,7 +25,10 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
+import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
@@ -190,6 +193,10 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public void importCsvFiles() throws Exception
 	{
+
+		// Check thematic search is configured properly
+		ThematicSearchConfig.getInstance();
+
 		String csvDir = System.getProperty("csvDir");
 		if (csvDir == null) {
 			throw new Exception("Missing -DcsvDir argument");
@@ -231,6 +238,11 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSourceSystemId(barcode);
 		specimen.setUnitID(barcode);
+
+		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
+		specimen.setTheme(themes);
+
 		specimen.setRecordBasis("PreservedSpecimen");
 		specimen.setAssemblageID(ID_PREFIX + val(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
@@ -264,24 +276,24 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		ge.setCountry(val(record, CsvField.COUNTRY.ordinal()));
 		ge.setProvinceState(val(record, CsvField.MAJORAREA.ordinal()));
 		StringBuilder sb = new StringBuilder(50);
-		if(ge.getWorldRegion() != null) {
+		if (ge.getWorldRegion() != null) {
 			sb.append("continent: " + ge.getWorldRegion());
 		}
-		if(ge.getCountry() != null) {
-			if(sb.length() != 0) {
+		if (ge.getCountry() != null) {
+			if (sb.length() != 0) {
 				sb.append("; ");
 			}
 			sb.append("country: " + ge.getCountry());
 		}
-		if(ge.getProvinceState() != null) {
-			if(sb.length() != 0) {
+		if (ge.getProvinceState() != null) {
+			if (sb.length() != 0) {
 				sb.append("; ");
 			}
-			sb.append("province/state: " + ge.getProvinceState());	
+			sb.append("province/state: " + ge.getProvinceState());
 		}
 		String locNotes = val(record, CsvField.LOCNOTES.ordinal());
-		if(locNotes !=null) {
-			if(sb.length() != 0) {
+		if (locNotes != null) {
+			if (sb.length() != 0) {
 				sb.append("; ");
 			}
 			sb.append(locNotes);
@@ -353,15 +365,12 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
 	{
-		final DefaultClassification dc = new DefaultClassification();
+		final DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
 		dc.setPhylum(null);
 		dc.setClassName(val(record, CsvField.FAMCLASS.ordinal()));
 		dc.setOrder(val(record, CsvField.ORDER.ordinal()));
 		dc.setFamily(val(record, CsvField.FAMILY.ordinal()));
-		dc.setGenus(sn.getGenusOrMonomial());
-		dc.setSpecificEpithet(sn.getSpecificEpithet());
-		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
 		return dc;
 	}
 

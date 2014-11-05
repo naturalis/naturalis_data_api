@@ -28,22 +28,21 @@ class NsrTaxonTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonTransfer.class);
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<String, TaxonomicStatus>();
-	
-/*
-	static {
-		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);
-		translations.put("isSynonymOf", TaxonomicStatus.SYNONYM);
-		translations.put("isSynonymSLOf", TaxonomicStatus.SYNONYM);
-		translations.put("isBasionymOf", TaxonomicStatus.BASIONYM);
-		translations.put("isHomonymOf", TaxonomicStatus.HOMONYM);
-		translations.put("isMisspelledNameOf", TaxonomicStatus.MISSPELLED_NAME);
-		translations.put("isInvalidNameOf", TaxonomicStatus.MISAPPLIED_NAME);
-	}
-	
-	TaxonomicStatus has a richer set of possible statuses than actually used
-	when importing (misspelled names and invalid names are simply mapped to
-	synonym)
-*/
+
+	/*
+	 * static { translations.put("isValidNameOf",
+	 * TaxonomicStatus.ACCEPTED_NAME); translations.put("isSynonymOf",
+	 * TaxonomicStatus.SYNONYM); translations.put("isSynonymSLOf",
+	 * TaxonomicStatus.SYNONYM); translations.put("isBasionymOf",
+	 * TaxonomicStatus.BASIONYM); translations.put("isHomonymOf",
+	 * TaxonomicStatus.HOMONYM); translations.put("isMisspelledNameOf",
+	 * TaxonomicStatus.MISSPELLED_NAME); translations.put("isInvalidNameOf",
+	 * TaxonomicStatus.MISAPPLIED_NAME); }
+	 * 
+	 * TaxonomicStatus has a richer set of possible statuses than actually used
+	 * when importing (misspelled names and invalid names are simply mapped to
+	 * synonym)
+	 */
 	static {
 		translations.put("isValidNameOf", TaxonomicStatus.ACCEPTED_NAME);
 		translations.put("isSynonymOf", TaxonomicStatus.SYNONYM);
@@ -84,8 +83,10 @@ class NsrTaxonTransfer {
 		}
 		taxon.setVernacularNames(getVernacularNames(taxonElement));
 		taxon.setDescriptions(getTaxonDescriptions(taxonElement));
+		TransferUtil.equalizeNameComponents(taxon);
 		return taxon;
 	}
+
 
 	private static List<ScientificName> getScientificNames(Element taxonElement) throws Exception
 	{
@@ -177,8 +178,8 @@ class NsrTaxonTransfer {
 		List<TaxonDescription> descriptions = new ArrayList<TaxonDescription>(pageElements.size());
 		for (Element pageElement : pageElements) {
 			TaxonDescription taxonDescription = new TaxonDescription();
-			taxonDescription.setCategory(DOMUtil.getValue(pageElement, "title"));
-			taxonDescription.setDescription(DOMUtil.getValue(pageElement, "text"));
+			taxonDescription.setCategory(nl(DOMUtil.getValue(pageElement, "title")));
+			taxonDescription.setDescription(nl(DOMUtil.getValue(pageElement, "text")));
 			descriptions.add(taxonDescription);
 		}
 		return descriptions;
@@ -194,14 +195,26 @@ class NsrTaxonTransfer {
 			return null;
 		}
 		List<Element> taxonElements = DOMUtil.getChildren(classificationElement);
-		if(taxonElements == null) {
+		if (taxonElements == null) {
 			String name = nl(DOMUtil.getValue(taxonElement, "name"));
 			logger.warn(String.format("No classification for taxon \"%s\"", name));
 			return null;
 		}
 		List<Monomial> monomials = new ArrayList<Monomial>(taxonElements.size());
 		for (Element e : taxonElements) {
-			monomials.add(new Monomial(DOMUtil.getValue(e, "rank"), DOMUtil.getValue(e, "name")));
+			String rankIdentifier = nl(DOMUtil.getValue(e, "rank"));
+			if (rankIdentifier == null) {
+				String name = nl(DOMUtil.getValue(taxonElement, "name"));
+				logger.error(String.format("Empty rank identifier (<rank>) for taxon \"%s\"", name));
+				continue;
+			}
+			String rankValue = nl(DOMUtil.getValue(e, "name"));
+			if (rankValue == null) {
+				String name = nl(DOMUtil.getValue(taxonElement, "name"));
+				logger.error(String.format("Empty rank value (<name>) for taxon \"%s\"", name));
+				continue;
+			}
+			monomials.add(new Monomial(rankIdentifier, rankValue));
 		}
 		return monomials;
 	}
@@ -246,7 +259,7 @@ class NsrTaxonTransfer {
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(nl(DOMUtil.getValue(nameElement, "fullname")));
 		sn.setAuthor(nl(DOMUtil.getValue(nameElement, "name_author")));
-		sn.setGenusOrMonomial(DOMUtil.getValue(nameElement, "uninomial"));
+		sn.setGenusOrMonomial(nl(DOMUtil.getValue(nameElement, "uninomial")));
 		sn.setSpecificEpithet(nl(DOMUtil.getValue(nameElement, "specific_epithet")));
 		sn.setInfraspecificEpithet(nl(DOMUtil.getValue(nameElement, "infra_specific_epithet")));
 		sn.setTaxonomicStatus(getTaxonomicStatus(nameElement));
@@ -293,9 +306,12 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static String nl(String in)
+	static String nl(String in)
 	{
-		return ((in == null || in.trim().length() == 0) ? null : in);
+		if (in == null) {
+			return null;
+		}
+		in = in.trim();
+		return in.length() == 0 ? null : in;
 	}
-
 }

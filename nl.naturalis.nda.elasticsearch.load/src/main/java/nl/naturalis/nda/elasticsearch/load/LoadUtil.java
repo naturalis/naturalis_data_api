@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class LoadUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoadUtil.class);
-	private static final String PROPERTY_FILE_NAME = "nda-es-loaders.properties";
+	private static final String PROPERTY_FILE_NAME = "nda-import.properties";
 
 	private static ConfigObject config;
 	private static Client localClient;

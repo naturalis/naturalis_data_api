@@ -56,6 +56,7 @@ public class NsrMultiMediaTransfer {
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystem(SourceSystem.NSR);
 		mmo.setSourceSystemId(taxon.getSourceSystemId() + ":" + url.hashCode());
+		mmo.setUnitID(mmo.getSourceSystemId());
 		mmo.setAssociatedTaxonReference(taxon.getSourceSystemId());
 		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, null, Variant.MEDIUM_QUALITY));
 		mmo.setCreator(nl(DOMUtil.getValue(imageElement, "photographer_name")));
@@ -78,12 +79,13 @@ public class NsrMultiMediaTransfer {
 		identification.setSystemClassification(taxon.getSystemClassification());
 		identification.setVernacularNames(taxon.getVernacularNames());
 		mmo.setIdentifications(Arrays.asList(identification));
+		TransferUtil.equalizeNameComponents(mmo);
 		return mmo;
 	}
 
 
 	private static String nl(String in)
 	{
-		return ((in == null || in.trim().length() == 0) ? null : in);
+		return NsrTaxonTransfer.nl(in);
 	}
 }

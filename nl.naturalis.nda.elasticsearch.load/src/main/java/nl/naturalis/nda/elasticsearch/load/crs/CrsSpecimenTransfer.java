@@ -148,11 +148,8 @@ public class CrsSpecimenTransfer {
 			si.setTaxonRank("genus");
 		}
 
-		DefaultClassification dc = new DefaultClassification();
-		dc.setGenus(sn.getGenusOrMonomial());
-		dc.setSpecificEpithet(sn.getSpecificEpithet());
-		dc.setInfraspecificRank(infraspecificRank);
-		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
+		DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
+		si.setDefaultClassification(dc);
 
 		String taxonCoverage = val(determinationElement, "abcd:taxonCoverage");
 		String higherTaxonRank = val(determinationElement, "abcd:HigherTaxonRank");

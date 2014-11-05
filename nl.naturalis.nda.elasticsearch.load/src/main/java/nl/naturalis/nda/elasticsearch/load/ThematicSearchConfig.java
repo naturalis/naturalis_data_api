@@ -20,6 +20,7 @@ public class ThematicSearchConfig {
 		DocumentType type;
 		String identifier;
 		List<String> ids;
+		int matches = 0;
 	}
 
 	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
@@ -59,6 +60,7 @@ public class ThematicSearchConfig {
 				continue;
 			}
 			if (Collections.binarySearch(theme.ids, id) >= 0) {
+				++theme.matches;
 				if (identifiers == null) {
 					identifiers = new ArrayList<String>(themes.size());
 				}
@@ -66,6 +68,14 @@ public class ThematicSearchConfig {
 			}
 		}
 		return identifiers;
+	}
+
+
+	public void logMatches()
+	{
+		for (Theme theme : themes) {
+			logger.info("Number of indexed documents for theme \"%s\": %s", theme.identifier, theme.matches);
+		}
 	}
 
 

@@ -131,6 +131,13 @@ public class NsrTaxonImporter {
 			}
 			try {
 				taxon = NsrTaxonTransfer.transfer(taxonElement);
+				taxa.add(taxon);
+				ids.add(ID_PREFIX + taxon.getSourceSystemId());
+				if (taxa.size() >= bulkRequestSize) {
+					index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+					taxa.clear();
+					ids.clear();
+				}
 			}
 			catch (Throwable t) {
 				++bad;
@@ -139,13 +146,6 @@ public class NsrTaxonImporter {
 				String msg = String.format("Error in record %s (\"%s\"): %s", (processed + 1), name, t.getMessage());
 				logger.error(msg);
 				logger.debug("Stack trace:", t);
-			}
-			taxa.add(taxon);
-			ids.add(ID_PREFIX + taxon.getSourceSystemId());
-			if (taxa.size() >= bulkRequestSize) {
-				index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
-				taxa.clear();
-				ids.clear();
 			}
 		}
 		if (!taxa.isEmpty()) {

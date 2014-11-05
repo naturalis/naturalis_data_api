@@ -8,11 +8,12 @@ import nl.naturalis.nda.domain.MultiMediaContentIdentification;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.ServiceAccessPoint;
-import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.ServiceAccessPoint.Variant;
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
@@ -45,13 +46,13 @@ public class CrsMultiMediaTransfer {
 		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
 		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
-		String sex  = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
+		String sex = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
 			String url = val(mediaFileElement, "abcd:fileuri");
-			if(url == null) {
-				logger.info("No Image URL for record with identifier " + val(recordElement, "identifier"));
+			if (url == null) {
+				logger.error("No Image URL for record with identifier " + val(recordElement, "identifier"));
 				continue;
 			}
 			String title = val(mediaFileElement, "dc:title");
@@ -61,6 +62,7 @@ public class CrsMultiMediaTransfer {
 			}
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 			mmo.setSourceSystem(SourceSystem.CRS);
 			mmo.setSourceSystemId(title);
 			mmo.setUnitID(title);
@@ -74,7 +76,6 @@ public class CrsMultiMediaTransfer {
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 		}
 		return mmos;
 	}
@@ -118,11 +119,14 @@ public class CrsMultiMediaTransfer {
 			MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
 			identifications.add(identification);
 			ScientificName sn = new ScientificName();
+			identification.setScientificName(sn);
 			sn.setFullScientificName(val(e, "dwc:scientificName"));
 			sn.setGenusOrMonomial(val(e, "abcd:GenusOrMonomial"));
 			sn.setSpecificEpithet(val(e, "abcd:SpeciesEpithet"));
 			sn.setInfraspecificEpithet(val(e, "abcd:subspeciesepithet"));
 			sn.setNameAddendum(val(e, "abcd:NameAddendum"));
+			sn.setAuthorshipVerbatim(val(e, "dwc:nameAccordingTo"));
+			identification.setDefaultClassification(TransferUtil.extractClassificiationFromName(sn));
 			String s = val(e, "abcd:IdentificationQualifier1");
 			if (s != null) {
 				List<String> qualifiers = new ArrayList<String>(3);
@@ -151,10 +155,7 @@ public class CrsMultiMediaTransfer {
 	private static boolean bval(Element e, String tag)
 	{
 		String s = val(e, tag);
-		if (s == null || !s.equals("1")) {
-			return false;
-		}
-		return true;
+		return (s == null || s.equals("1"));
 	}
 
 

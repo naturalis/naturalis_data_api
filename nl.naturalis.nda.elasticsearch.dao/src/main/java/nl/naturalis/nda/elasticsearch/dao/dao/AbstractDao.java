@@ -145,12 +145,6 @@ public abstract class AbstractDao {
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
                                                    boolean highlighting, QueryAndHighlightFields prebuiltQuery) {
-        String sortField = getSortFieldFromQueryParams(params);
-        FieldSortBuilder fieldSort = fieldSort(sortField);
-        SortOrder sortOrder = getSortOrderFromQueryParams(params);
-        if (sortOrder != null) {
-            fieldSort.order(sortOrder);
-        }
 
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         Operator operator = getOperator(params);
@@ -213,7 +207,7 @@ public abstract class AbstractDao {
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                 .setQuery(filteredQuery(completeQuery, null))
-                .addSort(fieldSort);
+                .addSort(makeFieldSort(params));
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);
@@ -236,6 +230,16 @@ public abstract class AbstractDao {
     }
 
     //================================================ Helper methods ==================================================
+
+    private FieldSortBuilder makeFieldSort(QueryParams params) {
+        String sortField = getSortFieldFromQueryParams(params);
+        FieldSortBuilder fieldSort = fieldSort(sortField);
+        SortOrder sortOrder = getSortOrderFromQueryParams(params);
+        if (sortOrder != null) {
+            fieldSort.order(sortOrder);
+        }
+        return fieldSort;
+    }
 
     private boolean extractRangeQuery(QueryParams params, BoolQueryBuilder boolQueryBuilder, boolean atLeastOneFieldToQuery) {
         if (params.containsKey("gatheringEvent.dateTimeBegin") || params.containsKey("gatheringEvent.dateTimeEnd")) {

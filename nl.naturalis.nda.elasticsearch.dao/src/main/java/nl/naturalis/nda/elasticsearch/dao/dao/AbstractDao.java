@@ -85,7 +85,8 @@ public abstract class AbstractDao {
     public static final String TAXON_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/taxon/get-taxon-within-result-set/?";
     public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/get-specimen/?unitID=";
     public static final String SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/specimen/get-specimen-within-result-set/?unitID=";
-    public static final String MULTIMEDIA_DETAIL_BASE_URL = BASE_URL + "/multimedia/get-multimedia/?unitID=";
+    public static final String MULTIMEDIA_DETAIL_BASE_URL_TAXON = BASE_URL + "/multimedia/get-multimedia-object-for-taxon-within-result-set/?unitID=";
+    public static final String MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN = BASE_URL + "/multimedia/get-multimedia-object-for-specimen-within-result-set/?unitID=";
 
     private static ObjectMapper objectMapper;
     private SearchParamFieldMapping searchParamFieldMapping;

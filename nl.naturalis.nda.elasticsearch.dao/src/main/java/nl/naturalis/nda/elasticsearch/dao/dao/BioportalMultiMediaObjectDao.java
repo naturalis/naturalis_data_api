@@ -170,8 +170,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      * <p/>
      * Evaluates simple search parameter.
      *
-     * @param params            search parameters
-     * @param allowedFieldNames may be null if you don't want filtering
+     * @param params                          search parameters
+     * @param allowedFieldNames               may be null if you don't want filtering
      * @param simpleSearchFieldNameExceptions
      * @return search results
      */
@@ -184,9 +184,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
 
         QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"),
-                                                                               bioportalTaxonDao, false);
+                bioportalTaxonDao, false);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true,
-                                                              nameResolutionQuery);
+                nameResolutionQuery);
 
         return responseToMultiMediaObjectSearchResultSet(searchResponse, params);
     }
@@ -227,10 +227,18 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                     }
 
                     if (previousMultiMediaObject != null) {
-                        searchResult.addLink(new Link("_previous", MULTIMEDIA_DETAIL_BASE_URL + previousMultiMediaObject.getResult().getUnitID()));
+                        if (previousMultiMediaObject.getResult().getAssociatedSpecimen() != null) {
+                            searchResult.addLink(new Link("_previous", MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN + previousMultiMediaObject.getResult().getUnitID()));
+                        } else if (previousMultiMediaObject.getResult().getAssociatedTaxon() != null) {
+                            searchResult.addLink(new Link("_previous", MULTIMEDIA_DETAIL_BASE_URL_TAXON + previousMultiMediaObject.getResult().getUnitID()));
+                        }
                     }
                     if (nextMultiMediaObject != null) {
-                        searchResult.addLink(new Link("_next", MULTIMEDIA_DETAIL_BASE_URL + nextMultiMediaObject.getResult().getUnitID()));
+                        if (nextMultiMediaObject.getResult().getAssociatedSpecimen() != null) {
+                            searchResult.addLink(new Link("_next", MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN + nextMultiMediaObject.getResult().getUnitID()));
+                        } else if (nextMultiMediaObject.getResult().getAssociatedTaxon() != null) {
+                            searchResult.addLink(new Link("_next", MULTIMEDIA_DETAIL_BASE_URL_TAXON + nextMultiMediaObject.getResult().getUnitID()));
+                        }
                     }
 
                     detailResultSet.addSearchResult(searchResult);
@@ -299,8 +307,11 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             if (hasText(multiMediaObject.getAssociatedSpecimenReference())) {
                 addAssociatedSpecimenLink(links, multiMediaObject, false);
             }
-
-            links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL + multiMediaObject.getUnitID()));
+            if (multiMediaObject.getAssociatedSpecimen() != null) {
+                links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN + multiMediaObject.getUnitID()));
+            } else if (multiMediaObject.getAssociatedTaxon() != null) {
+                links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL_TAXON + multiMediaObject.getUnitID()));
+            }
             multiMediaObjectSearchResult.setLinks(links);
 
             enhanceSearchResultWithMatchInfoAndScore(multiMediaObjectSearchResult, hit);

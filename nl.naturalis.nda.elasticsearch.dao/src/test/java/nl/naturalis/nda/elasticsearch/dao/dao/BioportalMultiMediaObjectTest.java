@@ -80,6 +80,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         assertEquals(1, searchResultSet.getTotalSize());
     }
 
+
     private void setupTaxonForNameResolution() throws IOException {
         client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
                 .setSource(getMapping("test-taxon-mapping.json"))

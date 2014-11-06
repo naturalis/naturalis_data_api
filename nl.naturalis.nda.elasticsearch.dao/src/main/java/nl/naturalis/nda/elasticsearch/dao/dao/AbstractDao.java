@@ -194,7 +194,7 @@ public abstract class AbstractDao {
         }
 
         if (prebuiltQuery != null && prebuiltQuery.getQuery() != null) {
-            extendQueryWithQuery(boolQueryBuilder, operator, prebuiltQuery.getQuery());
+            extendQueryWithQuery(boolQueryBuilder, OR, prebuiltQuery.getQuery());
             atLeastOneFieldToQuery = true;
         }
 
@@ -370,22 +370,22 @@ public abstract class AbstractDao {
             if (boostValue != null) {
                 fieldMatchQuery.boost(boostValue);
             }
-            extendQueryWithQuery(boolQueryBuilder, operator, fieldMatchQuery);
-
-            highlightFields.add(createHighlightField(field.getFieldName(),
-                    matchQuery(field.getFieldName(), field.getValue())));
 
             if (field.hasNGram() != null && field.hasNGram()) {
+                extendQueryWithQuery(boolQueryBuilder, OR, fieldMatchQuery);
                 MatchQueryBuilder ngramFieldMatchQuery = matchQuery(field.getFieldName() + ".ngram", field.getValue());
                 if (boostValue != null) {
                     ngramFieldMatchQuery.boost(boostValue);
                 }
                 extendQueryWithQuery(boolQueryBuilder, operator, ngramFieldMatchQuery);
                 if (highlight) {
-                    highlightFields.add(createHighlightField(field.getFieldName() + ".ngram",
-                            matchQuery(field.getFieldName() + ".ngram", field.getValue())));
+                    highlightFields.add(createHighlightField(field.getFieldName() + ".ngram", matchQuery(field.getFieldName() + ".ngram", field.getValue())));
                 }
+            } else {
+                extendQueryWithQuery(boolQueryBuilder, operator, fieldMatchQuery);
             }
+
+            highlightFields.add(createHighlightField(field.getFieldName(), matchQuery(field.getFieldName(), field.getValue())));
         }
     }
 

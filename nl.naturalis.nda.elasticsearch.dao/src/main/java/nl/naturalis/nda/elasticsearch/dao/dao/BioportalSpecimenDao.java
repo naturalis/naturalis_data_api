@@ -202,7 +202,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         float minScore = 0;
         if (totalHits > 1) {
             params.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(params, allowedFields, TAXON_TYPE, false).getHits().getAt(0).getScore();
+            minScore = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, false).getHits().getAt(0).getScore();
         }
 
         return responseToSpecimenResultGroupSet(searchResponse, params, minScore);

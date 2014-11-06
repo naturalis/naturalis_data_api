@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,6 +150,36 @@ public abstract class AbstractDao {
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         Operator operator = getOperator(params);
 
+
+
+
+        // FIXME: impl pseudo-code from here *************************************
+
+        Map<String, List<FieldMapping>> nestedFields_lvl1 = new HashMap<>();
+        List<FieldMapping> nonNestedFields_lvl1 = new ArrayList<>();
+
+        for (Set<FieldMapping> relatedFields : groupRelatedFields(fields)) {
+            if (relatedFields.size() == 1) {
+                FieldMapping field = relatedFields.iterator().next();
+                // populate nestedFields_lvl1 or nonNestedFields_lvl1 with field
+            } else {
+                BoolQueryBuilder relatedFieldsQuery = boolQuery();
+                Map<String, List<FieldMapping>> nestedFields_lvl2 = new HashMap<>();
+                List<FieldMapping> nonNestedFields_lvl2 = new ArrayList<>();
+                for (FieldMapping field : relatedFields) {
+                    // populate nestedFields_lvl2 or nonNestedFields_lvl2 with field
+                }
+                // extend *relatedFieldsQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using operator
+            }
+        }
+        // extend *nonPrebuiltQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using operator
+
+        // FIXME: to here *********************************************************
+
+
+
+
+
         Map<String, List<FieldMapping>> nestedFields = new HashMap<>();
         List<FieldMapping> nonNestedFields = new ArrayList<>();
         for (FieldMapping field : fields) {
@@ -207,7 +238,7 @@ public abstract class AbstractDao {
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                 .setQuery(filteredQuery(completeQuery, null))
-                .addSort(makeFieldSort(params));
+                .addSort(createFieldSort(params));
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);
@@ -231,7 +262,16 @@ public abstract class AbstractDao {
 
     //================================================ Helper methods ==================================================
 
-    private FieldSortBuilder makeFieldSort(QueryParams params) {
+    /**
+     * If no groups exist, this will return a lot of singleton sets in the big set. All related fields exist in a set.
+     * @param fields
+     * @return
+     */
+    private Set<Set<FieldMapping>> groupRelatedFields(List<FieldMapping> fields) {
+        return new HashSet<>();   // FIXME: implement
+    }
+
+    private FieldSortBuilder createFieldSort(QueryParams params) {
         String sortField = getSortFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
         SortOrder sortOrder = getSortOrderFromQueryParams(params);

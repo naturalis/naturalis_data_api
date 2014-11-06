@@ -55,8 +55,8 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         ResultGroupSet<Taxon, String> taxonStringResultGroupSet = taxonDao.taxonSearch(params);
         List<SearchResult<Taxon>> searchResults = taxonStringResultGroupSet.getResultGroups().get(0).getSearchResults();
 
-        assertTrue(searchResults.get(1).getResult().getSourceSystemId().equals("54321"));
-        assertTrue(searchResults.get(0).getResult().getSourceSystemId().equals("12345"));
+        assertTrue(searchResults.get(0).getResult().getSourceSystemId().equals("54321"));
+        assertTrue(searchResults.get(1).getResult().getSourceSystemId().equals("12345"));
     }
 
     @Test

@@ -8,7 +8,10 @@ import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,10 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SOURCE_SYSTEM_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_FULL_SCIENTIFIC_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_GENUS_OR_MONOMIAL;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_INFRASPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.ACCEPTEDNAME_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
+import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -39,22 +40,22 @@ public class TaxonDao extends AbstractTaxonDao {
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
         Map<String, String> fields = fieldNamesToValues(params);
-        String fullScientificName = fields.get(ACCEPTEDNAME_FULL_SCIENTIFIC_NAME);
         String genus = fields.get(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
+        String subgenus = fields.get(ACCEPTEDNAME_SUBGENUS);
         String specificEpithet = fields.get(ACCEPTEDNAME_SPECIFIC_EPITHET);
         String infraSpecificEpithet = fields.get(ACCEPTEDNAME_INFRASPECIFIC_EPITHET);
 
-        boolean validArgument = hasText(fullScientificName) || (hasText(genus) && hasText(specificEpithet));
+        boolean validArgument = (hasText(genus) && hasText(specificEpithet));
         if (!validArgument) {
             throw new IllegalArgumentException("In accepted name, there should be a full scientific name or a" +
                     " genus and specific epithet.");
         }
 
         ScientificName scientificName = new ScientificName();
-        scientificName.setFullScientificName(fullScientificName);
         scientificName.setGenusOrMonomial(genus);
         scientificName.setSpecificEpithet(specificEpithet);
         scientificName.setInfraspecificEpithet(infraSpecificEpithet);
+        scientificName.setSubgenus(subgenus);
         return lookupTaxonForScientificName(scientificName);
     }
 
@@ -74,28 +75,41 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return a SearchResultSet with the taxon if found
      */
     SearchResultSet<Taxon> lookupTaxonForScientificName(ScientificName scientificName) {
-        String fullScientificName = scientificName.getFullScientificName();
         String genusOrMonomial = scientificName.getGenusOrMonomial();
+        String subgenus = scientificName.getSubgenus();
         String specificEpithet = scientificName.getSpecificEpithet();
         String infraspecificEpithet = scientificName.getInfraspecificEpithet();
 
+
         BoolQueryBuilder boolQueryBuilder = boolQuery();
-        if (hasText(fullScientificName)) {
-            boolQueryBuilder.should(matchQuery(ACCEPTEDNAME_FULL_SCIENTIFIC_NAME, fullScientificName));
-        }
+        BoolFilterBuilder boolFilterBuilder = boolFilter();
         if (hasText(genusOrMonomial) && hasText(specificEpithet)) {
             BoolQueryBuilder acceptNameBoolQueryBuilder = boolQuery();
             acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_GENUS_OR_MONOMIAL, genusOrMonomial));
             acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_SPECIFIC_EPITHET, specificEpithet));
             if (hasText(infraspecificEpithet)) {
                 acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_INFRASPECIFIC_EPITHET, infraspecificEpithet));
+            } else {
+                boolFilterBuilder.must(missingFilter(ACCEPTEDNAME_INFRASPECIFIC_EPITHET));
+            }
+            if (hasText(subgenus)) {
+                acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_SUBGENUS, subgenus));
+            } else {
+                boolFilterBuilder.must(missingFilter(ACCEPTEDNAME_SUBGENUS));
             }
             boolQueryBuilder.should(acceptNameBoolQueryBuilder);
         }
 
-        SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
-                filteredQuery(boolQueryBuilder, null)
-        );
+        SearchRequestBuilder searchRequestBuilder;
+        if (boolFilterBuilder.hasClauses()) {
+            searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
+                    filteredQuery(boolQueryBuilder, boolFilterBuilder)
+            );
+        } else {
+            searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
+                    filteredQuery(boolQueryBuilder, null)
+            );
+        }
 
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
         ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams());

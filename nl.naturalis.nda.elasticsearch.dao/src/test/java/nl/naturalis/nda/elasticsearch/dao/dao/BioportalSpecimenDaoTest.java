@@ -324,7 +324,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
                 .setRefresh(true).execute()
                 .actionGet();
 
-        String geoShapeString = "{\"type\" : \"Polygon\",\"coordinates\" : [[[14,12], [14,13], [15,13], [15,12], [14,12]]]}";
+        String geoShapeString = "{\"type\":\"Polygon\",\"coordinates\":[[[-151.5179443359375,70.51537168634687],[69.41162109375,70.51537168634687],[69.41162109375,-28.691551383323603],[-151.5179443359375,-28.691551383323603],[-151.5179443359375,70.51537168634687]]]}";
 
         QueryParams params = new QueryParams();
         params.add("_geoShape", geoShapeString);
@@ -343,7 +343,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
         SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params,
-                                                                                                          specimenResultGroupSet);
+                specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("2", specimenSearchResult.getResult().getUnitID());
         assertTrue(specimenSearchResult.getLinks().get(0).getHref().contains("1"));
@@ -380,7 +380,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
         SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params,
-                                                                                                          specimenResultGroupSet);
+                specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("6", specimenSearchResult.getResult().getUnitID());
         assertTrue(specimenSearchResult.getLinks().get(0).getHref().contains("5"));
@@ -397,7 +397,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
         SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params,
-                                                                                                          specimenResultGroupSet);
+                specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("4", specimenSearchResult.getResult().getUnitID());
         assertTrue(specimenSearchResult.getLinks().get(0).getHref().contains("3"));
@@ -414,7 +414,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
         SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params,
-                                                                                                          specimenResultGroupSet);
+                specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("1", specimenSearchResult.getResult().getUnitID());
         assertEquals(1, specimenSearchResult.getLinks().size());
@@ -430,7 +430,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
 
         SearchResultSet<Specimen> specimenDetailSearchResultSet = dao.createSpecimenDetailSearchResultSet(params,
-                                                                                                          specimenResultGroupSet);
+                specimenResultGroupSet);
         SearchResult<Specimen> specimenSearchResult = specimenDetailSearchResultSet.getSearchResults().get(0);
         assertEquals("9", specimenSearchResult.getResult().getUnitID());
         List<Link> links = specimenSearchResult.getLinks();

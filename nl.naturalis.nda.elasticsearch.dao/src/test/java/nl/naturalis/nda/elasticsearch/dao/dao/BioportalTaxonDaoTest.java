@@ -10,6 +10,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.*;
 import org.junit.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,6 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
-
         ESTaxon testTaxon = createTestTaxon();
         testTaxon.setSourceSystemId("12345");
         ESTaxon testTaxon1 = createTestTaxon();
@@ -61,20 +61,10 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
     @Test
     public void testExtendedSearch() throws Exception {
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
-                .setSource(getMapping("test-taxon-mapping.json"))
-                .execute().actionGet();
-
-        ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
-        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
-                .setRefresh(true).execute().actionGet();
+        prepareTaxonSearch();
 
         QueryParams params = new QueryParams();
         params.add("acceptedName.genusOrMonomial", "Hyphomonas");
-
-        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
 
         ResultGroupSet<Taxon, String> result = taxonDao.taxonSearch(params);
 
@@ -90,22 +80,36 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     }
 
     @Test
+    public void testExtendedSearch_alias() throws Exception {
+        prepareTaxonSearch();
+
+        QueryParams params = new QueryParams();
+        params.add("genus", "Hyphomonas");
+
+        ResultGroupSet<Taxon, String> result = taxonDao.taxonSearch(params);
+
+        assertEquals(1, result.getResultGroups().size());
+    }
+
+    @Test
+    public void testExtendedSearch_genusAny() throws Exception {
+        prepareTaxonSearch();
+
+        QueryParams params = new QueryParams();
+        params.add("genusAny", "genusOrMonomialSynonyms");
+
+        ResultGroupSet<Taxon, String> result = taxonDao.taxonSearch(params);
+
+        assertEquals(1, result.getResultGroups().size());
+    }
+
+    @Test
     public void testTaxonInResultSet() throws Exception {
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
-                .setSource(getMapping("test-taxon-mapping.json"))
-                .execute().actionGet();
-
-        ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
-        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
-                .setRefresh(true).execute().actionGet();
+        prepareTaxonSearch();
 
         QueryParams params = new QueryParams();
         params.add("genus", "Hyphomonas");
         params.add("specificEpithet", "oceanitis");
-
-        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
 
         SearchResultSet<Taxon> result = taxonDao.getTaxonDetailWithinResultSet(params);
 
@@ -115,18 +119,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
     @Test
     public void testExtendedSearch_someFieldsThatAreUsedInNameResolution() throws Exception {
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
-                .setSource(getMapping("test-taxon-mapping.json"))
-                .execute().actionGet();
-
-        ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
-        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
-                .setRefresh(true).execute().actionGet();
-
-
-        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
+        prepareTaxonSearch();
 
         QueryParams params = new QueryParams();
 
@@ -248,8 +241,22 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         assertTrue(taxonDetailWithinResultSet.getResultGroups().size() == 2);
     }
 
-
     //================================================ Helper methods ==================================================
+
+
+    private void prepareTaxonSearch() throws IOException {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE)
+                .setSource(getMapping("test-taxon-mapping.json"))
+                .execute().actionGet();
+
+        ESTaxon esTaxon = BioportalTaxonDaoTest.createTestTaxon();
+        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon))
+                .setRefresh(true).execute().actionGet();
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1l));
+    }
 
     private Taxon createTaxonWithScientificName(String genusOrMonomial, String specificEpithet,
                                                 String infraspecificEpithet) {

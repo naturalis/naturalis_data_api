@@ -169,7 +169,7 @@ public abstract class AbstractDao {
                 for (FieldMapping field : relatedFields) {
                     // populate nestedFields_lvl2 or nonNestedFields_lvl2 with field
                 }
-                // extend *relatedFieldsQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using operator
+                // extend *relatedFieldsQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using OR
             }
         }
         // extend *nonPrebuiltQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using operator

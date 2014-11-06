@@ -198,7 +198,14 @@ public class BioportalSpecimenDao extends AbstractDao {
                 bioportalTaxonDao, highlighting, getOperator(params));
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery);
 
-        return responseToSpecimenResultGroupSet(searchResponse, params);
+        long totalHits = searchResponse.getHits().getTotalHits();
+        float minScore = 0;
+        if (totalHits > 1) {
+            params.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(params, allowedFields, TAXON_TYPE, false).getHits().getAt(0).getScore();
+        }
+
+        return responseToSpecimenResultGroupSet(searchResponse, params, minScore);
     }
 
     /**
@@ -375,7 +382,8 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response,
-                                                                              QueryParams params) {
+                                                                              QueryParams params, float minScore) {
+        float maxScore = response.getHits().getMaxScore();
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
         Map<String, List<Specimen>> tempMapSpecimens = new HashMap<>();
         Map<Specimen, SearchHit> tempMapSearchHits = new HashMap<>();
@@ -414,9 +422,14 @@ public class BioportalSpecimenDao extends AbstractDao {
             for (Specimen specimen : specimens) {
                 SearchResult<Specimen> searchResult = new SearchResult<>();
                 searchResult.setResult(specimen);
+
+                SearchHit hit = tempMapSearchHits.get(specimen);
+                double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+                searchResult.setPercentage(percentage);
+
                 searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
 
-                enhanceSearchResultWithMatchInfoAndScore(searchResult, tempMapSearchHits.get(specimen));
+                enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
                 List<SpecimenIdentification> identifications = specimen.getIdentifications();
                 if (identifications != null) {

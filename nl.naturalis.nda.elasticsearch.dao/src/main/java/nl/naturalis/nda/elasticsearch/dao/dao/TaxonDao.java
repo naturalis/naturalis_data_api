@@ -110,7 +110,8 @@ public class TaxonDao extends AbstractTaxonDao {
         }
 
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams(), minScore);
+        //todo change 0
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams(), 0);
         SearchResultSet<Taxon> resultSet = new SearchResultSet<>();
         List<ResultGroup<Taxon, String>> resultGroups = taxonStringResultGroupSet.getResultGroups();
         if (resultGroups != null && !resultGroups.isEmpty()) {

@@ -139,4 +139,7 @@ public class QueryParams extends HashMap<String, List<String>> {
         return copy;
     }
 
+    public QueryParams copy() {
+        return new QueryParams(this);
+    }
 }

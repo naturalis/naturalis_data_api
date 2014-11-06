@@ -277,7 +277,6 @@ public abstract class AbstractDao {
     }
 
     private void extendQueryWithGeoShapeFilter(BoolQueryBuilder boolQueryBuilder, String geoShape) {
-        logger.info("GeoShape string: " + geoShape);
         GeoJsonObject geo;
         ShapeBuilder shapeBuilder = null;
         try {
@@ -306,15 +305,11 @@ public abstract class AbstractDao {
         }
 
         if (shapeBuilder != null) {
-            NestedQueryBuilder queryBuilder = nestedQuery("gatheringEvent.siteCoordinates",
+            boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
                     geoShapeFilter(
                             "gatheringEvent.siteCoordinates.point",
                             shapeBuilder,
-                            ShapeRelation.WITHIN));
-
-            logger.info(queryBuilder.toString());
-
-            boolQueryBuilder.must(queryBuilder);
+                            ShapeRelation.WITHIN)));
         }
     }
 

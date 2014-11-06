@@ -54,8 +54,9 @@ public class AbstractTaxonDao extends AbstractDao {
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
-            params.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
+            QueryParams copy = params.copy();
+            copy.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
         }
 
         return responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);
@@ -73,8 +74,9 @@ public class AbstractTaxonDao extends AbstractDao {
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
-            params.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
+            QueryParams copy = params.copy();
+            copy.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
         }
 
         ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);

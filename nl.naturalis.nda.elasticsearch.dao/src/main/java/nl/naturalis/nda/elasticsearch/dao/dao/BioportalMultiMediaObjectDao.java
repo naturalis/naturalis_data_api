@@ -192,8 +192,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
-            params.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits().getAt(0).getScore();
+            QueryParams copy = params.copy();
+            copy.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits().getAt(0).getScore();
         }
         return responseToMultiMediaObjectSearchResultSet(searchResponse, params, minScore);
     }

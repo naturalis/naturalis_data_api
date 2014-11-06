@@ -13,7 +13,6 @@ import nl.naturalis.nda.search.ResultGroup;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.dao.AbstractDao.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.ASSEMBLAGE_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.COLLECTORS_FIELD_NUMBER;
@@ -189,7 +187,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"),
-                bioportalTaxonDao, highlighting);
+                bioportalTaxonDao, highlighting, getOperator(params));
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery);
 
         return responseToSpecimenResultGroupSet(searchResponse, params);

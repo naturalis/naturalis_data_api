@@ -309,6 +309,32 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         assertEquals(1, resultWithName.getTotalSize());
     }
 
+    @Test
+    public void testExtendedNameSearch_nameResolution_AND() throws Exception {
+        // GIVEN
+        setupNameResolutionTest();
+
+        // WHEN
+        QueryParams params_good = new QueryParams();
+        params_good.add("kingdom", "Bacteria");
+        params_good.add("family", "Rhodobacteraceae");
+        params_good.add("_andOr", "AND");
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params_good);
+
+        // THEN
+        assertEquals(1, result.getTotalSize());
+
+        // AND WHEN
+        QueryParams params_bad = new QueryParams();
+        params_bad.add("kingdom", "Bact_WRONG_VALUE_eria");
+        params_bad.add("family", "Rhodobacteraceae");
+        params_bad.add("_andOr", "AND");
+        result = dao.specimenNameSearch(params_bad);
+
+        // THEN
+        assertEquals(0, result.getTotalSize());
+    }
+
 
     private void setupNameResolutionTest() throws IOException {
         createIndex(INDEX_NAME);

@@ -152,7 +152,7 @@ public abstract class AbstractDao {
             fieldSort.order(sortOrder);
         }
 
-        BoolQueryBuilder boolQueryBuilder = boolQuery();
+        BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         Operator operator = getOperator(params);
 
         Map<String, List<FieldMapping>> nestedFields = new HashMap<>();
@@ -181,32 +181,38 @@ public abstract class AbstractDao {
                         : prebuiltQuery.getHighlightFields();
 
         for (String nestedPath : nestedFields.keySet()) {
-            extendQueryWithNestedFieldsWithSameNestedPath(boolQueryBuilder, operator, nestedPath, nestedFields.get(
+            extendQueryWithNestedFieldsWithSameNestedPath(nonPrebuiltQuery, operator, nestedPath, nestedFields.get(
                     nestedPath), highlightFields, highlighting);
             atLeastOneFieldToQuery = true;
         }
 
         for (FieldMapping field : nonNestedFields) {
             if (!field.getFieldName().contains("dateTime")) {
-                extendQueryWithField(boolQueryBuilder, operator, field, highlightFields, highlighting);
+                extendQueryWithField(nonPrebuiltQuery, operator, field, highlightFields, highlighting);
                 atLeastOneFieldToQuery = true;
             }
         }
 
-        if (prebuiltQuery != null && prebuiltQuery.getQuery() != null) {
-            extendQueryWithQuery(boolQueryBuilder, OR, prebuiltQuery.getQuery());
-            atLeastOneFieldToQuery = true;
-        }
-
         if (params.containsKey("_geoShape")) {
-            extendQueryWithGeoShapeFilter(boolQueryBuilder, params.getParam("_geoShape"));
+            extendQueryWithGeoShapeFilter(nonPrebuiltQuery, params.getParam("_geoShape"));
             atLeastOneFieldToQuery = true;
         }
 
-        atLeastOneFieldToQuery = extractRangeQuery(params, boolQueryBuilder, atLeastOneFieldToQuery);
+        atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
+
+        BoolQueryBuilder completeQuery;
+
+        if (prebuiltQuery != null && prebuiltQuery.getQuery() != null) {
+            completeQuery = boolQuery();
+            extendQueryWithQuery(completeQuery, OR, nonPrebuiltQuery);
+            extendQueryWithQuery(completeQuery, OR, prebuiltQuery.getQuery());
+            atLeastOneFieldToQuery = true;
+        } else {
+            completeQuery = nonPrebuiltQuery;
+        }
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
-                .setQuery(filteredQuery(boolQueryBuilder, null))
+                .setQuery(filteredQuery(completeQuery, null))
                 .addSort(fieldSort);
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
@@ -404,7 +410,7 @@ public abstract class AbstractDao {
      * @param params the query params
      * @return the operator from the params, if not found {@link Operator#OR} is returned
      */
-    private Operator getOperator(QueryParams params) {
+    protected Operator getOperator(QueryParams params) {
         String operatorValue = params.getParam("_andOr");
         Operator operator = OR;
         if (operatorValue != null && !operatorValue.isEmpty()) {
@@ -462,9 +468,13 @@ public abstract class AbstractDao {
      * @param simpleSearch
      * @param taxonDao     @return null in case of no valid param_keys or no taxons matching the supplied values
      * @param highlight
+     * @param operator     only used in case of extended search
      */
-    protected QueryAndHighlightFields buildNameResolutionQuery(List<FieldMapping> fields, String simpleSearch,
-                                                               BioportalTaxonDao taxonDao, boolean highlight) {
+    protected QueryAndHighlightFields buildNameResolutionQuery(List<FieldMapping> fields,
+                                                               String simpleSearch,
+                                                               BioportalTaxonDao taxonDao,
+                                                               boolean highlight,
+                                                               Operator operator) {
         if (!hasFieldWithTextWithOneOfNames(fields,
                 IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
                 IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
@@ -508,7 +518,11 @@ public abstract class AbstractDao {
         if (nameResTaxonQueryParams.size() == 0) {
             return null; // otherwise we would get an all-query
         }
-        nameResTaxonQueryParams.add("_andOr", "OR");
+        if (hasText(simpleSearch)) {
+            nameResTaxonQueryParams.add("_andOr", "OR");
+        } else {
+            nameResTaxonQueryParams.add("_andOr", operator.name());
+        }
         nameResTaxonQueryParams.add("_maxResults", "50");
         SearchResultSet<Taxon> nameResTaxons = taxonDao.searchReturnsResultSet(nameResTaxonQueryParams, null, null, false); // no field filtering
         if (nameResTaxons.getTotalSize() == 0) {

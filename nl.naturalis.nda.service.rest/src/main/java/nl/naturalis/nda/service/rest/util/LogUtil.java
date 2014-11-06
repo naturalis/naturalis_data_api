@@ -31,8 +31,8 @@ public class LogUtil {
 			return;
 		}
 		if (!(LoggerFactory.getILoggerFactory() instanceof LoggerContext)) {
-			FileUtil.log("Failed to set up NBA logging. Non-logback implementation used for slf4j: "
-					+ LoggerFactory.getILoggerFactory().getClass().getName());
+			String className = LoggerFactory.getILoggerFactory().getClass().getName();
+			FileUtil.log("Failed to set up NBA logging. Non-logback implementation used for slf4j: %s", className);
 			return;
 		}
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();

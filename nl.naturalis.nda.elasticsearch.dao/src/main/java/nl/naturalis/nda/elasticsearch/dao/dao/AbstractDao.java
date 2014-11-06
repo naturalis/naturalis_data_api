@@ -599,7 +599,6 @@ public abstract class AbstractDao {
     }
 
     protected void enhanceSearchResultWithMatchInfoAndScore(SearchResult<?> searchResult, SearchHit hit) {
-
         searchResult.setScore(hit.getScore());
 
         if (hit.getHighlightFields() != null) {

@@ -10,8 +10,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -112,7 +110,7 @@ public class TaxonDao extends AbstractTaxonDao {
         }
 
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams());
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams(), minScore);
         SearchResultSet<Taxon> resultSet = new SearchResultSet<>();
         List<ResultGroup<Taxon, String>> resultGroups = taxonStringResultGroupSet.getResultGroups();
         if (resultGroups != null && !resultGroups.isEmpty()) {

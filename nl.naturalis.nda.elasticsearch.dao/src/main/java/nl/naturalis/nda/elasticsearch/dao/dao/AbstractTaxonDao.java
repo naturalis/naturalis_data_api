@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
@@ -51,7 +50,15 @@ public class AbstractTaxonDao extends AbstractDao {
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
-        return responseToTaxonSearchResultGroupSet(searchResponse, params);
+
+        long totalHits = searchResponse.getHits().getTotalHits();
+        float minScore = 0;
+        if (totalHits > 1) {
+            params.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
+        }
+
+        return responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);
     }
 
     SearchResultSet<Taxon> searchReturnsResultSet(QueryParams params, Set<String> allowedFieldNames,
@@ -63,7 +70,14 @@ public class AbstractTaxonDao extends AbstractDao {
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
 
-        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, params);
+        long totalHits = searchResponse.getHits().getTotalHits();
+        float minScore = 0;
+        if (totalHits > 1) {
+            params.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
+        }
+
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);
         return resultGroupSetToResultSet(taxonStringResultGroupSet);
     }
 
@@ -83,7 +97,9 @@ public class AbstractTaxonDao extends AbstractDao {
         return resultSet;
     }
 
-    protected ResultGroupSet<Taxon, String> responseToTaxonSearchResultGroupSet(SearchResponse searchResponse, QueryParams params) {
+    protected ResultGroupSet<Taxon, String> responseToTaxonSearchResultGroupSet(SearchResponse searchResponse, QueryParams params, float minScore) {
+        float maxScore = searchResponse.getHits().getMaxScore();
+
         ResultGroupSet<Taxon, String> taxonSearchResultGroupSet = new ResultGroupSet<>();
 
         Map<String, SearchResultSet<Taxon>> nameToTaxons = new HashMap<>();
@@ -102,6 +118,8 @@ public class AbstractTaxonDao extends AbstractDao {
             //TODO NDA-66 taxon link must be to detail base url in result set
             searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(esTaxon.getAcceptedName())));
             searchResult.setResult(taxon);
+            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            searchResult.setPercentage(percentage);
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
             taxonsForName.addSearchResult(searchResult);

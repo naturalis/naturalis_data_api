@@ -30,6 +30,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMe
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SEXES;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SPECIMEN_TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 
@@ -188,7 +189,13 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true,
                 nameResolutionQuery);
 
-        return responseToMultiMediaObjectSearchResultSet(searchResponse, params);
+        long totalHits = searchResponse.getHits().getTotalHits();
+        float minScore = 0;
+        if (totalHits > 1) {
+            params.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits().getAt(0).getScore();
+        }
+        return responseToMultiMediaObjectSearchResultSet(searchResponse, params, minScore);
     }
 
     /**
@@ -292,7 +299,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     }
 
     private SearchResultSet<MultiMediaObject> responseToMultiMediaObjectSearchResultSet(SearchResponse searchResponse,
-                                                                                        QueryParams params) {
+                                                                                        QueryParams params, float minScore) {
+        float maxScore = searchResponse.getHits().getMaxScore();
         SearchResultSet<MultiMediaObject> searchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
             ESMultiMediaObject esObject = getObjectMapper().convertValue(hit.getSource(), ESMultiMediaObject.class);
@@ -313,6 +321,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL_TAXON + multiMediaObject.getUnitID()));
             }
             multiMediaObjectSearchResult.setLinks(links);
+            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            multiMediaObjectSearchResult.setPercentage(percentage);
 
             enhanceSearchResultWithMatchInfoAndScore(multiMediaObjectSearchResult, hit);
 

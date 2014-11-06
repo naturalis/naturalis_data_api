@@ -42,6 +42,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.Specime
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.THEMES;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
@@ -150,7 +151,14 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
 
-        return responseToSpecimenSearchResultSet(searchResponse, params);
+        long totalHits = searchResponse.getHits().getTotalHits();
+        float minScore = 0;
+        if (totalHits > 1) {
+            params.putSingle("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, false).getHits().getAt(0).getScore();
+        }
+
+        return responseToSpecimenSearchResultSet(searchResponse, params, minScore);
     }
 
     /**
@@ -343,8 +351,8 @@ public class BioportalSpecimenDao extends AbstractDao {
         return searchResultSet;
     }
 
-    private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, QueryParams params) {
-
+    private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, QueryParams params, float minScore) {
+        float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
         resultSet.setTotalSize(response.getHits().getTotalHits());
         resultSet.setQueryParameters(params.copyWithoutGeoShape());
@@ -356,6 +364,8 @@ public class BioportalSpecimenDao extends AbstractDao {
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
             SearchResult<Specimen> searchResult = new SearchResult<Specimen>(transfer);
             resultSet.addSearchResult(searchResult);
+            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            searchResult.setPercentage(percentage);
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
         }

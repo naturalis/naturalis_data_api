@@ -6,6 +6,7 @@ import java.util.List;
 public class SearchResult<T> {
 
     private float score;
+    private double percentage;
     private String actualType;
     private List<Link> links;
 
@@ -111,5 +112,13 @@ public class SearchResult<T> {
 
     public void setNameResolutionInfo(List<NameResolutionInfo> nameResolutionInfo) {
         this.nameResolutionInfo = nameResolutionInfo;
+    }
+
+    public double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(double percentage) {
+        this.percentage = percentage;
     }
 }

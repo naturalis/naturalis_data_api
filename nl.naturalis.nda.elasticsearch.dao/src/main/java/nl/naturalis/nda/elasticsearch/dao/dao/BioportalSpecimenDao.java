@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
@@ -401,16 +402,22 @@ public class BioportalSpecimenDao extends AbstractDao {
             List<SpecimenIdentification> identifications = transfer.getIdentifications();
             if (identifications != null) {
                 for (SpecimenIdentification specimenIdentification : identifications) {
-                    String scientificName = specimenIdentification.getScientificName().getFullScientificName();
+                    ScientificName scientificName = specimenIdentification.getScientificName();
+                    String combined;
+                    if (scientificName.getFullScientificName() != null) {
+                        combined = scientificName.getFullScientificName();
+                    } else {
+                        combined = createScientificName(scientificName);
+                    }
 
                     List<Specimen> specimens;
-                    if (tempMapSpecimens.containsKey(scientificName)) {
-                        specimens = tempMapSpecimens.get(scientificName);
+                    if (tempMapSpecimens.containsKey(combined)) {
+                        specimens = tempMapSpecimens.get(combined);
                     } else {
                         specimens = new ArrayList<>();
                     }
                     specimens.add(transfer);
-                    tempMapSpecimens.put(scientificName, specimens);
+                    tempMapSpecimens.put(combined, specimens);
                 }
             }
         }
@@ -456,6 +463,32 @@ public class BioportalSpecimenDao extends AbstractDao {
         specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
         specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
+    }
+
+    private String createScientificName(ScientificName scientificName) {
+        String genusOrMonomial = "";
+        String subgenus = "";
+        String specificEpithet = "";
+        String infraspecificEpithet = "";
+        String author = "";
+
+        if (scientificName.getGenusOrMonomial() != null) {
+            genusOrMonomial = scientificName.getGenusOrMonomial() + " ";
+        }
+        if (scientificName.getSubgenus() != null) {
+            subgenus = scientificName.getSubgenus() + " ";
+        }
+        if (scientificName.getSpecificEpithet() != null) {
+            specificEpithet = scientificName.getSpecificEpithet() + " ";
+        }
+        if (scientificName.getInfraspecificEpithet() != null) {
+            infraspecificEpithet = scientificName.getInfraspecificEpithet() + " ";
+        }
+        if (scientificName.getAuthor() != null) {
+            author = scientificName.getAuthor();
+        }
+
+        return genusOrMonomial + subgenus + specificEpithet + infraspecificEpithet + author;
     }
 
 

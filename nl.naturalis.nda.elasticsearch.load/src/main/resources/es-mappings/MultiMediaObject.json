@@ -11,6 +11,7 @@
                 }
             },
             "sourceSystemId" : { "type" : "string", "index" : "not_analyzed" },
+            "recordURI": { "type": "string", "index": "not_analyzed" },
             "unitID" : { "type" : "string", "index" : "not_analyzed" },
             "title" : { "type" : "string" },
             "caption" : { "type" : "string" },

@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
 
 import org.apache.commons.csv.CSVRecord;
+import org.domainobject.util.ArrayUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +38,23 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		}
 
 		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
+
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_TAXON);
-			Thread.sleep(2000);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
 			index.addType(LUCENE_TYPE_TAXON, mapping);
 		}
+		else {
+			if (index.typeExists(LUCENE_TYPE_TAXON)) {
+				index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.COL.getCode());
+			}
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
+				index.addType(LUCENE_TYPE_TAXON, mapping);
+			}
+		}
+		
+		
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			importer.importCsv(dwcaDir + "/taxa.txt");
@@ -89,6 +102,8 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
 	static final String ID_PREFIX = "COL-";
 
+	private static final String[] ALLOWED_TAXON_RANKS = new String[] { "species", "infraspecies" };
+
 
 	public CoLTaxonImporter(Index index)
 	{
@@ -105,10 +120,28 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	@Override
 	protected List<ESTaxon> transfer(CSVRecord record)
 	{
+
+		String taxonRank = val(record, CsvField.taxonRank.ordinal());
+		if (!ArrayUtil.contains(taxonRank, ALLOWED_TAXON_RANKS)) {
+			return null;
+		}
+
 		final ESTaxon taxon = new ESTaxon();
 
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.setSourceSystemId(val(record, CsvField.taxonID.ordinal()));
+		String references = val(record, CsvField.references.ordinal());
+		if (references == null) {
+			logger.warn("Missing URL for taxon " + taxon.getSourceSystemId());
+		}
+		else {
+			try {
+				taxon.setRecordURI(URI.create(references));
+			}
+			catch (Throwable t) {
+				logger.error(String.format("Invalid URL for taxon with id %s: \"%s\"", taxon.getSourceSystemId(), references));
+			}
+		}
 		taxon.setTaxonRank(val(record, CsvField.taxonRank.ordinal()));
 
 		final ScientificName sn = new ScientificName();

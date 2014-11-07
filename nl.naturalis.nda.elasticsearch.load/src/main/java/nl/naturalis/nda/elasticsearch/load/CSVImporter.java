@@ -125,7 +125,11 @@ public abstract class CSVImporter<T> {
 						++skipped;
 					}
 					else {
-						objects.addAll(transfer(record));
+						List<T> extracted = transfer(record);
+						if(extracted == null || extracted.size() == 0) {
+							continue;
+						}
+						objects.addAll(extracted);
 						if (specifyId) {
 							ids.addAll(getIds(record));
 						}

@@ -1,7 +1,5 @@
 package nl.naturalis.nda.service.rest.resource;
 
-import java.util.Map;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

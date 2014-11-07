@@ -48,9 +48,11 @@ public class NDA {
 				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, port);
 				((TransportClient) client).addTransportAddress(transportAddress);
 			}
-			ClusterStatsRequest request = new ClusterStatsRequest();
-			ClusterStatsResponse response = client.admin().cluster().clusterStats(request).actionGet();
-			logger.debug("Cluster stats: " + response.toString());
+			if (logger.isDebugEnabled()) {
+				ClusterStatsRequest request = new ClusterStatsRequest();
+				ClusterStatsResponse response = client.admin().cluster().clusterStats(request).actionGet();
+				logger.debug("Cluster stats: " + response.toString());
+			}
 		}
 		return client;
 	}

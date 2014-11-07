@@ -52,7 +52,7 @@ public class TaxonResource {
 		if (result == null) {
 			throw ResourceUtil.handleError(request, Status.NOT_FOUND);
 		}
-		result.addLink("_self", request.getRequestUri().toString());
+		ResourceUtil.addDefaultRestLinks(result, request, false);
 		return result;
 	}
 
@@ -66,7 +66,7 @@ public class TaxonResource {
 			logger.debug("getTaxonDetailWithinResultSet");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().getTaxonDetailWithinResultSet(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, false);
 			return result;
 		}
 		catch (Throwable t) {
@@ -84,7 +84,7 @@ public class TaxonResource {
 			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			ResultGroupSet<Taxon, String> result = registry.getBioportalTaxonDao().taxonSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {
@@ -103,7 +103,7 @@ public class TaxonResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			ResultGroupSet<Taxon, String> result = registry.getBioportalTaxonDao().taxonSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {

@@ -2,6 +2,7 @@ package nl.naturalis.nda.service.rest.util;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.search.AbstractResultSet;
@@ -69,20 +70,53 @@ public class ResourceUtil {
 	}
 
 
-	public static void addDefaultRestLinks(AbstractResultSet result, UriInfo request, boolean forcePrevNextLinks)
+	public static void addDefaultRestLinks(AbstractResultSet result, UriInfo request, boolean addNavigationLinks)
 	{
 		result.addLink("_self", request.getRequestUri().toString());
-		String offset = request.getQueryParameters().getFirst("_offset");
-		String maxResults = request.getQueryParameters().getFirst("_maxResults");
-		if (offset == null || offset.trim().length() == 0) {
-			offset = "0";
+		if (addNavigationLinks) {
+			String offset = request.getQueryParameters().getFirst("_offset");
+			boolean hasOffset = true;
+			String maxResults = request.getQueryParameters().getFirst("_maxResults");
+			if (offset == null || offset.trim().length() == 0) {
+				hasOffset = false;
+				offset = "0";
+			}
+			if (maxResults == null || maxResults.trim().length() == 0) {
+				maxResults = "10";
+			}
+			long iOffset = Long.parseLong(offset);
+			long iMaxResults = Long.parseLong(maxResults);
+			long offsetNext = iOffset + iMaxResults;
+			long offsetPrev = Math.max(0, iOffset - iMaxResults);
+			UriBuilder prevLinkUriBuilder = request.getRequestUriBuilder();
+			UriBuilder nextLinkUriBuilder = request.getRequestUriBuilder();
+
+			if (offsetNext < result.getTotalSize()) {
+				if (hasOffset) {
+					nextLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetNext));
+				}
+				else {
+					nextLinkUriBuilder.queryParam("_offset", String.valueOf(offsetNext));
+				}
+			}
+
+			if (offsetPrev == 0) {
+				if (hasOffset) {
+					prevLinkUriBuilder.replaceQueryParam("_offset", "0");
+				}
+			}
+			else {
+				if (hasOffset) {
+					prevLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetPrev));
+				}
+				else {
+					prevLinkUriBuilder.queryParam("_offset", String.valueOf(offsetPrev));
+				}
+			}
+
+			result.addLink("_prevPage", prevLinkUriBuilder.build().toString());
+			result.addLink("_nextPage", nextLinkUriBuilder.build().toString());
 		}
-		if (maxResults == null || maxResults.trim().length() == 0) {
-			maxResults = "10";
-		}
-		int iOffset = Integer.parseInt(offset);
-		int iMaxResults = Integer.parseInt(maxResults);
-		iOffset += iMaxResults;
 
 	}
 

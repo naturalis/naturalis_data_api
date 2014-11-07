@@ -43,13 +43,14 @@ public class MultiMediaObjectResource {
 			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(request, t);
 		}
 	}
+
 
 	@POST
 	@Path("/search")
@@ -61,7 +62,7 @@ public class MultiMediaObjectResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {
@@ -80,7 +81,7 @@ public class MultiMediaObjectResource {
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao();
 			SearchResultSet<MultiMediaObject> result = dao.getTaxonMultiMediaObjectDetailWithinResultSet(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, false);
 			return result;
 		}
 		catch (Throwable t) {
@@ -99,7 +100,7 @@ public class MultiMediaObjectResource {
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao();
 			SearchResultSet<MultiMediaObject> result = dao.getSpecimenMultiMediaObjectDetailWithinResultSet(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, false);
 			return result;
 		}
 		catch (Throwable t) {

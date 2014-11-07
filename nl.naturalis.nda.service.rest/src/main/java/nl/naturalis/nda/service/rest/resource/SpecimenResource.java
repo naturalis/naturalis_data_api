@@ -1,5 +1,7 @@
 package nl.naturalis.nda.service.rest.resource;
 
+import java.util.Map;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -56,7 +58,7 @@ public class SpecimenResource {
 		if (result == null) {
 			throw ResourceUtil.handleError(request, Status.NOT_FOUND);
 		}
-		result.addLink("_self", request.getRequestUri().toString());
+		ResourceUtil.addDefaultRestLinks(result, request, false);
 		return result;
 	}
 
@@ -70,7 +72,7 @@ public class SpecimenResource {
 			logger.debug("getSpecimenDetailWithinResultSetGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, false);
 			return result;
 		}
 		catch (Throwable t) {
@@ -89,7 +91,7 @@ public class SpecimenResource {
 			logger.debug("getSpecimenDetailWithinResultSetPOST");
 			QueryParams params = new QueryParams(form);
 			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, false);
 			return result;
 		}
 		catch (Throwable t) {
@@ -107,7 +109,7 @@ public class SpecimenResource {
 			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {
@@ -126,7 +128,7 @@ public class SpecimenResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {
@@ -144,7 +146,7 @@ public class SpecimenResource {
 			logger.debug("nameSearchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {
@@ -163,7 +165,7 @@ public class SpecimenResource {
 			logger.debug("nameSearchPOST");
 			QueryParams params = new QueryParams(form);
 			ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
-			result.addLink("_self", request.getRequestUri().toString());
+			ResourceUtil.addDefaultRestLinks(result, request, true);
 			return result;
 		}
 		catch (Throwable t) {

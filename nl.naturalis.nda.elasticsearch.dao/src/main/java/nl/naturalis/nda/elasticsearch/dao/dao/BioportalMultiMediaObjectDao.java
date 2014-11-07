@@ -13,9 +13,11 @@ import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,7 +196,13 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits().getAt(0).getScore();
+            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits();
+            if(hits != null && hits.getAt(0) != null) {
+            	minScore = hits.getAt(0).getScore();
+            }
+            else {
+            	minScore = 0;
+            }
         }
         return responseToMultiMediaObjectSearchResultSet(searchResponse, params, minScore);
     }

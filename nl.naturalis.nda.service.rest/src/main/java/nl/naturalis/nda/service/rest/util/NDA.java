@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 public class NDA {
 
 	public static final String SYSPROP_CONFIG_DIR = "nl.naturalis.nda.conf.dir";
-	
-	private static final Logger logger = LoggerFactory.getLogger(NDA.class);
 	private static final String CONFIG_FILE_NAME = "nda.properties";
+
+	private static final Logger logger = LoggerFactory.getLogger(NDA.class);
 
 	private final ConfigObject config;
 	private Client client = null;
@@ -32,17 +32,22 @@ public class NDA {
 	}
 
 
-	@SuppressWarnings("resource")
 	public Client getESClient()
 	{
 		if (client == null) {
 			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");
-			String host = config.required("elasticsearch.transportaddress.host");
-			String port = config.required("elasticsearch.transportaddress.port");
-			InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, Integer.parseInt(port));
+			String[] hosts = config.required("elasticsearch.transportaddress.host").trim().split(",");
+			String[] ports = getPorts(hosts.length);
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
-			client = new TransportClient(settings).addTransportAddress(transportAddress);
+			client = new TransportClient(settings);
+			for (int i = 0; i < hosts.length; ++i) {
+				String host = hosts[i].trim();
+				int port = Integer.parseInt(ports[i].trim());
+				logger.info(String.format("Adding transport address \"%s:%s\"", host, port));
+				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, port);
+				((TransportClient) client).addTransportAddress(transportAddress);
+			}
 			ClusterStatsRequest request = new ClusterStatsRequest();
 			ClusterStatsResponse response = client.admin().cluster().clusterStats(request).actionGet();
 			logger.debug("Cluster stats: " + response.toString());
@@ -60,6 +65,24 @@ public class NDA {
 	public ConfigObject getConfig()
 	{
 		return config;
+	}
+
+
+	private String[] getPorts(int numHosts)
+	{
+		String port = config.get("elasticsearch.transportaddress.port", true);
+		String[] ports = port == null ? new String[] { "9300" } : port.trim().split(",");
+		if (ports.length > 1 && ports.length != numHosts) {
+			throw new RuntimeException("Error creating ES client: number of ports does not match number of hosts");
+		}
+		else if (ports.length == 1 && numHosts > 1) {
+			port = ports[0];
+			ports = new String[numHosts];
+			for (int i = 0; i < ports.length; ++i) {
+				ports[i] = port;
+			}
+		}
+		return ports;
 	}
 
 

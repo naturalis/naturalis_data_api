@@ -3,12 +3,14 @@ package nl.naturalis.nda.service.rest.resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.MultiMediaObject;
@@ -38,8 +40,26 @@ public class MultiMediaObjectResource {
 	public SearchResultSet<MultiMediaObject> searchGET(@Context UriInfo request)
 	{
 		try {
-			logger.debug("search");
+			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
+			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
+			result.addLink("_self", request.getRequestUri().toString());
+			return result;
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(request, t);
+		}
+	}
+
+	@POST
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public SearchResultSet<MultiMediaObject> searchPOST(@Context UriInfo request, MultivaluedMap<String, String> form)
+	{
+		try {
+			logger.debug("searchPOST");
+			QueryParams params = new QueryParams(form);
 			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
 			result.addLink("_self", request.getRequestUri().toString());
 			return result;
@@ -56,7 +76,7 @@ public class MultiMediaObjectResource {
 	public SearchResultSet<MultiMediaObject> getTaxonMultiMediaObjectDetailWithinResultSet(@Context UriInfo request)
 	{
 		try {
-			logger.debug("search");
+			logger.debug("getTaxonMultiMediaObjectDetailWithinResultSet");
 			QueryParams params = new QueryParams(request.getQueryParameters());
 			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao();
 			SearchResultSet<MultiMediaObject> result = dao.getTaxonMultiMediaObjectDetailWithinResultSet(params);

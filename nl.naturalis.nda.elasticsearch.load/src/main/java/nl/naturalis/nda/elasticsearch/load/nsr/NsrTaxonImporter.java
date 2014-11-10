@@ -41,9 +41,14 @@ public class NsrTaxonImporter {
 			index.addType(LUCENE_TYPE_TAXON, mapping);
 		}
 		else {
-			index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.NSR.getCode());
+			if (index.typeExists(LUCENE_TYPE_TAXON)) {
+				index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.NSR.getCode());
+			}
+			else {
+				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
+				index.addType(LUCENE_TYPE_TAXON, mapping);
+			}
 		}
-		Thread.sleep(2000);
 		try {
 			NsrTaxonImporter importer = new NsrTaxonImporter(index);
 			importer.importXmlFiles();

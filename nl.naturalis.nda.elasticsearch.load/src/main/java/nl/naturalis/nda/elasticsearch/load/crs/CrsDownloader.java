@@ -6,6 +6,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
@@ -75,19 +77,18 @@ public class CrsDownloader {
 		String s = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		logger.info("Downloading " + s);
 		String resToken = null;
+		int batch = 0;
+		// Override/ignore (only relevant within CrsSpecimenImporter
+		// and CrsMultiMediaImporter)
+		LoadUtil.getConfig().set("crs.save_local", "true");
 		do {
 			String xml;
-			String saveTo;
 			if (type == Type.SPECIMEN) {
-				xml = CrsSpecimenImporter.callOaiService(resToken);
-				saveTo = CrsSpecimenImporter.getLocalPath(resToken);
+				xml = CrsSpecimenImporter.callOaiService(resToken, batch++);
 			}
 			else {
-				xml = CrsMultiMediaImporter.callOaiService(resToken);
-				saveTo = CrsMultiMediaImporter.getLocalPath(resToken);
+				xml = CrsMultiMediaImporter.callOaiService(resToken, batch++);
 			}
-			logger.info("Saving output to file " + saveTo);
-			FileUtil.setContents(saveTo, xml);
 			logger.info("Extracting resumption token from output");
 			try {
 				Document doc = builder.parse(StringUtil.asInputStream(xml));

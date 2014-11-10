@@ -6,6 +6,7 @@ import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_S
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -165,8 +166,9 @@ public class CrsSpecimenImporter {
 		processed = 0;
 		bad = 0;
 		do {
-			logger.info("Processing batch " + batch++);
-			String xml = callOaiService(resToken);
+			logger.info("Processing batch " + batch);
+			String xml = callOaiService(resToken, batch);
+			++batch;
 			resToken = index(xml);
 		} while (resToken != null);
 		logger.info("Deleting resumption token file");
@@ -193,7 +195,7 @@ public class CrsSpecimenImporter {
 	}
 
 
-	static String callOaiService(String resumptionToken)
+	static String callOaiService(String resumptionToken, int batch)
 	{
 		String url;
 		ConfigObject config = LoadUtil.getConfig();
@@ -210,7 +212,7 @@ public class CrsSpecimenImporter {
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
 		if (config.getBoolean("crs.save_local")) {
-			String path = getLocalPath(resumptionToken);
+			String path = getLocalPath(batch);
 			logger.info("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);
 		}
@@ -274,10 +276,11 @@ public class CrsSpecimenImporter {
 	}
 
 
-	static String getLocalPath(String resumptionToken)
+	static String getLocalPath(int batch)
 	{
+		String s = new DecimalFormat("00000").format(batch);
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/specimens.%s.oai.xml", testDir, resumptionToken);
+		return String.format("%s/specimens.%s.oai.xml", testDir, s);
 	}
 
 

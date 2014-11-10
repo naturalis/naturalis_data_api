@@ -138,7 +138,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 			try {
 				taxon.setRecordURI(URI.create(references));
 			}
-			catch (Throwable t) {
+			catch (IllegalArgumentException e) {
 				logger.error(String.format("Invalid URL for taxon with id %s: \"%s\"", taxon.getSourceSystemId(), references));
 			}
 		}

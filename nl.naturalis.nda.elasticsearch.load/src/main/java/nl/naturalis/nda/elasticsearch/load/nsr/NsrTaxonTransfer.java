@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,6 +61,18 @@ class NsrTaxonTransfer {
 		taxon.setSourceSystem(SourceSystem.NSR);
 		taxon.setSourceSystemId(nl(DOMUtil.getValue(taxonElement, "nsr_id")));
 		taxon.setSourceSystemParentId(nl(DOMUtil.getValue(taxonElement, "nsr_id_parent")));
+		String uriString = nl(DOMUtil.getValue(taxonElement, "nsr_id_parent"));
+		if (uriString == null) {
+
+		}
+		else {
+			try {
+				taxon.setRecordURI(URI.create(uriString));
+			}
+			catch (IllegalArgumentException e) {
+				logger.error(String.format("Invalid URL for taxon with id %s: \"%s\"", taxon.getSourceSystemId(), uriString));
+			}
+		}
 		taxon.setTaxonRank(nl(DOMUtil.getValue(taxonElement, "rank")));
 		List<Monomial> monomials = getMonomials(taxonElement);
 		if (monomials != null) {

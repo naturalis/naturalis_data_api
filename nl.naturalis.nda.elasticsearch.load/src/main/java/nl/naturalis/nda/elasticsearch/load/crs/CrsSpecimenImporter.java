@@ -6,9 +6,14 @@ import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_S
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,7 +56,7 @@ public class CrsSpecimenImporter {
 		logger.info("-----------------------------------------------------------------");
 
 		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
-		
+
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 
@@ -201,6 +206,17 @@ public class CrsSpecimenImporter {
 		ConfigObject config = LoadUtil.getConfig();
 		if (resumptionToken == null) {
 			url = config.required("crs.specimens.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
+			if (maxAge != 0) {
+				Date date = new Date(System.currentTimeMillis() - (maxAge * 60 * 60 * 1000));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
+				try {
+					url += "&from=" + URLEncoder.encode(sdf.format(date), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 		else {
 			url = String.format(config.required("crs.specimens.url.resume"), resumptionToken);

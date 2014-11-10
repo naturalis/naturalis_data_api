@@ -244,7 +244,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setTheme(themes);
 
 		specimen.setRecordBasis("PreservedSpecimen");
-		specimen.setAssemblageID(ID_PREFIX + val(record, CsvField.BRAHMS.ordinal()));
+		specimen.setAssemblageID(ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		String notOnline = val(record, CsvField.NOTONLINE.ordinal());
@@ -488,6 +488,22 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		s = val(record, CsvField.SP3.ordinal());
 		if ((r == null && s != null) || (r != null && s == null)) {
 			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
+		}
+	}
+
+
+	private static Integer getFloatFieldAsInteger(CSVRecord record, int field)
+	{
+		String s = val(record, field);
+		if (s == null) {
+			return null;
+		}
+		try {
+			return (int) Float.parseFloat(s);
+		}
+		catch (NumberFormatException e) {
+			logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
+			return null;
 		}
 	}
 

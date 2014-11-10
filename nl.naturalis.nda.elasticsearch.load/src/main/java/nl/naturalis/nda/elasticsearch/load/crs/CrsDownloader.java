@@ -78,9 +78,12 @@ public class CrsDownloader {
 		logger.info("Downloading " + s);
 		String resToken = null;
 		int batch = 0;
-		// Override/ignore (only relevant within CrsSpecimenImporter
-		// and CrsMultiMediaImporter)
+		
+		// Override/ignore some properties which are only relevant while
+		// indexing (within CrsSpecimenImporter or CrsMultiMediaImporter):
 		LoadUtil.getConfig().set("crs.save_local", "true");
+		LoadUtil.getConfig().set("crs.max_age", "0");
+		
 		do {
 			String xml;
 			if (type == Type.SPECIMEN) {

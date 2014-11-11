@@ -92,7 +92,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     }
 
     @Test
-    public void testExtendedSearch_genusAny() throws Exception {
+    public void testExtendedSegenusOrMonomialSynonymsearch_genusAny() throws Exception {
         prepareTaxonSearch();
 
         QueryParams params = new QueryParams();

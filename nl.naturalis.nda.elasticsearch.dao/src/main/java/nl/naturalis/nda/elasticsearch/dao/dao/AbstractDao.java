@@ -412,7 +412,7 @@ public abstract class AbstractDao {
         extendQueryWithQuery(boolQueryBuilder, operator, nestedQueryBuilder);
     }
 
-    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
+    private void  extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
                                       List<HighlightBuilder.Field> highlightFields, boolean highlight) {
         if (field.getValue() != null) {
             MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());
@@ -427,7 +427,7 @@ public abstract class AbstractDao {
                 if (boostValue != null) {
                     ngramFieldMatchQuery.boost(boostValue);
                 }
-                extendQueryWithQuery(boolQueryBuilder, operator, ngramFieldMatchQuery);
+                extendQueryWithQuery(boolQueryBuilder, OR, ngramFieldMatchQuery);
                 if (highlight) {
                     highlightFields.add(createHighlightField(field.getFieldName() + ".ngram", matchQuery(field.getFieldName() + ".ngram", field.getValue())));
                 }
@@ -456,7 +456,7 @@ public abstract class AbstractDao {
      */
     protected Operator getOperator(QueryParams params) {
         String operatorValue = params.getParam("_andOr");
-        Operator operator = OR;
+        Operator operator = AND;
         if (operatorValue != null && !operatorValue.isEmpty()) {
             operator = valueOf(operatorValue);
         }

@@ -138,7 +138,7 @@ public class BioportalSpecimenDao extends AbstractDao {
      */
     public SearchResultSet<Specimen> specimenSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
-        if(params.containsKey("_search")) {
+        if (params.containsKey("_search")) {
             params.putSingle("_andOr", "OR");
         }
         return doSpecimenSearch(params, true);
@@ -202,7 +202,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
     private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
-        if(params.containsKey("_search")) {
+        if (params.containsKey("_search")) {
             params.putSingle("_andOr", "OR");
         }
         evaluateSimpleSearch(params, specimenNameSearchFieldNames, specimenNameSearchFieldNames_simpleSearchExceptions);
@@ -401,10 +401,29 @@ public class BioportalSpecimenDao extends AbstractDao {
             double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
             searchResult.setPercentage(percentage);
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
+
+            getTaxonForSpecimenFullScientificName(transfer, searchResult);
+
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
         }
 
         return resultSet;
+    }
+
+    private void getTaxonForSpecimenFullScientificName(Specimen transfer, SearchResult<Specimen> searchResult) {
+        List<SpecimenIdentification> identifications = transfer.getIdentifications();
+        if (identifications != null) {
+            for (SpecimenIdentification identification : identifications) {
+                SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(identification.getScientificName());
+                List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
+                if (searchResults != null) {
+                    for (SearchResult<Taxon> taxonSearchResult : searchResults) {
+                        Taxon taxon = taxonSearchResult.getResult();
+                        searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
+                    }
+                }
+            }
+        }
     }
 
 
@@ -465,19 +484,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
                 enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
-                List<SpecimenIdentification> identifications = specimen.getIdentifications();
-                if (identifications != null) {
-                    for (SpecimenIdentification identification : identifications) {
-                        SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(identification.getScientificName());
-                        List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                        if (searchResults != null) {
-                            for (SearchResult<Taxon> taxonSearchResult : searchResults) {
-                                Taxon taxon = taxonSearchResult.getResult();
-                                searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
-                            }
-                        }
-                    }
-                }
+                getTaxonForSpecimenFullScientificName(specimen, searchResult);
                 resultGroup.addSearchResult(searchResult);
             }
             specimenStringResultGroupSet.addGroup(resultGroup);

@@ -60,8 +60,13 @@ public class CrsMultiMediaTransfer {
 				logger.error("Missing title for record with identifier " + val(recordElement, "identifier"));
 				continue;
 			}
+			
+			if(url.indexOf("medialib.naturalis.nl") != -1) {
+				url = url.replace("/small", "/large");
+			}
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
+			
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 			mmo.setSourceSystem(SourceSystem.CRS);
 			mmo.setSourceSystemId(title);

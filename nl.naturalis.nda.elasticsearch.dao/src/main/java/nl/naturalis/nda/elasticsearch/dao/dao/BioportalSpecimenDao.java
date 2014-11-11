@@ -118,6 +118,8 @@ public class BioportalSpecimenDao extends AbstractDao {
      * scientificName as the key
      */
     public SearchResultSet<Specimen> specimenSearch(QueryParams params) {
+        //Force OR, cause AND will never be used in simple search
+        params.putSingle("_andOr", "OR");
         return doSpecimenSearch(params, true);
     }
 

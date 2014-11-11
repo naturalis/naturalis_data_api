@@ -78,6 +78,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
      * @return search results
      */
     public ResultGroupSet<Taxon, String> taxonSearch(QueryParams params) {
+        //Force OR, cause AND will never be used in simple search
+        params.putSingle("_andOr", "OR");
         return search(params, allowedFieldNamesForSearch, allowedFieldNamesForSearch_simpleSearchExceptions, true);
     }
 

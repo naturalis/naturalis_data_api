@@ -10,7 +10,6 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
-import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

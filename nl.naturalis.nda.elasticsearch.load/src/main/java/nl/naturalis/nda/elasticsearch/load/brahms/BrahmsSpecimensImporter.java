@@ -197,10 +197,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 
-		String csvDir = System.getProperty("csvDir");
-		if (csvDir == null) {
-			throw new Exception("Missing -DcsvDir argument");
-		}
+		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));

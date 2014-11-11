@@ -79,10 +79,8 @@ public class BrahmsImportAll {
 
 	public void importCsvFiles() throws Exception
 	{
-		String csvDir = System.getProperty("csvDir");
-		if (csvDir == null) {
-			throw new Exception("Missing -DcsvDir argument");
-		}
+		BrahmsExportEncodingConverter.convertFiles();
+		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));

@@ -90,10 +90,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public void importCsvFiles() throws Exception
 	{
-		String csvDir = System.getProperty("csvDir");
-		if (csvDir == null) {
-			throw new Exception("Missing -DcsvDir argument");
-		}
+		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));

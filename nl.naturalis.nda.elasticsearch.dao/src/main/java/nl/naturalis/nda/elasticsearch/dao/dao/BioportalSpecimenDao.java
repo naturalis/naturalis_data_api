@@ -53,21 +53,40 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     private static final Logger logger = LoggerFactory.getLogger(BioportalSpecimenDao.class);
 
-    private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
-            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
-            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
-            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS,
-            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET, IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
-            IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME, IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL, IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS,
-            IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET, IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
-            IDENTIFICATIONS_VERNACULAR_NAMES_NAME, GATHERINGEVENT_DATE_TIME_BEGIN, GATHERINGEVENT_SITECOORDINATES_POINT));
+    private static final Set<String> specimenNameSearchFieldNames = new HashSet<>(Arrays.asList(
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
+            IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
+            IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
+            GATHERINGEVENT_DATE_TIME_BEGIN,
+            GATHERINGEVENT_SITECOORDINATES_POINT));
 
     private static final Set<String> specimenNameSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(
             GATHERINGEVENT_DATE_TIME_BEGIN, GATHERINGEVENT_SITECOORDINATES_POINT));
 
-    private static final Set<String> specimenSearchFieldNames = new HashSet<>(Arrays.asList(UNIT_ID, TYPE_STATUS, PHASE_OR_STAGE, SEX, THEMES,
-            COLLECTORS_FIELD_NUMBER, GATHERINGEVENT_LOCALITY_TEXT, GATHERINGEVENT_GATHERING_PERSONS_FULLNAME,
-            GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME, GATHERINGEVENT_DATE_TIME_BEGIN, GATHERINGEVENT_SITECOORDINATES_POINT));
+    private static final Set<String> specimenSearchFieldNames = new HashSet<>(Arrays.asList(
+            UNIT_ID,
+            TYPE_STATUS,
+            PHASE_OR_STAGE,
+            SEX,
+            THEMES,
+            COLLECTORS_FIELD_NUMBER,
+            GATHERINGEVENT_LOCALITY_TEXT,
+            GATHERINGEVENT_GATHERING_PERSONS_FULLNAME,
+            GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME,
+            GATHERINGEVENT_DATE_TIME_BEGIN,
+            GATHERINGEVENT_SITECOORDINATES_POINT));
 
     private static final Set<String> specimenSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(GATHERINGEVENT_DATE_TIME_BEGIN,
             GATHERINGEVENT_SITECOORDINATES_POINT));
@@ -119,7 +138,9 @@ public class BioportalSpecimenDao extends AbstractDao {
      */
     public SearchResultSet<Specimen> specimenSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
-        params.putSingle("_andOr", "OR");
+        if(params.containsKey("_search")) {
+            params.putSingle("_andOr", "OR");
+        }
         return doSpecimenSearch(params, true);
     }
 
@@ -181,6 +202,9 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
     private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
+        if(params.containsKey("_search")) {
+            params.putSingle("_andOr", "OR");
+        }
         evaluateSimpleSearch(params, specimenNameSearchFieldNames, specimenNameSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);

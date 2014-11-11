@@ -6,6 +6,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.search.AbstractResultSet;
+import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
 
 public class ResourceUtil {
@@ -70,8 +71,9 @@ public class ResourceUtil {
 	}
 
 
-	public static void addDefaultRestLinks(AbstractResultSet result, UriInfo request, boolean addNavigationLinks)
+	public static void doAfterDao(AbstractResultSet result, UriInfo request, boolean addNavigationLinks)
 	{
+		result.setQueryParameters(new QueryParams(request.getQueryParameters()));
 		result.addLink("_self", request.getRequestUri().toString());
 		if (addNavigationLinks) {
 			String offset = request.getQueryParameters().getFirst("_offset");

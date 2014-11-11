@@ -56,6 +56,7 @@ public class NsrTaxonImporter {
 		finally {
 			index.getClient().close();
 		}
+		logger.info("NsrTaxonImporter finished");
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonImporter.class);

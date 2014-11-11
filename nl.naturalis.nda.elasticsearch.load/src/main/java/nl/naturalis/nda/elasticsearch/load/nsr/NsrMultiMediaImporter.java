@@ -50,6 +50,7 @@ public class NsrMultiMediaImporter {
 		finally {
 			index.getClient().close();
 		}
+		logger.info("NsrMultiMediaImporter finished");
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrMultiMediaImporter.class);

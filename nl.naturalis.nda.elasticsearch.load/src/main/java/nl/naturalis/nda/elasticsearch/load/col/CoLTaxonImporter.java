@@ -62,6 +62,9 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		finally {
 			index.getClient().close();
 		}
+		
+		logger.info("CoLTaxonImporter finished");
+		
 	}
 
 	//@formatter:off

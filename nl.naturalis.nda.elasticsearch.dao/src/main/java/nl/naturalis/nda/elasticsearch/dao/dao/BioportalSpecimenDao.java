@@ -274,10 +274,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
         String source = params.getParam("_source");
         if (source.equals("SPECIMEN_NAME_SEARCH")) {
-            ResultGroupSet<Specimen, String> specimenResultGroupSet = doSpecimenNameSearch(params, false);
+            ResultGroupSet<Specimen, String> specimenResultGroupSet = doSpecimenNameSearch(params, true);
             return createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
         } else if (source.equals("SPECIMEN_SEARCH")) {
-            SearchResultSet<Specimen> specimenSearchResultSet = doSpecimenSearch(params, false);
+            SearchResultSet<Specimen> specimenSearchResultSet = doSpecimenSearch(params, true);
             return createSpecimenDetailSearchResultSet(params, specimenSearchResultSet);
         }
         throw new RuntimeException(String.format("Invalid value for query parameter \"_source\": \"%s\"", source));

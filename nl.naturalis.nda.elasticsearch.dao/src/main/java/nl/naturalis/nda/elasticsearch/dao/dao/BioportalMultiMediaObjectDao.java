@@ -106,7 +106,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      */
     public SearchResultSet<MultiMediaObject> multiMediaObjectSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
-        params.putSingle("_andOr", "OR");
+        if (params.containsKey("_search")) {
+            params.putSingle("_andOr", "OR");
+        }
         return search(params, multiMediaSearchFields, multiMediaSearchFields_simpleSearchExceptions);
     }
 
@@ -199,14 +201,13 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             QueryParams copy = params.copy();
             copy.putSingle("_offset", String.valueOf(totalHits - 1));
             SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits();
-			try {
-				if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
-					minScore = hits.getAt(0).getScore();
-				}
-			}
-			catch (ArrayIndexOutOfBoundsException e) {
-				// TODO
-			}
+            try {
+                if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
+                    minScore = hits.getAt(0).getScore();
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // TODO
+            }
         }
         return responseToMultiMediaObjectSearchResultSet(searchResponse, params, minScore);
     }

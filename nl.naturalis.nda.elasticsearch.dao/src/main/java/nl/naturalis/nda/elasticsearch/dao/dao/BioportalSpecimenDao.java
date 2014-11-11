@@ -515,7 +515,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (scientificName.getInfraspecificEpithet() != null) {
             infraspecificEpithet = scientificName.getInfraspecificEpithet() + " ";
         }
-        if (scientificName.getAuthor() != null) {
+        if (scientificName.getAuthorshipVerbatim() != null) {
             author = scientificName.getAuthorshipVerbatim();
         }
 

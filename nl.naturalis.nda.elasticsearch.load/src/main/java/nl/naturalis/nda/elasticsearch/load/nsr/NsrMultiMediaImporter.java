@@ -69,7 +69,7 @@ public class NsrMultiMediaImporter {
 		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty("rename", "1");
+		prop = System.getProperty("rename", "0");
 		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
 
@@ -88,7 +88,7 @@ public class NsrMultiMediaImporter {
 			@Override
 			public boolean accept(File dir, String name)
 			{
-				return name.endsWith(".xml");
+				return name.toLowerCase().endsWith(".xml");
 			}
 		});
 		if (xmlFiles.length == 0) {

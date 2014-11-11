@@ -63,7 +63,7 @@ class NsrTaxonTransfer {
 		taxon.setSourceSystemParentId(nl(DOMUtil.getValue(taxonElement, "nsr_id_parent")));
 		String uriString = nl(DOMUtil.getValue(taxonElement, "nsr_id_parent"));
 		if (uriString == null) {
-
+			logger.error(String.format("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId()));
 		}
 		else {
 			try {

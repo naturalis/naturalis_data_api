@@ -39,7 +39,7 @@ public class CoLTaxonSynonymEnricher {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
 
-		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
 			enricher.importCsv(dwcaDir + "/taxa.txt");

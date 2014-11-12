@@ -38,7 +38,7 @@ public class CoLTaxonReferenceEnricher {
 		if (dwcaDir == null) {
 			throw new Exception("Missing property \"dwcaDir\"");
 		}
-		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonReferenceEnricher enricher = new CoLTaxonReferenceEnricher(index);
 			enricher.importCsv(dwcaDir + "/reference.txt");

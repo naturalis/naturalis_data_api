@@ -22,7 +22,7 @@ public class LoadUtil {
 	private static final String PROPERTY_FILE_NAME = "nda-import.properties";
 
 	private static ConfigObject config;
-	private static Client localClient;
+	private static Client esClient;
 
 
 	public static String getLuceneType(Class<?> cls)
@@ -76,22 +76,47 @@ public class LoadUtil {
 	}
 
 
-	@SuppressWarnings("resource")
-	public static final Client getDefaultClient()
+	public static final Client getESClient()
 	{
-		if (localClient == null) {
-			ConfigObject config = getConfig();
+		// Make sure configuration is loaded
+		getConfig();
+		if (esClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");
-			String host = config.required("elasticsearch.transportaddress.host");
-			String port = config.required("elasticsearch.transportaddress.port");
-			InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, Integer.parseInt(port));
+			String[] hosts = config.required("elasticsearch.transportaddress.host").trim().split(",");
+			String[] ports = getPorts(hosts.length);
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
-			localClient = new TransportClient(settings).addTransportAddress(transportAddress);
-			ClusterStatsRequest request = new ClusterStatsRequest();
-			ClusterStatsResponse response = localClient.admin().cluster().clusterStats(request).actionGet();
-			logger.debug("Cluster stats: " + response.toString());
+			esClient = new TransportClient(settings);
+			for (int i = 0; i < hosts.length; ++i) {
+				String host = hosts[i].trim();
+				int port = Integer.parseInt(ports[i].trim());
+				logger.info(String.format("Adding transport address \"%s:%s\"", host, port));
+				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, port);
+				((TransportClient) esClient).addTransportAddress(transportAddress);
+			}
+			if (logger.isDebugEnabled()) {
+				ClusterStatsRequest request = new ClusterStatsRequest();
+				ClusterStatsResponse response = esClient.admin().cluster().clusterStats(request).actionGet();
+				logger.debug("Cluster stats: " + response.toString());
+			}
 		}
-		return localClient;
+		return esClient;
+	}
+
+	private static String[] getPorts(int numHosts)
+	{
+		String port = config.get("elasticsearch.transportaddress.port", true);
+		String[] ports = port == null ? new String[] { "9300" } : port.trim().split(",");
+		if (ports.length > 1 && ports.length != numHosts) {
+			throw new RuntimeException("Error creating ES client: number of ports does not match number of hosts");
+		}
+		else if (ports.length == 1 && numHosts > 1) {
+			port = ports[0];
+			ports = new String[numHosts];
+			for (int i = 0; i < ports.length; ++i) {
+				ports[i] = port;
+			}
+		}
+		return ports;
 	}
 }

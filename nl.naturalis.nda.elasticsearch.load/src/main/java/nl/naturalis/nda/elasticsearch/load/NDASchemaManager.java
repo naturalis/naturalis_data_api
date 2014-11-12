@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.nsr.NsrImportAll;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class NDASchemaManager {
 
 	public static void main(String[] args)
 	{
-		Index index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
 		NDASchemaManager nsm = new NDASchemaManager(index);
 		nsm.bootstrap();
 	}
@@ -33,12 +34,25 @@ public class NDASchemaManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(NDASchemaManager.class);
 
-	private final Index index;
+	private final IndexNative index;
 
 
-	public NDASchemaManager(Index index)
+	public NDASchemaManager(IndexNative index)
 	{
 		this.index = index;
+	}
+
+
+	public void importAll()
+	{
+		try {
+			NsrImportAll nsrImportAll = new NsrImportAll(index);
+			nsrImportAll.importXmlFiles();
+		}
+		catch (Throwable t) {
+			logger.error("NSR Import Failed!");
+			logger.error(t.getMessage(), t);
+		}
 	}
 
 

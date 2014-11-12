@@ -23,12 +23,12 @@ public class NsrImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-		
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		IndexNative index = new IndexNative(LoadUtil.getDefaultClient(), DEFAULT_NDA_INDEX_NAME);
-		
+
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild != null && (rebuild.equalsIgnoreCase("true") || rebuild.equals("1"))) {
 			index.deleteType(LUCENE_TYPE_TAXON);
@@ -44,17 +44,17 @@ public class NsrImportAll {
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-				index.addType(LUCENE_TYPE_TAXON, mapping);				
+				index.addType(LUCENE_TYPE_TAXON, mapping);
 			}
 			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
 				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.NSR.getCode());
 			}
 			else {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);				
+				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
 			}
 		}
-		
+
 		try {
 			NsrImportAll importer = new NsrImportAll(index);
 			importer.importXmlFiles();
@@ -63,7 +63,7 @@ public class NsrImportAll {
 			index.getClient().close();
 		}
 		logger.info("Ready");
-		
+
 	}
 
 	static final Logger logger = LoggerFactory.getLogger(NsrImportAll.class);
@@ -75,17 +75,23 @@ public class NsrImportAll {
 	public NsrImportAll(IndexNative index)
 	{
 		this.index = index;
-		String prop = System.getProperty("rename", "false");
+		String prop = System.getProperty("rename", "0");
 		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
 
 
 	public void importXmlFiles() throws Exception
 	{
-		String xmlDir = System.getProperty("xmlDir");
-		if (xmlDir == null) {
-			throw new Exception("Missing -DxmlDir argument");
-		}
+		NsrTaxonImporter taxonImporter = new NsrTaxonImporter(index);
+		taxonImporter.importXmlFiles();
+		NsrMultiMediaImporter mediaImporter = new NsrMultiMediaImporter(index);
+		mediaImporter.importXmlFiles();
+	}
+
+
+	public void importXmlFiles2() throws Exception
+	{
+		String xmlDir = LoadUtil.getConfig().required("nsr.xml_dir");
 		File file = new File(xmlDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", xmlDir));

@@ -77,10 +77,7 @@ public class NsrMultiMediaImporter {
 
 	public void importXmlFiles() throws Exception
 	{
-		String xmlDir = System.getProperty("xmlDir");
-		if (xmlDir == null) {
-			throw new Exception("Missing -DxmlDir argument");
-		}
+		String xmlDir = LoadUtil.getConfig().required("nsr.xml_dir");
 		File file = new File(xmlDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", xmlDir));

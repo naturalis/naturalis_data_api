@@ -1,7 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
+import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
 import nl.naturalis.nda.elasticsearch.load.nsr.NsrImportAll;
 
 import org.domainobject.util.StringUtil;
@@ -15,12 +16,12 @@ import org.slf4j.LoggerFactory;
  * @author ayco_holleman
  * 
  */
-public class NDASchemaManager {
+public class NDAIndexManager {
 
 	public static void main(String[] args)
 	{
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-		NDASchemaManager nsm = new NDASchemaManager(index);
+		NDAIndexManager nsm = new NDAIndexManager(index);
 		nsm.bootstrap();
 	}
 
@@ -32,12 +33,12 @@ public class NDASchemaManager {
 	public static final String LUCENE_TYPE_SPECIMEN = "Specimen";
 	public static final String LUCENE_TYPE_MULTIMEDIA_OBJECT = "MultiMediaObject";
 
-	private static final Logger logger = LoggerFactory.getLogger(NDASchemaManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(NDAIndexManager.class);
 
 	private final IndexNative index;
 
 
-	public NDASchemaManager(IndexNative index)
+	public NDAIndexManager(IndexNative index)
 	{
 		this.index = index;
 	}
@@ -45,14 +46,38 @@ public class NDASchemaManager {
 
 	public void importAll()
 	{
+		
+		logger.info("Starting NSR Import");
 		try {
 			NsrImportAll nsrImportAll = new NsrImportAll(index);
 			nsrImportAll.importXmlFiles();
 		}
 		catch (Throwable t) {
-			logger.error("NSR Import Failed!");
+			logger.error("NSR import Failed!");
 			logger.error(t.getMessage(), t);
 		}
+		
+		logger.info("Starting Brahms Import");
+		try {
+			BrahmsImportAll brahmsImportAll = new BrahmsImportAll(index);
+			brahmsImportAll.importCsvFiles();
+		}
+		catch (Throwable t) {
+			logger.error("Brahms import Failed!");
+			logger.error(t.getMessage(), t);
+		}
+		
+		logger.info("Starting CRS Import");
+		try {
+			CrsImportAll crsImportAll = new CrsImportAll(index);
+			crsImportAll.importOai();
+		}
+		catch (Throwable t) {
+			logger.error("CRS import Failed!");
+			logger.error(t.getMessage(), t);
+		}
+		
+		
 	}
 
 

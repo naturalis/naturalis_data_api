@@ -15,7 +15,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.ArrayUtil;
@@ -31,14 +31,10 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String dwcaDir = System.getProperty("dwcaDir");
-		String rebuild = System.getProperty("rebuild", "false");
-		if (dwcaDir == null) {
-			throw new Exception("Missing property \"dwcaDir\"");
-		}
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 
+		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_TAXON);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
@@ -57,6 +53,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
+			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {

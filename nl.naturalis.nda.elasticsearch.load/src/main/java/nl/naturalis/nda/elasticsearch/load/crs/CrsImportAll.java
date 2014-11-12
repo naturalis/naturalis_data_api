@@ -1,8 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_SPECIMEN;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
@@ -48,10 +48,8 @@ public class CrsImportAll {
 		}
 
 		try {
-			CrsSpecimenImporter specimenImporter = new CrsSpecimenImporter(index);
-			specimenImporter.importSpecimens();
-			CrsMultiMediaImporter multimediaImporter = new CrsMultiMediaImporter(index);
-			multimediaImporter.importMultiMedia();
+			CrsImportAll crsImportAll = new CrsImportAll(index);
+			crsImportAll.importOai();
 		}
 		finally {
 			index.getClient().close();
@@ -61,4 +59,21 @@ public class CrsImportAll {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsImportAll.class);
+
+	private final IndexNative index;
+
+
+	public CrsImportAll(IndexNative index)
+	{
+		this.index = index;
+	}
+
+
+	public void importOai() throws Exception
+	{
+		CrsSpecimenImporter specimenImporter = new CrsSpecimenImporter(index);
+		specimenImporter.importSpecimens();
+		CrsMultiMediaImporter multimediaImporter = new CrsMultiMediaImporter(index);
+		multimediaImporter.importMultiMedia();
+	}
 }

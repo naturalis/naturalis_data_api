@@ -31,7 +31,7 @@ import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -95,18 +95,18 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
 		}
-		File[] xmlFiles = file.listFiles(new FilenameFilter() {
+		File[] csvFiles = file.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{
 				return name.toLowerCase().endsWith(".csv");
 			}
 		});
-		if (xmlFiles.length == 0) {
+		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
-		for (File f : xmlFiles) {
+		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 			if (rename) {
 				String now = new SimpleDateFormat("yyyyMMdd").format(new Date());

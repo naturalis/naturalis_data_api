@@ -1,9 +1,11 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import java.io.IOException;
+
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.*;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -17,14 +19,9 @@ public class CoLImportAll {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String dwcaDir = System.getProperty("dwcaDir");
-		String rebuild = System.getProperty("rebuild", "false");
-		if (dwcaDir == null) {
-			throw new Exception("Missing property \"dwcaDir\"");
-		}
-
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 
+		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_TAXON);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
@@ -41,14 +38,8 @@ public class CoLImportAll {
 		}
 
 		try {
-			CoLTaxonImporter importer = new CoLTaxonImporter(index);
-			importer.importCsv(dwcaDir + "/taxa.txt");
-			CoLTaxonSynonymEnricher synonymEnricher = new CoLTaxonSynonymEnricher(index);
-			synonymEnricher.importCsv(dwcaDir + "/taxa.txt");
-			CoLTaxonVernacularNameEnricher vernacularNameEnricher = new CoLTaxonVernacularNameEnricher(index);
-			vernacularNameEnricher.importCsv(dwcaDir + "/vernacular.txt");
-			CoLTaxonReferenceEnricher referenceEnricher = new CoLTaxonReferenceEnricher(index);
-			referenceEnricher.importCsv(dwcaDir + "/reference.txt");
+			CoLImportAll colImportAll = new CoLImportAll(index);
+			colImportAll.importAll();
 		}
 		finally {
 			index.getClient().close();
@@ -57,4 +48,26 @@ public class CoLImportAll {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLImportAll.class);
+
+	private final IndexNative index;
+
+
+	public CoLImportAll(IndexNative index)
+	{
+		this.index = index;
+	}
+
+
+	public void importAll() throws IOException
+	{
+		String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
+		CoLTaxonImporter importer = new CoLTaxonImporter(index);
+		importer.importCsv(dwcaDir + "/taxa.txt");
+		CoLTaxonSynonymEnricher synonymEnricher = new CoLTaxonSynonymEnricher(index);
+		synonymEnricher.importCsv(dwcaDir + "/taxa.txt");
+		CoLTaxonVernacularNameEnricher vernacularNameEnricher = new CoLTaxonVernacularNameEnricher(index);
+		vernacularNameEnricher.importCsv(dwcaDir + "/vernacular.txt");
+		CoLTaxonReferenceEnricher referenceEnricher = new CoLTaxonReferenceEnricher(index);
+		referenceEnricher.importCsv(dwcaDir + "/reference.txt");
+	}
 }

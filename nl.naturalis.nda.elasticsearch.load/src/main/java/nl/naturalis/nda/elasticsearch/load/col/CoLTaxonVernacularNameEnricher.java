@@ -1,8 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.DEFAULT_NDA_INDEX_NAME;
-import static nl.naturalis.nda.elasticsearch.load.NDASchemaManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,24 +27,17 @@ public class CoLTaxonVernacularNameEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		String dwcaDir = System.getProperty("dwcaDir");
-		if (dwcaDir == null) {
-			throw new Exception("Missing property \"dwcaDir\"");
-		}
-
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
+			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {
 			index.getClient().close();
 		}
-
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonVernacularNameEnricher.class);

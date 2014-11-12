@@ -14,6 +14,7 @@ public class TaxonTransfer {
         taxon.setSourceSystem(esTaxon.getSourceSystem());
         taxon.setSourceSystemId(esTaxon.getSourceSystemId());
         taxon.setSourceSystemParentId(esTaxon.getSourceSystemParentId());
+        taxon.setRecordURI(esTaxon.getRecordURI());
         taxon.setTaxonRank(esTaxon.getTaxonRank());
         taxon.setAcceptedName(esTaxon.getAcceptedName());
         taxon.setDefaultClassification(esTaxon.getDefaultClassification());

@@ -134,12 +134,14 @@ public class NsrTaxonImporter {
 			}
 			try {
 				taxon = NsrTaxonTransfer.transfer(taxonElement);
-				taxa.add(taxon);
-				ids.add(ID_PREFIX + taxon.getSourceSystemId());
-				if (taxa.size() >= bulkRequestSize) {
-					index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
-					taxa.clear();
-					ids.clear();
+				if(taxon != null) {
+					taxa.add(taxon);
+					ids.add(ID_PREFIX + taxon.getSourceSystemId());
+					if (taxa.size() >= bulkRequestSize) {
+						index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+						taxa.clear();
+						ids.clear();
+					}
 				}
 			}
 			catch (Throwable t) {

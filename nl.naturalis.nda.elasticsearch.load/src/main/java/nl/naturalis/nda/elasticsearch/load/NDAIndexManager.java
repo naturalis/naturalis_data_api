@@ -1,7 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import java.util.Arrays;
+
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
+import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
 import nl.naturalis.nda.elasticsearch.load.nsr.NsrImportAll;
 
@@ -21,8 +24,13 @@ public class NDAIndexManager {
 	public static void main(String[] args)
 	{
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-		NDAIndexManager nsm = new NDAIndexManager(index);
-		nsm.bootstrap();
+		NDAIndexManager indexManager = new NDAIndexManager(index);
+		if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
+			indexManager.bootstrap();
+		}
+		if (args.length == 0 || Arrays.asList(args).contains("import")) {
+			indexManager.importAll();
+		}
 	}
 
 	/**
@@ -46,7 +54,7 @@ public class NDAIndexManager {
 
 	public void importAll()
 	{
-		
+
 		logger.info("Starting NSR Import");
 		try {
 			NsrImportAll nsrImportAll = new NsrImportAll(index);
@@ -56,7 +64,7 @@ public class NDAIndexManager {
 			logger.error("NSR import Failed!");
 			logger.error(t.getMessage(), t);
 		}
-		
+
 		logger.info("Starting Brahms Import");
 		try {
 			BrahmsImportAll brahmsImportAll = new BrahmsImportAll(index);
@@ -66,7 +74,7 @@ public class NDAIndexManager {
 			logger.error("Brahms import Failed!");
 			logger.error(t.getMessage(), t);
 		}
-		
+
 		logger.info("Starting CRS Import");
 		try {
 			CrsImportAll crsImportAll = new CrsImportAll(index);
@@ -76,8 +84,19 @@ public class NDAIndexManager {
 			logger.error("CRS import Failed!");
 			logger.error(t.getMessage(), t);
 		}
-		
-		
+
+		logger.info("Starting CoL Import");
+		try {
+			CoLImportAll colImportAll = new CoLImportAll(index);
+			colImportAll.importAll();
+		}
+		catch (Throwable t) {
+			logger.error("CoL import Failed!");
+			logger.error(t.getMessage(), t);
+		}
+
+		logger.info("Ready");
+
 	}
 
 

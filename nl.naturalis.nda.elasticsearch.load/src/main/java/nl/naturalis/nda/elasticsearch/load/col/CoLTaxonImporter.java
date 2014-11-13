@@ -102,7 +102,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
 	static final String ID_PREFIX = "COL-";
 
-	private static final String[] ALLOWED_TAXON_RANKS = new String[] { "species", "infraspecies" };
+	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies");
 
 
 	public CoLTaxonImporter(Index index)

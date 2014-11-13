@@ -54,14 +54,27 @@ class NsrTaxonTransfer {
 		translations.put("isInvalidNameOf", TaxonomicStatus.SYNONYM);
 	}
 
+	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis");
+
 
 	static ESTaxon transfer(Element taxonElement) throws Exception
 	{
+		String id = nl(DOMUtil.getValue(taxonElement, "nsr_id"));
+		String rank = nl(DOMUtil.getValue(taxonElement, "rank"));
+		if (rank == null) {
+			logger.error(String.format("Missing taxonomic rank for taxon with id \"%s\"", id));
+			return null;
+		}
+		if (!ALLOWED_TAXON_RANKS.contains(rank)) {
+			logger.debug(String.format("Skipping taxon with id \"%s\" (higher rank not allowed: \"%s\")", id, rank));
+			return null;
+		}
 		ESTaxon taxon = new ESTaxon();
 		taxon.setSourceSystem(SourceSystem.NSR);
-		taxon.setSourceSystemId(nl(DOMUtil.getValue(taxonElement, "nsr_id")));
+		taxon.setSourceSystemId(id);
+		taxon.setTaxonRank(rank);
 		taxon.setSourceSystemParentId(nl(DOMUtil.getValue(taxonElement, "nsr_id_parent")));
-		String uriString = nl(DOMUtil.getValue(taxonElement, "nsr_id_parent"));
+		String uriString = nl(DOMUtil.getValue(taxonElement, "url"));
 		if (uriString == null) {
 			logger.error(String.format("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId()));
 		}
@@ -73,7 +86,6 @@ class NsrTaxonTransfer {
 				logger.error(String.format("Invalid URL for taxon with id %s: \"%s\"", taxon.getSourceSystemId(), uriString));
 			}
 		}
-		taxon.setTaxonRank(nl(DOMUtil.getValue(taxonElement, "rank")));
 		List<Monomial> monomials = getMonomials(taxonElement);
 		if (monomials != null) {
 			taxon.setSystemClassification(monomials);

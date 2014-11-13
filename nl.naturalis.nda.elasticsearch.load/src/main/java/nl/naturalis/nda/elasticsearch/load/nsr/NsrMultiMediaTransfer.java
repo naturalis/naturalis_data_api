@@ -35,6 +35,9 @@ public class NsrMultiMediaTransfer {
 			return null;
 		}
 		ESTaxon taxon = NsrTaxonTransfer.transfer(taxonElement);
+		if (taxon == null) {
+			return null;
+		}
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(imageElements.size());
 		for (Element imageElement : imageElements) {
 			ESMultiMediaObject mmo = transfer(taxon, imageElement);
@@ -42,7 +45,7 @@ public class NsrMultiMediaTransfer {
 				mmos.add(mmo);
 			}
 		}
-		return mmos;
+		return mmos.size() == 0 ? null : mmos;
 	}
 
 

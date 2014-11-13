@@ -23,7 +23,7 @@ public class NDA {
 	private static final Logger logger = LoggerFactory.getLogger(NDA.class);
 
 	private final ConfigObject config;
-	private Client client = null;
+	private Client esClient = null;
 
 
 	public NDA()
@@ -34,27 +34,27 @@ public class NDA {
 
 	public Client getESClient()
 	{
-		if (client == null) {
+		if (esClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");
 			String[] hosts = config.required("elasticsearch.transportaddress.host").trim().split(",");
 			String[] ports = getPorts(hosts.length);
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
-			client = new TransportClient(settings);
+			esClient = new TransportClient(settings);
 			for (int i = 0; i < hosts.length; ++i) {
 				String host = hosts[i].trim();
 				int port = Integer.parseInt(ports[i].trim());
 				logger.info(String.format("Adding transport address \"%s:%s\"", host, port));
 				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, port);
-				((TransportClient) client).addTransportAddress(transportAddress);
+				((TransportClient) esClient).addTransportAddress(transportAddress);
 			}
 			if (logger.isDebugEnabled()) {
 				ClusterStatsRequest request = new ClusterStatsRequest();
-				ClusterStatsResponse response = client.admin().cluster().clusterStats(request).actionGet();
+				ClusterStatsResponse response = esClient.admin().cluster().clusterStats(request).actionGet();
 				logger.debug("Cluster stats: " + response.toString());
 			}
 		}
-		return client;
+		return esClient;
 	}
 
 

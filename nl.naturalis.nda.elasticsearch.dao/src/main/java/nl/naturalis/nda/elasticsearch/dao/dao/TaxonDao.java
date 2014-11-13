@@ -11,10 +11,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SOURCE_SYSTEM_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.TaxonFields.*;
@@ -128,7 +125,7 @@ public class TaxonDao extends AbstractTaxonDao {
 
     private Map<String, String> fieldNamesToValues(QueryParams params) {
         List<FieldMapping> mappingsForFields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
-        Map<String, String> map = new HashMap<>();
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (FieldMapping fieldMapping : mappingsForFields) {
             String fieldName = fieldMapping.getFieldName();
             String value = fieldMapping.getValue();

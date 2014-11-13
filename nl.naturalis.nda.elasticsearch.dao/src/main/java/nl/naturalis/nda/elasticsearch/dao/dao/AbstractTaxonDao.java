@@ -14,10 +14,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 
@@ -103,26 +100,25 @@ public class AbstractTaxonDao extends AbstractDao {
         float maxScore = searchResponse.getHits().getMaxScore();
 
         ResultGroupSet<Taxon, String> taxonSearchResultGroupSet = new ResultGroupSet<>();
-
-        Map<String, SearchResultSet<Taxon>> nameToTaxons = new HashMap<>();
+        LinkedHashMap<String, SearchResultSet<Taxon>> nameToTaxons = new LinkedHashMap<>();
 
         for (SearchHit hit : searchResponse.getHits()) {
-            SearchResult<Taxon> searchResult = new SearchResult<>();
+            Taxon taxon = TaxonTransfer.transfer(getObjectMapper().convertValue(hit.getSource(), ESTaxon.class));
 
-            ESTaxon esTaxon = getObjectMapper().convertValue(hit.getSource(), ESTaxon.class);
-            String taxonName = createAcceptedNameParams(esTaxon.getAcceptedName());
+            String taxonName = createAcceptedNameParams(taxon.getAcceptedName());
             if (!nameToTaxons.containsKey(taxonName)) {
                 nameToTaxons.put(taxonName, new SearchResultSet<Taxon>());
             }
-            SearchResultSet<Taxon> taxonsForName = nameToTaxons.get(taxonName);
 
-            Taxon taxon = TaxonTransfer.transfer(esTaxon);
+            SearchResultSet<Taxon> taxonsForName = nameToTaxons.get(taxonName);
+            SearchResult<Taxon> searchResult = new SearchResult<>();
+
             //TODO NDA-66 taxon link must be to detail base url in result set
-            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(esTaxon.getAcceptedName())));
+            searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
             searchResult.setResult(taxon);
+            enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
             double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
             searchResult.setPercentage(percentage);
-            enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
             taxonsForName.addSearchResult(searchResult);
         }

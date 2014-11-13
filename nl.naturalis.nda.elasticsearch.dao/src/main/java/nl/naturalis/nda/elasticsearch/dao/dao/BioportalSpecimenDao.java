@@ -21,13 +21,7 @@ import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.ASSEMBLAGE_ID;
@@ -430,8 +424,8 @@ public class BioportalSpecimenDao extends AbstractDao {
     private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, QueryParams params, float minScore) {
         float maxScore = response.getHits().getMaxScore();
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
-        Map<String, List<Specimen>> tempMapSpecimens = new HashMap<>();
-        Map<Specimen, SearchHit> tempMapSearchHits = new HashMap<>();
+        LinkedHashMap<String, List<Specimen>> tempMapSpecimens = new LinkedHashMap<>();
+        LinkedHashMap<Specimen, SearchHit> tempMapSearchHits = new LinkedHashMap<>();
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);

@@ -7,10 +7,7 @@ import nl.naturalis.nda.domain.SpecimenTypeStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MultiMediaObjectTransfer {
 
@@ -46,7 +43,7 @@ public class MultiMediaObjectTransfer {
         List<ServiceAccessPoint> serviceAccessPoints = esMmo.getServiceAccessPoints();
 
         if (serviceAccessPoints != null) {
-            Map<ServiceAccessPoint.Variant, ServiceAccessPoint> accessPointMap = new HashMap<>();
+            LinkedHashMap<ServiceAccessPoint.Variant, ServiceAccessPoint> accessPointMap = new LinkedHashMap<>();
             for (ServiceAccessPoint serviceAccessPoint : serviceAccessPoints) {
                 accessPointMap.put(serviceAccessPoint.getVariant(), serviceAccessPoint);
             }

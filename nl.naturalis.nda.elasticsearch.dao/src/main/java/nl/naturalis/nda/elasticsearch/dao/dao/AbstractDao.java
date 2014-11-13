@@ -39,14 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
@@ -150,7 +143,7 @@ public abstract class AbstractDao {
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         Operator operator = getOperator(params);
 
-        Map<String, List<FieldMapping>> nestedFields = new HashMap<>();
+        LinkedHashMap<String, List<FieldMapping>> nestedFields = new LinkedHashMap<>();
         List<FieldMapping> nonNestedFields = new ArrayList<>();
         for (FieldMapping field : fields) {
             String nestedPath = field.getNestedPath();
@@ -438,7 +431,7 @@ public abstract class AbstractDao {
         String sortParam = params.getParam("_sort");
         String sortField = "_score";
         if (sortParam != null && !sortParam.isEmpty()) {
-            sortField = sortParam;
+            sortField = sortParam + ".raw";
         }
         return sortField;
     }
@@ -617,7 +610,7 @@ public abstract class AbstractDao {
         searchResult.setScore(hit.getScore());
 
         if (hit.getHighlightFields() != null) {
-            Map<String, StringMatchInfo> stringMatchInfos = new HashMap<>();
+            LinkedHashMap<String, StringMatchInfo> stringMatchInfos = new LinkedHashMap<>();
             for (Map.Entry<String, HighlightField> highlightFieldEntry : hit.getHighlightFields().entrySet()) {
                 StringMatchInfo stringMatchInfo = new StringMatchInfo();
 

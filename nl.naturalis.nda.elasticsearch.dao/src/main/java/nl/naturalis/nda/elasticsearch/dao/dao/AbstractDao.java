@@ -430,7 +430,7 @@ public abstract class AbstractDao {
     protected String getSortFieldFromQueryParams(QueryParams params) {
         String sortParam = params.getParam("_sort");
         String sortField = "_score";
-        if (sortParam != null && !sortParam.isEmpty()) {
+        if (sortParam != null && !sortParam.isEmpty() && !sortParam.equalsIgnoreCase("_sort")) {
             sortField = sortParam + ".raw";
         }
         return sortField;

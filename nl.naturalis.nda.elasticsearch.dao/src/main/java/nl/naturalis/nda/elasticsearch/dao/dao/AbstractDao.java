@@ -150,36 +150,6 @@ public abstract class AbstractDao {
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         Operator operator = getOperator(params);
 
-
-
-
-        // FIXME: impl pseudo-code from here *************************************
-
-        Map<String, List<FieldMapping>> nestedFields_lvl1 = new HashMap<>();
-        List<FieldMapping> nonNestedFields_lvl1 = new ArrayList<>();
-
-        for (Set<FieldMapping> relatedFields : groupRelatedFields(fields)) {
-            if (relatedFields.size() == 1) {
-                FieldMapping field = relatedFields.iterator().next();
-                // populate nestedFields_lvl1 or nonNestedFields_lvl1 with field
-            } else {
-                BoolQueryBuilder relatedFieldsQuery = boolQuery();
-                Map<String, List<FieldMapping>> nestedFields_lvl2 = new HashMap<>();
-                List<FieldMapping> nonNestedFields_lvl2 = new ArrayList<>();
-                for (FieldMapping field : relatedFields) {
-                    // populate nestedFields_lvl2 or nonNestedFields_lvl2 with field
-                }
-                // extend *relatedFieldsQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using OR
-            }
-        }
-        // extend *nonPrebuiltQuery* with nestedFields_lvl1 or nonNestedFields_lvl1, using operator
-
-        // FIXME: to here *********************************************************
-
-
-
-
-
         Map<String, List<FieldMapping>> nestedFields = new HashMap<>();
         List<FieldMapping> nonNestedFields = new ArrayList<>();
         for (FieldMapping field : fields) {
@@ -264,6 +234,7 @@ public abstract class AbstractDao {
 
     /**
      * If no groups exist, this will return a lot of singleton sets in the big set. All related fields exist in a set.
+     *
      * @param fields
      * @return
      */
@@ -359,7 +330,7 @@ public abstract class AbstractDao {
             for (LngLatAlt lngLatAlt : lngLatAlts) {
                 double longitude = lngLatAlt.getLongitude();
                 double latitude = lngLatAlt.getLatitude();
-                coordinates.add(new Coordinate(latitude, longitude));
+                coordinates.add(new Coordinate(longitude, latitude));
             }
         }
         return coordinates.toArray(new Coordinate[coordinates.size()]);
@@ -412,7 +383,7 @@ public abstract class AbstractDao {
         extendQueryWithQuery(boolQueryBuilder, operator, nestedQueryBuilder);
     }
 
-    private void  extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
+    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
                                       List<HighlightBuilder.Field> highlightFields, boolean highlight) {
         if (field.getValue() != null) {
             MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());

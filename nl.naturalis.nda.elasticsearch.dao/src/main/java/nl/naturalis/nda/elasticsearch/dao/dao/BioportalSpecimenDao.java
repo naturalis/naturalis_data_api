@@ -280,7 +280,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             SearchResultSet<Specimen> specimenSearchResultSet = doSpecimenSearch(params, true);
             return createSpecimenDetailSearchResultSet(params, specimenSearchResultSet);
         }
-        throw new RuntimeException(String.format("Invalid value for query parameter \"_source\": \"%s\"", source));
+        throw new RuntimeException(String.format("  Invalid value for query parameter \"_source\": \"%s\"", source));
     }
 
 

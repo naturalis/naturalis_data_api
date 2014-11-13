@@ -131,6 +131,28 @@ public class CrsMultiMediaTransfer {
 			sn.setInfraspecificEpithet(val(e, "abcd:subspeciesepithet"));
 			sn.setNameAddendum(val(e, "abcd:NameAddendum"));
 			sn.setAuthorshipVerbatim(val(e, "dwc:nameAccordingTo"));
+			if(sn.getFullScientificName() == null) {
+				StringBuilder sb = new StringBuilder();
+				if (sn.getGenusOrMonomial() != null) {
+					sb.append(sn.getGenusOrMonomial()).append(' ');
+				}
+				else {
+					String taxonCoverage = val(e, "ac:taxonCoverage");
+					if (taxonCoverage != null) {
+						sb.append(taxonCoverage).append(' ');
+					}
+				}
+				if (sn.getSubgenus() != null) {
+					sb.append(sn.getSubgenus()).append(' ');
+				}
+				if (sn.getSpecificEpithet() != null) {
+					sb.append(sn.getSpecificEpithet()).append(' ');
+				}
+				if (sn.getInfraspecificEpithet() != null) {
+					sb.append(sn.getInfraspecificEpithet()).append(' ');
+				}
+				sn.setFullScientificName(sb.toString().trim());				
+			}
 			identification.setDefaultClassification(TransferUtil.extractClassificiationFromName(sn));
 			String s = val(e, "abcd:IdentificationQualifier1");
 			if (s != null) {

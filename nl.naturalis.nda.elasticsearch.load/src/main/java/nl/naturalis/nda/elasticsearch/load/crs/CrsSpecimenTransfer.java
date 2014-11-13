@@ -186,6 +186,28 @@ public class CrsSpecimenTransfer {
 		sn.setInfraspecificEpithet(s);
 		sn.setNameAddendum(val(determinationElement, "abcd:NameAddendum"));
 		sn.setAuthorshipVerbatim(val(determinationElement, "abcd:AuthorTeamOriginalAndYear"));
+		if (sn.getFullScientificName() == null) {
+			StringBuilder sb = new StringBuilder();
+			if (sn.getGenusOrMonomial() != null) {
+				sb.append(sn.getGenusOrMonomial()).append(' ');
+			}
+			else {
+				String taxonCoverage = val(determinationElement, "abcd:taxonCoverage");
+				if (taxonCoverage != null) {
+					sb.append(taxonCoverage).append(' ');
+				}
+			}
+			if (sn.getSubgenus() != null) {
+				sb.append(sn.getSubgenus()).append(' ');
+			}
+			if (sn.getSpecificEpithet() != null) {
+				sb.append(sn.getSpecificEpithet()).append(' ');
+			}
+			if (sn.getInfraspecificEpithet() != null) {
+				sb.append(sn.getInfraspecificEpithet()).append(' ');
+			}
+			sn.setFullScientificName(sb.toString().trim());
+		}
 		return sn;
 	}
 

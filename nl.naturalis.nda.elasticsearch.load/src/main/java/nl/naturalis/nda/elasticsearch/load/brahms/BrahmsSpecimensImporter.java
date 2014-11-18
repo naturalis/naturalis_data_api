@@ -240,7 +240,14 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
 		specimen.setTheme(themes);
 
-		specimen.setRecordBasis("PreservedSpecimen");
+		String recordBasis = val(record, CsvField.CATEGORY.ordinal());
+		if (recordBasis == null) {
+			specimen.setRecordBasis("Preserved Specimen");
+		}
+		else {
+			specimen.setRecordBasis(recordBasis);
+		}
+		
 		specimen.setAssemblageID(ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));

@@ -35,17 +35,42 @@ public class CrsDownloader {
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
+		
 		CrsDownloader downloader = new CrsDownloader();
-		String prop = System.getProperty("specimens", "1");
-		if (prop.equals("1") || prop.equalsIgnoreCase("true")) {
-			downloader.download(Type.SPECIMEN);
+
+		if(args.length == 0) {
+			downloader.download(Type.SPECIMEN, null, 0);
+			downloader.download(Type.MULTIMEDIA, null, 0);
 		}
-		prop = System.getProperty("multimedia", "1");
-		if (prop.equals("1") || prop.equalsIgnoreCase("true")) {
-			downloader.download(Type.MULTIMEDIA);
+		
+		else if(args.length == 1) {
+			if(args[0].toLowerCase().equals("specimens")) {
+				downloader.download(Type.SPECIMEN, null, 0);
+			}
+			else if(args[0].toLowerCase().equals("multimedia")) {
+				downloader.download(Type.MULTIMEDIA, null, 0);
+			}
+			else {
+				logger.error(USAGE);
+			}
 		}
-		logger.info("Ready");
+		
+		else if(args.length == 3) {
+			if(args[0].toLowerCase().equals("specimens")) {
+				downloader.download(Type.SPECIMEN, args[1], Integer.parseInt(args[2]));
+			}
+			else if(args[0].toLowerCase().equals("multimedia")) {
+				downloader.download(Type.MULTIMEDIA, args[1], Integer.parseInt(args[2]));
+			}
+			else {
+				logger.error(USAGE);
+			}
+		}
+		
+		else {
+			logger.error(USAGE);
+		}
+
 	}
 
 	public static enum Type
@@ -54,6 +79,7 @@ public class CrsDownloader {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsDownloader.class);
+	private static final String USAGE = "USAGE: java CrsDownloader [ specimens|multimedia [<resumption-token> <batchNo>] ]";
 
 	private final DocumentBuilder builder;
 
@@ -71,12 +97,17 @@ public class CrsDownloader {
 	}
 
 
-	public void download(Type type)
+	public void download(Type type, String resToken, int batch)
 	{
 		String s = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		logger.info("Downloading " + s);
-		String resToken = null;
-		int batch = 0;
+		
+		if(resToken == null) {
+			logger.info("Starting from scratch");
+		}
+		else {
+			logger.info(String.format("Resuming with resumption token \"%s\"", resToken));
+		}
 		
 		// Override/ignore some properties which are only relevant while
 		// indexing (within CrsSpecimenImporter or CrsMultiMediaImporter):

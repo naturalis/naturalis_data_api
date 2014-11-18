@@ -14,6 +14,7 @@ import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
@@ -35,40 +36,47 @@ public class CrsDownloader {
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
-		CrsDownloader downloader = new CrsDownloader();
 
-		if(args.length == 0) {
-			downloader.download(Type.SPECIMEN, null, 0);
-			downloader.download(Type.MULTIMEDIA, null, 0);
-		}
-		
-		else if(args.length == 1) {
-			if(args[0].toLowerCase().equals("specimens")) {
+		try {
+			CrsDownloader downloader = new CrsDownloader();
+
+			if (args.length == 0) {
 				downloader.download(Type.SPECIMEN, null, 0);
-			}
-			else if(args[0].toLowerCase().equals("multimedia")) {
 				downloader.download(Type.MULTIMEDIA, null, 0);
 			}
+
+			else if (args.length == 1) {
+				if (args[0].toLowerCase().equals("specimens")) {
+					downloader.download(Type.SPECIMEN, null, 0);
+				}
+				else if (args[0].toLowerCase().equals("multimedia")) {
+					downloader.download(Type.MULTIMEDIA, null, 0);
+				}
+				else {
+					logger.error(USAGE);
+				}
+			}
+
+			else if (args.length == 3) {
+				if (args[0].toLowerCase().equals("specimens")) {
+					downloader.download(Type.SPECIMEN, args[1], Integer.parseInt(args[2]));
+				}
+				else if (args[0].toLowerCase().equals("multimedia")) {
+					downloader.download(Type.MULTIMEDIA, args[1], Integer.parseInt(args[2]));
+				}
+				else {
+					logger.error(USAGE);
+				}
+			}
+
 			else {
 				logger.error(USAGE);
 			}
+
 		}
-		
-		else if(args.length == 3) {
-			if(args[0].toLowerCase().equals("specimens")) {
-				downloader.download(Type.SPECIMEN, args[1], Integer.parseInt(args[2]));
-			}
-			else if(args[0].toLowerCase().equals("multimedia")) {
-				downloader.download(Type.MULTIMEDIA, args[1], Integer.parseInt(args[2]));
-			}
-			else {
-				logger.error(USAGE);
-			}
-		}
-		
-		else {
-			logger.error(USAGE);
+		catch (Throwable t) {
+			logger.error(t.getMessage(), t);
+			logger.error("Download did not complete successfully");
 		}
 
 	}
@@ -84,36 +92,31 @@ public class CrsDownloader {
 	private final DocumentBuilder builder;
 
 
-	public CrsDownloader()
+	public CrsDownloader() throws ParserConfigurationException
 	{
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
-		try {
-			builder = builderFactory.newDocumentBuilder();
-		}
-		catch (ParserConfigurationException e) {
-			throw ExceptionUtil.smash(e);
-		}
+		builder = builderFactory.newDocumentBuilder();
 	}
 
 
-	public void download(Type type, String resToken, int batch)
+	public void download(Type type, String resToken, int batch) throws Exception
 	{
 		String s = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		logger.info("Downloading " + s);
-		
-		if(resToken == null) {
+
+		if (resToken == null) {
 			logger.info("Starting from scratch");
 		}
 		else {
 			logger.info(String.format("Resuming with resumption token \"%s\"", resToken));
 		}
-		
+
 		// Override/ignore some properties which are only relevant while
 		// indexing (within CrsSpecimenImporter or CrsMultiMediaImporter):
 		LoadUtil.getConfig().set("crs.save_local", "true");
 		LoadUtil.getConfig().set("crs.max_age", "0");
-		
+
 		do {
 			String xml;
 			if (type == Type.SPECIMEN) {
@@ -123,15 +126,17 @@ public class CrsDownloader {
 				xml = CrsMultiMediaImporter.callOaiService(resToken, batch++);
 			}
 			logger.info("Extracting resumption token from output");
-			try {
-				Document doc = builder.parse(StringUtil.asInputStream(xml));
+			Document doc = builder.parse(StringUtil.asInputStream(xml));
+			Element e = DOMUtil.getDescendant(doc.getDocumentElement(), "error");
+			if (e == null) {
 				resToken = DOMUtil.getDescendantValue(doc, "resumptionToken");
 				if (resToken != null) {
 					logger.info("Resumption token used for next call: " + resToken);
 				}
 			}
-			catch (SAXException | IOException e) {
-				throw ExceptionUtil.smash(e);
+			else {
+				String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
+				throw new Exception(msg);
 			}
 		} while (resToken != null);
 		logger.info("Successfully downloaded " + s);

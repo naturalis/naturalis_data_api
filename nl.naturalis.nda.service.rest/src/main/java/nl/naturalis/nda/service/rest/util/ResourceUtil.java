@@ -36,6 +36,12 @@ public class ResourceUtil {
 
 	public static RuntimeException handleError(UriInfo request, Throwable throwable)
 	{
+		return handleError(request, null, throwable);
+	}
+
+
+	public static RuntimeException handleError(UriInfo request, MultivaluedMap<String, String> form, Throwable throwable)
+	{
 		boolean returnExceptionAsJson = false;
 		String s = request.getQueryParameters().getFirst(ERROR_AS_JSON);
 		if (s != null) {
@@ -47,7 +53,7 @@ public class ResourceUtil {
 			}
 		}
 		if (returnExceptionAsJson) {
-			return new HTTP200Exception(request, throwable, Status.INTERNAL_SERVER_ERROR);
+			return new HTTP200Exception(request, form, throwable);
 		}
 		return throwable instanceof RuntimeException ? ((RuntimeException) throwable) : new RuntimeException(throwable);
 	}

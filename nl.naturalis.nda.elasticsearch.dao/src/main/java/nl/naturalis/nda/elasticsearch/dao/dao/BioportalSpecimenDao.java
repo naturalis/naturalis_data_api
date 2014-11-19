@@ -34,7 +34,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.Specime
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.PHASE_OR_STAGE;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.SEX;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.THEMES;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.THEME;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
@@ -74,7 +74,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             TYPE_STATUS,
             PHASE_OR_STAGE,
             SEX,
-            THEMES,
+            THEME,
             COLLECTORS_FIELD_NUMBER,
             GATHERINGEVENT_LOCALITY_TEXT,
             GATHERINGEVENT_GATHERING_PERSONS_FULLNAME,

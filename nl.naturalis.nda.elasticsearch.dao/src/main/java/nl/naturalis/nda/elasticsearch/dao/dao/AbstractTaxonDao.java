@@ -132,7 +132,7 @@ public class AbstractTaxonDao extends AbstractDao {
             taxonSearchResultGroupSet.addGroup(group);
         }
 
-        taxonSearchResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
+        //taxonSearchResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         taxonSearchResultGroupSet.setTotalSize(searchResponse.getHits().getTotalHits());
 
         return taxonSearchResultGroupSet;

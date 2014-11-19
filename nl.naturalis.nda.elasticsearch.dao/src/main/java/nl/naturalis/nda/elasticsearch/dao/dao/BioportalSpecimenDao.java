@@ -314,7 +314,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
-        searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
+        //searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return searchResultSet;
     }
 
@@ -374,7 +374,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         searchResultSet.addSearchResult(foundSpecimenForUnitId);
-        searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
+        //searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return searchResultSet;
     }
 
@@ -383,7 +383,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
         resultSet.setTotalSize(response.getHits().getTotalHits());
-        resultSet.setQueryParameters(params.copyWithoutGeoShape());
+        //resultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
@@ -485,7 +485,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
-        specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
+        //specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
     }
 

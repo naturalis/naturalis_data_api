@@ -267,7 +267,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             }
         }
         detailResultSet.setTotalSize(searchResultSet.getTotalSize());
-        detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
+        //detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return detailResultSet;
     }
 
@@ -345,7 +345,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         }
 
         searchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
-        searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
+        //searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         return searchResultSet;
     }

@@ -32,6 +32,7 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	private List<ESGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
 	private List<String> identifyingEpithets;
+	private List<String> theme;
 
 
 	public void addServiceAccessPoint(ServiceAccessPoint sap)
@@ -288,5 +289,17 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	public List<String> getIdentifyingEpithets()
 	{
 		return identifyingEpithets;
+	}
+
+
+	public List<String> getTheme()
+	{
+		return theme;
+	}
+
+
+	public void setTheme(List<String> theme)
+	{
+		this.theme = theme;
 	}
 }

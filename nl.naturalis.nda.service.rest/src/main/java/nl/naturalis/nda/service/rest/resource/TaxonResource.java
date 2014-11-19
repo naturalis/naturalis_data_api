@@ -103,7 +103,7 @@ public class TaxonResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			ResultGroupSet<Taxon, String> result = registry.getBioportalTaxonDao().taxonSearch(params);
-			ResourceUtil.doAfterDao(result, request, true);
+			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
 		}
 		catch (Throwable t) {

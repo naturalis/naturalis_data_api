@@ -2,6 +2,7 @@ package nl.naturalis.nda.service.rest.util;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -73,7 +74,18 @@ public class ResourceUtil {
 
 	public static void doAfterDao(AbstractResultSet result, UriInfo request, boolean addNavigationLinks)
 	{
-		result.setQueryParameters(new QueryParams(request.getQueryParameters()));
+		doAfterDao(result, request, null, addNavigationLinks);
+	}
+
+
+	public static void doAfterDao(AbstractResultSet result, UriInfo request, MultivaluedMap<String, String> formParams, boolean addNavigationLinks)
+	{
+		QueryParams params = new QueryParams();
+		params.addParams(request.getQueryParameters());
+		if (formParams != null) {
+			params.addParams(formParams);
+		}
+		result.setQueryParameters(params);
 		result.addLink("_self", request.getRequestUri().toString());
 		if (addNavigationLinks) {
 			String offset = request.getQueryParameters().getFirst("_offset");

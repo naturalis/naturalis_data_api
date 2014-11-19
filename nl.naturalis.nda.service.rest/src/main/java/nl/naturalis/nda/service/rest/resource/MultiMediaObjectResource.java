@@ -62,7 +62,7 @@ public class MultiMediaObjectResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
-			ResourceUtil.doAfterDao(result, request, true);
+			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
 		}
 		catch (Throwable t) {

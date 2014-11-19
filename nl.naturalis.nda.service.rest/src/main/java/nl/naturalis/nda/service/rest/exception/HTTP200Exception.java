@@ -1,12 +1,12 @@
 package nl.naturalis.nda.service.rest.exception;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 @SuppressWarnings("serial")
 public class HTTP200Exception extends RuntimeException {
@@ -48,14 +48,31 @@ public class HTTP200Exception extends RuntimeException {
 		httpStatusInfo.put("code", actualStatus.getStatusCode());
 		httpStatusInfo.put("message", actualStatus.toString());
 
+
 		if (getCause() != null) {
+			
+			Throwable rootCause = getCause();
+			while (rootCause.getCause() != null) {
+				rootCause = rootCause.getCause();
+			}			
+			
 			HashMap<String, Object> exceptionInfo = new HashMap<>();
 			info.put("exception", exceptionInfo);
-			exceptionInfo.put("message", getCause().getMessage());
-			StringWriter sw = new StringWriter(255);
-			PrintWriter pw = new PrintWriter(sw);
-			getCause().printStackTrace(pw);
-			exceptionInfo.put("stackTrace", sw.toString());
+			exceptionInfo.put("message", rootCause.getMessage());
+			exceptionInfo.put("root cause", rootCause.getClass().getName());
+			if (rootCause != getCause()) {
+				exceptionInfo.put("cause", getCause().getClass().getName());
+			}
+			StackTraceElement[] stackTraceElements = rootCause.getStackTrace();
+			List<String> trace = new ArrayList<String>(stackTraceElements.length);
+			for (StackTraceElement e : stackTraceElements) {
+				StringBuilder sb = new StringBuilder(100);
+				sb.append("at ");
+				sb.append(e.getClassName()).append('.').append(e.getMethodName());
+				sb.append('(').append(e.getFileName()).append(':').append(e.getLineNumber()).append(')');
+				trace.add(sb.toString());
+			}
+			exceptionInfo.put("stackTrace", trace);
 		}
 		return info;
 	}

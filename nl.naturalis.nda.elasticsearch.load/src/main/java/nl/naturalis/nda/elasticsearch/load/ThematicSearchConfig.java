@@ -19,8 +19,8 @@ public class ThematicSearchConfig {
 	private class Theme {
 		String code;
 		String file;
-		DocumentType type;
 		String identifier;
+		List<DocumentType> types;
 		List<String> ids;
 		List<SourceSystem> systems;
 		int matches = 0;
@@ -62,7 +62,7 @@ public class ThematicSearchConfig {
 		}
 		List<String> identifiers = null;
 		for (Theme theme : themes) {
-			if (theme.type != type) {
+			if (theme.types != null && !theme.types.contains(type)) {
 				continue;
 			}
 			if (theme.systems != null && !theme.systems.contains(system)) {
@@ -103,11 +103,15 @@ public class ThematicSearchConfig {
 				Theme theme = new Theme();
 				themes.add(theme);
 				String type = props.getProperty(code + ".type");
-				if (type == null) {
-					throw new RuntimeException(String.format("Missing property \"%s.type\"", code));
+				if (type != null && type.length() != 0) {
+					String[] types = type.split(",");
+					List<DocumentType> documentTypes = new ArrayList<>(types.length);
+					for (String t : types) {
+						documentTypes.add(DocumentType.forName(t.trim()));
+					}
+					theme.types = documentTypes;
 				}
 				theme.code = code;
-				theme.type = DocumentType.forName(type);
 				theme.file = props.getProperty(code + ".file");
 				if (theme.file == null || theme.file.length() == 0) {
 					theme.file = thematicSearchDir.getAbsolutePath() + "/" + theme.code + ".txt";

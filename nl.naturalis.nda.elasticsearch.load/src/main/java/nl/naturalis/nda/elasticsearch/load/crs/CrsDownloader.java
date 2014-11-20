@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import java.io.IOException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -9,13 +7,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 /**
  * Harvests the CRS OAI service and saves its output to local files. Since the

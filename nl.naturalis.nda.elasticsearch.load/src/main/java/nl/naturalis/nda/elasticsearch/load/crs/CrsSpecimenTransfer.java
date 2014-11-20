@@ -28,11 +28,6 @@ import org.w3c.dom.Element;
 
 public class CrsSpecimenTransfer {
 
-	public static void main(String[] args)
-	{
-		System.out.println("Hallo");
-	}
-
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();

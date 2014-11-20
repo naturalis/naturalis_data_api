@@ -13,6 +13,8 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.load.DocumentType;
+import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -47,6 +49,11 @@ public class CrsMultiMediaTransfer {
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
 		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
 		String sex = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
+		
+		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		List<String> themes = tsc.getThemesForDocument(associatedSpecimenReference, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.CRS);
+		
+		
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
@@ -80,7 +87,8 @@ public class CrsMultiMediaTransfer {
 			mmo.setSexes(sexes);
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
-			mmo.setCreator(val(mediaFileElement, "dc:creator"));
+			mmo.setCreator(val(mediaFileElement, "dc:creator"));			
+			mmo.setTheme(themes);
 		}
 		return mmos;
 	}

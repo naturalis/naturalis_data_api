@@ -28,7 +28,9 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
+import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
@@ -90,6 +92,10 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public void importCsvFiles() throws Exception
 	{
+
+		// Check thematic search is configured properly
+		ThematicSearchConfig.getInstance();
+
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
@@ -148,15 +154,20 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl) throws Exception
 	{
-		String s = val(record, BARCODE.ordinal());
-		if (s == null) {
+		String specimenUnitId = val(record, BARCODE.ordinal());
+		if (specimenUnitId == null) {
 			throw new Exception("Missing barcode");
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
-		mmo.setUnitID(s + ":" + imageNo);
+		mmo.setUnitID(specimenUnitId + ":" + imageNo);
 		mmo.setSourceSystemId(mmo.getUnitID());
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
-		mmo.setAssociatedSpecimenReference(s);
+		mmo.setAssociatedSpecimenReference(specimenUnitId);
+		
+		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		List<String> themes = tsc.getThemesForDocument(specimenUnitId, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+		mmo.setTheme(themes);
+		
 		mmo.setDescription(val(record, PLANTDESC.ordinal()));
 		mmo.setGatheringEvents(Arrays.asList(BrahmsSpecimensImporter.getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
@@ -168,6 +179,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		catch (URISyntaxException e) {
 			throw new Exception("Invalid URL: " + imageUrl);
 		}
+		
+
 		return mmo;
 	}
 

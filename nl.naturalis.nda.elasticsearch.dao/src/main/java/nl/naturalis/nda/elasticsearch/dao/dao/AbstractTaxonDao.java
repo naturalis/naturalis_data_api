@@ -84,12 +84,15 @@ public class AbstractTaxonDao extends AbstractDao {
         SearchResultSet<Taxon> resultSet = new SearchResultSet<>();
         List<ResultGroup<Taxon, String>> resultGroups = taxonStringResultGroupSet.getResultGroups();
         if (resultGroups != null && !resultGroups.isEmpty()) {
-            List<SearchResult<Taxon>> searchResults = resultGroups.get(0).getSearchResults();
-            if (searchResults != null && !searchResults.isEmpty()) {
-                for (SearchResult<Taxon> searchResult : searchResults) {
-                    resultSet.addSearchResult(searchResult);
+            for (ResultGroup<Taxon, String> resultGroup : resultGroups) {
+                List<SearchResult<Taxon>> searchResults = resultGroup.getSearchResults();
+                if (searchResults != null && !searchResults.isEmpty()) {
+                    for (SearchResult<Taxon> searchResult : searchResults) {
+                        resultSet.addSearchResult(searchResult);
+                    }
                 }
             }
+
         }
         resultSet.setTotalSize(taxonStringResultGroupSet.getTotalSize());
         resultSet.setQueryParameters(taxonStringResultGroupSet.getQueryParameters());

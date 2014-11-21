@@ -73,7 +73,10 @@ public class CrsSpecimenTransfer {
 		}
 		else {
 			for (Element e : determinationElements) {
-				specimen.addIndentification(transferIdentification(e));
+				s = val(e, "abcd:PreferredFlag");
+				if (s == null || s.equals("1")) {
+					specimen.addIndentification(transferIdentification(e));
+				}
 			}
 		}
 		specimen.setGatheringEvent(transferGatheringEvent(recordElement));
@@ -117,8 +120,11 @@ public class CrsSpecimenTransfer {
 	public static SpecimenIdentification transferIdentification(Element determinationElement)
 	{
 		final SpecimenIdentification si = new SpecimenIdentification();
-		String s = val(determinationElement, "abcd:NameAddendum");
+		/*
+		String s = val(determinationElement, "abcd:PreferredFlag");
 		si.setPreferred(s != null && s.equals("1"));
+		*/
+		si.setPreferred(true);
 		si.setDateIdentified(date(determinationElement, "abcd:IdentificationDate"));
 		si.setAssociatedFossilAssemblage(val(determinationElement, "abcd:AssociatedFossilAssemblage"));
 		si.setAssociatedMineralName(val(determinationElement, "abcd:AssociatedMineralName"));
@@ -158,7 +164,7 @@ public class CrsSpecimenTransfer {
 			}
 		}
 
-		s = val(determinationElement, "abcd:InformalNameString");
+		String s = val(determinationElement, "abcd:InformalNameString");
 		if (s != null) {
 			si.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}

@@ -230,29 +230,6 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
     }
 
     @Test
-    public void searchParametersButNotGeoDataAreReturnedWithResults() throws IOException {
-        // GIVEN
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE)
-                .setSource(getMapping("test-specimen-mapping.json"))
-                .execute().actionGet();
-
-        QueryParams params = new QueryParams();
-        params.add("gatheringEvent.gatheringPersons.fullName", "Meijer, W.");
-        params.add("_geoShape", "{\"type\":\"MultiPolygon\",\"coordinates\":[[fake]]} ");
-
-        // WHEN
-        SearchResultSet<Specimen> specimenStringResultGroupSet = dao.specimenSearch(params);
-
-        // THEN
-        QueryParams searchParameters = specimenStringResultGroupSet.getQueryParameters();
-
-        assertThat(searchParameters.getParam("gatheringEvent.gatheringPersons.fullName"), is("Meijer, W."));
-        assertThat(searchParameters.getParam("_geoShape"), nullValue());
-    }
-
-    @Test
     public void testGetOtherSpecimensWithSameAssemblageId() throws Exception {
         createIndex(INDEX_NAME);
 
@@ -350,26 +327,6 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         assertTrue(specimenSearchResult.getLinks().get(0).getRel().equals("_previous"));
         assertTrue(specimenSearchResult.getLinks().get(1).getHref().contains("3"));
         assertTrue(specimenSearchResult.getLinks().get(1).getRel().equals("_next"));
-    }
-
-    @Test
-    public void testDetailQuery_returnedParams() {
-        // GIVEN
-        QueryParams params = new QueryParams();
-        params.add(UNIT_ID, "2");
-        String geoShapeString = "{\"type\" : \"Polygon\",\"coordinates\" : [[[14,12], [14,13], [15,13], [15,12], [14,12]]]}";
-        params.add("_geoShape", geoShapeString);
-
-        // WHEN
-        ResultGroupSet<Specimen, String> specimenResultGroupSet = createSpecimenResultGroupSet();
-
-        SearchResultSet<Specimen> specimenDetailSearchResultSet
-                = dao.createSpecimenDetailSearchResultSet(params, specimenResultGroupSet);
-
-        // THEN
-        QueryParams returnedParams = specimenDetailSearchResultSet.getQueryParameters();
-        assertThat(returnedParams.getParam(UNIT_ID), is("2"));
-        assertFalse(returnedParams.containsKey("_geoShape"));
     }
 
     @Test

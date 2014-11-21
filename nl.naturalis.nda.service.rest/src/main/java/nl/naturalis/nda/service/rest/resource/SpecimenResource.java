@@ -88,6 +88,7 @@ public class SpecimenResource {
 		try {
 			logger.debug("getSpecimenDetailWithinResultSetPOST");
 			QueryParams params = new QueryParams(form);
+			params.addParams(request.getQueryParameters());
 			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
 			ResourceUtil.doAfterDao(result, request, form, false);
 			return result;
@@ -125,6 +126,7 @@ public class SpecimenResource {
 		try {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
+			params.addParams(request.getQueryParameters());
 			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
@@ -162,6 +164,7 @@ public class SpecimenResource {
 		try {
 			logger.debug("nameSearchPOST");
 			QueryParams params = new QueryParams(form);
+			params.addParams(request.getQueryParameters());
 			ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;

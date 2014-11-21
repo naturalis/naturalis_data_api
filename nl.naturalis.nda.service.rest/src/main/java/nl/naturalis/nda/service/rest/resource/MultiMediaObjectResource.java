@@ -61,6 +61,7 @@ public class MultiMediaObjectResource {
 		try {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
+			params.addParams(request.getQueryParameters());
 			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;

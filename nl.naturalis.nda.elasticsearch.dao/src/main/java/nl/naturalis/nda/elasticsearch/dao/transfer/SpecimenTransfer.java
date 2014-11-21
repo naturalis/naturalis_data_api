@@ -13,17 +13,20 @@ public class SpecimenTransfer {
 		// Only static method in transfer objects
 	}
 
-
 	public static Specimen transfer(ESSpecimen esSpecimen)
 	{
 		Specimen specimen = new Specimen();
-        specimen.setCollectorsFieldNumber(esSpecimen.getCollectorsFieldNumber());
+		specimen.setCollectorsFieldNumber(esSpecimen.getCollectorsFieldNumber());
 		specimen.setSourceSystem(esSpecimen.getSourceSystem());
 		specimen.setSourceSystemId(esSpecimen.getSourceSystemId());
 		specimen.setUnitID(esSpecimen.getUnitID());
 		specimen.setUnitGUID(esSpecimen.getUnitGUID());
 		specimen.setAssemblageID(esSpecimen.getAssemblageID());
 		specimen.setSourceInstitutionID(esSpecimen.getSourceInstitutionID());
+		specimen.setSourceID(esSpecimen.getSourceID());
+		specimen.setOwner(esSpecimen.getOwner());
+		specimen.setLicenceType(esSpecimen.getLicenceType());
+		specimen.setLicence(esSpecimen.getLicence());
 		specimen.setRecordBasis(esSpecimen.getRecordBasis());
 		specimen.setKindOfUnit(esSpecimen.getKindOfUnit());
 		specimen.setCollectionType(esSpecimen.getCollectionType());
@@ -42,4 +45,5 @@ public class SpecimenTransfer {
 		specimen.setGatheringEvent(GatheringEventTransfer.transfer(esSpecimen.getGatheringEvent()));
 		return specimen;
 	}
+	
 }

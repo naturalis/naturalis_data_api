@@ -12,6 +12,11 @@ import nl.naturalis.nda.domain.ServiceAccessPoint;
 
 public class ESMultiMediaObject extends NdaTraceableObject {
 
+	private String sourceInstitutionID;
+	private String sourceID;
+	private String owner;
+	private String licenceType;
+	private String licence;
 	private String unitID;
 	private String title;
 	private String caption;
@@ -41,6 +46,66 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 			serviceAccessPoints = new ArrayList<ServiceAccessPoint>(4);
 		}
 		serviceAccessPoints.add(sap);
+	}
+
+
+	public String getSourceInstitutionID()
+	{
+		return sourceInstitutionID;
+	}
+
+
+	public void setSourceInstitutionID(String sourceInstitutionID)
+	{
+		this.sourceInstitutionID = sourceInstitutionID;
+	}
+
+
+	public String getSourceID()
+	{
+		return sourceID;
+	}
+
+
+	public void setSourceID(String sourceID)
+	{
+		this.sourceID = sourceID;
+	}
+
+
+	public String getOwner()
+	{
+		return owner;
+	}
+
+
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+
+
+	public String getLicenceType()
+	{
+		return licenceType;
+	}
+
+
+	public void setLicenceType(String licenceType)
+	{
+		this.licenceType = licenceType;
+	}
+
+
+	public String getLicence()
+	{
+		return licence;
+	}
+
+
+	public void setLicence(String licence)
+	{
+		this.licence = licence;
 	}
 
 
@@ -302,4 +367,5 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	{
 		this.theme = theme;
 	}
+
 }

@@ -11,39 +11,44 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 
 public class ESSpecimen extends NdaTraceableObject {
 
-    private String unitID;
-    private String unitGUID;
-    private String collectorsFieldNumber;
-    private String assemblageID;
-    private String sourceInstitutionID;
-    private String recordBasis;
-    private String kindOfUnit;
-    private String collectionType;
-    private String typeStatus;
-    private String sex;
-    private String phaseOrStage;
-    private String title;
-    private String notes;
-    private String preparationType;
-    private int numberOfSpecimen;
-    private boolean fromCaptivity;
-    private boolean objectPublic;
-    private boolean multiMediaPublic;
+	private String unitID;
+	private String unitGUID;
+	private String collectorsFieldNumber;
+	private String assemblageID;
+	private String sourceInstitutionID;
+	private String sourceID;
+	private String owner;
+	private String licenceType;
+	private String licence;
+	private String recordBasis;
+	private String kindOfUnit;
+	private String collectionType;
+	private String typeStatus;
+	private String sex;
+	private String phaseOrStage;
+	private String title;
+	private String notes;
+	private String preparationType;
+	private int numberOfSpecimen;
+	private boolean fromCaptivity;
+	private boolean objectPublic;
+	private boolean multiMediaPublic;
 
-    private Agent acquiredFrom;
-    private ESGatheringEvent gatheringEvent;
-    private List<SpecimenIdentification> identifications;
-    private List<String> identifyingEpithets;
-    private List<String> theme;
+	private Agent acquiredFrom;
+	private ESGatheringEvent gatheringEvent;
+	private List<SpecimenIdentification> identifications;
+	private List<String> identifyingEpithets;
+	private List<String> theme;
 
 
-    public void addIndentification(SpecimenIdentification identification) {
-        if (identifications == null) {
-            identifications = new ArrayList<SpecimenIdentification>();
-            identifyingEpithets = new ArrayList<String>();
-        }
-        identifications.add(identification);
-        //@formatter:off
+	public void addIndentification(SpecimenIdentification identification)
+	{
+		if (identifications == null) {
+			identifications = new ArrayList<SpecimenIdentification>();
+			identifyingEpithets = new ArrayList<String>();
+		}
+		identifications.add(identification);
+		//@formatter:off
         String identifier =
                 identification.getScientificName().getGenusOrMonomial() +
                         IDENTIFYING_EPITHETS_DELIMITER +
@@ -53,221 +58,311 @@ public class ESSpecimen extends NdaTraceableObject {
                         IDENTIFYING_EPITHETS_DELIMITER +
                         identification.getScientificName().getInfraspecificEpithet();
         //@formatter:on
-        identifyingEpithets.add(identifier);
-    }
+		identifyingEpithets.add(identifier);
+	}
 
 
-    public String getUnitID() {
-        return unitID;
-    }
+	public String getUnitID()
+	{
+		return unitID;
+	}
 
 
-    public void setUnitID(String unitID) {
-        this.unitID = unitID;
-    }
+	public void setUnitID(String unitID)
+	{
+		this.unitID = unitID;
+	}
 
 
-    public String getUnitGUID() {
-        return unitGUID;
-    }
+	public String getUnitGUID()
+	{
+		return unitGUID;
+	}
 
 
-    public void setUnitGUID(String unitGUID) {
-        this.unitGUID = unitGUID;
-    }
+	public void setUnitGUID(String unitGUID)
+	{
+		this.unitGUID = unitGUID;
+	}
 
 
-    public String getCollectorsFieldNumber() {
-        return collectorsFieldNumber;
-    }
+	public String getCollectorsFieldNumber()
+	{
+		return collectorsFieldNumber;
+	}
 
 
-    public void setCollectorsFieldNumber(String collectorsFieldNumber) {
-        this.collectorsFieldNumber = collectorsFieldNumber;
-    }
+	public void setCollectorsFieldNumber(String collectorsFieldNumber)
+	{
+		this.collectorsFieldNumber = collectorsFieldNumber;
+	}
 
 
-    public String getAssemblageID() {
-        return assemblageID;
-    }
+	public String getAssemblageID()
+	{
+		return assemblageID;
+	}
 
 
-    public void setAssemblageID(String assemblageID) {
-        this.assemblageID = assemblageID;
-    }
+	public void setAssemblageID(String assemblageID)
+	{
+		this.assemblageID = assemblageID;
+	}
 
 
-    public String getSourceInstitutionID() {
-        return sourceInstitutionID;
-    }
+	public String getSourceInstitutionID()
+	{
+		return sourceInstitutionID;
+	}
 
 
-    public void setSourceInstitutionID(String sourceInstitutionID) {
-        this.sourceInstitutionID = sourceInstitutionID;
-    }
+	public void setSourceInstitutionID(String sourceInstitutionID)
+	{
+		this.sourceInstitutionID = sourceInstitutionID;
+	}
 
 
-    public String getRecordBasis() {
-        return recordBasis;
-    }
+	public String getSourceID()
+	{
+		return sourceID;
+	}
 
 
-    public void setRecordBasis(String recordBasis) {
-        this.recordBasis = recordBasis;
-    }
+	public void setSourceID(String sourceID)
+	{
+		this.sourceID = sourceID;
+	}
 
 
-    public String getKindOfUnit() {
-        return kindOfUnit;
-    }
+	public String getOwner()
+	{
+		return owner;
+	}
 
 
-    public void setKindOfUnit(String kindOfUnit) {
-        this.kindOfUnit = kindOfUnit;
-    }
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
 
 
-    public String getCollectionType() {
-        return collectionType;
-    }
+	public String getLicenceType()
+	{
+		return licenceType;
+	}
 
 
-    public void setCollectionType(String collectionType) {
-        this.collectionType = collectionType;
-    }
+	public void setLicenceType(String licenceType)
+	{
+		this.licenceType = licenceType;
+	}
 
 
-    public String getTypeStatus() {
-        return typeStatus;
-    }
+	public String getLicence()
+	{
+		return licence;
+	}
 
 
-    public void setTypeStatus(String typeStatus) {
-        this.typeStatus = typeStatus;
-    }
+	public void setLicence(String licence)
+	{
+		this.licence = licence;
+	}
 
 
-    public String getSex() {
-        return sex;
-    }
+	public String getRecordBasis()
+	{
+		return recordBasis;
+	}
 
 
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
+	public void setRecordBasis(String recordBasis)
+	{
+		this.recordBasis = recordBasis;
+	}
 
 
-    public String getPhaseOrStage() {
-        return phaseOrStage;
-    }
+	public String getKindOfUnit()
+	{
+		return kindOfUnit;
+	}
 
 
-    public void setPhaseOrStage(String phaseOrStage) {
-        this.phaseOrStage = phaseOrStage;
-    }
+	public void setKindOfUnit(String kindOfUnit)
+	{
+		this.kindOfUnit = kindOfUnit;
+	}
 
 
-    public String getTitle() {
-        return title;
-    }
+	public String getCollectionType()
+	{
+		return collectionType;
+	}
 
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setCollectionType(String collectionType)
+	{
+		this.collectionType = collectionType;
+	}
 
 
-    public String getNotes() {
-        return notes;
-    }
+	public String getTypeStatus()
+	{
+		return typeStatus;
+	}
 
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+	public void setTypeStatus(String typeStatus)
+	{
+		this.typeStatus = typeStatus;
+	}
 
 
-    public String getPreparationType() {
-        return preparationType;
-    }
+	public String getSex()
+	{
+		return sex;
+	}
 
 
-    public void setPreparationType(String preparationType) {
-        this.preparationType = preparationType;
-    }
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
 
 
-    public int getNumberOfSpecimen() {
-        return numberOfSpecimen;
-    }
+	public String getPhaseOrStage()
+	{
+		return phaseOrStage;
+	}
 
 
-    public void setNumberOfSpecimen(int numberOfSpecimen) {
-        this.numberOfSpecimen = numberOfSpecimen;
-    }
+	public void setPhaseOrStage(String phaseOrStage)
+	{
+		this.phaseOrStage = phaseOrStage;
+	}
 
 
-    public boolean isFromCaptivity() {
-        return fromCaptivity;
-    }
+	public String getTitle()
+	{
+		return title;
+	}
 
 
-    public void setFromCaptivity(boolean fromCaptivity) {
-        this.fromCaptivity = fromCaptivity;
-    }
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
 
 
-    public boolean isObjectPublic() {
-        return objectPublic;
-    }
+	public String getNotes()
+	{
+		return notes;
+	}
 
 
-    public void setObjectPublic(boolean objectPublic) {
-        this.objectPublic = objectPublic;
-    }
+	public void setNotes(String notes)
+	{
+		this.notes = notes;
+	}
 
 
-    public boolean isMultiMediaPublic() {
-        return multiMediaPublic;
-    }
+	public String getPreparationType()
+	{
+		return preparationType;
+	}
 
 
-    public void setMultiMediaPublic(boolean multiMediaPublic) {
-        this.multiMediaPublic = multiMediaPublic;
-    }
+	public void setPreparationType(String preparationType)
+	{
+		this.preparationType = preparationType;
+	}
 
 
-    public Agent getAcquiredFrom() {
-        return acquiredFrom;
-    }
+	public int getNumberOfSpecimen()
+	{
+		return numberOfSpecimen;
+	}
 
 
-    public void setAcquiredFrom(Agent acquiredFrom) {
-        this.acquiredFrom = acquiredFrom;
-    }
+	public void setNumberOfSpecimen(int numberOfSpecimen)
+	{
+		this.numberOfSpecimen = numberOfSpecimen;
+	}
 
 
-    public ESGatheringEvent getGatheringEvent() {
-        return gatheringEvent;
-    }
+	public boolean isFromCaptivity()
+	{
+		return fromCaptivity;
+	}
 
 
-    public void setGatheringEvent(ESGatheringEvent gatheringEvent) {
-        this.gatheringEvent = gatheringEvent;
-    }
+	public void setFromCaptivity(boolean fromCaptivity)
+	{
+		this.fromCaptivity = fromCaptivity;
+	}
 
 
-    public List<SpecimenIdentification> getIdentifications() {
-        return identifications;
-    }
+	public boolean isObjectPublic()
+	{
+		return objectPublic;
+	}
 
 
-    public void setIdentifications(List<SpecimenIdentification> identifications) {
-        this.identifications = identifications;
-        this.identifyingEpithets = new ArrayList<>();
-        if (identifications != null) {
-            for (SpecimenIdentification identification : identifications) {
-                //@formatter:off
+	public void setObjectPublic(boolean objectPublic)
+	{
+		this.objectPublic = objectPublic;
+	}
+
+
+	public boolean isMultiMediaPublic()
+	{
+		return multiMediaPublic;
+	}
+
+
+	public void setMultiMediaPublic(boolean multiMediaPublic)
+	{
+		this.multiMediaPublic = multiMediaPublic;
+	}
+
+
+	public Agent getAcquiredFrom()
+	{
+		return acquiredFrom;
+	}
+
+
+	public void setAcquiredFrom(Agent acquiredFrom)
+	{
+		this.acquiredFrom = acquiredFrom;
+	}
+
+
+	public ESGatheringEvent getGatheringEvent()
+	{
+		return gatheringEvent;
+	}
+
+
+	public void setGatheringEvent(ESGatheringEvent gatheringEvent)
+	{
+		this.gatheringEvent = gatheringEvent;
+	}
+
+
+	public List<SpecimenIdentification> getIdentifications()
+	{
+		return identifications;
+	}
+
+
+	public void setIdentifications(List<SpecimenIdentification> identifications)
+	{
+		this.identifications = identifications;
+		this.identifyingEpithets = new ArrayList<>();
+		if (identifications != null) {
+			for (SpecimenIdentification identification : identifications) {
+				//@formatter:off
                 String identifier =
                         identification.getScientificName().getGenusOrMonomial() +
                                 IDENTIFYING_EPITHETS_DELIMITER +
@@ -277,15 +372,16 @@ public class ESSpecimen extends NdaTraceableObject {
                                 IDENTIFYING_EPITHETS_DELIMITER +
                                 identification.getScientificName().getInfraspecificEpithet();
                 //@formatter:on
-                identifyingEpithets.add(identifier);
-            }
-        }
-    }
+				identifyingEpithets.add(identifier);
+			}
+		}
+	}
 
 
-    public List<String> getIdentifyingEpithets() {
-        return identifyingEpithets;
-    }
+	public List<String> getIdentifyingEpithets()
+	{
+		return identifyingEpithets;
+	}
 
 
 	public List<String> getTheme()
@@ -298,6 +394,5 @@ public class ESSpecimen extends NdaTraceableObject {
 	{
 		this.theme = themes;
 	}
-
 
 }

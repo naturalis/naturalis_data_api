@@ -1,5 +1,16 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.checkSpData;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDate;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDefaultClassification;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getGatheringEvent;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getScientificName;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getSystemClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.DAYIDENT;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.IMAGELIST;
@@ -33,7 +44,6 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
@@ -44,10 +54,10 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
-		
+
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		String rebuild = System.getProperty("rebuild", "false");
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
@@ -58,7 +68,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		else {
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 		}
-		
+
 		try {
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsvFiles();
@@ -74,10 +84,12 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private final boolean rename;
 
+
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
 		this.delimiter = ',';
+		this.suppressErrors = true;
 		setSpecifyId(true);
 		setSpecifyParent(false);
 		String prop = System.getProperty("bulkRequestSize", "1000");
@@ -87,7 +99,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		prop = System.getProperty("rename", "false");
 		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
-
 
 
 	public void importCsvFiles() throws Exception
@@ -121,15 +132,19 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		}
 	}
 
+
 	@Override
-	protected List<ESMultiMediaObject> transfer(CSVRecord record) throws Exception
+	protected List<ESMultiMediaObject> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
 	{
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
 		String s = val(record, IMAGELIST.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
-				mmos.add(transferOne(record, i, urls[i]));
+				ESMultiMediaObject mmo = transferOne(record, i, urls[i], lineNo);
+				if (mmo != null) {
+					mmos.add(mmo);
+				}
 			}
 		}
 		return mmos;
@@ -152,24 +167,37 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	}
 
 
-	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl) throws Exception
+	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl, int lineNo) throws Exception
 	{
 		String specimenUnitId = val(record, BARCODE.ordinal());
 		if (specimenUnitId == null) {
-			throw new Exception("Missing barcode");
+			logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+			return null;
+		}
+		try {
+			checkSpData(record);
+		}
+		catch (Exception e) {
+			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
+			return null;
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setUnitID(specimenUnitId + ":" + imageNo);
 		mmo.setSourceSystemId(mmo.getUnitID());
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
+		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+		mmo.setOwner(SOURCE_INSTITUTION_ID);
+		mmo.setSourceID("Brahms");
+		mmo.setLicenceType(LICENCE_TYPE);
+		mmo.setLicence(LICENCE);
 		mmo.setAssociatedSpecimenReference(specimenUnitId);
-		
+
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimenUnitId, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 		mmo.setTheme(themes);
-		
+
 		mmo.setDescription(val(record, PLANTDESC.ordinal()));
-		mmo.setGatheringEvents(Arrays.asList(BrahmsSpecimensImporter.getGatheringEvent(record)));
+		mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		try {
@@ -179,7 +207,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		catch (URISyntaxException e) {
 			throw new Exception("Invalid URL: " + imageUrl);
 		}
-		
 
 		return mmo;
 	}
@@ -195,15 +222,13 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		String y = val(record, YEARIDENT.ordinal());
 		String m = val(record, MONTHIDENT.ordinal());
 		String d = val(record, DAYIDENT.ordinal());
-		identification.setDateIdentified(BrahmsSpecimensImporter.getDate(y, m, d));
-		ScientificName sn = BrahmsSpecimensImporter.getScientificName(record);
-		DefaultClassification dc = BrahmsSpecimensImporter.getDefaultClassification(record, sn);
+		identification.setDateIdentified(getDate(y, m, d));
+		ScientificName sn = getScientificName(record);
+		DefaultClassification dc = getDefaultClassification(record, sn);
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
-		identification.setSystemClassification(BrahmsSpecimensImporter.getSystemClassification(dc));
+		identification.setSystemClassification(getSystemClassification(dc));
 		return identification;
 	}
-
-
 
 }

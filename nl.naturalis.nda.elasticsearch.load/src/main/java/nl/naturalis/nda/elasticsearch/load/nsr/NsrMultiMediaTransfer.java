@@ -1,5 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +63,11 @@ public class NsrMultiMediaTransfer {
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystem(SourceSystem.NSR);
 		mmo.setSourceSystemId(taxon.getSourceSystemId() + ":" + url.hashCode());
+		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+		mmo.setOwner(SOURCE_INSTITUTION_ID);
+		mmo.setSourceID("LNG NSR");
+		mmo.setLicenceType(LICENCE_TYPE);
+		mmo.setLicence(LICENCE);
 		mmo.setUnitID(mmo.getSourceSystemId());
 		mmo.setAssociatedTaxonReference(taxon.getSourceSystemId());
 		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, null, Variant.MEDIUM_QUALITY));

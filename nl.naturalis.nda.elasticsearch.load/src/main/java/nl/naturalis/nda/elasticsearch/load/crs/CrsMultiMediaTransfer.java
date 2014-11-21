@@ -1,5 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +14,7 @@ import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.ServiceAccessPoint;
 import nl.naturalis.nda.domain.ServiceAccessPoint.Variant;
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
@@ -49,34 +54,38 @@ public class CrsMultiMediaTransfer {
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
 		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
 		String sex = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
-		
+
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 		List<String> themes = tsc.getThemesForDocument(associatedSpecimenReference, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.CRS);
-		
-		
+
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
 			String url = val(mediaFileElement, "abcd:fileuri");
 			if (url == null) {
-				logger.error("No Image URL for record with identifier " + val(recordElement, "identifier"));
+				logger.debug("Record ignored. No Image URL for record with identifier " + val(recordElement, "identifier"));
 				continue;
 			}
 			String title = val(mediaFileElement, "dc:title");
 			if (title == null) {
-				logger.error("Missing title for record with identifier " + val(recordElement, "identifier"));
+				logger.error("Record ignored. Missing title for record with identifier " + val(recordElement, "identifier"));
 				continue;
 			}
-			
-			if(url.indexOf("medialib.naturalis.nl") != -1) {
+
+			if (url.indexOf("medialib.naturalis.nl") != -1) {
 				url = url.replace("/small", "/large");
 			}
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
-			
+
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 			mmo.setSourceSystem(SourceSystem.CRS);
 			mmo.setSourceSystemId(title);
+			mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+			mmo.setOwner(SOURCE_INSTITUTION_ID);
+			mmo.setSourceID("CRS");
+			mmo.setLicenceType(LICENCE_TYPE);
+			mmo.setLicence(LICENCE);
 			mmo.setUnitID(title);
 			mmo.setTitle(title);
 			mmo.setCaption(title);
@@ -87,7 +96,7 @@ public class CrsMultiMediaTransfer {
 			mmo.setSexes(sexes);
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
-			mmo.setCreator(val(mediaFileElement, "dc:creator"));			
+			mmo.setCreator(val(mediaFileElement, "dc:creator"));
 			mmo.setTheme(themes);
 		}
 		return mmos;
@@ -129,6 +138,10 @@ public class CrsMultiMediaTransfer {
 		List<Element> elems = DOMUtil.getDescendants(dcElement, "ncrsDetermination");
 		List<MultiMediaContentIdentification> identifications = new ArrayList<MultiMediaContentIdentification>(elems.size());
 		for (Element e : elems) {
+			String s = val(e, "abcd:PreferredFlag");
+			if (s != null && !s.equals("1")) {
+				continue;
+			}
 			MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
 			identifications.add(identification);
 			ScientificName sn = new ScientificName();
@@ -139,7 +152,7 @@ public class CrsMultiMediaTransfer {
 			sn.setInfraspecificEpithet(val(e, "abcd:subspeciesepithet"));
 			sn.setNameAddendum(val(e, "abcd:NameAddendum"));
 			sn.setAuthorshipVerbatim(val(e, "dwc:nameAccordingTo"));
-			if(sn.getFullScientificName() == null) {
+			if (sn.getFullScientificName() == null) {
 				StringBuilder sb = new StringBuilder();
 				if (sn.getGenusOrMonomial() != null) {
 					sb.append(sn.getGenusOrMonomial()).append(' ');
@@ -159,10 +172,10 @@ public class CrsMultiMediaTransfer {
 				if (sn.getInfraspecificEpithet() != null) {
 					sb.append(sn.getInfraspecificEpithet()).append(' ');
 				}
-				sn.setFullScientificName(sb.toString().trim());				
+				sn.setFullScientificName(sb.toString().trim());
 			}
 			identification.setDefaultClassification(TransferUtil.extractClassificiationFromName(sn));
-			String s = val(e, "abcd:IdentificationQualifier1");
+			s = val(e, "abcd:IdentificationQualifier1");
 			if (s != null) {
 				List<String> qualifiers = new ArrayList<String>(3);
 				identification.setIdentificationQualifiers(qualifiers);
@@ -176,6 +189,12 @@ public class CrsMultiMediaTransfer {
 					qualifiers.add(s);
 				}
 			}
+
+			s = val(e, "dwc:vernacularName");
+			if (s != null) {
+				identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
+			}
+
 		}
 		return identifications;
 	}

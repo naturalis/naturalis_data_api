@@ -77,6 +77,11 @@ public abstract class CSVImporter<T> {
 	private boolean specifyParent = false;
 
 	protected char delimiter = '\t';
+	
+	// Will log errors as debug messages. Specifically
+	// useful when expecting huge amounts of errors, as
+	// with Brahms.
+	protected boolean suppressErrors = false;
 
 
 	public CSVImporter(Index index, String type)
@@ -115,7 +120,7 @@ public abstract class CSVImporter<T> {
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
 				if (line.trim().length() == 0) {
-					logger.info("Ignoring empty line: " + lineNo);
+					logger.debug("Ignoring empty line: " + lineNo);
 					continue;
 				}
 				++processed;
@@ -125,8 +130,8 @@ public abstract class CSVImporter<T> {
 						++skipped;
 					}
 					else {
-						List<T> extracted = transfer(record);
-						if(extracted == null || extracted.size() == 0) {
+						List<T> extracted = transfer(record, line, lineNo);
+						if (extracted == null || extracted.size() == 0) {
 							continue;
 						}
 						objects.addAll(extracted);
@@ -151,9 +156,18 @@ public abstract class CSVImporter<T> {
 				}
 				catch (Throwable t) {
 					++bad;
-					logger.error("Error at line " + lineNo + ": " + t.getMessage());
-					logger.error("Line: [[" + line + "]]");
-					logger.debug("Stack trace: ", t);
+					if (suppressErrors) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Error at line " + lineNo + ": " + t.getMessage());
+						}
+					}
+					else {
+						logger.error("Error at line " + lineNo + ": " + t.getMessage());
+					}
+					if (logger.isDebugEnabled()) {
+						logger.debug("Line: [[" + line + "]]");
+						logger.debug("Stack trace: ", t);
+					}
 				}
 				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
@@ -185,7 +199,7 @@ public abstract class CSVImporter<T> {
 	}
 
 
-	protected abstract List<T> transfer(CSVRecord record) throws Exception;
+	protected abstract List<T> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception;
 
 
 	@SuppressWarnings({ "static-method", "unused" })

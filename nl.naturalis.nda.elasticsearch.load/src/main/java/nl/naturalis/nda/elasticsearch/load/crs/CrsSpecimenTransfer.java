@@ -1,5 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +51,12 @@ public class CrsSpecimenTransfer {
 		specimen.setTheme(themes);
 		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));
-		specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));
+		//specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));
+		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+		specimen.setOwner(SOURCE_INSTITUTION_ID);
+		specimen.setSourceID("CRS");
+		specimen.setLicenceType(LICENCE_TYPE);
+		specimen.setLicence(LICENCE);
 		specimen.setRecordBasis(val(recordElement, "abcd:RecordBasis"));
 		specimen.setKindOfUnit(val(recordElement, "abcd:KindOfUnit"));
 		specimen.setCollectionType(val(recordElement, "abcd:CollectionType"));
@@ -121,9 +131,9 @@ public class CrsSpecimenTransfer {
 	{
 		final SpecimenIdentification si = new SpecimenIdentification();
 		/*
-		String s = val(determinationElement, "abcd:PreferredFlag");
-		si.setPreferred(s != null && s.equals("1"));
-		*/
+		 * String s = val(determinationElement, "abcd:PreferredFlag");
+		 * si.setPreferred(s != null && s.equals("1"));
+		 */
 		si.setPreferred(true);
 		si.setDateIdentified(date(determinationElement, "abcd:IdentificationDate"));
 		si.setAssociatedFossilAssemblage(val(determinationElement, "abcd:AssociatedFossilAssemblage"));
@@ -206,6 +216,15 @@ public class CrsSpecimenTransfer {
 			}
 			if (sn.getInfraspecificEpithet() != null) {
 				sb.append(sn.getInfraspecificEpithet()).append(' ');
+			}
+			if (sn.getAuthorshipVerbatim() != null) {
+				if (sn.getAuthorshipVerbatim().charAt(0) != '(') {
+					sb.append('(');
+				}
+				sb.append(sn.getAuthorshipVerbatim());
+				if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')') {
+					sb.append(')');
+				}
 			}
 			sn.setFullScientificName(sb.toString().trim());
 		}

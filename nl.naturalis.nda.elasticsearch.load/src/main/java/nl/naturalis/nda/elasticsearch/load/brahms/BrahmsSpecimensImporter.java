@@ -1,5 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
@@ -180,6 +184,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 		super(index, LUCENE_TYPE_SPECIMEN);
 		this.delimiter = ',';
+		this.suppressErrors = true;
 		setSpecifyId(true);
 		setSpecifyParent(false);
 		String prop = System.getProperty("bulkRequestSize", "1000");
@@ -224,17 +229,30 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 
 	@Override
-	protected List<ESSpecimen> transfer(CSVRecord record) throws Exception
+	protected List<ESSpecimen> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
 	{
 		String barcode = val(record, CsvField.BARCODE.ordinal());
 		if (barcode == null) {
-			throw new Exception("Missing barcode");
+			logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+			return null;
 		}
-		checkSpData(record);
+		try {
+			checkSpData(record);
+		}
+		catch (Exception e) {
+			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
+			return null;
+		}
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSourceSystemId(barcode);
 		specimen.setUnitID(barcode);
+
+		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+		specimen.setOwner(SOURCE_INSTITUTION_ID);
+		specimen.setSourceID("Brahms");
+		specimen.setLicenceType(LICENCE_TYPE);
+		specimen.setLicence(LICENCE);
 
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
@@ -247,7 +265,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		else {
 			specimen.setRecordBasis(recordBasis);
 		}
-		
+
 		specimen.setAssemblageID(ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
@@ -408,6 +426,20 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 
 
+	static void checkSpData(CSVRecord record) throws Exception
+	{
+		String r = val(record, CsvField.RANK1.ordinal());
+		String s = val(record, CsvField.SP2.ordinal());
+		if ((r == null && s != null) || (r != null && s == null)) {
+			throw new Exception("If rank1 is provided, sp2 must also be provided and vice versa");
+		}
+		r = val(record, CsvField.RANK2.ordinal());
+		s = val(record, CsvField.SP3.ordinal());
+		if ((r == null && s != null) || (r != null && s == null)) {
+			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
+		}
+	}
+
 	static Date getDate(String year, String month, String day)
 	{
 		year = year.trim();
@@ -438,7 +470,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
 		}
 		catch (Exception e) {
-			logger.warn(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
+			logger.debug(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
 			return null;
 		}
 	}
@@ -481,20 +513,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	}
 
-
-	private static void checkSpData(CSVRecord record) throws Exception
-	{
-		String r = val(record, CsvField.RANK1.ordinal());
-		String s = val(record, CsvField.SP2.ordinal());
-		if ((r == null && s != null) || (r != null && s == null)) {
-			throw new Exception("If rank1 is provided, sp2 must also be provided and vice versa");
-		}
-		r = val(record, CsvField.RANK2.ordinal());
-		s = val(record, CsvField.SP3.ordinal());
-		if ((r == null && s != null) || (r != null && s == null)) {
-			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
-		}
-	}
 
 
 	private static Integer getFloatFieldAsInteger(CSVRecord record, int field)

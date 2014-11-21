@@ -118,7 +118,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 
 	@Override
-	protected List<ESTaxon> transfer(CSVRecord record)
+	protected List<ESTaxon> transfer(CSVRecord record, String csvRecord, int lineNo)
 	{
 
 		String taxonRank = val(record, CsvField.taxonRank.ordinal());

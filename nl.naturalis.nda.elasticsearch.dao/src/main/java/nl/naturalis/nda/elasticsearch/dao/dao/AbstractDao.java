@@ -195,6 +195,7 @@ public abstract class AbstractDao {
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {
             geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
+            logger.info("FOUND GEO SHAPE!!"); //TODO REMOVE ME!
             geoSearch = true;
         }
 

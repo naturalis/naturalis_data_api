@@ -20,11 +20,7 @@ import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.NestedQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.highlight.HighlightField;
@@ -53,6 +49,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIF
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
+import static org.elasticsearch.index.query.FilterBuilders.nestedFilter;
 import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
@@ -181,11 +178,6 @@ public abstract class AbstractDao {
             }
         }
 
-        if (params.containsKey("_geoShape")) {
-            extendQueryWithGeoShapeFilter(nonPrebuiltQuery, params.getParam("_geoShape"));
-            atLeastOneFieldToQuery = true;
-        }
-
         atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
 
         BoolQueryBuilder completeQuery;
@@ -199,8 +191,15 @@ public abstract class AbstractDao {
             completeQuery = nonPrebuiltQuery;
         }
 
+        NestedFilterBuilder geoShape = null;
+        boolean geoSearch = false;
+        if (params.containsKey("_geoShape")) {
+            geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
+            geoSearch = true;
+        }
+
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
-                .setQuery(filteredQuery(completeQuery, null))
+                .setQuery(filteredQuery(completeQuery, geoShape))
                 .addSort(createFieldSort(params));
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
@@ -213,6 +212,12 @@ public abstract class AbstractDao {
                 searchRequestBuilder.addHighlightedField(highlightField);
             }
             searchRequestBuilder.setHighlighterPreTags("<span class=\"search_hit\">").setHighlighterPostTags("</span>");
+        }
+
+        if (geoSearch && !atLeastOneFieldToQuery) {
+            searchRequestBuilder.setQuery(filteredQuery(matchAllQuery(), geoShape));
+            logger.info(searchRequestBuilder.toString());
+            return searchRequestBuilder.execute().actionGet();
         }
 
         if (!atLeastOneFieldToQuery) {
@@ -280,7 +285,7 @@ public abstract class AbstractDao {
         }
     }
 
-    private void extendQueryWithGeoShapeFilter(BoolQueryBuilder boolQueryBuilder, String geoShape) {
+    private NestedFilterBuilder createGeoShapeFilter(String geoShape) {
         GeoJsonObject geo;
         ShapeBuilder shapeBuilder = null;
         try {
@@ -309,12 +314,13 @@ public abstract class AbstractDao {
         }
 
         if (shapeBuilder != null) {
-            boolQueryBuilder.must(nestedQuery("gatheringEvent.siteCoordinates",
+            return nestedFilter("gatheringEvent.siteCoordinates",
                     geoShapeFilter(
                             "gatheringEvent.siteCoordinates.point",
                             shapeBuilder,
-                            ShapeRelation.WITHIN)));
+                            ShapeRelation.WITHIN));
         }
+        return null;
     }
 
     private Coordinate[] getCoordinatesFromPolygon(List<List<LngLatAlt>> coordinatesPolygon) {

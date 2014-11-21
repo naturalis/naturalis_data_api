@@ -208,7 +208,7 @@ public abstract class AbstractDao {
         }
         setSize(params, searchRequestBuilder);
 
-        if (highlighting) {
+        if (!highlightFields.isEmpty()) {
             for (HighlightBuilder.Field highlightField : highlightFields) {
                 searchRequestBuilder.addHighlightedField(highlightField);
             }

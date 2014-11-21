@@ -41,9 +41,10 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
                 .setSource(getMapping("test-multimedia-mapping.json"))
                 .execute().actionGet();
         BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
+        TaxonDao taxonDao = new TaxonDao(client(), INDEX_NAME);
         dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao,
                                                new TaxonDao(client(), INDEX_NAME), new SpecimenDao(client(),
-                                                                                                   INDEX_NAME));
+                                                                                                   INDEX_NAME, taxonDao));
 
         client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(createTestMultiMediaObject()))

@@ -29,7 +29,7 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
         super.setUp();
         BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
         TaxonDao taxonDao = new TaxonDao(client(), INDEX_NAME);
-        SpecimenDao specimenDao = new SpecimenDao(client(), INDEX_NAME);
+        SpecimenDao specimenDao = new SpecimenDao(client(), INDEX_NAME, taxonDao);
         bioportalMultiMediaObjectDao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME,
                                                                         bioportalTaxonDao, taxonDao, specimenDao);
 

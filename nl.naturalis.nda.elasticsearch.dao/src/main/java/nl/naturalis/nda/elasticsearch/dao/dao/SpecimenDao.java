@@ -1,15 +1,22 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
+import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
@@ -19,8 +26,11 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class SpecimenDao extends AbstractDao {
 
-    public SpecimenDao(Client esClient, String ndaIndexName) {
+    private final TaxonDao taxonDao;
+
+    public SpecimenDao(Client esClient, String ndaIndexName, TaxonDao taxonDao) {
         super(esClient, ndaIndexName);
+        this.taxonDao = taxonDao;
     }
 
     /**
@@ -34,12 +44,12 @@ public class SpecimenDao extends AbstractDao {
         SearchResponse response = newSearchRequest()
                 .setTypes(SPECIMEN_TYPE)
                 .setQuery(filteredQuery(
-                                  matchAllQuery(),
-                                  termFilter(
-                                          UNIT_ID,
-                                          unitID
-                                  )
-                          )
+                                matchAllQuery(),
+                                termFilter(
+                                        UNIT_ID,
+                                        unitID
+                                )
+                        )
                 )
                 .execute().actionGet();
 
@@ -47,15 +57,30 @@ public class SpecimenDao extends AbstractDao {
 
         if (response.getHits().getHits().length != 0) {
             SearchHit hit = response.getHits().getHits()[0];
+            Specimen specimen = null;
             if (hit != null) {
                 ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
-                Specimen specimen = SpecimenTransfer.transfer(esSpecimen);
+                specimen = SpecimenTransfer.transfer(esSpecimen);
                 resultSet.addSearchResult(specimen);
             }
             resultSet.setTotalSize(response.getHits().getTotalHits());
             QueryParams queryParams = new QueryParams();
             queryParams.put(UNIT_ID, Collections.singletonList(unitID));
             resultSet.setQueryParameters(queryParams);
+
+            List<Link> links = new ArrayList<>();
+            if (specimen != null && specimen.getIdentifications() != null) {
+                for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
+                    ScientificName scientificName = specimenIdentification.getScientificName();
+                    SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName);
+
+                    List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
+                    for (SearchResult<Taxon> searchResult : searchResults) {
+                        links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
+                    }
+                }
+            }
+            resultSet.setLinks(links);
             return resultSet;
         }
         return null;

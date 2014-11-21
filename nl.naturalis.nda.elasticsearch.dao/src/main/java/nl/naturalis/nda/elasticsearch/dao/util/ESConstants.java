@@ -24,7 +24,7 @@ public class ESConstants {
      * The Taxon type
      */
     public static final String TAXON_TYPE = "Taxon";
-    
+
     public static final String IDENTIFYING_EPITHETS_DELIMITER = "||";
 
     public static class Fields {
@@ -43,6 +43,7 @@ public class ESConstants {
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS = "identifications.defaultClassification.subgenus";
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET = "identifications.defaultClassification.specificEpithet";
         public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET = "identifications.defaultClassification.infraspecificEpithet";
+        public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME = "identifications.scientificName.fullScientificName";
         public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS = "identifications.scientificName.subgenus";
         public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL = "identifications.scientificName.genusOrMonomial";
         public static final String IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET = "identifications.scientificName.specificEpithet";

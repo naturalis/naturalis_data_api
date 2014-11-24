@@ -1,9 +1,14 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.domain.TaxonomicRank.FAMILY;
+import static nl.naturalis.nda.domain.TaxonomicRank.GENUS;
+import static nl.naturalis.nda.domain.TaxonomicRank.KINGDOM;
+import static nl.naturalis.nda.domain.TaxonomicRank.ORDER;
+import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
@@ -390,7 +395,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 		final DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
-		dc.setPhylum(null);
+		// Phylum deliberately not set
 		dc.setClassName(val(record, CsvField.FAMCLASS.ordinal()));
 		dc.setOrder(val(record, CsvField.ORDER.ordinal()));
 		dc.setFamily(val(record, CsvField.FAMILY.ordinal()));
@@ -402,25 +407,22 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 		final List<Monomial> sc = new ArrayList<Monomial>(8);
 		if (dc.getKingdom() != null) {
-			sc.add(new Monomial("kingdom", dc.getKingdom()));
-		}
-		if (dc.getPhylum() != null) {
-			sc.add(new Monomial("division", dc.getPhylum()));
+			sc.add(new Monomial(KINGDOM, dc.getKingdom()));
 		}
 		if (dc.getOrder() != null) {
-			sc.add(new Monomial("order", dc.getOrder()));
+			sc.add(new Monomial(ORDER, dc.getOrder()));
 		}
 		if (dc.getFamily() != null) {
-			sc.add(new Monomial("family", dc.getFamily()));
+			sc.add(new Monomial(FAMILY, dc.getFamily()));
 		}
 		if (dc.getGenus() != null) {
-			sc.add(new Monomial("genus", dc.getGenus()));
+			sc.add(new Monomial(GENUS, dc.getGenus()));
 		}
 		if (dc.getSpecificEpithet() != null) {
-			sc.add(new Monomial("species", dc.getSpecificEpithet()));
+			sc.add(new Monomial(SPECIES, dc.getSpecificEpithet()));
 		}
 		if (dc.getInfraspecificEpithet() != null) {
-			sc.add(new Monomial("subspecies", dc.getInfraspecificEpithet()));
+			sc.add(new Monomial(SUBSPECIES, dc.getInfraspecificEpithet()));
 		}
 		return sc;
 	}
@@ -439,6 +441,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
 		}
 	}
+
 
 	static Date getDate(String year, String month, String day)
 	{
@@ -512,7 +515,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		return val(record, CsvField.RANK2.ordinal());
 
 	}
-
 
 
 	private static Integer getFloatFieldAsInteger(CSVRecord record, int field)

@@ -1,15 +1,23 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static nl.naturalis.nda.domain.TaxonomicRank.GENUS;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
+import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUBGENUS;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.TaxonomicRank;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
@@ -63,10 +71,6 @@ public class TransferUtil {
 	private static final String EQUALIZE = "Equalizing value of %s (copy from %s to %s: \"%s\")";
 	private static final String NAME = "scientific name";
 	private static final String CLASSIFICATION = "classification ";
-	private static final String GENUS = "genus";
-	private static final String SUBGENUS = "subgenus";
-	private static final String SPECIFIC_EPITHET = "specific epithet";
-	private static final String INFRA_SP_EPITHET = "infraspecific epithet";
 
 
 	public static DefaultClassification extractClassificiationFromName(ScientificName sn)
@@ -77,6 +81,25 @@ public class TransferUtil {
 		dc.setSpecificEpithet(sn.getSpecificEpithet());
 		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
 		return dc;
+	}
+
+
+	public static List<Monomial> getMonomialsInName(ScientificName sn)
+	{
+		List<Monomial> monomials = new ArrayList<Monomial>(3);
+		if (sn.getGenusOrMonomial() != null) {
+			monomials.add(new Monomial(GENUS, sn.getGenusOrMonomial()));
+		}
+		if (sn.getSubgenus() != null) {
+			monomials.add(new Monomial(SUBGENUS, sn.getSubgenus()));
+		}
+		if (sn.getSpecificEpithet() != null) {
+			monomials.add(new Monomial(SPECIES, sn.getSpecificEpithet()));
+		}
+		if (sn.getInfraspecificEpithet() != null) {
+			monomials.add(new Monomial(SUBSPECIES, sn.getInfraspecificEpithet()));
+		}
+		return monomials;
 	}
 
 
@@ -147,32 +170,32 @@ public class TransferUtil {
 
 		if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() != null) {
 			if (!dc.getSpecificEpithet().equals(sn.getSpecificEpithet())) {
-				String msg = String.format(MISMATCH, SPECIFIC_EPITHET, dc.getSpecificEpithet(), sn.getSpecificEpithet());
+				String msg = String.format(MISMATCH, SPECIES, dc.getSpecificEpithet(), sn.getSpecificEpithet());
 				throw new RuntimeException(msg);
 			}
 		}
 		else if (dc.getSpecificEpithet() == null && sn.getSpecificEpithet() != null) {
 			dc.setSpecificEpithet(sn.getSpecificEpithet());
-			logger.debug(String.format(EQUALIZE, SPECIFIC_EPITHET, NAME, CLASSIFICATION, sn.getSpecificEpithet()));
+			logger.debug(String.format(EQUALIZE, SPECIES, NAME, CLASSIFICATION, sn.getSpecificEpithet()));
 		}
 		else if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() == null) {
 			sn.setSpecificEpithet(dc.getSpecificEpithet());
-			logger.debug(String.format(EQUALIZE, SPECIFIC_EPITHET, CLASSIFICATION, NAME, sn.getSpecificEpithet()));
+			logger.debug(String.format(EQUALIZE, SPECIES, CLASSIFICATION, NAME, sn.getSpecificEpithet()));
 		}
 
 		if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() != null) {
 			if (!dc.getInfraspecificEpithet().equals(sn.getInfraspecificEpithet())) {
-				String msg = String.format(MISMATCH, INFRA_SP_EPITHET, dc.getInfraspecificEpithet(), sn.getInfraspecificEpithet());
+				String msg = String.format(MISMATCH, SUBSPECIES, dc.getInfraspecificEpithet(), sn.getInfraspecificEpithet());
 				throw new RuntimeException(msg);
 			}
 		}
 		else if (dc.getInfraspecificEpithet() == null && sn.getInfraspecificEpithet() != null) {
 			dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
-			logger.debug(String.format(EQUALIZE, INFRA_SP_EPITHET, NAME, CLASSIFICATION, sn.getInfraspecificEpithet()));
+			logger.debug(String.format(EQUALIZE, SUBSPECIES, NAME, CLASSIFICATION, sn.getInfraspecificEpithet()));
 		}
 		else if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() == null) {
 			sn.setInfraspecificEpithet(dc.getInfraspecificEpithet());
-			logger.debug(String.format(EQUALIZE, INFRA_SP_EPITHET, CLASSIFICATION, NAME, sn.getInfraspecificEpithet()));
+			logger.debug(String.format(EQUALIZE, SUBSPECIES, CLASSIFICATION, NAME, sn.getInfraspecificEpithet()));
 		}
 	}
 

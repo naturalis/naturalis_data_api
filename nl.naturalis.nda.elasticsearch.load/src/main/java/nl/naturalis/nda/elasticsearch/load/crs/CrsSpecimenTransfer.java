@@ -4,7 +4,7 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -82,6 +82,7 @@ public class CrsSpecimenTransfer {
 			logger.warn("No determinations for specimen with unitID " + specimen.getUnitID());
 		}
 		else {
+			// For version 0.9 only preferred specimens are indexed.
 			for (Element e : determinationElements) {
 				s = val(e, "abcd:PreferredFlag");
 				if (s == null || s.equals("1")) {
@@ -129,61 +130,49 @@ public class CrsSpecimenTransfer {
 
 	public static SpecimenIdentification transferIdentification(Element determinationElement)
 	{
-		final SpecimenIdentification si = new SpecimenIdentification();
+		final SpecimenIdentification identification = new SpecimenIdentification();
 		/*
-		 * String s = val(determinationElement, "abcd:PreferredFlag");
-		 * si.setPreferred(s != null && s.equals("1"));
+		 * Non-preferred determinations have already been filtered out String s
+		 * = val(determinationElement, "abcd:PreferredFlag"); si.setPreferred(s
+		 * != null && s.equals("1"));
 		 */
-		si.setPreferred(true);
-		si.setDateIdentified(date(determinationElement, "abcd:IdentificationDate"));
-		si.setAssociatedFossilAssemblage(val(determinationElement, "abcd:AssociatedFossilAssemblage"));
-		si.setAssociatedMineralName(val(determinationElement, "abcd:AssociatedMineralName"));
-		si.setRockMineralUsage(val(determinationElement, "abcd:RockMineralUsage"));
-		si.setRockType(val(determinationElement, "abcd:RockType"));
+		identification.setPreferred(true);
+		identification.setDateIdentified(date(determinationElement, "abcd:IdentificationDate"));
+		identification.setAssociatedFossilAssemblage(val(determinationElement, "abcd:AssociatedFossilAssemblage"));
+		identification.setAssociatedMineralName(val(determinationElement, "abcd:AssociatedMineralName"));
+		identification.setRockMineralUsage(val(determinationElement, "abcd:RockMineralUsage"));
+		identification.setRockType(val(determinationElement, "abcd:RockType"));
 
-		ScientificName sn = transferScientificName(determinationElement);
-		si.setScientificName(sn);
+		identification.setScientificName(getScientificName(determinationElement));
+		identification.setSystemClassification(getSystemClassification(determinationElement, identification.getScientificName()));
+		DefaultClassification dc = DefaultClassification.fromSystemClassification(identification.getSystemClassification());
+		identification.setDefaultClassification(dc);
 
 		String infraspecificRank = val(determinationElement, "abcd:InfrasubspecificRank");
 
 		if (infraspecificRank != null) {
-			si.setTaxonRank(infraspecificRank);
+			identification.setTaxonRank(infraspecificRank);
 		}
-		else if (sn.getInfraspecificEpithet() != null) {
-			si.setTaxonRank("subspecies");
+		else if (identification.getScientificName().getInfraspecificEpithet() != null) {
+			identification.setTaxonRank("subspecies");
 		}
-		else if (sn.getSpecificEpithet() != null) {
-			si.setTaxonRank("species");
+		else if (identification.getScientificName().getSpecificEpithet() != null) {
+			identification.setTaxonRank("species");
 		}
 		else {
-			si.setTaxonRank("genus");
-		}
-
-		DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
-		si.setDefaultClassification(dc);
-
-		String taxonCoverage = val(determinationElement, "abcd:taxonCoverage");
-		String higherTaxonRank = val(determinationElement, "abcd:HigherTaxonRank");
-
-		if (taxonCoverage != null && higherTaxonRank != null) {
-			Monomial monomial = new Monomial(higherTaxonRank, taxonCoverage);
-			si.setSystemClassification(Arrays.asList(monomial));
-			DefaultClassification.Rank rank = DefaultClassification.Rank.forName(higherTaxonRank);
-			if (rank != null) {
-				dc.set(rank, taxonCoverage);
-			}
+			identification.setTaxonRank("genus");
 		}
 
 		String s = val(determinationElement, "abcd:InformalNameString");
 		if (s != null) {
-			si.setVernacularNames(Arrays.asList(new VernacularName(s)));
+			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
 
-		return si;
+		return identification;
 	}
 
 
-	private static ScientificName transferScientificName(Element determinationElement)
+	private static ScientificName getScientificName(Element determinationElement)
 	{
 		final ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(determinationElement, "abcd:FullScientificNameString"));
@@ -229,6 +218,24 @@ public class CrsSpecimenTransfer {
 			sn.setFullScientificName(sb.toString().trim());
 		}
 		return sn;
+	}
+
+
+	private static List<Monomial> getSystemClassification(Element determinationElement, ScientificName sn)
+	{
+		List<Monomial> lowerClassification = TransferUtil.getMonomialsInName(sn);
+		List<Element> elems = DOMUtil.getChildren(determinationElement, "ncrsHighername");
+		if (elems == null) {
+			return lowerClassification;
+		}
+		List<Monomial> systemClassification = new ArrayList<Monomial>(elems.size() + lowerClassification.size());
+		for (Element e : elems) {
+			String rank = DOMUtil.getValue(e, "abcd:HigherTaxonRank");
+			String name = DOMUtil.getValue(e, "abcd:taxonCoverage");
+			systemClassification.add(new Monomial(rank, name));
+		}
+		systemClassification.addAll(lowerClassification);
+		return systemClassification;
 	}
 
 

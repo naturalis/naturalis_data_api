@@ -1,5 +1,18 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import static nl.naturalis.nda.domain.TaxonomicRank.CLASS;
+import static nl.naturalis.nda.domain.TaxonomicRank.FAMILY;
+import static nl.naturalis.nda.domain.TaxonomicRank.GENUS;
+import static nl.naturalis.nda.domain.TaxonomicRank.KINGDOM;
+import static nl.naturalis.nda.domain.TaxonomicRank.ORDER;
+import static nl.naturalis.nda.domain.TaxonomicRank.PHYLUM;
+import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUBGENUS;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUPER_FAMILY;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +28,6 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.ArrayUtil;
@@ -30,7 +42,6 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 
@@ -49,8 +60,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 				index.addType(LUCENE_TYPE_TAXON, mapping);
 			}
 		}
-		
-		
+
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
@@ -59,9 +69,9 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		finally {
 			index.getClient().close();
 		}
-		
+
 		logger.info("CoLTaxonImporter finished");
-		
+
 	}
 
 	//@formatter:off
@@ -202,43 +212,44 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		final DefaultClassification dc = taxon.getDefaultClassification();
 		Monomial monomial;
 		if (dc.getKingdom() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.KINGDOM.toString(), dc.getKingdom());
+			monomial = new Monomial(KINGDOM, dc.getKingdom());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getPhylum() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.PHYLUM.toString(), dc.getPhylum());
+			monomial = new Monomial(PHYLUM, dc.getPhylum());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getClassName() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.CLASS.toString(), dc.getClassName());
+			monomial = new Monomial(CLASS, dc.getClassName());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getOrder() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.ORDER.toString(), dc.getOrder());
+			monomial = new Monomial(ORDER, dc.getOrder());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getSuperFamily() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.SUPER_FAMILY.toString(), dc.getSuperFamily());
+			monomial = new Monomial(SUPER_FAMILY, dc.getSuperFamily());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getFamily() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.FAMILY.toString(), dc.getFamily());
+			monomial = new Monomial(FAMILY, dc.getFamily());
 			taxon.addMonomial(monomial);
 		}
+		// Tribe not used in Catalogue of Life.
 		if (dc.getGenus() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.GENUS.toString(), dc.getGenus());
+			monomial = new Monomial(GENUS, dc.getGenus());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getSubgenus() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.SUBGENUS.toString(), dc.getSubgenus());
+			monomial = new Monomial(SUBGENUS, dc.getSubgenus());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getSpecificEpithet() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.SPECIFIC_EPITHET.toString(), dc.getSpecificEpithet());
+			monomial = new Monomial(SPECIES, dc.getSpecificEpithet());
 			taxon.addMonomial(monomial);
 		}
 		if (dc.getInfraspecificEpithet() != null) {
-			monomial = new Monomial(DefaultClassification.Rank.INFRASPECIFIC_EPITHET.toString(), dc.getInfraspecificEpithet());
+			monomial = new Monomial(SUBSPECIES, dc.getInfraspecificEpithet());
 			taxon.addMonomial(monomial);
 		}
 	}

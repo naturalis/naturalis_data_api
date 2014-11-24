@@ -89,7 +89,8 @@ class NsrTaxonTransfer {
 		List<Monomial> monomials = getMonomials(taxonElement);
 		if (monomials != null) {
 			taxon.setSystemClassification(monomials);
-			DefaultClassification dc = getDefaultClassification(monomials);
+			//DefaultClassification dc = getDefaultClassification(monomials);
+			DefaultClassification dc = DefaultClassification.fromSystemClassification(monomials);
 			taxon.setDefaultClassification(dc);
 		}
 		for (ScientificName sn : getScientificNames(taxonElement)) {
@@ -163,6 +164,9 @@ class NsrTaxonTransfer {
 	}
 
 
+	@SuppressWarnings("unused")
+	// Does not retrieve lower ranks, therefore does not cause discrepancies between
+	// DefaultClassification and ScientificName.
 	private static DefaultClassification getDefaultClassification(List<Monomial> monomials)
 	{
 		DefaultClassification dc = new DefaultClassification();

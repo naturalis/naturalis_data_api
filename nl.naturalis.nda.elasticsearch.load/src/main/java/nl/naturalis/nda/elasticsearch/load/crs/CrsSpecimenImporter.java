@@ -224,6 +224,11 @@ public class CrsSpecimenImporter {
 		// Avoid "Content is not allowed in prolog"
 		String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
 		if (!xml.startsWith("<?xml")) {
+			if(xml.indexOf("<?xml") == -1) {
+				logger.error("Unexpected response:");
+				logger.error(xml);
+				return null;
+			}
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
 		if (config.getBoolean("crs.save_local")) {

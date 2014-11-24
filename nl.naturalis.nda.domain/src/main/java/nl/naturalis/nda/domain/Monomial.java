@@ -31,6 +31,20 @@ public class Monomial {
 	}
 
 
+	/**
+	 * Creates a monomial using the english name of the specified
+	 * {@link TaxonomicRank}.
+	 * 
+	 * @param rank
+	 * @param name
+	 */
+	public Monomial(TaxonomicRank rank, String name)
+	{
+		this.rank = rank.getEnglishName();
+		this.name = name;
+	}
+
+
 	public String getRank()
 	{
 		return rank;

@@ -1,47 +1,45 @@
 package nl.naturalis.nda.domain;
 
+import java.util.List;
+
 /**
  * A {@code DefaultClassification} classifies a specimen or species according to
- * the ranks explicitly listed as a term the Darwin Core specification (see
- * http://rs.tdwg.org/dwc/terms/#taxonindex).
+ * the ranks explicitly listed in the Darwin Core specification plus two extra
+ * higher ranks commonly used within the Naturalis specimen registration
+ * systems: super family and tribe.
+ * 
+ * @see http://rs.tdwg.org/dwc/terms/#taxonindex).
+ * 
+ * @author ayco_holleman
+ * 
  */
 public class DefaultClassification {
 
-	//@formatter:off
-	public static enum Rank
+	/**
+	 * Extract's the NBA's default taxonomic classification from a provided
+	 * classification (i.e. a classification as provided by one of the NBA's
+	 * source systems).
+	 * 
+	 * @param systemClassification
+	 * @return
+	 */
+	public static DefaultClassification fromSystemClassification(List<Monomial> systemClassification)
 	{
-		
-		KINGDOM("kingdom"),
-		PHYLUM("phylum"),
-		CLASS("class"),
-		ORDER("order"),
-		SUPER_FAMILY("superfamily"),
-		FAMILY("family"),
-		GENUS("genus"),
-		SUBGENUS("subgenus"),
-		SPECIFIC_EPITHET("specificEpithet"),
-		INFRASPECIFIC_EPITHET("infraspecificEpithet");
-		
-		private String name;	
-		private Rank(String name) { this.name = name; }
-		public String toString() { return name; }
-		
-		public static Rank forName(String name) {
-			if(name.equalsIgnoreCase(KINGDOM.name)) return KINGDOM;
-			if(name.equalsIgnoreCase(PHYLUM.name)) return PHYLUM;
-			if(name.equalsIgnoreCase(CLASS.name)) return CLASS;
-			if(name.equalsIgnoreCase(ORDER.name)) return ORDER;
-			if(name.equalsIgnoreCase(SUPER_FAMILY.name)) return SUPER_FAMILY;
-			if(name.equalsIgnoreCase(FAMILY.name)) return FAMILY;
-			if(name.equalsIgnoreCase(GENUS.name)) return GENUS;
-			if(name.equalsIgnoreCase(SUBGENUS.name)) return SUBGENUS;
-			if(name.equalsIgnoreCase(SPECIFIC_EPITHET.name)) return SPECIFIC_EPITHET;
-			if(name.equalsIgnoreCase(INFRASPECIFIC_EPITHET.name)) return INFRASPECIFIC_EPITHET;
+		if (systemClassification == null) {
 			return null;
 		}
-		
+		DefaultClassification dc = null;
+		for (Monomial monomial : systemClassification) {
+			TaxonomicRank rank = TaxonomicRank.forName(monomial.getRank());
+			if (rank != null) {
+				if (dc == null) {
+					dc = new DefaultClassification();
+				}
+				dc.set(rank, monomial.getName());
+			}
+		}
+		return dc;
 	}
-	//@formatter:on
 
 	private String kingdom;
 	private String phylum;
@@ -49,6 +47,7 @@ public class DefaultClassification {
 	private String order;
 	private String superFamily;
 	private String family;
+	private String tribe;
 	private String genus;
 	private String subgenus;
 	private String specificEpithet;
@@ -56,7 +55,25 @@ public class DefaultClassification {
 	private String infraspecificRank;
 
 
-	public void set(Rank rank, String name)
+	/**
+	 * Sets the rank corresponding to the specified monomial's rank <i>iff</i>
+	 * the monomial's rank can be mapped to a predefined {@link TaxonomicRank}
+	 * (using {@link TaxonomicRank#forName(String)}). If not, this method does
+	 * nothing (it will not throw an exception if the monomial's rank is not one
+	 * of the predefined taxonomic ranks).
+	 * 
+	 * @param monomial
+	 */
+	public void set(Monomial monomial)
+	{
+		TaxonomicRank rank = TaxonomicRank.forName(monomial.getRank());
+		if (rank != null) {
+			set(rank, monomial.getName());
+		}
+	}
+
+
+	public void set(TaxonomicRank rank, String name)
 	{
 		switch (rank) {
 			case KINGDOM:
@@ -77,21 +94,25 @@ public class DefaultClassification {
 			case FAMILY:
 				this.family = name;
 				break;
+			case TRIBE:
+				this.tribe = name;
+				break;
 			case GENUS:
 				this.genus = name;
 				break;
 			case SUBGENUS:
 				this.subgenus = name;
 				break;
-			case SPECIFIC_EPITHET:
+			case SPECIES:
 				this.specificEpithet = name;
 				break;
-			case INFRASPECIFIC_EPITHET:
+			case SUBSPECIES:
 				this.infraspecificEpithet = name;
 				break;
 		}
 	}
-	
+
+
 	public String getKingdom()
 	{
 		return kingdom;
@@ -161,6 +182,18 @@ public class DefaultClassification {
 	public void setFamily(String family)
 	{
 		this.family = family;
+	}
+
+
+	public String getTribe()
+	{
+		return tribe;
+	}
+
+
+	public void setTribe(String tribe)
+	{
+		this.tribe = tribe;
 	}
 
 

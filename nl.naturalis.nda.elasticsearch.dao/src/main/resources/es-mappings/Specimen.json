@@ -1,0 +1,614 @@
+{
+    "Specimen": {
+
+        "dynamic": "strict",
+
+        "properties": {
+            "sourceSystem": {
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "sourceSystemId": { "type": "string", "index": "not_analyzed" },
+            "sourceInstitutionID": { "type": "string", "index" : "not_analyzed" },
+            "sourceID": { "type": "string", "index" : "not_analyzed" },
+            "owner": { "type": "string", "index" : "not_analyzed" },
+            "licenceType": { "type": "string", "index" : "not_analyzed" },
+            "licence": { "type": "string", "index" : "not_analyzed" },
+            "recordURI": { "type": "string", "index": "not_analyzed" },
+            "unitID": { "type": "string" },
+            "unitGUID": { "type": "string", "index": "not_analyzed" },
+            "theme": { "type": "string", "index": "not_analyzed" },
+            "collectorsFieldNumber": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "assemblageID": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "recordBasis": {
+                "type": "string"
+            },
+            "kindOfUnit": {
+                "type": "string"
+            },
+            "typeStatus": {
+                "type": "string"
+            },
+            "collectionType": {
+                "type": "string"
+            },
+            "sex": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "phaseOrStage": {
+                "type": "string"
+            },
+            "title": {
+                "type": "string"
+            },
+            "notes": {
+                "type": "string"
+            },
+            "preparationType": {
+                "type": "string"
+            },
+            "numberOfSpecimen": {
+                "type": "integer"
+            },
+            "fromCaptivity": {
+                "type": "boolean"
+            },
+            "objectPublic": {
+                "type": "boolean"
+            },
+            "multiMediaPublic": {
+                "type": "boolean"
+            },
+            "gatheringEvent": {
+                "properties": {
+                    "projectTitle": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "worldRegion": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "continent": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "country": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "iso3166Code": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "provinceState": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "island": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "locality": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "city": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "sublocality": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
+                    },
+                    "localityText": {
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            },
+                            "ngram": {
+                                "type": "string",
+                                "index_analyzer": "nda_ngram_analyzer"
+                            }
+
+                        }
+                    },
+                    "dateTimeBegin": {
+                        "type": "date"
+                    },
+                    "dateTimeEnd": {
+                        "type": "date"
+                    },
+                    "method": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "altitude": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "altitudeUnitOfMeasurement": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "depth": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "depthUnitOfMeasurement": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "gatheringPersons": {
+                        "type": "nested",
+                        "properties": {
+                            "agentText": {
+                                "type": "string"
+                            },
+                            "fullName": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "gatheringOrganizations": {
+                        "type": "nested",
+                        "properties": {
+                            "agentText": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "siteCoordinates": {
+                        "type": "nested",
+                        "properties": {
+                            "longitudeDecimal": {
+                                "type": "float"
+                            },
+                            "latitudeDecimal": {
+                                "type": "float"
+                            },
+                            "point": {
+                                "type": "geo_shape"
+                            }
+                        }
+                    }
+                }
+            },
+            "identifyingEpithets" : {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "identifications": {
+                "type": "nested",
+                "properties": {
+                    "preferred": {
+                        "type": "boolean"
+                    },
+                    "verificationStatus": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "rockType": {
+                        "type": "string"
+                    },
+                    "associatedFossilAssemblage": {
+                        "type": "string"
+                    },
+                    "rockMineralUsage": {
+                        "type": "string"
+                    },
+                    "associatedMineralName": {
+                        "type": "string"
+                    },
+                    "remarks": {
+                        "type": "string"
+                    },
+                    "taxonRank": {
+                        "type": "string"
+                    },
+                    "scientificName": {
+                        "properties": {
+                            "taxonomicStatus": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            },
+                            "fullScientificName": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "genusOrMonomial": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    },
+                                    "ngram": {
+                                      "type": "string",
+                                      "index_analyzer": "nda_ngram_analyzer"
+                                    }
+                                }
+                            },
+                            "subgenus": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "specificEpithet": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "infraspecificEpithet": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "nameAddendum": {
+                                "type": "string"
+                            },
+                            "authorshipVerbatim": {
+                                "type": "string"
+                            },
+                            "author": {
+                                "type": "string"
+                            },
+                            "year": {
+                                "type": "string"
+                            },
+                            "experts": {
+                                "type": "nested",
+                                "properties": {
+                                    "agentText": {
+                                        "type": "string"
+                                    },
+                                    "fullName": {
+                                        "type": "string"
+                                    },
+                                    "organization": {
+                                        "properties": {
+                                            "agentText": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "references": {
+                                "type": "nested",
+                                "properties": {
+                                    "titleCitation": {
+                                        "type": "string"
+                                    },
+                                    "citationDetail": {
+                                        "type": "string"
+                                    },
+                                    "uri": {
+                                        "type": "string"
+                                    },
+                                    "publicationDate": {
+                                        "type": "date"
+                                    },
+                                    "author": {
+                                        "properties": {
+                                            "agentText": {
+                                                "type": "string"
+                                            },
+                                            "fullName": {
+                                                "type": "string"
+                                            },
+                                            "organization": {
+                                                "properties": {
+                                                    "agentText": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "defaultClassification": {
+                        "properties": {
+                            "kingdom": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "phylum": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "className": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "order": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "superFamily": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "family": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "genus": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "subgenus": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "specificEpithet": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "infraspecificEpithet": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            },
+                            "infraspecificRank": {
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "systemClassification": {
+                        "type": "nested",
+                        "properties": {
+                            "rank": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "vernacularNames": {
+                        "type": "nested",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "fields": {
+                                    "ngram": {
+                                        "type": "string",
+                                        "index_analyzer": "nda_ngram_analyzer"
+                                    }
+                                }
+                            },
+                            "language": {
+                                "type": "string"
+                            },
+                            "preferred": {
+                                "type": "boolean"
+                            },
+                            "experts": {
+                                "type": "nested",
+                                "properties": {
+                                    "agentText": {
+                                        "type": "string"
+                                    },
+                                    "fullName": {
+                                        "type": "string"
+                                    },
+                                    "organization": {
+                                        "properties": {
+                                            "agentText": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "references": {
+                                "type": "nested",
+                                "properties": {
+                                    "titleCitation": {
+                                        "type": "string"
+                                    },
+                                    "citationDetail": {
+                                        "type": "string"
+                                    },
+                                    "uri": {
+                                        "type": "string"
+                                    },
+                                    "publicationDate": {
+                                        "type": "date"
+                                    },
+                                    "author": {
+                                        "properties": {
+                                            "agentText": {
+                                                "type": "string"
+                                            },
+                                            "fullName": {
+                                                "type": "string"
+                                            },
+                                            "organization": {
+                                                "properties": {
+                                                    "agentText": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "dateIdentified": {
+                        "type": "date"
+                    },
+                    "identifiers": {
+                        "type": "nested",
+                        "properties": {
+                            "agentText": {
+                                "type": "string"
+                            },
+                            "fullName": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "identificationQualifiers": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

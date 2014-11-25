@@ -47,7 +47,7 @@ public class DefaultClassification {
 	private String order;
 	private String superFamily;
 	private String family;
-	private String tribe;
+//	private String tribe;
 	private String genus;
 	private String subgenus;
 	private String specificEpithet;
@@ -94,9 +94,9 @@ public class DefaultClassification {
 			case FAMILY:
 				this.family = name;
 				break;
-			case TRIBE:
-				this.tribe = name;
-				break;
+//			case TRIBE:
+//				this.tribe = name;
+//				break;
 			case GENUS:
 				this.genus = name;
 				break;
@@ -185,16 +185,16 @@ public class DefaultClassification {
 	}
 
 
-	public String getTribe()
-	{
-		return tribe;
-	}
-
-
-	public void setTribe(String tribe)
-	{
-		this.tribe = tribe;
-	}
+//	public String getTribe()
+//	{
+//		return tribe;
+//	}
+//
+//
+//	public void setTribe(String tribe)
+//	{
+//		this.tribe = tribe;
+//	}
 
 
 	public String getGenus()

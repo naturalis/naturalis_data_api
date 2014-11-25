@@ -108,6 +108,7 @@ public class NDAIndexManager {
 	{
 		index.delete();
 		String settings = StringUtil.getResourceAsString("/es-settings.json");
+		logger.info("Creating index using settings: " + settings);
 		index.create(settings);
 		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
 		index.addType(LUCENE_TYPE_TAXON, mapping);
@@ -115,6 +116,6 @@ public class NDAIndexManager {
 		index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 		mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
 		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-		logger.info(index.describe());
+		//logger.info(index.describe());
 	}
 }

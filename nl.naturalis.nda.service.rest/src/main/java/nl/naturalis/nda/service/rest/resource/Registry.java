@@ -47,7 +47,7 @@ public class Registry {
 
 	public SpecimenDao getSpecimenDao()
 	{
-		return new SpecimenDao(nda.getESClient(), nda.getIndexName());
+		return new SpecimenDao(nda.getESClient(), nda.getIndexName(), getTaxonDao());
 	}
 
 

@@ -18,7 +18,7 @@ public class VersionResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String show()
 	{
-		return "0.9.00009";
+		return "0.9.00011";
 	}
 
 }

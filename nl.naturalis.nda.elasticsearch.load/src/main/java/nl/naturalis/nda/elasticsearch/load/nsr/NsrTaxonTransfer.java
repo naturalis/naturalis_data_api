@@ -89,8 +89,8 @@ class NsrTaxonTransfer {
 		List<Monomial> monomials = getMonomials(taxonElement);
 		if (monomials != null) {
 			taxon.setSystemClassification(monomials);
-			//DefaultClassification dc = getDefaultClassification(monomials);
-			DefaultClassification dc = DefaultClassification.fromSystemClassification(monomials);
+			DefaultClassification dc = getDefaultClassification(monomials);
+			//DefaultClassification dc = DefaultClassification.fromSystemClassification(monomials);
 			taxon.setDefaultClassification(dc);
 		}
 		for (ScientificName sn : getScientificNames(taxonElement)) {

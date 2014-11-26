@@ -21,7 +21,7 @@ public class AbstractDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        abstractDao = new AbstractDao(null, "fakeIndex") {
+        abstractDao = new AbstractDao(null, "fakeIndex", "http://test.nl/v0/") {
         };
     }
 

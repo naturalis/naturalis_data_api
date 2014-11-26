@@ -50,8 +50,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
 
     private static final Set<String> allowedFieldNamesForSearch_simpleSearchExceptions = Collections.emptySet();
 
-    public BioportalTaxonDao(Client esClient, String ndaIndexName) {
-        super(esClient, ndaIndexName);
+    public BioportalTaxonDao(Client esClient, String ndaIndexName, String baseUrl) {
+        super(esClient, ndaIndexName, baseUrl);
     }
 
     /**

@@ -25,7 +25,7 @@ public class TaxonDaoTest extends DaoIntegrationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        taxonDao = new TaxonDao(client(), INDEX_NAME);
+        taxonDao = new TaxonDao(client(), INDEX_NAME, "http://test.nl/test/");
     }
 
     @Test

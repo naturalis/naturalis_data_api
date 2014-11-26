@@ -37,7 +37,6 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.Specime
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.THEME;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
@@ -90,8 +89,8 @@ public class BioportalSpecimenDao extends AbstractDao {
     private final TaxonDao taxonDao;
 
 
-    public BioportalSpecimenDao(Client esClient, String ndaIndexName, BioportalTaxonDao bioportalTaxonDao, TaxonDao taxonDao) {
-        super(esClient, ndaIndexName);
+    public BioportalSpecimenDao(Client esClient, String ndaIndexName, BioportalTaxonDao bioportalTaxonDao, TaxonDao taxonDao, String baseUrl) {
+        super(esClient, ndaIndexName, baseUrl);
         this.bioportalTaxonDao = bioportalTaxonDao;
         this.taxonDao = taxonDao;
     }

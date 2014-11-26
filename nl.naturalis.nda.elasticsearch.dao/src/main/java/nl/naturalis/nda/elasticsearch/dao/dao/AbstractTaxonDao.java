@@ -25,8 +25,8 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
  */
 public class AbstractTaxonDao extends AbstractDao {
 
-    public AbstractTaxonDao(Client esClient, String ndaIndexName) {
-        super(esClient, ndaIndexName);
+    public AbstractTaxonDao(Client esClient, String ndaIndexName, String baseUrl) {
+        super(esClient, ndaIndexName, baseUrl);
     }
 
     /**

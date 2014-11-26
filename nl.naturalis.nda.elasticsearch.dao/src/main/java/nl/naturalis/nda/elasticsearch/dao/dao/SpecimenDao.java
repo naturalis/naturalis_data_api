@@ -28,8 +28,8 @@ public class SpecimenDao extends AbstractDao {
 
     private final TaxonDao taxonDao;
 
-    public SpecimenDao(Client esClient, String ndaIndexName, TaxonDao taxonDao) {
-        super(esClient, ndaIndexName);
+    public SpecimenDao(Client esClient, String ndaIndexName, TaxonDao taxonDao, String baseUrl) {
+        super(esClient, ndaIndexName, baseUrl);
         this.taxonDao = taxonDao;
     }
 

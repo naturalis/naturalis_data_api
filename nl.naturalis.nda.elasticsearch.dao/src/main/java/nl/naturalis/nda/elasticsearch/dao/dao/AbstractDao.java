@@ -71,13 +71,13 @@ public abstract class AbstractDao {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
-    public static final String BASE_URL = "http://10.42.1.149:8080/";
-    public static final String TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/get-taxon/?";
-    public static final String TAXON_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/taxon/get-taxon-within-result-set/?";
-    public static final String SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/get-specimen/?unitID=";
-    public static final String SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/specimen/get-specimen-within-result-set/?unitID=";
-    public static final String MULTIMEDIA_DETAIL_BASE_URL_TAXON = BASE_URL + "/multimedia/get-multimedia-object-for-taxon-within-result-set/?unitID=";
-    public static final String MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN = BASE_URL + "/multimedia/get-multimedia-object-for-specimen-within-result-set/?unitID=";
+    public static String BASE_URL;
+    public static String TAXON_DETAIL_BASE_URL;
+    public static String TAXON_DETAIL_BASE_URL_IN_RESULT_SET;
+    public static String SPECIMEN_DETAIL_BASE_URL;
+    public static String SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET;
+    public static String MULTIMEDIA_DETAIL_BASE_URL_TAXON;
+    public static String MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN;
 
     private static ObjectMapper objectMapper;
     private SearchParamFieldMapping searchParamFieldMapping;
@@ -85,10 +85,17 @@ public abstract class AbstractDao {
     protected final Client esClient;
     protected final String ndaIndexName;
 
-    public AbstractDao(Client esClient, String ndaIndexName) {
+    public AbstractDao(Client esClient, String ndaIndexName, String baseUrl) {
         this.esClient = esClient;
         this.ndaIndexName = ndaIndexName;
         this.searchParamFieldMapping = SearchParamFieldMapping.getInstance();
+        BASE_URL = baseUrl;
+        TAXON_DETAIL_BASE_URL = BASE_URL + "/taxon/get-taxon/?";
+        TAXON_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/taxon/get-taxon-within-result-set/?";
+        SPECIMEN_DETAIL_BASE_URL = BASE_URL + "/specimen/get-specimen/?unitID=";
+        SPECIMEN_DETAIL_BASE_URL_IN_RESULT_SET = BASE_URL + "/specimen/get-specimen-within-result-set/?unitID=";
+        MULTIMEDIA_DETAIL_BASE_URL_TAXON = BASE_URL + "/multimedia/get-multimedia-object-for-taxon-within-result-set/?unitID=";
+        MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN = BASE_URL + "/multimedia/get-multimedia-object-for-specimen-within-result-set/?unitID=";
     }
 
     protected static ObjectMapper getObjectMapper() {

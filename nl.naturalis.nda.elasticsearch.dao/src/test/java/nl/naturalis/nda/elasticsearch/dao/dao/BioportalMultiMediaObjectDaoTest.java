@@ -9,15 +9,16 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectTest.createTestMultiMediaObject;
 import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
 import static org.hamcrest.Matchers.is;
 
 public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
@@ -27,11 +28,11 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
-        TaxonDao taxonDao = new TaxonDao(client(), INDEX_NAME);
-        SpecimenDao specimenDao = new SpecimenDao(client(), INDEX_NAME, taxonDao);
+        BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME, "http://test.nl/test/");
+        TaxonDao taxonDao = new TaxonDao(client(), INDEX_NAME, "http://test.nl/test/");
+        SpecimenDao specimenDao = new SpecimenDao(client(), INDEX_NAME, taxonDao, "http://test.nl/test/");
         bioportalMultiMediaObjectDao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME,
-                                                                        bioportalTaxonDao, taxonDao, specimenDao);
+                bioportalTaxonDao, taxonDao, specimenDao, "http://test.nl/test/");
 
         createIndex(INDEX_NAME);
         client().admin().indices().preparePutMapping(INDEX_NAME).setType(MULTI_MEDIA_OBJECT_TYPE)
@@ -53,21 +54,21 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
 
         IndexRequestBuilder multimediaRequestBuilder = client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_TYPE);
         multimediaRequestBuilder.setSource(objectMapper.writeValueAsString(multiMediaObject))
-                                .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         multiMediaObject.setUnitID("unit2");
         multimediaRequestBuilder.setSource(objectMapper.writeValueAsString(new ESMultiMediaObject()))
-                                .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         ESTaxon esTaxon = createTestTaxon();
         esTaxon.setSourceSystemId("1234");
         IndexRequestBuilder taxonRequestBuilder = client().prepareIndex(INDEX_NAME, TAXON_TYPE);
         taxonRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon))
-                           .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         esTaxon.setSourceSystemId("5678");
         taxonRequestBuilder.setSource(objectMapper.writeValueAsString(esTaxon))
-                           .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(4l));
     }
@@ -93,11 +94,11 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
 
         IndexRequestBuilder specimenRequestBuilder = client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE);
         specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
-                              .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         esSpecimen.setUnitID("spec2");
         specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
-                              .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
         params.add(UNIT_ID, "unit1");
@@ -127,11 +128,11 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
 
         IndexRequestBuilder specimenRequestBuilder = client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE);
         specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
-                              .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         esSpecimen.setUnitID("spec2");
         specimenRequestBuilder.setSource(objectMapper.writeValueAsString(esSpecimen))
-                              .setRefresh(true).execute().actionGet();
+                .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
         params.add(UNIT_ID, "unit1");

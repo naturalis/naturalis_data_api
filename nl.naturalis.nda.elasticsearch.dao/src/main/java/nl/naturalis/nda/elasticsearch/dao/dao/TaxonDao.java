@@ -22,8 +22,8 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 public class TaxonDao extends AbstractTaxonDao {
 
-    public TaxonDao(Client esClient, String ndaIndexName) {
-        super(esClient, ndaIndexName);
+    public TaxonDao(Client esClient, String ndaIndexName, String baseUrl) {
+        super(esClient, ndaIndexName, baseUrl);
     }
 
     /**

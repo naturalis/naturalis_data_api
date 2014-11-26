@@ -32,7 +32,6 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMe
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SEXES;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SPECIMEN_TYPE_STATUS;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 
@@ -67,8 +66,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     private final SpecimenDao specimenDao;
 
     public BioportalMultiMediaObjectDao(Client esClient, String ndaIndexName, BioportalTaxonDao bioportalTaxonDao,
-                                        TaxonDao taxonDao, SpecimenDao specimenDao) {
-        super(esClient, ndaIndexName);
+                                        TaxonDao taxonDao, SpecimenDao specimenDao, String baseUrl) {
+        super(esClient, ndaIndexName, baseUrl);
         this.bioportalTaxonDao = bioportalTaxonDao;
         this.taxonDao = taxonDao;
         this.specimenDao = specimenDao;

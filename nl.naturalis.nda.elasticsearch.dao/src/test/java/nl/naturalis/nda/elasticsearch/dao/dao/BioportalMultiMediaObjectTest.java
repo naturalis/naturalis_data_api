@@ -1,21 +1,12 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Expert;
-import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.Reference;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.TaxonomicStatus;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -40,11 +31,14 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         client().admin().indices().preparePutMapping(INDEX_NAME).setType(MULTI_MEDIA_OBJECT_TYPE)
                 .setSource(getMapping("test-multimedia-mapping.json"))
                 .execute().actionGet();
-        BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
-        TaxonDao taxonDao = new TaxonDao(client(), INDEX_NAME);
-        dao = new BioportalMultiMediaObjectDao(client(), INDEX_NAME, bioportalTaxonDao,
-                                               new TaxonDao(client(), INDEX_NAME), new SpecimenDao(client(),
-                                                                                                   INDEX_NAME, taxonDao));
+        BioportalTaxonDao bioportalTaxonDao = new BioportalTaxonDao(client(), INDEX_NAME, "http://test.nl/test/");
+        TaxonDao taxonDao = new TaxonDao(client(), INDEX_NAME, "http://test.nl/test/");
+        dao = new BioportalMultiMediaObjectDao(
+                client(),
+                INDEX_NAME,
+                bioportalTaxonDao,
+                new TaxonDao(client(), INDEX_NAME, "http://test.nl/test/"),
+                new SpecimenDao(client(), INDEX_NAME, taxonDao, "http://test.nl/test/"), "http://test.nl/test/");
 
         client().prepareIndex(INDEX_NAME, MULTI_MEDIA_OBJECT_TYPE, "1")
                 .setSource(objectMapper.writeValueAsString(createTestMultiMediaObject()))

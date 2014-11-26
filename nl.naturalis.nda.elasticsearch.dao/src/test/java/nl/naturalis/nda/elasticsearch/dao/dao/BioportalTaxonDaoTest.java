@@ -1,14 +1,10 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.Taxon;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.search.*;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +23,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        taxonDao = new BioportalTaxonDao(client(), INDEX_NAME);
+        taxonDao = new BioportalTaxonDao(client(), INDEX_NAME, "http://test.nl/test/");
     }
 
     @Test
@@ -83,18 +79,6 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
 
         QueryParams params = new QueryParams();
         params.add("genus", "Hyphomonas");
-
-        ResultGroupSet<Taxon, String> result = taxonDao.taxonSearch(params);
-
-        assertEquals(1, result.getResultGroups().size());
-    }
-
-    @Test
-    public void testExtendedSegenusOrMonomialSynonymsearch_genusAny() throws Exception {
-        prepareTaxonSearch();
-
-        QueryParams params = new QueryParams();
-        params.add("genusAny", "genusOrMonomialSynonyms");
 
         ResultGroupSet<Taxon, String> result = taxonDao.taxonSearch(params);
 

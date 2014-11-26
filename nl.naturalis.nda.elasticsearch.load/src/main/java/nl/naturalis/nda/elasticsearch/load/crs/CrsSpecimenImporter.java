@@ -224,7 +224,7 @@ public class CrsSpecimenImporter {
 		// Avoid "Content is not allowed in prolog"
 		String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
 		if (!xml.startsWith("<?xml")) {
-			if(xml.indexOf("<?xml") == -1) {
+			if (xml.indexOf("<?xml") == -1) {
 				logger.error("Unexpected response:");
 				logger.error(xml);
 				return null;
@@ -258,7 +258,10 @@ public class CrsSpecimenImporter {
 					Element record = (Element) records.item(i);
 					String id = ID_PREFIX + DOMUtil.getDescendantValue(record, "identifier");
 					if (isDeletedRecord(record)) {
-						index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
+						// With full harvest we ignore records with status DELETED
+						if (LoadUtil.getConfig().getInt("crs.max_age") != 0) {
+							index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
+						}
 					}
 					else {
 						specimens.add(CrsSpecimenTransfer.transfer(record));

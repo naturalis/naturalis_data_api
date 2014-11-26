@@ -37,29 +37,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
-import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
-import static org.elasticsearch.index.query.FilterBuilders.nestedFilter;
-import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.FilterBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -166,10 +150,11 @@ public abstract class AbstractDao {
 
         boolean atLeastOneFieldToQuery = false;
 
-        List<HighlightBuilder.Field> highlightFields =
-                prebuiltQuery == null || prebuiltQuery.getHighlightFields() == null
+        Map<String, HighlightBuilder.Field> highlightFields =
+                prebuiltQuery == null
+                        || prebuiltQuery.getHighlightFields() == null
                         || prebuiltQuery.getHighlightFields().isEmpty()
-                        ? new ArrayList<HighlightBuilder.Field>()
+                        ? new HashMap<String, HighlightBuilder.Field>()
                         : prebuiltQuery.getHighlightFields();
 
         for (String nestedPath : nestedFields.keySet()) {
@@ -216,7 +201,7 @@ public abstract class AbstractDao {
         setSize(params, searchRequestBuilder);
 
         if (!highlightFields.isEmpty()) {
-            for (HighlightBuilder.Field highlightField : highlightFields) {
+            for (HighlightBuilder.Field highlightField : highlightFields.values()) {
                 searchRequestBuilder.addHighlightedField(highlightField);
             }
             searchRequestBuilder.setHighlighterPreTags("<span class=\"search_hit\">").setHighlighterPostTags("</span>");
@@ -376,7 +361,7 @@ public abstract class AbstractDao {
 
     private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator,
                                                                String nestedPath, List<FieldMapping> fields,
-                                                               List<HighlightBuilder.Field> highlightFields,
+                                                               Map<String, HighlightBuilder.Field> highlightFields,
                                                                boolean highlight) {
         BoolQueryBuilder nestedBoolQueryBuilder = boolQuery();
         for (FieldMapping field : fields) {
@@ -391,7 +376,7 @@ public abstract class AbstractDao {
     }
 
     private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
-                                      List<HighlightBuilder.Field> highlightFields, boolean highlight) {
+                                      Map<String, HighlightBuilder.Field> highlightFields, boolean highlight) {
         if (field.getValue() != null) {
             MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());
             Float boostValue = field.getBoostValue();
@@ -407,13 +392,14 @@ public abstract class AbstractDao {
                 }
                 extendQueryWithQuery(boolQueryBuilder, OR, ngramFieldMatchQuery);
                 if (highlight) {
-                    highlightFields.add(createHighlightField(field.getFieldName() + ".ngram", matchQuery(field.getFieldName() + ".ngram", field.getValue())));
+                    highlightFields.put(field.getFieldName() + ".ngram", createHighlightField(field.getFieldName() + ".ngram", matchQuery(field.getFieldName() + ".ngram", field.getValue())));
                 }
             } else {
                 extendQueryWithQuery(boolQueryBuilder, operator, fieldMatchQuery);
             }
-
-            highlightFields.add(createHighlightField(field.getFieldName(), matchQuery(field.getFieldName(), field.getValue())));
+            if (!highlightFields.containsKey(field.getFieldName())) {
+                highlightFields.put(field.getFieldName(), createHighlightField(field.getFieldName(), matchQuery(field.getFieldName(), field.getValue())));
+            }
         }
     }
 
@@ -585,7 +571,7 @@ public abstract class AbstractDao {
             MatchQueryBuilder localQuery = matchQuery(fieldName, fieldValue);
             query.must(localQuery);
             if (highlight) {
-                highlightFieldsContainer.addHighlightField(createHighlightField(fieldName, localQuery));
+                highlightFieldsContainer.addHighlightField(fieldName, createHighlightField(fieldName, localQuery));
             }
         }
     }

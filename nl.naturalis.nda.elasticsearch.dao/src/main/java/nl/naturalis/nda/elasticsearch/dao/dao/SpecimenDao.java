@@ -73,10 +73,13 @@ public class SpecimenDao extends AbstractDao {
                 for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
                     ScientificName scientificName = specimenIdentification.getScientificName();
                     SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName);
-
-                    List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                    for (SearchResult<Taxon> searchResult : searchResults) {
-                        links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
+                    if (taxonSearchResultSet != null) {
+                        List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
+                        if(searchResults != null) {
+                            for (SearchResult<Taxon> searchResult : searchResults) {
+                                links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
+                            }
+                        }
                     }
                 }
             }

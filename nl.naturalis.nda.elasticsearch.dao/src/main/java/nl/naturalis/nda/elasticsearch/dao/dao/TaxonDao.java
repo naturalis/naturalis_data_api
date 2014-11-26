@@ -76,9 +76,10 @@ public class TaxonDao extends AbstractTaxonDao {
         String infraspecificEpithet = scientificName.getInfraspecificEpithet();
 
 
-        BoolQueryBuilder boolQueryBuilder = boolQuery();
+        BoolQueryBuilder boolQueryBuilder = null;
         BoolFilterBuilder boolFilterBuilder = boolFilter();
         if (hasText(genusOrMonomial) && hasText(specificEpithet)) {
+            boolQueryBuilder = boolQuery();
             BoolQueryBuilder acceptNameBoolQueryBuilder = boolQuery();
             acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_GENUS_OR_MONOMIAL, genusOrMonomial));
             acceptNameBoolQueryBuilder.must(matchQuery(ACCEPTEDNAME_SPECIFIC_EPITHET, specificEpithet));
@@ -95,20 +96,25 @@ public class TaxonDao extends AbstractTaxonDao {
             boolQueryBuilder.should(acceptNameBoolQueryBuilder);
         }
 
-        SearchRequestBuilder searchRequestBuilder;
-        if (boolFilterBuilder.hasClauses()) {
-            searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
-                    filteredQuery(boolQueryBuilder, boolFilterBuilder)
-            );
-        } else {
-            searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
-                    filteredQuery(boolQueryBuilder, null)
-            );
+        SearchRequestBuilder searchRequestBuilder = null;
+        if(boolQueryBuilder != null) {
+            if (boolFilterBuilder.hasClauses()) {
+                searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
+                        filteredQuery(boolQueryBuilder, boolFilterBuilder)
+                );
+            } else {
+                searchRequestBuilder = newSearchRequest().setTypes(ESConstants.TAXON_TYPE).setQuery(
+                        filteredQuery(boolQueryBuilder, null)
+                );
+            }
         }
 
-        SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-        //todo change 0
-        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams(), 0);
+        ResultGroupSet<Taxon, String> taxonStringResultGroupSet = new ResultGroupSet<>();
+        if(searchRequestBuilder != null) {
+            SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+            taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams(), 0);
+        }
+
         SearchResultSet<Taxon> resultSet = new SearchResultSet<>();
         List<ResultGroup<Taxon, String>> resultGroups = taxonStringResultGroupSet.getResultGroups();
         if (resultGroups != null && !resultGroups.isEmpty()) {

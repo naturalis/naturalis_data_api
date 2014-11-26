@@ -307,8 +307,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName);
 
                 List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                for (SearchResult<Taxon> searchResult : searchResults) {
-                    links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
+                if(searchResults != null) {
+                    for (SearchResult<Taxon> searchResult : searchResults) {
+                        links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
+                    }
                 }
             }
         }

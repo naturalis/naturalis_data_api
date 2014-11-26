@@ -42,6 +42,10 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
                 .setSource(getMapping("test-taxon-mapping.json"))
                 .execute().actionGet();
 
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE)
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
+
         ESMultiMediaObject multiMediaObject = createTestMultiMediaObject();
         multiMediaObject.setAssociatedTaxonReference("1234");
         multiMediaObject.setAssociatedSpecimenReference("spec1");
@@ -176,6 +180,6 @@ public class BioportalMultiMediaObjectDaoTest extends DaoIntegrationTest {
         assertEquals("unit1", result.getUnitID());
         assertNotNull(result.getAssociatedSpecimen());
         assertEquals("spec1", result.getAssociatedSpecimen().getUnitID());
-        assertEquals(5, results.getSearchResults().get(0).getLinks().size());
+        assertEquals(3, results.getSearchResults().get(0).getLinks().size());
     }
 }

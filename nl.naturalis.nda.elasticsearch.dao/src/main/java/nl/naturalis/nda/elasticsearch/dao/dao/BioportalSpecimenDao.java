@@ -526,7 +526,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                     .setTypes(SPECIMEN_TYPE)
                     .setQuery(
                             filteredQuery(matchAllQuery(),
-                                    boolFilter().must(termFilter(ASSEMBLAGE_ID, assemblageID)).mustNot(termFilter(UNIT_ID, transfer.getUnitID()))))
+                                    boolFilter().must(termFilter(ASSEMBLAGE_ID, assemblageID)).mustNot(termFilter(UNIT_ID + ".raw", transfer.getUnitID()))))
                     .execute().actionGet();
             SearchHits hits = searchResponse.getHits();
             for (SearchHit searchHitFields : hits) {

@@ -46,7 +46,7 @@ public class SpecimenDao extends AbstractDao {
                 .setQuery(filteredQuery(
                                 matchAllQuery(),
                                 termFilter(
-                                        UNIT_ID,
+                                        UNIT_ID + ".raw",
                                         unitID
                                 )
                         )

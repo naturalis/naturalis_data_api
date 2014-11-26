@@ -1,22 +1,43 @@
 {
     "Taxon": {
-
         "dynamic": "strict",
-
         "properties": {
             "sourceSystem": {
                 "properties": {
                     "code": {
                         "type": "string",
-                        "index": "not_analyzed"
+                        "index": "not_analyzed",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     }
                 }
             },
             "sourceSystemId": {
                 "type": "string",
+                "index": "not_analyzed",
+                "fields": {
+                    "raw": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    }
+                }
+            },
+            "recordURI": {
+                "type": "string",
+                "index": "not_analyzed",
                 "fields": {
                     "raw": {
                         "type": "string",
@@ -25,14 +46,34 @@
                 }
             },
             "sourceSystemParentId": {
-                "type": "string"
+                "type": "string",
+                "index": "not_analyzed",
+                "fields": {
+                    "raw": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    }
+                }
             },
             "taxonRank": {
-                "type": "string"
+                "type": "string",
+                "index": "not_analyzed",
+                "fields": {
+                    "raw": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    }
+                }
             },
             "identifyingEpithets": {
                 "type": "string",
-                "index": "not_analyzed"
+                "index": "not_analyzed",
+                "fields": {
+                    "raw": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    }
+                }
             },
             "defaultClassification": {
                 "properties": {
@@ -141,10 +182,22 @@
                 "type": "nested",
                 "properties": {
                     "rank": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     }
                 }
             },
@@ -152,7 +205,13 @@
                 "properties": {
                     "taxonomicStatus": {
                         "type": "string",
-                        "index": "not_analyzed"
+                        "index": "not_analyzed",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "fullScientificName": {
                         "type": "string",
@@ -200,33 +259,81 @@
                         }
                     },
                     "nameAddendum": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "authorshipVerbatim": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "author": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "year": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "experts": {
                         "type": "nested",
                         "properties": {
                             "agentText": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "fullName": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "organization": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -236,13 +343,31 @@
                         "type": "nested",
                         "properties": {
                             "titleCitation": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "citationDetail": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "uri": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "publicationDate": {
                                 "type": "date"
@@ -250,18 +375,42 @@
                             "author": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "fullName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "organization": {
                                         "properties": {
                                             "agentText": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "fields": {
+                                                    "raw": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed"
+                                                    }
+                                                }
                                             },
                                             "name": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "fields": {
+                                                    "raw": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -276,7 +425,13 @@
                 "properties": {
                     "taxonomicStatus": {
                         "type": "string",
-                        "index": "not_analyzed"
+                        "index": "not_analyzed",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "fullScientificName": {
                         "type": "string",
@@ -324,33 +479,81 @@
                         }
                     },
                     "nameAddendum": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "authorshipVerbatim": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "author": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "year": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "experts": {
                         "type": "nested",
                         "properties": {
                             "agentText": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "fullName": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "organization": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -360,13 +563,31 @@
                         "type": "nested",
                         "properties": {
                             "titleCitation": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "citationDetail": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "uri": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "publicationDate": {
                                 "type": "date"
@@ -374,18 +595,42 @@
                             "author": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "fullName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "organization": {
                                         "properties": {
                                             "agentText": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "fields": {
+                                                    "raw": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed"
+                                                    }
+                                                }
                                             },
                                             "name": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "fields": {
+                                                    "raw": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -404,11 +649,21 @@
                             "ngram": {
                                 "type": "string",
                                 "index_analyzer": "nda_ngram_analyzer"
+                            },
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
                             }
                         }
                     },
                     "language": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "preferred": {
                         "type": "boolean"
@@ -417,18 +672,42 @@
                         "type": "nested",
                         "properties": {
                             "agentText": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "fullName": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "organization": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -438,10 +717,22 @@
                         "type": "nested",
                         "properties": {
                             "titleCitation": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "citationDetail": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "uri": {
                                 "type": "string"
@@ -452,18 +743,42 @@
                             "author": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "fullName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "organization": {
                                         "properties": {
                                             "agentText": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "fields": {
+                                                    "raw": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed"
+                                                    }
+                                                }
                                             },
                                             "name": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "fields": {
+                                                    "raw": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -477,18 +792,42 @@
                 "type": "nested",
                 "properties": {
                     "agentText": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "fullName": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "organization": {
                         "properties": {
                             "agentText": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "name": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             }
                         }
                     }
@@ -498,13 +837,31 @@
                 "type": "nested",
                 "properties": {
                     "titleCitation": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "citationDetail": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "uri": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "publicationDate": {
                         "type": "date"
@@ -512,18 +869,42 @@
                     "author": {
                         "properties": {
                             "agentText": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "fullName": {
-                                "type": "string"
+                                "type": "string",
+                                "fields": {
+                                    "raw": {
+                                        "type": "string",
+                                        "index": "not_analyzed"
+                                    }
+                                }
                             },
                             "organization": {
                                 "properties": {
                                     "agentText": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     },
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "fields": {
+                                            "raw": {
+                                                "type": "string",
+                                                "index": "not_analyzed"
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -535,10 +916,22 @@
                 "type": "nested",
                 "properties": {
                     "category": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     },
                     "description": {
-                        "type": "string"
+                        "type": "string",
+                        "fields": {
+                            "raw": {
+                                "type": "string",
+                                "index": "not_analyzed"
+                            }
+                        }
                     }
                 }
             }

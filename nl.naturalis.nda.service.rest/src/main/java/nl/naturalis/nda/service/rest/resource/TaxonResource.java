@@ -11,10 +11,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
+import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResultSet;
@@ -44,7 +46,9 @@ public class TaxonResource {
 		SearchResultSet<Taxon> result = null;
 		try {
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			result = registry.getTaxonDao().getTaxonDetail(params);
+			String baseUrl = request.getBaseUri().toString();
+			TaxonDao dao = registry.getTaxonDao(baseUrl);
+			result = dao.getTaxonDetail(params);
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(request, t);
@@ -65,7 +69,9 @@ public class TaxonResource {
 		try {
 			logger.debug("getTaxonDetailWithinResultSet");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			SearchResultSet<Taxon> result = registry.getBioportalTaxonDao().getTaxonDetailWithinResultSet(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalTaxonDao dao = registry.getBioportalTaxonDao(baseUrl);
+			SearchResultSet<Taxon> result = dao.getTaxonDetailWithinResultSet(params);
 			ResourceUtil.doAfterDao(result, request, false);
 			return result;
 		}
@@ -83,7 +89,9 @@ public class TaxonResource {
 		try {
 			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			ResultGroupSet<Taxon, String> result = registry.getBioportalTaxonDao().taxonSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalTaxonDao dao = registry.getBioportalTaxonDao(baseUrl);
+			ResultGroupSet<Taxon, String> result = dao.taxonSearch(params);
 			ResourceUtil.doAfterDao(result, request, true);
 			return result;
 		}
@@ -103,7 +111,9 @@ public class TaxonResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			params.addParams(request.getQueryParameters());
-			ResultGroupSet<Taxon, String> result = registry.getBioportalTaxonDao().taxonSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalTaxonDao dao = registry.getBioportalTaxonDao(baseUrl);
+			ResultGroupSet<Taxon, String> result = dao.taxonSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
 		}

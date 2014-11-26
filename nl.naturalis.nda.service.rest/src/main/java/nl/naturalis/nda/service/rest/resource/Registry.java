@@ -33,33 +33,34 @@ public class Registry {
 	}
 
 
-	public TaxonDao getTaxonDao()
+	public TaxonDao getTaxonDao(String baseUrl)
 	{
-		return new TaxonDao(nda.getESClient(), nda.getIndexName());
+		return new TaxonDao(nda.getESClient(), nda.getIndexName(), baseUrl);
 	}
 
 
-	public BioportalTaxonDao getBioportalTaxonDao()
+	public BioportalTaxonDao getBioportalTaxonDao(String baseUrl)
 	{
-		return new BioportalTaxonDao(nda.getESClient(), nda.getIndexName());
+		return new BioportalTaxonDao(nda.getESClient(), nda.getIndexName(), baseUrl);
 	}
 
 
-	public SpecimenDao getSpecimenDao()
+	public SpecimenDao getSpecimenDao(String baseUrl)
 	{
-		return new SpecimenDao(nda.getESClient(), nda.getIndexName(), getTaxonDao());
+		return new SpecimenDao(nda.getESClient(), nda.getIndexName(), getTaxonDao(baseUrl), baseUrl);
 	}
 
 
-	public BioportalSpecimenDao getBioportalSpecimenDao()
+	public BioportalSpecimenDao getBioportalSpecimenDao(String baseUrl)
 	{
-		return new BioportalSpecimenDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(), getTaxonDao());
+		return new BioportalSpecimenDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(baseUrl), getTaxonDao(baseUrl), baseUrl);
 	}
 
 
-	public BioportalMultiMediaObjectDao getBioportalMultiMediaObjectDao()
+	public BioportalMultiMediaObjectDao getBioportalMultiMediaObjectDao(String baseUrl)
 	{
-		return new BioportalMultiMediaObjectDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(), getTaxonDao(), getSpecimenDao());
+		return new BioportalMultiMediaObjectDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(baseUrl), getTaxonDao(baseUrl),
+				getSpecimenDao(baseUrl), baseUrl);
 	}
 
 

@@ -16,6 +16,8 @@ import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.ejb.service.SpecimenService;
+import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
+import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResultSet;
@@ -48,7 +50,9 @@ public class SpecimenResource {
 		SearchResultSet<Specimen> result = null;
 		try {
 			String unitID = request.getQueryParameters().getFirst("unitID");
-			result = registry.getSpecimenDao().getSpecimenDetail(unitID);
+			String baseUrl = request.getBaseUri().toString();
+			SpecimenDao dao = registry.getSpecimenDao(baseUrl);
+			result = dao.getSpecimenDetail(unitID);
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(request, t);
@@ -69,7 +73,9 @@ public class SpecimenResource {
 		try {
 			logger.debug("getSpecimenDetailWithinResultSetGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
+			SearchResultSet<Specimen> result = dao.getSpecimenDetailWithinSearchResult(params);
 			ResourceUtil.doAfterDao(result, request, false);
 			return result;
 		}
@@ -89,7 +95,9 @@ public class SpecimenResource {
 			logger.debug("getSpecimenDetailWithinResultSetPOST");
 			QueryParams params = new QueryParams(form);
 			params.addParams(request.getQueryParameters());
-			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().getSpecimenDetailWithinSearchResult(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
+			SearchResultSet<Specimen> result = dao.getSpecimenDetailWithinSearchResult(params);
 			ResourceUtil.doAfterDao(result, request, form, false);
 			return result;
 		}
@@ -107,7 +115,9 @@ public class SpecimenResource {
 		try {
 			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
+			SearchResultSet<Specimen> result = dao.specimenSearch(params);
 			ResourceUtil.doAfterDao(result, request, true);
 			return result;
 		}
@@ -127,7 +137,9 @@ public class SpecimenResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			params.addParams(request.getQueryParameters());
-			SearchResultSet<Specimen> result = registry.getBioportalSpecimenDao().specimenSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
+			SearchResultSet<Specimen> result = dao.specimenSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
 		}
@@ -145,7 +157,9 @@ public class SpecimenResource {
 		try {
 			logger.debug("nameSearchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
+			ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 			ResourceUtil.doAfterDao(result, request, true);
 			return result;
 		}
@@ -165,7 +179,9 @@ public class SpecimenResource {
 			logger.debug("nameSearchPOST");
 			QueryParams params = new QueryParams(form);
 			params.addParams(request.getQueryParameters());
-			ResultGroupSet<Specimen, String> result = registry.getBioportalSpecimenDao().specimenNameSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
+			ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
 		}

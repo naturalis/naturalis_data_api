@@ -42,7 +42,9 @@ public class MultiMediaObjectResource {
 		try {
 			logger.debug("searchGET");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao(baseUrl);
+			SearchResultSet<MultiMediaObject> result = dao.multiMediaObjectSearch(params);
 			ResourceUtil.doAfterDao(result, request, true);
 			return result;
 		}
@@ -62,7 +64,9 @@ public class MultiMediaObjectResource {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
 			params.addParams(request.getQueryParameters());
-			SearchResultSet<MultiMediaObject> result = registry.getBioportalMultiMediaObjectDao().multiMediaObjectSearch(params);
+			String baseUrl = request.getBaseUri().toString();
+			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao(baseUrl);
+			SearchResultSet<MultiMediaObject> result = dao.multiMediaObjectSearch(params);
 			ResourceUtil.doAfterDao(result, request, form, true);
 			return result;
 		}
@@ -80,7 +84,8 @@ public class MultiMediaObjectResource {
 		try {
 			logger.debug("getTaxonMultiMediaObjectDetailWithinResultSet");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao();
+			String baseUrl = request.getBaseUri().toString();
+			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao(baseUrl);
 			SearchResultSet<MultiMediaObject> result = dao.getTaxonMultiMediaObjectDetailWithinResultSet(params);
 			ResourceUtil.doAfterDao(result, request, false);
 			return result;
@@ -99,7 +104,8 @@ public class MultiMediaObjectResource {
 		try {
 			logger.debug("getSpecimenMultiMediaObjectDetailWithinResultSet");
 			QueryParams params = new QueryParams(request.getQueryParameters());
-			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao();
+			String baseUrl = request.getBaseUri().toString();
+			BioportalMultiMediaObjectDao dao = registry.getBioportalMultiMediaObjectDao(baseUrl);
 			SearchResultSet<MultiMediaObject> result = dao.getSpecimenMultiMediaObjectDetailWithinResultSet(params);
 			ResourceUtil.doAfterDao(result, request, false);
 			return result;

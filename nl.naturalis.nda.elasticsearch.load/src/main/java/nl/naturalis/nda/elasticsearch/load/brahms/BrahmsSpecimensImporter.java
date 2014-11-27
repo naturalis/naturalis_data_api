@@ -387,6 +387,33 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		sn.setGenusOrMonomial(val(record, CsvField.GENUS.ordinal()));
 		sn.setSpecificEpithet(val(record, CsvField.SP1.ordinal()));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
+		if (sn.getFullScientificName() == null) {
+			StringBuilder sb = new StringBuilder();
+			if (sn.getGenusOrMonomial() != null) {
+				sb.append(sn.getGenusOrMonomial()).append(' ');
+			}
+			if (sn.getSubgenus() != null) {
+				sb.append(sn.getSubgenus()).append(' ');
+			}
+			if (sn.getSpecificEpithet() != null) {
+				sb.append(sn.getSpecificEpithet()).append(' ');
+			}
+			if (sn.getInfraspecificEpithet() != null) {
+				sb.append(sn.getInfraspecificEpithet()).append(' ');
+			}
+			if (sn.getAuthorshipVerbatim() != null) {
+				if (sn.getAuthorshipVerbatim().charAt(0) != '(') {
+					sb.append('(');
+				}
+				sb.append(sn.getAuthorshipVerbatim());
+				if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')') {
+					sb.append(')');
+				}
+			}
+			if (sb.length() != 0) {
+				sn.setFullScientificName(sb.toString().trim());
+			}
+		}
 		return sn;
 	}
 

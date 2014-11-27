@@ -215,7 +215,9 @@ public class CrsSpecimenTransfer {
 					sb.append(')');
 				}
 			}
-			sn.setFullScientificName(sb.toString().trim());
+			if (sb.length() != 0) {
+				sn.setFullScientificName(sb.toString().trim());
+			}
 		}
 		return sn;
 	}

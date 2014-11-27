@@ -79,13 +79,13 @@ public class CrsSpecimenTransfer {
 		List<Element> determinationElements = DOMUtil.getDescendants(recordElement, "ncrsDetermination");
 
 		if (determinationElements == null) {
-			logger.warn("No determinations for specimen with unitID " + specimen.getUnitID());
+			logger.debug("No determinations for specimen with unitID " + specimen.getUnitID());
 		}
 		else {
 			// For version 0.9 only preferred specimens are indexed.
 			for (Element e : determinationElements) {
 				s = val(e, "abcd:PreferredFlag");
-				if (s == null || s.equals("1")) {
+				if (s == null || s.trim().equals("1") || determinationElements.size() == 1) {
 					specimen.addIndentification(transferIdentification(e));
 				}
 			}

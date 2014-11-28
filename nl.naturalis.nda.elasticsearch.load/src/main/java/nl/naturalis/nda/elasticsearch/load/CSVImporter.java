@@ -25,6 +25,7 @@ public abstract class CSVImporter<T> {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
+	private static final int INDEXED_NOTIFIER_INTERVAL = 50000;
 
 
 	public static String val(CSVRecord record, int fieldNo)
@@ -77,7 +78,7 @@ public abstract class CSVImporter<T> {
 	private boolean specifyParent = false;
 
 	protected char delimiter = '\t';
-	
+
 	// Will log errors as debug messages. Specifically
 	// useful when expecting huge amounts of errors, as
 	// with Brahms.
@@ -102,6 +103,7 @@ public abstract class CSVImporter<T> {
 		int lineNo = 0;
 		int processed = 0;
 		int indexed = 0;
+		int indexedTreshold = INDEXED_NOTIFIER_INTERVAL;
 		int skipped = 0;
 		int bad = 0;
 
@@ -142,14 +144,18 @@ public abstract class CSVImporter<T> {
 							parentIds.addAll(getParentIds(record));
 						}
 						if (objects.size() >= bulkRequestSize) {
-							index.saveObjects(type, objects, ids, parentIds);
-							indexed += objects.size();
-							objects.clear();
-							if (specifyId) {
-								ids.clear();
+							try {
+								index.saveObjects(type, objects, ids, parentIds);
+								indexed += objects.size();
 							}
-							if (specifyParent) {
-								parentIds.clear();
+							finally {
+								objects.clear();
+								if (specifyId) {
+									ids.clear();
+								}
+								if (specifyParent) {
+									parentIds.clear();
+								}
 							}
 						}
 					}
@@ -174,6 +180,10 @@ public abstract class CSVImporter<T> {
 				}
 				if (processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
+				}
+				if (indexed >= indexedTreshold) {
+					logger.info("Documents indexed: " + indexed);
+					indexedTreshold += INDEXED_NOTIFIER_INTERVAL;
 				}
 			}
 			if (!objects.isEmpty()) {

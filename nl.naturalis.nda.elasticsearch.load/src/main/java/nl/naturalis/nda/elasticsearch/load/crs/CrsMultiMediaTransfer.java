@@ -62,11 +62,16 @@ public class CrsMultiMediaTransfer {
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
 			String url = val(mediaFileElement, "abcd:fileuri");
+			String title = val(mediaFileElement, "dc:title");
 			if (url == null) {
-				logger.debug("Record ignored. No Image URL for record with identifier " + val(recordElement, "identifier"));
+				if (title == null) {
+					logger.debug("Record ignored. No Image URL for record with identifier " + val(recordElement, "identifier"));
+				}
+				else {
+					logger.debug("Record ignored. No Image URL for record with title " + title);
+				}
 				continue;
 			}
-			String title = val(mediaFileElement, "dc:title");
 			if (title == null) {
 				logger.error("Record ignored. Missing title for record with identifier " + val(recordElement, "identifier"));
 				continue;
@@ -136,6 +141,11 @@ public class CrsMultiMediaTransfer {
 	private static List<MultiMediaContentIdentification> getIdentifications(Element dcElement)
 	{
 		List<Element> elems = DOMUtil.getDescendants(dcElement, "ncrsDetermination");
+		if (elems == null) {
+			String specimenId = DOMUtil.getDescendantValue(dcElement, "ac:associatedSpecimenReference");
+			logger.debug("No determinations for specimen with unitID " + specimenId);
+			return null;
+		}
 		List<MultiMediaContentIdentification> identifications = new ArrayList<MultiMediaContentIdentification>(elems.size());
 		for (Element e : elems) {
 			String s = val(e, "abcd:PreferredFlag");

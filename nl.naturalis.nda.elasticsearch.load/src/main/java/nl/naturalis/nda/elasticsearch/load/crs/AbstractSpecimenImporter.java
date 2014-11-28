@@ -1,14 +1,15 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,10 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.elasticsearch.client.Index;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.ConfigObject;
@@ -33,59 +31,14 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-/**
- * ETL class using CRS's OAIPMH service to extract the data, w3c DOM to parse
- * the data, and ElasticSearch's native client to save the data.
- * 
- * @author ayco_holleman
- * 
- */
-public class CrsMultiMediaImporter {
+public abstract class AbstractSpecimenImporter {
 
-	public static void main(String[] args) throws Exception
-	{
-
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-		}
-		else {
-			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
-				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-			}
-		}
-
-		try {
-			CrsMultiMediaImporter importer = new CrsMultiMediaImporter(index);
-			importer.importMultiMedia();
-		}
-		finally {
-			index.getClient().close();
-		}
-		logger.info("Ready");
-
-	}
-
-	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
-	private static final String ID_PREFIX = "CRS-";
+	private static final Logger logger = LoggerFactory.getLogger(AbstractSpecimenImporter.class);
 	private static final int INDEXED_NOTIFIER_INTERVAL = 10000;
 
 	private final DocumentBuilder builder;
 
-	private final Index index;
 	private final int bulkRequestSize;
 	private final int maxRecords;
 	private final boolean forceRestart;
@@ -96,9 +49,8 @@ public class CrsMultiMediaImporter {
 	private int indexedTreshold = INDEXED_NOTIFIER_INTERVAL;
 
 
-	public CrsMultiMediaImporter(Index index) throws Exception
+	public AbstractSpecimenImporter() throws Exception
 	{
-		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
 
@@ -119,18 +71,17 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	public void importMultiMedia()
+	public void importSpecimens()
 	{
 		processed = 0;
 		bad = 0;
 		indexed = 0;
-		indexedTreshold = 10000;
 		try {
 			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
-				processLocal();
+				importLocal();
 			}
 			else {
-				processRemote();
+				importRemote();
 			}
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
@@ -143,7 +94,13 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	private void processRemote() throws IOException
+	protected abstract void saveSpecimens(List<ESSpecimen> specimens, List<String> ids);
+
+
+	protected abstract void deleteSpecimen(String databaseId);
+
+
+	private void importRemote() throws IOException
 	{
 		int batch = 0;
 		String resToken;
@@ -181,7 +138,7 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	private void processLocal() throws IOException
+	private void importLocal() throws IOException
 	{
 		Iterator<File> localFileIterator = getLocalFileIterator();
 		File f;
@@ -193,92 +150,36 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	private String index(String xml)
-	{
-		Document doc;
-		logger.debug("Parsing XML");
-		try {
-			doc = builder.parse(StringUtil.asInputStream(xml));
-		}
-		catch (SAXException | IOException e) {
-			throw ExceptionUtil.smash(e);
-		}
-		doc.normalize();
-		NodeList records = doc.getElementsByTagName("record");
-		int numRecords = records.getLength();
-		logger.debug("Number of records in XML output: " + numRecords);
-
-		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(bulkRequestSize);
-		List<String> ids = new ArrayList<String>(bulkRequestSize);
-		for (int i = 0; i < numRecords; ++i) {
-			++processed;
-			try {
-				Element record = (Element) records.item(i);
-				if (isDeletedRecord(record)) {
-					// TODO delete media from ES index
-				}
-				else {
-					List<ESMultiMediaObject> extractedMedia = CrsMultiMediaTransfer.transfer(record);
-					if (extractedMedia != null) {
-						List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
-						for (ESMultiMediaObject mo : extractedMedia) {
-							extractedIds.add(ID_PREFIX + mo.getSourceSystemId());
-						}
-						mediaObjects.addAll(extractedMedia);
-						ids.addAll(extractedIds);
-						if (mediaObjects.size() >= bulkRequestSize) {
-							try {
-								index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
-								indexed += mediaObjects.size();
-							}
-							finally {
-								mediaObjects.clear();
-								ids.clear();
-							}
-						}
-					}
-				}
-			}
-			catch (Throwable t) {
-				++bad;
-				logger.error(t.getMessage(), t);
-			}
-			if (maxRecords > 0 && processed >= maxRecords) {
-				break;
-			}
-			if (processed % 50000 == 0) {
-				logger.info("Records processed: " + processed);
-			}
-			if (indexed >= indexedTreshold) {
-				logger.info("Documents indexed: " + indexed);
-				indexedTreshold += INDEXED_NOTIFIER_INTERVAL;
-			}
-		}
-		if (!mediaObjects.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
-			indexed += mediaObjects.size();
-		}
-		if (maxRecords > 0 && processed >= maxRecords) {
-			return null;
-		}
-		return DOMUtil.getDescendantValue(doc, "resumptionToken");
-	}
-
-
 	static String callOaiService(String resumptionToken, int batch)
 	{
 		String url;
 		ConfigObject config = LoadUtil.getConfig();
 		if (resumptionToken == null) {
-			url = config.required("crs.multimedia.url.initial");
+			url = config.required("crs.specimens.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
+			if (maxAge != 0) {
+				Date date = new Date(System.currentTimeMillis() - (maxAge * 60 * 60 * 1000));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
+				try {
+					url += "&from=" + URLEncoder.encode(sdf.format(date), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 		else {
-			url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
+			url = String.format(config.required("crs.specimens.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
 		// Avoid "Content is not allowed in prolog"
 		String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
 		if (!xml.startsWith("<?xml")) {
+			if (xml.indexOf("<?xml") == -1) {
+				logger.error("Unexpected response:");
+				logger.error(xml);
+				return null;
+			}
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
 		if (config.getBoolean("crs.save_local")) {
@@ -290,22 +191,93 @@ public class CrsMultiMediaImporter {
 	}
 
 
+	private String index(String xml)
+	{
+		try {
+			Document doc;
+			logger.debug("Parsing XML");
+			doc = builder.parse(StringUtil.asInputStream(xml));
+			doc.normalize();
+			NodeList records = doc.getElementsByTagName("record");
+			int numRecords = records.getLength();
+			logger.debug("Number of records in XML output: " + numRecords);
+			List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
+			List<String> ids = new ArrayList<String>(bulkRequestSize);
+			for (int i = 0; i < numRecords; ++i) {
+				++processed;
+				try {
+					Element record = (Element) records.item(i);
+					String id = DOMUtil.getDescendantValue(record, "identifier");
+					if (isDeletedRecord(record)) {
+						// With full harvest we ignore records with status DELETED
+						if (LoadUtil.getConfig().getInt("crs.max_age") != 0) {
+							//index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
+							deleteSpecimen(id);
+						}
+					}
+					else {
+						specimens.add(CrsSpecimenTransfer.transfer(record));
+						ids.add(id);
+						if (specimens.size() >= bulkRequestSize) {
+							try {
+								saveSpecimens(specimens, ids);
+								indexed += specimens.size();
+							}
+							finally {
+								specimens.clear();
+								ids.clear();
+							}
+						}
+					}
+				}
+				catch (Throwable t) {
+					++bad;
+					logger.error(t.getMessage(), t);
+				}
+				if (maxRecords > 0 && processed >= maxRecords) {
+					break;
+				}
+				if (processed % 50000 == 0) {
+					logger.info("Records processed: " + processed);
+				}
+				if (indexed >= indexedTreshold) {
+					logger.info("Documents indexed: " + indexed);
+					indexedTreshold += INDEXED_NOTIFIER_INTERVAL;
+				}
+			}
+			if (!specimens.isEmpty()) {
+				//index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
+				saveSpecimens(specimens, ids);
+				indexed += specimens.size();
+			}
+			if (maxRecords > 0 && processed >= maxRecords) {
+				return null;
+			}
+			return DOMUtil.getDescendantValue(doc, "resumptionToken");
+		}
+		catch (Throwable t) {
+			logger.error(t.getMessage(), t);
+			return null;
+		}
+	}
+
+
 	static String getLocalPath(int batch)
 	{
 		String s = new DecimalFormat("00000").format(batch);
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/multimedia.%s.oai.xml", testDir, s);
+		return String.format("%s/specimens.%s.oai.xml", testDir, s);
 	}
 
 
-	private static Iterator<File> getLocalFileIterator()
+	static Iterator<File> getLocalFileIterator()
 	{
 		String path = LoadUtil.getConfig().required("crs.local_dir");
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{
-				if (!name.startsWith("multimedia.")) {
+				if (!name.startsWith("specimens.")) {
 					return false;
 				}
 				if (!name.endsWith(".oai.xml")) {
@@ -329,7 +301,7 @@ public class CrsMultiMediaImporter {
 
 	private static File getResumptionTokenFile()
 	{
-		return new File(System.getProperty("java.io.tmpdir") + "/crs-multimedia.resumption-token");
+		return new File(System.getProperty("java.io.tmpdir") + "/crs-specimens.resumption-token");
 	}
 
 }

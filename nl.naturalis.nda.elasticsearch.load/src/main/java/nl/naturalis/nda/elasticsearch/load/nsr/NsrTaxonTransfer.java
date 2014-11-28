@@ -164,7 +164,6 @@ class NsrTaxonTransfer {
 	}
 
 
-	@SuppressWarnings("unused")
 	// Does not retrieve lower ranks, therefore does not cause discrepancies between
 	// DefaultClassification and ScientificName.
 	private static DefaultClassification getDefaultClassification(List<Monomial> monomials)

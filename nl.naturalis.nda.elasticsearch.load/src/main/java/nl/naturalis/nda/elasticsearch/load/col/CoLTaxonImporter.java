@@ -70,8 +70,6 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 			index.getClient().close();
 		}
 
-		logger.info("CoLTaxonImporter finished");
-
 	}
 
 	//@formatter:off
@@ -112,7 +110,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
 	static final String ID_PREFIX = "COL-";
 
-	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies");
+	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "infraspecies");
 
 
 	public CoLTaxonImporter(Index index)
@@ -132,7 +130,8 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	{
 
 		String taxonRank = val(record, CsvField.taxonRank.ordinal());
-		if (!ArrayUtil.contains(taxonRank, ALLOWED_TAXON_RANKS)) {
+		if (!ALLOWED_TAXON_RANKS.contains(taxonRank)) {
+			logger.debug(String.format("Ignoring taxon with rank \"%s\"", taxonRank));
 			return null;
 		}
 

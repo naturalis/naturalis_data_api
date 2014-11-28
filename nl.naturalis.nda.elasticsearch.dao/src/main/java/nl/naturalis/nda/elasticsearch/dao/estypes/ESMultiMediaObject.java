@@ -334,10 +334,11 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
 	{
 		this.identifications = identifications;
-		this.identifyingEpithets = new ArrayList<String>(identifications.size());
-		for (MultiMediaContentIdentification identification : identifications) {
-			//@formatter:off
-	        String identifier = 
+		if (identifications != null) {
+			this.identifyingEpithets = new ArrayList<String>(identifications.size());
+			for (MultiMediaContentIdentification identification : identifications) {
+				//@formatter:off
+				String identifier = 
 	        		identification.getScientificName().getGenusOrMonomial() +
 	        		IDENTIFYING_EPITHETS_DELIMITER +
 	        		identification.getScientificName().getSubgenus() +
@@ -345,8 +346,9 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	        		identification.getScientificName().getSpecificEpithet() +
 	        		IDENTIFYING_EPITHETS_DELIMITER +
 	        		identification.getScientificName().getInfraspecificEpithet();
-	        //@formatter:on
-			identifyingEpithets.add(identifier);
+				//@formatter:on
+				identifyingEpithets.add(identifier);
+			}
 		}
 	}
 

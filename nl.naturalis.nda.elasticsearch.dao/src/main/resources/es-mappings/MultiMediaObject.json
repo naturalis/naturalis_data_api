@@ -97,6 +97,7 @@
       },
       "unitID": {
         "type": "string",
+        "index": "not_analyzed",
         "fields": {
           "raw": {
             "type": "string",
@@ -524,7 +525,11 @@
                   "raw": {
                     "type": "string",
                     "index": "not_analyzed"
-                  }
+                  },
+	              "ngram": {
+	                "type": "string",
+	                "index_analyzer": "nda_ngram_analyzer"
+	              }
                 }
               },
               "subgenus": {

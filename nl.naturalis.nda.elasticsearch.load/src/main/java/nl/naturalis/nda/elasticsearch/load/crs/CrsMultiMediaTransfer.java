@@ -38,6 +38,8 @@ public class CrsMultiMediaTransfer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
 
+	private static final String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
+
 
 	public static List<ESMultiMediaObject> transfer(Element recordElement)
 	{
@@ -77,21 +79,32 @@ public class CrsMultiMediaTransfer {
 				continue;
 			}
 
-			if (url.indexOf("medialib.naturalis.nl") != -1) {
-				url = url.replace("/small", "/large");
+			String unitID;
+
+			if (url.startsWith(MEDIALIB_URL_START)) {
+				unitID = url.substring(MEDIALIB_URL_START.length() + 1);
+				int x = unitID.indexOf('/');
+				if (x != -1) {
+					unitID = unitID.substring(0, x);
+					url = url.replace("/small", "/large");
+				}
 			}
+			else {
+				unitID = title;
+			}
+			
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
 
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
 			mmo.setSourceSystem(SourceSystem.CRS);
-			mmo.setSourceSystemId(title);
+			mmo.setSourceSystemId(unitID);
 			mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 			mmo.setOwner(SOURCE_INSTITUTION_ID);
 			mmo.setSourceID("CRS");
 			mmo.setLicenceType(LICENCE_TYPE);
 			mmo.setLicence(LICENCE);
-			mmo.setUnitID(title);
+			mmo.setUnitID(unitID);
 			mmo.setTitle(title);
 			mmo.setCaption(title);
 			mmo.setAssociatedSpecimenReference(associatedSpecimenReference);

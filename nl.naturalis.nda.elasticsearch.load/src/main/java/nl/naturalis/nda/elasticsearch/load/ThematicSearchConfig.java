@@ -69,6 +69,7 @@ public class ThematicSearchConfig {
 				continue;
 			}
 			if (Collections.binarySearch(theme.ids, id) >= 0) {
+				logger.debug(String.format("Found match for ID \"%s\" in theme %s", id, theme.code));
 				++theme.matches;
 				if (identifiers == null) {
 					identifiers = new ArrayList<String>(themes.size());
@@ -80,7 +81,15 @@ public class ThematicSearchConfig {
 	}
 
 
-	public void logMatches()
+	public void resetMatchCounters()
+	{
+		for (Theme theme : themes) {
+			theme.matches = 0;
+		}
+	}
+
+
+	public void logMatchInfo()
 	{
 		for (Theme theme : themes) {
 			logger.info("Number of indexed documents for theme \"%s\": %s", theme.identifier, theme.matches);
@@ -95,13 +104,15 @@ public class ThematicSearchConfig {
 		if (props != null) {
 			for (Object prop : props.keySet()) {
 				String s = (String) prop;
-				String code = s.substring(0, s.indexOf('.'));
+				int x = s.indexOf('.');
+				String code = x == -1 ? s : s.substring(0, x);
 				if (isThemeLoaded(code)) {
 					continue;
 				}
 				logger.info(String.format("Retrieving information for theme \"%s\"", code));
 				Theme theme = new Theme();
 				themes.add(theme);
+				theme.code = code;
 				String type = props.getProperty(code + ".type");
 				if (type != null && type.length() != 0) {
 					String[] types = type.split(",");
@@ -111,7 +122,6 @@ public class ThematicSearchConfig {
 					}
 					theme.types = documentTypes;
 				}
-				theme.code = code;
 				theme.file = props.getProperty(code + ".file");
 				if (theme.file == null || theme.file.length() == 0) {
 					theme.file = thematicSearchDir.getAbsolutePath() + "/" + theme.code + ".txt";

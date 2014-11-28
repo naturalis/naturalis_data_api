@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
@@ -77,12 +78,18 @@ public abstract class AbstractSpecimenImporter {
 		bad = 0;
 		indexed = 0;
 		try {
+			
+			ThematicSearchConfig.getInstance().resetMatchCounters();
+			
 			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
 				importLocal();
 			}
 			else {
 				importRemote();
 			}
+			
+			ThematicSearchConfig.getInstance().logMatchInfo();
+			
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
 			logger.info("Documents indexed: " + indexed);

@@ -53,8 +53,12 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String rebuild = System.getProperty("rebuild", "false");
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+
+		// Check thematic search is configured properly
+		ThematicSearchConfig.getInstance();				
+		
+		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_SPECIMEN);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
@@ -204,8 +208,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	public void importCsvFiles() throws Exception
 	{
 
-		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();
+		ThematicSearchConfig.getInstance().resetMatchCounters();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
@@ -230,6 +233,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 				f.renameTo(new File(f.getCanonicalPath() + "." + now + ".bak"));
 			}
 		}
+
+		ThematicSearchConfig.getInstance().logMatchInfo();
+
 	}
 
 
@@ -335,11 +341,15 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		ge.setDateTimeEnd(date);
 		Double lat = dget(record, CsvField.LATITUDE.ordinal());
 		Double lon = dget(record, CsvField.LONGITUDE.ordinal());
-		if (lon != null && (lon < -180 || lon > 180)) {
+		if (lat == 0D && lon == 0D) {
+			lat = null;
+			lon = null;
+		}
+		if (lon != null && (lon < -180D || lon > 180D)) {
 			logger.error("Invalid longitude: " + lon);
 			lon = null;
 		}
-		if (lat != null && (lat < -90 || lat > 90)) {
+		if (lat != null && (lat < -90D || lat > 90D)) {
 			logger.error("Invalid latitude: " + lat);
 			lat = null;
 		}

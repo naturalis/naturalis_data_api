@@ -58,8 +58,12 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		String rebuild = System.getProperty("rebuild", "false");
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		
+		// Check thematic search is configured properly
+		ThematicSearchConfig.getInstance();		
+		
+		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
 			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
@@ -104,8 +108,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	public void importCsvFiles() throws Exception
 	{
 
-		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();
+		ThematicSearchConfig.getInstance().resetMatchCounters();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
@@ -130,6 +133,9 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 				f.renameTo(new File(f.getCanonicalPath() + "." + now + ".bak"));
 			}
 		}
+		
+		ThematicSearchConfig.getInstance().logMatchInfo();
+		
 	}
 
 

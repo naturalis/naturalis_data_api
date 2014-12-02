@@ -12,6 +12,7 @@ import java.util.Date;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -26,6 +27,9 @@ public class BrahmsImportAll {
 		logger.info("-----------------------------------------------------------------");
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+
+		// Check thematic search is configured properly
+		ThematicSearchConfig.getInstance();				
 
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {

@@ -40,15 +40,19 @@ public class BrahmsExportEncodingConverter {
 			return;
 		}
 		for (File f : csvFiles) {
-			File input = new File(f.getCanonicalPath() + ".orig");
-			if (input.isFile()) {
+			File original = new File(f.getCanonicalPath() + ".orig");
+			if (original.isFile()) {
 				logger.warn(String.format("A converted version of %1$s already exists. Remove %1$s.orig to force conversion", f.getName()));
 				continue;
 			}
-			File output = new File(f.getCanonicalPath());
-			f.renameTo(input);
-			FileUtil.convertToUtf8(input, output, "Windows-1252");
-			logger.info("Converting to UTF-8: " + f.getCanonicalPath());
+			File converted = new File(f.getCanonicalPath());
+			if (f.renameTo(original)) {
+				logger.info("Converting to UTF-8: " + f.getCanonicalPath());
+				FileUtil.convertToUtf8(original, converted, "Windows-1252");
+			}
+			else {
+				throw new Exception(String.format("Failed to rename file \"%s\"", f.getAbsolutePath()));
+			}
 		}
 		logger.info("File encoding conversion complete");
 	}

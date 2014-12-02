@@ -52,7 +52,7 @@ public class CrsMultiMediaImporter {
 		logger.info("-----------------------------------------------------------------");
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-
+		
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 
@@ -79,6 +79,7 @@ public class CrsMultiMediaImporter {
 		finally {
 			index.getClient().close();
 		}
+		
 		logger.info("Ready");
 
 	}
@@ -130,12 +131,18 @@ public class CrsMultiMediaImporter {
 		indexed = 0;
 		indexedTreshold = 10000;
 		try {
+			
+			ThematicSearchConfig.getInstance().resetMatchCounters();
+			
 			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
 				processLocal();
 			}
 			else {
 				processRemote();
 			}
+			
+			ThematicSearchConfig.getInstance().logMatchInfo();
+			
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
 			logger.info("Documents indexed: " + indexed);

@@ -62,14 +62,14 @@ public class ThematicSearchConfig {
 		}
 		List<String> identifiers = null;
 		for (Theme theme : themes) {
-			if (theme.types != null && !theme.types.contains(type)) {
+			if (type != null && theme.types != null && !theme.types.contains(type)) {
 				continue;
 			}
-			if (theme.systems != null && !theme.systems.contains(system)) {
+			if (system != null && theme.systems != null && !theme.systems.contains(system)) {
 				continue;
 			}
 			if (Collections.binarySearch(theme.ids, id) >= 0) {
-				logger.debug(String.format("Found match for ID \"%s\" in theme %s", id, theme.code));
+				logger.debug(String.format("Found match for ID %s in theme %s (%s)", id, theme.code, theme.file));
 				++theme.matches;
 				if (identifiers == null) {
 					identifiers = new ArrayList<String>(themes.size());

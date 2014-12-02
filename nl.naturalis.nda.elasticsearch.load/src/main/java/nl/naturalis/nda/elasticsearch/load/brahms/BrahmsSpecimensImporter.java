@@ -56,8 +56,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 
 		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();				
-		
+		ThematicSearchConfig.getInstance();
+
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_SPECIMEN);
@@ -396,6 +396,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		sn.setAuthorshipVerbatim(getAuthor(record));
 		sn.setGenusOrMonomial(val(record, CsvField.GENUS.ordinal()));
 		sn.setSpecificEpithet(val(record, CsvField.SP1.ordinal()));
+		sn.setInfraspecificMarker(getInfraspecificMarker(record));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
 		if (sn.getFullScientificName() == null) {
 			StringBuilder sb = new StringBuilder();
@@ -407,6 +408,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			}
 			if (sn.getSpecificEpithet() != null) {
 				sb.append(sn.getSpecificEpithet()).append(' ');
+			}
+			if (sn.getInfraspecificMarker() != null) {
+				sb.append(sn.getInfraspecificMarker()).append(' ');
 			}
 			if (sn.getInfraspecificEpithet() != null) {
 				sb.append(sn.getInfraspecificEpithet()).append(' ');
@@ -530,8 +534,19 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	private static String getInfraspecificEpithet(CSVRecord record)
 	{
-		if (val(record, CsvField.RANK1.ordinal()) == "subspecies") {
+		String rank1 = val(record, CsvField.RANK1.ordinal());
+		if (rank1.equals("subspecies")) {
 			return val(record, CsvField.SP2.ordinal());
+		}
+		return null;
+	}
+
+
+	private static String getInfraspecificMarker(CSVRecord record)
+	{
+		String rank1 = val(record, CsvField.RANK1.ordinal());
+		if (rank1.equals("subspecies")) {
+			return rank1;
 		}
 		return null;
 	}

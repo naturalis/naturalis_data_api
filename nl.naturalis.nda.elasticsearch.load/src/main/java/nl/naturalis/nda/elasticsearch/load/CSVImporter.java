@@ -93,7 +93,7 @@ public abstract class CSVImporter<T> {
 
 	public void importCsv(String path) throws IOException
 	{
-		logger.info(String.format("Processing CSV file \"%s\"", path));
+		logger.info(String.format("[%s] Processing CSV file \"%s\"", getClass().getSimpleName(), path));
 		CSVFormat format = CSVFormat.DEFAULT;
 		format = format.withDelimiter(delimiter);
 		format = format.withRecordSeparator("\r\n");
@@ -177,8 +177,8 @@ public abstract class CSVImporter<T> {
 					break;
 				}
 				if (processed % 50000 == 0) {
-					logger.info("Records processed: " + processed);
-					logger.info("Documents indexed: " + indexed);
+					logger.info(String.format("[%s] Records processed: %s", getClass().getSimpleName(), processed));
+					logger.info(String.format("[%s] Documents indexed: %s", getClass().getSimpleName(), indexed));
 				}
 			}
 			if (!objects.isEmpty()) {
@@ -193,7 +193,7 @@ public abstract class CSVImporter<T> {
 		logger.info("Records skipped: " + skipped);
 		logger.info("Bad records: " + bad);
 		logger.info("Documents indexed: " + indexed);
-		logger.info(getClass().getSimpleName() + " finished processing file " + path);
+		logger.info(String.format("[%s] Finished processing file: %s", getClass().getSimpleName(), path));
 	}
 
 

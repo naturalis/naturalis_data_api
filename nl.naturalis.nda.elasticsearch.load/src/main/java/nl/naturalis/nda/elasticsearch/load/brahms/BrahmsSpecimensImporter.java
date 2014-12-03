@@ -247,13 +247,18 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			logger.debug(String.format("Error at line %s: missing barcode", lineNo));
 			return null;
 		}
-		try {
-			checkSpData(record);
-		}
-		catch (Exception e) {
-			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
-			return null;
-		}
+
+//		According to Marian vd Meij and Jeroen Creuwels, this check should not be done
+//		(even though it's in the QAW templates for GBIF/IPT.
+//		try {
+//			checkSpData(record);
+//		}
+//		catch (Exception e) {
+//			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
+//			return null;
+//		}
+		
+	
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSourceSystemId(barcode);
@@ -532,23 +537,17 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 
 
-	private static String getInfraspecificEpithet(CSVRecord record)
+	private static String getInfraspecificMarker(CSVRecord record)
 	{
-		String rank1 = val(record, CsvField.RANK1.ordinal());
-		if (rank1.equals("subspecies")) {
-			return val(record, CsvField.SP2.ordinal());
-		}
-		return null;
+		String s = val(record, CsvField.RANK2.ordinal());
+		return s == null ? val(record, CsvField.RANK1.ordinal()) : s;
 	}
 
 
-	private static String getInfraspecificMarker(CSVRecord record)
+	private static String getInfraspecificEpithet(CSVRecord record)
 	{
-		String rank1 = val(record, CsvField.RANK1.ordinal());
-		if (rank1.equals("subspecies")) {
-			return rank1;
-		}
-		return null;
+		String s = val(record, CsvField.SP3.ordinal());
+		return s == null ? val(record, CsvField.SP2.ordinal()) : s;
 	}
 
 
@@ -565,7 +564,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return val(record, CsvField.RANK1.ordinal());
 		}
 		return val(record, CsvField.RANK2.ordinal());
-
 	}
 
 

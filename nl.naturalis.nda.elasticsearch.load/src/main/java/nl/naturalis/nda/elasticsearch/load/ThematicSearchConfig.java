@@ -193,7 +193,6 @@ public class ThematicSearchConfig {
 					continue;
 				}
 				ids.add(line);
-
 			}
 			lnr.close();
 		}

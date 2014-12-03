@@ -78,18 +78,18 @@ public abstract class AbstractSpecimenImporter {
 		bad = 0;
 		indexed = 0;
 		try {
-			
+
 			ThematicSearchConfig.getInstance().resetMatchCounters();
-			
+
 			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
 				importLocal();
 			}
 			else {
 				importRemote();
 			}
-			
+
 			ThematicSearchConfig.getInstance().logMatchInfo();
-			
+
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
 			logger.info("Documents indexed: " + indexed);
@@ -134,7 +134,7 @@ public abstract class AbstractSpecimenImporter {
 		}
 		do {
 			logger.info("Processing batch " + batch);
-			String xml = callOaiService(resToken, batch);
+			String xml = callOaiService(resToken);
 			++batch;
 			resToken = index(xml);
 		} while (resToken != null);
@@ -157,7 +157,7 @@ public abstract class AbstractSpecimenImporter {
 	}
 
 
-	static String callOaiService(String resumptionToken, int batch)
+	static String callOaiService(String resumptionToken)
 	{
 		String url;
 		ConfigObject config = LoadUtil.getConfig();
@@ -190,7 +190,7 @@ public abstract class AbstractSpecimenImporter {
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
 		if (config.getBoolean("crs.save_local")) {
-			String path = getLocalPath(batch);
+			String path = getLocalPath(resumptionToken);
 			logger.info("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);
 		}
@@ -269,11 +269,10 @@ public abstract class AbstractSpecimenImporter {
 	}
 
 
-	static String getLocalPath(int batch)
+	static String getLocalPath(String resToken)
 	{
-		String s = new DecimalFormat("00000").format(batch);
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/specimens.%s.oai.xml", testDir, s);
+		return String.format("%s/specimens.%s.oai.xml", testDir, resToken);
 	}
 
 

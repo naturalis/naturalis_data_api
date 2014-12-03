@@ -37,28 +37,28 @@ public class CrsDownloader {
 			CrsDownloader downloader = new CrsDownloader();
 
 			if (args.length == 0) {
-				downloader.download(Type.SPECIMEN, null, 0);
-				downloader.download(Type.MULTIMEDIA, null, 0);
+				downloader.download(Type.SPECIMEN, null);
+				downloader.download(Type.MULTIMEDIA, null);
 			}
 
 			else if (args.length == 1) {
 				if (args[0].toLowerCase().equals("specimens")) {
-					downloader.download(Type.SPECIMEN, null, 0);
+					downloader.download(Type.SPECIMEN, null);
 				}
 				else if (args[0].toLowerCase().equals("multimedia")) {
-					downloader.download(Type.MULTIMEDIA, null, 0);
+					downloader.download(Type.MULTIMEDIA, null);
 				}
 				else {
 					logger.error(USAGE);
 				}
 			}
 
-			else if (args.length == 3) {
+			else if (args.length == 2) {
 				if (args[0].toLowerCase().equals("specimens")) {
-					downloader.download(Type.SPECIMEN, args[1], Integer.parseInt(args[2]));
+					downloader.download(Type.SPECIMEN, args[1]);
 				}
 				else if (args[0].toLowerCase().equals("multimedia")) {
-					downloader.download(Type.MULTIMEDIA, args[1], Integer.parseInt(args[2]));
+					downloader.download(Type.MULTIMEDIA, args[1]);
 				}
 				else {
 					logger.error(USAGE);
@@ -83,7 +83,7 @@ public class CrsDownloader {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsDownloader.class);
-	private static final String USAGE = "USAGE: java CrsDownloader [ specimens|multimedia [<resumption-token> <batchNo>] ]";
+	private static final String USAGE = "USAGE: java CrsDownloader [specimens|multimedia [<resumption-token>]]";
 
 	private final DocumentBuilder builder;
 
@@ -96,7 +96,7 @@ public class CrsDownloader {
 	}
 
 
-	public void download(Type type, String resToken, int batch) throws Exception
+	public void download(Type type, String resToken) throws Exception
 	{
 		String s = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		logger.info("Downloading " + s);
@@ -116,15 +116,18 @@ public class CrsDownloader {
 		do {
 			String xml;
 			if (type == Type.SPECIMEN) {
-				xml = CrsSpecimenImporter.callOaiService(resToken, batch++);
+				xml = CrsSpecimenImporter.callOaiService(resToken);
 			}
 			else {
-				xml = CrsMultiMediaImporter.callOaiService(resToken, batch++);
+				xml = CrsMultiMediaImporter.callOaiService(resToken);
 			}
-			logger.info("Extracting resumption token from output");
 			Document doc = builder.parse(StringUtil.asInputStream(xml));
+			if (!doc.getDocumentElement().getTagName().equals("OAI-PMH")) {
+				throw new Exception("XML output is not OAI-PMH");
+			}
 			Element e = DOMUtil.getDescendant(doc.getDocumentElement(), "error");
 			if (e == null) {
+				logger.debug("Extracting resumption token from output");
 				resToken = DOMUtil.getDescendantValue(doc, "resumptionToken");
 				if (resToken != null) {
 					logger.info("Resumption token used for next call: " + resToken);
@@ -134,7 +137,7 @@ public class CrsDownloader {
 				String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
 				throw new Exception(msg);
 			}
-		} while (resToken != null);
+		} while (resToken != null && resToken.trim().length() != 0);
 		logger.info("Successfully downloaded " + s);
 	}
 

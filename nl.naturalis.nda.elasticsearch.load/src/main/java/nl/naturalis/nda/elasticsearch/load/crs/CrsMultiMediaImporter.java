@@ -181,7 +181,7 @@ public class CrsMultiMediaImporter {
 		}
 		do {
 			logger.info("Processing batch " + batch);
-			String xml = callOaiService(resToken, batch);
+			String xml = callOaiService(resToken);
 			++batch;
 			resToken = index(xml);
 		} while (resToken != null);
@@ -276,7 +276,7 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	static String callOaiService(String resumptionToken, int batch)
+	static String callOaiService(String resumptionToken)
 	{
 		String url;
 		ConfigObject config = LoadUtil.getConfig();
@@ -293,7 +293,7 @@ public class CrsMultiMediaImporter {
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
 		if (config.getBoolean("crs.save_local")) {
-			String path = getLocalPath(batch);
+			String path = getLocalPath(resumptionToken);
 			logger.info("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);
 		}
@@ -301,11 +301,10 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	static String getLocalPath(int batch)
+	static String getLocalPath(String resToken)
 	{
-		String s = new DecimalFormat("00000").format(batch);
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/multimedia.%s.oai.xml", testDir, s);
+		return String.format("%s/multimedia.%s.oai.xml", testDir, resToken);
 	}
 
 

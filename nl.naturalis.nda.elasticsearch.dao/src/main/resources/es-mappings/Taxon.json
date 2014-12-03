@@ -270,6 +270,16 @@
               }
             }
           },
+          "infraspecificMarker": {
+            "type": "string",
+            "index": "not_analyzed",
+            "fields": {
+              "raw": {
+                "type": "string",
+                "index": "not_analyzed"
+              }
+            }
+          },
           "nameAddendum": {
             "type": "string",
             "fields": {
@@ -483,6 +493,16 @@
           },
           "infraspecificEpithet": {
             "type": "string",
+            "fields": {
+              "raw": {
+                "type": "string",
+                "index": "not_analyzed"
+              }
+            }
+          },
+          "infraspecificMarker": {
+            "type": "string",
+            "index": "not_analyzed",
             "fields": {
               "raw": {
                 "type": "string",

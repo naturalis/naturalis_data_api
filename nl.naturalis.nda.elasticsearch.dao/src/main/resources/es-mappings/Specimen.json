@@ -602,6 +602,16 @@
                   }
                 }
               },
+              "infraspecificMarker": {
+                "type": "string",
+                "index": "not_analyzed",
+                "fields": {
+                  "raw": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                  }
+                }
+              },
               "nameAddendum": {
                 "type": "string",
                 "fields": {

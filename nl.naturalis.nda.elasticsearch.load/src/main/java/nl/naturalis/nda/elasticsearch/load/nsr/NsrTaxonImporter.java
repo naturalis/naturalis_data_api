@@ -5,7 +5,6 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TA
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 

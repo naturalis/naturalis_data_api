@@ -34,6 +34,7 @@ public class CrsFindInSource {
 		ArrayList<String> argList = new ArrayList<String>(Arrays.asList(args));
 		boolean caseSensitive = getBooleanOption("--case-sensitive", argList, true);
 		boolean exactMatch = getBooleanOption("--exact-match", argList, true);
+		boolean countOnly = getBooleanOption("--count-only", argList, false);
 		boolean noDots = getBooleanOption("--no-dots", argList, false);
 		int maxRecords = getIntOption("--max-records", argList, 1);
 
@@ -56,6 +57,7 @@ public class CrsFindInSource {
 		crsFindInSource.maxRecords = maxRecords;
 		crsFindInSource.caseSensitive = caseSensitive;
 		crsFindInSource.exactMatch = exactMatch;
+		crsFindInSource.countOnly = countOnly;
 		crsFindInSource.noDots = noDots;
 
 		crsFindInSource.findOaiRecords();
@@ -74,6 +76,7 @@ public class CrsFindInSource {
 	private int maxRecords = 1;
 	private boolean caseSensitive = true;
 	private boolean exactMatch = true;
+	private boolean countOnly = false;
 	private boolean noDots = false;
 
 
@@ -94,6 +97,7 @@ public class CrsFindInSource {
 
 	public void findOaiRecords() throws SAXException, IOException, TransformerException
 	{
+		long start = System.currentTimeMillis();
 		System.out.print("Searching " + LoadUtil.getConfig().required("crs.local_dir") + " ");
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
@@ -136,14 +140,17 @@ public class CrsFindInSource {
 							match = true;
 						}
 						if (match) {
-							System.out.println();
-							System.out.println();
-							System.out.println("********** [ " + f.getAbsolutePath() + " ] [ Record " + i + " ] **********");
-							recordElement.setAttribute("xmlns:xsi", XSI_NAMESPACE);
-							DOMSource source = new DOMSource(recordElement);
-							StreamResult result = new StreamResult(System.out);
-							transformer.transform(source, result);
-							System.out.println();
+							++matches;
+							if (!countOnly) {
+								System.out.println();
+								System.out.println();
+								System.out.println("********** [ " + f.getAbsolutePath() + " ] [ Record " + (i + 1) + " ] **********");
+								recordElement.setAttribute("xmlns:xsi", XSI_NAMESPACE);
+								DOMSource source = new DOMSource(recordElement);
+								StreamResult result = new StreamResult(System.out);
+								transformer.transform(source, result);
+								System.out.println();
+							}
 							if (maxRecords > 0 && ++matches == maxRecords) {
 								break LEVEL0;
 							}
@@ -153,8 +160,10 @@ public class CrsFindInSource {
 				}
 			}
 		}
+		int seconds = (int) (System.currentTimeMillis() - start);
 		System.out.println();
 		System.out.println(String.format("Number of matches for value \"%s\": %s", value, matches));
+		System.out.println(String.format("Search completed in %s second(s)", seconds));
 		System.out.println();
 	}
 
@@ -234,15 +243,13 @@ public class CrsFindInSource {
 		if (shellScript == null) {
 			throw new Exception("Missing system property: \"shellScript\"");
 		}
-		System.out
-				.println("USAGE: "
-						+ shellScript
-						+ " specimens|multimedia <xml-element> <value> [--case-sensitive[=true|false]] [--maxRecords=<integer>] [--exact-match[=true|false]] [--no-dots]");
+		System.out.println("USAGE: " + shellScript + " specimens|multimedia <xml-element> <value> [option ...]");
 		System.out.println();
 		System.out.println("OPTIONS: ");
 		System.out.println("--case-sensitive      Whether or not to do a case sensitive search. Default true.");
 		System.out.println("--max-records         Maximum number of records to find. Default 1. Zero (0) means: find all.");
 		System.out.println("--exact-match         Whether or not the value argument must be matched exactly. Default true.");
+		System.out.println("--count-only          Only print number of matches. Especially useful with --max-records=0. Default false.");
 		System.out.println("--no-dots             Suppress printing dots while searching. Default false.");
 		System.out.println();
 		System.out.println("Example 1: find specimen record with UnitID \"RMNH.MAM.45522.A\":");

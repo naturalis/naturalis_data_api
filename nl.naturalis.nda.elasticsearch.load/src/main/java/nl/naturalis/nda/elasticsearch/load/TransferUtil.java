@@ -1,9 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import static nl.naturalis.nda.domain.TaxonomicRank.GENUS;
-import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBGENUS;
+import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +17,6 @@ import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.MultiMediaContentIdentification;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.TaxonomicRank;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;

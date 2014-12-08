@@ -6,8 +6,10 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MU
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.domainobject.util.http.SimpleHttpGet;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -51,7 +54,7 @@ public class CrsMultiMediaImporter {
 		logger.info("-----------------------------------------------------------------");
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-		
+
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 
@@ -78,7 +81,7 @@ public class CrsMultiMediaImporter {
 		finally {
 			index.getClient().close();
 		}
-		
+
 		logger.info("Ready");
 
 	}
@@ -130,18 +133,18 @@ public class CrsMultiMediaImporter {
 		indexed = 0;
 		indexedTreshold = 10000;
 		try {
-			
+
 			ThematicSearchConfig.getInstance().resetMatchCounters();
-			
+
 			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
 				processLocal();
 			}
 			else {
 				processRemote();
 			}
-			
+
 			ThematicSearchConfig.getInstance().logMatchInfo();
-			
+
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
 			logger.info("Documents indexed: " + indexed);
@@ -281,6 +284,13 @@ public class CrsMultiMediaImporter {
 		ConfigObject config = LoadUtil.getConfig();
 		if (resumptionToken == null) {
 			url = config.required("crs.multimedia.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
+			if (maxAge != 0) {
+				DateTime now = new DateTime();
+				DateTime wayback = now.minusHours(maxAge);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
+				url += "&from=" + sdf.format(wayback.toDate());
+			}
 		}
 		else {
 			url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
@@ -289,21 +299,29 @@ public class CrsMultiMediaImporter {
 		// Avoid "Content is not allowed in prolog"
 		String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
 		if (!xml.startsWith("<?xml")) {
+			if (xml.indexOf("<?xml") == -1) {
+				logger.error("Unexpected response:");
+				logger.error(xml);
+				return null;
+			}
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
 		if (config.getBoolean("crs.save_local")) {
 			String path = getLocalPath(resumptionToken);
-			logger.info("Saving XML to local file system: " + path);
+			logger.debug("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);
 		}
 		return xml;
 	}
 
+	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
 
+
+	@SuppressWarnings("unused")
 	static String getLocalPath(String resToken)
 	{
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/multimedia.%s.oai.xml", testDir, resToken);
+		return String.format("%s/multimedia.%s.oai.xml", testDir, DF.format(new Date()));
 	}
 
 

@@ -20,5 +20,10 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/test/nda-import/lib/misc/commons-csv-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/test/nda-import/lib/misc/mysql-connector-java-5.1.26.jar"/>
+	<classpathentry kind="lib" path="C:/test/nda-import/lib/misc/joda-time-2.6.jar" sourcepath="C:/test/nda-import/lib/misc/joda-time-2.6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/test/nda-import/lib/misc/joda-time-2.6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

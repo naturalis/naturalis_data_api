@@ -3,9 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +24,7 @@ import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.domainobject.util.http.SimpleHttpGet;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -165,14 +163,10 @@ public abstract class AbstractSpecimenImporter {
 			url = config.required("crs.specimens.url.initial");
 			int maxAge = config.required("crs.max_age", int.class);
 			if (maxAge != 0) {
-				Date date = new Date(System.currentTimeMillis() - (maxAge * 60 * 60 * 1000));
+				DateTime now = new DateTime();
+				DateTime wayback = now.minusHours(maxAge);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
-				try {
-					url += "&from=" + URLEncoder.encode(sdf.format(date), "UTF-8");
-				}
-				catch (UnsupportedEncodingException e) {
-					throw new RuntimeException(e);
-				}
+				url += "&from=" + sdf.format(wayback.toDate());
 			}
 		}
 		else {
@@ -191,7 +185,7 @@ public abstract class AbstractSpecimenImporter {
 		}
 		if (config.getBoolean("crs.save_local")) {
 			String path = getLocalPath(resumptionToken);
-			logger.info("Saving XML to local file system: " + path);
+			logger.debug("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);
 		}
 		return xml;
@@ -253,7 +247,6 @@ public abstract class AbstractSpecimenImporter {
 				}
 			}
 			if (!specimens.isEmpty()) {
-				//index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, ids);
 				saveSpecimens(specimens, ids);
 				indexed += specimens.size();
 			}
@@ -268,11 +261,14 @@ public abstract class AbstractSpecimenImporter {
 		}
 	}
 
+	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
 
+
+	@SuppressWarnings("unused")
 	static String getLocalPath(String resToken)
 	{
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/specimens.%s.oai.xml", testDir, resToken);
+		return String.format("%s/specimens.%s.oai.xml", testDir, DF.format(new Date()));
 	}
 
 

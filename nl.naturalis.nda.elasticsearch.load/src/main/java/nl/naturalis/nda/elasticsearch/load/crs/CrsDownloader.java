@@ -101,17 +101,13 @@ public class CrsDownloader {
 		String s = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		logger.info("Downloading " + s);
 
-		if (resToken == null) {
-			logger.info("Starting from scratch");
-		}
-		else {
+		if (resToken != null) {
 			logger.info(String.format("Resuming with resumption token \"%s\"", resToken));
 		}
 
 		// Override/ignore some properties which are only relevant while
 		// indexing (within CrsSpecimenImporter or CrsMultiMediaImporter):
 		LoadUtil.getConfig().set("crs.save_local", "true");
-		LoadUtil.getConfig().set("crs.max_age", "0");
 
 		do {
 			String xml;

@@ -1,5 +1,37 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.ASSOCIATED_SPECIMEN_REFERENCE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.ASSOCIATED_TAXON_REFERENCE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.GATHERINGEVENTS_SITECOORDINATES_POINT;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.PHASES_OR_STAGES;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SEXES;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SPECIMEN_TYPE_STATUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.THEME;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
@@ -18,26 +50,19 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.GATHERINGEVENTS_SITECOORDINATES_POINT;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.PHASES_OR_STAGES;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SEXES;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SPECIMEN_TYPE_STATUS;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 
-    private static final Set<String> multiMediaSearchFields = new HashSet<>(Arrays.asList(
+	   private static final Logger logger = LoggerFactory.getLogger(BioportalMultiMediaObjectDao.class);
+
+	   private static final Set<String> multiMediaSearchFields = new HashSet<>(Arrays.asList(
             UNIT_ID,
             SEXES,
+            THEME,
+            ASSOCIATED_SPECIMEN_REFERENCE,
+            ASSOCIATED_TAXON_REFERENCE,
             SPECIMEN_TYPE_STATUS,
             PHASES_OR_STAGES,
             IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
@@ -196,6 +221,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 nameResolutionQuery);
 
         long totalHits = searchResponse.getHits().getTotalHits();
+        logger.info("Total hits: " + totalHits);
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();

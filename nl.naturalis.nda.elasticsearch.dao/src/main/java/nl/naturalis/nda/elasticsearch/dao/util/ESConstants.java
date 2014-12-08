@@ -51,6 +51,9 @@ public class ESConstants {
 
         public static class MultiMediaObjectFields {
             public static final String SEXES = "sexes";
+            public static final String THEME = "theme";
+            public static final String ASSOCIATED_SPECIMEN_REFERENCE = "associatedSpecimenReference";
+            public static final String ASSOCIATED_TAXON_REFERENCE = "associatedTaxonReference";
             public static final String SPECIMEN_TYPE_STATUS = "specimenTypeStatus";
             public static final String PHASES_OR_STAGES = "phasesOrStages";
             public static final String GATHERINGEVENTS_SITECOORDINATES_POINT = "gatheringEvents.siteCoordinates.point";

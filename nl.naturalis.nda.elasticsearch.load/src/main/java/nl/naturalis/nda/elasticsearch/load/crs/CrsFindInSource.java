@@ -260,7 +260,7 @@ public class CrsFindInSource {
 		System.out.println("Example 3: find at most 5 multimedia records with associatedSpecimenReference \"RGM.1101811\":");
 		System.out.println("           " + shellScript + " multimedia abcd:associatedSpecimenReference RGM.1101811 --max-records=5");
 		System.out.println("Example 4: find, ignoring case, a multimedia record with CollectionType \"mineralogy and petrology\":");
-		System.out.println("           " + shellScript + " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-sensitive");
+		System.out.println("           " + shellScript + " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-sensitive=false");
 		System.out.println("Example 5: find all specimen records with \"MAM\" in their UnitID:");
 		System.out.println("           " + shellScript + " multimedia abcd:UnitID MAM --exact-match=false");
 		System.out.println("Example 6: get number of specimens belonging to collection type \"Hymenoptera\":");

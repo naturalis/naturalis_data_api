@@ -22,6 +22,8 @@ import javax.xml.transform.stream.StreamResult;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.DOMUtil;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -160,10 +162,9 @@ public class CrsFindInSource {
 				}
 			}
 		}
-		int seconds = (int) (System.currentTimeMillis() - start);
 		System.out.println();
+		System.out.println("Search completed in " + PeriodFormat.getDefault().print(new Duration(System.currentTimeMillis() - start).toPeriod()));
 		System.out.println(String.format("Number of matches for value \"%s\": %s", value, matches));
-		System.out.println(String.format("Search completed in %s second(s)", seconds));
 		System.out.println();
 	}
 
@@ -175,14 +176,14 @@ public class CrsFindInSource {
 				args.remove(arg);
 				args.trimToSize();
 				if (arg.length() == optionName.length()) {
-					return dfault;
+					return true;
 				}
 				int i = arg.indexOf('=');
 				if (i == -1) {
 					throw new Exception(String.format("Option %1$s must be specified as %1$s (%2$s) or %1$s=true|false", optionName, dfault));
 				}
 				if (i == arg.length() - 1) {
-					return dfault;
+					return true;
 				}
 				return Boolean.parseBoolean(arg.substring(i + 1));
 			}
@@ -262,6 +263,8 @@ public class CrsFindInSource {
 		System.out.println("           " + shellScript + " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-sensitive");
 		System.out.println("Example 5: find all specimen records with \"MAM\" in their UnitID:");
 		System.out.println("           " + shellScript + " multimedia abcd:UnitID MAM --exact-match=false");
+		System.out.println("Example 6: get number of specimens belonging to collection type \"Hymenoptera\":");
+		System.out.println("           " + shellScript + " specimens abcd:CollectionType Hymenoptera --max-records=0 --count-only --no-dots");
 		System.out.println();
 	}
 }

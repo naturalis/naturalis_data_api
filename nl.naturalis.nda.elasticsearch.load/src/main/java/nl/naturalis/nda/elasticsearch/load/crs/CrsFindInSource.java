@@ -98,18 +98,18 @@ public class CrsFindInSource {
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
 		String valueUpperCase = value.toUpperCase();
-		LEVEL0:
-		while (iterator.hasNext()) {
+		LEVEL0: while (iterator.hasNext()) {
+			builder.reset();
 			File f = iterator.next();
 			if (!noDots) {
 				System.out.print('.');
 			}
 			Document doc = builder.parse(f);
 			List<Element> recordElements = DOMUtil.getDescendants(doc.getDocumentElement(), "record");
-			if(recordElements == null) {
+			if (recordElements == null) {
 				continue;
 			}
-			for (int i=0;i<recordElements.size(); ++i) {
+			for (int i = 0; i < recordElements.size(); ++i) {
 				Element recordElement = recordElements.get(i);
 				List<Element> elems = DOMUtil.getDescendants(recordElement, xmlElement);
 				if (elems != null) {
@@ -234,8 +234,10 @@ public class CrsFindInSource {
 		if (shellScript == null) {
 			throw new Exception("Missing system property: \"shellScript\"");
 		}
-		System.out.println("USAGE: " + shellScript
-				+ " specimens|multimedia <xml-element> <value> [--case-sensitive[=true|false]] [--maxRecords=<integer>] [--exact-match[=true|false]] [--no-dots]");
+		System.out
+				.println("USAGE: "
+						+ shellScript
+						+ " specimens|multimedia <xml-element> <value> [--case-sensitive[=true|false]] [--maxRecords=<integer>] [--exact-match[=true|false]] [--no-dots]");
 		System.out.println();
 		System.out.println("OPTIONS: ");
 		System.out.println("--case-sensitive      Whether or not to do a case sensitive search. Default true.");

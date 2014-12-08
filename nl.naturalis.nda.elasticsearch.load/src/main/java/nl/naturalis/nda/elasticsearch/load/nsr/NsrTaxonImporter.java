@@ -5,6 +5,7 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TA
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,10 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
+import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.StringUtil;
@@ -68,7 +72,9 @@ public class NsrTaxonImporter {
 	private final boolean rename;
 
 	private int totalProcessed = 0;
-	private int totalBad = 0;
+	private int totalIndexed = 0;
+	private int totalSkipped = 0;
+	private int totalRejected = 0;
 
 
 	public NsrTaxonImporter(Index index)
@@ -109,16 +115,19 @@ public class NsrTaxonImporter {
 				xmlFile.renameTo(new File(xmlFile.getCanonicalPath() + ".bak"));
 			}
 		}
-		logger.info("Total number of records processed: " + totalProcessed);
-		logger.info("Total number of bad records: " + totalBad);
-		logger.info("Ready");
+		logger.info("Skipped records            (total) : " + String.format("%5d", totalSkipped));
+		logger.info("Malformed/rejected records (total) : " + String.format("%5d", totalRejected));
+		logger.info("Records indexed            (total) : " + String.format("%5d", totalIndexed));
+		logger.info("Records processed          (total) : " + String.format("%5d", totalProcessed));
 	}
 
 
 	public void importXmlFile(Document doc)
 	{
 		int processed = 0;
-		int bad = 0;
+		int indexed = 0;
+		int skipped = 0;
+		int rejected = 0;
 
 		Element taxaElement = DOMUtil.getChild(doc.getDocumentElement());
 		List<Element> taxonElements = DOMUtil.getChildren(taxaElement);
@@ -129,36 +138,61 @@ public class NsrTaxonImporter {
 		ESTaxon taxon = null;
 		for (Element taxonElement : taxonElements) {
 			++totalProcessed;
-			if (++processed % 1000 == 0) {
+			if (++processed % 5000 == 0) {
 				logger.info("Records processed: " + processed);
 			}
 			try {
 				taxon = NsrTaxonTransfer.transfer(taxonElement);
-				if(taxon != null) {
+				if (taxon != null) {
 					taxa.add(taxon);
 					ids.add(ID_PREFIX + taxon.getSourceSystemId());
 					if (taxa.size() >= bulkRequestSize) {
-						index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
-						taxa.clear();
-						ids.clear();
+						try {
+							index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+							indexed += taxa.size();
+							totalIndexed += taxa.size();
+						}
+						finally {
+							taxa.clear();
+							ids.clear();
+						}
 					}
 				}
 			}
-			catch (Throwable t) {
-				++bad;
-				++totalBad;
+			catch (SkippableDataException e) {
+				++skipped;
+				++totalSkipped;
 				String name = DOMUtil.getValue(taxonElement, "name");
-				String msg = String.format("Error in record %s (\"%s\"): %s", (processed + 1), name, t.getMessage());
+				String msg = String.format("Skipping record %s (\"%s\"): %s", (processed + 1), name, e.getMessage());
+				logger.debug(msg);
+			}
+			catch (MalformedDataException | InvalidDataException e) {
+				++rejected;
+				++totalRejected;
+				String name = DOMUtil.getValue(taxonElement, "name");
+				String msg = String.format("Invalid or malformed data in record %s (\"%s\"): %s", (processed + 1), name, e.getMessage());
+				logger.error(msg);
+				logger.debug("Stack trace:", e);
+			}
+			catch (Throwable t) {
+				++rejected;
+				++totalRejected;
+				String name = DOMUtil.getValue(taxonElement, "name");
+				String msg = String.format("Error while processing record %s (\"%s\"): %s", (processed + 1), name, t.getMessage());
 				logger.error(msg);
 				logger.debug("Stack trace:", t);
 			}
 		}
 		if (!taxa.isEmpty()) {
 			index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+			indexed += taxa.size();
+			totalIndexed += taxa.size();
 		}
 
-		logger.info("Records processed: " + processed);
-		logger.info("Bad records: " + bad);
+		logger.info("Records indexed            : " + String.format("%5d", indexed));
+		logger.info("Records skipped            : " + String.format("%5d", skipped));
+		logger.info("Rejected/malformed records : " + String.format("%5d", rejected));
+		logger.info("Records processed          : " + String.format("%5d", processed));
 	}
 
 }

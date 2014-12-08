@@ -18,6 +18,9 @@ import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
+import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
+import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
 import org.domainobject.util.DOMUtil;
@@ -57,17 +60,15 @@ class NsrTaxonTransfer {
 	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis");
 
 
-	static ESTaxon transfer(Element taxonElement) throws Exception
+	static ESTaxon transfer(Element taxonElement) throws InvalidDataException, SkippableDataException, MalformedDataException
 	{
 		String id = nl(DOMUtil.getValue(taxonElement, "nsr_id"));
 		String rank = nl(DOMUtil.getValue(taxonElement, "rank"));
 		if (rank == null) {
-			logger.error(String.format("Missing taxonomic rank for taxon with id \"%s\"", id));
-			return null;
+			throw new InvalidDataException(String.format("Missing taxonomic rank for taxon with id \"%s\"", id));
 		}
 		if (!ALLOWED_TAXON_RANKS.contains(rank)) {
-			logger.debug(String.format("Skipping taxon with id \"%s\" (higher rank not allowed: \"%s\")", id, rank));
-			return null;
+			throw new SkippableDataException(String.format("Ignoring higher taxon: \"%s\"", rank));
 		}
 		ESTaxon taxon = new ESTaxon();
 		taxon.setSourceSystem(SourceSystem.NSR);
@@ -96,7 +97,7 @@ class NsrTaxonTransfer {
 		for (ScientificName sn : getScientificNames(taxonElement)) {
 			if (sn.getTaxonomicStatus() == TaxonomicStatus.ACCEPTED_NAME) {
 				if (taxon.getAcceptedName() != null) {
-					throw new Exception("Only one accepted name per taxon allowed");
+					throw new InvalidDataException("Only one accepted name per taxon allowed");
 				}
 				taxon.setAcceptedName(sn);
 			}
@@ -105,7 +106,7 @@ class NsrTaxonTransfer {
 			}
 		}
 		if (taxon.getAcceptedName() == null) {
-			throw new Exception("Missing accepted name for taxon");
+			throw new InvalidDataException("Missing accepted name for taxon");
 		}
 		taxon.setVernacularNames(getVernacularNames(taxonElement));
 		taxon.setDescriptions(getTaxonDescriptions(taxonElement));
@@ -114,15 +115,15 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static List<ScientificName> getScientificNames(Element taxonElement) throws Exception
+	private static List<ScientificName> getScientificNames(Element taxonElement) throws MalformedDataException, InvalidDataException
 	{
 		Element namesElement = DOMUtil.getChild(taxonElement, "names");
 		if (namesElement == null) {
-			throw new Exception("Missing <names> element under <taxon> element");
+			throw new MalformedDataException("Missing <names> element under <taxon> element");
 		}
 		List<Element> nameElements = DOMUtil.getChildren(namesElement);
 		if (nameElements == null) {
-			throw new Exception("There must be at least one <name> element under a <names> element (for the accepted name)");
+			throw new MalformedDataException("There must be at least one <name> element under a <names> element (for the accepted name)");
 		}
 		List<ScientificName> names = new ArrayList<ScientificName>();
 		for (Element e : nameElements) {
@@ -134,7 +135,7 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static List<VernacularName> getVernacularNames(Element taxonElement) throws Exception
+	private static List<VernacularName> getVernacularNames(Element taxonElement) throws MalformedDataException
 	{
 		Element namesElement = DOMUtil.getChild(taxonElement, "names");
 		if (namesElement == null) {
@@ -154,11 +155,11 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static boolean isScientificNameElement(Element nameElement) throws Exception
+	private static boolean isScientificNameElement(Element nameElement) throws MalformedDataException
 	{
 		String nameType = nl(DOMUtil.getValue(nameElement, "nametype"));
 		if (nameType == null) {
-			throw new Exception("Missing <nametype> element under <name> element");
+			throw new MalformedDataException("Missing <nametype> element under <name> element");
 		}
 		return (!nameType.equals("isPreferredNameOf")) && (!nameType.equals("isAlternativeNameOf"));
 	}
@@ -282,7 +283,7 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static ScientificName getScientificName(Element nameElement)
+	private static ScientificName getScientificName(Element nameElement) throws InvalidDataException
 	{
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(nl(DOMUtil.getValue(nameElement, "fullname")));
@@ -318,17 +319,15 @@ class NsrTaxonTransfer {
 	}
 
 
-	private static TaxonomicStatus getTaxonomicStatus(Element nameElement)
+	private static TaxonomicStatus getTaxonomicStatus(Element nameElement) throws InvalidDataException
 	{
 		String raw = nl(DOMUtil.getValue(nameElement, "nametype"));
 		if (raw == null) {
-			logger.error("Missing or empty nametype element for name: " + DOMUtil.getValue(nameElement, "fullname"));
-			return null;
+			throw new InvalidDataException("Missing or empty <nametype> for name: " + DOMUtil.getValue(nameElement, "fullname"));
 		}
 		TaxonomicStatus status = translations.get(raw);
 		if (status == null) {
-			logger.error("Unknown taxonomic status: " + raw);
-			return null;
+			throw new InvalidDataException("Unknown taxonomic status: " + raw);
 		}
 		return status;
 	}

@@ -32,15 +32,15 @@ public class CrsFindInSource {
 	{
 
 		ArrayList<String> argList = new ArrayList<String>(Arrays.asList(args));
-		boolean caseInsensitive = getBooleanOption("--case-insensitive", argList, false);
+		boolean caseSensitive = getBooleanOption("--case-sensitive", argList, true);
 		boolean exactMatch = getBooleanOption("--exact-match", argList, true);
+		boolean noDots = getBooleanOption("--no-dots", argList, false);
 		int maxRecords = getIntOption("--max-records", argList, 1);
-		
-		if(argList.size() != 3) {
-			usage();
-			return;			
-		}
 
+		if (argList.size() != 3) {
+			usage();
+			return;
+		}
 
 		String type = argList.get(0);
 		String xmlElement = argList.get(1);
@@ -54,8 +54,9 @@ public class CrsFindInSource {
 		CrsFindInSource crsFindInSource = new CrsFindInSource(type, xmlElement, value);
 
 		crsFindInSource.maxRecords = maxRecords;
-		crsFindInSource.caseInsensitive = caseInsensitive;
+		crsFindInSource.caseSensitive = caseSensitive;
 		crsFindInSource.exactMatch = exactMatch;
+		crsFindInSource.noDots = noDots;
 
 		crsFindInSource.findOaiRecords();
 
@@ -71,8 +72,9 @@ public class CrsFindInSource {
 	private final String value;
 
 	private int maxRecords = 1;
-	private boolean caseInsensitive = false;
+	private boolean caseSensitive = true;
 	private boolean exactMatch = true;
+	private boolean noDots = false;
 
 
 	public CrsFindInSource(String type, String xmlElement, String value) throws ParserConfigurationException, TransformerConfigurationException
@@ -92,51 +94,58 @@ public class CrsFindInSource {
 
 	public void findOaiRecords() throws SAXException, IOException, TransformerException
 	{
+		System.out.print("Searching " + LoadUtil.getConfig().required("crs.local_dir") + " ");
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
 		String valueUpperCase = value.toUpperCase();
+		LEVEL0:
 		while (iterator.hasNext()) {
 			File f = iterator.next();
-			System.out.println("******************** [ Searching file " + f.getName() + " ] ********************");
+			if (!noDots) {
+				System.out.print('.');
+			}
 			Document doc = builder.parse(f);
 			List<Element> recordElements = DOMUtil.getDescendants(doc.getDocumentElement(), "record");
-			for (Element recordElement : recordElements) {
+			if(recordElements == null) {
+				continue;
+			}
+			for (int i=0;i<recordElements.size(); ++i) {
+				Element recordElement = recordElements.get(i);
 				List<Element> elems = DOMUtil.getDescendants(recordElement, xmlElement);
 				if (elems != null) {
 					for (Element e : elems) {
 						boolean match = false;
 						if (!exactMatch) {
-							if (caseInsensitive) {
-								if (e.getTextContent().toUpperCase().indexOf(valueUpperCase) != -1) {
+							if (caseSensitive) {
+								if (e.getTextContent().indexOf(value) != -1) {
 									match = true;
 								}
 							}
 							else {
-								if (e.getTextContent().indexOf(valueUpperCase) != -1) {
+								if (e.getTextContent().toUpperCase().indexOf(valueUpperCase) != -1) {
 									match = true;
 								}
 							}
 						}
-						else if (caseInsensitive) {
+						else if (caseSensitive) {
 							if (e.getTextContent().trim().equalsIgnoreCase(value)) {
 								match = true;
 							}
 						}
-						else if (e.getTextContent().trim().equals(value)) {
+						else if (e.getTextContent().trim().toUpperCase().equals(valueUpperCase)) {
 							match = true;
 						}
 						if (match) {
-							System.out.println("Found ");
+							System.out.println();
+							System.out.println();
+							System.out.println("********** [ " + f.getAbsolutePath() + " ] [ Record " + i + " ] **********");
 							recordElement.setAttribute("xmlns:xsi", XSI_NAMESPACE);
 							DOMSource source = new DOMSource(recordElement);
 							StreamResult result = new StreamResult(System.out);
 							transformer.transform(source, result);
 							System.out.println();
 							if (maxRecords > 0 && ++matches == maxRecords) {
-								System.out.println();
-								System.out.println(String.format("Number of matches for value \"%s\": %s", value, matches));
-								System.out.println();
-								return;
+								break LEVEL0;
 							}
 							continue;
 						}
@@ -225,16 +234,25 @@ public class CrsFindInSource {
 		if (shellScript == null) {
 			throw new Exception("Missing system property: \"shellScript\"");
 		}
-		System.out.println("USAGE: " + shellScript + " specimens|multimedia <xml-element> <value> [--case-sensitive] [--maxRecords=<integer>] [--exact-match=true|false]");
-		System.out.println("Example 1: find specimen record with unitID \"RMNH.MAM.45522.A\":");
-		System.out.println("           " + shellScript + " specimens abcd:unitID RMNH.MAM.45522.A");
-		System.out.println("Example 2: find all specimen records with RecordBasis \"Preserved Specimen\":");
+		System.out.println("USAGE: " + shellScript
+				+ " specimens|multimedia <xml-element> <value> [--case-sensitive[=true|false]] [--maxRecords=<integer>] [--exact-match[=true|false]] [--no-dots]");
+		System.out.println();
+		System.out.println("OPTIONS: ");
+		System.out.println("--case-sensitive      Whether or not to do a case sensitive search. Default true.");
+		System.out.println("--max-records         Maximum number of records to find. Default 1. Zero (0) means: find all.");
+		System.out.println("--exact-match         Whether or not the value argument must be matched exactly. Default true.");
+		System.out.println("--no-dots             Suppress printing dots while searching. Default false.");
+		System.out.println();
+		System.out.println("Example 1: find specimen record with UnitID \"RMNH.MAM.45522.A\":");
+		System.out.println("           " + shellScript + " specimens abcd:UnitID RMNH.MAM.45522.A");
+		System.out.println("Example 2: find ALL specimen records with RecordBasis \"Preserved Specimen\":");
 		System.out.println("           " + shellScript + " specimens abcd:RecordBasis \"Preserved Specimen\" --max-records=0");
 		System.out.println("Example 3: find at most 5 multimedia records with associatedSpecimenReference \"RGM.1101811\":");
 		System.out.println("           " + shellScript + " multimedia abcd:associatedSpecimenReference RGM.1101811 --max-records=5");
 		System.out.println("Example 4: find, ignoring case, a multimedia record with CollectionType \"mineralogy and petrology\":");
-		System.out.println("           " + shellScript + " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-insensitive");
-		System.out.println("Example 5: find all specimen records with \"MAM\" in their unitID:");
-		System.out.println("           " + shellScript + " multimedia abcd:unitID MAM --exact-match=false");
+		System.out.println("           " + shellScript + " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-sensitive");
+		System.out.println("Example 5: find all specimen records with \"MAM\" in their UnitID:");
+		System.out.println("           " + shellScript + " multimedia abcd:UnitID MAM --exact-match=false");
+		System.out.println();
 	}
 }

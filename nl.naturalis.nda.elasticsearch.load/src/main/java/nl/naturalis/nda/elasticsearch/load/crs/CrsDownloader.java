@@ -74,6 +74,8 @@ public class CrsDownloader {
 			logger.error(t.getMessage(), t);
 			logger.error("Download did not complete successfully");
 		}
+		
+		logger.info("Ready");
 
 	}
 

@@ -46,6 +46,7 @@ public class CrsMultiMediaTransfer {
 		Element dcElement = DOMUtil.getDescendant(recordElement, "oai_dc:dc");
 		List<Element> mediaFileElements = DOMUtil.getDescendants(dcElement, "frmDigitalebestanden");
 		if (mediaFileElements == null) {
+			logger.debug("Missing element <frmDigitalebestanden> for record with id " + DOMUtil.getDescendantIntValue(recordElement, "identifier"));
 			// Wired but it happens
 			return new ArrayList<ESMultiMediaObject>(0);
 		}
@@ -92,7 +93,7 @@ public class CrsMultiMediaTransfer {
 			else {
 				unitID = title;
 			}
-			
+
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
 

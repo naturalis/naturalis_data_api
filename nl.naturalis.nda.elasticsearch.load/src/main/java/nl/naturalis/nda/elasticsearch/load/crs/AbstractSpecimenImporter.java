@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -274,6 +275,7 @@ public abstract class AbstractSpecimenImporter {
 
 	static Iterator<File> getLocalFileIterator()
 	{
+		logger.debug("Retrieving file list");
 		String path = LoadUtil.getConfig().required("crs.local_dir");
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 			@Override
@@ -286,6 +288,13 @@ public abstract class AbstractSpecimenImporter {
 					return false;
 				}
 				return true;
+			}
+		});
+		logger.debug("Sorting file list");
+		Arrays.sort(files, new Comparator<File>() {
+			public int compare(File f1, File f2)
+			{
+				return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
 			}
 		});
 		return Arrays.asList(files).iterator();

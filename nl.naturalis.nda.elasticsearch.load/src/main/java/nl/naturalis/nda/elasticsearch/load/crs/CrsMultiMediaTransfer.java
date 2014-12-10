@@ -53,6 +53,7 @@ public class CrsMultiMediaTransfer {
 		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
+		
 		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
 		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
@@ -97,7 +98,7 @@ public class CrsMultiMediaTransfer {
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
 
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, "JPG", Variant.GOOD_QUALITY));
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, null, Variant.MEDIUM_QUALITY));
 			mmo.setSourceSystem(SourceSystem.CRS);
 			mmo.setSourceSystemId(unitID);
 			mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);

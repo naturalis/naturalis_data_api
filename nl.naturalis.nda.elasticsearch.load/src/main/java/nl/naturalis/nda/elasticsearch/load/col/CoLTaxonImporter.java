@@ -30,8 +30,8 @@ import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.apache.commons.csv.CSVRecord;
-import org.domainobject.util.ArrayUtil;
 import org.domainobject.util.StringUtil;
+import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +110,10 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
 	static final String ID_PREFIX = "COL-";
 
+	private static final String ANNUAL_CHECKLIST_URL_COMPONENT = "annual-checklist";
 	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "infraspecies");
+
+	private final String colYear;
 
 
 	public CoLTaxonImporter(Index index)
@@ -122,6 +125,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		setBulkRequestSize(Integer.parseInt(prop));
 		prop = System.getProperty("maxRecords", "0");
 		setMaxRecords(Integer.parseInt(prop));
+		colYear = LoadUtil.getConfig().required("col.year");
 	}
 
 
@@ -144,23 +148,31 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 			logger.warn("Missing URL for taxon " + taxon.getSourceSystemId());
 		}
 		else {
-			try {
-				taxon.setRecordURI(URI.create(references));
+			String[] chunks = references.split(ANNUAL_CHECKLIST_URL_COMPONENT);
+			if (chunks.length != 2) {
+				logger.error("Unexpected URL: " + references);
 			}
-			catch (IllegalArgumentException e) {
-				logger.error(String.format("Invalid URL for taxon with id %s: \"%s\"", taxon.getSourceSystemId(), references));
+			else {
+				String url = new StringBuilder(96).append(chunks[0]).append(ANNUAL_CHECKLIST_URL_COMPONENT).append('/').append(colYear)
+						.append(chunks[1]).toString();
+				try {
+					taxon.setRecordURI(URI.create(url));
+				}
+				catch (IllegalArgumentException e) {
+					logger.error(String.format("Invalid URL for taxon with id %s: \"%s\"", taxon.getSourceSystemId(), references));
+				}
 			}
 		}
 		taxon.setTaxonRank(val(record, CsvField.taxonRank.ordinal()));
 
 		final ScientificName sn = new ScientificName();
-		taxon.setAcceptedName(sn);
 		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
 		sn.setGenusOrMonomial(val(record, CsvField.genericName.ordinal()));
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
 		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
 		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
 		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
+		taxon.setAcceptedName(sn);
 
 		final DefaultClassification dc = new DefaultClassification();
 		taxon.setDefaultClassification(dc);

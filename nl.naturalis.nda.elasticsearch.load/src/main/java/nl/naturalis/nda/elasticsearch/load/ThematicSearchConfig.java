@@ -68,6 +68,7 @@ public class ThematicSearchConfig {
 			if (system != null && theme.systems != null && !theme.systems.contains(system)) {
 				continue;
 			}
+			//if(theme.ids.contains(id)) {
 			if (Collections.binarySearch(theme.ids, id) >= 0) {
 				logger.debug(String.format("Found match for ID %s in theme %s (%s)", id, theme.code, theme.file));
 				++theme.matches;

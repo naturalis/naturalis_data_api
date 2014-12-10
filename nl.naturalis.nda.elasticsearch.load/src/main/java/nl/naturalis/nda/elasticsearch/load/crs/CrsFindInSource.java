@@ -153,7 +153,7 @@ public class CrsFindInSource {
 								transformer.transform(source, result);
 								System.out.println();
 							}
-							if (maxRecords > 0 && ++matches == maxRecords) {
+							if (maxRecords > 0 && matches == maxRecords) {
 								break LEVEL0;
 							}
 							continue;

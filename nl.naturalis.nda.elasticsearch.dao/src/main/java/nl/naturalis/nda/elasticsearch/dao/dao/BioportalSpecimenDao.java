@@ -392,7 +392,6 @@ public class BioportalSpecimenDao extends AbstractDao {
 
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
         }
-
         return resultSet;
     }
 
@@ -419,7 +418,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         LinkedHashMap<String, List<Specimen>> tempMapSpecimens = new LinkedHashMap<>();
         LinkedHashMap<Specimen, SearchHit> tempMapSearchHits = new LinkedHashMap<>();
 
-        int results = 0;
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
             Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
@@ -429,10 +427,8 @@ public class BioportalSpecimenDao extends AbstractDao {
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
 
             List<SpecimenIdentification> identifications = transfer.getIdentifications();
-
             if (identifications != null) {
                 for (SpecimenIdentification specimenIdentification : identifications) {
-                    results++;
                     ScientificName scientificName = specimenIdentification.getScientificName();
                     String combined;
                     if (scientificName.getFullScientificName() != null) {
@@ -479,9 +475,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             specimenStringResultGroupSet.addGroup(resultGroup);
         }
 
-
-
-        specimenStringResultGroupSet.setTotalSize(results);
+        specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
         //specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
     }

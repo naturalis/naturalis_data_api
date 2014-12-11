@@ -1,10 +1,6 @@
 package nl.naturalis.nda.search;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A class capturing the input for an ElasticSearch query. This class mimicks
@@ -17,7 +13,7 @@ import java.util.Map;
  * @author ayco_holleman
  */
 @SuppressWarnings("serial")
-public class QueryParams extends HashMap<String, List<String>> {
+public class QueryParams extends LinkedHashMap<String, List<String>> {
 
 	/**
 	 * Instantiate a {@code QueryParams} instance from another map. Although the

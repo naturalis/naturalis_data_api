@@ -253,7 +253,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(3l));
 
-        List<Specimen> otherSpecimensWithSameAssemblageId = dao.getOtherSpecimensWithSameAssemblageId(specimen);
+        List<Specimen> otherSpecimensWithSameAssemblageId = dao.getOtherSpecimensWithSameAssemblageId(specimen, null);
 
         assertEquals(1, otherSpecimensWithSameAssemblageId.size());
         assertEquals("2", otherSpecimensWithSameAssemblageId.get(0).getUnitID());

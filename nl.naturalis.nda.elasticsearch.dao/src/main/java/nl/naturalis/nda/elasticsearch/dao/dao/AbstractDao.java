@@ -113,8 +113,8 @@ public abstract class AbstractDao {
     }
 
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   boolean highlighting) {
-        return executeExtendedSearch(params, fields, type, highlighting, null);
+                                                   boolean highlighting, String sessionId) {
+        return executeExtendedSearch(params, fields, type, highlighting, null, sessionId);
     }
 
     /**
@@ -123,10 +123,11 @@ public abstract class AbstractDao {
      * @param type
      * @param highlighting  whether to use highlighting
      * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
+     * @param sessionId
      * @return
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   boolean highlighting, QueryAndHighlightFields prebuiltQuery) {
+                                                   boolean highlighting, QueryAndHighlightFields prebuiltQuery, String sessionId) {
 
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         Operator operator = getOperator(params);
@@ -187,7 +188,6 @@ public abstract class AbstractDao {
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {
             geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
-            logger.info("FOUND GEO SHAPE!!"); //TODO REMOVE ME!
             geoSearch = true;
         }
 
@@ -207,6 +207,8 @@ public abstract class AbstractDao {
             searchRequestBuilder.setHighlighterPreTags("<span class=\"search_hit\">").setHighlighterPostTags("</span>");
         }
 
+        searchRequestBuilder.setPreference(sessionId);
+
         if (geoSearch && !atLeastOneFieldToQuery) {
             searchRequestBuilder.setQuery(filteredQuery(matchAllQuery(), geoShape));
             logger.info(searchRequestBuilder.toString());
@@ -222,16 +224,6 @@ public abstract class AbstractDao {
     }
 
     //================================================ Helper methods ==================================================
-
-    /**
-     * If no groups exist, this will return a lot of singleton sets in the big set. All related fields exist in a set.
-     *
-     * @param fields
-     * @return
-     */
-    private Set<Set<FieldMapping>> groupRelatedFields(List<FieldMapping> fields) {
-        return new HashSet<>();   // FIXME: implement
-    }
 
     private FieldSortBuilder createFieldSort(QueryParams params) {
         String sortField = getSortFieldFromQueryParams(params);
@@ -477,12 +469,14 @@ public abstract class AbstractDao {
      * @param taxonDao     @return null in case of no valid param_keys or no taxons matching the supplied values
      * @param highlight
      * @param operator     only used in case of extended search
+     * @param sessionId
      */
     protected QueryAndHighlightFields buildNameResolutionQuery(List<FieldMapping> fields,
                                                                String simpleSearch,
                                                                BioportalTaxonDao taxonDao,
                                                                boolean highlight,
-                                                               Operator operator) {
+                                                               Operator operator,
+                                                               String sessionId) {
         if (!hasFieldWithTextWithOneOfNames(fields,
                 IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
                 IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM,
@@ -532,7 +526,7 @@ public abstract class AbstractDao {
             nameResTaxonQueryParams.add("_andOr", operator.name());
         }
         nameResTaxonQueryParams.add("_maxResults", "50");
-        SearchResultSet<Taxon> nameResTaxons = taxonDao.searchReturnsResultSet(nameResTaxonQueryParams, null, null, true); // no field filtering
+        SearchResultSet<Taxon> nameResTaxons = taxonDao.searchReturnsResultSet(nameResTaxonQueryParams, null, null, true, sessionId); // no field filtering
         if (nameResTaxons.getTotalSize() == 0) {
             return null;
         }

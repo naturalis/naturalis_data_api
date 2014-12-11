@@ -1,42 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS_OR_MONOMIAL;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.ASSOCIATED_SPECIMEN_REFERENCE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.ASSOCIATED_TAXON_REFERENCE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.GATHERINGEVENTS_SITECOORDINATES_POINT;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.PHASES_OR_STAGES;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SEXES;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.SPECIMEN_TYPE_STATUS;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.THEME;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
@@ -45,7 +9,6 @@ import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
@@ -53,11 +16,17 @@ import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.MultiMediaObjectFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
+
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 
-	   private static final Logger logger = LoggerFactory.getLogger(BioportalMultiMediaObjectDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(BioportalMultiMediaObjectDao.class);
 
-	   private static final Set<String> multiMediaSearchFields = new HashSet<>(Arrays.asList(
+    private static final Set<String> multiMediaSearchFields = new HashSet<>(Arrays.asList(
             UNIT_ID,
             SEXES,
             THEME,
@@ -132,8 +101,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     public SearchResultSet<MultiMediaObject> multiMediaObjectSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
         if (params.containsKey("_search")) {
-            params.putSingle("_andOr", "OR");
+            params.add("_andOr", "OR");
         }
+
         return search(params, multiMediaSearchFields, multiMediaSearchFields_simpleSearchExceptions);
     }
 
@@ -153,13 +123,14 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      * @return the searchResultSet with the associated links
      */
     public SearchResultSet<MultiMediaObject> getTaxonMultiMediaObjectDetailWithinResultSet(QueryParams params) {
+        String sessionId = params.getParam("_session_id");
         SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet = multiMediaObjectSearch(params);
 
         SearchResultSet<MultiMediaObject> resultSetWithPreviousAndNextLinks =
                 createMultiMediaObjectDetailSearchResultSet(params, multiMediaObjectSearchResultSet);
         List<SearchResult<MultiMediaObject>> searchResults = resultSetWithPreviousAndNextLinks.getSearchResults();
         if (searchResults != null && searchResults.size() >= 1) {
-            addAssociatedTaxonLink(searchResults.get(0).getLinks(), searchResults.get(0).getResult());
+            addAssociatedTaxonLink(searchResults.get(0).getLinks(), searchResults.get(0).getResult(), sessionId);
         }
 
         return resultSetWithPreviousAndNextLinks;
@@ -181,6 +152,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      * @return the searchResultSet with the associated links
      */
     public SearchResultSet<MultiMediaObject> getSpecimenMultiMediaObjectDetailWithinResultSet(QueryParams params) {
+        String sessionId = params.getParam("_session_id");
         SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet = multiMediaObjectSearch(params);
 
         SearchResultSet<MultiMediaObject> resultSetWithPreviousAndNextLinks =
@@ -189,7 +161,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (searchResults != null && searchResults.size() >= 1) {
             SearchResult<MultiMediaObject> multiMediaObjectSearchResult = searchResults.get(0);
             addTaxonLinksByScientificName(multiMediaObjectSearchResult.getLinks(),
-                    multiMediaObjectSearchResult.getResult().getAssociatedSpecimen());
+                    multiMediaObjectSearchResult.getResult().getAssociatedSpecimen(), sessionId);
         }
 
         return resultSetWithPreviousAndNextLinks;
@@ -209,6 +181,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      */
     SearchResultSet<MultiMediaObject> search(QueryParams params, Set<String> allowedFieldNames,
                                              Set<String> simpleSearchFieldNameExceptions) {
+
+        String sessionId = params.getParam("_session_id");
+        params.remove("_session_id");
+
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getMultimediaMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
@@ -216,17 +192,17 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
 
         QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"),
-                bioportalTaxonDao, true, getOperator(params));
+                bioportalTaxonDao, true, getOperator(params), sessionId);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true,
-                nameResolutionQuery);
+                nameResolutionQuery, sessionId);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         logger.info("Total hits: " + totalHits);
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
-            copy.putSingle("_offset", String.valueOf(totalHits - 1));
-            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true).getHits();
+            copy.add("_offset", String.valueOf(totalHits - 1));
+            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, sessionId).getHits();
             try {
                 if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
                     minScore = hits.getAt(0).getScore();
@@ -235,7 +211,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 // TODO
             }
         }
-        return responseToMultiMediaObjectSearchResultSet(searchResponse, params, minScore);
+        return responseToMultiMediaObjectSearchResultSet(searchResponse, minScore, sessionId);
     }
 
     /**
@@ -297,9 +273,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         return detailResultSet;
     }
 
-    private void addAssociatedTaxonLink(List<Link> links, MultiMediaObject multiMediaObject) {
+    private void addAssociatedTaxonLink(List<Link> links, MultiMediaObject multiMediaObject, String sessionId) {
         String sourceSystemId = multiMediaObject.getAssociatedTaxonReference();
-        SearchResultSet<Taxon> taxonDetail = taxonDao.lookupTaxonForSystemSourceId(sourceSystemId);
+        SearchResultSet<Taxon> taxonDetail = taxonDao.lookupTaxonForSystemSourceId(sourceSystemId, sessionId);
         if (taxonDetail.getSearchResults() != null && taxonDetail.getSearchResults().get(0) != null) {
             Taxon taxon = taxonDetail.getSearchResults().get(0).getResult();
             multiMediaObject.setAssociatedTaxon(taxon);
@@ -307,10 +283,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         }
     }
 
-    private void addAssociatedSpecimenLink(List<Link> links, MultiMediaObject multiMediaObject, boolean addTaxonLinksByAcceptedName) {
+    private void addAssociatedSpecimenLink(List<Link> links, MultiMediaObject multiMediaObject, boolean addTaxonLinksByAcceptedName, String sessionId) {
         String associatedSpecimenReference = multiMediaObject.getAssociatedSpecimenReference();
         if (hasText(associatedSpecimenReference)) {
-            SearchResultSet<Specimen> specimenDetail = specimenDao.getSpecimenDetail(associatedSpecimenReference);
+            SearchResultSet<Specimen> specimenDetail = specimenDao.getSpecimenDetail(associatedSpecimenReference, sessionId);
             if (specimenDetail != null) {
                 if (specimenDetail.getSearchResults() != null && specimenDetail.getSearchResults().get(0) != null) {
                     Specimen specimen = specimenDetail.getSearchResults().get(0).getResult();
@@ -318,21 +294,21 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                     links.add(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
 
                     if (specimen.getIdentifications() != null && addTaxonLinksByAcceptedName) {
-                        addTaxonLinksByScientificName(links, specimen);
+                        addTaxonLinksByScientificName(links, specimen, sessionId);
                     }
                 }
             }
         }
     }
 
-    private void addTaxonLinksByScientificName(List<Link> links, Specimen specimen) {
+    private void addTaxonLinksByScientificName(List<Link> links, Specimen specimen, String sessionId) {
         if (specimen != null && specimen.getIdentifications() != null) {
             for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
                 ScientificName scientificName = specimenIdentification.getScientificName();
-                SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName);
+                SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName, sessionId);
 
                 List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                if(searchResults != null) {
+                if (searchResults != null) {
                     for (SearchResult<Taxon> searchResult : searchResults) {
                         links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
                     }
@@ -341,8 +317,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         }
     }
 
-    private SearchResultSet<MultiMediaObject> responseToMultiMediaObjectSearchResultSet(SearchResponse searchResponse,
-                                                                                        QueryParams params, float minScore) {
+    private SearchResultSet<MultiMediaObject> responseToMultiMediaObjectSearchResultSet(SearchResponse searchResponse, float minScore, String sessionId) {
         float maxScore = searchResponse.getHits().getMaxScore();
         SearchResultSet<MultiMediaObject> searchResultSet = new SearchResultSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
@@ -353,10 +328,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             multiMediaObjectSearchResult.setResult(multiMediaObject);
 
             if (hasText(multiMediaObject.getAssociatedTaxonReference())) {
-                addAssociatedTaxonLink(links, multiMediaObject);
+                addAssociatedTaxonLink(links, multiMediaObject, sessionId);
             }
             if (hasText(multiMediaObject.getAssociatedSpecimenReference())) {
-                addAssociatedSpecimenLink(links, multiMediaObject, false);
+                addAssociatedSpecimenLink(links, multiMediaObject, false, sessionId);
             }
             if (multiMediaObject.getAssociatedSpecimen() != null) {
                 links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL_SPECIMEN + multiMediaObject.getUnitID()));

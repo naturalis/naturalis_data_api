@@ -34,6 +34,8 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
+        String sessionId = params.getParam("_session_id");
+        params.remove("_session_id");
         Map<String, String> fields = fieldNamesToValues(params);
         String genus = fields.get(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
         String subgenus = fields.get(ACCEPTEDNAME_SUBGENUS);
@@ -51,16 +53,16 @@ public class TaxonDao extends AbstractTaxonDao {
         scientificName.setSpecificEpithet(specificEpithet);
         scientificName.setInfraspecificEpithet(infraSpecificEpithet);
         scientificName.setSubgenus(subgenus);
-        return lookupTaxonForScientificName(scientificName);
+        return lookupTaxonForScientificName(scientificName, sessionId);
     }
 
-    SearchResultSet<Taxon> lookupTaxonForSystemSourceId(String sourceSystemId) {
+    SearchResultSet<Taxon> lookupTaxonForSystemSourceId(String sourceSystemId, String sessionId) {
         if (!hasText(sourceSystemId)) {
             return new SearchResultSet<>();
         }
         QueryParams params = new QueryParams();
         params.add(SOURCE_SYSTEM_ID, sourceSystemId);
-        return searchReturnsResultSet(params, Collections.singleton(SOURCE_SYSTEM_ID), Collections.<String>emptySet(), false);
+        return searchReturnsResultSet(params, Collections.singleton(SOURCE_SYSTEM_ID), Collections.<String>emptySet(), false, sessionId);
     }
 
     /**
@@ -69,7 +71,7 @@ public class TaxonDao extends AbstractTaxonDao {
      * @param scientificName scientificName containing the information for the lookup
      * @return a SearchResultSet with the taxon if found
      */
-    SearchResultSet<Taxon> lookupTaxonForScientificName(ScientificName scientificName) {
+    SearchResultSet<Taxon> lookupTaxonForScientificName(ScientificName scientificName, String sessionId) {
         String genusOrMonomial = scientificName.getGenusOrMonomial();
         String subgenus = scientificName.getSubgenus();
         String specificEpithet = scientificName.getSpecificEpithet();
@@ -111,6 +113,7 @@ public class TaxonDao extends AbstractTaxonDao {
 
         ResultGroupSet<Taxon, String> taxonStringResultGroupSet = new ResultGroupSet<>();
         if(searchRequestBuilder != null) {
+            searchRequestBuilder.setPreference(sessionId);
             SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
             taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, new QueryParams(), 0);
         }

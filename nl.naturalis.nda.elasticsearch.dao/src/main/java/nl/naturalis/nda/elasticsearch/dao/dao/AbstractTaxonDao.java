@@ -4,17 +4,15 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
 
@@ -40,40 +38,42 @@ public class AbstractTaxonDao extends AbstractDao {
      * @param highlighting                    @return search results
      */
     ResultGroupSet<Taxon, String> search(QueryParams params, Set<String> allowedFieldNames,
-                                         Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
+                                         Set<String> simpleSearchFieldNameExceptions,
+                                         boolean highlighting,
+                                         String sessionId) {
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting, sessionId);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
-            copy.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
+            copy.add("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting, sessionId).getHits().getAt(0).getScore();
         }
 
         return responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);
     }
 
     SearchResultSet<Taxon> searchReturnsResultSet(QueryParams params, Set<String> allowedFieldNames,
-                                                  Set<String> simpleSearchFieldNameExceptions, boolean highlighting) {
+                                                  Set<String> simpleSearchFieldNameExceptions, boolean highlighting, String sessionId) {
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getTaxonMappingForFields(params);
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting, sessionId);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
-            copy.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting).getHits().getAt(0).getScore();
+            copy.add("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting, sessionId).getHits().getAt(0).getScore();
         }
 
         ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);

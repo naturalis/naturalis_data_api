@@ -8,12 +8,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.*;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
@@ -24,18 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.ASSEMBLAGE_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.COLLECTORS_FIELD_NUMBER;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_DATE_TIME_BEGIN;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_GATHERING_PERSONS_FULLNAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_LOCALITY_TEXT;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_SITECOORDINATES_POINT;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.PHASE_OR_STAGE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.SEX;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.THEME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.TYPE_STATUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
@@ -135,18 +119,21 @@ public class BioportalSpecimenDao extends AbstractDao {
     public SearchResultSet<Specimen> specimenSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
         if (params.containsKey("_search")) {
-            params.putSingle("_andOr", "OR");
+            params.add("_andOr", "OR");
         }
+
         return doSpecimenSearch(params, true);
     }
 
 
     private SearchResultSet<Specimen> doSpecimenSearch(QueryParams params, boolean highlighting) {
+        String sessionId = params.getParam("_session_id");
+        params.remove("_session_id");
         evaluateSimpleSearch(params, specimenSearchFieldNames, specimenSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting, sessionId);
 
         logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
 
@@ -154,11 +141,11 @@ public class BioportalSpecimenDao extends AbstractDao {
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
-            copy.putSingle("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, fieldMappings, SPECIMEN_TYPE, false).getHits().getAt(0).getScore();
+            copy.add("_offset", String.valueOf(totalHits - 1));
+            minScore = executeExtendedSearch(copy, fieldMappings, SPECIMEN_TYPE, false, sessionId).getHits().getAt(0).getScore();
         }
 
-        return responseToSpecimenSearchResultSet(searchResponse, params, minScore);
+        return responseToSpecimenSearchResultSet(searchResponse, minScore, sessionId);
     }
 
 
@@ -199,22 +186,25 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
         if (params.containsKey("_search")) {
-            params.putSingle("_andOr", "OR");
+            params.add("_andOr", "OR");
         }
+        String sessionId = params.getParam("_session_id");
+        params.remove("_session_id");
+
         evaluateSimpleSearch(params, specimenNameSearchFieldNames, specimenNameSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting,
-                getOperator(params));
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery);
+                getOperator(params), sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery, sessionId);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
-            copy.putSingle("_offset", String.valueOf(totalHits - 1));
-            SearchHits hits = executeExtendedSearch(copy, allowedFields, SPECIMEN_TYPE, false).getHits();
+            copy.add("_offset", String.valueOf(totalHits - 1));
+            SearchHits hits = executeExtendedSearch(copy, allowedFields, SPECIMEN_TYPE, false, sessionId).getHits();
             try {
                 if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
                     minScore = hits.getAt(0).getScore();
@@ -225,7 +215,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             }
         }
 
-        return responseToSpecimenResultGroupSet(searchResponse, params, minScore);
+        return responseToSpecimenResultGroupSet(searchResponse, minScore, sessionId);
     }
 
 
@@ -381,7 +371,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, QueryParams params, float minScore) {
+    private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, float minScore, String sessionId) {
         float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
         resultSet.setTotalSize(response.getHits().getTotalHits());
@@ -390,7 +380,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
             Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
-            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer);
+            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer, sessionId);
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
             SearchResult<Specimen> searchResult = new SearchResult<>(transfer);
             resultSet.addSearchResult(searchResult);
@@ -398,7 +388,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             searchResult.setPercentage(percentage);
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
 
-            getTaxonForSpecimenFullScientificName(transfer, searchResult);
+            getTaxonForSpecimenFullScientificName(transfer, searchResult, sessionId);
 
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
         }
@@ -406,11 +396,11 @@ public class BioportalSpecimenDao extends AbstractDao {
         return resultSet;
     }
 
-    private void getTaxonForSpecimenFullScientificName(Specimen transfer, SearchResult<Specimen> searchResult) {
+    private void getTaxonForSpecimenFullScientificName(Specimen transfer, SearchResult<Specimen> searchResult, String sessionId) {
         List<SpecimenIdentification> identifications = transfer.getIdentifications();
         if (identifications != null) {
             for (SpecimenIdentification identification : identifications) {
-                SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(identification.getScientificName());
+                SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(identification.getScientificName(), sessionId);
                 List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                 if (searchResults != null) {
                     for (SearchResult<Taxon> taxonSearchResult : searchResults) {
@@ -423,7 +413,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, QueryParams params, float minScore) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, float minScore, String sessionId) {
         float maxScore = response.getHits().getMaxScore();
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
         LinkedHashMap<String, List<Specimen>> tempMapSpecimens = new LinkedHashMap<>();
@@ -434,7 +424,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
             tempMapSearchHits.put(transfer, hit);
 
-            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer);
+            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer, sessionId);
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
 
             List<SpecimenIdentification> identifications = transfer.getIdentifications();
@@ -480,7 +470,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
                 enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
 
-                getTaxonForSpecimenFullScientificName(specimen, searchResult);
+                getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);
                 resultGroup.addSearchResult(searchResult);
             }
             specimenStringResultGroupSet.addGroup(resultGroup);
@@ -519,11 +509,12 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer) {
+    protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer, String sessionId) {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
         String assemblageID = transfer.getAssemblageID();
         if (assemblageID != null) {
             SearchResponse searchResponse = newSearchRequest()
+                    .setPreference(sessionId)
                     .setTypes(SPECIMEN_TYPE)
                     .setQuery(
                             filteredQuery(matchAllQuery(),

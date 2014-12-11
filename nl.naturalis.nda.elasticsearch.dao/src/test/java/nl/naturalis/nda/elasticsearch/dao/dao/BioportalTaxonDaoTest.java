@@ -108,11 +108,11 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         params.add("_andOr", "OR");
         params.add("_maxResults", "50");
         params.add("vernacularNames.name", "henkie");
-        assertEquals(1, taxonDao.search(params, null, null, true).getResultGroups().size());
+        assertEquals(1, taxonDao.search(params, null, null, true, null).getResultGroups().size());
 
         params.remove("vernacularNames.name");
         params.add("synonyms.genusOrMonomial", "genusOrMonomialSynonyms");
-        assertEquals(1, taxonDao.search(params, null, null, true).getResultGroups().size());
+        assertEquals(1, taxonDao.search(params, null, null, true, null).getResultGroups().size());
 
 //        params.add("synonyms.specificEpithet", "");
 //        params.add("synonyms.infraspecificEpithet", "");

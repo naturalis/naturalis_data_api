@@ -1,10 +1,12 @@
 /multimedia/search:BioportalTaxonDao.multiMediaObjectSearch
 /multimedia/get-multimedia-object-for-taxon-within-result-set:BioportalTaxonDao.getTaxonMultiMediaObjectDetailWithinResultSet
 /multimedia/get-multimedia-object-for-specimen-within-result-set:BioportalTaxonDao.getSpecimenMultiMediaObjectDetailWithinResultSet
+
 /specimen/get-specimen:SpecimenDao.getSpecimenDetail
 /specimen/get-specimen-within-result-set:BioportalSpecimenDao.getSpecimenDetailWithinSearchResult
 /specimen/search:BioportalSpecimenDao.specimenSearch
 /specimen/name-search:BioportalSpecimenDao.specimenNameSearch
+
 /taxon/get-taxon:TaxonDao.getTaxonDetail
 /taxon/get-taxon-within-result-set:BioportalTaxonDao.getTaxonDetailWithinResultSet
 /taxon/search:BioportalTaxonDao.taxonSearch

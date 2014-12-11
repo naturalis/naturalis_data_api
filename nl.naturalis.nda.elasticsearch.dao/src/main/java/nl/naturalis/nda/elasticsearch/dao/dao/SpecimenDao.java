@@ -40,8 +40,9 @@ public class SpecimenDao extends AbstractDao {
      * @return {@link nl.naturalis.nda.search.SearchResultSet} containing the
      * {@link nl.naturalis.nda.domain.Specimen}
      */
-    public SearchResultSet<Specimen> getSpecimenDetail(String unitID) {
+    public SearchResultSet<Specimen> getSpecimenDetail(String unitID, String sessionId) {
         SearchResponse response = newSearchRequest()
+                .setPreference(sessionId)
                 .setTypes(SPECIMEN_TYPE)
                 .setQuery(filteredQuery(
                                 matchAllQuery(),
@@ -72,7 +73,7 @@ public class SpecimenDao extends AbstractDao {
             if (specimen != null && specimen.getIdentifications() != null) {
                 for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
                     ScientificName scientificName = specimenIdentification.getScientificName();
-                    SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName);
+                    SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName, sessionId);
                     if (taxonSearchResultSet != null) {
                         List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
                         if(searchResults != null) {

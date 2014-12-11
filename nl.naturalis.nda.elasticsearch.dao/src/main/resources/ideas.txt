@@ -1,0 +1,13 @@
+Scoring lijkt niet altijd goed te gaan.
+Soms krijg je andere volgorde en andere score, ookal wordt dezelfde query uitgevoerd.
+
+Dit kan liggen aan het feit dat ES standaard op de shard de score berekent van de documenten die hij in zich heeft en dit daarna van alle shards verzamelt.
+Dit is de standaard manier hoe ES werkt (query then fetch).
+
+http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-search-type.html
+
+Als we dit zouden aanpassen naar dfs_query_then_fetch, wordt de score berekent van alle documenten over alle shards heen
+Dit gaat tenkoste van performance, maar zorgt ervoor dat  de score beter berekend wordt.
+
+------------------------------------------------------------------------------------------------------------------------
+

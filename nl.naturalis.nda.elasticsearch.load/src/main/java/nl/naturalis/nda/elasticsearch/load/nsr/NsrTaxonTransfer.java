@@ -57,7 +57,7 @@ class NsrTaxonTransfer {
 		translations.put("isInvalidNameOf", TaxonomicStatus.SYNONYM);
 	}
 
-	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis");
+	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis", "forma");
 
 
 	static ESTaxon transfer(Element taxonElement) throws InvalidDataException, SkippableDataException, MalformedDataException

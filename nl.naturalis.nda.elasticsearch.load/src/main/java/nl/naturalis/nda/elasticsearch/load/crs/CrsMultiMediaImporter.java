@@ -22,6 +22,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
@@ -89,7 +90,6 @@ public class CrsMultiMediaImporter {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
 	private static final String ID_PREFIX = "CRS-";
-	private static final int INDEXED_NOTIFIER_INTERVAL = 10000;
 
 	private final DocumentBuilder builder;
 
@@ -99,9 +99,9 @@ public class CrsMultiMediaImporter {
 	private final boolean forceRestart;
 
 	private int processed;
-	private int bad;
+	private int rejected;
 	private int indexed;
-	private int indexedTreshold = INDEXED_NOTIFIER_INTERVAL;
+	private int skipped;
 
 
 	public CrsMultiMediaImporter(Index index) throws Exception
@@ -130,9 +130,10 @@ public class CrsMultiMediaImporter {
 	public void importMultiMedia()
 	{
 		processed = 0;
-		bad = 0;
+		rejected = 0;
 		indexed = 0;
-		indexedTreshold = 10000;
+		skipped = 0;
+		
 		try {
 
 			ThematicSearchConfig.getInstance().resetMatchCounters();
@@ -146,10 +147,11 @@ public class CrsMultiMediaImporter {
 
 			ThematicSearchConfig.getInstance().logMatchInfo();
 
-			logger.info("Records processed: " + processed);
-			logger.info("Bad records: " + bad);
-			logger.info("Documents indexed: " + indexed);
-			logger.info(getClass().getSimpleName() + " finished successfully");
+			logger.info("Records indexed            : " + String.format("%7d", indexed));
+			logger.info("Records skipped            : " + String.format("%7d", skipped));
+			logger.info("Malformed/rejected records : " + String.format("%7d", rejected));
+			logger.info("Records processed          : " + String.format("%7d", processed));
+			
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
@@ -224,15 +226,26 @@ public class CrsMultiMediaImporter {
 
 		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(bulkRequestSize);
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
+
 		for (int i = 0; i < numRecords; ++i) {
 			++processed;
 			try {
 				Element record = (Element) records.item(i);
 				if (isDeletedRecord(record)) {
+					++skipped;
+					logger.debug("Skipped record with status \"deleted\"");
 					// TODO delete media from ES index
 				}
 				else {
-					List<ESMultiMediaObject> extractedMedia = CrsMultiMediaTransfer.transfer(record);
+					List<ESMultiMediaObject> extractedMedia = null;
+					try {
+						extractedMedia = CrsMultiMediaTransfer.transfer(record);
+					}
+					catch (InvalidDataException e) {
+						++rejected;
+						logger.debug(e.getMessage());
+						logger.debug("Stack trace:", e);
+					}
 					if (extractedMedia != null) {
 						List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
 						for (ESMultiMediaObject mo : extractedMedia) {
@@ -254,18 +267,15 @@ public class CrsMultiMediaImporter {
 				}
 			}
 			catch (Throwable t) {
-				++bad;
-				logger.error(t.getMessage(), t);
+				logger.error(t.getMessage());
+				logger.debug("Stack trace: ", t);
 			}
 			if (maxRecords > 0 && processed >= maxRecords) {
 				break;
 			}
 			if (processed % 50000 == 0) {
 				logger.info("Records processed: " + processed);
-			}
-			if (indexed >= indexedTreshold) {
 				logger.info("Documents indexed: " + indexed);
-				indexedTreshold += INDEXED_NOTIFIER_INTERVAL;
 			}
 		}
 		if (!mediaObjects.isEmpty()) {

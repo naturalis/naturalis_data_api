@@ -19,6 +19,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
+import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
@@ -26,6 +27,7 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
+import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -37,23 +39,22 @@ public class CrsMultiMediaTransfer {
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
-
 	private static final String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
+	private static final SimpleHttpHead httpHead = new SimpleHttpHead();
 
 
-	public static List<ESMultiMediaObject> transfer(Element recordElement)
+	public static List<ESMultiMediaObject> transfer(Element recordElement) throws InvalidDataException
 	{
+		String identifier = val(recordElement, "identifier");
 		Element dcElement = DOMUtil.getDescendant(recordElement, "oai_dc:dc");
 		List<Element> mediaFileElements = DOMUtil.getDescendants(dcElement, "frmDigitalebestanden");
 		if (mediaFileElements == null) {
-			logger.debug("Missing element <frmDigitalebestanden> for record with id " + DOMUtil.getDescendantIntValue(recordElement, "identifier"));
-			// Wired but it happens
-			return new ArrayList<ESMultiMediaObject>(0);
+			throw new InvalidDataException("Missing element <frmDigitalebestanden> for record with identifier " + identifier);
 		}
 		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
-		
+
 		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
 		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
@@ -65,23 +66,20 @@ public class CrsMultiMediaTransfer {
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
 		for (Element mediaFileElement : mediaFileElements) {
-			String url = val(mediaFileElement, "abcd:fileuri");
 			String title = val(mediaFileElement, "dc:title");
+			String url = val(mediaFileElement, "abcd:fileuri");
 			if (url == null) {
-				if (title == null) {
-					logger.debug("Record ignored. No Image URL for record with identifier " + val(recordElement, "identifier"));
-				}
-				else {
-					logger.debug("Record ignored. No Image URL for record with title " + title);
-				}
-				continue;
+				String msg = String.format("Missing media URL for record with identifier %s (title=%s)", identifier, title);
+				throw new InvalidDataException(msg);
 			}
 			if (title == null) {
-				logger.error("Record ignored. Missing title for record with identifier " + val(recordElement, "identifier"));
-				continue;
+				String msg = String.format("Missing title for record with identifier %s (title=%s)", identifier, title);
+				throw new InvalidDataException(msg);
 			}
 
 			String unitID;
+
+			String contentType = null;
 
 			if (url.startsWith(MEDIALIB_URL_START)) {
 				unitID = url.substring(MEDIALIB_URL_START.length() + 1);
@@ -90,6 +88,8 @@ public class CrsMultiMediaTransfer {
 					unitID = unitID.substring(0, x);
 					url = url.replace("/small", "/large");
 				}
+				logger.debug("Retrieving content type for URL " + url);
+				contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
 			}
 			else {
 				unitID = title;
@@ -98,7 +98,7 @@ public class CrsMultiMediaTransfer {
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			mmos.add(mmo);
 
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, null, Variant.MEDIUM_QUALITY));
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(url, contentType, Variant.MEDIUM_QUALITY));
 			mmo.setSourceSystem(SourceSystem.CRS);
 			mmo.setSourceSystemId(unitID);
 			mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
@@ -132,12 +132,12 @@ public class CrsMultiMediaTransfer {
 		ge.setSublocality(val(dcElement, "Iptc4xmpExt:Sublocation"));
 		Double lat = dval(dcElement, "dwc:decimalLatitude");
 		if (lat != null && (lat < -90 || lat > 90)) {
-			logger.error("Invalid latitude: " + lat);
+			logger.warn("Invalid latitude: " + lat);
 			lat = null;
 		}
 		Double lon = dval(dcElement, "dwc:decimalLongitude");
 		if (lon != null && (lon < -180 || lon > 180)) {
-			logger.error("Invalid latitude: " + lon);
+			logger.warn("Invalid latitude: " + lon);
 			lon = null;
 		}
 		if (lat != null || lon != null) {

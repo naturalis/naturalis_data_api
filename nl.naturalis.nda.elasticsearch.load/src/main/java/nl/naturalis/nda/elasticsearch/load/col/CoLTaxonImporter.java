@@ -31,7 +31,6 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.StringUtil;
-import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

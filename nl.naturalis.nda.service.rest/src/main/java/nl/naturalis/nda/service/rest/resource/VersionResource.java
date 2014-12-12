@@ -1,5 +1,6 @@
 package nl.naturalis.nda.service.rest.resource;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -13,12 +14,16 @@ import javax.ws.rs.core.MediaType;
 /* only here so @EJB injection works in JBoss AS; remove when possible */
 public class VersionResource {
 
+	@EJB
+	Registry registry;
+
+
 	@GET
 	@Path("/")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String show()
 	{
-		return "0.9.021";
+		return registry.getNDA().getConfig().required("nda.version");
 	}
 
 }

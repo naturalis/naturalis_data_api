@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 public class NDA {
 
 	public static final String SYSPROP_CONFIG_DIR = "nl.naturalis.nda.conf.dir";
+	public static final String SESSION_ID_PARAM = "_SESSION_ID";
+	
 	private static final String CONFIG_FILE_NAME = "nda.properties";
 
 	private static final Logger logger = LoggerFactory.getLogger(NDA.class);

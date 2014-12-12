@@ -3,6 +3,7 @@ package nl.naturalis.nda.service.rest.resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -21,6 +22,7 @@ import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;
 
 import org.slf4j.Logger;
@@ -44,23 +46,24 @@ public class SpecimenResource {
 	@GET
 	@Path("/get-specimen")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<Specimen> getSpecimenDetail(@Context UriInfo request)
+	public SearchResultSet<Specimen> getSpecimenDetail(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		logger.debug("getSpecimenDetail");
+		String sessionId = request.getSession().getId();
 		SearchResultSet<Specimen> result = null;
 		try {
-			String unitID = request.getQueryParameters().getFirst("unitID");
-			String baseUrl = request.getBaseUri().toString();
+			String unitID = uriInfo.getQueryParameters().getFirst("unitID");
+			String baseUrl = uriInfo.getBaseUri().toString();
 			SpecimenDao dao = registry.getSpecimenDao(baseUrl);
-			result = dao.getSpecimenDetail(unitID);
+			result = dao.getSpecimenDetail(unitID, sessionId);
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, t);
+			throw ResourceUtil.handleError(uriInfo, t);
 		}
 		if (result == null) {
-			throw ResourceUtil.handleError(request, Status.NOT_FOUND);
+			throw ResourceUtil.handleError(uriInfo, Status.NOT_FOUND);
 		}
-		ResourceUtil.doAfterDao(result, request, false);
+		ResourceUtil.doAfterDao(result, uriInfo, false);
 		return result;
 	}
 
@@ -68,19 +71,20 @@ public class SpecimenResource {
 	@GET
 	@Path("/get-specimen-within-result-set")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetGET(@Context UriInfo request)
+	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetGET(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("getSpecimenDetailWithinResultSetGET");
-			QueryParams params = new QueryParams(request.getQueryParameters());
-			String baseUrl = request.getBaseUri().toString();
+			QueryParams params = new QueryParams(uriInfo.getQueryParameters());
+			params.putSingle(NDA.SESSION_ID_PARAM, request.getSession().getId());
+			String baseUrl = uriInfo.getBaseUri().toString();
 			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
 			SearchResultSet<Specimen> result = dao.getSpecimenDetailWithinSearchResult(params);
-			ResourceUtil.doAfterDao(result, request, false);
+			ResourceUtil.doAfterDao(result, uriInfo, false);
 			return result;
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, t);
+			throw ResourceUtil.handleError(uriInfo, t);
 		}
 	}
 
@@ -89,20 +93,21 @@ public class SpecimenResource {
 	@Path("/get-specimen-within-result-set")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo request)
+	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("getSpecimenDetailWithinResultSetPOST");
 			QueryParams params = new QueryParams(form);
-			params.addParams(request.getQueryParameters());
-			String baseUrl = request.getBaseUri().toString();
+			params.addParams(uriInfo.getQueryParameters());
+			params.putSingle(NDA.SESSION_ID_PARAM, request.getSession().getId());
+			String baseUrl = uriInfo.getBaseUri().toString();
 			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
 			SearchResultSet<Specimen> result = dao.getSpecimenDetailWithinSearchResult(params);
-			ResourceUtil.doAfterDao(result, request, form, false);
+			ResourceUtil.doAfterDao(result, uriInfo, form, false);
 			return result;
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, form, t);
+			throw ResourceUtil.handleError(uriInfo, form, t);
 		}
 	}
 
@@ -110,19 +115,20 @@ public class SpecimenResource {
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<Specimen> searchGET(@Context UriInfo request)
+	public SearchResultSet<Specimen> searchGET(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("searchGET");
-			QueryParams params = new QueryParams(request.getQueryParameters());
-			String baseUrl = request.getBaseUri().toString();
+			QueryParams params = new QueryParams(uriInfo.getQueryParameters());
+			params.putSingle(NDA.SESSION_ID_PARAM, request.getSession().getId());
+			String baseUrl = uriInfo.getBaseUri().toString();
 			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
 			SearchResultSet<Specimen> result = dao.specimenSearch(params);
-			ResourceUtil.doAfterDao(result, request, true);
+			ResourceUtil.doAfterDao(result, uriInfo, true);
 			return result;
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, t);
+			throw ResourceUtil.handleError(uriInfo, t);
 		}
 	}
 
@@ -131,20 +137,21 @@ public class SpecimenResource {
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public SearchResultSet<Specimen> searchPOST(MultivaluedMap<String, String> form, @Context UriInfo request)
+	public SearchResultSet<Specimen> searchPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("searchPOST");
 			QueryParams params = new QueryParams(form);
-			params.addParams(request.getQueryParameters());
-			String baseUrl = request.getBaseUri().toString();
+			params.addParams(uriInfo.getQueryParameters());
+			params.putSingle(NDA.SESSION_ID_PARAM, request.getSession().getId());
+			String baseUrl = uriInfo.getBaseUri().toString();
 			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
 			SearchResultSet<Specimen> result = dao.specimenSearch(params);
-			ResourceUtil.doAfterDao(result, request, form, true);
+			ResourceUtil.doAfterDao(result, uriInfo, form, true);
 			return result;
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, form, t);
+			throw ResourceUtil.handleError(uriInfo, form, t);
 		}
 	}
 
@@ -152,19 +159,20 @@ public class SpecimenResource {
 	@GET
 	@Path("/name-search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResultGroupSet<Specimen, String> nameSearchGET(@Context UriInfo request)
+	public ResultGroupSet<Specimen, String> nameSearchGET(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("nameSearchGET");
-			QueryParams params = new QueryParams(request.getQueryParameters());
-			String baseUrl = request.getBaseUri().toString();
+			QueryParams params = new QueryParams(uriInfo.getQueryParameters());
+			params.putSingle(NDA.SESSION_ID_PARAM, request.getSession().getId());
+			String baseUrl = uriInfo.getBaseUri().toString();
 			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
 			ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-			ResourceUtil.doAfterDao(result, request, true);
+			ResourceUtil.doAfterDao(result, uriInfo, true);
 			return result;
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, t);
+			throw ResourceUtil.handleError(uriInfo, t);
 		}
 	}
 
@@ -173,20 +181,21 @@ public class SpecimenResource {
 	@Path("/name-search")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public ResultGroupSet<Specimen, String> nameSearchPOST(MultivaluedMap<String, String> form, @Context UriInfo request)
+	public ResultGroupSet<Specimen, String> nameSearchPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("nameSearchPOST");
 			QueryParams params = new QueryParams(form);
-			params.addParams(request.getQueryParameters());
-			String baseUrl = request.getBaseUri().toString();
+			params.addParams(uriInfo.getQueryParameters());
+			params.putSingle(NDA.SESSION_ID_PARAM, request.getSession().getId());
+			String baseUrl = uriInfo.getBaseUri().toString();
 			BioportalSpecimenDao dao = registry.getBioportalSpecimenDao(baseUrl);
 			ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-			ResourceUtil.doAfterDao(result, request, form, true);
+			ResourceUtil.doAfterDao(result, uriInfo, form, true);
 			return result;
 		}
 		catch (Throwable t) {
-			throw ResourceUtil.handleError(request, form, t);
+			throw ResourceUtil.handleError(uriInfo, form, t);
 		}
 	}
 

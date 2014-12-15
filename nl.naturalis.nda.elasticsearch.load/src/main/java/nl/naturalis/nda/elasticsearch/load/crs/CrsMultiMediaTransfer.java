@@ -64,24 +64,18 @@ public class CrsMultiMediaTransfer {
 		String sex = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
 
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
-		boolean themeCheckDone = false;			
+		boolean themeCheckDone = false;
 		List<String> themes = null;
 
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
-		for (Element mediaFileElement : mediaFileElements) {			
+		for (Element mediaFileElement : mediaFileElements) {
 
 			String title = val(mediaFileElement, "dc:title");
 			String url = val(mediaFileElement, "abcd:fileuri");
 			if (url == null) {
 				++crsMultiMediaImporter.multimediaRejected;
 				String msg = String.format("Missing media URL for record with identifier %s (title=%s)", identifier, title);
-				logger.error(msg);
-				continue;
-			}
-			if (title == null) {
-				++crsMultiMediaImporter.multimediaRejected;
-				String msg = String.format("Missing title for record with identifier %s (title=%s)", identifier, title);
 				logger.error(msg);
 				continue;
 			}
@@ -97,10 +91,20 @@ public class CrsMultiMediaTransfer {
 					unitID = unitID.substring(0, x);
 					url = url.replace("/small", "/large");
 				}
+				if (title == null) {
+					title = unitID;
+					String msg = String.format("Missing title for record with identifier %s. Set to specimen UnitID: %s", identifier, title);
+					logger.debug(msg);
+				}
 				logger.debug("Retrieving content type for URL " + url);
-				//contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
+				contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
 			}
 			else {
+				if (title == null) {
+					title = associatedSpecimenReference + ':' + String.valueOf(url.hashCode()).replace('-', '0');
+					String msg = String.format("Missing title for record with identifier %s. Assigned title: %s", identifier, title);
+					logger.debug(msg);
+				}
 				unitID = title;
 			}
 
@@ -126,13 +130,13 @@ public class CrsMultiMediaTransfer {
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
-			
-			if(!themeCheckDone) {
+
+			if (!themeCheckDone) {
 				themes = tsc.getThemesForDocument(associatedSpecimenReference, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.CRS);
 				themeCheckDone = true;
-			}		
+			}
 			mmo.setTheme(themes);
-			
+
 		}
 		return mmos;
 	}

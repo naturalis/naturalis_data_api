@@ -104,6 +104,7 @@ public class CrsMultiMediaImporter {
 	int multimediaRejected;
 
 	int recordsSkipped;
+	int recordsInvestigated;
 	int multimediaSkipped;
 
 	int multimediaIndexed;
@@ -135,6 +136,7 @@ public class CrsMultiMediaImporter {
 	public void importMultiMedia()
 	{
 		recordsProcessed = 0;
+		recordsInvestigated = 0;
 		multimediaProcessed = 0;
 		recordsRejected = 0;
 		multimediaRejected = 0;
@@ -155,6 +157,7 @@ public class CrsMultiMediaImporter {
 
 			ThematicSearchConfig.getInstance().logMatchInfo();
 
+			logger.info(" ");
 			logger.info("Multimedia indexed            : " + String.format("%7d", multimediaIndexed));
 			logger.info("Multimedia skipped            : " + String.format("%7d", multimediaSkipped));
 			logger.info("Malformed/rejected multimedia : " + String.format("%7d", multimediaRejected));
@@ -163,9 +166,11 @@ public class CrsMultiMediaImporter {
 
 			logger.info(" ");
 			logger.info("Records skipped               : " + String.format("%7d", recordsSkipped));
+			logger.info("Records investigated          : " + String.format("%7d", recordsInvestigated));
 			logger.info("Malformed/rejected records    : " + String.format("%7d", recordsRejected));
 			logger.info("--------------------------------------- +");
 			logger.info("Records processed             : " + String.format("%7d", recordsProcessed));
+			logger.info(" ");
 
 		}
 		catch (Throwable t) {
@@ -259,6 +264,7 @@ public class CrsMultiMediaImporter {
 					++recordsRejected;
 					logger.error("Error while processing record " + i + ": " + t.getMessage());
 					logger.trace("Stack trace: ", t);
+					continue;
 				}
 				if (extractedMedia != null) {
 					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());

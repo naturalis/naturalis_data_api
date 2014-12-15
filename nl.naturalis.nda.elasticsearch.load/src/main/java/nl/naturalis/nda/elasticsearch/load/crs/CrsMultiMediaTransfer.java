@@ -52,6 +52,7 @@ public class CrsMultiMediaTransfer {
 			logger.error("Missing element <frmDigitalebestanden> for record with identifier " + identifier);
 			return null;
 		}
+		++crsMultiMediaImporter.recordsInvestigated;
 		crsMultiMediaImporter.multimediaProcessed += mediaFileElements.size();
 		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
@@ -97,7 +98,7 @@ public class CrsMultiMediaTransfer {
 					url = url.replace("/small", "/large");
 				}
 				logger.debug("Retrieving content type for URL " + url);
-				contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
+				//contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
 			}
 			else {
 				unitID = title;

@@ -92,7 +92,7 @@ public class ThematicSearchConfig {
 	public void logMatchInfo()
 	{
 		for (Theme theme : themes) {
-			logger.info(String.format("Number of indexed documents for theme \"%s\": %s", theme.identifier, theme.matches));
+			logger.info(String.format("Number of indexed documents for theme \"%s\": %s", theme.code, theme.matches));
 		}
 	}
 

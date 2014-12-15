@@ -109,6 +109,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 
 		ThematicSearchConfig.getInstance().resetMatchCounters();
+		
+		BrahmsExportEncodingConverter.convertFiles();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);

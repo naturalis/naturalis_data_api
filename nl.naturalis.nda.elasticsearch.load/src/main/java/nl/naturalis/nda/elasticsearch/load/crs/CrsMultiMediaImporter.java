@@ -22,7 +22,6 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
-import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
@@ -98,10 +97,16 @@ public class CrsMultiMediaImporter {
 	private final int maxRecords;
 	private final boolean forceRestart;
 
-	private int processed;
-	private int rejected;
-	private int indexed;
-	private int skipped;
+	int recordsProcessed;
+	int multimediaProcessed;
+
+	int recordsRejected;
+	int multimediaRejected;
+
+	int recordsSkipped;
+	int multimediaSkipped;
+
+	int multimediaIndexed;
 
 
 	public CrsMultiMediaImporter(Index index) throws Exception
@@ -129,11 +134,14 @@ public class CrsMultiMediaImporter {
 
 	public void importMultiMedia()
 	{
-		processed = 0;
-		rejected = 0;
-		indexed = 0;
-		skipped = 0;
-		
+		recordsProcessed = 0;
+		multimediaProcessed = 0;
+		recordsRejected = 0;
+		multimediaRejected = 0;
+		recordsSkipped = 0;
+
+		multimediaIndexed = 0;
+
 		try {
 
 			ThematicSearchConfig.getInstance().resetMatchCounters();
@@ -147,11 +155,18 @@ public class CrsMultiMediaImporter {
 
 			ThematicSearchConfig.getInstance().logMatchInfo();
 
-			logger.info("Records indexed            : " + String.format("%7d", indexed));
-			logger.info("Records skipped            : " + String.format("%7d", skipped));
-			logger.info("Malformed/rejected records : " + String.format("%7d", rejected));
-			logger.info("Records processed          : " + String.format("%7d", processed));
-			
+			logger.info("Multimedia indexed            : " + String.format("%7d", multimediaIndexed));
+			logger.info("Multimedia skipped            : " + String.format("%7d", multimediaSkipped));
+			logger.info("Malformed/rejected multimedia : " + String.format("%7d", multimediaRejected));
+			logger.info("--------------------------------------- +");
+			logger.info("Multimedia processed          : " + String.format("%7d", multimediaProcessed));
+
+			logger.info(" ");
+			logger.info("Records skipped               : " + String.format("%7d", recordsSkipped));
+			logger.info("Malformed/rejected records    : " + String.format("%7d", recordsRejected));
+			logger.info("--------------------------------------- +");
+			logger.info("Records processed             : " + String.format("%7d", recordsProcessed));
+
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
@@ -228,61 +243,55 @@ public class CrsMultiMediaImporter {
 		List<String> ids = new ArrayList<String>(bulkRequestSize);
 
 		for (int i = 0; i < numRecords; ++i) {
-			++processed;
-			try {
-				Element record = (Element) records.item(i);
-				if (isDeletedRecord(record)) {
-					++skipped;
-					logger.debug("Skipped record with status \"deleted\"");
-					// TODO delete media from ES index
+			++recordsProcessed;
+			Element record = (Element) records.item(i);
+			if (isDeletedRecord(record)) {
+				++recordsSkipped;
+				logger.debug("Skipped record with status \"deleted\"");
+				// TODO delete media from ES index
+			}
+			else {
+				List<ESMultiMediaObject> extractedMedia = null;
+				try {
+					extractedMedia = CrsMultiMediaTransfer.transfer(record, this);
 				}
-				else {
-					List<ESMultiMediaObject> extractedMedia = null;
-					try {
-						extractedMedia = CrsMultiMediaTransfer.transfer(record);
+				catch (Throwable t) {
+					++recordsRejected;
+					logger.error("Error while processing record " + i + ": " + t.getMessage());
+					logger.trace("Stack trace: ", t);
+				}
+				if (extractedMedia != null) {
+					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
+					for (ESMultiMediaObject mo : extractedMedia) {
+						extractedIds.add(ID_PREFIX + mo.getSourceSystemId());
 					}
-					catch (InvalidDataException e) {
-						++rejected;
-						logger.debug(e.getMessage());
-						logger.debug("Stack trace:", e);
-					}
-					if (extractedMedia != null) {
-						List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
-						for (ESMultiMediaObject mo : extractedMedia) {
-							extractedIds.add(ID_PREFIX + mo.getSourceSystemId());
+					mediaObjects.addAll(extractedMedia);
+					ids.addAll(extractedIds);
+					if (mediaObjects.size() >= bulkRequestSize) {
+						try {
+							index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
+							multimediaIndexed += mediaObjects.size();
 						}
-						mediaObjects.addAll(extractedMedia);
-						ids.addAll(extractedIds);
-						if (mediaObjects.size() >= bulkRequestSize) {
-							try {
-								index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
-								indexed += mediaObjects.size();
-							}
-							finally {
-								mediaObjects.clear();
-								ids.clear();
-							}
+						finally {
+							mediaObjects.clear();
+							ids.clear();
 						}
 					}
 				}
 			}
-			catch (Throwable t) {
-				logger.error(t.getMessage());
-				logger.debug("Stack trace: ", t);
-			}
-			if (maxRecords > 0 && processed >= maxRecords) {
+			if (maxRecords > 0 && recordsProcessed >= maxRecords) {
 				break;
 			}
-			if (processed % 50000 == 0) {
-				logger.info("Records processed: " + processed);
-				logger.info("Documents indexed: " + indexed);
+			if (recordsProcessed % 50000 == 0) {
+				logger.info("Records processed: " + recordsProcessed);
+				logger.info("Documents indexed: " + multimediaIndexed);
 			}
 		}
 		if (!mediaObjects.isEmpty()) {
 			index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, mediaObjects, ids);
-			indexed += mediaObjects.size();
+			multimediaIndexed += mediaObjects.size();
 		}
-		if (maxRecords > 0 && processed >= maxRecords) {
+		if (maxRecords > 0 && recordsProcessed >= maxRecords) {
 			return null;
 		}
 		return DOMUtil.getDescendantValue(doc, "resumptionToken");

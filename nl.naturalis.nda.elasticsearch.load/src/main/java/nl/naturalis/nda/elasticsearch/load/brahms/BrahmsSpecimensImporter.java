@@ -209,6 +209,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 
 		ThematicSearchConfig.getInstance().resetMatchCounters();
+		
+		BrahmsExportEncodingConverter.convertFiles();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);

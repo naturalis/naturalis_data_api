@@ -43,14 +43,17 @@ public class CrsMultiMediaTransfer {
 	private static final SimpleHttpHead httpHead = new SimpleHttpHead();
 
 
-	public static List<ESMultiMediaObject> transfer(Element recordElement) throws InvalidDataException
+	public static List<ESMultiMediaObject> transfer(Element recordElement, CrsMultiMediaImporter crsMultiMediaImporter)
 	{
 		String identifier = val(recordElement, "identifier");
 		Element dcElement = DOMUtil.getDescendant(recordElement, "oai_dc:dc");
 		List<Element> mediaFileElements = DOMUtil.getDescendants(dcElement, "frmDigitalebestanden");
 		if (mediaFileElements == null) {
-			throw new InvalidDataException("Missing element <frmDigitalebestanden> for record with identifier " + identifier);
+			++crsMultiMediaImporter.recordsRejected;
+			logger.error("Missing element <frmDigitalebestanden> for record with identifier " + identifier);
+			return null;
 		}
+		crsMultiMediaImporter.multimediaProcessed += mediaFileElements.size();
 		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
@@ -61,20 +64,26 @@ public class CrsMultiMediaTransfer {
 		String sex = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
 
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
-		List<String> themes = tsc.getThemesForDocument(associatedSpecimenReference, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.CRS);
+		boolean themeCheckDone = false;			
+		List<String> themes = null;
 
 		List<String> sexes = sex == null ? null : Arrays.asList(sex);
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(mediaFileElements.size());
-		for (Element mediaFileElement : mediaFileElements) {
+		for (Element mediaFileElement : mediaFileElements) {			
+
 			String title = val(mediaFileElement, "dc:title");
 			String url = val(mediaFileElement, "abcd:fileuri");
 			if (url == null) {
+				++crsMultiMediaImporter.multimediaRejected;
 				String msg = String.format("Missing media URL for record with identifier %s (title=%s)", identifier, title);
-				throw new InvalidDataException(msg);
+				logger.error(msg);
+				continue;
 			}
 			if (title == null) {
+				++crsMultiMediaImporter.multimediaRejected;
 				String msg = String.format("Missing title for record with identifier %s (title=%s)", identifier, title);
-				throw new InvalidDataException(msg);
+				logger.error(msg);
+				continue;
 			}
 
 			String unitID;
@@ -89,7 +98,7 @@ public class CrsMultiMediaTransfer {
 					url = url.replace("/small", "/large");
 				}
 				logger.debug("Retrieving content type for URL " + url);
-				contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
+				//contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
 			}
 			else {
 				unitID = title;
@@ -117,7 +126,13 @@ public class CrsMultiMediaTransfer {
 			mmo.setPhasesOrStages(phaseOrStages);
 			mmo.setMultiMediaPublic(bval(mediaFileElement, "abcd:MultiMediaPublic"));
 			mmo.setCreator(val(mediaFileElement, "dc:creator"));
+			
+			if(!themeCheckDone) {
+				themes = tsc.getThemesForDocument(associatedSpecimenReference, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.CRS);
+				themeCheckDone = true;
+			}		
 			mmo.setTheme(themes);
+			
 		}
 		return mmos;
 	}

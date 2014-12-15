@@ -59,10 +59,10 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		logger.info("-----------------------------------------------------------------");
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-		
+
 		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();		
-		
+		ThematicSearchConfig.getInstance();
+
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
 			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
@@ -109,7 +109,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 
 		ThematicSearchConfig.getInstance().resetMatchCounters();
-		
+
 		BrahmsExportEncodingConverter.convertFiles();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
@@ -135,21 +135,24 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 				f.renameTo(new File(f.getCanonicalPath() + "." + now + ".bak"));
 			}
 		}
-		
+
 		ThematicSearchConfig.getInstance().logMatchInfo();
-		
+
 	}
+
+	private ArrayList<String> multimediaIds;
 
 
 	@Override
 	protected List<ESMultiMediaObject> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
 	{
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
+		multimediaIds = new ArrayList<String>(4);
 		String s = val(record, IMAGELIST.ordinal());
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
-				ESMultiMediaObject mmo = transferOne(record, i, urls[i], lineNo);
+				ESMultiMediaObject mmo = transferOne(record, urls[i], lineNo);
 				if (mmo != null) {
 					mmos.add(mmo);
 				}
@@ -162,20 +165,24 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String base = ID_PREFIX + val(record, BARCODE.ordinal());
-		List<String> ids = new ArrayList<String>(4);
-		String s = val(record, IMAGELIST.ordinal());
-		if (s != null) {
-			String[] urls = s.split(",");
-			for (int i = 0; i < urls.length; ++i) {
-				ids.add(base + "_" + i);
-			}
+		ArrayList<String> ids = new ArrayList<String>(multimediaIds);
+		for (int i = 0; i < ids.size(); ++i) {
+			ids.set(i, ID_PREFIX + ids.get(i));
 		}
+		//		String base = ID_PREFIX + val(record, BARCODE.ordinal());
+		//		List<String> ids = new ArrayList<String>(4);
+		//		String s = val(record, IMAGELIST.ordinal());
+		//		if (s != null) {
+		//			String[] urls = s.split(",");
+		//			for (int i = 0; i < urls.length; ++i) {
+		//				ids.add(base + "_" + i);
+		//			}
+		//		}
 		return ids;
 	}
 
 
-	private static ESMultiMediaObject transferOne(CSVRecord record, int imageNo, String imageUrl, int lineNo) throws Exception
+	private ESMultiMediaObject transferOne(CSVRecord record, String imageUrl, int lineNo) throws Exception
 	{
 		String specimenUnitId = val(record, BARCODE.ordinal());
 		if (specimenUnitId == null) {
@@ -190,7 +197,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			return null;
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
-		mmo.setUnitID(specimenUnitId + ":" + imageNo);
+		mmo.setUnitID(specimenUnitId + ':' + String.valueOf(imageUrl.hashCode()).replace('-', '0'));
+		multimediaIds.add(mmo.getUnitID());
 		mmo.setSourceSystemId(mmo.getUnitID());
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);

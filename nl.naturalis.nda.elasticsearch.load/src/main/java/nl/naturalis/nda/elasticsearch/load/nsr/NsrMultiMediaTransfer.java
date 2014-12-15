@@ -62,7 +62,7 @@ public class NsrMultiMediaTransfer {
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystem(SourceSystem.NSR);
-		mmo.setSourceSystemId(taxon.getSourceSystemId() + ":" + url.hashCode());
+		mmo.setSourceSystemId(taxon.getSourceSystemId() + ':' + String.valueOf(url.hashCode()).replace('-', '0'));
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
 		mmo.setSourceID("LNG NSR");

@@ -21,13 +21,13 @@ public class BrahmsExportEncodingConverter {
 
 	public static void convertFiles() throws Exception
 	{
-		logger.info("Preparing file encoding conversion");
+		logger.info("Checking file encoding for Brahms CSV files");
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
 		}
-		logger.info("Converting CSV files in directory " + file.getCanonicalPath());
+		logger.info("Brahms data directory: " + file.getCanonicalPath());
 		File[] csvFiles = file.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)

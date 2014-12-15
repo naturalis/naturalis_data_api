@@ -5,7 +5,7 @@ public class SourceSystem {
 	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS", "Brahms");
 	public static final SourceSystem COL = new SourceSystem("COL", "Catalogue Of Life");
 	public static final SourceSystem CRS = new SourceSystem("CRS", "Naturalis Collectie Registratie Systeem");
-	public static final SourceSystem NSR = new SourceSystem("NSR", "Nationaal Soortenregister");
+	public static final SourceSystem NSR = new SourceSystem("NSR", "Nederlands Soortenregister");
 
 	private String code;
 	private String name;

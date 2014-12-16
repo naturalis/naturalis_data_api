@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.Reference;
@@ -67,8 +66,8 @@ public class CoLTaxonReferenceEnricher {
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
-		List<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
-		List<String> ids = new ArrayList<String>(bulkRequestSize);
+		ArrayList<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
+		ArrayList<String> ids = new ArrayList<String>(bulkRequestSize);
 
 		int lineNo = 0;
 		int processed = 0;
@@ -94,26 +93,36 @@ public class CoLTaxonReferenceEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String id = CoLTaxonImporter.ID_PREFIX + val(record, CsvField.taxonID.ordinal());
+					String taxonId = val(record, CsvField.taxonID.ordinal());
+					String esId = CoLTaxonImporter.ID_PREFIX + taxonId;
+
 					reference = new Reference();
 					reference.setTitleCitation(val(record, CsvField.title.ordinal()));
 					reference.setCitationDetail(val(record, CsvField.description.ordinal()));
 					Date pubDate = TransferUtil.parseDate(val(record, CsvField.date.ordinal()));
 					reference.setPublicationDate(pubDate);
 					reference.setAuthor(new Person(val(record, CsvField.creator.ordinal())));
-					taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
+					
+					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {
-						logger.debug("Orphan reference: " + id);
+						taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);
+					}
+					if (taxon == null) {
+						logger.debug("Orphan reference: " + esId);
 					}
 					else if (taxon.getReferences() == null || !taxon.getReferences().contains(reference)) {
 						taxon.addReference(reference);
 						objects.add(taxon);
-						ids.add(id);
+						ids.add(esId);
 						if (objects.size() >= bulkRequestSize) {
-							index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
-							indexed += objects.size();
-							objects.clear();
-							ids.clear();
+							try {
+								index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+								indexed += objects.size();
+							}
+							finally {
+								objects.clear();
+								ids.clear();
+							}
 						}
 					}
 				}
@@ -143,4 +152,14 @@ public class CoLTaxonReferenceEnricher {
 		logger.info("Documents indexed: " + indexed);
 	}
 
+
+	private static ESTaxon findTaxonInBatch(String taxonId, ArrayList<ESTaxon> batch)
+	{
+		for (ESTaxon taxon : batch) {
+			if (taxonId.equals(taxon.getSourceSystemId())) {
+				return taxon;
+			}
+		}
+		return null;
+	}
 }

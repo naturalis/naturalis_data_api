@@ -138,10 +138,11 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 			return null;
 		}
 
-		final ESTaxon taxon = new ESTaxon();
+		ESTaxon taxon = new ESTaxon();
 
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.setSourceSystemId(val(record, CsvField.taxonID.ordinal()));
+		
 		String references = val(record, CsvField.references.ordinal());
 		if (references == null) {
 			logger.warn("Missing URL for taxon " + taxon.getSourceSystemId());
@@ -164,7 +165,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		}
 		taxon.setTaxonRank(val(record, CsvField.taxonRank.ordinal()));
 
-		final ScientificName sn = new ScientificName();
+		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
 		sn.setGenusOrMonomial(val(record, CsvField.genericName.ordinal()));
 		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
@@ -173,7 +174,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
 		taxon.setAcceptedName(sn);
 
-		final DefaultClassification dc = new DefaultClassification();
+		DefaultClassification dc = new DefaultClassification();
 		taxon.setDefaultClassification(dc);
 
 		dc.setKingdom(val(record, CsvField.kingdom.ordinal()));

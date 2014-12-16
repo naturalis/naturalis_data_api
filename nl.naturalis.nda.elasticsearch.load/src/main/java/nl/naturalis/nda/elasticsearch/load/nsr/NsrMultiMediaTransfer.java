@@ -66,13 +66,15 @@ public class NsrMultiMediaTransfer {
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
 		mmo.setSourceID("LNG NSR");
-		mmo.setLicenceType(LICENCE_TYPE);
-		mmo.setLicence(LICENCE);
 		mmo.setUnitID(mmo.getSourceSystemId());
 		mmo.setAssociatedTaxonReference(taxon.getSourceSystemId());
 		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, null, Variant.MEDIUM_QUALITY));
 		mmo.setCreator(nl(DOMUtil.getValue(imageElement, "photographer_name")));
 		mmo.setCopyrightText(nl(DOMUtil.getValue(imageElement, "copyright")));
+		if(mmo.getCopyrightText() == null) {
+			mmo.setLicenceType(LICENCE_TYPE);
+			mmo.setLicence(LICENCE);
+		}
 		mmo.setDescription(nl(DOMUtil.getValue(imageElement, "short_description")));
 		mmo.setCaption(mmo.getDescription());
 		String locality = nl(DOMUtil.getValue(imageElement, "geography"));

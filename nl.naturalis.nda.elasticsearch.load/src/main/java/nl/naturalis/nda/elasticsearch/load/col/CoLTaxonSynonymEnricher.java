@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
-import java.util.List;
 
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.TaxonomicStatus;
@@ -68,8 +67,8 @@ public class CoLTaxonSynonymEnricher {
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
-		List<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
-		List<String> ids = new ArrayList<String>(bulkRequestSize);
+		ArrayList<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
+		ArrayList<String> ids = new ArrayList<String>(bulkRequestSize);
 
 		int lineNo = 0;
 		int processed = 0;
@@ -100,21 +99,31 @@ public class CoLTaxonSynonymEnricher {
 						++skipped;
 					}
 					else {
-						String id = CoLTaxonImporter.ID_PREFIX + val(record, CsvField.acceptedNameUsageID.ordinal());
+						String taxonId = val(record, CsvField.acceptedNameUsageID.ordinal());
+						String esId = CoLTaxonImporter.ID_PREFIX + taxonId;
+						
 						String synonym = val(record, CsvField.scientificName.ordinal());
-						taxon = index.get(LUCENE_TYPE_TAXON, id, ESTaxon.class);
+						
+						taxon = findTaxonInBatch(taxonId, objects);
+						if (taxon == null) {
+							taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);
+						}
 						if (taxon == null) {
 							logger.debug("Orphan synonym: " + synonym);
 						}
 						else if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
 							taxon.addSynonym(transfer(record));
 							objects.add(taxon);
-							ids.add(id);
-							if (objects.size() == bulkRequestSize) {
-								index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
-								indexed += bulkRequestSize;
-								objects.clear();
-								ids.clear();
+							ids.add(esId);
+							if (objects.size() >= bulkRequestSize) {
+								try {
+									index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+									indexed += objects.size();
+								}
+								finally {
+									objects.clear();
+									ids.clear();
+								}
 							}
 						}
 						else {
@@ -161,6 +170,17 @@ public class CoLTaxonSynonymEnricher {
 		TaxonomicStatus status = statusNormalizer.getEnumConstant(val(record, CsvField.taxonomicStatus.ordinal()));
 		sn.setTaxonomicStatus(status);
 		return sn;
+	}
+
+
+	private static ESTaxon findTaxonInBatch(String taxonId, ArrayList<ESTaxon> batch)
+	{
+		for (ESTaxon taxon : batch) {
+			if (taxonId.equals(taxon.getSourceSystemId())) {
+				return taxon;
+			}
+		}
+		return null;
 	}
 
 }

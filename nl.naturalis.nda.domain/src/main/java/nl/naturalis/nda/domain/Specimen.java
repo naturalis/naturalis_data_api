@@ -11,8 +11,8 @@ public class Specimen extends NdaTraceableObject {
 	private String sourceInstitutionID;
 	private String sourceID;
 	private String owner;
-	private String licenceType;
-	private String licence;
+	private String licenseType;
+	private String license;
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
@@ -126,25 +126,25 @@ public class Specimen extends NdaTraceableObject {
 
 	public String getLicenceType()
 	{
-		return licenceType;
+		return licenseType;
 	}
 
 
 	public void setLicenceType(String licenceType)
 	{
-		this.licenceType = licenceType;
+		this.licenseType = licenceType;
 	}
 
 
-	public String getLicence()
+	public String getLicense()
 	{
-		return licence;
+		return license;
 	}
 
 
-	public void setLicence(String licence)
+	public void setLicense(String license)
 	{
-		this.licence = licence;
+		this.license = license;
 	}
 
 

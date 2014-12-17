@@ -23,8 +23,8 @@ public class MultiMediaObject extends NdaTraceableObject {
 	private String sourceInstitutionID;
 	private String sourceID;
 	private String owner;
-	private String licenceType;
-	private String licence;
+	private String licenseType;
+	private String license;
 	private String unitID;
 	private String title;
 	private String caption;
@@ -106,25 +106,25 @@ public class MultiMediaObject extends NdaTraceableObject {
 
 	public String getLicenceType()
 	{
-		return licenceType;
+		return licenseType;
 	}
 
 
 	public void setLicenceType(String licenceType)
 	{
-		this.licenceType = licenceType;
+		this.licenseType = licenceType;
 	}
 
 
-	public String getLicence()
+	public String getLicense()
 	{
-		return licence;
+		return license;
 	}
 
 
-	public void setLicence(String licence)
+	public void setLicense(String license)
 	{
-		this.licence = licence;
+		this.license = license;
 	}
 
 

@@ -47,16 +47,24 @@ public class CrsMultiMediaTransfer {
 		String identifier = val(recordElement, "identifier");
 		Element dcElement = DOMUtil.getDescendant(recordElement, "oai_dc:dc");
 		List<Element> mediaFileElements = DOMUtil.getDescendants(dcElement, "frmDigitalebestanden");
+		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
 		if (mediaFileElements == null) {
 			++crsMultiMediaImporter.recordsRejected;
-			logger.error("Missing element <frmDigitalebestanden> for record with identifier " + identifier);
+			String fmt = "Missing element <frmDigitalebestanden> for record with identifier %s (%s)";
+			logger.error(String.format(fmt, identifier, associatedSpecimenReference));
+			return null;
+		}
+		List<Element> determinationElements = DOMUtil.getDescendants(dcElement, "ncrsDetermination");
+		if (determinationElements == null) {
+			++crsMultiMediaImporter.recordsRejected;
+			String fmt = "No identifications for record with identifier %s (%s)";
+			logger.error(String.format(fmt, identifier, associatedSpecimenReference));
 			return null;
 		}
 		++crsMultiMediaImporter.recordsInvestigated;
 		crsMultiMediaImporter.multimediaProcessed += mediaFileElements.size();
-		List<MultiMediaContentIdentification> identifications = getIdentifications(dcElement);
+		List<MultiMediaContentIdentification> identifications = getIdentifications(determinationElements);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
-		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
 
 		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
@@ -172,16 +180,10 @@ public class CrsMultiMediaTransfer {
 	}
 
 
-	private static List<MultiMediaContentIdentification> getIdentifications(Element dcElement)
+	private static List<MultiMediaContentIdentification> getIdentifications(List<Element> determinationElements)
 	{
-		List<Element> elems = DOMUtil.getDescendants(dcElement, "ncrsDetermination");
-		if (elems == null) {
-			String specimenId = DOMUtil.getDescendantValue(dcElement, "ac:associatedSpecimenReference");
-			logger.debug("No determinations for specimen with unitID " + specimenId);
-			return null;
-		}
-		List<MultiMediaContentIdentification> identifications = new ArrayList<MultiMediaContentIdentification>(elems.size());
-		for (Element e : elems) {
+		List<MultiMediaContentIdentification> identifications = new ArrayList<MultiMediaContentIdentification>(determinationElements.size());
+		for (Element e : determinationElements) {
 			String s = val(e, "abcd:PreferredFlag");
 			if (s != null && !s.equals("1")) {
 				continue;

@@ -42,9 +42,15 @@ public class CrsSpecimenTransfer {
 
 	public static ESSpecimen transfer(Element recordElement)
 	{
+		String unitId = val(recordElement, "abcd:UnitID");
+		List<Element> determinationElements = DOMUtil.getDescendants(recordElement, "ncrsDetermination");
+		if (determinationElements == null) {
+			logger.error("No determinations for specimen with unitID " + unitId);
+			return null;
+		}
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.CRS);
-		specimen.setUnitID(val(recordElement, "abcd:UnitID"));
+		specimen.setUnitID(unitId);
 		specimen.setSourceSystemId(specimen.getUnitID());
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
@@ -76,18 +82,11 @@ public class CrsSpecimenTransfer {
 		specimen.setPhaseOrStage(phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "abcd:PhaseOrStage")));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus")));
 		specimen.setSex(sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex")));
-		List<Element> determinationElements = DOMUtil.getDescendants(recordElement, "ncrsDetermination");
-
-		if (determinationElements == null) {
-			logger.debug("No determinations for specimen with unitID " + specimen.getUnitID());
-		}
-		else {
-			// For version 0.9 only preferred specimens are indexed.
-			for (Element e : determinationElements) {
-				s = val(e, "abcd:PreferredFlag");
-				if (s == null || s.trim().equals("1") || determinationElements.size() == 1) {
-					specimen.addIndentification(transferIdentification(e));
-				}
+		// For version 0.9 only preferred specimens are indexed.
+		for (Element e : determinationElements) {
+			s = val(e, "abcd:PreferredFlag");
+			if (s == null || s.trim().equals("1") || determinationElements.size() == 1) {
+				specimen.addIndentification(transferIdentification(e));
 			}
 		}
 		specimen.setGatheringEvent(transferGatheringEvent(recordElement));

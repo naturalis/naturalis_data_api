@@ -218,16 +218,19 @@ public abstract class AbstractSpecimenImporter {
 						}
 					}
 					else {
-						specimens.add(CrsSpecimenTransfer.transfer(record));
-						ids.add(id);
-						if (specimens.size() >= bulkRequestSize) {
-							try {
-								saveSpecimens(specimens, ids);
-								indexed += specimens.size();
-							}
-							finally {
-								specimens.clear();
-								ids.clear();
+						ESSpecimen specimen = CrsSpecimenTransfer.transfer(record);
+						if (specimen != null) {
+							specimens.add(specimen);
+							ids.add(id);
+							if (specimens.size() >= bulkRequestSize) {
+								try {
+									saveSpecimens(specimens, ids);
+									indexed += specimens.size();
+								}
+								finally {
+									specimens.clear();
+									ids.clear();
+								}
 							}
 						}
 					}

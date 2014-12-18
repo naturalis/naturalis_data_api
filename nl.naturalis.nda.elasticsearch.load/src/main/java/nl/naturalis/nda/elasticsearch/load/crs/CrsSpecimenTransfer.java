@@ -6,6 +6,8 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTI
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -48,23 +50,38 @@ public class CrsSpecimenTransfer {
 			logger.error("Missing <ncrsDetermination> element for specimen with unitID " + unitId);
 			return null;
 		}
-		
+
 		final ESSpecimen specimen = new ESSpecimen();
-		
+
 		String string;
-		
-		// For version 0.9 only preferred specimens are indexed.
+
 		for (Element e : determinationElements) {
-			string = val(e, "abcd:PreferredFlag");
-			if (string == null || string.trim().equals("1") || determinationElements.size() == 1) {
-				specimen.addIndentification(transferIdentification(e));
+			SpecimenIdentification si = transferIdentification(e, unitId);
+			if (si != null) {
+				specimen.addIndentification(transferIdentification(e, unitId));
 			}
 		}
-		
-		if(specimen.getIdentifications() == null) {
+
+		if (specimen.getIdentifications() == null) {
 			logger.error("Missing non-empty <ncrsDetermination> element for specimen with unitID " + unitId);
-			return null;			
+			return null;
 		}
+
+		Collections.sort(specimen.getIdentifications(), new Comparator<SpecimenIdentification>() {
+
+			@Override
+			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
+			{
+				if (o1.isPreferred()) {
+					return -1;
+				}
+				if (o2.isPreferred()) {
+					return 1;
+				}
+				return 0;
+			}
+
+		});
 
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setUnitID(unitId);
@@ -99,13 +116,6 @@ public class CrsSpecimenTransfer {
 		specimen.setPhaseOrStage(phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "abcd:PhaseOrStage")));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus")));
 		specimen.setSex(sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex")));
-		// For version 0.9 only preferred specimens are indexed.
-		for (Element e : determinationElements) {
-			string = val(e, "abcd:PreferredFlag");
-			if (string == null || string.trim().equals("1") || determinationElements.size() == 1) {
-				specimen.addIndentification(transferIdentification(e));
-			}
-		}
 		specimen.setGatheringEvent(transferGatheringEvent(recordElement));
 		return specimen;
 	}
@@ -144,15 +154,20 @@ public class CrsSpecimenTransfer {
 	}
 
 
-	public static SpecimenIdentification transferIdentification(Element determinationElement)
+	public static SpecimenIdentification transferIdentification(Element determinationElement, String unitID)
 	{
+
+		ScientificName sn = getScientificName(determinationElement);
+		if (sn.getFullScientificName() == null) {
+			String fmt = "Missing scientific name in identification for record with UnitID %s";
+			logger.error(String.format(fmt, unitID));
+			return null;
+		}
+
 		final SpecimenIdentification identification = new SpecimenIdentification();
-		/*
-		 * Non-preferred determinations have already been filtered out String s
-		 * = val(determinationElement, "abcd:PreferredFlag"); si.setPreferred(s
-		 * != null && s.equals("1"));
-		 */
-		identification.setPreferred(true);
+
+		String s = val(determinationElement, "abcd:PreferredFlag");
+		identification.setPreferred(s == null || s.equals("1"));
 		identification.setDateIdentified(date(determinationElement, "abcd:IdentificationDate"));
 		identification.setAssociatedFossilAssemblage(val(determinationElement, "abcd:AssociatedFossilAssemblage"));
 		identification.setAssociatedMineralName(val(determinationElement, "abcd:AssociatedMineralName"));
@@ -179,7 +194,7 @@ public class CrsSpecimenTransfer {
 			identification.setTaxonRank("genus");
 		}
 
-		String s = val(determinationElement, "abcd:InformalNameString");
+		s = val(determinationElement, "abcd:InformalNameString");
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}

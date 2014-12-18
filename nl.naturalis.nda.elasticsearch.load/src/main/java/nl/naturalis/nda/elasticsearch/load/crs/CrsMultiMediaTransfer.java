@@ -61,12 +61,13 @@ public class CrsMultiMediaTransfer {
 			logger.error(String.format(fmt, identifier, associatedSpecimenReference));
 			return null;
 		}
-		List<MultiMediaContentIdentification> identifications = getIdentifications(determinationElements);
-		if(identifications == null) {
+		List<MultiMediaContentIdentification> identifications = getIdentifications(determinationElements, crsMultiMediaImporter, identifier,
+				associatedSpecimenReference);
+		if (identifications == null) {
 			++crsMultiMediaImporter.recordsRejected;
 			String fmt = "Missing non-empty <ncrsDetermination> element for record with identifier %s (%s)";
 			logger.error(String.format(fmt, identifier, associatedSpecimenReference));
-			return null;			
+			return null;
 		}
 
 		++crsMultiMediaImporter.recordsInvestigated;
@@ -187,21 +188,16 @@ public class CrsMultiMediaTransfer {
 	}
 
 
-	private static List<MultiMediaContentIdentification> getIdentifications(List<Element> determinationElements)
+	private static List<MultiMediaContentIdentification> getIdentifications(List<Element> determinationElements,
+			CrsMultiMediaImporter crsMultiMediaImporter, String identifier, String associatedSpecimenReference)
 	{
 		ArrayList<MultiMediaContentIdentification> identifications = null;
 		for (Element e : determinationElements) {
-			String s = val(e, "abcd:PreferredFlag");
-			if (s != null && !s.equals("1")) {
-				continue;
-			}
-			MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
-			if (identifications == null) {
-				identifications = new ArrayList<MultiMediaContentIdentification>(determinationElements.size());
-			}
-			identifications.add(identification);
+			//			String string = val(e, "abcd:PreferredFlag");
+			//			if (string != null && !string.equals("1")) {
+			//				continue;
+			//			}
 			ScientificName sn = new ScientificName();
-			identification.setScientificName(sn);
 			sn.setFullScientificName(val(e, "dwc:scientificName"));
 			sn.setGenusOrMonomial(val(e, "abcd:GenusOrMonomial"));
 			sn.setSpecificEpithet(val(e, "abcd:SpeciesEpithet"));
@@ -228,30 +224,51 @@ public class CrsMultiMediaTransfer {
 				if (sn.getInfraspecificEpithet() != null) {
 					sb.append(sn.getInfraspecificEpithet()).append(' ');
 				}
-				sn.setFullScientificName(sb.toString().trim());
-			}
-			identification.setDefaultClassification(TransferUtil.extractClassificiationFromName(sn));
-			s = val(e, "abcd:IdentificationQualifier1");
-			if (s != null) {
-				List<String> qualifiers = new ArrayList<String>(3);
-				identification.setIdentificationQualifiers(qualifiers);
-				qualifiers.add(s);
-				s = val(e, "abcd:IdentificationQualifier2");
-				if (s != null) {
-					qualifiers.add(s);
+				if (sb.length() > 0) {
+					sn.setFullScientificName(sb.toString().trim());
 				}
-				s = val(e, "abcd:IdentificationQualifier3");
-				if (s != null) {
-					qualifiers.add(s);
+			}
+			if (sn.getFullScientificName() == null) {
+				++crsMultiMediaImporter.multimediaRejected;
+				String fmt = "Missing scientific name in identification for record with identifier %s (%s)";
+				logger.error(String.format(fmt, identifier, associatedSpecimenReference));
+				continue;
+			}
+
+			MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
+			identification.setScientificName(sn);
+			identification.setDefaultClassification(TransferUtil.extractClassificiationFromName(sn));
+
+			String string = val(e, "abcd:IdentificationQualifier1");
+			if (string != null) {
+				List<String> qualifiers = new ArrayList<String>(3);
+				qualifiers.add(string);
+				string = val(e, "abcd:IdentificationQualifier2");
+				if (string != null) {
+					qualifiers.add(string);
+				}
+				string = val(e, "abcd:IdentificationQualifier3");
+				if (string != null) {
+					qualifiers.add(string);
+				}
+				if (qualifiers.size() != 0) {
+					identification.setIdentificationQualifiers(qualifiers);
 				}
 			}
 
-			s = val(e, "dwc:vernacularName");
-			if (s != null) {
-				identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
+			string = val(e, "dwc:vernacularName");
+			if (string != null) {
+				identification.setVernacularNames(Arrays.asList(new VernacularName(string)));
 			}
+
+			if (identifications == null) {
+				identifications = new ArrayList<MultiMediaContentIdentification>(determinationElements.size());
+			}
+
+			identifications.add(identification);
 
 		}
+
 		return identifications;
 	}
 

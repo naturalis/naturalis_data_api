@@ -45,10 +45,27 @@ public class CrsSpecimenTransfer {
 		String unitId = val(recordElement, "abcd:UnitID");
 		List<Element> determinationElements = DOMUtil.getDescendants(recordElement, "ncrsDetermination");
 		if (determinationElements == null) {
-			logger.error("No determinations for specimen with unitID " + unitId);
+			logger.error("Missing <ncrsDetermination> element for specimen with unitID " + unitId);
 			return null;
 		}
+		
 		final ESSpecimen specimen = new ESSpecimen();
+		
+		String string;
+		
+		// For version 0.9 only preferred specimens are indexed.
+		for (Element e : determinationElements) {
+			string = val(e, "abcd:PreferredFlag");
+			if (string == null || string.trim().equals("1") || determinationElements.size() == 1) {
+				specimen.addIndentification(transferIdentification(e));
+			}
+		}
+		
+		if(specimen.getIdentifications() == null) {
+			logger.error("Missing non-empty <ncrsDetermination> element for specimen with unitID " + unitId);
+			return null;			
+		}
+
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setUnitID(unitId);
 		specimen.setSourceSystemId(specimen.getUnitID());
@@ -68,24 +85,24 @@ public class CrsSpecimenTransfer {
 		specimen.setCollectionType(val(recordElement, "abcd:CollectionType"));
 		specimen.setTitle(val(recordElement, "abcd:Title"));
 		specimen.setNumberOfSpecimen(ival(recordElement, "abcd:AccessionSpecimenNumbers"));
-		String s = val(recordElement, "abcd:ObjectPublic");
-		specimen.setObjectPublic(s == null || s.trim().equals("1"));
-		s = val(recordElement, "abcd:MultiMediaPublic");
-		specimen.setMultiMediaPublic(s == null || s.trim().equals("1"));
-		s = val(recordElement, "abcd:FromCaptivity");
-		specimen.setFromCaptivity(s != null && s.trim().equals("1"));
-		s = val(recordElement, "abcd:PreparationType");
-		if (s == null) {
-			s = val(recordElement, "abcd:SpecimenMount");
+		string = val(recordElement, "abcd:ObjectPublic");
+		specimen.setObjectPublic(string == null || string.trim().equals("1"));
+		string = val(recordElement, "abcd:MultiMediaPublic");
+		specimen.setMultiMediaPublic(string == null || string.trim().equals("1"));
+		string = val(recordElement, "abcd:FromCaptivity");
+		specimen.setFromCaptivity(string != null && string.trim().equals("1"));
+		string = val(recordElement, "abcd:PreparationType");
+		if (string == null) {
+			string = val(recordElement, "abcd:SpecimenMount");
 		}
-		specimen.setPreparationType(s);
+		specimen.setPreparationType(string);
 		specimen.setPhaseOrStage(phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "abcd:PhaseOrStage")));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus")));
 		specimen.setSex(sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex")));
 		// For version 0.9 only preferred specimens are indexed.
 		for (Element e : determinationElements) {
-			s = val(e, "abcd:PreferredFlag");
-			if (s == null || s.trim().equals("1") || determinationElements.size() == 1) {
+			string = val(e, "abcd:PreferredFlag");
+			if (string == null || string.trim().equals("1") || determinationElements.size() == 1) {
 				specimen.addIndentification(transferIdentification(e));
 			}
 		}

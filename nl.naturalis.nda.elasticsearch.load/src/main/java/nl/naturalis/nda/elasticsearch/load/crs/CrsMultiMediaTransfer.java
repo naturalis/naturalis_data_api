@@ -57,13 +57,20 @@ public class CrsMultiMediaTransfer {
 		List<Element> determinationElements = DOMUtil.getDescendants(dcElement, "ncrsDetermination");
 		if (determinationElements == null) {
 			++crsMultiMediaImporter.recordsRejected;
-			String fmt = "No identifications for record with identifier %s (%s)";
+			String fmt = "Missing <ncrsDetermination> element for record with identifier %s (%s)";
 			logger.error(String.format(fmt, identifier, associatedSpecimenReference));
 			return null;
 		}
+		List<MultiMediaContentIdentification> identifications = getIdentifications(determinationElements);
+		if(identifications == null) {
+			++crsMultiMediaImporter.recordsRejected;
+			String fmt = "Missing non-empty <ncrsDetermination> element for record with identifier %s (%s)";
+			logger.error(String.format(fmt, identifier, associatedSpecimenReference));
+			return null;			
+		}
+
 		++crsMultiMediaImporter.recordsInvestigated;
 		crsMultiMediaImporter.multimediaProcessed += mediaFileElements.size();
-		List<MultiMediaContentIdentification> identifications = getIdentifications(determinationElements);
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 
 		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
@@ -182,13 +189,16 @@ public class CrsMultiMediaTransfer {
 
 	private static List<MultiMediaContentIdentification> getIdentifications(List<Element> determinationElements)
 	{
-		List<MultiMediaContentIdentification> identifications = new ArrayList<MultiMediaContentIdentification>(determinationElements.size());
+		ArrayList<MultiMediaContentIdentification> identifications = null;
 		for (Element e : determinationElements) {
 			String s = val(e, "abcd:PreferredFlag");
 			if (s != null && !s.equals("1")) {
 				continue;
 			}
 			MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
+			if (identifications == null) {
+				identifications = new ArrayList<MultiMediaContentIdentification>(determinationElements.size());
+			}
 			identifications.add(identification);
 			ScientificName sn = new ScientificName();
 			identification.setScientificName(sn);

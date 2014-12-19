@@ -26,7 +26,7 @@ public class SpecimenTransfer {
 		specimen.setSourceID(esSpecimen.getSourceID());
 		specimen.setOwner(esSpecimen.getOwner());
 		// TODO: Change licenceType to licenseType in ESSpecimen and ES mapping!!
-		specimen.setLicenceType(esSpecimen.getLicenceType());
+		specimen.setLicenseType(esSpecimen.getLicenceType());
 		// TODO: Change licence to license in ESSpecimen and ES mapping!!
 		specimen.setLicense(esSpecimen.getLicence());
 		specimen.setRecordBasis(esSpecimen.getRecordBasis());

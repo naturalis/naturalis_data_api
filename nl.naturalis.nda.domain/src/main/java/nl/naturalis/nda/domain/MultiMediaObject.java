@@ -104,15 +104,15 @@ public class MultiMediaObject extends NdaTraceableObject {
 	}
 
 
-	public String getLicenceType()
+	public String getLicenseType()
 	{
 		return licenseType;
 	}
 
 
-	public void setLicenceType(String licenceType)
+	public void setLicenseType(String licenseType)
 	{
-		this.licenseType = licenceType;
+		this.licenseType = licenseType;
 	}
 
 

@@ -26,7 +26,7 @@ public class MultiMediaObjectTransfer {
 		mmo.setSourceID(esMmo.getSourceID());
 		mmo.setOwner(esMmo.getOwner());
 		// TODO: Change licenceType to licenseType in ESMultiMediaObject and ES mapping!!
-		mmo.setLicenceType(esMmo.getLicenceType());
+		mmo.setLicenseType(esMmo.getLicenceType());
 		// TODO: Change licence to license in ESMultiMediaObject and ES mapping!!
 		mmo.setLicense(esMmo.getLicence());
 		mmo.setUnitID(esMmo.getUnitID());

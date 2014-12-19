@@ -3,6 +3,8 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
+import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -31,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public abstract class AbstractSpecimenImporter {
 
@@ -99,6 +103,19 @@ public abstract class AbstractSpecimenImporter {
 		}
 	}
 
+
+	public void checkSpecimen(String unitID) throws IOException, SAXException
+	{
+		logger.info(String.format("Searching for specimen with UnitID \"%s\"", unitID));
+		Iterator<File> localFileIterator = getLocalFileIterator();
+		while (localFileIterator.hasNext()) {
+			File f = localFileIterator.next();
+			logger.info("Searching file " + f.getCanonicalPath());
+			if (checkFile(FileUtil.getContents(f), unitID)) {
+				break;
+			}
+		}
+	}
 
 	protected abstract void saveSpecimens(List<ESSpecimen> specimens, List<String> ids);
 
@@ -190,6 +207,41 @@ public abstract class AbstractSpecimenImporter {
 			FileUtil.setContents(path, xml);
 		}
 		return xml;
+	}
+
+
+	private boolean checkFile(String xml, String unitID) throws SAXException, IOException
+	{
+		Document doc = builder.parse(StringUtil.asInputStream(xml));
+		doc.normalize();
+		NodeList records = doc.getElementsByTagName("record");
+		int numRecords = records.getLength();
+		boolean found = false;
+		for (int i = 0; i < numRecords; ++i) {
+			Element record = (Element) records.item(i);
+			if (isDeletedRecord(record)) {
+				continue;
+			}
+			String id = CrsSpecimenTransfer.val(record, "abcd:UnitID");
+			if (!id.equals(unitID)) {
+				continue;
+			}
+			found = true;
+			ESSpecimen specimen = null;
+			try {
+				specimen = CrsSpecimenTransfer.transfer(record);
+			}
+			catch (Throwable t) {
+				logger.error(String.format("An error occurred for specimen with UnitID \"%s\": %s", unitID, t.getMessage()));
+			}
+			StringWriter sw = new StringWriter(1024);
+			PrintWriter pw = new PrintWriter(sw);
+			BeanPrinter bp = new BeanPrinter(pw);
+			bp.dump(specimen);
+			logger.info(sw.toString());
+			break;
+		}
+		return found;
 	}
 
 

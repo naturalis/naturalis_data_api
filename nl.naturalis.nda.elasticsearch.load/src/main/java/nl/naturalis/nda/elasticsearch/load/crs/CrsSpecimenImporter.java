@@ -31,10 +31,17 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
-
-		// Check thematic search is configured properly
+		// Set up thematic search and make sure it's configured OK.
 		ThematicSearchConfig.getInstance();
+		
+		String unitIDToCheck = System.getProperty("check");
+		if(unitIDToCheck != null) {
+			CrsSpecimenImporter importer = new CrsSpecimenImporter(null);
+			importer.checkSpecimen(unitIDToCheck);
+			return;
+		}		
+		
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
 
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {

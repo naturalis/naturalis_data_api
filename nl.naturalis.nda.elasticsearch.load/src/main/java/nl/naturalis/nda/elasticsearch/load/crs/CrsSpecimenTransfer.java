@@ -11,7 +11,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import nl.naturalis.nda.domain.BioStratigraphy;
+import nl.naturalis.nda.domain.ChronoStratigraphy;
 import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.LithoStratigraphy;
 import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
@@ -150,9 +153,138 @@ public class CrsSpecimenTransfer {
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
+		
+		ge.setChronoStratigraphy(getChronoStratigraphyList(recordElement));
+		
 		return ge;
 	}
+	
+	public static List<ChronoStratigraphy> getChronoStratigraphyList(Element recordElement)
+	{
+		
+		List<Element> chronoStratigraphyElements = DOMUtil.getDescendants(recordElement, "ncrsChronoStratigraphy");
+		if (chronoStratigraphyElements == null) {
+	   	  return null;	
+		}
+		List<ChronoStratigraphy> result = new ArrayList<ChronoStratigraphy>(chronoStratigraphyElements.size());
+		for(Element e : chronoStratigraphyElements) {
+			ChronoStratigraphy one = getChronoStratigraphyObject(e);
+			result.add(one);
+		}
+		return result;
+	}
 
+
+	private static ChronoStratigraphy getChronoStratigraphyObject(Element e)
+	{
+		ChronoStratigraphy one = new ChronoStratigraphy();
+		one.setYoungRegionalSubstage(val(e, "abcd:YoungRegionalSubstage"));
+		one.setYoungRegionalStage(val(e, "abcd:YoungRegionalStage"));
+		one.setYoungRegionalSeries(val(e, "abcd:YoungRegionalSeries"));
+		one.setYoungDatingQualifier(val(e, "abcd:YoungDatingQualifier"));
+		one.setYoungInternSystem(val(e, "abcd:YoungInternSystem"));
+		one.setYoungInternSubstage(val(e, "abcd:youngInternSubstage"));
+		one.setYoungInternStage(val(e, "abcd:YoungInternStage"));
+		one.setYoungInternSeries(val(e, "abcd:YoungInternSeries"));
+		one.setYoungInternErathem(val(e, "abcd:YoungInternErathem"));
+		one.setYoungInternEonothem(val(e, "abcd:YoungInternEonothem"));
+		one.setYoungChronoName(val(e, "abcd:YoungChronoName"));
+		one.setYoungCertainty(val(e,"abcd:YoungCertainty"));
+		one.setOldDatingQualifier(val(e, "abcd:OldDatingQualifier"));
+		one.setChronoPreferredFlag(bval(e, "abcd:ChronoPreferredFlag"));
+		one.setOldRegionalSubstage(val(e, "abcd:OldRegionalSubstage"));
+		one.setOldRegionalStage(val(e, "abcd:OldRegionalStage"));
+		one.setOldRegionalSeries(val(e, "abcd:OldRegionalSeries"));
+		one.setOldInternSystem(val(e, "abcd:OldInternSystem"));
+		one.setOldInternSubstage(val(e, "abcd:OldInternSubstage"));
+		one.setOldInternStage(val(e, "abcd:OldInternStage"));
+		one.setOldInternSeries(val(e, "abcd:OldInternSeries"));
+		one.setOldInternErathem(val(e, "abcd:OldInternErathem"));
+		one.setOldInternEonothem(val(e, "abcd:OldInternEonothem"));
+		one.setOldChronoName(val(e, "abcd:OldChronoName"));
+		one.setChronoIdentifier(val(e, "abcd:ChronoIdentifier"));
+		one.setOldCertainty(val(e, "abcd:OldCertainty"));
+		
+		return one;
+	}
+
+	
+	public static List<BioStratigraphy> getBioStratigraphyList(Element recordElement) {
+		List<Element> bioStratigraphyElements = DOMUtil.getDescendants(recordElement, "ncrsBioStratigraphy");
+		if (bioStratigraphyElements == null){
+		   	  return null;	
+		}
+		List<BioStratigraphy> result = new ArrayList<BioStratigraphy>(bioStratigraphyElements.size());
+		for(Element e : bioStratigraphyElements) {
+			BioStratigraphy one = getBioStratigraphyObject(e);
+			result.add(one);
+		}
+		return result;
+	}
+	
+	
+	private static BioStratigraphy getBioStratigraphyObject(Element e)
+	{
+		BioStratigraphy one = new BioStratigraphy();
+		one.setYoungBioDatingQualifier(val(e, "abcd:YoungBioDatingQualifier"));
+		one.setYoungBioName(val(e, "abcd:YoungBioName"));
+		one.setYoungFossilZone(val(e, "abcd:YoungFossilZone"));
+		one.setYoungFossilSubZone(val(e, "abcd:YoungFossilSubZone"));
+		one.setYoungBioCertainty(val(e, "abcd:YoungBioCertainty"));
+		one.setYoungStratType(val(e, "abcd:YoungStratType"));
+		one.setBioDatingQualifier(val(e, "abcd:BioDatingQualifier"));
+		one.setBioPreferredFlag(bval(e, "abcd:BioPreferredFlag"));
+		one.setRangePosition(val(e, "abcd:RangePosition"));
+		one.setOldBioName(val(e, "abcd:OldBioName"));
+		one.setBioIdentifier(val(e, "abcd:BioIdentifier"));
+		one.setOldFossilzone(val(e,"abcd:OldFossilzone"));
+		one.setOldFossilSubzone(val(e, "abcd:OldFossilSubzone"));
+		one.setOldBioCertainty(val(e, "abcd:OldBioCertainty"));
+		one.setOldBioStratType(val(e, "abcd:OldBioStratType"));
+
+		return one;
+	}
+	
+	public static List<LithoStratigraphy> getLithoStratigraphyList(Element recordElement) {
+		List<Element> lithoStratigraphyElements = DOMUtil.getDescendants(recordElement, "ncrsLithoStratigraphy");
+		if (lithoStratigraphyElements == null){
+		   	  return null;	
+		}
+		List<LithoStratigraphy> result = new ArrayList<LithoStratigraphy>(lithoStratigraphyElements.size());
+		for(Element e : lithoStratigraphyElements) {
+			LithoStratigraphy one = getLithoStratigraphyObject(e);
+			result.add(one);
+		}
+		return result;
+	}
+	
+	
+	private static LithoStratigraphy getLithoStratigraphyObject(Element e)
+	{
+		LithoStratigraphy one = new LithoStratigraphy();
+		one.setQualifier(val(e, "abcd:Qualifier"));
+		one.setPreferredFlag(bval(e, "abcd:PreferredFlag"));
+		one.setMember2(val(e, "abcd:Member2"));
+		one.setMember(val(e, "abcd:Member"));
+		one.setInformalName2(val(e, "abcd:InformalName2"));
+		one.setInformalName(val(e, "abcd:InformalName"));
+		one.setImportedName2(val(e, "abcd:ImportedName2"));
+		one.setImportedName1(val(e, "abcd:ImportedName1"));
+		one.setLithoIdentifier(val(e, "abcd:LithoIdentifier"));
+		one.setFormation2(val(e, "abcd:Formation2"));
+		one.setFormationGroup2(val(e, "abcd:FormationGroup2"));
+		one.setFormationGroup(val(e,"abcd:FormationGroup"));
+		one.setFormation(val(e, "abcd:Formation"));
+		one.setCertainty2(val(e, "abcd:Certainty2"));
+		one.setCertainty(val(e, "abcd:Certainty"));
+		one.setBed2(val(e, "abcd:Bed2"));
+		one.setBed(val(e, "abcd:Bed"));
+
+		return one;
+	}
+	
+	
+	
 
 	public static SpecimenIdentification transferIdentification(Element determinationElement, String unitID)
 	{
@@ -322,6 +454,12 @@ public class CrsSpecimenTransfer {
 			return null;
 		}
 		return s;
+	}
+	
+	private static boolean bval(Element e, String tag)
+	{
+		String s = val(e, tag);
+		return (s == null || s.equals("1"));
 	}
 
 }

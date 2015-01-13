@@ -26,7 +26,9 @@ public class GatheringEvent {
 	private String depthUnitOfMeasurement;
 	private List<Agent> gatheringAgents;
 	private List<GatheringSiteCoordinates> siteCoordinates;
-
+    private List<ChronoStratigraphy> chronoStratigraphy;
+    private List<BioStratigraphy> bioStratigraphic;
+    private List<LithoStratigraphy> lithoStratigraphy;
 
 	public void addGatheringAgent(Agent agent)
 	{
@@ -329,6 +331,42 @@ public class GatheringEvent {
 	public void setSiteCoordinates(List<GatheringSiteCoordinates> siteCoordinates)
 	{
 		this.siteCoordinates = siteCoordinates;
+	}
+
+
+	public List<ChronoStratigraphy> getChronoStratigraphy()
+	{
+		return chronoStratigraphy;
+	}
+
+
+	public void setChronoStratigraphy(List<ChronoStratigraphy> chronoStratigraphy)
+	{
+		this.chronoStratigraphy = chronoStratigraphy;
+	}
+
+
+	public List<BioStratigraphy> getBiostratigraphic()
+	{
+		return bioStratigraphic;
+	}
+
+
+	public void setBiostratigraphic(List<BioStratigraphy> bioStratigraphic)
+	{
+		this.bioStratigraphic = bioStratigraphic;
+	}
+
+
+	public List<LithoStratigraphy> getLithoStratigraphy()
+	{
+		return lithoStratigraphy;
+	}
+
+
+	public void setLithoStratigraphy(List<LithoStratigraphy> lithoStratigraphy)
+	{
+		this.lithoStratigraphy = lithoStratigraphy;
 	}
 
 }

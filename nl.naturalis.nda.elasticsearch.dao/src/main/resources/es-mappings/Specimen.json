@@ -461,7 +461,7 @@
               }
             }
           },
-          "chronoStratigrahy": {
+          "chronoStratigraphy": {
           	"type": "nested",
           	"properties": {
           	  "youngRegionalSubstage": {

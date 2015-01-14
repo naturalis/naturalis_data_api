@@ -155,6 +155,8 @@ public class CrsSpecimenTransfer {
 		}
 		
 		ge.setChronoStratigraphy(getChronoStratigraphyList(recordElement));
+		ge.setBioStratigraphy(getBioStratigraphyList(recordElement));
+		ge.setLithoStratigraphy(getLithoStratigraphyList(recordElement));
 		
 		return ge;
 	}

@@ -9,7 +9,6 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
@@ -53,7 +52,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();

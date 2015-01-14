@@ -25,7 +25,8 @@ public class NDAIndexManager {
 
 	public static void main(String[] args)
 	{
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		String indexName = LoadUtil.getConfig().required("elasticsearch.index.name");
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), indexName);
 		NDAIndexManager indexManager = new NDAIndexManager(index);
 		if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
 			indexManager.bootstrap();
@@ -35,10 +36,6 @@ public class NDAIndexManager {
 		}
 	}
 
-	/**
-	 * The default name of the ElasticSearch index for the Naturalis Data API.
-	 */
-	public static final String DEFAULT_NDA_INDEX_NAME = "nda";
 	public static final String LUCENE_TYPE_TAXON = "Taxon";
 	public static final String LUCENE_TYPE_SPECIMEN = "Specimen";
 	public static final String LUCENE_TYPE_MULTIMEDIA_OBJECT = "MultiMediaObject";

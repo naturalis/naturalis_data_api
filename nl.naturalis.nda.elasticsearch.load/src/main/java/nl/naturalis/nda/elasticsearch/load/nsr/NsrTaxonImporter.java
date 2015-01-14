@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.io.File;
@@ -35,7 +34,7 @@ public class NsrTaxonImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {

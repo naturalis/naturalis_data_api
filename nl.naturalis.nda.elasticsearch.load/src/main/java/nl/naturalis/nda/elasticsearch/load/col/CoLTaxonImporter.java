@@ -10,7 +10,6 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBGENUS;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUPER_FAMILY;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.net.URI;
@@ -42,7 +41,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 
 		String rebuild = System.getProperty("rebuild", "false");
 		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {

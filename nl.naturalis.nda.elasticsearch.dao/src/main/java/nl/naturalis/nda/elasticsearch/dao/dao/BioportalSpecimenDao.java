@@ -616,13 +616,13 @@ public class BioportalSpecimenDao extends AbstractDao {
                     searchResult.setResult(specimen);
                     searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
                     double percentage;
-                    if (maxScore != minScore) {
-                        percentage = ((keysAndScores.get(key) - minScore) / (maxScore - minScore)) * 100;
-                    } else {
-                        percentage = 100d;
+                    Double aDouble = keysAndScores.get(key);
+                    if ((maxScore != minScore) && aDouble != null) {
+                        percentage = ((aDouble - minScore) / (maxScore - minScore)) * 100;
+                        //null for some reason sometimes?? todo
+                        searchResult.setScore(aDouble.floatValue());
+                        searchResult.setPercentage(percentage);
                     }
-                    searchResult.setScore(keysAndScores.get(key).floatValue());
-                    searchResult.setPercentage(percentage);
 
                     enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
                     getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);

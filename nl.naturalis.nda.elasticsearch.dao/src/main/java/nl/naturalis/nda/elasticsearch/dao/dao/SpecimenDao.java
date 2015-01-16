@@ -76,7 +76,7 @@ public class SpecimenDao extends AbstractDao {
                     SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName, sessionId);
                     if (taxonSearchResultSet != null) {
                         List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                        if(searchResults != null) {
+                        if (searchResults != null) {
                             for (SearchResult<Taxon> searchResult : searchResults) {
                                 links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
                             }

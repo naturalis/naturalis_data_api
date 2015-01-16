@@ -225,7 +225,7 @@ public abstract class AbstractDao {
 
     //================================================ Helper methods ==================================================
 
-    private FieldSortBuilder createFieldSort(QueryParams params) {
+    FieldSortBuilder createFieldSort(QueryParams params) {
         String sortField = getSortFieldFromQueryParams(params);
         FieldSortBuilder fieldSort = fieldSort(sortField);
         SortOrder sortOrder = getSortOrderFromQueryParams(params);
@@ -235,7 +235,7 @@ public abstract class AbstractDao {
         return fieldSort;
     }
 
-    private boolean extractRangeQuery(QueryParams params, BoolQueryBuilder boolQueryBuilder, boolean atLeastOneFieldToQuery) {
+    boolean extractRangeQuery(QueryParams params, BoolQueryBuilder boolQueryBuilder, boolean atLeastOneFieldToQuery) {
         if (params.containsKey("gatheringEvent.dateTimeBegin") || params.containsKey("gatheringEvent.dateTimeEnd")) {
             extendQueryWithRangeFilter(boolQueryBuilder,
                     params,
@@ -270,7 +270,7 @@ public abstract class AbstractDao {
         }
     }
 
-    private NestedFilterBuilder createGeoShapeFilter(String geoShape) {
+    NestedFilterBuilder createGeoShapeFilter(String geoShape) {
         GeoJsonObject geo;
         ShapeBuilder shapeBuilder = null;
         try {
@@ -338,7 +338,7 @@ public abstract class AbstractDao {
         return approvedFields;
     }
 
-    private void setSize(QueryParams params, SearchRequestBuilder searchRequestBuilder) {
+    void setSize(QueryParams params, SearchRequestBuilder searchRequestBuilder) {
         if (params.containsKey("_maxResults")) {
             String maxResultsAsString = params.getFirst("_maxResults");
             try {
@@ -351,10 +351,10 @@ public abstract class AbstractDao {
         }
     }
 
-    private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator,
-                                                               String nestedPath, List<FieldMapping> fields,
-                                                               Map<String, HighlightBuilder.Field> highlightFields,
-                                                               boolean highlight) {
+    void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator,
+                                                       String nestedPath, List<FieldMapping> fields,
+                                                       Map<String, HighlightBuilder.Field> highlightFields,
+                                                       boolean highlight) {
         BoolQueryBuilder nestedBoolQueryBuilder = boolQuery();
         for (FieldMapping field : fields) {
             if (!field.getFieldName().contains("dateTime")) {
@@ -367,8 +367,8 @@ public abstract class AbstractDao {
         extendQueryWithQuery(boolQueryBuilder, operator, nestedQueryBuilder);
     }
 
-    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
-                                      Map<String, HighlightBuilder.Field> highlightFields, boolean highlight) {
+    void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
+                              Map<String, HighlightBuilder.Field> highlightFields, boolean highlight) {
         if (field.getValue() != null) {
             MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());
             Float boostValue = field.getBoostValue();
@@ -395,8 +395,8 @@ public abstract class AbstractDao {
         }
     }
 
-    private void extendQueryWithQuery(BoolQueryBuilder boolQueryBuilder, Operator operator,
-                                      QueryBuilder nameResolutionQuery) {
+    void extendQueryWithQuery(BoolQueryBuilder boolQueryBuilder, Operator operator,
+                              QueryBuilder nameResolutionQuery) {
         if (operator == AND) {
             boolQueryBuilder.must(nameResolutionQuery);
         } else {
@@ -434,7 +434,7 @@ public abstract class AbstractDao {
      * @param params the query params
      * @return the offSet if available, null otherwise
      */
-    private Integer getOffSetFromParams(QueryParams params) {
+    Integer getOffSetFromParams(QueryParams params) {
         String offSetParam = params.getParam("_offset");
         if (hasText(offSetParam)) {
             return Integer.parseInt(offSetParam);

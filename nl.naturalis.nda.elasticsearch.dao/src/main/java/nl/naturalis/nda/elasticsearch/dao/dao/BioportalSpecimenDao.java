@@ -1,30 +1,44 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
 import nl.naturalis.nda.search.*;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.collect.Iterables;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.ReverseNested;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.max.Max;
+import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
+import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
+import org.elasticsearch.search.highlight.HighlightBuilder;
+import org.elasticsearch.search.internal.InternalSearchResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer.transfer;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
+import static org.elasticsearch.action.search.SearchType.COUNT;
 import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
+import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
@@ -185,6 +199,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
     private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
+        boolean atLeastOneFieldToQuery = false;
         if (params.containsKey("_search")) {
             params.add("_andOr", "OR");
         }
@@ -195,27 +210,159 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
-        QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting,
-                getOperator(params), sessionId);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, SPECIMEN_TYPE, highlighting, nameResQuery, sessionId);
+        QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting, getOperator(params), sessionId);
 
-        long totalHits = searchResponse.getHits().getTotalHits();
-        float minScore = 0;
-        if (totalHits > 1) {
-            QueryParams copy = params.copy();
-            copy.add("_offset", String.valueOf(totalHits - 1));
-            SearchHits hits = executeExtendedSearch(copy, allowedFields, SPECIMEN_TYPE, false, sessionId).getHits();
-            try {
-                if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
-                    minScore = hits.getAt(0).getScore();
+
+        BoolQueryBuilder nonPrebuiltQuery = boolQuery();
+        SimpleQueryStringBuilder.Operator operator = getOperator(params);
+
+        LinkedHashMap<String, List<FieldMapping>> nestedFields = new LinkedHashMap<>();
+        List<FieldMapping> nonNestedFields = new ArrayList<>();
+        for (FieldMapping field : fields) {
+            String nestedPath = field.getNestedPath();
+            if (nestedPath != null && nestedPath.trim().length() > 0) {
+                List<FieldMapping> fieldMappings = new ArrayList<>();
+                if (nestedFields.containsKey(nestedPath)) {
+                    fieldMappings = nestedFields.get(nestedPath);
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // TODO
-                logger.error("doSpecimenNameSearch: don't understand why we get here");
+
+                fieldMappings.add(field);
+                nestedFields.put(nestedPath, fieldMappings);
+            } else {
+                nonNestedFields.add(field);
             }
         }
 
-        return responseToSpecimenResultGroupSet(searchResponse, minScore, sessionId);
+        Map<String, HighlightBuilder.Field> highlightFields = nameResQuery == null || nameResQuery.getHighlightFields() == null || nameResQuery.getHighlightFields().isEmpty() ? new HashMap<String, HighlightBuilder.Field>() : nameResQuery.getHighlightFields();
+
+        for (String nestedPath : nestedFields.keySet()) {
+            extendQueryWithNestedFieldsWithSameNestedPath(nonPrebuiltQuery, operator, nestedPath, nestedFields.get(nestedPath), highlightFields, highlighting);
+            atLeastOneFieldToQuery = true;
+        }
+
+        for (FieldMapping field : nonNestedFields) {
+            if (!field.getFieldName().contains("dateTime")) {
+                extendQueryWithField(nonPrebuiltQuery, operator, field, highlightFields, highlighting);
+                atLeastOneFieldToQuery = true;
+            }
+        }
+
+        atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
+
+        BoolQueryBuilder completeQuery;
+
+        if (nameResQuery != null && nameResQuery.getQuery() != null) {
+            completeQuery = boolQuery();
+            extendQueryWithQuery(completeQuery, OR, nonPrebuiltQuery);
+            extendQueryWithQuery(completeQuery, OR, nameResQuery.getQuery());
+            atLeastOneFieldToQuery = true;
+        } else {
+            completeQuery = nonPrebuiltQuery;
+        }
+
+        NestedFilterBuilder geoShape = null;
+        boolean geoSearch = false;
+        if (params.containsKey("_geoShape")) {
+            geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
+            geoSearch = true;
+        }
+
+
+        double minScore;
+        double maxScore;
+        //BEGIN FIRST QUERY
+        SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(completeQuery, geoShape)).setSearchType(COUNT);
+        searchRequestBuilder.setPreference(sessionId);
+        NestedBuilder aggregation = nested("nested").path("identifications")
+                .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(aggregation("max_score", false))
+                        .subAggregation(max("max_score").script("doc.score")));
+        searchRequestBuilder.addAggregation(aggregation);
+
+        logger.info(searchRequestBuilder.toString());
+        SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+        List<String> keys = getKeysFromAggregationResult(searchResponse);
+
+        minScore = getMinScoreFromAggregation(searchResponse);
+        maxScore = getMaxScoreFromAggregation(searchResponse);
+        //END FIRST QUERY
+
+        //BEGIN SECOND QUERY
+        if (!keys.isEmpty()) {
+            NestedQueryBuilder namesQuery = nestedQuery("identifications", createNamesQuery(keys));
+            searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(namesQuery, geoShape)).setSearchType(COUNT);
+            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(10).setFetchSource(true);
+            if (!highlightFields.isEmpty()) {
+                for (HighlightBuilder.Field highlightField : highlightFields.values()) {
+                    topHitsBuilder.addHighlightedField(highlightField);
+                }
+            }
+            searchRequestBuilder
+                    .addAggregation(nested("nested").path("identifications")
+                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(10)
+                                    .subAggregation(reverseNested("reverse")
+                                            .subAggregation(topHitsBuilder))));
+            searchResponse = searchRequestBuilder.execute().actionGet();
+        } else {
+            searchResponse = new SearchResponse(InternalSearchResponse.empty(), "", 0, 0, 0, null);
+        }
+        logger.info(searchRequestBuilder.toString());
+        //END SECOND QUERY
+
+
+        return responseToSpecimenResultGroupSet(searchResponse, minScore, maxScore, sessionId);
+    }
+
+    private double getMaxScoreFromAggregation(SearchResponse searchResponse) {
+        Nested nested = searchResponse.getAggregations().get("nested");
+        Terms terms = nested.getAggregations().get("names");
+        Collection<Terms.Bucket> buckets = terms.getBuckets();
+        if (!buckets.isEmpty()) {
+            Terms.Bucket maxBucket = (Terms.Bucket) Iterables.getFirst(buckets, 0);
+            if (maxBucket != null) {
+                Max max_score = maxBucket.getAggregations().get("max_score");
+                return max_score.getValue();
+
+            }
+        }
+        return 0;
+    }
+
+    private double getMinScoreFromAggregation(SearchResponse searchResponse) {
+        Nested nested = searchResponse.getAggregations().get("nested");
+        Terms terms = nested.getAggregations().get("names");
+        Collection<Terms.Bucket> buckets = terms.getBuckets();
+        if (!buckets.isEmpty()) {
+            Terms.Bucket minBucket = (Terms.Bucket) Iterables.getLast(buckets, 0);
+            if (minBucket != null) {
+                Max max_score = minBucket.getAggregations().get("max_score");
+                return max_score.getValue();
+
+            }
+        }
+        return 0;
+    }
+
+
+    private QueryBuilder createNamesQuery(List<String> keys) {
+        BoolFilterBuilder boolFilterBuilder = boolFilter();
+        for (String key : keys) {
+            boolFilterBuilder.should(termFilter("identifications.scientificName.fullScientificName.raw", key));
+        }
+        return filteredQuery(matchAllQuery(), boolFilterBuilder);
+    }
+
+    private List<String> getKeysFromAggregationResult(SearchResponse searchResponse) {
+        List<String> keys = new LinkedList<>();
+
+        Nested nested = searchResponse.getAggregations().get("nested");
+        Terms terms = nested.getAggregations().get("names");
+        Collection<Terms.Bucket> buckets = terms.getBuckets();
+
+        for (Terms.Bucket bucket : buckets) {
+            keys.add(bucket.getKey());
+        }
+
+        return keys;
     }
 
 
@@ -379,7 +526,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
-            Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
+            Specimen transfer = transfer(esSpecimen);
             List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer, sessionId);
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
             SearchResult<Specimen> searchResult = new SearchResult<>(transfer);
@@ -412,101 +559,46 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, float minScore, String sessionId) {
-        float maxScore = response.getHits().getMaxScore();
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, double minScore, double maxScore, String sessionId) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
-        LinkedHashMap<String, List<Specimen>> tempMapSpecimens = new LinkedHashMap<>();
-        LinkedHashMap<Specimen, SearchHit> tempMapSearchHits = new LinkedHashMap<>();
 
-        for (SearchHit hit : response.getHits()) {
-            ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
-            Specimen transfer = SpecimenTransfer.transfer(esSpecimen);
-            tempMapSearchHits.put(transfer, hit);
+        if (response.getAggregations() != null) {
+            Nested nested = response.getAggregations().get("nested");
+            Terms terms = nested.getAggregations().get("names");
+            Collection<Terms.Bucket> buckets = terms.getBuckets();
 
-            List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(transfer, sessionId);
-            transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
+            for (Terms.Bucket bucket : buckets) {
+                ResultGroup<Specimen, String> resultGroup = new ResultGroup<>();
 
-            List<SpecimenIdentification> identifications = transfer.getIdentifications();
-            if (identifications != null) {
-                for (SpecimenIdentification specimenIdentification : identifications) {
-                    ScientificName scientificName = specimenIdentification.getScientificName();
-                    String combined;
-                    if (scientificName.getFullScientificName() != null) {
-                        combined = scientificName.getFullScientificName();
-                    } else {
-                        combined = createScientificName(scientificName);
-                    }
+                String key = bucket.getKey();
+                ReverseNested reverse = bucket.getAggregations().get("reverse");
+                TopHits topHits = reverse.getAggregations().get("top-hits");
+                SearchHits hits = topHits.getHits();
 
-                    List<Specimen> specimens;
-                    if (tempMapSpecimens.containsKey(combined)) {
-                        specimens = tempMapSpecimens.get(combined);
-                    } else {
-                        specimens = new ArrayList<>();
-                    }
-                    specimens.add(transfer);
-                    tempMapSpecimens.put(combined, specimens);
+                for (SearchHit hit : hits) {
+                    Specimen specimen = transfer(getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class));
+                    List<Specimen> specimensWithSameAssemblageId = getOtherSpecimensWithSameAssemblageId(specimen, sessionId);
+                    specimen.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
+
+                    SearchResult<Specimen> searchResult = new SearchResult<>();
+                    searchResult.setResult(specimen);
+                    searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
+                    enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
+                    getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);
+                    resultGroup.addSearchResult(searchResult);
+                    //todo percentage
+                    //double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+                    //if (Double.isNaN(percentage)) {
+                    //percentage = 100;
+                    //}
                 }
+                resultGroup.setSharedValue(key);
+                specimenStringResultGroupSet.addGroup(resultGroup);
             }
         }
-
-        for (Map.Entry<String, List<Specimen>> stringListEntry : tempMapSpecimens.entrySet()) {
-            ResultGroup<Specimen, String> resultGroup = new ResultGroup<>();
-            String scientificName = stringListEntry.getKey();
-            resultGroup.setSharedValue(scientificName);
-            List<Specimen> specimens = stringListEntry.getValue();
-
-            for (Specimen specimen : specimens) {
-                SearchResult<Specimen> searchResult = new SearchResult<>();
-                searchResult.setResult(specimen);
-
-                SearchHit hit = tempMapSearchHits.get(specimen);
-                double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
-                if (Double.isNaN(percentage)) {
-                    percentage = 100;
-                }
-                searchResult.setPercentage(percentage);
-                searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
-
-                enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
-
-                getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);
-                resultGroup.addSearchResult(searchResult);
-            }
-            specimenStringResultGroupSet.addGroup(resultGroup);
-        }
-
         specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
-        //specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
     }
-
-
-    private String createScientificName(ScientificName scientificName) {
-        String genusOrMonomial = "";
-        String subgenus = "";
-        String specificEpithet = "";
-        String infraspecificEpithet = "";
-        String author = "";
-
-        if (scientificName.getGenusOrMonomial() != null) {
-            genusOrMonomial = scientificName.getGenusOrMonomial() + " ";
-        }
-        if (scientificName.getSubgenus() != null) {
-            subgenus = scientificName.getSubgenus() + " ";
-        }
-        if (scientificName.getSpecificEpithet() != null) {
-            specificEpithet = scientificName.getSpecificEpithet() + " ";
-        }
-        if (scientificName.getInfraspecificEpithet() != null) {
-            infraspecificEpithet = scientificName.getInfraspecificEpithet() + " ";
-        }
-        if (scientificName.getAuthorshipVerbatim() != null) {
-            author = scientificName.getAuthorshipVerbatim();
-        }
-
-        return genusOrMonomial + subgenus + specificEpithet + infraspecificEpithet + author;
-    }
-
 
     protected List<Specimen> getOtherSpecimensWithSameAssemblageId(Specimen transfer, String sessionId) {
         List<Specimen> specimensWithSameAssemblageId = new ArrayList<>();
@@ -522,7 +614,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             SearchHits hits = searchResponse.getHits();
             for (SearchHit searchHitFields : hits) {
                 ESSpecimen esSpecimenWithSameAssemblageId = getObjectMapper().convertValue(searchHitFields.getSource(), ESSpecimen.class);
-                specimensWithSameAssemblageId.add(SpecimenTransfer.transfer(esSpecimenWithSameAssemblageId));
+                specimensWithSameAssemblageId.add(transfer(esSpecimenWithSameAssemblageId));
             }
         }
         return specimensWithSameAssemblageId;

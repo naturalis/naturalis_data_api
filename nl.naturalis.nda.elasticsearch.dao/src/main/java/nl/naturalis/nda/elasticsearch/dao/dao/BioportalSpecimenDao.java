@@ -275,8 +275,17 @@ public class BioportalSpecimenDao extends AbstractDao {
         logger.info(searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
-        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params);
 
+        Integer maxResults = 0;
+        if (params.containsKey("_maxResults")) {
+            String maxResultsAsString = params.getFirst("_maxResults");
+            try {
+                maxResults = Integer.valueOf(maxResultsAsString);
+            } catch (NumberFormatException e) {
+                logger.debug("No valid int for maxResults");
+            }
+        }
+        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params, maxResults);
         long totalHits = searchResponse.getHits().getTotalHits();
         double minScore = getMinScoreFromAggregation(searchResponse);
         double maxScore = getMaxScoreFromAggregation(searchResponse);
@@ -297,7 +306,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             }
             searchRequestBuilder
                     .addAggregation(nested("nested").path("identifications")
-                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(10).order(aggregation("max_score", false))
+                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(maxResults).order(aggregation("max_score", false))
                                     .subAggregation(max("max_score").script("doc.score"))
                                     .subAggregation(reverseNested("reverse")
                                             .subAggregation(topHitsBuilder))));
@@ -351,7 +360,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         return boolFilterBuilder;
     }
 
-    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, QueryParams params) {
+    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, QueryParams params, Integer maxResults) {
         Map<String, Double> temp = new LinkedHashMap<>();
         Nested nested = searchResponse.getAggregations().get("nested");
         Terms terms = nested.getAggregations().get("names");
@@ -362,17 +371,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (offSet == null) {
             offSet = 0;
         }
-
-        Integer maxResults = 0;
-        if (params.containsKey("_maxResults")) {
-            String maxResultsAsString = params.getFirst("_maxResults");
-            try {
-                maxResults = Integer.valueOf(maxResultsAsString);
-            } catch (NumberFormatException e) {
-                logger.debug("No valid int for maxResults");
-            }
-        }
-
 
         ArrayList<Terms.Bucket> bucketsAsList = new ArrayList<>(buckets);
         if (bucketsAsList.size() > offSet) {

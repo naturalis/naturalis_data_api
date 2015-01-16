@@ -277,7 +277,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params);
 
-
+        long totalHits = searchResponse.getHits().getTotalHits();
         double minScore = getMinScoreFromAggregation(searchResponse);
         double maxScore = getMaxScoreFromAggregation(searchResponse);
         //END FIRST QUERY
@@ -309,7 +309,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END SECOND QUERY
 
 
-        return responseToSpecimenResultGroupSet(searchResponse, minScore, maxScore, sessionId);
+        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalHits, sessionId);
     }
 
     private double getMaxScoreFromAggregation(SearchResponse searchResponse) {
@@ -583,7 +583,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, double minScore, double maxScore, String sessionId) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, long totalHits, String sessionId) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
 
         if (response.getAggregations() != null) {
@@ -607,20 +607,24 @@ public class BioportalSpecimenDao extends AbstractDao {
                     SearchResult<Specimen> searchResult = new SearchResult<>();
                     searchResult.setResult(specimen);
                     searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
+                    double percentage;
+                    if (maxScore != minScore) {
+                        percentage = ((keysAndScores.get(key) - minScore) / (maxScore - minScore)) * 100;
+                    } else {
+                        percentage = 100d;
+                    }
+                    searchResult.setScore(keysAndScores.get(key).floatValue());
+                    searchResult.setPercentage(percentage);
+
                     enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
                     getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);
                     resultGroup.addSearchResult(searchResult);
-                    //todo percentage
-                    //double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
-                    //if (Double.isNaN(percentage)) {
-                    //percentage = 100;
-                    //}
                 }
                 resultGroup.setSharedValue(key);
                 specimenStringResultGroupSet.addGroup(resultGroup);
             }
         }
-        specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
+        specimenStringResultGroupSet.setTotalSize(totalHits);
         return specimenStringResultGroupSet;
     }
 

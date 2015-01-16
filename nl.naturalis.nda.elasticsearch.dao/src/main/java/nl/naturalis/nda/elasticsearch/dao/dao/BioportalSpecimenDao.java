@@ -23,6 +23,7 @@ import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.internal.InternalSearchResponse;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -266,13 +267,18 @@ public class BioportalSpecimenDao extends AbstractDao {
             geoSearch = true;
         }
 
+        SortOrder sortOrder = getSortOrderFromQueryParams(params);
+        boolean isAscending = false;
+        if(sortOrder.equals(ASC)) {
+            isAscending = true;
+        }
 
         //BEGIN FIRST QUERY
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(completeQuery, geoShape)).setSearchType(COUNT);
         searchRequestBuilder.setPreference(sessionId);
         searchRequestBuilder.addAggregation(nested("nested").path("identifications")
                 .subAggregation(cardinality("number_of_buckets").field("identifications.scientificName.fullScientificName.raw"))
-                .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(aggregation("max_score", false))
+                .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(aggregation("max_score", isAscending))
                         .subAggregation(max("max_score").script("doc.score"))));
 
         logger.info(searchRequestBuilder.toString());
@@ -297,7 +303,6 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         //BEGIN SECOND QUERY
         if (!keysAndScores.keySet().isEmpty()) {
-
             NestedFilterBuilder namesFilter = nestedFilter("identifications", createNamesQuery(keysAndScores.keySet()));
             FilteredQueryBuilder newQuery = filteredQuery(completeQuery, namesFilter);
 

@@ -449,7 +449,7 @@ public abstract class AbstractDao {
      * @param params the query params
      * @return the sort order if available, null otherwise
      */
-    private SortOrder getSortOrderFromQueryParams(QueryParams params) {
+    SortOrder getSortOrderFromQueryParams(QueryParams params) {
         String sortOrderParam = params.getParam("_sortDirection");
         SortOrder sortOrder = null;
         if (hasText(sortOrderParam)) {

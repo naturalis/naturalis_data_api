@@ -15,7 +15,6 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
-import org.elasticsearch.search.aggregations.bucket.nested.NestedBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
@@ -33,8 +32,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.*;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.action.search.SearchType.COUNT;
-import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
-import static org.elasticsearch.index.query.FilterBuilders.termFilter;
+import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
@@ -268,28 +266,30 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
 
-        double minScore;
-        double maxScore;
         //BEGIN FIRST QUERY
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(completeQuery, geoShape)).setSearchType(COUNT);
         searchRequestBuilder.setPreference(sessionId);
-        NestedBuilder aggregation = nested("nested").path("identifications")
+        searchRequestBuilder.addAggregation(nested("nested").path("identifications")
                 .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(aggregation("max_score", false))
-                        .subAggregation(max("max_score").script("doc.score")));
-        searchRequestBuilder.addAggregation(aggregation);
+                        .subAggregation(max("max_score").script("doc.score"))));
 
         logger.info(searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-        List<String> keys = getKeysFromAggregationResult(searchResponse);
 
-        minScore = getMinScoreFromAggregation(searchResponse);
-        maxScore = getMaxScoreFromAggregation(searchResponse);
+        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse);
+
+
+        double minScore = getMinScoreFromAggregation(searchResponse);
+        double maxScore = getMaxScoreFromAggregation(searchResponse);
         //END FIRST QUERY
 
         //BEGIN SECOND QUERY
-        if (!keys.isEmpty()) {
-            NestedQueryBuilder namesQuery = nestedQuery("identifications", createNamesQuery(keys));
-            searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(namesQuery, geoShape)).setSearchType(COUNT);
+        if (!keysAndScores.keySet().isEmpty()) {
+
+            NestedFilterBuilder namesFilter = nestedFilter("identifications", createNamesQuery(keysAndScores.keySet()));
+            FilteredQueryBuilder newQuery = filteredQuery(completeQuery, namesFilter);
+
+            searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(newQuery, geoShape)).setSearchType(COUNT);
             TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(10).setFetchSource(true);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
@@ -298,7 +298,8 @@ public class BioportalSpecimenDao extends AbstractDao {
             }
             searchRequestBuilder
                     .addAggregation(nested("nested").path("identifications")
-                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(10)
+                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(10).order(aggregation("max_score", false))
+                                    .subAggregation(max("max_score").script("doc.score"))
                                     .subAggregation(reverseNested("reverse")
                                             .subAggregation(topHitsBuilder))));
             searchResponse = searchRequestBuilder.execute().actionGet();
@@ -343,26 +344,26 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private QueryBuilder createNamesQuery(List<String> keys) {
+    private FilterBuilder createNamesQuery(Set<String> keys) {
         BoolFilterBuilder boolFilterBuilder = boolFilter();
         for (String key : keys) {
             boolFilterBuilder.should(termFilter("identifications.scientificName.fullScientificName.raw", key));
         }
-        return filteredQuery(matchAllQuery(), boolFilterBuilder);
+        return boolFilterBuilder;
     }
 
-    private List<String> getKeysFromAggregationResult(SearchResponse searchResponse) {
-        List<String> keys = new LinkedList<>();
-
+    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse) {
+        Map<String, Double> temp = new LinkedHashMap<>();
         Nested nested = searchResponse.getAggregations().get("nested");
         Terms terms = nested.getAggregations().get("names");
         Collection<Terms.Bucket> buckets = terms.getBuckets();
 
         for (Terms.Bucket bucket : buckets) {
-            keys.add(bucket.getKey());
+            Max max_score = bucket.getAggregations().get("max_score");
+            temp.put(bucket.getKey(), max_score.getValue());
         }
 
-        return keys;
+        return temp;
     }
 
 

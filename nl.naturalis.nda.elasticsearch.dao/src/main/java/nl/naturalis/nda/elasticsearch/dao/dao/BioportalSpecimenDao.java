@@ -38,6 +38,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
+import static org.elasticsearch.search.sort.SortOrder.ASC;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
@@ -301,7 +302,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             FilteredQueryBuilder newQuery = filteredQuery(completeQuery, namesFilter);
 
             searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(newQuery, geoShape)).setSearchType(COUNT);
-            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(10).setFetchSource(true);
+            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(10).setFetchSource(true).addSort("unitID.raw", ASC);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
                     topHitsBuilder.addHighlightedField(highlightField);

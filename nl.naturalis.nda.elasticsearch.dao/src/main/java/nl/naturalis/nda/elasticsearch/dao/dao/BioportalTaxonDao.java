@@ -82,8 +82,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
         if(params.containsKey("_search")) {
             params.add("_andOr", "OR");
         }
-        String sessionId = params.getParam("_session_id");
-        params.remove("_session_id");
+        String sessionId = params.getParam("_SESSION_ID");
+        params.remove("_SESSION_ID");
         return search(params, allowedFieldNamesForSearch, allowedFieldNamesForSearch_simpleSearchExceptions, true, sessionId);
     }
 

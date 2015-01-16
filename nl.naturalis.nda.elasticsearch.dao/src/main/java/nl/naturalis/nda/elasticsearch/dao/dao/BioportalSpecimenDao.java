@@ -141,8 +141,8 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
     private SearchResultSet<Specimen> doSpecimenSearch(QueryParams params, boolean highlighting) {
-        String sessionId = params.getParam("_session_id");
-        params.remove("_session_id");
+        String sessionId = params.getParam("_SESSION_ID");
+        params.remove("_SESSION_ID");
         evaluateSimpleSearch(params, specimenSearchFieldNames, specimenSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
@@ -203,8 +203,8 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (params.containsKey("_search")) {
             params.add("_andOr", "OR");
         }
-        String sessionId = params.getParam("_session_id");
-        params.remove("_session_id");
+        String sessionId = params.getParam("_SESSION_ID");
+        params.remove("_SESSION_ID");
 
         evaluateSimpleSearch(params, specimenNameSearchFieldNames, specimenNameSearchFieldNames_simpleSearchExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);

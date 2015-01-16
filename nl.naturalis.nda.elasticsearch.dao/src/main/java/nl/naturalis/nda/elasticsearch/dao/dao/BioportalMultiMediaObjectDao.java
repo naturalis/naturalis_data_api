@@ -123,7 +123,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      * @return the searchResultSet with the associated links
      */
     public SearchResultSet<MultiMediaObject> getTaxonMultiMediaObjectDetailWithinResultSet(QueryParams params) {
-        String sessionId = params.getParam("_session_id");
+        String sessionId = params.getParam("_SESSION_ID");
         SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet = multiMediaObjectSearch(params);
 
         SearchResultSet<MultiMediaObject> resultSetWithPreviousAndNextLinks =
@@ -152,7 +152,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
      * @return the searchResultSet with the associated links
      */
     public SearchResultSet<MultiMediaObject> getSpecimenMultiMediaObjectDetailWithinResultSet(QueryParams params) {
-        String sessionId = params.getParam("_session_id");
+        String sessionId = params.getParam("_SESSION_ID");
         SearchResultSet<MultiMediaObject> multiMediaObjectSearchResultSet = multiMediaObjectSearch(params);
 
         SearchResultSet<MultiMediaObject> resultSetWithPreviousAndNextLinks =
@@ -182,8 +182,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     SearchResultSet<MultiMediaObject> search(QueryParams params, Set<String> allowedFieldNames,
                                              Set<String> simpleSearchFieldNameExceptions) {
 
-        String sessionId = params.getParam("_session_id");
-        params.remove("_session_id");
+        String sessionId = params.getParam("_SESSION_ID");
+        params.remove("_SESSION_ID");
 
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getMultimediaMappingForFields(params);

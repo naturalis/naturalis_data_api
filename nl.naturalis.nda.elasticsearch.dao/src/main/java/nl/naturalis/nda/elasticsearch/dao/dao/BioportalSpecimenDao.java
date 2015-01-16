@@ -210,7 +210,6 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting, getOperator(params), sessionId);
 
-
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
         SimpleQueryStringBuilder.Operator operator = getOperator(params);
 
@@ -276,7 +275,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         logger.info(searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
-        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse);
+        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params);
 
 
         double minScore = getMinScoreFromAggregation(searchResponse);
@@ -352,15 +351,39 @@ public class BioportalSpecimenDao extends AbstractDao {
         return boolFilterBuilder;
     }
 
-    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse) {
+    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, QueryParams params) {
         Map<String, Double> temp = new LinkedHashMap<>();
         Nested nested = searchResponse.getAggregations().get("nested");
         Terms terms = nested.getAggregations().get("names");
         Collection<Terms.Bucket> buckets = terms.getBuckets();
 
-        for (Terms.Bucket bucket : buckets) {
-            Max max_score = bucket.getAggregations().get("max_score");
-            temp.put(bucket.getKey(), max_score.getValue());
+
+        Integer offSet = getOffSetFromParams(params);
+        if (offSet == null) {
+            offSet = 0;
+        }
+
+        Integer maxResults = 0;
+        if (params.containsKey("_maxResults")) {
+            String maxResultsAsString = params.getFirst("_maxResults");
+            try {
+                maxResults = Integer.valueOf(maxResultsAsString);
+            } catch (NumberFormatException e) {
+                logger.debug("No valid int for maxResults");
+            }
+        }
+
+
+        ArrayList<Terms.Bucket> bucketsAsList = new ArrayList<>(buckets);
+        if (bucketsAsList.size() > offSet) {
+            for (int i = offSet; i < bucketsAsList.size(); i++) {
+                Terms.Bucket bucket = bucketsAsList.get(i);
+                Max max_score = bucket.getAggregations().get("max_score");
+                temp.put(bucket.getKey(), max_score.getValue());
+                if (i == (offSet + maxResults)) {
+                    break;
+                }
+            }
         }
 
         return temp;

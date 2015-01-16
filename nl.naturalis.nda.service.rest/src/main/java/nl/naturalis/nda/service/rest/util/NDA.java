@@ -39,6 +39,7 @@ public class NDA {
 		if (esClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");
+			logger.info("ElasticSearch cluster: " + cluster);
 			String[] hosts = config.required("elasticsearch.transportaddress.host").trim().split(",");
 			String[] ports = getPorts(hosts.length);
 			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();

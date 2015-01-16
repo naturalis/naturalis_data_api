@@ -17,6 +17,7 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.cardinality.Cardinality;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
@@ -286,7 +287,8 @@ public class BioportalSpecimenDao extends AbstractDao {
             }
         }
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params, maxResults);
-        long totalHits = searchResponse.getHits().getTotalHits();
+
+        long totalHits = getTotalHitsFromAggregation(searchResponse);
         double minScore = getMinScoreFromAggregation(searchResponse);
         double maxScore = getMaxScoreFromAggregation(searchResponse);
         //END FIRST QUERY
@@ -319,6 +321,12 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
         return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalHits, sessionId);
+    }
+
+    private long getTotalHitsFromAggregation(SearchResponse searchResponse) {
+        Nested nested = searchResponse.getAggregations().get("nested");
+        Cardinality cardinality = nested.getAggregations().get("number_of_buckets");
+        return cardinality.getValue();
     }
 
     private double getMaxScoreFromAggregation(SearchResponse searchResponse) {

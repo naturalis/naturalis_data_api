@@ -270,6 +270,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(completeQuery, geoShape)).setSearchType(COUNT);
         searchRequestBuilder.setPreference(sessionId);
         searchRequestBuilder.addAggregation(nested("nested").path("identifications")
+                .subAggregation(cardinality("number_of_buckets").field("identifications.scientificName.fullScientificName.raw"))
                 .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(aggregation("max_score", false))
                         .subAggregation(max("max_score").script("doc.score"))));
 

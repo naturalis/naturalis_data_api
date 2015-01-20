@@ -69,5 +69,7 @@ public class CoLImportAll {
 		vernacularNameEnricher.importCsv(dwcaDir + "/vernacular.txt");
 		CoLTaxonReferenceEnricher referenceEnricher = new CoLTaxonReferenceEnricher(index);
 		referenceEnricher.importCsv(dwcaDir + "/reference.txt");
+		CoLTaxonDistributionEnricher distributionEnricher = new CoLTaxonDistributionEnricher(index);
+		distributionEnricher.importCsv(dwcaDir + "/distribution.txt"); 
 	}
 }

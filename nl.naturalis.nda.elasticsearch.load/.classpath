@@ -4,22 +4,14 @@
 	<classpathentry kind="src" output="build/main" path="src/main/resources"/>
 	<classpathentry kind="src" output="build/test" path="src/test/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Elastic Search"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache httpclient"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/slf4j"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jackson"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.debug"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
-	<classpathentry kind="lib" path="C:/test/nda-import/lib/misc/commons-csv-1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/test/nda-import/lib/misc/mysql-connector-java-5.1.26.jar"/>
-	<classpathentry kind="lib" path="C:/test/nda-import/lib/misc/joda-time-2.6.jar" sourcepath="C:/test/nda-import/lib/misc/joda-time-2.6-sources.jar">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/8">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/test/nda-import/lib/misc/joda-time-2.6-javadoc.jar!/"/>
+			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA_LOAD_LIB"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ELASTIC_SEARCH"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

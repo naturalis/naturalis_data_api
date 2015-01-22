@@ -285,10 +285,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
 
-        Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults"));
-        Integer groupOffset = Integer.parseInt(params.getParam("_groupOffset"));
+        Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults", "10"));
+        Integer groupOffset = Integer.parseInt(params.getParam("_groupOffset", "0"));
         String groupSortDirection = params.getParam("_groupSortDirection");
-        String groupSort = params.getParam("_groupSort", "unitID.raw");
+        String groupSort = params.getParam("_groupSort"); //groupName
         String sortField = params.getParam("_sort", "unitID");
         SortOrder sortDirection = getSortOrderFromQueryParams(params);
 
@@ -340,12 +340,11 @@ public class BioportalSpecimenDao extends AbstractDao {
                 direction = SortOrder.valueOf(groupSortDirection);
             }
             Terms.Order order;
-            if (hasText(groupSort)) {
+            if (hasText(groupSort) && groupSort.equalsIgnoreCase("groupName")) {
                 order = term(direction.equals(ASC));
             } else {
                 order = aggregation("max_score", direction.equals(ASC));
             }
-
 
             searchRequestBuilder
                     .addAggregation(nested("nested").path("identifications")

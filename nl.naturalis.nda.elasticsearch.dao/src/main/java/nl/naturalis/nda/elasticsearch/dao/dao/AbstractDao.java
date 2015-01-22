@@ -151,12 +151,7 @@ public abstract class AbstractDao {
 
         boolean atLeastOneFieldToQuery = false;
 
-        Map<String, HighlightBuilder.Field> highlightFields =
-                prebuiltQuery == null
-                        || prebuiltQuery.getHighlightFields() == null
-                        || prebuiltQuery.getHighlightFields().isEmpty()
-                        ? new HashMap<String, HighlightBuilder.Field>()
-                        : prebuiltQuery.getHighlightFields();
+        Map<String, HighlightBuilder.Field> highlightFields = prebuiltQuery == null || prebuiltQuery.getHighlightFields() == null || prebuiltQuery.getHighlightFields().isEmpty() ? new HashMap<String, HighlightBuilder.Field>() : prebuiltQuery.getHighlightFields();
 
         for (String nestedPath : nestedFields.keySet()) {
             extendQueryWithNestedFieldsWithSameNestedPath(nonPrebuiltQuery, operator, nestedPath, nestedFields.get(

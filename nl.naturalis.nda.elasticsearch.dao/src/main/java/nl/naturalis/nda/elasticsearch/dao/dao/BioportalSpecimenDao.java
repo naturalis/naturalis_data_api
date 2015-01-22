@@ -35,6 +35,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.action.search.SearchType.COUNT;
 import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
@@ -216,7 +217,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting, getOperator(params), sessionId);
 
         BoolQueryBuilder nonPrebuiltQuery = boolQuery();
-        SimpleQueryStringBuilder.Operator operator = getOperator(params);
+        Operator operator = getOperator(params);
 
         LinkedHashMap<String, List<FieldMapping>> nestedFields = new LinkedHashMap<>();
         List<FieldMapping> nonNestedFields = new ArrayList<>();
@@ -250,6 +251,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
+
         BoolQueryBuilder completeQuery;
         if (nameResQuery != null && nameResQuery.getQuery() != null) {
             completeQuery = boolQuery();
@@ -259,6 +261,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         } else {
             completeQuery = nonPrebuiltQuery;
         }
+
         NestedFilterBuilder geoShape = null;
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {

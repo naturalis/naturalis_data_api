@@ -31,6 +31,8 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_sortDirection");
         EXCLUDED_PARAMS.add("_maxResults");
         EXCLUDED_PARAMS.add("_offset");
+        EXCLUDED_PARAMS.add("_geoShape");
+        EXCLUDED_PARAMS.add("_SESSION_ID");
     }
 
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();

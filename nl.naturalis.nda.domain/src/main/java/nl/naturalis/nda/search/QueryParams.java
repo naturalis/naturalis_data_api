@@ -115,7 +115,7 @@ public class QueryParams extends LinkedHashMap<String, List<String>> {
 	{
 		List<String> values = get(key);
 		if (values == null || values.size() == 0) {
-			return null;
+			return dfault;
 		}
 		return values.get(0).length() == 0 ? dfault : values.get(0);
 	}

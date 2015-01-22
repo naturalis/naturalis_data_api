@@ -269,11 +269,26 @@ public class BioportalSpecimenDao extends AbstractDao {
             geoSearch = true;
         }
 
-        SortOrder sortOrder = getSortOrderFromQueryParams(params);
-        boolean isAscending = false;
-        if (sortOrder.equals(ASC)) {
-            isAscending = true;
+
+        //INITS
+        Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults", "10"));
+        Integer groupOffset = Integer.parseInt(params.getParam("_groupOffset", "0"));
+        String groupSortDirection = params.getParam("_groupSortDirection");
+        String groupSort = params.getParam("_groupSort"); //groupName
+        String sortField = params.getParam("_sort", "unitID");
+        SortOrder sortDirection = getSortOrderFromQueryParams(params);
+        SortOrder direction = DESC;
+        if (hasText(groupSortDirection)) {
+            direction = SortOrder.valueOf(groupSortDirection);
         }
+        Terms.Order order;
+        if (hasText(groupSort) && groupSort.equalsIgnoreCase("groupName")) {
+            order = term(direction.equals(ASC));
+        } else {
+            order = aggregation("max_score", direction.equals(ASC));
+        }
+        //INITS
+
 
         FilteredQueryBuilder finalQuery;
         if (geoSearch && !atLeastOneFieldToQuery) {
@@ -284,22 +299,12 @@ public class BioportalSpecimenDao extends AbstractDao {
             finalQuery = filteredQuery(completeQuery, geoShape);
         }
 
-
-        Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults", "10"));
-        Integer groupOffset = Integer.parseInt(params.getParam("_groupOffset", "0"));
-        String groupSortDirection = params.getParam("_groupSortDirection");
-        String groupSort = params.getParam("_groupSort"); //groupName
-        String sortField = params.getParam("_sort", "unitID");
-        SortOrder sortDirection = getSortOrderFromQueryParams(params);
-
-
         //BEGIN FIRST QUERY
-        //todo sort based on fullScientificName.raw
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(finalQuery).setSearchType(COUNT);
         searchRequestBuilder.setPreference(sessionId);
         searchRequestBuilder.addAggregation(nested("nested").path("identifications")
                 .subAggregation(cardinality("number_of_buckets").field("identifications.scientificName.fullScientificName.raw"))
-                .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(aggregation("max_score", isAscending))
+                .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(order)
                         .subAggregation(max("max_score").script("doc.score"))));
 
         logger.info(searchRequestBuilder.toString());
@@ -333,17 +338,6 @@ public class BioportalSpecimenDao extends AbstractDao {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
                     topHitsBuilder.addHighlightedField(highlightField);
                 }
-            }
-
-            SortOrder direction = DESC;
-            if (hasText(groupSortDirection)) {
-                direction = SortOrder.valueOf(groupSortDirection);
-            }
-            Terms.Order order;
-            if (hasText(groupSort) && groupSort.equalsIgnoreCase("groupName")) {
-                order = term(direction.equals(ASC));
-            } else {
-                order = aggregation("max_score", direction.equals(ASC));
             }
 
             searchRequestBuilder

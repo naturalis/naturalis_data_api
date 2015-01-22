@@ -250,9 +250,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
         atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
-
         BoolQueryBuilder completeQuery;
-
         if (nameResQuery != null && nameResQuery.getQuery() != null) {
             completeQuery = boolQuery();
             extendQueryWithQuery(completeQuery, OR, nonPrebuiltQuery);
@@ -261,7 +259,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         } else {
             completeQuery = nonPrebuiltQuery;
         }
-
         NestedFilterBuilder geoShape = null;
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {

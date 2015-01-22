@@ -22,7 +22,6 @@ import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHits;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
-import org.elasticsearch.search.internal.InternalSearchResponse;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,10 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
+import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.term;
+import static org.elasticsearch.search.internal.InternalSearchResponse.empty;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
+import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 public class BioportalSpecimenDao extends AbstractDao {
 
@@ -269,12 +271,31 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         SortOrder sortOrder = getSortOrderFromQueryParams(params);
         boolean isAscending = false;
-        if(sortOrder.equals(ASC)) {
+        if (sortOrder.equals(ASC)) {
             isAscending = true;
         }
 
+        FilteredQueryBuilder finalQuery;
+        if (geoSearch && !atLeastOneFieldToQuery) {
+            finalQuery = filteredQuery(matchAllQuery(), geoShape);
+        } else if (!atLeastOneFieldToQuery) {
+            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), null, 0, 0, 0, sessionId);
+        } else {
+            finalQuery = filteredQuery(completeQuery, geoShape);
+        }
+
+
+        Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults"));
+        Integer groupOffset = Integer.parseInt(params.getParam("_groupOffset"));
+        String groupSortDirection = params.getParam("_groupSortDirection");
+        String groupSort = params.getParam("_groupSort", "unitID.raw");
+        String sortField = params.getParam("_sort", "unitID");
+        SortOrder sortDirection = getSortOrderFromQueryParams(params);
+
+
         //BEGIN FIRST QUERY
-        SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(completeQuery, geoShape)).setSearchType(COUNT);
+        //todo sort based on fullScientificName.raw
+        SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(finalQuery).setSearchType(COUNT);
         searchRequestBuilder.setPreference(sessionId);
         searchRequestBuilder.addAggregation(nested("nested").path("identifications")
                 .subAggregation(cardinality("number_of_buckets").field("identifications.scientificName.fullScientificName.raw"))
@@ -294,7 +315,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                 logger.debug("No valid int for maxResults");
             }
         }
-        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params, maxResults);
+        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params, groupMaxResults, groupOffset);
 
         long totalHits = getTotalHitsFromAggregation(searchResponse);
         double minScore = getMinScoreFromAggregation(searchResponse);
@@ -307,21 +328,34 @@ public class BioportalSpecimenDao extends AbstractDao {
             FilteredQueryBuilder newQuery = filteredQuery(completeQuery, namesFilter);
 
             searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(newQuery, geoShape)).setSearchType(COUNT);
-            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(10).setFetchSource(true).addSort("unitID.raw", ASC);
+            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(maxResults).setFetchSource(true).addSort(sortField + ".raw", sortDirection);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
                     topHitsBuilder.addHighlightedField(highlightField);
                 }
             }
+
+            SortOrder direction = DESC;
+            if (hasText(groupSortDirection)) {
+                direction = SortOrder.valueOf(groupSortDirection);
+            }
+            Terms.Order order;
+            if (hasText(groupSort)) {
+                order = term(direction.equals(ASC));
+            } else {
+                order = aggregation("max_score", direction.equals(ASC));
+            }
+
+
             searchRequestBuilder
                     .addAggregation(nested("nested").path("identifications")
-                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(maxResults).order(aggregation("max_score", false))
+                            .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(groupMaxResults).order(order)
                                     .subAggregation(max("max_score").script("doc.score"))
                                     .subAggregation(reverseNested("reverse")
                                             .subAggregation(topHitsBuilder))));
             searchResponse = searchRequestBuilder.execute().actionGet();
         } else {
-            searchResponse = new SearchResponse(InternalSearchResponse.empty(), "", 0, 0, 0, null);
+            searchResponse = new SearchResponse(empty(), "", 0, 0, 0, null);
         }
         logger.info(searchRequestBuilder.toString());
         //END SECOND QUERY
@@ -375,17 +409,11 @@ public class BioportalSpecimenDao extends AbstractDao {
         return boolFilterBuilder;
     }
 
-    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, QueryParams params, Integer maxResults) {
+    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, QueryParams params, Integer maxResults, Integer offSet) {
         Map<String, Double> temp = new LinkedHashMap<>();
         Nested nested = searchResponse.getAggregations().get("nested");
         Terms terms = nested.getAggregations().get("names");
         Collection<Terms.Bucket> buckets = terms.getBuckets();
-
-
-        Integer offSet = getOffSetFromParams(params);
-        if (offSet == null) {
-            offSet = 0;
-        }
 
         ArrayList<Terms.Bucket> bucketsAsList = new ArrayList<>(buckets);
         if (bucketsAsList.size() > offSet) {
@@ -634,6 +662,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                     resultGroup.addSearchResult(searchResult);
                 }
                 resultGroup.setSharedValue(key);
+                resultGroup.setTotalSize(nested.getDocCount());
                 specimenStringResultGroupSet.addGroup(resultGroup);
             }
         }

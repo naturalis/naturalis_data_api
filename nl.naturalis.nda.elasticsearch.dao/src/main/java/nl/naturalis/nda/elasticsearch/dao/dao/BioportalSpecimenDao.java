@@ -315,6 +315,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         //BEGIN FIRST QUERY
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(finalQuery).setSearchType(COUNT);
         searchRequestBuilder.setPreference(sessionId);
+        searchRequestBuilder.setTrackScores(true);
         searchRequestBuilder.addAggregation(nested("nested").path("identifications")
                 .subAggregation(cardinality("number_of_buckets").field("identifications.scientificName.fullScientificName.raw"))
                 .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(order)
@@ -323,7 +324,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         logger.info(searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
-        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params, groupMaxResults, groupOffset);
+        Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, groupMaxResults, groupOffset);
 
         long totalHits = getTotalHitsFromAggregation(searchResponse);
         double minScore = getMinScoreFromAggregation(searchResponse);
@@ -333,7 +334,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         //BEGIN SECOND QUERY
         if (!keysAndScores.keySet().isEmpty()) {
             NestedFilterBuilder namesFilter = nestedFilter("identifications", createNamesQuery(keysAndScores.keySet()));
-            searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(finalQuery, namesFilter)).setSearchType(COUNT);
+            searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(finalQuery, namesFilter)).setSearchType(COUNT).setTrackScores(true);
             TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(maxResults).setFetchSource(true).addSort(sortField, sortDirection);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
@@ -403,7 +404,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         return boolFilterBuilder;
     }
 
-    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, QueryParams params, Integer maxResults, Integer offSet) {
+    private Map<String, Double> getKeysAndScoreFromAggregation(SearchResponse searchResponse, Integer maxResults, Integer offSet) {
         Map<String, Double> temp = new LinkedHashMap<>();
         Nested nested = searchResponse.getAggregations().get("nested");
         Terms terms = nested.getAggregations().get("names");

@@ -270,7 +270,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         }
 
 
-        //INITS
+        //BEGIN INITS
         Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults", "10"));
         Integer groupOffset = Integer.parseInt(params.getParam("_groupOffset", "0"));
         String groupSortDirection = params.getParam("_groupSortDirection");
@@ -278,6 +278,15 @@ public class BioportalSpecimenDao extends AbstractDao {
         String sortField = params.getParam("_sort", "unitID");
         SortOrder sortDirection = getSortOrderFromQueryParams(params);
         SortOrder direction = DESC;
+        Integer maxResults = 0;
+        if (params.containsKey("_maxResults")) {
+            String maxResultsAsString = params.getFirst("_maxResults");
+            try {
+                maxResults = Integer.valueOf(maxResultsAsString);
+            } catch (NumberFormatException e) {
+                logger.debug("No valid int for maxResults");
+            }
+        }
         if (hasText(groupSortDirection)) {
             direction = SortOrder.valueOf(groupSortDirection);
         }
@@ -287,9 +296,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         } else {
             order = aggregation("max_score", direction.equals(ASC));
         }
-        //INITS
+        //END INITS
 
-
+        //BEGIN QUERY SETUP
         FilteredQueryBuilder finalQuery;
         if (geoSearch && !atLeastOneFieldToQuery) {
             finalQuery = filteredQuery(matchAllQuery(), geoShape);
@@ -298,6 +307,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         } else {
             finalQuery = filteredQuery(completeQuery, geoShape);
         }
+        //END QUERY SETUP
 
         //BEGIN FIRST QUERY
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(finalQuery).setSearchType(COUNT);
@@ -310,16 +320,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         logger.info(searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
-
-        Integer maxResults = 0;
-        if (params.containsKey("_maxResults")) {
-            String maxResultsAsString = params.getFirst("_maxResults");
-            try {
-                maxResults = Integer.valueOf(maxResultsAsString);
-            } catch (NumberFormatException e) {
-                logger.debug("No valid int for maxResults");
-            }
-        }
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, params, groupMaxResults, groupOffset);
 
         long totalHits = getTotalHitsFromAggregation(searchResponse);

@@ -341,18 +341,17 @@ public class BioportalSpecimenDao extends AbstractDao {
                     topHitsBuilder.addHighlightedField(highlightField);
                 }
             }
-
             searchRequestBuilder
                     .addAggregation(nested("nested").path("identifications")
                             .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(groupMaxResults).order(order)
                                     .subAggregation(max("max_score").script("doc.score"))
                                     .subAggregation(reverseNested("reverse")
                                             .subAggregation(topHitsBuilder))));
+            logger.info(searchRequestBuilder.toString());
             searchResponse = searchRequestBuilder.execute().actionGet();
         } else {
             searchResponse = new SearchResponse(empty(), "", 0, 0, 0, null);
         }
-        logger.info(searchRequestBuilder.toString());
         //END SECOND QUERY
 
 

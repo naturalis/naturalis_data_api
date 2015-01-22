@@ -273,6 +273,9 @@ public class BioportalSpecimenDao extends AbstractDao {
         String groupSortDirection = params.getParam("_groupSortDirection");
         String groupSort = params.getParam("_groupSort"); //groupName
         String sortField = params.getParam("_sort", "unitID");
+        if (!sortField.equalsIgnoreCase("_score")) {
+            sortField = sortField + ".raw";
+        }
         SortOrder sortDirection = getSortOrderFromQueryParams(params);
         SortOrder direction = DESC;
         Integer maxResults = 10;
@@ -294,6 +297,9 @@ public class BioportalSpecimenDao extends AbstractDao {
             order = aggregation("max_score", direction.equals(ASC));
         }
         //END INITS
+
+
+
 
         //BEGIN QUERY SETUP
         FilteredQueryBuilder finalQuery;
@@ -328,9 +334,8 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (!keysAndScores.keySet().isEmpty()) {
             NestedFilterBuilder namesFilter = nestedFilter("identifications", createNamesQuery(keysAndScores.keySet()));
             FilteredQueryBuilder newQuery = filteredQuery(completeQuery, namesFilter);
-
             searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(newQuery, geoShape)).setSearchType(COUNT);
-            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(maxResults).setFetchSource(true).addSort(sortField + ".raw", sortDirection);
+            TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(maxResults).setFetchSource(true).addSort(sortField, sortDirection);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
                     topHitsBuilder.addHighlightedField(highlightField);

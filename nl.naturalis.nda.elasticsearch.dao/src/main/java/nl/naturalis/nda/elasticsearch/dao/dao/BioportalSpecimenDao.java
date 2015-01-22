@@ -275,7 +275,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         String sortField = params.getParam("_sort", "unitID");
         SortOrder sortDirection = getSortOrderFromQueryParams(params);
         SortOrder direction = DESC;
-        Integer maxResults = 0;
+        Integer maxResults = 10;
         if (params.containsKey("_maxResults")) {
             String maxResultsAsString = params.getFirst("_maxResults");
             try {
@@ -652,7 +652,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                     resultGroup.addSearchResult(searchResult);
                 }
                 resultGroup.setSharedValue(key);
-                resultGroup.setTotalSize(nested.getDocCount());
+                resultGroup.setTotalSize(bucket.getDocCount());
                 specimenStringResultGroupSet.addGroup(resultGroup);
             }
         }

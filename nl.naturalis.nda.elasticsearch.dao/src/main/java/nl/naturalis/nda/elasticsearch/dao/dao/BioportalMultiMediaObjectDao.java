@@ -40,7 +40,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
-            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS_OR_MONOMIAL,
+            IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
@@ -191,10 +191,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
 
-        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"),
-                bioportalTaxonDao, true, getOperator(params), sessionId);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true,
-                nameResolutionQuery, sessionId);
+        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"), bioportalTaxonDao, true, getOperator(params), sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, nameResolutionQuery, sessionId);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         logger.info("Total hits: " + totalHits);

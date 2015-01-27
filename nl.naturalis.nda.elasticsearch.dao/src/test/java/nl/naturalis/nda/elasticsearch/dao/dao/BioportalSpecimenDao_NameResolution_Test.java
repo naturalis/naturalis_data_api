@@ -100,7 +100,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         List<StringMatchInfo> matchInfos = searchResult.getMatchInfo();
         assertEquals(1, matchInfos.size());
         assertEquals("identifications.vernacularNames.name", matchInfos.get(0).getPath());
-        assertEquals("bos<span class=\"search_hit\">aap</span>", matchInfos.get(0).getValueHighlighted());
+        assertEquals("bos<em>aap</em>", matchInfos.get(0).getValueHighlighted());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         List<StringMatchInfo> matchInfos = searchResult.getMatchInfo();
         assertEquals(1, matchInfos.size());
         assertEquals("identifications.vernacularNames.name", matchInfos.get(0).getPath());
-        assertEquals("<span class=\"search_hit\">bosaap</span>", matchInfos.get(0).getValueHighlighted());
+        assertEquals("<em>bosaap</em>", matchInfos.get(0).getValueHighlighted());
     }
 
     @Test
@@ -350,6 +350,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         SpecimenIdentification specimenIdentification = new SpecimenIdentification();
 
         ScientificName scientificName = new ScientificName();
+        scientificName.setFullScientificName("geslacht specifiek infra");
         scientificName.setGenusOrMonomial("geslacht");
         scientificName.setSpecificEpithet("specifiek");
         scientificName.setInfraspecificEpithet("infra");

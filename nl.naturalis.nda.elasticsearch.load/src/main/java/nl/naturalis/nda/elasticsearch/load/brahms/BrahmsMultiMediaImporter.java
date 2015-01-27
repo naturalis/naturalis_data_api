@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.brahms;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.checkSpData;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDate;
@@ -58,7 +57,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();

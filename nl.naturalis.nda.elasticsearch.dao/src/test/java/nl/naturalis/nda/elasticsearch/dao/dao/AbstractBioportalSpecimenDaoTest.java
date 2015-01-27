@@ -56,6 +56,7 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
         ScientificName scientificName = new ScientificName();
         scientificName.setGenusOrMonomial("Xylopia");
         scientificName.setSpecificEpithet("ferruginea");
+        scientificName.setFullScientificName("Xylopia ferruginea, 1988");
         specimenIdentification.setScientificName(scientificName);
 
         VernacularName vernacularName = new VernacularName();

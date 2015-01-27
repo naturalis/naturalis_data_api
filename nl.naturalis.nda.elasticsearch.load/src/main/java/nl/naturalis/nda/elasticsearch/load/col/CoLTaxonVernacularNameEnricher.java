@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.DEFAULT_NDA_INDEX_NAME;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.io.FileReader;
@@ -28,7 +27,7 @@ public class CoLTaxonVernacularNameEnricher {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), DEFAULT_NDA_INDEX_NAME);
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");

@@ -5,8 +5,8 @@
 
     <include file="./paths.xml" />
 
-    <property name="javacSource" value="1.6" />
-    <property name="javacTarget" value="1.6" />
+    <property name="javacSource" value="1.7" />
+    <property name="javacTarget" value="1.7" />
     <property name="javacDebugLevel" value="source,lines,vars" />
 
     <tstamp>

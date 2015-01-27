@@ -7,16 +7,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache httpclient"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 8.x Runtime">
-		<attributes>
-			<attribute name="owner.project.facets" value="jst.utility"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_25">
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA Lib"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA Lib"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

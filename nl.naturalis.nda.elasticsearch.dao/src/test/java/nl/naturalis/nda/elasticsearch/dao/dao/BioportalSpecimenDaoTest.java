@@ -29,6 +29,53 @@ import org.junit.Test;
 
 public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
+
+
+
+
+
+    @Test
+    public void textNewNameSearch() throws Exception {
+        createIndex(INDEX_NAME);
+
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE).setSource(getMapping("test-specimen-mapping.json")).execute().actionGet();
+        ESSpecimen esSpecimen = createSpecimen();
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
+        esSpecimen.setUnitID("L  01914100");
+        classification.setKingdom("fake");
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        QueryParams params = new QueryParams();
+        params.add("kingdom", "Plantae");
+        params.add("identifications.scientificName.genusOrMonomial", "Xylopia");
+        params.add("_andOr", "OR");
+
+        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
+
+        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
+
+        assertEquals(2, result.getTotalSize());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Test
     public void testSpecimenSearch() throws Exception {
         createIndex(INDEX_NAME);
@@ -122,10 +169,11 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen))
                 .setRefresh(true).execute().actionGet();
-        DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
-        esSpecimen.setUnitID("L  01914100");
-        classification.setKingdom("fake");
 
+        DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
+        esSpecimen.getIdentifications().get(0).getScientificName().setFullScientificName("test");
+        classification.setKingdom("fake");
+        esSpecimen.setUnitID("L  01914100");
         client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
                 .setRefresh(true).execute().actionGet();
 
@@ -214,6 +262,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
         esSpecimen.setUnitID("L  01914100");
         classification.setKingdom("fake");
+        esSpecimen.getIdentifications().get(0).getScientificName().setFullScientificName("test");
 
         client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
                 .setRefresh(true).execute().actionGet();

@@ -1,3 +1,4 @@
+//
 package nl.naturalis.nda.elasticsearch.dao.util;
 
 import nl.naturalis.nda.search.QueryParams;
@@ -31,6 +32,12 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_sortDirection");
         EXCLUDED_PARAMS.add("_maxResults");
         EXCLUDED_PARAMS.add("_offset");
+        EXCLUDED_PARAMS.add("_geoShape");
+        EXCLUDED_PARAMS.add("_groupMaxResults");
+        EXCLUDED_PARAMS.add("_groupSort");
+        EXCLUDED_PARAMS.add("_groupSortDirection");      
+        EXCLUDED_PARAMS.add("_SESSION_ID");       
+        EXCLUDED_PARAMS.add("_session_id");       
     }
 
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();

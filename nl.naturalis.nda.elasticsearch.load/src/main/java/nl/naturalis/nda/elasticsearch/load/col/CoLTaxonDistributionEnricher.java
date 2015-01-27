@@ -21,6 +21,11 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author Reinier.Kartowikromo
+ *
+ */
 public class CoLTaxonDistributionEnricher
 {
 
@@ -46,6 +51,10 @@ public class CoLTaxonDistributionEnricher
 	private final int bulkRequestSize;
 	private final int maxRecords;
 
+	/**
+	 * 
+	 * @param index
+	 */
 	public CoLTaxonDistributionEnricher(Index index)
 	{
 		this.index = index;

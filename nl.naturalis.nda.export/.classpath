@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/main" path="src/main/java"/>
+	<classpathentry kind="src" output="build/main" path="src/test/java"/>
+	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.load"/>
+	<classpathentry kind="src" output="build/test" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA Lib"/>
+	<classpathentry kind="output" path="build/main"/>
+</classpath>

@@ -35,8 +35,8 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.action.search.SearchType.COUNT;
 import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.*;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.term;
@@ -68,7 +68,8 @@ public class BioportalSpecimenDao extends AbstractDao {
             IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
             IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
             GATHERINGEVENT_DATE_TIME_BEGIN,
-            GATHERINGEVENT_SITECOORDINATES_POINT));
+            GATHERINGEVENT_SITECOORDINATES_POINT,
+            UNIT_ID));
 
     private static final Set<String> specimenNameSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(
             GATHERINGEVENT_DATE_TIME_BEGIN, GATHERINGEVENT_SITECOORDINATES_POINT));
@@ -214,53 +215,181 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
-        QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting, getOperator(params), sessionId);
 
-        BoolQueryBuilder nonPrebuiltQuery = boolQuery();
-        Operator operator = getOperator(params);
+        //Allowed fields contains all the fields where we would like to query on.
 
-        LinkedHashMap<String, List<FieldMapping>> nestedFields = new LinkedHashMap<>();
-        List<FieldMapping> nonNestedFields = new ArrayList<>();
-        for (FieldMapping field : fields) {
-            String nestedPath = field.getNestedPath();
-            if (nestedPath != null && nestedPath.trim().length() > 0) {
-                List<FieldMapping> fieldMappings = new ArrayList<>();
-                if (nestedFields.containsKey(nestedPath)) {
-                    fieldMappings = nestedFields.get(nestedPath);
+        //top level fields (fields with no deep path) are on top.
+        //Same path fields stick together and are combined in one must
+        //NGram fields are always should grouped
+        //Nested don't have to be together
+
+        Map<String, List<FieldMapping>> tempAllowedFields = new LinkedHashMap<>();
+        for (FieldMapping field : allowedFields) {
+            String fieldName = field.getFieldName();
+            int lastIndex = fieldName.lastIndexOf(".");
+            if (lastIndex != -1) {
+                String groupPath = fieldName.substring(0, lastIndex);
+                List<FieldMapping> groupedFields = tempAllowedFields.get(groupPath);
+                if (groupedFields == null) {
+                    groupedFields = new ArrayList<>();
                 }
-
-                fieldMappings.add(field);
-                nestedFields.put(nestedPath, fieldMappings);
+                groupedFields.add(field);
+                tempAllowedFields.put(groupPath, groupedFields);
             } else {
-                nonNestedFields.add(field);
+                tempAllowedFields.put(fieldName, Arrays.asList(field));
             }
         }
 
-        Map<String, HighlightBuilder.Field> highlightFields = nameResQuery == null || nameResQuery.getHighlightFields() == null || nameResQuery.getHighlightFields().isEmpty() ? new HashMap<String, HighlightBuilder.Field>() : nameResQuery.getHighlightFields();
+        Operator operator = getOperator(params);
+        BoolQueryBuilder query = new BoolQueryBuilder();
+        Map<String, HighlightBuilder.Field> highlightFields = new HashMap<>();
 
-        for (String nestedPath : nestedFields.keySet()) {
-            extendQueryWithNestedFieldsWithSameNestedPath(nonPrebuiltQuery, operator, nestedPath, nestedFields.get(nestedPath), highlightFields, highlighting);
-            atLeastOneFieldToQuery = true;
-        }
-
-        for (FieldMapping field : nonNestedFields) {
-            if (!field.getFieldName().contains("dateTime")) {
-                extendQueryWithField(nonPrebuiltQuery, operator, field, highlightFields, highlighting);
-                atLeastOneFieldToQuery = true;
+        for (Map.Entry<String, List<FieldMapping>> entry : tempAllowedFields.entrySet()) {
+            List<FieldMapping> value = entry.getValue();
+            if (entry.getValue().size() > 1) {
+                //MULTIPLE VALUES FOR PATH
+                BoolQueryBuilder tempQuery = new BoolQueryBuilder();
+                for (FieldMapping fieldMapping : value) {
+                    if (fieldMapping.isFromAlias()) {
+                        BoolQueryBuilder tempQuery2 = new BoolQueryBuilder();
+                        Float boostValue = fieldMapping.getBoostValue();
+                        if (boostValue == null) {
+                            boostValue = 1f;
+                        }
+                        if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
+                            //HAS NGRAM
+                            tempQuery2.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                            tempQuery2.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
+                            if (operator.equals(AND)) {
+                                tempQuery.must(tempQuery2);
+                            } else {
+                                tempQuery.should(tempQuery2);
+                            }
+                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                            highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
+                        } else {
+                            //HAS NO NGRAM
+                            if (operator.equals(AND)) {
+                                tempQuery.must(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                            } else {
+                                tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                            }
+                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                        }
+                    } else {
+                        boolean isNested = fieldMapping.getNestedPath() != null && fieldMapping.getNestedPath().trim().length() > 0;
+                        Float boostValue = fieldMapping.getBoostValue();
+                        if (boostValue == null) {
+                            boostValue = 1f;
+                        }
+                        if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
+                            tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                            tempQuery.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
+                            if (operator.equals(AND)) {
+                                if (isNested) {
+                                    query.must(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
+                                } else {
+                                    query.must(tempQuery);
+                                }
+                            } else {
+                                if (isNested) {
+                                    query.should(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
+                                } else {
+                                    query.should(tempQuery);
+                                }
+                            }
+                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                            highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
+                        } else {
+                            //HAS NO NGRAM
+                            if (operator.equals(AND)) {
+                                if (isNested) {
+                                    query.must(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
+                                } else {
+                                    query.must(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                                }
+                            } else {
+                                if (isNested) {
+                                    query.should(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
+                                } else {
+                                    query.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                                }
+                            }
+                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                        }
+                    }
+                }
+                FieldMapping fieldMapping = value.get(0);
+                boolean isNested = fieldMapping.getNestedPath() != null && fieldMapping.getNestedPath().trim().length() > 0;
+                if (isNested) {
+                    //IS NESTED
+                    NestedQueryBuilder nestedQueryBuilder = nestedQuery(fieldMapping.getNestedPath(), tempQuery);
+                    query.should(nestedQueryBuilder);
+                } else {
+                    //IS NOT NESTED
+                    query.should(tempQuery);
+                }
+            } else {
+                //1 VALUE FOR PATH
+                FieldMapping fieldMapping = entry.getValue().get(0);
+                boolean isNested = fieldMapping.getNestedPath() != null && fieldMapping.getNestedPath().trim().length() > 0;
+                BoolQueryBuilder tempQuery = new BoolQueryBuilder();
+                Float boostValue = fieldMapping.getBoostValue();
+                if (boostValue == null) {
+                    boostValue = 1f;
+                }
+                if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
+                    tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                    tempQuery.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
+                    if (operator.equals(AND)) {
+                        if (isNested) {
+                            query.must(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
+                        } else {
+                            query.must(tempQuery);
+                        }
+                    } else {
+                        if (isNested) {
+                            query.should(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
+                        } else {
+                            query.should(tempQuery);
+                        }
+                    }
+                    highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                    highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
+                } else {
+                    //HAS NO NGRAM
+                    if (operator.equals(AND)) {
+                        if (isNested) {
+                            query.must(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
+                        } else {
+                            query.must(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                        }
+                    } else {
+                        if (isNested) {
+                            query.should(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
+                        } else {
+                            query.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                        }
+                    }
+                    highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                }
             }
         }
 
-        atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
 
-        BoolQueryBuilder completeQuery;
-        if (nameResQuery != null && nameResQuery.getQuery() != null) {
-            completeQuery = boolQuery();
-            extendQueryWithQuery(completeQuery, OR, nonPrebuiltQuery);
-            extendQueryWithQuery(completeQuery, OR, nameResQuery.getQuery());
-            atLeastOneFieldToQuery = true;
-        } else {
-            completeQuery = nonPrebuiltQuery;
+        QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting, getOperator(params), sessionId);
+        if (nameResQuery != null) {
+            if (nameResQuery.getQuery() != null) {
+                query.should(nameResQuery.getQuery());
+            }
+            Map<String, HighlightBuilder.Field> nameResQueryHighlightFields = nameResQuery.getHighlightFields();
+            if (nameResQueryHighlightFields != null && nameResQueryHighlightFields.size() != 0) {
+                for (Map.Entry<String, HighlightBuilder.Field> stringFieldEntry : nameResQueryHighlightFields.entrySet()) {
+                    highlightFields.put(stringFieldEntry.getKey(), stringFieldEntry.getValue());
+                }
+            }
         }
+
 
         NestedFilterBuilder geoShape = null;
         boolean geoSearch = false;
@@ -268,7 +397,6 @@ public class BioportalSpecimenDao extends AbstractDao {
             geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
             geoSearch = true;
         }
-
 
         //BEGIN INITS
         Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults", "10"));
@@ -302,16 +430,15 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END INITS
 
 
-
-
         //BEGIN QUERY SETUP
+        atLeastOneFieldToQuery = query.hasClauses();
         FilteredQueryBuilder finalQuery;
         if (geoSearch && !atLeastOneFieldToQuery) {
             finalQuery = filteredQuery(matchAllQuery(), geoShape);
         } else if (!atLeastOneFieldToQuery) {
             return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), null, 0, 0, 0, sessionId);
         } else {
-            finalQuery = filteredQuery(completeQuery, geoShape);
+            finalQuery = filteredQuery(query, geoShape);
         }
         //END QUERY SETUP
 

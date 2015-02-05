@@ -532,15 +532,9 @@ public abstract class AbstractDao {
             Taxon taxon = taxonSearchResult.getResult();
             BoolQueryBuilder scientificNameQuery = boolQuery();
 
-            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight,
-                    taxon.getValidName().getGenusOrMonomial(),
-                    IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL);
-            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight,
-                    taxon.getValidName().getSpecificEpithet(),
-                    IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET);
-            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight,
-                    taxon.getValidName().getInfraspecificEpithet(),
-                    IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET);
+            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight, taxon.getValidName().getGenusOrMonomial(), IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL);
+            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight, taxon.getValidName().getSpecificEpithet(), IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET);
+            addMustQueryWithHighlightSupport(queryAndHighlightFields, scientificNameQuery, highlight, taxon.getValidName().getInfraspecificEpithet(), IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET);
 
             nameResQueryBuilder.should(scientificNameQuery);
         }
@@ -565,7 +559,7 @@ public abstract class AbstractDao {
         }
     }
 
-    private HighlightBuilder.Field createHighlightField(String fieldName, QueryBuilder highlightQuery) {
+    HighlightBuilder.Field createHighlightField(String fieldName, QueryBuilder highlightQuery) {
         HighlightBuilder.Field field = new HighlightBuilder.Field(fieldName);
         field.highlightQuery(highlightQuery);
         return field;

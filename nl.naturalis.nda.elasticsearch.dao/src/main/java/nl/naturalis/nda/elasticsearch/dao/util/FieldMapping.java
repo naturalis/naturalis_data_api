@@ -12,13 +12,15 @@ public class FieldMapping {
     private final String value;
     private final String nestedPath;
     private final Boolean hasNGramField;
+    private boolean fromAlias;
 
-    public FieldMapping(String fieldName, Float boostValue, String value, String nestedPath, Boolean hasNGram) {
+    public FieldMapping(String fieldName, Float boostValue, String value, String nestedPath, Boolean hasNGram, boolean fromAlias) {
         this.fieldName = fieldName;
         this.boostValue = boostValue;
         this.value = value;
         this.nestedPath = nestedPath;
         this.hasNGramField = hasNGram;
+        this.fromAlias = fromAlias;
     }
 
     public String getFieldName() {
@@ -42,6 +44,14 @@ public class FieldMapping {
 
     public Boolean hasNGram() {
         return hasNGramField;
+    }
+
+    public boolean isFromAlias() {
+        return fromAlias;
+    }
+
+    public void setFromAlias(boolean fromAlias) {
+        this.fromAlias = fromAlias;
     }
 
     @Override

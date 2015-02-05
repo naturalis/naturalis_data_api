@@ -187,11 +187,9 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getMultimediaMappingForFields(params);
-        List<FieldMapping> allowedFields = (allowedFieldNames == null)
-                ? fields
-                : filterAllowedFieldMappings(fields, allowedFieldNames);
+        List<FieldMapping> allowedFields = (allowedFieldNames == null) ? fields : filterAllowedFieldMappings(fields, allowedFieldNames);
 
-        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"), bioportalTaxonDao, true, getOperator(params), sessionId);
+        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, true, getOperator(params), sessionId);
         SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, nameResolutionQuery, sessionId);
 
         long totalHits = searchResponse.getHits().getTotalHits();

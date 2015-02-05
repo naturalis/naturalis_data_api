@@ -72,7 +72,7 @@ public class ESConstants {
             public static final String GATHERINGEVENT_SITECOORDINATES_POINT = "gatheringEvent.siteCoordinates.point";
             public static final String GATHERINGEVENT_LOCALITY_TEXT = "gatheringEvent.localityText";
             public static final String GATHERINGEVENT_GATHERING_PERSONS_FULLNAME = "gatheringEvent.gatheringPersons.fullName";
-            public static final String GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME = "gatheringEvent.gatheringOrganisations.name";
+            public static final String GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME = "gatheringEvent.gatheringOrganizations.name";
         }
 
         public static class TaxonFields {

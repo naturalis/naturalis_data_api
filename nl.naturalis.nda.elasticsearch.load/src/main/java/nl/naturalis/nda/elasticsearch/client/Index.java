@@ -1,6 +1,9 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface defining methods for classes operating on a single ElasticSearch
@@ -113,7 +116,12 @@ public interface Index {
 	 */
 	<T> T get(String type, String id, Class<T> targetClass);
 
+	
+	<T> T getAll(String type, Class<T> targetClass);
+	HashMap<String,Object> getResultsMap(String type, int size);
 
+	ArrayList<Map<String, Object>> getResultsList(String type, int size);
+	
 	/**
 	 * Delete the document with the specified id
 	 * 

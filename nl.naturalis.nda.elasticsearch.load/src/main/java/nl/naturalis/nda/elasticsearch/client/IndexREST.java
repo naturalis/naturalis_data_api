@@ -2,7 +2,10 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.http.SimpleHttpDelete;
@@ -368,5 +371,30 @@ public class IndexREST implements Index {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public HashMap<String, Object> getResultsMap(String type, int size)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public ArrayList<Map<String, Object>> getResultsList(String type, int size)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <T> T getAll(String type, Class<T> targetClass)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

@@ -1,35 +1,24 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import static java.util.Arrays.asList;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.TAXON_TYPE;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
-import nl.naturalis.nda.search.StringMatchInfo;
-
+import nl.naturalis.nda.search.*;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
+import static org.hamcrest.Matchers.is;
 
 public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
@@ -76,7 +65,9 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         params.add("genus", "Xylopia");
         params.add("unitID", "L  0191413");
         params.add("specificEpithet", "ferruginea ");
-        params.add("identifications.defaultClassification.kingdom", "Plantae");
+        params.add("kingdom", "Plantae");
+        params.add("identifications.defaultClassification.order", "Phylum");
+        params.add("collector", "Van der Meijer Tussennaam W.");
         params.add("_andOr", "AND");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);

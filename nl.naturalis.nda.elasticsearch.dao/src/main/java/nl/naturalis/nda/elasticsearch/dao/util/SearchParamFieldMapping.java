@@ -130,10 +130,12 @@ public class SearchParamFieldMapping {
             String nestedPath = getNestedPathValueForField(esField, properties);
             Boolean hasNGramField = getNGramValueForField(esField, properties);
             boolean fromAlias  = false;
+            String aliasName = null;
             if(!esField.equalsIgnoreCase(field)) {
                 fromAlias = true;
+                aliasName = field;
             }
-            mappings.add(new FieldMapping(esField, boostValue, value, nestedPath, hasNGramField, fromAlias));
+            mappings.add(new FieldMapping(esField, boostValue, value, nestedPath, hasNGramField, fromAlias, aliasName));
         }
 
         return mappings;

@@ -66,8 +66,6 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         params.add("unitID", "L  0191413");
         params.add("specificEpithet", "ferruginea ");
         params.add("kingdom", "Plantae");
-        params.add("identifications.defaultClassification.order", "Phylum");
-        params.add("collector", "Van der Meijer Tussennaam W.");
         params.add("_andOr", "AND");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);

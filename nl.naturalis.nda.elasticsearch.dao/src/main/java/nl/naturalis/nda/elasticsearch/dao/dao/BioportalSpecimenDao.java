@@ -229,6 +229,9 @@ public class BioportalSpecimenDao extends AbstractDao {
             int lastIndex = fieldName.lastIndexOf(".");
             if (lastIndex != -1) {
                 String groupPath = fieldName.substring(0, lastIndex);
+                if (field.isFromAlias()) {
+                    groupPath = groupPath + "-alias";
+                }
                 List<FieldMapping> groupedFields = tempAllowedFields.get(groupPath);
                 if (groupedFields == null) {
                     groupedFields = new ArrayList<>();
@@ -250,73 +253,30 @@ public class BioportalSpecimenDao extends AbstractDao {
                 //MULTIPLE VALUES FOR PATH
                 BoolQueryBuilder tempQuery = new BoolQueryBuilder();
                 for (FieldMapping fieldMapping : value) {
-                    if (fieldMapping.isFromAlias()) {
-                        BoolQueryBuilder tempQuery2 = new BoolQueryBuilder();
-                        Float boostValue = fieldMapping.getBoostValue();
-                        if (boostValue == null) {
-                            boostValue = 1f;
-                        }
-                        if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
-                            //HAS NGRAM
-                            tempQuery2.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
-                            tempQuery2.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
-                            if (operator.equals(AND)) {
-                                tempQuery.must(tempQuery2);
-                            } else {
-                                tempQuery.should(tempQuery2);
-                            }
-                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
-                            highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
+                    BoolQueryBuilder tempQuery2 = new BoolQueryBuilder();
+                    Float boostValue = fieldMapping.getBoostValue();
+                    if (boostValue == null) {
+                        boostValue = 1f;
+                    }
+                    if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
+                        //HAS NGRAM
+                        tempQuery2.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
+                        tempQuery2.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
+                        if (operator.equals(AND)) {
+                            tempQuery.must(tempQuery2);
                         } else {
-                            //HAS NO NGRAM
-                            if (operator.equals(AND)) {
-                                tempQuery.must(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
-                            } else {
-                                tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
-                            }
-                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                            tempQuery.should(tempQuery2);
                         }
+                        highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                        highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
                     } else {
-                        boolean isNested = fieldMapping.getNestedPath() != null && fieldMapping.getNestedPath().trim().length() > 0;
-                        Float boostValue = fieldMapping.getBoostValue();
-                        if (boostValue == null) {
-                            boostValue = 1f;
-                        }
-                        if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
-                            tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
-                            tempQuery.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
-                            if (operator.equals(AND)) {
-                                if (isNested) {
-                                    query.must(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
-                                } else {
-                                    query.must(tempQuery);
-                                }
-                            } else {
-                                if (isNested) {
-                                    query.should(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
-                                } else {
-                                    query.should(tempQuery);
-                                }
-                            }
-                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
-                            highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
+                        //HAS NO NGRAM
+                        if (operator.equals(AND)) {
+                            tempQuery.must(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
                         } else {
-                            //HAS NO NGRAM
-                            if (operator.equals(AND)) {
-                                if (isNested) {
-                                    query.must(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
-                                } else {
-                                    query.must(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
-                                }
-                            } else {
-                                if (isNested) {
-                                    query.should(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
-                                } else {
-                                    query.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
-                                }
-                            }
-                            highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
+                            tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
                         }
+                        highlightFields.put(fieldMapping.getFieldName(), createHighlightField(fieldMapping.getFieldName(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue())));
                     }
                 }
                 FieldMapping fieldMapping = value.get(0);
@@ -341,7 +301,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                 if (fieldMapping.hasNGram() != null && fieldMapping.hasNGram()) {
                     tempQuery.should(matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue));
                     tempQuery.should(matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue()).boost(boostValue));
-                    if (operator.equals(AND)) {
+                    if (operator.equals(AND) && !fieldMapping.isFromAlias()) {
                         if (isNested) {
                             query.must(nestedQuery(fieldMapping.getNestedPath(), tempQuery));
                         } else {
@@ -358,7 +318,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                     highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
                 } else {
                     //HAS NO NGRAM
-                    if (operator.equals(AND)) {
+                    if (operator.equals(AND) && !fieldMapping.isFromAlias()) {
                         if (isNested) {
                             query.must(nestedQuery(fieldMapping.getNestedPath(), matchQuery(fieldMapping.getFieldName(), fieldMapping.getValue()).boost(boostValue)));
                         } else {

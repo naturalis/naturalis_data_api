@@ -33,9 +33,6 @@ import org.junit.Test;
 
 public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
-
-
-
     @Test
     public void testNewSearch() throws Exception {
         createIndex(INDEX_NAME);
@@ -221,7 +218,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getResultGroups().get(0).getTotalSize());
     }
 
     @Test
@@ -306,7 +303,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getResultGroups().get(0).getTotalSize());
     }
 
     @Test

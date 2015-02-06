@@ -63,7 +63,6 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         QueryParams params = new QueryParams();
         params.add("genus", "Xylopia");
-        params.add("unitID", "L  0191413");
         params.add("specificEpithet", "ferruginea ");
         params.add("kingdom", "Plantae");
         params.add("_andOr", "AND");

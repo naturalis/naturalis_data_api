@@ -34,9 +34,8 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.Specime
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.action.search.SearchType.COUNT;
 import static org.elasticsearch.index.query.FilterBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.*;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.term;
@@ -55,8 +54,6 @@ public class BioportalSpecimenDao extends AbstractDao {
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS,
-            "gatheringEvent.gatheringPersons.fullName",
-            "gatheringEvent.gatheringOrganizations.name",
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
@@ -70,8 +67,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
             IDENTIFICATIONS_VERNACULAR_NAMES_NAME,
             GATHERINGEVENT_DATE_TIME_BEGIN,
-            GATHERINGEVENT_SITECOORDINATES_POINT,
-            UNIT_ID));
+            GATHERINGEVENT_SITECOORDINATES_POINT));
 
     private static final Set<String> specimenNameSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(
             GATHERINGEVENT_DATE_TIME_BEGIN, GATHERINGEVENT_SITECOORDINATES_POINT));

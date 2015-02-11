@@ -9,12 +9,22 @@ package nl.naturalis.nda.export.dwca;
 
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.NDAIndexManager;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
+
+
+
+
+
+
 
 
 
@@ -45,7 +55,7 @@ public class DwCAExporter
 		try
 		{
 			DwCAExporter exp = new DwCAExporter(index);
-			exp.ExportDwca();
+		    exp.ExportDwca();
 		} finally
 		{
 			index.getClient().close();
@@ -67,7 +77,8 @@ public class DwCAExporter
 
 	public void ExportDwca() throws IOException
 	{
-		index.getResultsList(NDAIndexManager.LUCENE_TYPE_SPECIMEN, 25);//, ESSpecimen.class);
+	   Path output = Paths.get("Specimens.txt");
+       index.getResultsMap(NDAIndexManager.LUCENE_TYPE_SPECIMEN, 100);
 	}
 
 	

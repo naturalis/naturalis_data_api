@@ -122,6 +122,8 @@ public interface Index {
 
 	ArrayList<Map<String, Object>> getResultsList(String type, int size);
 	
+
+	
 	/**
 	 * Delete the document with the specified id
 	 * 

@@ -8,28 +8,18 @@ package nl.naturalis.nda.export.dwca;
 
 
 
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
+
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.PrintWriter;
+import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.NDAIndexManager;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
-
-
-
-
-
-
-
-
-
-
+import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +67,25 @@ public class DwCAExporter
 
 	public void ExportDwca() throws IOException
 	{
-	   Path output = Paths.get("Specimens.txt");
-       index.getResultsMap(NDAIndexManager.LUCENE_TYPE_SPECIMEN, 100);
+		FileOutputStream fos = new FileOutputStream("C:/tmp/taxa.txt");
+		PrintWriter pw = new PrintWriter(fos, true);
+	   // index.getResultsMap(NDAIndexManager.LUCENE_TYPE_SPECIMEN, 100);
+       List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, 5, ESSpecimen.class);
+       BeanPrinter.out(list);
+       for(ESSpecimen specimen : list) {
+    	   pw.println(getCSVRecordFromSpecimen(specimen));
+       }
+       pw.close();
+	}
+
+
+
+	private String getCSVRecordFromSpecimen(ESSpecimen specimen)
+	{
+		String result = null;
+		result = specimen.getUnitID();
+		// TODO Auto-generated method stub
+		return result;
 	}
 
 	

@@ -1,20 +1,18 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.lang.Object;
+
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
@@ -310,43 +308,43 @@ public class IndexNative implements Index
 	/*
 	 * Created by Reinier Description: for the DwCA export Date: 29-01-2015
 	 */
-	public HashMap<String, Object> getResultsMap(String type, int size)
-	{
-		ArrayList<Map<String, Object>> list = getResultsList(type, size);
-		HashMap<String, Object> map = new HashMap<>();
-		map.put("type", type);
-		map.put("results", list);
-		Set<?> set = map.entrySet();
-		Iterator<?> i = set.iterator();
-		while(i.hasNext())
-		{
-			@SuppressWarnings("rawtypes")
-			Map.Entry me = (Map.Entry)i.next();
-			System.out.print(me.getKey() + ": ");
-			System.out.println(me.getValue());
-		}
-		
-		try 
-		{
-			DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("output.txt")));
-			for(int t=0; t <list.size(); t++)
-			{
-				dos.writeBytes(list.get(t).toString() + System.lineSeparator());
-			}
-				dos.close();
-				System.out.println("Data saved.");
-			} 
-		    catch (IOException e) 
-		    {
-		    	e.printStackTrace();
-			} 		
-		
-		return map;
-	}
-	
+//	public HashMap<String, Object> getResultsMap(String type, int size)
+//	{
+//		ArrayList<Map<String, Object>> list = getResultsList(type, size, null);
+//		HashMap<String, Object> map = new HashMap<>();
+//		map.put("type", type);
+//		map.put("results", list);
+//		Set<?> set = map.entrySet();
+//		Iterator<?> i = set.iterator();
+//		while(i.hasNext())
+//		{
+//			@SuppressWarnings("rawtypes")
+//			Map.Entry me = (Map.Entry)i.next();
+//			System.out.print(me.getKey() + ": ");
+//			System.out.println(me.getValue());
+//		}
+//		
+//		try 
+//		{
+//			DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("output.txt")));
+//			for(int t=0; t <list.size(); t++)
+//			{
+//				dos.writeBytes(list.get(t).toString() + System.lineSeparator());
+//			}
+//				dos.close();
+//				System.out.println("Data saved.");
+//			} 
+//		    catch (IOException e) 
+//		    {
+//		    	e.printStackTrace();
+//			} 		
+//		
+//		return map;
+//	}
+//	
 	
 
-	public ArrayList<Map<String, Object>> getResultsList(String type, int size)
+	public <T> List<T> getResultsList(String type, int size,Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch()
 				.setQuery(QueryBuilders.matchAllQuery())
@@ -367,9 +365,9 @@ public class IndexNative implements Index
 		String output = response.toString();
 		System.out.println(output);
 
-		ArrayList<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		List<Object> nameOfList = new ArrayList<Object>();
-		List<Object> resultOfList = new ArrayList<Object>();
+		List<T> list = new ArrayList<T>();
+		//List<Object> nameOfList = new ArrayList<Object>();
+		//List<Object> resultOfList = new ArrayList<Object>();
         
 		while (true)
 		{
@@ -382,40 +380,42 @@ public class IndexNative implements Index
 			{
 				for (SearchHit hit : response.getHits())
 				{
-					// the retrieved document
-					Map<String, Object> result = hit.getSource();
-					result.putAll(result);
 					
-					System.out.println(hit.getSource());
-					System.out.println(hit.getSourceAsString());
+					T result = objectMapper.convertValue(hit.getSource(), targetClass);
+					// the retrieved document
+//					Map<String, Object> result = hit.getSource();
+//					result.putAll(result);
+//					
+//					System.out.println(hit.getSource());
+//					System.out.println(hit.getSourceAsString());
 					list.add(result);
 									
 					//getting an iterator object to browse list items
-					nameOfList.add(hit.getSourceAsString().toString() + System.lineSeparator());
-					Iterator<Object> itr= nameOfList.iterator();
-
-					while(itr.hasNext())
-					{
-						resultOfList.add(nameOfList); 
-						System.out.println(itr.next());
-					}
-					
-					//Break condition: No hits are returned
-				    if (response.getHits().hits().length == 0) 
-				    {
-				    	logger.info("No hits");
-				        break;
-				    }
+//					nameOfList.add(hit.getSourceAsString().toString() + System.lineSeparator());
+//					Iterator<Object> itr= nameOfList.iterator();
+//
+//					while(itr.hasNext())
+//					{
+//						resultOfList.add(nameOfList); 
+//						System.out.println(itr.next());
+//					}
+//					
+//					//Break condition: No hits are returned
+//				    if (response.getHits().hits().length == 0) 
+//				    {
+//				    	logger.info("No hits");
+//				        break;
+//				    }
 				}
 				{
-          	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("SpecimenObjects.txt"));
-				/* Write the resultOfList object to the objectoutputstream. 
-				 * This writes the object as well all objects that it referes to.
-				   It writes only those objects that implement serializable
-			    */
-			    objectOutputStream.writeObject(resultOfList);
-				objectOutputStream.flush();
-				objectOutputStream.close();
+//          	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("SpecimenObjects.txt"));
+//				/* Write the resultOfList object to the objectoutputstream. 
+//				 * This writes the object as well all objects that it referes to.
+//				   It writes only those objects that implement serializable
+//			    */
+//			    objectOutputStream.writeObject(list);
+//				objectOutputStream.flush();
+//				objectOutputStream.close();
 				}
 			} catch (Exception e)
 			{

@@ -118,9 +118,9 @@ public interface Index {
 
 	
 	<T> T getAll(String type, Class<T> targetClass);
-	HashMap<String,Object> getResultsMap(String type, int size);
+	//HashMap<String,Object> getResultsMap(String type, int size);
 
-	ArrayList<Map<String, Object>> getResultsList(String type, int size);
+	<T> List<T> getResultsList(String type, int size,Class<T> targetClass);
 	
 
 	

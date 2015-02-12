@@ -373,20 +373,13 @@ public class IndexREST implements Index {
 	}
 
 
-	@Override
-	public HashMap<String, Object> getResultsMap(String type, int size)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public HashMap<String, Object> getResultsMap(String type, int size)
+//	{
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
-
-	@Override
-	public ArrayList<Map<String, Object>> getResultsList(String type, int size)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 	@Override
@@ -395,6 +388,15 @@ public class IndexREST implements Index {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	@Override
+	public <T> List<T> getResultsList(String type, int size, Class<T> targetClass)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 

@@ -366,8 +366,6 @@ public class IndexNative implements Index
 		System.out.println(output);
 
 		List<T> list = new ArrayList<T>();
-		//List<Object> nameOfList = new ArrayList<Object>();
-		//List<Object> resultOfList = new ArrayList<Object>();
         
 		while (true)
 		{
@@ -382,13 +380,22 @@ public class IndexNative implements Index
 				{
 					
 					T result = objectMapper.convertValue(hit.getSource(), targetClass);
+					list.add(result);
+					
+					//Break condition: No hits are returned
+				    if (response.getHits().hits().length == 0) 
+				    {
+				    	logger.info("No hits");
+				        break;
+				    }
+					
 					// the retrieved document
 //					Map<String, Object> result = hit.getSource();
 //					result.putAll(result);
 //					
 //					System.out.println(hit.getSource());
 //					System.out.println(hit.getSourceAsString());
-					list.add(result);
+
 									
 					//getting an iterator object to browse list items
 //					nameOfList.add(hit.getSourceAsString().toString() + System.lineSeparator());
@@ -400,12 +407,7 @@ public class IndexNative implements Index
 //						System.out.println(itr.next());
 //					}
 //					
-//					//Break condition: No hits are returned
-//				    if (response.getHits().hits().length == 0) 
-//				    {
-//				    	logger.info("No hits");
-//				        break;
-//				    }
+
 				}
 				{
 //          	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("SpecimenObjects.txt"));
@@ -424,28 +426,6 @@ public class IndexNative implements Index
 			
     		return list;
 		}
-
-		/*
-		 * SearchRequestBuilder srb = esClient.prepareSearch()
-		 * .setQuery(QueryBuilders.matchAllQuery()) .setIndices(indexName)
-		 * .setTypes(type) .setFrom(0) .setSize(100);
-		 * 
-		 * SearchResponse response = srb.execute().actionGet();
-		 * 
-		 * 
-		 * ArrayList<Map<String, Object>> result = new ArrayList<Map<String,
-		 * Object>>(); try { long totalHitCount =
-		 * response.getHits().getTotalHits();
-		 * 
-		 * System.out.println("Total hits: " + totalHitCount);
-		 * 
-		 * for (SearchHit hit : response.getHits()) {
-		 * System.out.println(hit.getSourceAsString());
-		 * result.add(hit.getSource());
-		 * 
-		 * } } catch (Exception e) { throw new IndexException(e); }
-		 * System.out.println(result); return result;
-		 */
 	}
 
 	@Override

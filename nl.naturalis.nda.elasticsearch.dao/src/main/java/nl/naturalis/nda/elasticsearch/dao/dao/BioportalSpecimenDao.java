@@ -278,7 +278,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (geoSearch && !atLeastOneFieldToQuery) {
             finalQuery = filteredQuery(matchAllQuery(), geoShape);
         } else if (!atLeastOneFieldToQuery) {
-            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), null, 0, 0, 0, sessionId);
+            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), null, 0, 0, sessionId);
         } else {
             finalQuery = filteredQuery(query, geoShape);
         }
@@ -298,7 +298,6 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, groupMaxResults, groupOffset);
 
-        long totalHits = getTotalHitsFromAggregation(searchResponse);
         double minScore = getMinScoreFromAggregation(searchResponse);
         double maxScore = getMaxScoreFromAggregation(searchResponse);
         //END FIRST QUERY
@@ -327,13 +326,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END SECOND QUERY
 
 
-        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalHits, sessionId);
-    }
-
-    private long getTotalHitsFromAggregation(SearchResponse searchResponse) {
-        Nested nested = searchResponse.getAggregations().get("nested");
-        Cardinality cardinality = nested.getAggregations().get("number_of_buckets");
-        return cardinality.getValue();
+        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, sessionId);
     }
 
     private double getMaxScoreFromAggregation(SearchResponse searchResponse) {
@@ -590,7 +583,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, long totalHits, String sessionId) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, String sessionId) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
 
         if (response.getAggregations() != null) {
@@ -631,8 +624,10 @@ public class BioportalSpecimenDao extends AbstractDao {
                 resultGroup.setTotalSize(bucket.getDocCount());
                 specimenStringResultGroupSet.addGroup(resultGroup);
             }
+            Cardinality cardinality = nested.getAggregations().get("number_of_buckets");
+            specimenStringResultGroupSet.setTotalBuckets(cardinality.getValue());
+            specimenStringResultGroupSet.setTotalSize(nested.getDocCount());
         }
-        specimenStringResultGroupSet.setTotalSize(totalHits);
         return specimenStringResultGroupSet;
     }
 

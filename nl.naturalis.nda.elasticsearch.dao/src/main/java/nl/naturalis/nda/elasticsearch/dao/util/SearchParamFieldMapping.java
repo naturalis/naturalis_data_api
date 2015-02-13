@@ -38,6 +38,7 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_groupSortDirection");      
         EXCLUDED_PARAMS.add("_SESSION_ID");       
         EXCLUDED_PARAMS.add("_session_id");       
+        EXCLUDED_PARAMS.add("_jsonError");
     }
 
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();

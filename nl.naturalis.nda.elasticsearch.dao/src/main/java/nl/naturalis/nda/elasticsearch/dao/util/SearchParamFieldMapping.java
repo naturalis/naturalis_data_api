@@ -39,6 +39,7 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_SESSION_ID");       
         EXCLUDED_PARAMS.add("_session_id");       
         EXCLUDED_PARAMS.add("_jsonError");
+        EXCLUDED_PARAMS.add("_showMap");
     }
 
     private static final SearchParamFieldMapping INSTANCE = new SearchParamFieldMapping();

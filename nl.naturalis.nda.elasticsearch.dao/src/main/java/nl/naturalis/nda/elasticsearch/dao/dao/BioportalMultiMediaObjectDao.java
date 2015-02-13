@@ -190,7 +190,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         List<FieldMapping> allowedFields = (allowedFieldNames == null) ? fields : filterAllowedFieldMappings(fields, allowedFieldNames);
 
         QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, true, getOperator(params), sessionId);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, nameResolutionQuery, sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, nameResolutionQuery, sessionId, true);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         logger.info("Total hits: " + totalHits);
@@ -198,7 +198,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.add("_offset", String.valueOf(totalHits - 1));
-            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, sessionId).getHits();
+            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, sessionId, true).getHits();
             try {
                 if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
                     minScore = hits.getAt(0).getScore();

@@ -20,7 +20,12 @@ import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.NestedFilterBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.highlight.HighlightField;
@@ -35,15 +40,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
-import static org.elasticsearch.index.query.FilterBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.FilterBuilders.geoShapeFilter;
+import static org.elasticsearch.index.query.FilterBuilders.nestedFilter;
+import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.AND;
+import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.valueOf;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 /**
@@ -113,21 +141,22 @@ public abstract class AbstractDao {
     }
 
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   boolean highlighting, String sessionId) {
-        return executeExtendedSearch(params, fields, type, highlighting, null, sessionId);
+                                                   boolean highlighting, String sessionId, boolean fromMultiMedia) {
+        return executeExtendedSearch(params, fields, type, highlighting, null, sessionId, fromMultiMedia);
     }
 
     /**
      * @param params
      * @param fields
      * @param type
-     * @param highlighting  whether to use highlighting
-     * @param prebuiltQuery ignored if null, appended with AND or OR (from _andOr in params) else
+     * @param highlighting   whether to use highlighting
+     * @param prebuiltQuery  ignored if null, appended with AND or OR (from _andOr in params) else
      * @param sessionId
+     * @param fromMultiMedia
      * @return
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   boolean highlighting, QueryAndHighlightFields prebuiltQuery, String sessionId) {
+                                                   boolean highlighting, QueryAndHighlightFields prebuiltQuery, String sessionId, boolean fromMultiMedia) {
 
 
         CreateQuery createQuery = new CreateQuery(params, fields).invoke();
@@ -151,7 +180,7 @@ public abstract class AbstractDao {
         NestedFilterBuilder geoShape = null;
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {
-            geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
+            geoShape = createGeoShapeFilter(params.getParam("_geoShape"), fromMultiMedia);
             geoSearch = true;
         }
 
@@ -237,7 +266,7 @@ public abstract class AbstractDao {
         }
     }
 
-    NestedFilterBuilder createGeoShapeFilter(String geoShape) {
+    NestedFilterBuilder createGeoShapeFilter(String geoShape, boolean fromMultiMedia) {
         GeoJsonObject geo;
         ShapeBuilder shapeBuilder = null;
         try {
@@ -266,9 +295,15 @@ public abstract class AbstractDao {
         }
 
         if (shapeBuilder != null) {
-            return nestedFilter("gatheringEvent.siteCoordinates",
+            String nestedPath;
+            if (fromMultiMedia) {
+                nestedPath = "gatheringEvents.siteCoordinates";
+            } else {
+                nestedPath = "gatheringEvent.siteCoordinates";
+            }
+            return nestedFilter(nestedPath,
                     geoShapeFilter(
-                            "gatheringEvent.siteCoordinates.point",
+                            nestedPath + ".point",
                             shapeBuilder,
                             ShapeRelation.WITHIN));
         }

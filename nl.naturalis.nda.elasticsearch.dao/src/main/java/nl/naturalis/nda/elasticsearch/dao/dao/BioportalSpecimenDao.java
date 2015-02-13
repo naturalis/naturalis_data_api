@@ -150,7 +150,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting, sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting, sessionId, false);
 
         logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
 
@@ -159,7 +159,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.add("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, fieldMappings, SPECIMEN_TYPE, false, sessionId).getHits().getAt(0).getScore();
+            minScore = executeExtendedSearch(copy, fieldMappings, SPECIMEN_TYPE, false, sessionId, false).getHits().getAt(0).getScore();
         }
 
         return responseToSpecimenSearchResultSet(searchResponse, minScore, sessionId);
@@ -236,7 +236,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         NestedFilterBuilder geoShape = null;
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {
-            geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
+            geoShape = createGeoShapeFilter(params.getParam("_geoShape"), false);
             geoSearch = true;
         }
 

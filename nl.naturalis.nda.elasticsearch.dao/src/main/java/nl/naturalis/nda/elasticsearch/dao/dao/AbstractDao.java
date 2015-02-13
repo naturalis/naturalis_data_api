@@ -470,6 +470,7 @@ public abstract class AbstractDao {
             return null; // otherwise we would get an all-query
         }
         if (hasText(simpleSearch)) {
+            nameResTaxonQueryParams.remove("_andOr");
             nameResTaxonQueryParams.add("_andOr", "OR");
         } else {
             nameResTaxonQueryParams.add("_andOr", operator.name());

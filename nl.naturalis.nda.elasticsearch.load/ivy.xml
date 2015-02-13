@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info
+        organisation="Naturalis"
+        module="nl.naturalis.nda.elasticsearch.load"
+        status="integration">
+	</info>
+	<dependencies>
+		<dependency org="org.elasticsearch" name="elasticsearch" rev="1.3.4"/>
+	</dependencies>
+</ivy-module>

@@ -35,9 +35,10 @@ public class SearchParamFieldMapping {
         EXCLUDED_PARAMS.add("_geoShape");
         EXCLUDED_PARAMS.add("_groupMaxResults");
         EXCLUDED_PARAMS.add("_groupSort");
-        EXCLUDED_PARAMS.add("_groupSortDirection");      
-        EXCLUDED_PARAMS.add("_SESSION_ID");       
-        EXCLUDED_PARAMS.add("_session_id");       
+        EXCLUDED_PARAMS.add("_groupSortDirection");
+        EXCLUDED_PARAMS.add("_groupOffset");
+        EXCLUDED_PARAMS.add("_SESSION_ID");
+        EXCLUDED_PARAMS.add("_session_id");
         EXCLUDED_PARAMS.add("_jsonError");
         EXCLUDED_PARAMS.add("_showMap");
     }
@@ -131,9 +132,9 @@ public class SearchParamFieldMapping {
             Float boostValue = getBoostValueForField(esField, properties);
             String nestedPath = getNestedPathValueForField(esField, properties);
             Boolean hasNGramField = getNGramValueForField(esField, properties);
-            boolean fromAlias  = false;
+            boolean fromAlias = false;
             String aliasName = null;
-            if(!esField.equalsIgnoreCase(field)) {
+            if (!esField.equalsIgnoreCase(field)) {
                 fromAlias = true;
                 aliasName = field;
             }

@@ -101,6 +101,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     public SearchResultSet<MultiMediaObject> multiMediaObjectSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
         if (params.containsKey("_search")) {
+            params.remove("_andOr");
             params.add("_andOr", "OR");
         }
 

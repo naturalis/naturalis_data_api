@@ -10,23 +10,26 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.*;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.export.dwca.EmlXml;
+import nl.naturalis.nda.export.dwca.EMLS;
 
 import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 /**
  * @author Reinier.Kartowikromo
@@ -38,12 +41,13 @@ public class DwCAExporter
 	public static final String CSVComma = "\t";
 	private static final String csvOutPutFile = "specimen.txt";
 	private static final String FILE_NAME = "meta.xml";
+	private static final String FILE_NAME_EML = "eml.xml";
 
 	/**
 	 * @param args
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
 
 		logger.info("-----------------------------------------------------------------");
@@ -74,7 +78,7 @@ public class DwCAExporter
 
 	private final IndexNative index;
 
-	public void ExportDwca() throws IOException
+	public void ExportDwca() throws Exception
 	{
 		// before we open the file check to see if it already exists
 		// boolean alreadyExists = new File(csvOutPutFile).exists();
@@ -151,21 +155,25 @@ public class DwCAExporter
 			 * adding data row
 			 */
 			fileWriter.WriteRow(dataRow);
-			
+
 			XMLSpecimen xmlspecimen = new XMLSpecimen();
 			xmlspecimen.setKindOfUnit(specimen.getKindOfUnit());
 			xmlspecimen.setOwner(specimen.getOwner());
-	        DwCAObjectToXML(xmlspecimen);
-	 
-	        XMLSpecimen specFromFile = DwCAXMLToObject();
-	        System.out.println(specFromFile.toString());
+			DwCAObjectToXML(xmlspecimen);
+
+			XMLSpecimen specFromFile = DwCAXMLToObject();
+			System.out.println(specFromFile.toString());
+
+			// EmlXml emlxml = new EmlXml();
+			// DwCAEmlObjectToXML(emlxml);
+
+			CreateEmlObjectToXML();
 		}
 
 		/* always close the csv writer object after use */
 		fileWriter.close();
 		// pw.close();
-		
-		
+
 	}
 
 	private static XMLSpecimen DwCAXMLToObject()
@@ -199,6 +207,105 @@ public class DwCAExporter
 		{
 			e.printStackTrace();
 		}
+	}
+
+//	private static void DwCAEmlObjectToXML(EmlXml eml) throws Exception
+//	{
+//		JAXBContext jc = JAXBContext.newInstance(EmlXml.class, Dataset.class, Contact.class, Role.class);
+//
+//		eml.setEml("eml://ecoinformatics.org/eml-2.1.1");
+//		eml.setXmlns("eml");
+//
+//		ArrayList<Dataset> datasetlist = new ArrayList<Dataset>();
+//		Dataset ds = new Dataset("Naturalis Biodiversity Center(NL)", "Test", "English", "Multiple language",
+//				"Occurence", "Specimen");
+//		datasetlist.add(ds);
+//		eml.setListOfDataset(datasetlist);
+//
+//		ArrayList<Contact> contactlist = new ArrayList<Contact>();
+//		Contact<?> cl = new Contact("Naturalis Biodiversity Center", "Individual", "Reinier", "Kartowikromo",
+//				"Address", "Darwinweg 2", "Leiden", "South Holland", "Netherlands", "NL-2300RA",
+//				"0031715687600", "contact@naturalis.nl", "http://www.naturalis.nl");
+//		contactlist.add(cl);
+//		eml.setListOfContact(contactlist);
+//
+//		// Dataset<Contact> list = new Dataset<Contact>();
+//		// Contact con = new Contact();
+//		// con.setOrganisation("Naturalis Biodiversity Center");
+//		// con.setPhone("0102150587");
+//		// list.getValues().add(con);
+//
+//		ArrayList<Role> rolelist = new ArrayList<Role>();
+//		Role role = new Role();
+//		role.setPosition("Application Developer");
+//		rolelist.add(role);
+//		eml.setListOfContactChildTree(rolelist);
+//
+//		// JAXBContext context = JAXBContext.newInstance(DwCAEmlXml.class);
+//		Marshaller m = jc.createMarshaller();
+//		// for pretty-print XML in JAXB
+//		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//
+//		// Write to File
+//		m.marshal(eml, new File(FILE_NAME_EML));
+//		// m.marshal(list, new File(FILE_NAME_EML));
+//
+//	}
+
+	private static void CreateEmlObjectToXML()
+	{
+		try
+		{
+			Role role = new Role();
+			role.setPosition("Application Developer");
+
+			IndividualName indi = new IndividualName();
+			indi.setGivenname("Reinier");
+			indi.setSurname("Kartowikromo");
+			
+			Contacts con = new Contacts();
+			con.setOrganisation("Naturalis Biodiversity Center");
+			con.setPhone("0102150587");
+			con.setEmailAddress("contact@naturalis.nl");
+			con.setOnlineUrl("http://www.naturalis.nl");
+			con.setRole(role);
+			con.setIndividualName(indi);
+			
+			Datasets ds = new Datasets();
+			ds.setTitle("Naturalis Biodiversity Center(NL)");
+			ds.setDescription("Test description");
+			ds.setMetadatalanguage("English");
+			ds.setResourcelanguage("Multiple language");
+			ds.setType("Occurence");
+			ds.setSubtype("Specimen");
+			ds.setContacts(con);
+			
+			
+			EMLS eml = new EMLS();
+			eml.add(ds);
+			// eml.setEml("eml://ecoinformatics.org/eml-2.1.1");
+			eml.setEmlxmlns("eml");
+			
+			JAXBContext jaxbContext = JAXBContext.newInstance(EMLS.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			
+			
+			/* set this flag to true to format the output */
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			/*
+			 * marshaling of java objects in xml (output to file and standard
+			 * output)
+			 */
+			jaxbMarshaller.marshal(eml, new File("eml1.xml"));
+			jaxbMarshaller.marshal(eml, System.out);
+
+		} catch (JAXBException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	// private String getCSVRecordFromSpecimen(ESSpecimen specimen) throws

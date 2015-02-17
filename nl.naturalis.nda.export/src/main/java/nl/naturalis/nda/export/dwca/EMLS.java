@@ -3,34 +3,39 @@ package nl.naturalis.nda.export.dwca;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "eml")
 public class EMLS
 {
-
+	@XmlAttribute(name = "xmlns")
+	private String xmlns;
+	@XmlAttribute(name = "xmlns:eml")
 	private String emlxmlns;
-	
-	List<Datasets> datasets;
+	@XmlElement(name = "dataset")
+	List<Dataset> datasets;
 
-	public List<Datasets> getDatasets()
+	public List<Dataset> getDatasets()
 	{
 		return datasets;
 	}
 
-	@XmlElement(name = "dataset")
-	public void setDatasets(List<Datasets> datasets)
+	
+	public void setDatasets(List<Dataset> datasets)
 	{
 		this.datasets = datasets;
 	}
 
-	public void add(Datasets dataset)
+	public void add(Dataset dataset)
 	{
 		if (this.datasets == null)
 		{
-			this.datasets = new ArrayList<Datasets>();
+			this.datasets = new ArrayList<Dataset>();
 		}
 		this.datasets.add(dataset);
 
@@ -41,10 +46,20 @@ public class EMLS
 		return emlxmlns;
 	}
 
-	@XmlAttribute(name = "xmlns:eml")
+	
 	public void setEmlxmlns(String emlxmlns)
 	{
 		this.emlxmlns = emlxmlns;
+	}
+
+	public String getXmlns()
+	{
+		return xmlns;
+	}
+
+	public void setXmlns(String xmlns)
+	{
+		this.xmlns = xmlns;
 	}
 
 }

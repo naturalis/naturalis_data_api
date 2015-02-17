@@ -24,7 +24,6 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.export.dwca.EmlXml;
 import nl.naturalis.nda.export.dwca.EMLS;
 
 import org.domainobject.util.debug.BeanPrinter;
@@ -263,22 +262,30 @@ public class DwCAExporter
 			indi.setGivenname("Reinier");
 			indi.setSurname("Kartowikromo");
 			
-			Contacts con = new Contacts();
-			con.setOrganisation("Naturalis Biodiversity Center");
-			con.setPhone("0102150587");
-			con.setEmailAddress("contact@naturalis.nl");
-			con.setOnlineUrl("http://www.naturalis.nl");
-			con.setRole(role);
-			con.setIndividualName(indi);
+			Address address = new Address();
+			address.setDeliveryPoint("Darwinweg 2");
+			address.setCity("Leiden");
+			address.setStateProvince("South Holland");
+			address.setCountry("Netherlands");
+			address.setPostalCode("NL-2300RA");
 			
-			Datasets ds = new Datasets();
+			Contact contact = new Contact();
+			contact.setOrganisation("Naturalis Biodiversity Center");
+			contact.setPhone("0102150587");
+			contact.setEmailAddress("contact@naturalis.nl");
+			contact.setOnlineUrl("http://www.naturalis.nl");
+			contact.setRole(role);
+			contact.setIndividualName(indi);
+			contact.setAddress(address);
+			
+			Dataset ds = new Dataset();
 			ds.setTitle("Naturalis Biodiversity Center(NL)");
 			ds.setDescription("Test description");
 			ds.setMetadatalanguage("English");
 			ds.setResourcelanguage("Multiple language");
 			ds.setType("Occurence");
 			ds.setSubtype("Specimen");
-			ds.setContacts(con);
+			ds.setContacts(contact);
 			
 			
 			EMLS eml = new EMLS();

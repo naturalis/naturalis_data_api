@@ -1,17 +1,16 @@
 package nl.naturalis.nda.export.dwca;
 
-import java.util.List;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+
 
 @XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(propOrder = { "organisation", "role", "IndividualName", "phone", "EmailAddress", "OnlineUrl"})
 @XmlRootElement(name = "contact")
-public class Contacts
+public class Contact
 {
 	@XmlElement(name="organisation")
 	private String organisation;
@@ -19,14 +18,16 @@ public class Contacts
 	Role role;
 	@XmlElement(name="IndividualName")
 	IndividualName individualName;
+	@XmlElement(name="address")
+	Address address;
 	@XmlElement(name="phone")
 	private String phone;
 	@XmlElement(name="EmailAddress")
 	private String emailAddress;
 	@XmlElement(name="OnlineUrl")
 	private String onlineUrl;
-
-	public Contacts()
+	
+	public Contact()
 	{
 		// TODO Auto-generated constructor stub
 	}
@@ -89,6 +90,16 @@ public class Contacts
 	public void setOnlineUrl(String onlineUrl)
 	{
 		this.onlineUrl = onlineUrl;
+	}
+
+	public Address getAddress()
+	{
+		return address;
+	}
+
+	public void setAddress(Address address)
+	{
+		this.address = address;
 	}
 
 

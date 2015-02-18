@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 		              "recordBasis", "kindOfUnit", "collectionType", "typeStatus","sex",
 		              "phaseOrStage","title","notes","preparationType","numberOfSpecimen","fromCaptivity","objectPublic","multiMediaPublic"})
 
-public class XMLSpecimen
+public class Meta
 {
 	private String unitID;
 	private String unitGUID;

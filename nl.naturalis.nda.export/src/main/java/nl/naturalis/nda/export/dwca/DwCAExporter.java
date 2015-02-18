@@ -24,7 +24,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.export.dwca.EMLS;
+import nl.naturalis.nda.export.dwca.Eml;
 
 import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
@@ -155,30 +155,30 @@ public class DwCAExporter
 			 */
 			fileWriter.WriteRow(dataRow);
 
-			XMLSpecimen xmlspecimen = new XMLSpecimen();
+			/* Create Meta.xml file for NBA */
+			Meta xmlspecimen = new Meta();
 			xmlspecimen.setKindOfUnit(specimen.getKindOfUnit());
 			xmlspecimen.setOwner(specimen.getOwner());
 			DwCAObjectToXML(xmlspecimen);
 
-			XMLSpecimen specFromFile = DwCAXMLToObject();
+			Meta specFromFile = DwCAXMLToObject();
 			System.out.println(specFromFile.toString());
 
+			/* Create "EML" xml file */
 			CreateEmlObjectToXML();
 		}
 
 		/* always close the csv writer object after use */
 		fileWriter.close();
-		// pw.close();
-
 	}
 
-	private static XMLSpecimen DwCAXMLToObject()
+	private static Meta DwCAXMLToObject()
 	{
 		try
 		{
-			JAXBContext context = JAXBContext.newInstance(XMLSpecimen.class);
+			JAXBContext context = JAXBContext.newInstance(Meta.class);
 			Unmarshaller un = context.createUnmarshaller();
-			XMLSpecimen xmlspecimen = (XMLSpecimen) un.unmarshal(new File(FILE_NAME));
+			Meta xmlspecimen = (Meta) un.unmarshal(new File(FILE_NAME));
 			return xmlspecimen;
 		} catch (JAXBException e)
 		{
@@ -187,17 +187,19 @@ public class DwCAExporter
 		return null;
 	}
 
-	private static void DwCAObjectToXML(XMLSpecimen specimen)
+	private static void DwCAObjectToXML(Meta meta)
 	{
 		try
 		{
-			JAXBContext context = JAXBContext.newInstance(XMLSpecimen.class);
+			JAXBContext context = JAXBContext.newInstance(Meta.class);
 			Marshaller m = context.createMarshaller();
 			// for pretty-print XML in JAXB
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
 			// Write to File
-			m.marshal(specimen, new File(FILE_NAME));
+			m.marshal(meta, new File(FILE_NAME));
+			m.marshal(meta, System.out);
+			
 		} catch (JAXBException e)
 		{
 			e.printStackTrace();
@@ -209,33 +211,34 @@ public class DwCAExporter
 	{
 		try
 		{
-			/* Role info for Contact */
+			/* Element Role info for Contact */
 			Role role = new Role();
 			role.setPosition("Application Developer");
 
-			/* Name info for Contact */
+			/* Element Name info for Contact */
 			IndividualName indi = new IndividualName();
 			indi.setGivenname("Reinier");
 			indi.setSurname("Kartowikromo");
 			
-			/* Role info for Creator */
+			/* Element Role info for Creator */
 			Role rolecreator = new Role();
 			rolecreator.setPosition("Analist");
 
-			/* Name info for Creator */
+			/* Element Name info for Creator */
 			IndividualName individual = new IndividualName();
 			individual.setGivenname("Wilfred");
 			individual.setSurname("Gerritsen");
 			
-			/* Role info for Provider */
+			/* Element Role info for Provider */
 			Role roleprovider = new Role();
 			roleprovider.setPosition("Lead Software Developer");
 
-			/* Name info for Provider */
+			/* Element Name info for Provider */
 			IndividualName individualprovider = new IndividualName();
 			individualprovider.setGivenname("Ayco");
 			individualprovider.setSurname("Holleman");
 			
+			/* Element info "address" */
 			Address address = new Address();
 			address.setDeliveryPoint("Darwinweg 2");
 			address.setCity("Leiden");
@@ -243,6 +246,7 @@ public class DwCAExporter
 			address.setCountry("Netherlands");
 			address.setPostalCode("NL-2300RA");
 			
+			/* Element info "contact" */
 			Contact contact = new Contact();
 			contact.setOrganisation("Naturalis Biodiversity Center");
 			contact.setPhone("0102150587");
@@ -252,6 +256,7 @@ public class DwCAExporter
 			contact.setIndividualName(indi);
 			contact.setAddress(address);
 			
+			/* Element info "creator" */
 			Creator creator = new Creator();
 			creator.setOrganisation("Naturalis Biodiversity Center");
 			creator.setPhone("0102151088");
@@ -261,6 +266,7 @@ public class DwCAExporter
 			creator.setIndividualName(individual);
 			creator.setAddress(address);
 			
+			/* Element info "provider" */
 			Provider provider = new Provider();
 			provider.setOrganisation("Naturalis Biodiversity Center");
 			provider.setPhone("0102151088");
@@ -270,7 +276,7 @@ public class DwCAExporter
 			provider.setIndividualName(individualprovider);
 			provider.setAddress(address);
 			
-			
+			/* Element info "dataset" */
 			Dataset ds = new Dataset();
 			ds.setTitle("Naturalis Biodiversity Center(NL)");
 			ds.setDescription("Test description");
@@ -282,8 +288,8 @@ public class DwCAExporter
 			ds.setCreator(creator);
 			ds.setProvider(provider);
 			
-			
-			EMLS eml = new EMLS();
+			/* Header info Element "eml" */
+			Eml eml = new Eml();
 			eml.add(ds);
 			eml.setEmlxmlns("eml://ecoinformatics.org/eml-2.1.1");
 			eml.setXmlnsmd("eml://ecoinformatics.org/methods-2.1.1");
@@ -299,7 +305,7 @@ public class DwCAExporter
 			eml.setXmllang("eng");
 			eml.setXmlns("eml");
 			
-			JAXBContext jaxbContext = JAXBContext.newInstance(EMLS.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Eml.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			/* set this flag to true to format the output */

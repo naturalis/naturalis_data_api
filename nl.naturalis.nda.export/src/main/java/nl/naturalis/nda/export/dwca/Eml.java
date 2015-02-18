@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "eml")
-public class EMLS
+public class Eml
 {
 	@XmlAttribute(name = "xmlns:eml")
 	private String emlxmlns;

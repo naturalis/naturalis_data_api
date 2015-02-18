@@ -1,16 +1,15 @@
 package nl.naturalis.nda.export.dwca;
 
-
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
+
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "contact")
-public class Contact
+@XmlRootElement(name = "provider")
+public class Provider
 {
 	@XmlElement(name="organisation")
 	private String organisation;
@@ -27,7 +26,7 @@ public class Contact
 	@XmlElement(name="onlineurl")
 	private String onlineUrl;
 	
-	public Contact()
+	public Provider()
 	{
 		// TODO Auto-generated constructor stub
 	}
@@ -62,6 +61,16 @@ public class Contact
 		this.individualName = individualName;
 	}
 
+	public Address getAddress()
+	{
+		return address;
+	}
+
+	public void setAddress(Address address)
+	{
+		this.address = address;
+	}
+
 	public String getPhone()
 	{
 		return phone;
@@ -91,16 +100,5 @@ public class Contact
 	{
 		this.onlineUrl = onlineUrl;
 	}
-
-	public Address getAddress()
-	{
-		return address;
-	}
-
-	public void setAddress(Address address)
-	{
-		this.address = address;
-	}
-
 
 }

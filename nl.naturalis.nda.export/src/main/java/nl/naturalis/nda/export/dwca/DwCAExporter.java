@@ -27,7 +27,6 @@ import nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow;
 import nl.naturalis.nda.export.dwca.Eml;
 
 import org.domainobject.util.debug.BeanPrinter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,41 +162,14 @@ public class DwCAExporter
 			Id id = new Id();
 			id.setIndex(0);
 
-			// field.setTerm(dwcUrlTdwgOrg + headerRow.toString());//
-			// specimen.getTitle());
+//			List<String> listfields = new ArrayList<String>();
+//			Iterator<String> fieldIterator = headerRow.iterator();
+//			while (fieldIterator.hasNext())
+//			{
+//				listfields.add(dwcUrlTdwgOrg + fieldIterator.next());
+//			}
 
-			// for (ListIterator<Integer> iter = numbers.listIterator();
-			// iter.hasNext(); ) {
-			// Integer number = iter.next();
-			// iter.add(number+1); // insert a number right before this
-			// }
-			//
-
-	
-			/*
-			 * Iterator<String> fieldIterator = headerRow.iterator(); while
-			 * (fieldIterator.hasNext()) { // field.add(fieldIterator.next());
-			 * field.setTerm(dwcUrlTdwgOrg + fieldIterator.next());
-			 * field.setFields("2", headerRow); arglist.add(dwcUrlTdwgOrg +
-			 * fieldIterator.next()); }
-			 */
-
-			List<String> arg = new ArrayList<String>();
-			Iterator<String> fieldIterator = headerRow.iterator();
-			while (fieldIterator.hasNext())
-			{
-				arg.add(dwcUrlTdwgOrg + fieldIterator.next());
-			}
-			/*Fields fld = new Fields("123", arg);
-			JAXBContext jc = JAXBContext.newInstance(Fields.class);
-			Marshaller marshaller = jc.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.marshal(fld, new File("test.xml"));
-			marshaller.marshal(fld, System.out);
-           */
-			
-			
-			Core cores = new Core("2", arg);
+			Core cores = new Core("2", null);
 			cores.setEncoding("UTF-8");
 			cores.setFieldsEnclosedBy("'");
 			cores.setFieldsTerminatedBy("\t");
@@ -206,48 +178,19 @@ public class DwCAExporter
 			cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
 			cores.setFiles(files);
 			cores.setId(id);
-//			cores.setField(field);
 			
-			/*Iterator<String> fieldIter = headerRow.iterator();
+			/* Create field index, term Atrribute */
+			Integer cnt = new Integer(0);
+			Iterator<String> fieldIter = headerRow.iterator();
 			while (fieldIter.hasNext())
 			{
-				Field field = new Field();
-				field.setIndex("0");
+				cnt = Integer.valueOf(cnt.intValue() + 1);
+				Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
+				cores.addField(field);
+				
+			}
 
-				field.setFields("2", dwcUrlTdwgOrg + fieldIter.next());
-				cores.setField(field);
-			}*/
-
-			// List<String> fields = new ArrayList<String>();
-			// for (CsvRow i : Arrays.asList(headerRow))
-			// fields.addAll(i);
-
-			// Iterator<String> fieldIterator = headerRow.iterator();
-			// while (fieldIterator.hasNext())
-			// {
-			// fields.add(fieldIterator.next());
-			// field.setTerm(dwcUrlTdwgOrg + fieldIterator.next());
-			// System.out.println(fieldIterator.next());
-			//
-			// }
-
-			// StringBuilder builder = new StringBuilder();
-			// for (ListIterator<String> iter = headerRow.listIterator();
-			// iter.hasNext();)
-			// {
-			//
-			// String column = iter.next();
-			// if (column != null)
-			// {
-			// builder.append(column);
-			// field.setTerm(dwcUrlTdwgOrg + builder.toString());//
-			// column.toString());
-			// System.out.println(column);
-			// }
-			//
-			// cores.setField(field);
-			// }
-
+			
 			/* Create Meta.xml file for NBA */
 			Meta xmlspecimen = new Meta();
 			xmlspecimen.setMetadata("eml.xml");

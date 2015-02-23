@@ -9,6 +9,8 @@ package nl.naturalis.nda.export.dwca;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,6 +25,7 @@ import javax.xml.bind.Unmarshaller;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow;
 import nl.naturalis.nda.export.dwca.Eml;
 
@@ -42,6 +45,7 @@ public class DwCAExporter
 	private static final String FILE_NAME = "meta.xml";
 	private static final String FILE_NAME_EML = "eml.xml";
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
+	//private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	/**
 	 * @param args
@@ -60,7 +64,7 @@ public class DwCAExporter
 			boolean success = (new File(csvOutPutFile)).delete();
 			if (success)
 			{
-				System.out.println("The file has been successfully deleted");
+				System.out.println("The file " + csvOutPutFile + " has been successfully deleted");
 			}
 			exp.ExportDwca();
 		} finally
@@ -110,11 +114,30 @@ public class DwCAExporter
 		headerRow.add("FromCaptivity");
 		headerRow.add("ObjectPublic");
 		headerRow.add("MultiMediaPublic");
-		headerRow.add("AcquiredFrom");
+		headerRow.add("AcquiredFrom"); // ToDo
 		headerRow.add("ProjectTitle");
 		headerRow.add("WorldRegion");
 		headerRow.add("Continent");
 		headerRow.add("Country");
+		headerRow.add("ISO3166Code");
+		headerRow.add("ProvinceState");
+		headerRow.add("Island");
+		headerRow.add("Locality");
+		headerRow.add("City");
+		headerRow.add("Sublocality");
+		headerRow.add("LocalityText");
+		headerRow.add("DateTimeBegin");
+		headerRow.add("DateTimeEnd");
+		headerRow.add("Method");
+		headerRow.add("Altitude");
+		headerRow.add("AltitudeUnifOfMeasurement");
+		headerRow.add("Depth");
+		headerRow.add("depthUnitOfMeasurement");
+		headerRow.add("FullName");
+		headerRow.add("GatheringOrganizations");
+		headerRow.add("LongitudeDecimal");
+		headerRow.add("LatitudeDecimal");
+
 		/**
 		 * adding header row
 		 */
@@ -122,8 +145,6 @@ public class DwCAExporter
 
 		for (ESSpecimen specimen : list)
 		{
-			// pw.println(getCSVRecordFromSpecimen(specimen));
-
 			CsvFileWriter.CsvRow dataRow = fileWriter.new CsvRow();
 			dataRow.add(specimen.getUnitID());
 			dataRow.add(specimen.getUnitGUID());
@@ -147,10 +168,51 @@ public class DwCAExporter
 			dataRow.add(String.valueOf(specimen.isFromCaptivity()));
 			dataRow.add(Boolean.toString(specimen.isObjectPublic()));
 			dataRow.add(Boolean.toString(specimen.isMultiMediaPublic()));
+			if (specimen.getAcquiredFrom() != null)
+			{
+				dataRow.add(specimen.getAcquiredFrom().getAgentText());
+			}
 			dataRow.add(specimen.getGatheringEvent().getProjectTitle());
 			dataRow.add(specimen.getGatheringEvent().getWorldRegion());
 			dataRow.add(specimen.getGatheringEvent().getContinent());
 			dataRow.add(specimen.getGatheringEvent().getCountry());
+			dataRow.add(specimen.getGatheringEvent().getIso3166Code());
+			dataRow.add(specimen.getGatheringEvent().getProvinceState());
+			dataRow.add(specimen.getGatheringEvent().getIsland());
+			dataRow.add(specimen.getGatheringEvent().getLocality());
+			dataRow.add(specimen.getGatheringEvent().getCity());
+			dataRow.add(specimen.getGatheringEvent().getSublocality());
+			dataRow.add(specimen.getGatheringEvent().getLocalityText());
+			if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+			{
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+				dataRow.add(datebegin);
+			}
+			if (specimen.getGatheringEvent().getDateTimeEnd() != null)
+			{
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+				dataRow.add(dateEnd);
+			}
+			dataRow.add(specimen.getGatheringEvent().getMethod());
+			dataRow.add(specimen.getGatheringEvent().getAltitude());
+			dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
+			dataRow.add(specimen.getGatheringEvent().getDepth());
+			dataRow.add(specimen.getGatheringEvent().getDepthUnitOfMeasurement());
+			if (specimen.getGatheringEvent().getGatheringPersons() != null)
+			{
+				dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
+			}
+			if (specimen.getGatheringEvent().getGatheringOrganizations() != null)
+			{
+				dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next().getName());
+			}
+			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+			{
+				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal()));
+				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
+			}
 
 			/**
 			 * adding data row
@@ -162,14 +224,7 @@ public class DwCAExporter
 			Id id = new Id();
 			id.setIndex(0);
 
-//			List<String> listfields = new ArrayList<String>();
-//			Iterator<String> fieldIterator = headerRow.iterator();
-//			while (fieldIterator.hasNext())
-//			{
-//				listfields.add(dwcUrlTdwgOrg + fieldIterator.next());
-//			}
-
-			Core cores = new Core("2", null);
+			Core cores = new Core();
 			cores.setEncoding("UTF-8");
 			cores.setFieldsEnclosedBy("'");
 			cores.setFieldsTerminatedBy("\t");
@@ -178,7 +233,7 @@ public class DwCAExporter
 			cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
 			cores.setFiles(files);
 			cores.setId(id);
-			
+
 			/* Create field index, term Atrribute */
 			Integer cnt = new Integer(0);
 			Iterator<String> fieldIter = headerRow.iterator();
@@ -187,10 +242,9 @@ public class DwCAExporter
 				cnt = Integer.valueOf(cnt.intValue() + 1);
 				Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
 				cores.addField(field);
-				
+
 			}
 
-			
 			/* Create Meta.xml file for NBA */
 			Meta xmlspecimen = new Meta();
 			xmlspecimen.setMetadata("eml.xml");

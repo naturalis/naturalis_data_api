@@ -1,6 +1,5 @@
 package nl.naturalis.nda.export.dwca;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "core")
-public class Core
+@XmlRootElement(name = "extension")
+public class Extension
 {
 	@XmlAttribute(name = "encoding")
 	private String encoding;
@@ -30,35 +29,17 @@ public class Core
 	@XmlElement(name = "files")
 	Files files;
 	
-	@XmlElement(name = "id")
+	@XmlElement(name = "coreid")
 	Id id;
-
-
-	@XmlAttribute(name="index")
-	private String index;
-	
 	
 	@XmlElement(name = "field")
 	private List<Field> fields;
 	
 	
-	public Core()
+	public Extension()
 	{
 		// TODO Auto-generated constructor stub
 	}
-	
-
-	public Files getFiles()
-	{
-		return files;
-	}
-
-
-	public void setFiles(Files files)
-	{
-		this.files = files;
-	}
-
 
 
 	public String getEncoding()
@@ -133,6 +114,18 @@ public class Core
 	}
 
 
+	public Files getFiles()
+	{
+		return files;
+	}
+
+
+	public void setFiles(Files files)
+	{
+		this.files = files;
+	}
+
+
 	public Id getId()
 	{
 		return id;
@@ -145,29 +138,18 @@ public class Core
 	}
 
 
-
-	public String getIndex()
-	{
-		return index;
-	}
-
-	public void setIndex(String index)
-	{
-		this.index = index;
-	}
-
-
-	public List<Field> getField()
+	public List<Field> getFields()
 	{
 		return fields;
 	}
 
-	public void setField(List<Field> field)
-	{
-		this.fields = field;
-	}
 
-	public void addField(Field field)
+	public void setFields(List<Field> fields)
+	{
+		this.fields = fields;
+	}
+	
+	public void addExtensionField(Field field)
 	{
 		if (fields == null)
 		{
@@ -175,4 +157,6 @@ public class Core
 		}
 		fields.add(field);
 	}
+
+
 }

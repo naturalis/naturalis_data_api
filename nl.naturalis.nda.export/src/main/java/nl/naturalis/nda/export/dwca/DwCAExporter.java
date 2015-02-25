@@ -9,13 +9,13 @@ package nl.naturalis.nda.export.dwca;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
-import java.sql.Date;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,14 +24,14 @@ import javax.xml.bind.Unmarshaller;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
-import nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow;
 import nl.naturalis.nda.export.dwca.Eml;
 
-import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import nl.naturalis.nda.export.dwca.StringUtilities;
 
 /**
  * @author Reinier.Kartowikromo
@@ -41,11 +41,11 @@ public class DwCAExporter
 {
 	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
 	public static final String CSVComma = "\t";
-	private static final String csvOutPutFile = "specimen.txt";
-	private static final String FILE_NAME = "meta.xml";
+	private static final String csvOutPutFile = "occurence.txt";
+	private static final String FILE_NAME_META = "meta.xml";
 	private static final String FILE_NAME_EML = "eml.xml";
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
-	//private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final String zipExtension = ".zip";
 
 	/**
 	 * @param args
@@ -56,6 +56,9 @@ public class DwCAExporter
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("Start");
+		
+		String zipfilename = args[0];
+		
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required(
 				"elasticsearch.index.name"));
 		try
@@ -66,7 +69,7 @@ public class DwCAExporter
 			{
 				System.out.println("The file " + csvOutPutFile + " has been successfully deleted");
 			}
-			exp.ExportDwca();
+			exp.ExportDwca(zipfilename);
 		} finally
 		{
 			index.getClient().close();
@@ -82,13 +85,13 @@ public class DwCAExporter
 
 	private final IndexNative index;
 
-	public void ExportDwca() throws Exception
+	public void ExportDwca(String zipFileName) throws Exception
 	{
 		// before we open the file check to see if it already exists
 		// boolean alreadyExists = new File(csvOutPutFile).exists();
+
 		CsvFileWriter fileWriter = new CsvFileWriter(csvOutPutFile);
 		List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, 10, ESSpecimen.class);
-		BeanPrinter.out(list);
 
 		/* Create the CSV file */
 		CsvFileWriter.CsvRow headerRow = fileWriter.new CsvRow();
@@ -137,6 +140,7 @@ public class DwCAExporter
 		headerRow.add("GatheringOrganizations");
 		headerRow.add("LongitudeDecimal");
 		headerRow.add("LatitudeDecimal");
+		// headerRow.add(list.iterator().next().getUnitID());
 
 		/**
 		 * adding header row
@@ -202,66 +206,73 @@ public class DwCAExporter
 			dataRow.add(specimen.getGatheringEvent().getDepthUnitOfMeasurement());
 			if (specimen.getGatheringEvent().getGatheringPersons() != null)
 			{
-				dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
+				dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
+						.getFullName());
 			}
 			if (specimen.getGatheringEvent().getGatheringOrganizations() != null)
 			{
-				dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next().getName());
+				dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next()
+						.getName());
 			}
 			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 			{
-				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal()));
-				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
+				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
+						.next().getLatitudeDecimal()));
+				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
+						.next().getLongitudeDecimal()));
 			}
 
 			/**
 			 * adding data row
 			 */
 			fileWriter.WriteRow(dataRow);
+		}
+		fileWriter.close();
 
-			Files files = new Files();
-			files.setLocation("occurence.txt");
-			Id id = new Id();
-			id.setIndex(0);
+		Files files = new Files();
+		files.setLocation("occurence.txt");
+		Id id = new Id();
+		id.setIndex(0);
 
-			Core cores = new Core();
-			cores.setEncoding("UTF-8");
-			cores.setFieldsEnclosedBy("'");
-			cores.setFieldsTerminatedBy("\t");
-			cores.setLinesTerminatedBy("\r\n");
-			cores.setIgnoreHeaderLines("1");
-			cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
-			cores.setFiles(files);
-			cores.setId(id);
+		Core cores = new Core();
+		cores.setEncoding("UTF-8");
+		cores.setFieldsEnclosedBy("'");
+		cores.setFieldsTerminatedBy("\t");
+		cores.setLinesTerminatedBy("\r\n");
+		cores.setIgnoreHeaderLines("1");
+		cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
+		cores.setFiles(files);
+		cores.setId(id);
 
-			/* Create field index, term Atrribute */
-			Integer cnt = new Integer(0);
-			Iterator<String> fieldIter = headerRow.iterator();
-			while (fieldIter.hasNext())
-			{
-				cnt = Integer.valueOf(cnt.intValue() + 1);
-				Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
-				cores.addField(field);
+		/* Create field index, term Atrribute */
+		Integer cnt = new Integer(0);
+		Iterator<String> fieldIter = headerRow.iterator();
+		while (fieldIter.hasNext())
+		{
+			cnt = Integer.valueOf(cnt.intValue() + 1);
+			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
+			cores.addField(field);
 
-			}
-
-			/* Create Meta.xml file for NBA */
-			Meta xmlspecimen = new Meta();
-			xmlspecimen.setMetadata("eml.xml");
-			xmlspecimen.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
-			xmlspecimen.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
-			xmlspecimen.add(cores);
-			DwCAObjectToXML(xmlspecimen);
-
-			Meta specFromFile = DwCAXMLToObject();
-			System.out.println(specFromFile.toString());
-
-			/* Create "EML" xml file */
-			CreateEmlObjectToXML();
 		}
 
+		/* Create Meta.xml file for NBA */
+		Meta xmlspecimen = new Meta();
+		xmlspecimen.setMetadata("eml.xml");
+		xmlspecimen.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
+		xmlspecimen.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
+		xmlspecimen.add(cores);
+		DwCAObjectToXML(xmlspecimen);
+
+		Meta specFromFile = DwCAXMLToObject();
+		System.out.println(specFromFile.toString());
+
+		/* Create "EML" xml file */
+		CreateEmlObjectToXML();
+
+		/* Create the zipfile with a given filename */
+		createZipFiles(zipFileName);
 		/* always close the csv writer object after use */
-		fileWriter.close();
+		
 	}
 
 	private static Meta DwCAXMLToObject()
@@ -270,7 +281,7 @@ public class DwCAExporter
 		{
 			JAXBContext context = JAXBContext.newInstance(Meta.class);
 			Unmarshaller un = context.createUnmarshaller();
-			Meta xmlspecimen = (Meta) un.unmarshal(new File(FILE_NAME));
+			Meta xmlspecimen = (Meta) un.unmarshal(new File(FILE_NAME_META));
 			return xmlspecimen;
 		} catch (JAXBException e)
 		{
@@ -289,7 +300,7 @@ public class DwCAExporter
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
 			// Write to File
-			m.marshal(meta, new File(FILE_NAME));
+			m.marshal(meta, new File(FILE_NAME_META));
 			m.marshal(meta, System.out);
 
 		} catch (JAXBException e)
@@ -410,6 +421,32 @@ public class DwCAExporter
 			jaxbMarshaller.marshal(eml, System.out);
 
 		} catch (JAXBException e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	public static void createZipFiles(String zipFileName) throws FileNotFoundException
+	{
+		try
+		{
+			String zipfilename = zipFileName + zipExtension;
+			FileOutputStream fos = new FileOutputStream(zipfilename);
+			ZipOutputStream zos = new ZipOutputStream(fos);
+
+			StringUtilities.addToZipFile(FILE_NAME_META, zos);
+			StringUtilities.addToZipFile(FILE_NAME_EML, zos);
+			StringUtilities.addToZipFile(csvOutPutFile, zos);
+
+			zos.close();
+			fos.close();
+			System.out.println("Zipfile '" + zipfilename + "' created successfull.");
+
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}

@@ -117,7 +117,7 @@ public interface Index {
 	<T> T get(String type, String id, Class<T> targetClass);
 
 	
-	<T> T getAll(String type, Class<T> targetClass);
+	<T> T getAll(String type, String id, Class<T> targetClass);
 	//HashMap<String,Object> getResultsMap(String type, int size);
 
 	<T> List<T> getResultsList(String type, int size,Class<T> targetClass);

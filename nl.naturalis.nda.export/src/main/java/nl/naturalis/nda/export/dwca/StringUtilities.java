@@ -7,11 +7,20 @@ package nl.naturalis.nda.export.dwca;
  */
 
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
  
 public class StringUtilities
 {  
+	final static int BUFFER = 2048;
+	
     public static int indexOfFirstContainedCharacter(String s1, String s2) {
         if (s1 == null || s1.isEmpty())
             return -1;
@@ -27,16 +36,30 @@ public class StringUtilities
         return -1; // No matches.
     }
      
-    public static boolean isNumeric(String str) 
-    { 
-      try 
-      { 
-        double d = Double.parseDouble(str); 
-      } 
-      catch(NumberFormatException nfe) 
-      { 
-        return false; 
-      } 
-      return true; 
+
+    /* Zip multiple files */
+    public static void addToZipFile(String fileName, ZipOutputStream zos)throws FileNotFoundException, IOException
+    {
+    	System.out.println("Writing '" + fileName + "' to zip file");
+    	
+    	BufferedInputStream origin = null;
+    	byte data[]  = new byte[BUFFER];
+    	
+    	File file = new File(fileName);
+    	FileInputStream fis = new FileInputStream(file);
+    	origin = new BufferedInputStream(fis, BUFFER);
+    	ZipEntry zipEntry = new ZipEntry(fileName);
+    	zos.putNextEntry(zipEntry);
+    	
+    	int length;
+    	while ((length = origin.read(data, 0, BUFFER)) != -1)
+    	{
+    		zos.write(data, 0, length);
+    		zos.flush();
+    	}
+    	origin.close();
+    	zos.closeEntry();
+    	zos.close();
+    	fis.close();
     }
 }

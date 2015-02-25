@@ -383,7 +383,7 @@ public class IndexREST implements Index {
 
 
 	@Override
-	public <T> T getAll(String type, Class<T> targetClass)
+	public <T> T getAll(String type, String id, Class<T> targetClass)
 	{
 		// TODO Auto-generated method stub
 		return null;

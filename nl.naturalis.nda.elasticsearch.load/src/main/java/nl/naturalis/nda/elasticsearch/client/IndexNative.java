@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.Query;
+
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.ExceptionUtil;
@@ -277,7 +279,7 @@ public class IndexNative implements Index
 	/*
 	 * Create by Reinier Description: for the DwCA export Date: 29-01-2015
 	 */
-	public <T> T getAll(String type, Class<T> targetClass)
+	public <T> T getAll(String type, String id, Class<T> targetClass)
 	{
 		GetRequestBuilder reqbld = esClient.prepareGet();
 
@@ -286,6 +288,8 @@ public class IndexNative implements Index
 
 		/* Set the type of the document to fetch */
 		reqbld.setType(type);
+
+		reqbld.setId(id);
 
 		/* Execute the Get Request builder */
 		GetResponse resp = reqbld.execute().actionGet();
@@ -308,54 +312,55 @@ public class IndexNative implements Index
 	/*
 	 * Created by Reinier Description: for the DwCA export Date: 29-01-2015
 	 */
-//	public HashMap<String, Object> getResultsMap(String type, int size)
-//	{
-//		ArrayList<Map<String, Object>> list = getResultsList(type, size, null);
-//		HashMap<String, Object> map = new HashMap<>();
-//		map.put("type", type);
-//		map.put("results", list);
-//		Set<?> set = map.entrySet();
-//		Iterator<?> i = set.iterator();
-//		while(i.hasNext())
-//		{
-//			@SuppressWarnings("rawtypes")
-//			Map.Entry me = (Map.Entry)i.next();
-//			System.out.print(me.getKey() + ": ");
-//			System.out.println(me.getValue());
-//		}
-//		
-//		try 
-//		{
-//			DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("output.txt")));
-//			for(int t=0; t <list.size(); t++)
-//			{
-//				dos.writeBytes(list.get(t).toString() + System.lineSeparator());
-//			}
-//				dos.close();
-//				System.out.println("Data saved.");
-//			} 
-//		    catch (IOException e) 
-//		    {
-//		    	e.printStackTrace();
-//			} 		
-//		
-//		return map;
-//	}
-//	
-	
+	// public HashMap<String, Object> getResultsMap(String type, int size)
+	// {
+	// ArrayList<Map<String, Object>> list = getResultsList(type, size, null);
+	// HashMap<String, Object> map = new HashMap<>();
+	// map.put("type", type);
+	// map.put("results", list);
+	// Set<?> set = map.entrySet();
+	// Iterator<?> i = set.iterator();
+	// while(i.hasNext())
+	// {
+	// @SuppressWarnings("rawtypes")
+	// Map.Entry me = (Map.Entry)i.next();
+	// System.out.print(me.getKey() + ": ");
+	// System.out.println(me.getValue());
+	// }
+	//
+	// try
+	// {
+	// DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new
+	// FileOutputStream("output.txt")));
+	// for(int t=0; t <list.size(); t++)
+	// {
+	// dos.writeBytes(list.get(t).toString() + System.lineSeparator());
+	// }
+	// dos.close();
+	// System.out.println("Data saved.");
+	// }
+	// catch (IOException e)
+	// {
+	// e.printStackTrace();
+	// }
+	//
+	// return map;
+	// }
+	//
 
-	public <T> List<T> getResultsList(String type, int size,Class<T> targetClass)
+	public <T> List<T> getResultsList(String type, int size, Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch()
-				.setQuery(QueryBuilders.matchAllQuery())
-				.setSearchType(SearchType.SCAN)
-				.setScroll(new TimeValue(60000))
-				.setIndices(indexName)
-				.setTypes(type)
-				.setSize(size);
+				.setQuery(QueryBuilders.matchAllQuery()).setSearchType(SearchType.SCAN)
+				.setExplain(true)
+				.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
 
 		SearchResponse response = searchRequestBuilder.execute().actionGet();
-
+		
+		//System.out.println("Fieldname: " + response..getFields());
+		
+		System.out.println("Status: " + response.status());
+		
 		System.out.println("Scrollid:" + response.getScrollId());
 
 		long totalHitCount = response.getHits().getTotalHits();
@@ -364,67 +369,37 @@ public class IndexNative implements Index
 		/* Show response properties */
 		String output = response.toString();
 		System.out.println(output);
-
+		
+		
 		List<T> list = new ArrayList<T>();
-        
 		while (true)
 		{
 			response = esClient.prepareSearchScroll(response.getScrollId())
-					.setScrollId(response.getScrollId())
-					.setScroll(new TimeValue(600000))
-					.execute().actionGet();
+					.setScrollId(response.getScrollId()).setScroll(new TimeValue(600000)).execute()
+					.actionGet();
+			
+			SearchHit[] results = response.getHits().getHits();
+			System.out.println("Result: " + results.length);
 
 			try
 			{
 				for (SearchHit hit : response.getHits())
 				{
-					
 					T result = objectMapper.convertValue(hit.getSource(), targetClass);
 					list.add(result);
-					
-					//Break condition: No hits are returned
-				    if (response.getHits().hits().length == 0) 
-				    {
-				    	logger.info("No hits");
-				        break;
-				    }
-					
-					// the retrieved document
-//					Map<String, Object> result = hit.getSource();
-//					result.putAll(result);
-//					
-//					System.out.println(hit.getSource());
-//					System.out.println(hit.getSourceAsString());
 
-									
-					//getting an iterator object to browse list items
-//					nameOfList.add(hit.getSourceAsString().toString() + System.lineSeparator());
-//					Iterator<Object> itr= nameOfList.iterator();
-//
-//					while(itr.hasNext())
-//					{
-//						resultOfList.add(nameOfList); 
-//						System.out.println(itr.next());
-//					}
-//					
-
-				}
-				{
-//          	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("SpecimenObjects.txt"));
-//				/* Write the resultOfList object to the objectoutputstream. 
-//				 * This writes the object as well all objects that it referes to.
-//				   It writes only those objects that implement serializable
-//			    */
-//			    objectOutputStream.writeObject(list);
-//				objectOutputStream.flush();
-//				objectOutputStream.close();
+					// Break condition: No hits are returned
+					if (response.getHits().hits().length == 0)
+					{
+						logger.info("No hits");
+						break;
+					}
 				}
 			} catch (Exception e)
 			{
 				throw new IndexException(e);
 			}
-			
-    		return list;
+			return list;
 		}
 	}
 

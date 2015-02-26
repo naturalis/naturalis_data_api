@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="common">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="common">
 
 	<target name="clean">
 		<echo message="*** Performing cleanup for ${ant.project.name}" />
 		<delete dir="build/main" />
 		<delete dir="build/test" />
-		<delete  includeemptydirs="true">
+		<delete includeemptydirs="true">
 			<fileset dir="build">
-				<include name="*"/>
+				<include name="*" />
 			</fileset>
 		</delete>
 	</target>
@@ -39,19 +39,28 @@
 		</copy>
 	</target>
 
-	<target name="compile" depends="init">
-		<echo message="*** Compiling ${ant.project.name}" />
+	<target name="resolve">
+		<echo message="*** Resolving dependencies for ${ant.project.name}" />
+		<ivy:resolve />
+	</target>
+
+	<target name="compile-sources" depends="init,resolve">
+		<echo message="*** Compiling classes ${ant.project.name}" />
 		<javac destdir="build/main" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
 			<src path="src/main/java" />
 			<classpath refid="${ant.project.name}.classpath" />
 		</javac>
+	</target>
+
+	<target name="compile-test-sources" depends="init,resolve,compile-sources">
+		<echo message="*** Compiling test classes for ${ant.project.name}" />
 		<javac destdir="build/test" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
 			<src path="src/test/java" />
 			<classpath refid="${ant.project.name}.classpath" />
 		</javac>
 	</target>
 
-	<target name="test" depends="compile">
+	<target name="test" depends="compile-test-sources">
 		<echo message="*** Testing ${ant.project.name}" />
 		<junit printsummary="yes" haltonfailure="yes">
 			<classpath refid="${ant.project.name}.classpath" />
@@ -64,5 +73,10 @@
 			</batchtest>
 		</junit>
 	</target>
+
+	<target name="package" depends="compile-sources">
+		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" />
+	</target>
+
 
 </project>

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.load" default="resolve">
-	
+<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.load" default="build">
+
+	<import file="../nl.naturalis.nda.build/paths.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
-	<target name="package" depends="test">
-		<jar destfile="build/${ant.project.name}.jar">
-			<fileset dir="build/main" />
-		</jar>
+	<path id="non-ivy-dependencies">
+		<fileset dir="${nl.naturalis.nda.build.location}/lib">
+			<include name="org.domainobject.*.jar" />
+		</fileset>
+	</path>
+
+	<target name="compile-sources">
+		<ivy:retrieve />
+		<copy todir="lib">
+			<path refid="non-ivy-dependencies" />
+		</copy>
+		<javac destdir="build/main" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
+			<src path="src/main/java" />
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
 	</target>
 
-    <target name="resolve" description="--> retrieve dependencies with ivy">
-        <ivy:retrieve />
-    </target>
-	
-	<target name="build" depends="package" />
+
+	<target name="build" depends="compile-sources" />
 
 </project>

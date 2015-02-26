@@ -6,12 +6,14 @@
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA_LOAD_LIB"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ELASTIC_SEARCH"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.elasticsearch.load&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
+	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.debug.jar"/>
+	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.http.jar"/>
+	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.jar"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

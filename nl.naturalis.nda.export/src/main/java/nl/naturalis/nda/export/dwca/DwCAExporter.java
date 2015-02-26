@@ -24,7 +24,6 @@ import javax.xml.bind.Unmarshaller;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.export.dwca.Eml;
 
@@ -56,9 +55,11 @@ public class DwCAExporter
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("Start");
-		
+
 		String zipfilename = args[0];
-		
+		String namecollectiontype = args[1];
+		String totalsize = args[2];
+
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required(
 				"elasticsearch.index.name"));
 		try
@@ -69,7 +70,7 @@ public class DwCAExporter
 			{
 				System.out.println("The file " + csvOutPutFile + " has been successfully deleted");
 			}
-			exp.ExportDwca(zipfilename);
+			exp.ExportDwca(zipfilename, namecollectiontype, totalsize);
 		} finally
 		{
 			index.getClient().close();
@@ -85,13 +86,14 @@ public class DwCAExporter
 
 	private final IndexNative index;
 
-	public void ExportDwca(String zipFileName) throws Exception
+	public void ExportDwca(String zipFileName, String namecollectiontype, String totalsize) throws Exception
 	{
 		// before we open the file check to see if it already exists
 		// boolean alreadyExists = new File(csvOutPutFile).exists();
 
 		CsvFileWriter fileWriter = new CsvFileWriter(csvOutPutFile);
-		List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, 10, ESSpecimen.class);
+		List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
+				Integer.parseInt(totalsize), ESSpecimen.class);
 
 		/* Create the CSV file */
 		CsvFileWriter.CsvRow headerRow = fileWriter.new CsvRow();
@@ -140,7 +142,7 @@ public class DwCAExporter
 		headerRow.add("GatheringOrganizations");
 		headerRow.add("LongitudeDecimal");
 		headerRow.add("LatitudeDecimal");
-		// headerRow.add(list.iterator().next().getUnitID());
+	
 
 		/**
 		 * adding header row
@@ -216,10 +218,16 @@ public class DwCAExporter
 			}
 			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 			{
-				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
-						.next().getLatitudeDecimal()));
-				dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
-						.next().getLongitudeDecimal()));
+				if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal() != null)
+				{
+					dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
+							.next().getLatitudeDecimal()));
+				}
+				if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
+				{
+					dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
+							.next().getLongitudeDecimal()));
+				}
 			}
 
 			/**
@@ -272,7 +280,7 @@ public class DwCAExporter
 		/* Create the zipfile with a given filename */
 		createZipFiles(zipFileName);
 		/* always close the csv writer object after use */
-		
+
 	}
 
 	private static Meta DwCAXMLToObject()

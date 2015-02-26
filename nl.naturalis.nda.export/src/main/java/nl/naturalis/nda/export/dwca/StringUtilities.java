@@ -59,7 +59,7 @@ public class StringUtilities
     	}
     	origin.close();
     	zos.closeEntry();
-    	zos.close();
+    	//zos.close();
     	fis.close();
     }
 }

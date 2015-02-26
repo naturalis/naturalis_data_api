@@ -120,7 +120,7 @@ public interface Index {
 	<T> T getAll(String type, String id, Class<T> targetClass);
 	//HashMap<String,Object> getResultsMap(String type, int size);
 
-	<T> List<T> getResultsList(String type, int size,Class<T> targetClass);
+	<T> List<T> getResultsList(String type, String namecollectiontype, int size,Class<T> targetClass);
 	
 
 	

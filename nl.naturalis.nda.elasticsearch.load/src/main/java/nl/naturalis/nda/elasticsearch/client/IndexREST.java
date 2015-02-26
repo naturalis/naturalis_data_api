@@ -391,7 +391,7 @@ public class IndexREST implements Index {
 
 
 	@Override
-	public <T> List<T> getResultsList(String type, int size, Class<T> targetClass)
+	public <T> List<T> getResultsList(String type, String namecollectiontype, int size, Class<T> targetClass)
 	{
 		// TODO Auto-generated method stub
 		return null;

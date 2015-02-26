@@ -348,10 +348,11 @@ public class IndexNative implements Index
 	// }
 	//
 
-	public <T> List<T> getResultsList(String type, int size, Class<T> targetClass)
+	public <T> List<T> getResultsList(String type, String namecollectiontype, int size, Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch()
-				.setQuery(QueryBuilders.matchAllQuery()).setSearchType(SearchType.SCAN)
+				.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType"))//.matchAllQuery())
+				.setSearchType(SearchType.SCAN)
 				.setExplain(true)
 				.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
 

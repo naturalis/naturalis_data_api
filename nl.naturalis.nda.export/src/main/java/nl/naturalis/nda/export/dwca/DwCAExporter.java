@@ -9,12 +9,19 @@ package nl.naturalis.nda.export.dwca;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.bind.JAXBContext;
@@ -45,6 +52,7 @@ public class DwCAExporter
 	private static final String FILE_NAME_EML = "eml.xml";
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
 	private static final String zipExtension = ".zip";
+	private static final String MAPPING_FILE_NAME = "Specimen.properties";
 
 	/**
 	 * @param args
@@ -91,151 +99,159 @@ public class DwCAExporter
 		// before we open the file check to see if it already exists
 		// boolean alreadyExists = new File(csvOutPutFile).exists();
 
-		CsvFileWriter fileWriter = new CsvFileWriter(csvOutPutFile);
-		List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
-				Integer.parseInt(totalsize), ESSpecimen.class);
+		// CsvFileWriter fileWriter = new CsvFileWriter(csvOutPutFile);
+		// List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN,
+		// namecollectiontype,
+		// Integer.parseInt(totalsize), ESSpecimen.class);
+		//
+		// /* Create the CSV file */
+		// CsvFileWriter.CsvRow headerRow = fileWriter.new CsvRow();
+		// headerRow.add("UnitID");
+		// headerRow.add("UnitGUID");
+		// headerRow.add("CollectorsFieldNumber");
+		// headerRow.add("AssemblageID");
+		// headerRow.add("SourceInstitutionID");
+		// headerRow.add("SourceID");
+		// headerRow.add("Owner");
+		// headerRow.add("LicenceType");
+		// headerRow.add("Licence");
+		// headerRow.add("RecordBasis");
+		// headerRow.add("KindOfUnit");
+		// headerRow.add("CollectionType");
+		// headerRow.add("TypeStatus");
+		// headerRow.add("Sex");
+		// headerRow.add("PhaseOrStage");
+		// headerRow.add("Titles");
+		// headerRow.add("Notes");
+		// headerRow.add("PreparationType");
+		// headerRow.add("NumberOfSpecimen");
+		// headerRow.add("FromCaptivity");
+		// headerRow.add("ObjectPublic");
+		// headerRow.add("MultiMediaPublic");
+		// headerRow.add("AcquiredFrom"); // ToDo
+		// headerRow.add("ProjectTitle");
+		// headerRow.add("WorldRegion");
+		// headerRow.add("Continent");
+		// headerRow.add("Country");
+		// headerRow.add("ISO3166Code");
+		// headerRow.add("ProvinceState");
+		// headerRow.add("Island");
+		// headerRow.add("Locality");
+		// headerRow.add("City");
+		// headerRow.add("Sublocality");
+		// headerRow.add("LocalityText");
+		// headerRow.add("DateTimeBegin");
+		// headerRow.add("DateTimeEnd");
+		// headerRow.add("Method");
+		// headerRow.add("Altitude");
+		// headerRow.add("AltitudeUnifOfMeasurement");
+		// headerRow.add("Depth");
+		// headerRow.add("depthUnitOfMeasurement");
+		// headerRow.add("FullName");
+		// headerRow.add("GatheringOrganizations");
+		// headerRow.add("LongitudeDecimal");
+		// headerRow.add("LatitudeDecimal");
+		//
+		// /**
+		// * adding header row
+		// */
+		// fileWriter.WriteRow(headerRow);
+		//
+		// for (ESSpecimen specimen : list)
+		// {
+		// CsvFileWriter.CsvRow dataRow = fileWriter.new CsvRow();
+		// dataRow.add(specimen.getUnitID());
+		// dataRow.add(specimen.getUnitGUID());
+		// dataRow.add(specimen.getCollectorsFieldNumber());
+		// dataRow.add(specimen.getAssemblageID());
+		// dataRow.add(specimen.getSourceInstitutionID());
+		// dataRow.add(specimen.getSourceID());
+		// dataRow.add(specimen.getOwner());
+		// dataRow.add(specimen.getLicenceType());
+		// dataRow.add(specimen.getLicence());
+		// dataRow.add(specimen.getRecordBasis());
+		// dataRow.add(specimen.getKindOfUnit());
+		// dataRow.add(specimen.getCollectionType());
+		// dataRow.add(specimen.getTypeStatus());
+		// dataRow.add(specimen.getSex());
+		// dataRow.add(specimen.getPhaseOrStage());
+		// dataRow.add(specimen.getTitle());
+		// dataRow.add(specimen.getNotes());
+		// dataRow.add(specimen.getPreparationType());
+		// dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+		// dataRow.add(String.valueOf(specimen.isFromCaptivity()));
+		// dataRow.add(Boolean.toString(specimen.isObjectPublic()));
+		// dataRow.add(Boolean.toString(specimen.isMultiMediaPublic()));
+		// if (specimen.getAcquiredFrom() != null)
+		// {
+		// dataRow.add(specimen.getAcquiredFrom().getAgentText());
+		// }
+		// dataRow.add(specimen.getGatheringEvent().getProjectTitle());
+		// dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+		// dataRow.add(specimen.getGatheringEvent().getContinent());
+		// dataRow.add(specimen.getGatheringEvent().getCountry());
+		// dataRow.add(specimen.getGatheringEvent().getIso3166Code());
+		// dataRow.add(specimen.getGatheringEvent().getProvinceState());
+		// dataRow.add(specimen.getGatheringEvent().getIsland());
+		// dataRow.add(specimen.getGatheringEvent().getLocality());
+		// dataRow.add(specimen.getGatheringEvent().getCity());
+		// dataRow.add(specimen.getGatheringEvent().getSublocality());
+		// dataRow.add(specimen.getGatheringEvent().getLocalityText());
+		// if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+		// {
+		// SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+		// String datebegin =
+		// datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+		// dataRow.add(datebegin);
+		// }
+		// if (specimen.getGatheringEvent().getDateTimeEnd() != null)
+		// {
+		// SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+		// String dateEnd =
+		// datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+		// dataRow.add(dateEnd);
+		// }
+		// dataRow.add(specimen.getGatheringEvent().getMethod());
+		// dataRow.add(specimen.getGatheringEvent().getAltitude());
+		// dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
+		// dataRow.add(specimen.getGatheringEvent().getDepth());
+		// dataRow.add(specimen.getGatheringEvent().getDepthUnitOfMeasurement());
+		// if (specimen.getGatheringEvent().getGatheringPersons() != null)
+		// {
+		// dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
+		// .getFullName());
+		// }
+		// if (specimen.getGatheringEvent().getGatheringOrganizations() != null)
+		// {
+		// dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next()
+		// .getName());
+		// }
+		// if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+		// {
+		// if
+		// (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal()
+		// != null)
+		// {
+		// dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
+		// .next().getLatitudeDecimal()));
+		// }
+		// if
+		// (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()
+		// != null)
+		// {
+		// dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
+		// .next().getLongitudeDecimal()));
+		// }
+		// }
+		//
+		// /**
+		// * adding data row
+		// */
+		// fileWriter.WriteRow(dataRow);
+		// }
+		// fileWriter.close();
 
-		/* Create the CSV file */
-		CsvFileWriter.CsvRow headerRow = fileWriter.new CsvRow();
-		headerRow.add("UnitID");
-		headerRow.add("UnitGUID");
-		headerRow.add("CollectorsFieldNumber");
-		headerRow.add("AssemblageID");
-		headerRow.add("SourceInstitutionID");
-		headerRow.add("SourceID");
-		headerRow.add("Owner");
-		headerRow.add("LicenceType");
-		headerRow.add("Licence");
-		headerRow.add("RecordBasis");
-		headerRow.add("KindOfUnit");
-		headerRow.add("CollectionType");
-		headerRow.add("TypeStatus");
-		headerRow.add("Sex");
-		headerRow.add("PhaseOrStage");
-		headerRow.add("Titles");
-		headerRow.add("Notes");
-		headerRow.add("PreparationType");
-		headerRow.add("NumberOfSpecimen");
-		headerRow.add("FromCaptivity");
-		headerRow.add("ObjectPublic");
-		headerRow.add("MultiMediaPublic");
-		headerRow.add("AcquiredFrom"); // ToDo
-		headerRow.add("ProjectTitle");
-		headerRow.add("WorldRegion");
-		headerRow.add("Continent");
-		headerRow.add("Country");
-		headerRow.add("ISO3166Code");
-		headerRow.add("ProvinceState");
-		headerRow.add("Island");
-		headerRow.add("Locality");
-		headerRow.add("City");
-		headerRow.add("Sublocality");
-		headerRow.add("LocalityText");
-		headerRow.add("DateTimeBegin");
-		headerRow.add("DateTimeEnd");
-		headerRow.add("Method");
-		headerRow.add("Altitude");
-		headerRow.add("AltitudeUnifOfMeasurement");
-		headerRow.add("Depth");
-		headerRow.add("depthUnitOfMeasurement");
-		headerRow.add("FullName");
-		headerRow.add("GatheringOrganizations");
-		headerRow.add("LongitudeDecimal");
-		headerRow.add("LatitudeDecimal");
-	
-
-		/**
-		 * adding header row
-		 */
-		fileWriter.WriteRow(headerRow);
-
-		for (ESSpecimen specimen : list)
-		{
-			CsvFileWriter.CsvRow dataRow = fileWriter.new CsvRow();
-			dataRow.add(specimen.getUnitID());
-			dataRow.add(specimen.getUnitGUID());
-			dataRow.add(specimen.getCollectorsFieldNumber());
-			dataRow.add(specimen.getAssemblageID());
-			dataRow.add(specimen.getSourceInstitutionID());
-			dataRow.add(specimen.getSourceID());
-			dataRow.add(specimen.getOwner());
-			dataRow.add(specimen.getLicenceType());
-			dataRow.add(specimen.getLicence());
-			dataRow.add(specimen.getRecordBasis());
-			dataRow.add(specimen.getKindOfUnit());
-			dataRow.add(specimen.getCollectionType());
-			dataRow.add(specimen.getTypeStatus());
-			dataRow.add(specimen.getSex());
-			dataRow.add(specimen.getPhaseOrStage());
-			dataRow.add(specimen.getTitle());
-			dataRow.add(specimen.getNotes());
-			dataRow.add(specimen.getPreparationType());
-			dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
-			dataRow.add(String.valueOf(specimen.isFromCaptivity()));
-			dataRow.add(Boolean.toString(specimen.isObjectPublic()));
-			dataRow.add(Boolean.toString(specimen.isMultiMediaPublic()));
-			if (specimen.getAcquiredFrom() != null)
-			{
-				dataRow.add(specimen.getAcquiredFrom().getAgentText());
-			}
-			dataRow.add(specimen.getGatheringEvent().getProjectTitle());
-			dataRow.add(specimen.getGatheringEvent().getWorldRegion());
-			dataRow.add(specimen.getGatheringEvent().getContinent());
-			dataRow.add(specimen.getGatheringEvent().getCountry());
-			dataRow.add(specimen.getGatheringEvent().getIso3166Code());
-			dataRow.add(specimen.getGatheringEvent().getProvinceState());
-			dataRow.add(specimen.getGatheringEvent().getIsland());
-			dataRow.add(specimen.getGatheringEvent().getLocality());
-			dataRow.add(specimen.getGatheringEvent().getCity());
-			dataRow.add(specimen.getGatheringEvent().getSublocality());
-			dataRow.add(specimen.getGatheringEvent().getLocalityText());
-			if (specimen.getGatheringEvent().getDateTimeBegin() != null)
-			{
-				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-				String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-				dataRow.add(datebegin);
-			}
-			if (specimen.getGatheringEvent().getDateTimeEnd() != null)
-			{
-				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-				String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-				dataRow.add(dateEnd);
-			}
-			dataRow.add(specimen.getGatheringEvent().getMethod());
-			dataRow.add(specimen.getGatheringEvent().getAltitude());
-			dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
-			dataRow.add(specimen.getGatheringEvent().getDepth());
-			dataRow.add(specimen.getGatheringEvent().getDepthUnitOfMeasurement());
-			if (specimen.getGatheringEvent().getGatheringPersons() != null)
-			{
-				dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
-						.getFullName());
-			}
-			if (specimen.getGatheringEvent().getGatheringOrganizations() != null)
-			{
-				dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next()
-						.getName());
-			}
-			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
-			{
-				if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal() != null)
-				{
-					dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
-							.next().getLatitudeDecimal()));
-				}
-				if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
-				{
-					dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator()
-							.next().getLongitudeDecimal()));
-				}
-			}
-
-			/**
-			 * adding data row
-			 */
-			fileWriter.WriteRow(dataRow);
-		}
-		fileWriter.close();
+		printHeaderRowForCSV(namecollectiontype, totalsize);
 
 		Files files = new Files();
 		files.setLocation("occurence.txt");
@@ -253,15 +269,16 @@ public class DwCAExporter
 		cores.setId(id);
 
 		/* Create field index, term Atrribute */
-		Integer cnt = new Integer(0);
-		Iterator<String> fieldIter = headerRow.iterator();
-		while (fieldIter.hasNext())
-		{
-			cnt = Integer.valueOf(cnt.intValue() + 1);
-			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
-			cores.addField(field);
-
-		}
+		// Integer cnt = new Integer(0);
+		// Iterator<String> fieldIter = headerRow.iterator();
+		// while (fieldIter.hasNext())
+		// {
+		// cnt = Integer.valueOf(cnt.intValue() + 1);
+		// Field field = new Field(cnt.toString(), dwcUrlTdwgOrg +
+		// fieldIter.next());
+		// cores.addField(field);
+		//
+		// }
 
 		/* Create Meta.xml file for NBA */
 		Meta xmlspecimen = new Meta();
@@ -458,7 +475,164 @@ public class DwCAExporter
 		{
 			e.printStackTrace();
 		}
+	}
 
+	private void printHeaderRowForCSV(String namecollectiontype, String totalsize)
+	{
+		CsvFileWriter filewriter;
+		Properties prop = new Properties();
+		InputStream inputStream = null;
+		try
+		{
+			inputStream = getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME);
+			filewriter = new CsvFileWriter(csvOutPutFile);
+			List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
+					Integer.parseInt(totalsize), ESSpecimen.class);
+	
+			CsvFileWriter.CsvRow headerRow = filewriter.new CsvRow();
+			if (inputStream == null)
+			{
+				System.out.println("property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
+				return;
+			}
+			prop.load(inputStream);
+			
+			Enumeration<?> enuKeys = prop.keys();
+			while (enuKeys.hasMoreElements())
+			{
+				String key = (String) enuKeys.nextElement();
+				String value = prop.getProperty(key);
+				headerRow.add(value);
+				Collections.sort(headerRow);
+			}
+			
+			Properties configFile  = new Properties();
+			try 
+			{
+				configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
+				Enumeration<?> e  = configFile.keys();
+				while (e.hasMoreElements())
+				{
+					String key = (String) e.nextElement();
+					System.out.println(key);
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+
+			filewriter.WriteRow(headerRow);
+
+			for (ESSpecimen specimen : list)
+			{
+				CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();
+				dataRow.add(specimen.getUnitID());
+				dataRow.add(specimen.getUnitGUID());
+				dataRow.add(specimen.getCollectorsFieldNumber());
+				dataRow.add(specimen.getAssemblageID());
+				dataRow.add(specimen.getSourceInstitutionID());
+				dataRow.add(specimen.getSourceID());
+				dataRow.add(specimen.getOwner());
+				dataRow.add(specimen.getLicenceType());
+				dataRow.add(specimen.getLicence());
+				dataRow.add(specimen.getRecordBasis());
+				dataRow.add(specimen.getKindOfUnit());
+				dataRow.add(specimen.getCollectionType());
+				dataRow.add(specimen.getTypeStatus());
+				dataRow.add(specimen.getSex());
+				dataRow.add(specimen.getPhaseOrStage());
+				dataRow.add(specimen.getTitle());
+				dataRow.add(specimen.getNotes());
+				dataRow.add(specimen.getPreparationType());
+				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+				dataRow.add(String.valueOf(specimen.isFromCaptivity()));
+				dataRow.add(Boolean.toString(specimen.isObjectPublic()));
+				dataRow.add(Boolean.toString(specimen.isMultiMediaPublic()));
+				if (specimen.getAcquiredFrom() != null)
+				{
+					dataRow.add(specimen.getAcquiredFrom().getAgentText());
+				}
+				dataRow.add(specimen.getGatheringEvent().getProjectTitle());
+				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+				dataRow.add(specimen.getGatheringEvent().getContinent());
+				dataRow.add(specimen.getGatheringEvent().getCountry());
+				dataRow.add(specimen.getGatheringEvent().getIso3166Code());
+				dataRow.add(specimen.getGatheringEvent().getProvinceState());
+				dataRow.add(specimen.getGatheringEvent().getIsland());
+				dataRow.add(specimen.getGatheringEvent().getLocality());
+				dataRow.add(specimen.getGatheringEvent().getCity());
+				dataRow.add(specimen.getGatheringEvent().getSublocality());
+				dataRow.add(specimen.getGatheringEvent().getLocalityText());
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+				{
+					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(datebegin);
+				}
+				if (specimen.getGatheringEvent().getDateTimeEnd() != null)
+				{
+					SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateEnd);
+				}
+				dataRow.add(specimen.getGatheringEvent().getMethod());
+				dataRow.add(specimen.getGatheringEvent().getAltitude());
+				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
+				dataRow.add(specimen.getGatheringEvent().getDepth());
+				dataRow.add(specimen.getGatheringEvent().getDepthUnitOfMeasurement());
+				if (specimen.getGatheringEvent().getGatheringPersons() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
+							.getFullName());
+				}
+				if (specimen.getGatheringEvent().getGatheringOrganizations() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next()
+							.getName());
+				}
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+				{
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
+							.getLatitudeDecimal() != null)
+					{
+						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
+								.iterator().next().getLatitudeDecimal()));
+					}
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
+							.getLongitudeDecimal() != null)
+					{
+						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
+								.iterator().next().getLongitudeDecimal()));
+					}
+				}
+
+				/**
+				 * adding data row
+				 */
+				filewriter.WriteRow(dataRow);
+			}
+			filewriter.close();
+
+
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally
+		{
+			if (inputStream != null)
+			{
+				try
+				{
+					inputStream.close();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+		}
 	}
 
 }

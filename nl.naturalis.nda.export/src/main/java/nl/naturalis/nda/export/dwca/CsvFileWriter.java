@@ -58,7 +58,11 @@ public class CsvFileWriter extends BufferedWriter
      */
     public class CsvRow extends  ArrayList<String>
     {
-        String lineText = null;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		String lineText = null;
          
         public String getlineText(){
             return lineText;

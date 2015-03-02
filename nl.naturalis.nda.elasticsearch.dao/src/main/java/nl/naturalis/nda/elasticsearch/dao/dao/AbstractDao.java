@@ -187,7 +187,8 @@ public abstract class AbstractDao {
 
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                 .setQuery(filteredQuery(query, geoShape))
-                .addSort(createFieldSort(params)).setTrackScores(true);
+                .addSort(createFieldSort(params))
+                .setTrackScores(true);
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);

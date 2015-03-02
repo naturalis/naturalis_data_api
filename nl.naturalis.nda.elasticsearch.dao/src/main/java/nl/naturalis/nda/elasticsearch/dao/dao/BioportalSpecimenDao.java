@@ -358,6 +358,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (!keysAndScores.keySet().isEmpty()) {
             NestedFilterBuilder namesFilter = nestedFilter("identifications", createNamesQuery(keysAndScores.keySet()));
             searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(finalQuery, namesFilter)).setSearchType(COUNT).setTrackScores(true);
+            searchRequestBuilder.setTrackScores(true);
             TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(maxResults).setFetchSource(true).addSort(sortField, sortDirection);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {

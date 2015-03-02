@@ -22,6 +22,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.bind.JAXBContext;
@@ -519,6 +522,18 @@ public class DwCAExporter
 				
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+			
+			
+			Properties systemProperties = new Properties();
+			systemProperties.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
+			SortedMap sortedSystemProperties = new TreeMap(systemProperties);
+			Set keySet = sortedSystemProperties.keySet();
+			Iterator iterator = keySet.iterator();
+			while (iterator.hasNext()) {
+				String propertyName = (String) iterator.next();
+				String propertyValue = systemProperties.getProperty(propertyName);
+				System.out.println(propertyName + ": " + propertyValue);
 			}
 			
 

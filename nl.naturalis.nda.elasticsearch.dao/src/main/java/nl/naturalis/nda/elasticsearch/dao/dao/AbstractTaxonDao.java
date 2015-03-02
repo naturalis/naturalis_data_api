@@ -120,8 +120,18 @@ public class AbstractTaxonDao extends AbstractDao {
             searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
             searchResult.setResult(taxon);
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
-            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            double percentage;
+            if(maxScore == minScore) {
+                if(hit.getScore() == maxScore) {
+                    percentage = 100;
+                } else {
+                    percentage = 0;
+                }
+            } else {
+                percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            }
             searchResult.setPercentage(percentage);
+            searchResult.setScore(hit.getScore());
 
             taxonsForName.addSearchResult(searchResult);
         }

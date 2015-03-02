@@ -336,8 +336,18 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL_TAXON + multiMediaObject.getUnitID()));
             }
             multiMediaObjectSearchResult.setLinks(links);
-            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            double percentage;
+            if(maxScore == minScore) {
+                if(hit.getScore() == maxScore) {
+                    percentage = 100;
+                } else {
+                    percentage = 0;
+                }
+            } else {
+                percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            }
             multiMediaObjectSearchResult.setPercentage(percentage);
+            multiMediaObjectSearchResult.setScore(hit.getScore());
 
             enhanceSearchResultWithMatchInfoAndScore(multiMediaObjectSearchResult, hit);
 

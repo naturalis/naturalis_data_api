@@ -609,7 +609,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
         resultSet.setTotalSize(response.getHits().getTotalHits());
-        //resultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
@@ -618,8 +617,21 @@ public class BioportalSpecimenDao extends AbstractDao {
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
             SearchResult<Specimen> searchResult = new SearchResult<>(transfer);
             resultSet.addSearchResult(searchResult);
-            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+
+            double percentage;
+            if (maxScore == minScore) {
+                if (hit.getScore() == maxScore) {
+                    percentage = 100;
+                } else {
+                    percentage = 0;
+                }
+            } else {
+                percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            }
             searchResult.setPercentage(percentage);
+            searchResult.setScore(hit.getScore());
+
+
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
 
             getTaxonForSpecimenFullScientificName(transfer, searchResult, sessionId);
@@ -671,13 +683,17 @@ public class BioportalSpecimenDao extends AbstractDao {
                     searchResult.setResult(specimen);
                     searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
                     double percentage;
-                    Double aDouble = keysAndScores.get(key);
-                    if ((maxScore != minScore) && aDouble != null) {
-                        percentage = ((aDouble - minScore) / (maxScore - minScore)) * 100;
-                        //null for some reason sometimes?? todo
-                        searchResult.setScore(aDouble.floatValue());
-                        searchResult.setPercentage(percentage);
+                    if (maxScore == minScore) {
+                        if (hit.getScore() == maxScore) {
+                            percentage = 100;
+                        } else {
+                            percentage = 0;
+                        }
+                    } else {
+                        percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
                     }
+                    searchResult.setPercentage(percentage);
+                    searchResult.setScore(hit.getScore());
 
                     enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
                     getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);

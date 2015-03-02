@@ -131,7 +131,6 @@ public class AbstractTaxonDao extends AbstractDao {
                 percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
             }
             searchResult.setPercentage(percentage);
-            searchResult.setScore(hit.getScore());
 
             taxonsForName.addSearchResult(searchResult);
         }

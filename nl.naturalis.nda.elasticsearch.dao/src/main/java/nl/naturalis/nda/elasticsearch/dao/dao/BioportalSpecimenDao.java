@@ -628,8 +628,6 @@ public class BioportalSpecimenDao extends AbstractDao {
                 percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
             }
             searchResult.setPercentage(percentage);
-            searchResult.setScore(hit.getScore());
-
 
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
 

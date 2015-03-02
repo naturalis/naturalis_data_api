@@ -346,7 +346,6 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
             }
             multiMediaObjectSearchResult.setPercentage(percentage);
-            multiMediaObjectSearchResult.setScore(hit.getScore());
 
             enhanceSearchResultWithMatchInfoAndScore(multiMediaObjectSearchResult, hit);
 

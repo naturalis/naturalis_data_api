@@ -495,7 +495,7 @@ public abstract class AbstractDao {
             nameResQueryBuilder.should(scientificNameQuery);
         }
         NestedQueryBuilder nestedNameResQuery = nestedQuery("identifications", nameResQueryBuilder);
-        nestedNameResQuery.boost(0.5f);
+        nestedNameResQuery.boost(0f);
 
         queryAndHighlightFields.setQuery(nestedNameResQuery);
         return queryAndHighlightFields;

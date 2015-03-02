@@ -32,6 +32,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
@@ -491,7 +492,7 @@ public class DwCAExporter
 			filewriter = new CsvFileWriter(csvOutPutFile);
 			List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
 					Integer.parseInt(totalsize), ESSpecimen.class);
-	
+
 			CsvFileWriter.CsvRow headerRow = filewriter.new CsvRow();
 			if (inputStream == null)
 			{
@@ -499,43 +500,43 @@ public class DwCAExporter
 				return;
 			}
 			prop.load(inputStream);
-			
-			Enumeration<?> enuKeys = prop.keys();
-			while (enuKeys.hasMoreElements())
-			{
-				String key = (String) enuKeys.nextElement();
-				String value = prop.getProperty(key);
-				headerRow.add(value);
-				Collections.sort(headerRow);
-			}
-			
-			Properties configFile  = new Properties();
-			try 
-			{
-				configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
-				Enumeration<?> e  = configFile.keys();
-				while (e.hasMoreElements())
-				{
-					String key = (String) e.nextElement();
-					System.out.println(key);
-				}
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			
-			Properties systemProperties = new Properties();
-			systemProperties.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
-			SortedMap sortedSystemProperties = new TreeMap(systemProperties);
+
+			// Enumeration<?> enuKeys = prop.keys();
+			// while (enuKeys.hasMoreElements())
+			// {
+			// String key = (String) enuKeys.nextElement();
+			// String value = prop.getProperty(key);
+			// headerRow.add(value);
+			// Collections.sort(headerRow);
+			// }
+
+			// Properties configFile = new Properties();
+			// try
+			// {
+			// configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
+			// Enumeration<?> e = configFile.keys();
+			// while (e.hasMoreElements())
+			// {
+			// String key = (String) e.nextElement();
+			// System.out.println(key);
+			// }
+			//
+			// } catch (IOException e) {
+			// e.printStackTrace();
+			// }
+
+			Properties configFile = new Properties();
+			configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
+			SortedMap sortedSystemProperties = new TreeMap(configFile);
 			Set keySet = sortedSystemProperties.keySet();
-			Iterator iterator = keySet.iterator();
-			while (iterator.hasNext()) {
+			Iterator<?> iterator = keySet.iterator();
+			while (iterator.hasNext())
+			{
 				String propertyName = (String) iterator.next();
-				String propertyValue = systemProperties.getProperty(propertyName);
+				String propertyValue = configFile.getProperty(propertyName);
+				headerRow.add(propertyValue);
 				System.out.println(propertyName + ": " + propertyValue);
 			}
-			
 
 			filewriter.WriteRow(headerRow);
 
@@ -543,42 +544,20 @@ public class DwCAExporter
 			{
 				CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();
 				dataRow.add(specimen.getUnitID());
-				dataRow.add(specimen.getUnitGUID());
-				dataRow.add(specimen.getCollectorsFieldNumber());
-				dataRow.add(specimen.getAssemblageID());
-				dataRow.add(specimen.getSourceInstitutionID());
-				dataRow.add(specimen.getSourceID());
-				dataRow.add(specimen.getOwner());
-				dataRow.add(specimen.getLicenceType());
-				dataRow.add(specimen.getLicence());
-				dataRow.add(specimen.getRecordBasis());
-				dataRow.add(specimen.getKindOfUnit());
 				dataRow.add(specimen.getCollectionType());
+				dataRow.add(specimen.getSourceInstitutionID());
+				dataRow.add(specimen.getRecordBasis());
+				dataRow.add(specimen.getPreparationType());
 				dataRow.add(specimen.getTypeStatus());
 				dataRow.add(specimen.getSex());
 				dataRow.add(specimen.getPhaseOrStage());
-				dataRow.add(specimen.getTitle());
-				dataRow.add(specimen.getNotes());
-				dataRow.add(specimen.getPreparationType());
 				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
-				dataRow.add(String.valueOf(specimen.isFromCaptivity()));
-				dataRow.add(Boolean.toString(specimen.isObjectPublic()));
-				dataRow.add(Boolean.toString(specimen.isMultiMediaPublic()));
-				if (specimen.getAcquiredFrom() != null)
-				{
-					dataRow.add(specimen.getAcquiredFrom().getAgentText());
-				}
-				dataRow.add(specimen.getGatheringEvent().getProjectTitle());
 				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
-				dataRow.add(specimen.getGatheringEvent().getContinent());
 				dataRow.add(specimen.getGatheringEvent().getCountry());
-				dataRow.add(specimen.getGatheringEvent().getIso3166Code());
+				dataRow.add(specimen.getGatheringEvent().getLocality());
 				dataRow.add(specimen.getGatheringEvent().getProvinceState());
 				dataRow.add(specimen.getGatheringEvent().getIsland());
-				dataRow.add(specimen.getGatheringEvent().getLocality());
-				dataRow.add(specimen.getGatheringEvent().getCity());
-				dataRow.add(specimen.getGatheringEvent().getSublocality());
-				dataRow.add(specimen.getGatheringEvent().getLocalityText());
+				dataRow.add(specimen.getGatheringEvent().getCity()); // ToDo: Moet County worden.
 				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
 				{
 					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
@@ -591,44 +570,60 @@ public class DwCAExporter
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					dataRow.add(dateEnd);
 				}
-				dataRow.add(specimen.getGatheringEvent().getMethod());
-				dataRow.add(specimen.getGatheringEvent().getAltitude());
-				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
 				dataRow.add(specimen.getGatheringEvent().getDepth());
-				dataRow.add(specimen.getGatheringEvent().getDepthUnitOfMeasurement());
+				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
-							.getFullName());
-				}
-				if (specimen.getGatheringEvent().getGatheringOrganizations() != null)
-				{
-					dataRow.add(specimen.getGatheringEvent().getGatheringOrganizations().iterator().next()
-							.getName());
+					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
 				}
 				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
-							.getLatitudeDecimal() != null)
-					{
-						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
-								.iterator().next().getLatitudeDecimal()));
-					}
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLongitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLongitudeDecimal()));
 					}
-				}
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
+							.getLatitudeDecimal() != null)
+					{
+						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
+								.iterator().next().getLatitudeDecimal()));
+					}
 
+				}
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+						.getAuthorshipVerbatim());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+						.getSpecificEpithet());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+						.getFullScientificName());
+
+//				if(specimen.getIdentifications().iterator().next().getScientificName().get != null)
+//				{
+//					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName()); // ToDo: ????
+//				}
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
+
+				if (specimen.getIdentifications().iterator().next().getDateIdentified() != null)
+				{
+					SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
+					String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next()
+							.getDateIdentified());
+					dataRow.add(dateiden);
+				}
+				
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
+				dataRow.add(specimen.getIdentifications().iterator().next().getSystemClassification().iterator().next().getRank());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
+				
 				/**
 				 * adding data row
 				 */
 				filewriter.WriteRow(dataRow);
 			}
 			filewriter.close();
-
 
 		} catch (IOException e)
 		{

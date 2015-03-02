@@ -142,21 +142,20 @@ public abstract class AbstractDao {
 
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
                                                    boolean highlighting, String sessionId, boolean fromMultiMedia) {
-        return executeExtendedSearch(params, fields, type, highlighting, null, sessionId, fromMultiMedia);
+        return executeExtendedSearch(params, fields, type, null, sessionId, fromMultiMedia);
     }
 
     /**
      * @param params
      * @param fields
      * @param type
-     * @param highlighting   whether to use highlighting
      * @param prebuiltQuery  ignored if null, appended with AND or OR (from _andOr in params) else
      * @param sessionId
      * @param fromMultiMedia
      * @return
      */
     protected SearchResponse executeExtendedSearch(QueryParams params, List<FieldMapping> fields, String type,
-                                                   boolean highlighting, QueryAndHighlightFields prebuiltQuery, String sessionId, boolean fromMultiMedia) {
+                                                   QueryAndHighlightFields prebuiltQuery, String sessionId, boolean fromMultiMedia) {
 
 
         CreateQuery createQuery = new CreateQuery(params, fields).invoke();
@@ -498,6 +497,7 @@ public abstract class AbstractDao {
         nestedNameResQuery.boost(0f);
 
         queryAndHighlightFields.setQuery(nestedNameResQuery);
+        logger.info("NameResolutionQuery: \n" + nestedNameResQuery.toString());
         return queryAndHighlightFields;
     }
 

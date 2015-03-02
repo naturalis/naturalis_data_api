@@ -202,8 +202,6 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting, sessionId, false);
 
-        logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
-
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
@@ -329,7 +327,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (geoSearch && !atLeastOneFieldToQuery) {
             finalQuery = filteredQuery(matchAllQuery(), geoShape);
         } else if (!atLeastOneFieldToQuery) {
-            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), null, 0, 0, 0, sessionId);
+            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), 0, 0, 0, sessionId);
         } else {
             finalQuery = filteredQuery(query, geoShape);
         }
@@ -344,7 +342,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                 .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(order)
                         .subAggregation(max("max_score").script("doc.score"))));
 
-        logger.info(searchRequestBuilder.toString());
+        logger.info("SpecimenNameSearch: \n" + searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, groupMaxResults, groupOffset);
@@ -371,7 +369,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                                     .subAggregation(max("max_score").script("doc.score"))
                                     .subAggregation(reverseNested("reverse")
                                             .subAggregation(topHitsBuilder))));
-            logger.info(searchRequestBuilder.toString());
+            logger.info("SpecimenNameSearch: \n" + searchRequestBuilder.toString());
             searchResponse = searchRequestBuilder.execute().actionGet();
         } else {
             searchResponse = new SearchResponse(empty(), "", 0, 0, 0, null);
@@ -379,7 +377,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END SECOND QUERY
 
 
-        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalBuckets, sessionId);
+        return responseToSpecimenResultGroupSet(searchResponse, minScore, maxScore, totalBuckets, sessionId);
     }
 
     private long getTotalHitsFromAggregation(SearchResponse searchResponse) {
@@ -659,7 +657,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, long totalBuckets, String sessionId) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, double minScore, double maxScore, long totalBuckets, String sessionId) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
 
         if (response.getAggregations() != null) {

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:md="eml://ecoinformatics.org/methods-2.1.1" xmlns:proj="eml://ecoinformatics.org/project-2.1.1" xmlns:d="eml://ecoinformatics.org/dataset-2.1.1" xmlns:res="eml://ecoinformatics.org/resource-2.1.1" xmlns:dc="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.0.2/eml.xsd" packageId="2015-02-18" system="NBA 1.0" scope="system" xml:lang="eng" xmlns="eml">
+    <dataset>
+        <title>Naturalis Biodiversity Center(NL)</title>
+        <description>Test description</description>
+        <metadatalanguage>English</metadatalanguage>
+        <resourcelanguage>Multiple language</resourcelanguage>
+        <type>Occurence</type>
+        <subtype>Specimen</subtype>
+        <contact>
+            <organisation>Naturalis Biodiversity Center</organisation>
+            <role>
+                <position>Application Developer</position>
+            </role>
+            <individualname>
+                <givenname>Reinier</givenname>
+                <surname>Kartowikromo</surname>
+            </individualname>
+            <address>
+                <deliverypoint>Darwinweg 2</deliverypoint>
+                <city>Leiden</city>
+                <stateprovince>South Holland</stateprovince>
+                <country>Netherlands</country>
+                <postalcode>NL-2300RA</postalcode>
+            </address>
+            <phone>0102150587</phone>
+            <emailaddress>contact@naturalis.nl</emailaddress>
+            <onlineurl>http://www.naturalis.nl</onlineurl>
+        </contact>
+        <creator>
+            <organisation>Naturalis Biodiversity Center</organisation>
+            <role>
+                <position>Analist</position>
+            </role>
+            <individualname>
+                <givenname>Wilfred</givenname>
+                <surname>Gerritsen</surname>
+            </individualname>
+            <address>
+                <deliverypoint>Darwinweg 2</deliverypoint>
+                <city>Leiden</city>
+                <stateprovince>South Holland</stateprovince>
+                <country>Netherlands</country>
+                <postalcode>NL-2300RA</postalcode>
+            </address>
+            <phone>0102151088</phone>
+            <emailaddress>contact@naturalis.nl</emailaddress>
+            <onlineurl>http://www.naturalis.nl</onlineurl>
+        </creator>
+        <provider>
+            <organisation>Naturalis Biodiversity Center</organisation>
+            <role>
+                <position>Lead Software Developer</position>
+            </role>
+            <individualname>
+                <givenname>Ayco</givenname>
+                <surname>Holleman</surname>
+            </individualname>
+            <address>
+                <deliverypoint>Darwinweg 2</deliverypoint>
+                <city>Leiden</city>
+                <stateprovince>South Holland</stateprovince>
+                <country>Netherlands</country>
+                <postalcode>NL-2300RA</postalcode>
+            </address>
+            <phone>0102151088</phone>
+            <emailaddress>contact@naturalis.nl</emailaddress>
+            <onlineurl>http://www.naturalis.nl</onlineurl>
+        </provider>
+    </dataset>
+</eml>

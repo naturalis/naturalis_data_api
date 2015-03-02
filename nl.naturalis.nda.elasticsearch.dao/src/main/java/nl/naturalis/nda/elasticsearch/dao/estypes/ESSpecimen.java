@@ -9,6 +9,7 @@ import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.NdaTraceableObject;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 
+
 public class ESSpecimen extends NdaTraceableObject {
 
 	private String unitID;

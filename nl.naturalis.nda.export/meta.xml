@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<archive metadata="eml.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tdwg="http://rs.tdwg.org/dwc/text/">
+    <core encoding="UTF-8" fieldsEnclosedBy="'" fieldsTerminatedBy="&#x9;" linesTerminatedBy="&#xD;&#xA;" ignoreHeaderLines="1" rowtype="http://rs.tdwg.org/dwc/terms/Occurrence">
+        <files>
+            <location>occurence.txt</location>
+        </files>
+        <id index="0"/>
+    </core>
+</archive>

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -351,14 +352,12 @@ public class IndexNative implements Index
 	public <T> List<T> getResultsList(String type, String namecollectiontype, int size, Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch()
-				.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType"))//.matchAllQuery())
+				.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType"))
 				.setSearchType(SearchType.SCAN)
 				.setExplain(true)
 				.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
 
 		SearchResponse response = searchRequestBuilder.execute().actionGet();
-		
-		//System.out.println("Fieldname: " + response..getFields());
 		
 		System.out.println("Status: " + response.status());
 		

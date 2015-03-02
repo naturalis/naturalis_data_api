@@ -92,8 +92,8 @@ public class ESConstants {
             public static final String SYNONYMS_SUBGENUS = "synonyms.subgenus";
             public static final String SYNONYMS_SPECIFIC_EPITHET = "synonyms.specificEpithet";
             public static final String SYNONYMS_INFRASPECIFIC_EPITHET = "synonyms.infraspecificEpithet";
-            public static final String SYNONYMS_EXPERT_FULLNAME = "synonyms.expert.fullName";
-            public static final String SYNONYMS_EXPERT_ORGANIZATION_NAME = "synonyms.expert.organization.name";
+            public static final String SYNONYMS_EXPERTS_FULLNAME = "synonyms.experts.fullName";
+            public static final String SYNONYMS_EXPERTS_ORGANIZATION_NAME = "synonyms.experts.organization.name";
             public static final String SYNONYMS_TAXONOMIC_STATUS = "synonyms.taxonomicStatus";
             public static final String DEFAULT_CLASSIFICATION_KINGDOM = "defaultClassification.kingdom";
             public static final String DEFAULT_CLASSIFICATION_PHYLUM = "defaultClassification.phylum";

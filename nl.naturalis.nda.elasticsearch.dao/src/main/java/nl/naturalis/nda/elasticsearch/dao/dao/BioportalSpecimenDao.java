@@ -349,7 +349,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, groupMaxResults, groupOffset);
 
-        long totalHits = getTotalHitsFromAggregation(searchResponse);
+        long totalBuckets = getTotalHitsFromAggregation(searchResponse);
         double minScore = getMinScoreFromAggregation(searchResponse);
         double maxScore = getMaxScoreFromAggregation(searchResponse);
         //END FIRST QUERY
@@ -379,7 +379,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END SECOND QUERY
 
 
-        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalHits, sessionId);
+        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalBuckets, sessionId);
     }
 
     private long getTotalHitsFromAggregation(SearchResponse searchResponse) {
@@ -659,7 +659,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, long totalHits, String sessionId) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, long totalBuckets, String sessionId) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
 
         if (response.getAggregations() != null) {
@@ -704,16 +704,12 @@ public class BioportalSpecimenDao extends AbstractDao {
                 resultGroup.setTotalSize(bucket.getDocCount());
                 specimenStringResultGroupSet.addGroup(resultGroup);
             }
-            Cardinality cardinality = nested.getAggregations().get("number_of_buckets");
-            if (cardinality == null) {
-                specimenStringResultGroupSet.setTotalSize(totalHits);
-            } else {
-                specimenStringResultGroupSet.setTotalSize(nested.getDocCount());
-                specimenStringResultGroupSet.setTotalBuckets(cardinality.getValue());
-            }
+            specimenStringResultGroupSet.setTotalSize(nested.getDocCount());
         } else {
-            specimenStringResultGroupSet.setTotalSize(totalHits);
+            specimenStringResultGroupSet.setTotalSize(0);
         }
+
+        specimenStringResultGroupSet.setTotalBuckets(totalBuckets);
         return specimenStringResultGroupSet;
     }
 

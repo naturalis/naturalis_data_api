@@ -707,7 +707,7 @@ public abstract class AbstractDao {
                         if (hasNgram) {
                             tempQuery = boolQuery()
                                     .should(nestedQuery(nestedPath, matchQuery(fieldName, fieldValue)).boost(boostValue))
-                                    .should(nestedQuery(nestedPath, matchQuery(fieldName + "ngram", fieldValue)).boost(boostValue));
+                                    .should(nestedQuery(nestedPath, matchQuery(fieldName + ".ngram", fieldValue)).boost(boostValue));
                             highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
                         } else {
                             tempQuery = nestedQuery(nestedPath, matchQuery(fieldName, fieldValue).boost(boostValue));
@@ -750,7 +750,7 @@ public abstract class AbstractDao {
                         if (hasNgram) {
                             tempQuery = boolQuery()
                                     .should(nestedQuery(nestedPath, matchQuery(fieldName, fieldValue)).boost(boostValue))
-                                    .should(nestedQuery(nestedPath, matchQuery(fieldName + "ngram", fieldValue)).boost(boostValue));
+                                    .should(nestedQuery(nestedPath, matchQuery(fieldName + ".ngram", fieldValue)).boost(boostValue));
                             highlightFields.put(fieldMapping.getFieldName() + ".ngram", createHighlightField(fieldMapping.getFieldName() + ".ngram", matchQuery(fieldMapping.getFieldName() + ".ngram", fieldMapping.getValue())));
                         } else {
                             tempQuery = nestedQuery(nestedPath, matchQuery(fieldName, fieldValue).boost(boostValue));

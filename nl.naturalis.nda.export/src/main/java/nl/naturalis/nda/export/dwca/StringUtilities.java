@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -20,6 +21,8 @@ import java.util.zip.ZipOutputStream;
 public class StringUtilities
 {  
 	final static int BUFFER = 2048;
+	private static final String propertiesExtension = ".properties";
+	static String propertiesfilename = null;
 	
     public static int indexOfFirstContainedCharacter(String s1, String s2) {
         if (s1 == null || s1.isEmpty())
@@ -59,7 +62,47 @@ public class StringUtilities
     	}
     	origin.close();
     	zos.closeEntry();
-    	//zos.close();
     	fis.close();
+    }
+    
+    /* Read the value from properties file */
+    public static String readPropertyvalue(String propertyname, String key)
+    {
+    	propertiesfilename = propertyname + propertiesExtension;
+    	String result = null;
+    	Properties prop = new Properties();
+    	try
+		{
+    		/* load a properties file */
+    		prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
+    		result = prop.getProperty(key);
+    		
+		} catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+    	return result;
+    }
+    
+    
+    public static void createOutPutDirectory()
+    {
+    	File directory = new File(readPropertyvalue("OutPut", "Directory"));
+		boolean result = false;
+		if (!directory.exists())
+		{
+			try
+			{
+				directory.mkdir();
+				result = true;
+			} catch (SecurityException se)
+			{
+				se.printStackTrace();
+			}
+			if (result)
+			{
+				System.out.println("DwCAExport directory was created successfull.");
+			}
+		}	
     }
 }

@@ -8,6 +8,7 @@
 		<fileset dir="${nl.naturalis.nda.build.location}/lib">
 			<include name="org.domainobject.*.jar" />
 		</fileset>
+		<filelist dir="${nl.naturalis.nda.domain.location}/build" files="nl.naturalis.nda.domain.jar"/>
 	</path>
 
 	<target name="compile-sources">
@@ -23,6 +24,7 @@
 				</fileset>
 			</classpath>
 		</javac>
+		<!-- delete dir="lib" / -->
 	</target>
 
 

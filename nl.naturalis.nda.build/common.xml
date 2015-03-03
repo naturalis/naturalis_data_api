@@ -75,6 +75,7 @@
 	</target>
 
 	<target name="package" depends="compile-sources">
+		<echo message="*** Packaging ${ant.project.name}" />
 		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" />
 	</target>
 

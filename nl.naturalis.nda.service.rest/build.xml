@@ -7,7 +7,7 @@
         <delete file="build/nda.war">
         </delete>
     </target>
-
+<!--
     <target name="package" depends="compile">
         <war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
             <lib dir="WebContent/WEB-INF/lib" />
@@ -15,7 +15,7 @@
             <fileset dir="WebContent" />
         </war>
     </target>
-
+-->
     <target name="build" depends="package" />
 
 </project>

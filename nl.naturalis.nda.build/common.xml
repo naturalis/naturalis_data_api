@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="common">
 
+	<property name="javac.source" value="1.7" />
+	<property name="javac.target" value="1.7" />
+	<property name="javac.debug" value="source,lines,vars" />
+
 	<target name="clean">
 		<echo message="*** Performing cleanup for ${ant.project.name}" />
 		<delete dir="build/main" />
@@ -44,12 +48,32 @@
 		<ivy:resolve />
 	</target>
 
-	<target name="compile-sources" depends="init,resolve">
-		<echo message="*** Compiling classes ${ant.project.name}" />
-		<javac destdir="build/main" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
+	<target name="compile-sources" depends="init">
+		<echo message="*** Setting up classpath" />
+		<mkdir dir="classpath" />
+		<echo message="*** Copying Ivy-managed dependencies to classpath" />
+		<ivy:retrieve pattern="classpath/[artifact]-[revision](-[classifier]).[ext]" />
+		<echo message="*** Copying non-Ivy-managed libraries to classpath" />
+		<copy todir="classpath">
+			<path refid="non-ivy-dependencies" />
+		</copy>
+		<echo message="*** Copying libraries in lib directory to classpath" />
+		<copy todir="classpath">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<echo message="*** Compiling sources" />
+		<javac encoding="UTF8" destdir="build/main" debug="true" debuglevel="${javac.debug}" includeantruntime="false" source="${javac.source}" target="${javac.target}">
 			<src path="src/main/java" />
-			<classpath refid="${ant.project.name}.classpath" />
+			<classpath>
+				<fileset dir="classpath">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
 		</javac>
+		<echo message="*** Removing &quot;classpath&quot; directory" />
+		<delete dir="classpath" />
 	</target>
 
 	<target name="compile-test-sources" depends="init,resolve,compile-sources">

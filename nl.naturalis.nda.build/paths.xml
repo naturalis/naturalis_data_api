@@ -11,6 +11,7 @@
 	<property name="nl.naturalis.nda.ejb.location" location="${home}/nl.naturalis.nda.ejb" />
 	<property name="nl.naturalis.nda.domain.location" location="${home}/nl.naturalis.nda.domain" />
 	<property name="nl.naturalis.nda.client.location" location="${home}/nl.naturalis.nda.client" />
+	<property name="nl.naturalis.nda.elasticsearch.dao.location" location="${home}/nl.naturalis.nda.elasticsearch.dao" />
 	<property name="nl.naturalis.nda.elasticsearch.load.location" location="${home}/nl.naturalis.nda.elasticsearch.load" />
 
 	<path id="domainobject-libs">

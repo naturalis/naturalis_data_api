@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.load" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.elasticsearch.dao" default="build">
 
 	<import file="../nl.naturalis.nda.build/paths.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
+	<!-- dependencies not managed by Ivy and not in lib dir -->
 	<path id="non-ivy-dependencies">
 		<!-- project dependencies -->
 		<filelist dir="${nl.naturalis.nda.domain.location}/build" files="nl.naturalis.nda.domain.jar" />
-		<filelist dir="${nl.naturalis.nda.elasticsearch.dao.location}/build" files="nl.naturalis.nda.elasticsearch.dao.jar" />
 		<!-- required libraries not inside the lib directory -->
 		<filelist dir="${nl.naturalis.nda.build.location}/lib">
 			<file name="org.domainobject.util.jar" />
 			<file name="org.domainobject.util.debug.jar" />
-			<file name="org.domainobject.util.http.jar" />
 		</filelist>
 	</path>
 
 	<target name="build-required-projects">
-		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<echo message="*** Building domain project" />
+		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<target name="compile-sources" depends="build-required-projects,common.compile-sources" />

@@ -17,12 +17,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+
+import org.domainobject.util.ConfigObject;
  
 public class StringUtilities
 {  
 	final static int BUFFER = 2048;
 	private static final String propertiesExtension = ".properties";
 	static String propertiesfilename = null;
+	private static ConfigObject config;
 	
     public static int indexOfFirstContainedCharacter(String s1, String s2) {
         if (s1 == null || s1.isEmpty())
@@ -65,6 +69,7 @@ public class StringUtilities
     	fis.close();
     }
     
+    
     /* Read the value from properties file */
     public static String readPropertyvalue(String propertyname, String key)
     {
@@ -105,4 +110,66 @@ public class StringUtilities
 			}
 		}	
     }
+    
+    public static void createZipOutPutDirectory()
+    {
+    	File directory = new File(readPropertyvalue("OutPut", "ZipDirectory"));
+		boolean result = false;
+		if (!directory.exists())
+		{
+			try
+			{
+				directory.mkdir();
+				result = true;
+			} catch (SecurityException se)
+			{
+				se.printStackTrace();
+			}
+			if (result)
+			{
+				System.out.println("DwCAExportZip directory was created successfull.");
+			}
+		}	
+    }
+    
+    
+//    public static ConfigObject getConfig()
+//	{
+//		if (config == null) {
+//			String ndaConfDir = System.getProperty("ndaConfDir");
+//			if (ndaConfDir != null) {
+//				logger.debug("Using system property \"ndaConfDir\" to locate configuration file " + PROPERTY_FILE_NAME);
+//				File dir = new File(ndaConfDir);
+//				if (!dir.isDirectory()) {
+//					throw new RuntimeException(String.format("Invalid directory specified for property \"ndaConfDir\": \"%s\"", ndaConfDir));
+//				}
+//				try {
+//					File file = new File(dir.getCanonicalPath() + "/" + PROPERTY_FILE_NAME);
+//					if (!file.isFile()) {
+//						throw new RuntimeException(String.format("Configuration file missing: %s", file.getCanonicalPath()));
+//					}
+//					logger.debug(String.format("Using configuration file %s", file.getCanonicalPath()));
+//					config = new ConfigObject(file);
+//				}
+//				catch (IOException e) {
+//					throw new RuntimeException(e);
+//				}
+//			}
+//			else {
+//				logger.debug("Searching classpath for configuration file " + PROPERTY_FILE_NAME);
+//				try (InputStream is = LoadUtil.class.getResourceAsStream("/" + PROPERTY_FILE_NAME)) {
+//					if (is == null) {
+//						throw new RuntimeException(String.format("Configuration file missing: %s", PROPERTY_FILE_NAME));
+//					}
+//					config = new ConfigObject(is);
+//				}
+//				catch (IOException e) {
+//					throw new RuntimeException(e);
+//				}
+//			}
+//		}
+//		return config;
+//	}
+
+
 }

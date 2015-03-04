@@ -310,49 +310,12 @@ public class IndexNative implements Index
 		return null;
 	}
 
-	/*
-	 * Created by Reinier Description: for the DwCA export Date: 29-01-2015
-	 */
-	// public HashMap<String, Object> getResultsMap(String type, int size)
-	// {
-	// ArrayList<Map<String, Object>> list = getResultsList(type, size, null);
-	// HashMap<String, Object> map = new HashMap<>();
-	// map.put("type", type);
-	// map.put("results", list);
-	// Set<?> set = map.entrySet();
-	// Iterator<?> i = set.iterator();
-	// while(i.hasNext())
-	// {
-	// @SuppressWarnings("rawtypes")
-	// Map.Entry me = (Map.Entry)i.next();
-	// System.out.print(me.getKey() + ": ");
-	// System.out.println(me.getValue());
-	// }
-	//
-	// try
-	// {
-	// DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new
-	// FileOutputStream("output.txt")));
-	// for(int t=0; t <list.size(); t++)
-	// {
-	// dos.writeBytes(list.get(t).toString() + System.lineSeparator());
-	// }
-	// dos.close();
-	// System.out.println("Data saved.");
-	// }
-	// catch (IOException e)
-	// {
-	// e.printStackTrace();
-	// }
-	//
-	// return map;
-	// }
-	//
 
-	public <T> List<T> getResultsList(String type, String namecollectiontype, int size, Class<T> targetClass)
+
+	public <T> List<T> getResultsList(String type, String namecollectiontype, String sourcesystemcode, int size, Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch()
-				.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType"))
+				.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType", "sourceSystem.code"))
 				.setSearchType(SearchType.SCAN)
 				.setExplain(true)
 				.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);

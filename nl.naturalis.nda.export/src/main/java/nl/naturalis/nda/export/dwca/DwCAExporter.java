@@ -9,8 +9,6 @@ package nl.naturalis.nda.export.dwca;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
@@ -19,7 +17,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.zip.ZipOutputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -52,6 +49,8 @@ public class DwCAExporter
 	private static final String MAPPING_FILE_NAME = "Specimen.properties";
 	CsvFileWriter.CsvRow headerRow = null;
 	static String outputdirectory = null;
+	static String sourcesystemcode = null;
+	static String zipoutputdirectory = null;
 
 	/**
 	 * @param args
@@ -62,33 +61,41 @@ public class DwCAExporter
 
 		logger.info("-----------------------------------------------------------------");
 		logger.info("Start");
-        
+
 		/* Create NBA Directory */
-		StringUtilities.createOutPutDirectory(); 
+		StringUtilities.createOutPutDirectory();
+		StringUtilities.createZipOutPutDirectory();
 
 		/* Get the arguments: "OutPut", "Size", "Mammalia" */
-		
-		/* args[1] get the total records from ElasticSearch  */
+		logger.info("Start reading properties value from OutPut.properties");
+		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
 		/* args[2] Get the Collectionname */
 		String namecollectiontype = StringUtilities.readPropertyvalue(args[2], "Collectiontype");
-				
+		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
+		sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystem.code");
+
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
-		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "/";
+		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
+
+		zipoutputdirectory = StringUtilities.readPropertyvalue(args[0], "ZipDirectory") + "\\";
 
 		/* Get the directory and zipfilename */
-		String zipfilename = outputdirectory + namecollectiontype;
-		
+		String zipfilename = zipoutputdirectory + namecollectiontype;
+
+		logger.info("Loading Elastcisearch");
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required(
 				"elasticsearch.index.name"));
 		try
 		{
 			DwCAExporter exp = new DwCAExporter(index);
 			/* Delete the CSV file if Exists */
+			logger.info("Delete file Occurence.txt");
 			boolean success = (new File(outputdirectory + csvOutPutFile)).delete();
 			if (success)
 			{
-				System.out.println("The file " + csvOutPutFile + " has been successfully deleted");
+				logger.info("The file " + csvOutPutFile + " has been successfully deleted");
+//				System.out.println("The file " + csvOutPutFile + " has been successfully deleted");
 			}
 			exp.ExportDwca(zipfilename, namecollectiontype, totalsize);
 		} finally
@@ -110,6 +117,7 @@ public class DwCAExporter
 	{
 		printHeaderRowAndDataForCSV(namecollectiontype, totalsize);
 
+		logger.info("Creating the Meta.xml file.");
 		Files files = new Files();
 		files.setLocation("occurence.txt");
 		Id id = new Id();
@@ -148,6 +156,7 @@ public class DwCAExporter
 		System.out.println(specFromFile.toString());
 
 		/* Create "EML" xml file */
+		logger.info("Creating the EML.xml file.");
 		CreateEmlObjectToXML();
 
 		/* Create the zipfile with a given filename */
@@ -308,29 +317,39 @@ public class DwCAExporter
 
 	}
 
-	public static void createZipFiles(String zipFileName) throws FileNotFoundException
+	public static void createZipFiles(String zipFileName)
 	{
+		ZipDwCA zip = new ZipDwCA();
 		try
 		{
-			String zipfilename = zipFileName + zipExtension;
-			FileOutputStream fos = new FileOutputStream(zipfilename);
-			ZipOutputStream zos = new ZipOutputStream(fos);
-
-			StringUtilities.addToZipFile(outputdirectory + FILE_NAME_META, zos);
-			StringUtilities.addToZipFile(outputdirectory + FILE_NAME_EML, zos);
-			StringUtilities.addToZipFile(outputdirectory + csvOutPutFile, zos);
-
-			zos.close();
-			fos.close();
-			System.out.println("Zipfile '" + zipfilename + "' created successfull.");
-
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
+			zip.zipDirectory(outputdirectory, zipFileName + zipExtension);
+			System.out.println("Zipfile '" +  zipFileName + "' created successfull.");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
+
+//		try
+//		{
+//			String zipfilename = zipFileName + zipExtension;
+//			FileOutputStream fos = new FileOutputStream(zipfilename);
+//			ZipOutputStream zos = new ZipOutputStream(fos);
+//
+//			StringUtilities.addToZipFile(outputdirectory + FILE_NAME_META, zos);
+//			StringUtilities.addToZipFile(outputdirectory + FILE_NAME_EML, zos);
+//			StringUtilities.addToZipFile(outputdirectory + csvOutPutFile, zos);
+//
+//			zos.close();
+//			fos.close();
+//			System.out.println("Zipfile '" + zipfilename + "' created successfull.");
+//
+//		} catch (FileNotFoundException e)
+//		{
+//			e.printStackTrace();
+//		} catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
 	}
 
 	private void printHeaderRowAndDataForCSV(String namecollectiontype, String totalsize)
@@ -341,17 +360,19 @@ public class DwCAExporter
 			filewriter = new CsvFileWriter(outputdirectory + csvOutPutFile);
 			/* Get the result from ElasticSearch */
 			List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
-					Integer.parseInt(totalsize), ESSpecimen.class);
+					sourcesystemcode, Integer.parseInt(totalsize), ESSpecimen.class);
 
 			headerRow = filewriter.new CsvRow();
 
 			Properties configFile = new Properties();
 			try
 			{ /* load the values from the properties file */
+				logger.info("Load '"+ MAPPING_FILE_NAME + "' mappingscheme.");
 				configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
 			} catch (IOException e)
 			{
-				System.out.println("property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
+				logger.info("Fault: property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
+				//System.out.println("property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
 				return;
 			}
 			/* Sort the value from the properties file when loaded */
@@ -368,9 +389,11 @@ public class DwCAExporter
 			}
 
 			/* Write the headers columns */
+			logger.info("Writing headers row to the Occurence.txt file.");
 			filewriter.WriteRow(headerRow);
 
 			/* Add the value from ElasticSearch to the CSV File */
+			logger.info("Writing values from ElasticSearch to the Occurence.txt file.");
 			for (ESSpecimen specimen : list)
 			{
 				CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();
@@ -446,14 +469,17 @@ public class DwCAExporter
 						.getGenusOrMonomial());
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getInfraspecificEpithet());
-				dataRow.add(specimen.getIdentifications().iterator().next().getSystemClassification()
-						.iterator().next().getRank());
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+				}
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
 				/**
 				 * adding data row
 				 */
 				filewriter.WriteRow(dataRow);
 			}
+			// filewriter.close();
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -472,5 +498,4 @@ public class DwCAExporter
 
 		}
 	}
-
 }

@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." name="nl.naturalis.nda.ejb" default="build">
 
-    <import file="../nl.naturalis.nda.build/common.xml" />
+	<!--
+		Currently the EJB project does not contain serious
+		code. It is still packaged within the ear file though.
+		In the future, when we implement more typical EJB
+		functionality like authentication/authorization, we
+		should probably move the EJBs out of the REST project
+		and into this project. That's why we keep it around.
+		The REST project can then ditch its dependency on the
+		DAO project, while this project will come to depend on
+		the DAO project.
+	-->
 
-    <target name="package" depends="test">
-        <!--
-			We don't use the <ejbjar> task. Given the structure and contents,
-			it doesn't seem necessary. If you look at how Eclipse itself exports
-			the jar file, or if you look at the contents of the jar file in
-			JBoss's standalone/deployments directory, a regular jar suffices.	
-		 -->
-        <jar destfile="build/${ant.project.name}.jar" basedir="build/main" update="true" />
-    </target>
+	<import file="../nl.naturalis.nda.build/paths.xml" />
+	<import file="../nl.naturalis.nda.build/common.xml" />
 
-    <target name="build" depends="package" />
+	<path id="non-ivy-dependencies" />
+
+	<target name="projects">
+		<echo message="Building required projects for ${ant.project.name}" />
+	</target>
+
+	<target name="build" depends="projects,compile-sources,package" />
 
 </project>

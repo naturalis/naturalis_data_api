@@ -6,21 +6,15 @@
 	<property name="javac.debug" value="source,lines,vars" />
 
 	<target name="clean">
-		<echo message="*** Performing cleanup for ${ant.project.name}" />
-		<delete dir="build/main" />
-		<delete dir="build/test" />
-		<delete includeemptydirs="true">
-			<fileset dir="build">
-				<include name="*" />
-			</fileset>
-		</delete>
-	</target>
-
-	<target name="init">
-		<echo message="*** Creating build directories for ${ant.project.name}" />
+		<echo message="Performing cleanup for ${ant.project.name}" />
+		<delete dir="build" />
+		<mkdir dir="build" />
 		<mkdir dir="build/main" />
 		<mkdir dir="build/test" />
-		<echo message="*** Copying resources to build directories" />
+	</target>
+
+	<target name="resources">
+		<echo message="Copying resources to build directories" />
 		<copy includeemptydirs="false" todir="build/main">
 			<fileset dir="src/main/java">
 				<exclude name="**/*.java" />
@@ -44,26 +38,26 @@
 	</target>
 
 	<target name="resolve">
-		<echo message="*** Resolving dependencies for ${ant.project.name}" />
+		<echo message="Resolving dependencies for ${ant.project.name}" />
 		<ivy:resolve />
 	</target>
 
-	<target name="compile-sources" depends="init">
-		<echo message="*** Setting up classpath" />
+	<target name="compile-sources" depends="resources">
+		<echo message="Assembling classpath in temporary directory &quot;classpath&quot;" />
 		<mkdir dir="classpath" />
-		<echo message="*** Copying Ivy-managed dependencies to classpath" />
-		<ivy:retrieve pattern="classpath/[artifact]-[revision](-[classifier]).[ext]" />
-		<echo message="*** Copying non-Ivy-managed libraries to classpath" />
+		<echo message="Copying Ivy-managed dependencies to classpath" />
+		<ivy:retrieve pattern="classpath/[artifact]-[revision](-[classifier]).[ext]" log="download-only" />
+		<echo message="Copying non-Ivy-managed libraries to classpath" />
 		<copy todir="classpath">
 			<path refid="non-ivy-dependencies" />
 		</copy>
-		<echo message="*** Copying libraries in lib directory to classpath" />
+		<echo message="Copying libraries in ${ant.project.name}/lib to classpath" />
 		<copy todir="classpath">
 			<fileset dir="lib">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
-		<echo message="*** Compiling sources" />
+		<echo message="Compiling sources" />
 		<javac encoding="UTF8" destdir="build/main" debug="true" debuglevel="${javac.debug}" includeantruntime="false" source="${javac.source}" target="${javac.target}">
 			<src path="src/main/java" />
 			<classpath>
@@ -72,12 +66,12 @@
 				</fileset>
 			</classpath>
 		</javac>
-		<echo message="*** Removing &quot;classpath&quot; directory" />
+		<echo message="Removing directory &quot;classpath&quot;" />
 		<delete dir="classpath" />
 	</target>
 
-	<target name="compile-test-sources" depends="init,resolve,compile-sources">
-		<echo message="*** Compiling test classes for ${ant.project.name}" />
+	<target name="compile-test-sources" depends="resources,resolve,compile-sources">
+		<echo message="Compiling test classes for ${ant.project.name}" />
 		<javac destdir="build/test" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
 			<src path="src/test/java" />
 			<classpath refid="${ant.project.name}.classpath" />
@@ -85,7 +79,7 @@
 	</target>
 
 	<target name="test" depends="compile-test-sources">
-		<echo message="*** Testing ${ant.project.name}" />
+		<echo message="Testing ${ant.project.name}" />
 		<junit printsummary="yes" haltonfailure="yes">
 			<classpath refid="${ant.project.name}.classpath" />
 			<formatter type="xml" />
@@ -98,9 +92,9 @@
 		</junit>
 	</target>
 
-	<target name="package" depends="compile-sources">
-		<echo message="*** Packaging ${ant.project.name}" />
-		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" />
+	<target name="package">
+		<echo message="Creating ${basedir}/build/${ant.project.name}.jar" />
+		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" />
 	</target>
 
 

@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." name="nl.naturalis.nda.service.rest" default="build">
 
-    <import file="../nl.naturalis.nda.build/common.xml" />
+	<import file="../nl.naturalis.nda.build/paths.xml" />
+	<import file="../nl.naturalis.nda.build/common.xml" />
 
-    <target name="clean" depends="common.clean">
-        <delete file="build/nda.war">
-        </delete>
-    </target>
-<!--
-    <target name="package" depends="compile">
-        <war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
-            <lib dir="WebContent/WEB-INF/lib" />
-            <classes dir="build/main" />
-            <fileset dir="WebContent" />
-        </war>
-    </target>
--->
-    <target name="build" depends="package" />
+	<path id="non-ivy-dependencies">
+		<!-- projects that this project depends on -->
+		<filelist dir="${nl.naturalis.nda.domain.location}/build" files="nl.naturalis.nda.domain.jar" />
+		<filelist dir="${nl.naturalis.nda.elasticsearch.dao.location}/build" files="nl.naturalis.nda.elasticsearch.dao.jar" />
+		<filelist dir="${nl.naturalis.nda.ejb.location}/build" files="nl.naturalis.nda.ejb.jar" />
+		<!-- libraries not inside this project's lib dir -->
+		<filelist dir="${nl.naturalis.nda.build.location}/lib">
+			<file name="org.domainobject.util.jar" />
+			<file name="org.domainobject.util.debug.jar" />
+		</filelist>
+	</path>
+
+	<target name="projects">
+		<echo message="Building required projects for ${ant.project.name}" />
+		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+	</target>
+
+	<target name="build" depends="projects,compile-sources,package" />
 
 </project>

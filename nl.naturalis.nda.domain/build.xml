@@ -3,11 +3,10 @@
 
 	<import file="../nl.naturalis.nda.build/paths.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
-	
+
+	<!-- domain project does not have any dependencies -->
 	<path id="non-ivy-dependencies" />
 
-	<target name="compile-sources" depends="common.compile-sources"/>
-
-	<target name="build" depends="common.package" />
+	<target name="build" depends="compile-sources,package" />
 
 </project>

@@ -5,10 +5,10 @@
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
 	<path id="non-ivy-dependencies">
-		<!-- project dependencies -->
+		<!-- projects that this project depends on -->
 		<filelist dir="${nl.naturalis.nda.domain.location}/build" files="nl.naturalis.nda.domain.jar" />
 		<filelist dir="${nl.naturalis.nda.elasticsearch.dao.location}/build" files="nl.naturalis.nda.elasticsearch.dao.jar" />
-		<!-- required libraries not inside the lib directory -->
+		<!-- libraries not inside this project's lib dir -->
 		<filelist dir="${nl.naturalis.nda.build.location}/lib">
 			<file name="org.domainobject.util.jar" />
 			<file name="org.domainobject.util.debug.jar" />
@@ -16,12 +16,11 @@
 		</filelist>
 	</path>
 
-	<target name="build-required-projects">
+	<target name="projects">
+		<echo message="Building required projects for ${ant.project.name}" />
 		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="compile-sources" depends="build-required-projects,common.compile-sources" />
-
-	<target name="build" depends="common.package" />
+	<target name="build" depends="projects,compile-sources,package" />
 
 </project>

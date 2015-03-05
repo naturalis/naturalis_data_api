@@ -16,12 +16,12 @@
 	</path>
 
 	<target name="build-required-projects">
-		<echo message="*** Building domain project" />
+		<echo message="Building required projects for project ${ant.project.name}" />
 		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
-
+	
 	<target name="compile-sources" depends="build-required-projects,common.compile-sources" />
 
-	<target name="build" depends="common.package" />
+	<target name="build" depends="compile-sources,common.package" />
 
 </project>

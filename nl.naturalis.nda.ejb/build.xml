@@ -13,7 +13,6 @@
 		the DAO project.
 	-->
 
-	<import file="../nl.naturalis.nda.build/paths.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
 	<path id="non-ivy-dependencies" />

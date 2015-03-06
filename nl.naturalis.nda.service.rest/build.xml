@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." name="nl.naturalis.nda.service.rest" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.service.rest" default="build">
 
-	<import file="../nl.naturalis.nda.build/paths.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
 	<path id="non-ivy-dependencies">

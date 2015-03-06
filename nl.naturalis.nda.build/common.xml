@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="common">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="common">
+
+	<!-- Load properties -->
+	<property environment="env" />
+	<property file="build.properties" />
+
+	<!-- Configure Ivy -->
+	<path id="ivy.lib.path">
+		<fileset dir="${env.IVY_HOME}" includes="**/*.jar" />
+	</path>
+	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
 
 	<property name="javac.source" value="1.7" />
 	<property name="javac.target" value="1.7" />
 	<property name="javac.debug" value="source,lines,vars" />
+
+	<property name="home" location="${basedir}/../" />
+	<property name="nl.naturalis.nda.build.location" location="${home}/nl.naturalis.nda.build" />
+	<property name="nl.naturalis.nda.ear.location" location="${home}/nl.naturalis.nda.ear" />
+	<property name="nl.naturalis.nda.service.rest.location" location="${home}/nl.naturalis.nda.service.rest" />
+	<property name="nl.naturalis.nda.ejb.location" location="${home}/nl.naturalis.nda.ejb" />
+	<property name="nl.naturalis.nda.domain.location" location="${home}/nl.naturalis.nda.domain" />
+	<property name="nl.naturalis.nda.client.location" location="${home}/nl.naturalis.nda.client" />
+	<property name="nl.naturalis.nda.elasticsearch.dao.location" location="${home}/nl.naturalis.nda.elasticsearch.dao" />
+	<property name="nl.naturalis.nda.elasticsearch.load.location" location="${home}/nl.naturalis.nda.elasticsearch.load" />
+
+
+	<!-- =============== TASKS =============== -->
 
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
@@ -17,7 +40,6 @@
 	<fileset dir="src/main/resources">
 		<exclude name="**/*.java" />
 	</fileset>
-	
 
 
 	<target name="resources">

@@ -6,11 +6,6 @@
     <property name="earfile" location="build/naturalis-data-api.ear" />   
     <property name="assemblydir" location="build/nda" />
 
-    <target name="clean">
-        <delete file="${earfile}" />
-        <delete dir="${assemblydir}" />
-    </target>
-    
     <target name="package">
         <mkdir dir="${assemblydir}"/>
         <copy todir="${assemblydir}">

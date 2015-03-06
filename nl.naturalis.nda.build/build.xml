@@ -3,8 +3,6 @@
 
 	<property file="build.properties" />
 
-	<include file="./paths.xml" />
-
 	<path id="ivy.lib.path">
 		<fileset dir="${ivy.home}" includes="*.jar" />
 	</path>

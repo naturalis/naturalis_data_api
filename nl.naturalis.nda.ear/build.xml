@@ -3,7 +3,6 @@
 
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
-	<property name="earfile" location="build/nba.ear" />
 	<property name="assemblydir" location="build/nba" />
 
 	<!-- Can't use regular clean in common.xml -->
@@ -13,7 +12,7 @@
 		<mkdir dir="build" />
 	</target>
 
-	<target name="package">
+	<target name="package" depends="git.info">
 		<mkdir dir="${assemblydir}" />
 		<copy todir="${assemblydir}">
 			<fileset dir="EarContent" />
@@ -22,7 +21,7 @@
 		<copy file="${nl.naturalis.nda.service.rest.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
 		<copy file="${nl.naturalis.nda.domain.location}/build/nl.naturalis.nda.domain.jar" todir="${assemblydir}/lib" />
 		<copy file="${nl.naturalis.nda.elasticsearch.dao.location}/build/nl.naturalis.nda.elasticsearch.dao.jar" todir="${assemblydir}/lib" />
-		<jar destfile="${earfile}" basedir="${assemblydir}" />
+		<jar destfile="build/nba.${git.branch}.${git.revision}.ear" basedir="${assemblydir}" />
 	</target>
 
 	<target name="build" depends="package" />

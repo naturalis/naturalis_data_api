@@ -28,6 +28,22 @@
 
 	<!-- =============== TASKS =============== -->
 
+	<target name="git.info">
+		<exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
+			<arg value="log" />
+			<arg value='--pretty=format:"%H"' />
+			<arg value="-n" />
+			<arg value="1" />
+		</exec>
+		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
+			<arg value="rev-parse" />
+			<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+		</exec>
+		<echo message="${git.revision}" />
+		<echo message="${git.branch}" />
+	</target>
+
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
 		<delete dir="build" />

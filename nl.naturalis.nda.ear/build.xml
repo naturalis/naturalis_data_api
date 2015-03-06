@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." name="nl.naturalis.nda.ear" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.ear" default="build">
 
-    <import file="../nl.naturalis.nda.build/common.xml" />
-    
-    <property name="earfile" location="build/naturalis-data-api.ear" />   
-    <property name="assemblydir" location="build/nda" />
+	<import file="../nl.naturalis.nda.build/common.xml" />
 
-    <target name="package">
-        <mkdir dir="${assemblydir}"/>
-        <copy todir="${assemblydir}">
-            <fileset dir="EarContent"/>
-        </copy>
-        <copy file="${nl.naturalis.nda.ejb.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
-        <copy file="${nl.naturalis.nda.service.rest.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
-        <copy file="${nl.naturalis.nda.domain.location}/build/nl.naturalis.nda.domain.jar" todir="${assemblydir}/lib" />
-        <jar destfile="${earfile}" basedir="${assemblydir}" />
-    </target>
-    
-    <target name="build" depends="package"/>
+	<property name="earfile" location="build/nba.ear" />
+	<property name="assemblydir" location="build/nba" />
+
+	<!-- Can't use regular clean in common.xml -->
+	<target name="clean">
+		<echo message="Performing cleanup for ${ant.project.name}" />
+		<delete dir="build" />
+		<mkdir dir="build" />
+	</target>
+
+	<target name="package">
+		<mkdir dir="${assemblydir}" />
+		<copy todir="${assemblydir}">
+			<fileset dir="EarContent" />
+		</copy>
+		<copy file="${nl.naturalis.nda.ejb.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
+		<copy file="${nl.naturalis.nda.service.rest.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
+		<copy file="${nl.naturalis.nda.domain.location}/build/nl.naturalis.nda.domain.jar" todir="${assemblydir}/lib" />
+		<copy file="${nl.naturalis.nda.elasticsearch.dao.location}/build/nl.naturalis.nda.elasticsearch.dao.jar" todir="${assemblydir}/lib" />
+		<jar destfile="${earfile}" basedir="${assemblydir}" />
+	</target>
+
+	<target name="build" depends="package" />
 
 </project>

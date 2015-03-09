@@ -11,6 +11,7 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.naturalis.nda.export.dwca.StringUtilities;
+import nl.naturalis.nda.export.dwca.Zoology;
 
 /**
  * @author Reinier.Kartowikromo
@@ -46,11 +48,17 @@ public class DwCAExporter
 	private static final String FILE_NAME_EML = "eml.xml";
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
 	private static final String zipExtension = ".zip";
-	private static final String MAPPING_FILE_NAME = "Specimen.properties";
+	private static final String propertiesExtension = ".properties";
+	private static String MAPPING_FILE_NAME = null;
 	CsvFileWriter.CsvRow headerRow = null;
 	static String outputdirectory = null;
 	static String sourcesystemcode = null;
 	static String zipoutputdirectory = null;
+	static String propertyName = null;
+	static String propertyValue = null;
+	List<String> listfield = new ArrayList<>();
+	static String result = null;
+	static String resultprop = null;
 
 	/**
 	 * @param args
@@ -71,9 +79,11 @@ public class DwCAExporter
 		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
 		/* args[2] Get the Collectionname */
-		String namecollectiontype = StringUtilities.readPropertyvalue(args[2], "Collectiontype");
+		String namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
-		sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystem.code");
+		sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystemcode");
+		/* Get the Ocurrencefields value */
+		MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(args[2], "Ocurrencefields");
 
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
 		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
@@ -90,12 +100,10 @@ public class DwCAExporter
 		{
 			DwCAExporter exp = new DwCAExporter(index);
 			/* Delete the CSV file if Exists */
-			logger.info("Delete file Occurence.txt");
 			boolean success = (new File(outputdirectory + csvOutPutFile)).delete();
 			if (success)
 			{
 				logger.info("The file " + csvOutPutFile + " has been successfully deleted");
-//				System.out.println("The file " + csvOutPutFile + " has been successfully deleted");
 			}
 			exp.ExportDwca(zipfilename, namecollectiontype, totalsize);
 		} finally
@@ -127,8 +135,8 @@ public class DwCAExporter
 		cores.setEncoding("UTF-8");
 		cores.setFieldsEnclosedBy("'");
 		cores.setFieldsTerminatedBy("\t");
-		cores.setLinesTerminatedBy("\r\n");
-		cores.setIgnoreHeaderLines("1");
+		cores.setLinesTerminatedBy("\n");
+		cores.setIgnoreHeaderLines("0");
 		cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
 		cores.setFiles(files);
 		cores.setId(id);
@@ -322,34 +330,13 @@ public class DwCAExporter
 		ZipDwCA zip = new ZipDwCA();
 		try
 		{
+			logger.info("Creating the zipfile:" + outputdirectory + zipFileName + zipExtension);
 			zip.zipDirectory(outputdirectory, zipFileName + zipExtension);
-			System.out.println("Zipfile '" +  zipFileName + "' created successfull.");
+			System.out.println("Zipfile '" + zipFileName + "' created successfull.");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-
-//		try
-//		{
-//			String zipfilename = zipFileName + zipExtension;
-//			FileOutputStream fos = new FileOutputStream(zipfilename);
-//			ZipOutputStream zos = new ZipOutputStream(fos);
-//
-//			StringUtilities.addToZipFile(outputdirectory + FILE_NAME_META, zos);
-//			StringUtilities.addToZipFile(outputdirectory + FILE_NAME_EML, zos);
-//			StringUtilities.addToZipFile(outputdirectory + csvOutPutFile, zos);
-//
-//			zos.close();
-//			fos.close();
-//			System.out.println("Zipfile '" + zipfilename + "' created successfull.");
-//
-//		} catch (FileNotFoundException e)
-//		{
-//			e.printStackTrace();
-//		} catch (IOException e)
-//		{
-//			e.printStackTrace();
-//		}
 	}
 
 	private void printHeaderRowAndDataForCSV(String namecollectiontype, String totalsize)
@@ -367,12 +354,14 @@ public class DwCAExporter
 			Properties configFile = new Properties();
 			try
 			{ /* load the values from the properties file */
-				logger.info("Load '"+ MAPPING_FILE_NAME + "' mappingscheme.");
-				configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME));
+				logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
+				configFile.load(getClass().getClassLoader().getResourceAsStream(
+						MAPPING_FILE_NAME + propertiesExtension));
 			} catch (IOException e)
 			{
 				logger.info("Fault: property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
-				//System.out.println("property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
+				// System.out.println("property file '" + MAPPING_FILE_NAME +
+				// "' not found in the classpath");
 				return;
 			}
 			/* Sort the value from the properties file when loaded */
@@ -381,105 +370,155 @@ public class DwCAExporter
 			Iterator<?> iterator = keySet.iterator();
 			while (iterator.hasNext())
 			{
-				String propertyName = (String) iterator.next();
-				String propertyValue = configFile.getProperty(propertyName);
+				propertyName = (String) iterator.next();
+				propertyValue = configFile.getProperty(propertyName);
 				/* Add the headers to the CSV File */
-				headerRow.add(propertyValue);
-				System.out.println(propertyName + ": " + propertyValue);
+				if (propertyValue.contains("1"))
+					headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
+				listfield.add(propertyName);
+				// System.out.println(propertyName + ": " + propertyValue);
 			}
-
 			/* Write the headers columns */
 			logger.info("Writing headers row to the Occurence.txt file.");
 			filewriter.WriteRow(headerRow);
 
+			// Iterator<String> counter = headerRow.iterator();
+
 			/* Add the value from ElasticSearch to the CSV File */
 			logger.info("Writing values from ElasticSearch to the Occurence.txt file.");
-			for (ESSpecimen specimen : list)
+			if (MAPPING_FILE_NAME.equals("zoology"))
 			{
-				CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();
-				if (specimen.getUnitID() != null)
-				{
-					dataRow.add(specimen.getUnitID());
-				}
-				dataRow.add(specimen.getCollectionType());
-				dataRow.add(specimen.getSourceInstitutionID());
-				dataRow.add(specimen.getRecordBasis());
-				dataRow.add(specimen.getPreparationType());
-				dataRow.add(specimen.getTypeStatus());
-				dataRow.add(specimen.getSex());
-				dataRow.add(specimen.getPhaseOrStage());
-				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
-				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
-				dataRow.add(specimen.getGatheringEvent().getCountry());
-				dataRow.add(specimen.getGatheringEvent().getLocality());
-				dataRow.add(specimen.getGatheringEvent().getProvinceState());
-				dataRow.add(specimen.getGatheringEvent().getIsland());
-				/* ToDo: GetCity moet County worden. */
-				dataRow.add(specimen.getGatheringEvent().getCity());
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
-				{
-					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(datebegin);
-				}
-				if (specimen.getGatheringEvent().getDateTimeEnd() != null)
-				{
-					SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
-				}
-				dataRow.add(specimen.getGatheringEvent().getDepth());
-				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
-				if (specimen.getGatheringEvent().getGatheringPersons() != null)
-				{
-					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
-							.getFullName());
-				}
-				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
-				{
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
-							.getLongitudeDecimal() != null)
-					{
-						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
-								.iterator().next().getLongitudeDecimal()));
-					}
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
-							.getLatitudeDecimal() != null)
-					{
-						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
-								.iterator().next().getLatitudeDecimal()));
-					}
-				}
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getAuthorshipVerbatim());
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getSpecificEpithet());
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getFullScientificName());
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getAuthorshipVerbatim());
-				if (specimen.getIdentifications().iterator().next().getDateIdentified() != null)
-				{
-					SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
-					String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next()
-							.getDateIdentified());
-					dataRow.add(dateiden);
-				}
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getGenusOrMonomial());
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getInfraspecificEpithet());
-				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
-				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
-				}
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
-				/**
-				 * adding data row
-				 */
-				filewriter.WriteRow(dataRow);
+				Zoology zoology = new Zoology();
+				zoology.addZoologyOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
 			}
-			// filewriter.close();
+
+			/*
+			 * for (ESSpecimen specimen : list) { // while (i <
+			 * headerRow.size()) // { CsvFileWriter.CsvRow dataRow =
+			 * filewriter.new CsvRow(); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "OccurrenceID,1")) { dataRow.add(specimen.getSourceSystemId()); }
+			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "Collectioncode,1")) dataRow.add(specimen.getCollectionType());
+			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "InstitutionCode,1"))
+			 * dataRow.add(specimen.getSourceInstitutionID()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "BasisOfRecord,1")) dataRow.add(specimen.getRecordBasis()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "Preparations,1")) dataRow.add(specimen.getPreparationType()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "TypeStatus,1")) dataRow.add(specimen.getTypeStatus()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Sex,1"))
+			 * dataRow.add(specimen.getSex()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "LifeStage,1")) dataRow.add(specimen.getPhaseOrStage()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "IndividualCount,1"))
+			 * dataRow.add(Integer.toString(specimen.getNumberOfSpecimen())); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "Continent,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getWorldRegion()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Country,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getCountry()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Locality,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getLocality()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "StateProvince,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getProvinceState()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Island,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getIsland()); ToDo:
+			 * GetCity moet County worden. if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "County,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getCity()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "VerbatimEventdate,1")) if
+			 * (specimen.getGatheringEvent().getDateTimeBegin() != null) {
+			 * SimpleDateFormat datetimebegin = new
+			 * SimpleDateFormat("yyyy-MM-dd"); String datebegin =
+			 * datetimebegin.format(specimen.getGatheringEvent()
+			 * .getDateTimeBegin()); dataRow.add(datebegin); } if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "VerbatimEventdate,1")) if
+			 * (specimen.getGatheringEvent().getDateTimeEnd() != null) {
+			 * SimpleDateFormat datetimenend = new
+			 * SimpleDateFormat("yyyy-MM-dd"); String dateEnd =
+			 * datetimenend.format
+			 * (specimen.getGatheringEvent().getDateTimeEnd());
+			 * dataRow.add(dateEnd); } if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "VerbatimDepth,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getDepth()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "VerbatimElevation,1"))
+			 * dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement
+			 * ()); if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "RecordedBy,1")) if
+			 * (specimen.getGatheringEvent().getGatheringPersons() != null) {
+			 * dataRow
+			 * .add(specimen.getGatheringEvent().getGatheringPersons().iterator
+			 * ().next() .getFullName()); }
+			 * 
+			 * if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
+			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "DecimalLongitude,1")) if
+			 * (specimen.getGatheringEvent().getSiteCoordinates
+			 * ().iterator().next() .getLongitudeDecimal() != null) {
+			 * dataRow.add
+			 * (Double.toString(specimen.getGatheringEvent().getSiteCoordinates
+			 * () .iterator().next().getLongitudeDecimal())); } if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "DecimalLatitude,1")) if
+			 * (specimen.getGatheringEvent().getSiteCoordinates
+			 * ().iterator().next() .getLatitudeDecimal() != null) {
+			 * dataRow.add(
+			 * Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
+			 * .iterator().next().getLatitudeDecimal())); } } if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "ScientificnameAuthorship,1"))
+			 * dataRow.add(specimen.getIdentifications
+			 * ().iterator().next().getScientificName()
+			 * .getAuthorshipVerbatim()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "SpecificEpithet,1"))
+			 * dataRow.add(specimen.getIdentifications().iterator
+			 * ().next().getScientificName() .getSpecificEpithet()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "ScientificName,1"))
+			 * dataRow.add(specimen.getIdentifications().iterator
+			 * ().next().getScientificName() .getFullScientificName());
+			 * 
+			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "DateIdentified,1")) if
+			 * (specimen.getIdentifications().iterator().
+			 * next().getDateIdentified() != null) { SimpleDateFormat
+			 * dateidentified = new SimpleDateFormat("yyyy-MM-dd"); String
+			 * dateiden =
+			 * dateidentified.format(specimen.getIdentifications().iterator()
+			 * .next().getDateIdentified()); dataRow.add(dateiden); } if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Genus,1"))
+			 * dataRow.add(specimen.getIdentifications().iterator().next().
+			 * getScientificName() .getGenusOrMonomial()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "InfraSpecificEpithet,1"))
+			 * dataRow.add(specimen.getIdentifications
+			 * ().iterator().next().getScientificName()
+			 * .getInfraspecificEpithet()); if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
+			 * "TaxonRank,1")) if
+			 * (specimen.getIdentifications().iterator().next().getTaxonRank()
+			 * != null) {
+			 * dataRow.add(specimen.getIdentifications().iterator().next
+			 * ().getTaxonRank()); } if
+			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "SubGenus,1"))
+			 * dataRow.add(specimen.getIdentifications().iterator().next().
+			 * getScientificName() .getSubgenus());
+			 *//**
+			 * adding data row
+			 */
+			/*
+			 * filewriter.WriteRow(dataRow); }
+			 */
 		} catch (IOException e)
 		{
 			e.printStackTrace();

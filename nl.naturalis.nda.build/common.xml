@@ -40,23 +40,18 @@
 			<arg value="--abbrev-ref" />
 			<arg value="HEAD" />
 		</exec>
-		<echo message="${git.revision}" />
-		<echo message="${git.branch}" />
+		<echo message="git commit: ${git.revision}" />
+		<echo message="git branch: ${git.branch}" />
 	</target>
 
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
 		<delete dir="build" />
-		<delete dir="classpath" />
 		<mkdir dir="build" />
 		<mkdir dir="build/main" />
 		<mkdir dir="build/test" />
+		<mkdir dir="build/classpath" />
 	</target>
-
-	<fileset dir="src/main/resources">
-		<exclude name="**/*.java" />
-	</fileset>
-
 
 	<target name="resources">
 		<echo message="Copying resources to build directories" />
@@ -88,15 +83,15 @@
 	</target>
 
 	<target name="compile-sources" depends="resources">
-		<echo message="Assembling classpath in temporary directory &quot;classpath&quot;" />
+		<echo message="Setting up classpath" />
 		<mkdir dir="build/classpath" />
-		<echo message="Copying Ivy-managed dependencies to classpath" />
-		<ivy:retrieve pattern="classpath/[artifact]-[revision](-[classifier]).[ext]" log="download-only" />
-		<echo message="Copying non-Ivy-managed libraries to classpath" />
+		<echo message="Adding Ivy-managed dependencies to ${basedir}/build/classpath" />
+		<ivy:retrieve pattern="build/classpath/[artifact]-[revision](-[classifier]).[ext]" log="download-only" />
+		<echo message="Adding external libraries to ${basedir}/build/classpath" />
 		<copy todir="build/classpath">
 			<path refid="non-ivy-dependencies" />
 		</copy>
-		<echo message="Copying libraries in ${ant.project.name}/lib to classpath" />
+		<echo message="Adding libraries in ${basedir}/lib to ${basedir}/build/classpath" />
 		<copy todir="build/classpath">
 			<fileset dir="lib">
 				<include name="**/*.jar" />
@@ -111,7 +106,6 @@
 				</fileset>
 			</classpath>
 		</javac>
-		<echo message="Removing directory &quot;classpath&quot;" />
 	</target>
 
 	<target name="compile-test-sources" depends="resources,resolve,compile-sources">
@@ -137,8 +131,8 @@
 	</target>
 
 	<target name="package">
-		<echo message="Creating ${basedir}/build/${ant.project.name}.jar"/>
-		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" unless:set="${ant.project.name}.packaged" />
+		<echo message="Creating ${basedir}/build/${ant.project.name}.jar" />
+		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" />
 	</target>
 
 

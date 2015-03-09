@@ -25,7 +25,7 @@
 	<!-- Export a jar file, but only if it does not exist already -->
 	<target name="package" unless:set="${ant.project.name}.packaged">
 		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Execute &#34;clean&#34; first to force a rebuild" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built.  Clean project to force rebuild." />
 		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
 		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
 		<antcall target="common.package" unless:set="${ant.project.name}.packaged" />

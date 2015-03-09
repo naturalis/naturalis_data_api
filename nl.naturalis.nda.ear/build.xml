@@ -3,39 +3,45 @@
 
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
-
-	<!-- Can't use regular clean from common.xml -->
-	<target name="clean">
-		<echo message="Performing cleanup for ${ant.project.name}" />
-		<delete dir="build" />
-		<mkdir dir="build" />
-	</target>
-
 	<!-- Build projects that this project depends on -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
-		<!--
-			No need to list the other required projects (ejb, dao, domain)
-			here, because the rest project also depends upon them, so building
-			the rest project forces the other projects to be built as well.
-		-->
-		<ant antfile="${nl.naturalis.nda.service.rest}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${nl.naturalis.nda.ejb.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${nl.naturalis.nda.service.rest.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
+	<!-- Directory into which to collect the contents of the ear file -->
+	<property name="assemblydir" location="${basedir}/build/assemble" />
+
+	<!-- Collect stuff for ear file -->
 	<target name="assemble">
-		<property name="assemblydir" location="build/nba" />
-	</target>
-
-	<target name="package" depends="git.info">
+		<echo message="Collecting files for ear file" />
 		<mkdir dir="${assemblydir}" />
-		<copy todir="${assemblydir}">
-			<fileset dir="EarContent" />
-		</copy>
+		<echo message="Adding EJB project" />
 		<copy file="${nl.naturalis.nda.ejb.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
+		<echo message="Adding Web project" />
 		<copy file="${nl.naturalis.nda.service.rest.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
+		<echo message="Adding libraries" />
 		<copy file="${nl.naturalis.nda.domain.location}/build/nl.naturalis.nda.domain.jar" todir="${assemblydir}/lib" />
 		<copy file="${nl.naturalis.nda.elasticsearch.dao.location}/build/nl.naturalis.nda.elasticsearch.dao.jar" todir="${assemblydir}/lib" />
-		<jar destfile="build/nba.${git.branch}.${git.revision}.ear" basedir="${assemblydir}" />
+		<copy todir="${assemblydir}/lib">
+			<fileset dir="${nl.naturalis.nda.ejb.location}/build/classpath" />
+			<fileset dir="${nl.naturalis.nda.service.rest.location}/build/classpath" />
+			<fileset dir="${nl.naturalis.nda.domain.location}/build/classpath" />
+			<fileset dir="${nl.naturalis.nda.elasticsearch.dao.location}/build/classpath" />
+		</copy>
+	</target>
+
+	<!-- Export ear file, but only if it does not exist already -->
+	<target name="package" depends="git.info" unless:set="${ant.project.name}.packaged">
+		<property name="earfile" value="build/nba.${git.branch}.${git.revision}.ear" />
+		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built.  Clean project to force rebuild." />
+		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
+		<antcall target="assemble" unless:set="${ant.project.name}.packaged" />
+		<jar destfile="build/nba.${git.branch}.${git.revision}.ear" basedir="${assemblydir}" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="build" depends="package" />

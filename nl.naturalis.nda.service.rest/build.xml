@@ -19,12 +19,13 @@
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
 		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${nl.naturalis.nda.ejb.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<!-- Export a war file, but only if it does not exist already -->
 	<target name="package">
 		<available file="build/${ant.project.name}.war" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Execute &#34;clean&#34; first to force a rebuild" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
 		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
 		<war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">

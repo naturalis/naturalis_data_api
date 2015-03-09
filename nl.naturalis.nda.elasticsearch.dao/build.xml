@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.elasticsearch.dao" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.elasticsearch.dao" default="build">
 
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
@@ -14,11 +14,23 @@
 		</filelist>
 	</path>
 
+	<!-- Build projects that this project depends on -->
 	<target name="projects">
-		<echo message="Building required projects for project ${ant.project.name}" />
+		<echo message="Building required projects for ${ant.project.name}" />
 		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
-	
-	<target name="build" depends="projects,compile-sources,package" />
+
+	<!-- Export jar file, but only if it does not exist already -->
+	<target name="package" unless:set="${ant.project.name}.packaged">
+		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
+		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
+		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
+		<antcall target="common.package" unless:set="${ant.project.name}.packaged" />
+		<property name="${ant.project.name}.packaged" value="true" />
+	</target>
+
+	<target name="build" depends="package" />
+
 
 </project>

@@ -7,13 +7,13 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.ejb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/8">
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.service.rest&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
+	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.jar"/>
+	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.debug.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.service.rest&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
-	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.jar"/>
-	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.debug.jar"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

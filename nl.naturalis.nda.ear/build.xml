@@ -5,13 +5,18 @@
 
 	<property name="assemblydir" location="build/nba" />
 
-	<!-- Can't use regular clean in common.xml -->
+	<!-- Can't use regular clean from common.xml -->
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
 		<delete dir="build" />
 		<mkdir dir="build" />
 	</target>
 
+	<target name="projects">
+		<echo message="Building required projects for ${ant.project.name}" />
+		<ant antfile="${nl.naturalis.nda.service.rest}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+	</target>
+	
 	<target name="package" depends="git.info">
 		<mkdir dir="${assemblydir}" />
 		<copy todir="${assemblydir}">

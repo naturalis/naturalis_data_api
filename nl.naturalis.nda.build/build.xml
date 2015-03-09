@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." default="build" name="nl.naturalis.nda.build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant"  xmlns:unless="ant:unless" basedir="." default="build" name="nl.naturalis.nda.build">
 
 	<property file="build.properties" />
 
@@ -48,5 +48,10 @@
 	<target name="build-all" depends="build-ear,build-client" />
 
 	<target name="build" depends="build-all" />
+
+	<target name="bla">
+		<property name="${ant.project.name}.packaged" value="true" />
+		<echo message="hallo" unless:set="${ant.project.name}.packaged" />
+	</target>
 
 </project>

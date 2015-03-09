@@ -19,11 +19,10 @@
 	<target name="assemble">
 		<echo message="Collecting files for ear file" />
 		<mkdir dir="${assemblydir}" />
-		<echo message="Adding EJB project" />
+		<mkdir dir="${assemblydir}/META-INF" />
+		<mkdir dir="${assemblydir}/lib" />
 		<copy file="${nl.naturalis.nda.ejb.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
-		<echo message="Adding Web project" />
 		<copy file="${nl.naturalis.nda.service.rest.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
-		<echo message="Adding libraries" />
 		<copy file="${nl.naturalis.nda.domain.location}/build/nl.naturalis.nda.domain.jar" todir="${assemblydir}/lib" />
 		<copy file="${nl.naturalis.nda.elasticsearch.dao.location}/build/nl.naturalis.nda.elasticsearch.dao.jar" todir="${assemblydir}/lib" />
 		<copy todir="${assemblydir}/lib">
@@ -31,6 +30,9 @@
 			<fileset dir="${nl.naturalis.nda.service.rest.location}/build/classpath" />
 			<fileset dir="${nl.naturalis.nda.domain.location}/build/classpath" />
 			<fileset dir="${nl.naturalis.nda.elasticsearch.dao.location}/build/classpath" />
+		</copy>
+		<copy todir="${assemblydir}/META-INF">
+			<fileset dir="EarContent/META-INF" />
 		</copy>
 	</target>
 

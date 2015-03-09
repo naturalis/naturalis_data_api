@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.service.rest" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.service.rest" default="build">
 
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
@@ -15,18 +15,25 @@
 		</filelist>
 	</path>
 
+	<!-- Build projects that this project depends on -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
 		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-    <target name="package" depends="projects,compile-sources">
-        <war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
-            <lib dir="WebContent/WEB-INF/lib" />
-            <classes dir="build/main" excludes="**/.git*"/>
-            <fileset dir="WebContent" />
-        </war>
-    </target>
+	<!-- Export a war file, but only if it does not exist already -->
+	<target name="package">
+		<available file="build/${ant.project.name}.war" property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Execute &#34;clean&#34; first to force a rebuild" />
+		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
+		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
+		<war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
+			<lib dir="WebContent/WEB-INF/lib" />
+			<classes dir="build/main" excludes="**/.git*" />
+			<fileset dir="WebContent" />
+		</war>
+		<property name="${ant.project.name}.packaged" value="true" />
+	</target>
 
 	<target name="build" depends="package" />
 

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." name="nl.naturalis.nda.ear" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.ear" default="build">
 
 	<import file="../nl.naturalis.nda.build/common.xml" />
 
-	<property name="assemblydir" location="build/nba" />
 
 	<!-- Can't use regular clean from common.xml -->
 	<target name="clean">
@@ -12,11 +11,21 @@
 		<mkdir dir="build" />
 	</target>
 
+	<!-- Build projects that this project depends on -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
+		<!--
+			No need to list the other required projects (ejb, dao, domain)
+			here, because the rest project also depends upon them, so building
+			the rest project forces the other projects to be built as well.
+		-->
 		<ant antfile="${nl.naturalis.nda.service.rest}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
-	
+
+	<target name="assemble">
+		<property name="assemblydir" location="build/nba" />
+	</target>
+
 	<target name="package" depends="git.info">
 		<mkdir dir="${assemblydir}" />
 		<copy todir="${assemblydir}">

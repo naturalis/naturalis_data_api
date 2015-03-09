@@ -89,15 +89,15 @@
 
 	<target name="compile-sources" depends="resources">
 		<echo message="Assembling classpath in temporary directory &quot;classpath&quot;" />
-		<mkdir dir="classpath" />
+		<mkdir dir="build/classpath" />
 		<echo message="Copying Ivy-managed dependencies to classpath" />
 		<ivy:retrieve pattern="classpath/[artifact]-[revision](-[classifier]).[ext]" log="download-only" />
 		<echo message="Copying non-Ivy-managed libraries to classpath" />
-		<copy todir="classpath">
+		<copy todir="build/classpath">
 			<path refid="non-ivy-dependencies" />
 		</copy>
 		<echo message="Copying libraries in ${ant.project.name}/lib to classpath" />
-		<copy todir="classpath">
+		<copy todir="build/classpath">
 			<fileset dir="lib">
 				<include name="**/*.jar" />
 			</fileset>
@@ -106,13 +106,12 @@
 		<javac encoding="UTF8" destdir="build/main" debug="true" debuglevel="${javac.debug}" includeantruntime="false" source="${javac.source}" target="${javac.target}">
 			<src path="src/main/java" />
 			<classpath>
-				<fileset dir="classpath">
+				<fileset dir="build/classpath">
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
 		</javac>
 		<echo message="Removing directory &quot;classpath&quot;" />
-		<delete dir="classpath" />
 	</target>
 
 	<target name="compile-test-sources" depends="resources,resolve,compile-sources">
@@ -137,11 +136,9 @@
 		</junit>
 	</target>
 
-	<target name="package" unless:set="${ant.project.name}.packaged">
-		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
-		<echo message="Creating ${basedir}/build/${ant.project.name}.jar" unless:set="${ant.project.name}.packaged" />
+	<target name="package">
+		<echo message="Creating ${basedir}/build/${ant.project.name}.jar"/>
 		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" unless:set="${ant.project.name}.packaged" />
-		<property name="${ant.project.name}.packaged" value="true" />
 	</target>
 
 

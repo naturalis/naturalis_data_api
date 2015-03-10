@@ -18,14 +18,16 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.domainobject.util.ConfigObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StringUtilities
 {
+	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
 	final static int BUFFER = 2048;
 	private static final String propertiesExtension = ".properties";
 	static String propertiesfilename = null;
-	private static ConfigObject config;
+
 
 	public static int indexOfFirstContainedCharacter(String s1, String s2)
 	{
@@ -66,6 +68,7 @@ public class StringUtilities
 			IOException
 	{
 		System.out.println("Writing '" + fileName + "' to zip file");
+		logger.info("Writing '" + fileName + "' to zip file");
 
 		BufferedInputStream origin = null;
 		byte data[] = new byte[BUFFER];
@@ -110,7 +113,6 @@ public class StringUtilities
 					break;
 				}
 			}
-
 		} catch (IOException ex)
 		{
 			ex.printStackTrace();
@@ -134,9 +136,10 @@ public class StringUtilities
 		{
 			ex.printStackTrace();
 		}
-		return result;
+		return result.toLowerCase();
 	}
 
+	/* Create Output directory*/
 	public static void createOutPutDirectory()
 	{
 		File directory = new File(readPropertyvalue("OutPut", "Directory"));
@@ -153,11 +156,12 @@ public class StringUtilities
 			}
 			if (result)
 			{
-				System.out.println("DwCAExport directory was created successfull.");
+				logger.info("DwCAExport directory was created successfull.");
 			}
 		}
 	}
 
+	/* Create Output Zip directory. */
 	public static void createZipOutPutDirectory()
 	{
 		File directory = new File(readPropertyvalue("OutPut", "ZipDirectory"));
@@ -174,66 +178,18 @@ public class StringUtilities
 			}
 			if (result)
 			{
-				System.out.println("DwCAExportZip directory was created successfull.");
+				logger.info("DwCAExportZip directory was created successfull.");
 			}
 		}
 	}
 
+	/* if value is '1' field will be added to CSV file otherwise if value is '0'. field will not be added.*/
 	public static boolean isFieldChecked(String propertyname, String value)
 	{
 		int commaindex = StringUtilities.getPropertyValue(propertyname, value).length() - 1;
 		String result = StringUtilities.getPropertyValue(propertyname, value);
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
-		
 	}
-
-	// public static ConfigObject getConfig()
-	// {
-	// if (config == null) {
-	// String ndaConfDir = System.getProperty("ndaConfDir");
-	// if (ndaConfDir != null) {
-	// logger.debug("Using system property \"ndaConfDir\" to locate configuration file "
-	// + PROPERTY_FILE_NAME);
-	// File dir = new File(ndaConfDir);
-	// if (!dir.isDirectory()) {
-	// throw new
-	// RuntimeException(String.format("Invalid directory specified for property \"ndaConfDir\": \"%s\"",
-	// ndaConfDir));
-	// }
-	// try {
-	// File file = new File(dir.getCanonicalPath() + "/" + PROPERTY_FILE_NAME);
-	// if (!file.isFile()) {
-	// throw new
-	// RuntimeException(String.format("Configuration file missing: %s",
-	// file.getCanonicalPath()));
-	// }
-	// logger.debug(String.format("Using configuration file %s",
-	// file.getCanonicalPath()));
-	// config = new ConfigObject(file);
-	// }
-	// catch (IOException e) {
-	// throw new RuntimeException(e);
-	// }
-	// }
-	// else {
-	// logger.debug("Searching classpath for configuration file " +
-	// PROPERTY_FILE_NAME);
-	// try (InputStream is = LoadUtil.class.getResourceAsStream("/" +
-	// PROPERTY_FILE_NAME)) {
-	// if (is == null) {
-	// throw new
-	// RuntimeException(String.format("Configuration file missing: %s",
-	// PROPERTY_FILE_NAME));
-	// }
-	// config = new ConfigObject(is);
-	// }
-	// catch (IOException e) {
-	// throw new RuntimeException(e);
-	// }
-	// }
-	// }
-	// return config;
-	// }
 
 }

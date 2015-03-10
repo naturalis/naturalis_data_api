@@ -1,23 +1,22 @@
 package nl.naturalis.nda.export.dwca;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class Zoology
+import nl.naturalis.nda.domain.Agent;
+import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+
+public class Geology
 {
 
-	public Zoology()
+	public Geology()
 	{
 		// TODO Auto-generated constructor stub
 	}
-
-	public void addZoologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
-			String MAPPING_FILE_NAME)
+	
+	public void addGeologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter, String MAPPING_FILE_NAME)
 	{
 		for (ESSpecimen specimen : list)
 		{
@@ -32,7 +31,7 @@ public class Zoology
 				dataRow.add(specimen.getSourceSystemId());
 
 			/* 03_ClassName */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,1"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,0"))
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
 
 			/* 04_CollectionType */
@@ -73,14 +72,12 @@ public class Zoology
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLatitudeDecimal()));
 					}
-
+				
 				/* 10_LongitudeDecimal */
 				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
-							.getLongitudeDecimal() != null)
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
 					{
-						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
-								.iterator().next().getLongitudeDecimal()));
+						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
 					}
 			}
 
@@ -119,7 +116,7 @@ public class Zoology
 				dataRow.add(null);
 			
 			/* 16_Dummy2 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "habitat,0"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "habitat,1"))
 				dataRow.add(null);
 			
 			/* 17_Dummy3 */
@@ -169,8 +166,13 @@ public class Zoology
 			
 			/* 25_Kingdom */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
-			
+			{
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
+				}
+			}
+				
 			/* 26_PhaseOrStage */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "lifeStage,1"))
 				dataRow.add(specimen.getPhaseOrStage());
@@ -281,7 +283,7 @@ public class Zoology
 					dataRow.add(datebegin);
 				}
 			}
-			
+				
 			/* 48_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimTaxonRank,1"))
 				dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
@@ -297,6 +299,7 @@ public class Zoology
 				e.printStackTrace();
 			}
 		}
+
 	}
 
 }

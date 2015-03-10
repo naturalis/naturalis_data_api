@@ -10,7 +10,6 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +58,7 @@ public class DwCAExporter
 	List<String> listfield = new ArrayList<>();
 	static String result = null;
 	static String resultprop = null;
+	static String namecollectiontype = null;
 
 	/**
 	 * @param args
@@ -79,7 +79,14 @@ public class DwCAExporter
 		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
 		/* args[2] Get the Collectionname */
-		String namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
+		try
+		{
+			namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
+		}
+		catch (Exception ex)
+		{
+			logger.info(args[2] + " properties filename is not correct.");
+		}
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
 		sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystemcode");
 		/* Get the Ocurrencefields value */
@@ -94,8 +101,7 @@ public class DwCAExporter
 		String zipfilename = zipoutputdirectory + namecollectiontype;
 
 		logger.info("Loading Elastcisearch");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required(
-				"elasticsearch.index.name"));
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 		try
 		{
 			DwCAExporter exp = new DwCAExporter(index);
@@ -330,9 +336,10 @@ public class DwCAExporter
 		ZipDwCA zip = new ZipDwCA();
 		try
 		{
-			logger.info("Creating the zipfile:" + outputdirectory + zipFileName + zipExtension);
+			logger.info("Creating the zipfile:" + zipFileName + zipExtension);
 			zip.zipDirectory(outputdirectory, zipFileName + zipExtension);
 			System.out.println("Zipfile '" + zipFileName + "' created successfull.");
+			logger.info("Zipfile '" + zipFileName + "' created successfull.");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -355,8 +362,7 @@ public class DwCAExporter
 			try
 			{ /* load the values from the properties file */
 				logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
-				configFile.load(getClass().getClassLoader().getResourceAsStream(
-						MAPPING_FILE_NAME + propertiesExtension));
+				configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME + propertiesExtension));
 			} catch (IOException e)
 			{
 				logger.info("Fault: property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
@@ -381,144 +387,23 @@ public class DwCAExporter
 			/* Write the headers columns */
 			logger.info("Writing headers row to the Occurence.txt file.");
 			filewriter.WriteRow(headerRow);
+			logger.info("CSV Fieldsheader: " + headerRow.toString());
 
-			// Iterator<String> counter = headerRow.iterator();
 
-			/* Add the value from ElasticSearch to the CSV File */
-			logger.info("Writing values from ElasticSearch to the Occurence.txt file.");
 			if (MAPPING_FILE_NAME.equals("zoology"))
 			{
+				/* Add the value from ElasticSearch to the CSV File */
+				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 				Zoology zoology = new Zoology();
 				zoology.addZoologyOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
 			}
+			if (MAPPING_FILE_NAME.equals("geology"))
+			{
+				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+				Geology geo = new Geology();				
+				geo.addGeologyOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
+			}
 
-			/*
-			 * for (ESSpecimen specimen : list) { // while (i <
-			 * headerRow.size()) // { CsvFileWriter.CsvRow dataRow =
-			 * filewriter.new CsvRow(); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "OccurrenceID,1")) { dataRow.add(specimen.getSourceSystemId()); }
-			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "Collectioncode,1")) dataRow.add(specimen.getCollectionType());
-			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "InstitutionCode,1"))
-			 * dataRow.add(specimen.getSourceInstitutionID()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "BasisOfRecord,1")) dataRow.add(specimen.getRecordBasis()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "Preparations,1")) dataRow.add(specimen.getPreparationType()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "TypeStatus,1")) dataRow.add(specimen.getTypeStatus()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Sex,1"))
-			 * dataRow.add(specimen.getSex()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "LifeStage,1")) dataRow.add(specimen.getPhaseOrStage()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "IndividualCount,1"))
-			 * dataRow.add(Integer.toString(specimen.getNumberOfSpecimen())); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "Continent,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getWorldRegion()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Country,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getCountry()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Locality,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getLocality()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "StateProvince,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getProvinceState()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Island,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getIsland()); ToDo:
-			 * GetCity moet County worden. if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "County,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getCity()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "VerbatimEventdate,1")) if
-			 * (specimen.getGatheringEvent().getDateTimeBegin() != null) {
-			 * SimpleDateFormat datetimebegin = new
-			 * SimpleDateFormat("yyyy-MM-dd"); String datebegin =
-			 * datetimebegin.format(specimen.getGatheringEvent()
-			 * .getDateTimeBegin()); dataRow.add(datebegin); } if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "VerbatimEventdate,1")) if
-			 * (specimen.getGatheringEvent().getDateTimeEnd() != null) {
-			 * SimpleDateFormat datetimenend = new
-			 * SimpleDateFormat("yyyy-MM-dd"); String dateEnd =
-			 * datetimenend.format
-			 * (specimen.getGatheringEvent().getDateTimeEnd());
-			 * dataRow.add(dateEnd); } if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "VerbatimDepth,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getDepth()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "VerbatimElevation,1"))
-			 * dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement
-			 * ()); if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "RecordedBy,1")) if
-			 * (specimen.getGatheringEvent().getGatheringPersons() != null) {
-			 * dataRow
-			 * .add(specimen.getGatheringEvent().getGatheringPersons().iterator
-			 * ().next() .getFullName()); }
-			 * 
-			 * if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
-			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "DecimalLongitude,1")) if
-			 * (specimen.getGatheringEvent().getSiteCoordinates
-			 * ().iterator().next() .getLongitudeDecimal() != null) {
-			 * dataRow.add
-			 * (Double.toString(specimen.getGatheringEvent().getSiteCoordinates
-			 * () .iterator().next().getLongitudeDecimal())); } if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "DecimalLatitude,1")) if
-			 * (specimen.getGatheringEvent().getSiteCoordinates
-			 * ().iterator().next() .getLatitudeDecimal() != null) {
-			 * dataRow.add(
-			 * Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
-			 * .iterator().next().getLatitudeDecimal())); } } if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "ScientificnameAuthorship,1"))
-			 * dataRow.add(specimen.getIdentifications
-			 * ().iterator().next().getScientificName()
-			 * .getAuthorshipVerbatim()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "SpecificEpithet,1"))
-			 * dataRow.add(specimen.getIdentifications().iterator
-			 * ().next().getScientificName() .getSpecificEpithet()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "ScientificName,1"))
-			 * dataRow.add(specimen.getIdentifications().iterator
-			 * ().next().getScientificName() .getFullScientificName());
-			 * 
-			 * if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "DateIdentified,1")) if
-			 * (specimen.getIdentifications().iterator().
-			 * next().getDateIdentified() != null) { SimpleDateFormat
-			 * dateidentified = new SimpleDateFormat("yyyy-MM-dd"); String
-			 * dateiden =
-			 * dateidentified.format(specimen.getIdentifications().iterator()
-			 * .next().getDateIdentified()); dataRow.add(dateiden); } if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "Genus,1"))
-			 * dataRow.add(specimen.getIdentifications().iterator().next().
-			 * getScientificName() .getGenusOrMonomial()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "InfraSpecificEpithet,1"))
-			 * dataRow.add(specimen.getIdentifications
-			 * ().iterator().next().getScientificName()
-			 * .getInfraspecificEpithet()); if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME,
-			 * "TaxonRank,1")) if
-			 * (specimen.getIdentifications().iterator().next().getTaxonRank()
-			 * != null) {
-			 * dataRow.add(specimen.getIdentifications().iterator().next
-			 * ().getTaxonRank()); } if
-			 * (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "SubGenus,1"))
-			 * dataRow.add(specimen.getIdentifications().iterator().next().
-			 * getScientificName() .getSubgenus());
-			 *//**
-			 * adding data row
-			 */
-			/*
-			 * filewriter.WriteRow(dataRow); }
-			 */
 		} catch (IOException e)
 		{
 			e.printStackTrace();

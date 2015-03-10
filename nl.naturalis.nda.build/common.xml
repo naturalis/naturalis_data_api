@@ -138,5 +138,12 @@
 		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" />
 	</target>
 
+	<target name="templates">
+		<copy todir="${basedir}">
+			<fileset dir="${basedir}" includes="**/*.__template" />
+			<globmapper from="*.__template" to="*" />
+		</copy>
+	</target>
+
 
 </project>

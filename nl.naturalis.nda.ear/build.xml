@@ -54,4 +54,9 @@
 
 	<target name="rebuild" depends="clean,build" />
 
+	<target name="eclipse">
+		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="rebuild" />
+		<antcall target="templates" />
+	</target>
+
 </project>

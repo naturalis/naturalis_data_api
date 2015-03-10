@@ -51,4 +51,9 @@
 
 	<target name="build" depends="ear,load" />
 
+	<target name="eclipse">
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
+	</target>
+
+
 </project>

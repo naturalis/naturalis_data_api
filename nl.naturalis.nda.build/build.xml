@@ -49,6 +49,6 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="all" depends="ear,load" />
+	<target name="build" depends="ear,load" />
 
 </project>

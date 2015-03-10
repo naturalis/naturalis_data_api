@@ -46,7 +46,8 @@
 
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
-		<delete includeemptydirs="true">
+		<available file="build" type="dir" property="build.dir.exists" />
+		<delete includeemptydirs="true" if:set="build.dir.exists">
 			<fileset dir="build" includes="**/*" />
 		</delete>
 		<mkdir dir="build" />

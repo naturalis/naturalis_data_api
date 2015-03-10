@@ -6,12 +6,21 @@ import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
-import nl.naturalis.nda.search.*;
+import nl.naturalis.nda.search.Link;
+import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nda.search.ResultGroup;
+import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.SearchResultSet;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.collect.Iterables;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.NestedFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -26,18 +35,57 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer.transfer;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.*;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.*;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_CLASS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_FAMILY;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_GENUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_ORDER;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_PHYLUM;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.IDENTIFICATIONS_VERNACULAR_NAMES_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.ASSEMBLAGE_ID;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.COLLECTORS_FIELD_NUMBER;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_DATE_TIME_BEGIN;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_GATHERING_PERSONS_FULLNAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_LOCALITY_TEXT;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.GATHERINGEVENT_SITECOORDINATES_POINT;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.IDENTIFICATIONS_SYSTEM_CLASSIFICATION_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.PHASE_OR_STAGE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.SEX;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.THEME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.SpecimenFields.TYPE_STATUS;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static org.elasticsearch.action.search.SearchType.COUNT;
-import static org.elasticsearch.index.query.FilterBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.*;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.*;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.OR;
-import static org.elasticsearch.search.aggregations.AggregationBuilders.*;
+import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
+import static org.elasticsearch.index.query.FilterBuilders.nestedFilter;
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.cardinality;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.max;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.reverseNested;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.topHits;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.aggregation;
 import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Order.term;
 import static org.elasticsearch.search.internal.InternalSearchResponse.empty;
@@ -137,6 +185,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     public SearchResultSet<Specimen> specimenSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
         if (params.containsKey("_search")) {
+            params.remove("_andOr");
             params.add("_andOr", "OR");
         }
 
@@ -151,16 +200,14 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> fieldMappings = filterAllowedFieldMappings(fields, specimenSearchFieldNames);
 
-        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting, sessionId);
-
-        logger.info("*** Total hits = " + searchResponse.getHits().getTotalHits());
+        SearchResponse searchResponse = executeExtendedSearch(params, fieldMappings, SPECIMEN_TYPE, highlighting, sessionId, false);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.add("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, fieldMappings, SPECIMEN_TYPE, false, sessionId).getHits().getAt(0).getScore();
+            minScore = executeExtendedSearch(copy, fieldMappings, SPECIMEN_TYPE, false, sessionId, false).getHits().getAt(0).getScore();
         }
 
         return responseToSpecimenSearchResultSet(searchResponse, minScore, sessionId);
@@ -203,8 +250,8 @@ public class BioportalSpecimenDao extends AbstractDao {
 
 
     private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
-        boolean atLeastOneFieldToQuery = false;
         if (params.containsKey("_search")) {
+            params.remove("_andOr");
             params.add("_andOr", "OR");
         }
         String sessionId = params.getParam("_SESSION_ID");
@@ -214,61 +261,33 @@ public class BioportalSpecimenDao extends AbstractDao {
         List<FieldMapping> fields = getSearchParamFieldMapping().getSpecimenMappingForFields(params);
         List<FieldMapping> allowedFields = filterAllowedFieldMappings(fields, specimenNameSearchFieldNames);
 
+
+        CreateQuery createQuery = new CreateQuery(params, fields).invoke();
+        BoolQueryBuilder query = createQuery.getQuery();
+        Map<String, HighlightBuilder.Field> highlightFields = createQuery.getHighlightFields();
+
+
+        //Initiaes an nameResolutionQuery and adds the content to the original query. We also add highlighting for fields from the nameResQuery
         QueryAndHighlightFields nameResQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, highlighting, getOperator(params), sessionId);
-
-        BoolQueryBuilder nonPrebuiltQuery = boolQuery();
-        Operator operator = getOperator(params);
-
-        LinkedHashMap<String, List<FieldMapping>> nestedFields = new LinkedHashMap<>();
-        List<FieldMapping> nonNestedFields = new ArrayList<>();
-        for (FieldMapping field : fields) {
-            String nestedPath = field.getNestedPath();
-            if (nestedPath != null && nestedPath.trim().length() > 0) {
-                List<FieldMapping> fieldMappings = new ArrayList<>();
-                if (nestedFields.containsKey(nestedPath)) {
-                    fieldMappings = nestedFields.get(nestedPath);
+        if (nameResQuery != null) {
+            if (nameResQuery.getQuery() != null) {
+                query.should(nameResQuery.getQuery());
+            }
+            Map<String, HighlightBuilder.Field> nameResQueryHighlightFields = nameResQuery.getHighlightFields();
+            if (nameResQueryHighlightFields != null && nameResQueryHighlightFields.size() != 0) {
+                for (Map.Entry<String, HighlightBuilder.Field> stringFieldEntry : nameResQueryHighlightFields.entrySet()) {
+                    highlightFields.put(stringFieldEntry.getKey(), stringFieldEntry.getValue());
                 }
-
-                fieldMappings.add(field);
-                nestedFields.put(nestedPath, fieldMappings);
-            } else {
-                nonNestedFields.add(field);
             }
         }
 
-        Map<String, HighlightBuilder.Field> highlightFields = nameResQuery == null || nameResQuery.getHighlightFields() == null || nameResQuery.getHighlightFields().isEmpty() ? new HashMap<String, HighlightBuilder.Field>() : nameResQuery.getHighlightFields();
-
-        for (String nestedPath : nestedFields.keySet()) {
-            extendQueryWithNestedFieldsWithSameNestedPath(nonPrebuiltQuery, operator, nestedPath, nestedFields.get(nestedPath), highlightFields, highlighting);
-            atLeastOneFieldToQuery = true;
-        }
-
-        for (FieldMapping field : nonNestedFields) {
-            if (!field.getFieldName().contains("dateTime")) {
-                extendQueryWithField(nonPrebuiltQuery, operator, field, highlightFields, highlighting);
-                atLeastOneFieldToQuery = true;
-            }
-        }
-
-        atLeastOneFieldToQuery = extractRangeQuery(params, nonPrebuiltQuery, atLeastOneFieldToQuery);
-
-        BoolQueryBuilder completeQuery;
-        if (nameResQuery != null && nameResQuery.getQuery() != null) {
-            completeQuery = boolQuery();
-            extendQueryWithQuery(completeQuery, OR, nonPrebuiltQuery);
-            extendQueryWithQuery(completeQuery, OR, nameResQuery.getQuery());
-            atLeastOneFieldToQuery = true;
-        } else {
-            completeQuery = nonPrebuiltQuery;
-        }
 
         NestedFilterBuilder geoShape = null;
         boolean geoSearch = false;
         if (params.containsKey("_geoShape")) {
-            geoShape = createGeoShapeFilter(params.getParam("_geoShape"));
+            geoShape = createGeoShapeFilter(params.getParam("_geoShape"), false);
             geoSearch = true;
         }
-
 
         //BEGIN INITS
         Integer groupMaxResults = Integer.parseInt(params.getParam("_groupMaxResults", "10"));
@@ -302,16 +321,15 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END INITS
 
 
-
-
         //BEGIN QUERY SETUP
+        boolean atLeastOneFieldToQuery = query.hasClauses();
         FilteredQueryBuilder finalQuery;
         if (geoSearch && !atLeastOneFieldToQuery) {
             finalQuery = filteredQuery(matchAllQuery(), geoShape);
         } else if (!atLeastOneFieldToQuery) {
-            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), null, 0, 0, 0, sessionId);
+            return responseToSpecimenResultGroupSet(new SearchResponse(empty(), "", 0, 0, 0, null), 0, 0, 0, 0, sessionId);
         } else {
-            finalQuery = filteredQuery(completeQuery, geoShape);
+            finalQuery = filteredQuery(query, geoShape);
         }
         //END QUERY SETUP
 
@@ -324,11 +342,12 @@ public class BioportalSpecimenDao extends AbstractDao {
                 .subAggregation(terms("names").field("identifications.scientificName.fullScientificName.raw").size(0).order(order)
                         .subAggregation(max("max_score").script("doc.score"))));
 
-        logger.info(searchRequestBuilder.toString());
+        logger.info("SpecimenNameSearch: \n" + searchRequestBuilder.toString());
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
         Map<String, Double> keysAndScores = getKeysAndScoreFromAggregation(searchResponse, groupMaxResults, groupOffset);
 
+        long totalBuckets = getTotalBucketsFromAggregation(searchResponse);
         long totalHits = getTotalHitsFromAggregation(searchResponse);
         double minScore = getMinScoreFromAggregation(searchResponse);
         double maxScore = getMaxScoreFromAggregation(searchResponse);
@@ -338,6 +357,7 @@ public class BioportalSpecimenDao extends AbstractDao {
         if (!keysAndScores.keySet().isEmpty()) {
             NestedFilterBuilder namesFilter = nestedFilter("identifications", createNamesQuery(keysAndScores.keySet()));
             searchRequestBuilder = newSearchRequest().setTypes(SPECIMEN_TYPE).setQuery(filteredQuery(finalQuery, namesFilter)).setSearchType(COUNT).setTrackScores(true);
+            searchRequestBuilder.setTrackScores(true);
             TopHitsBuilder topHitsBuilder = topHits("top-hits").setSize(maxResults).setFetchSource(true).addSort(sortField, sortDirection);
             if (!highlightFields.isEmpty()) {
                 for (HighlightBuilder.Field highlightField : highlightFields.values()) {
@@ -350,7 +370,7 @@ public class BioportalSpecimenDao extends AbstractDao {
                                     .subAggregation(max("max_score").script("doc.score"))
                                     .subAggregation(reverseNested("reverse")
                                             .subAggregation(topHitsBuilder))));
-            logger.info(searchRequestBuilder.toString());
+            logger.info("SpecimenNameSearch: \n" + searchRequestBuilder.toString());
             searchResponse = searchRequestBuilder.execute().actionGet();
         } else {
             searchResponse = new SearchResponse(empty(), "", 0, 0, 0, null);
@@ -358,13 +378,26 @@ public class BioportalSpecimenDao extends AbstractDao {
         //END SECOND QUERY
 
 
-        return responseToSpecimenResultGroupSet(searchResponse, keysAndScores, minScore, maxScore, totalHits, sessionId);
+        return responseToSpecimenResultGroupSet(searchResponse, minScore, maxScore, totalBuckets, totalHits, sessionId);
+    }
+
+    private long getTotalBucketsFromAggregation(SearchResponse searchResponse) {
+        Nested nested = searchResponse.getAggregations().get("nested");
+        if (nested != null) {
+            Cardinality cardinality = nested.getAggregations().get("number_of_buckets");
+            if (cardinality != null) {
+                return cardinality.getValue();
+            }
+        }
+        return 0;
     }
 
     private long getTotalHitsFromAggregation(SearchResponse searchResponse) {
         Nested nested = searchResponse.getAggregations().get("nested");
-        Cardinality cardinality = nested.getAggregations().get("number_of_buckets");
-        return cardinality.getValue();
+        if (nested != null) {
+            return nested.getDocCount();
+        }
+        return 0;
     }
 
     private double getMaxScoreFromAggregation(SearchResponse searchResponse) {
@@ -584,7 +617,6 @@ public class BioportalSpecimenDao extends AbstractDao {
         float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
         resultSet.setTotalSize(response.getHits().getTotalHits());
-        //resultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         for (SearchHit hit : response.getHits()) {
             ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
@@ -593,8 +625,19 @@ public class BioportalSpecimenDao extends AbstractDao {
             transfer.setOtherSpecimensInAssemblage(specimensWithSameAssemblageId);
             SearchResult<Specimen> searchResult = new SearchResult<>(transfer);
             resultSet.addSearchResult(searchResult);
-            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+
+            double percentage;
+            if (maxScore == minScore) {
+                if (hit.getScore() == maxScore) {
+                    percentage = 100;
+                } else {
+                    percentage = 0;
+                }
+            } else {
+                percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            }
             searchResult.setPercentage(percentage);
+
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
 
             getTaxonForSpecimenFullScientificName(transfer, searchResult, sessionId);
@@ -621,7 +664,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     }
 
 
-    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, Map<String, Double> keysAndScores, double minScore, double maxScore, long totalHits, String sessionId) {
+    private ResultGroupSet<Specimen, String> responseToSpecimenResultGroupSet(SearchResponse response, double minScore, double maxScore, long totalBuckets, long totalHits, String sessionId) {
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = new ResultGroupSet<>();
 
         if (response.getAggregations() != null) {
@@ -646,13 +689,17 @@ public class BioportalSpecimenDao extends AbstractDao {
                     searchResult.setResult(specimen);
                     searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + specimen.getUnitID()));
                     double percentage;
-                    Double aDouble = keysAndScores.get(key);
-                    if ((maxScore != minScore) && aDouble != null) {
-                        percentage = ((aDouble - minScore) / (maxScore - minScore)) * 100;
-                        //null for some reason sometimes?? todo
-                        searchResult.setScore(aDouble.floatValue());
-                        searchResult.setPercentage(percentage);
+                    if (maxScore == minScore) {
+                        if (hit.getScore() == maxScore) {
+                            percentage = 100;
+                        } else {
+                            percentage = 0;
+                        }
+                    } else {
+                        percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
                     }
+                    searchResult.setPercentage(percentage);
+                    searchResult.setScore(hit.getScore());
 
                     enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
                     getTaxonForSpecimenFullScientificName(specimen, searchResult, sessionId);
@@ -663,7 +710,9 @@ public class BioportalSpecimenDao extends AbstractDao {
                 specimenStringResultGroupSet.addGroup(resultGroup);
             }
         }
+
         specimenStringResultGroupSet.setTotalSize(totalHits);
+        specimenStringResultGroupSet.setTotalBuckets(totalBuckets);
         return specimenStringResultGroupSet;
     }
 

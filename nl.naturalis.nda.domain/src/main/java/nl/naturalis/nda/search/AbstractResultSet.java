@@ -8,12 +8,13 @@ import java.util.List;
  */
 public abstract class AbstractResultSet {
 
-	private long totalSize;
-	private List<Link> links;
-	private QueryParams queryParameters;
+    private long totalSize;
+    private long totalBuckets;
+    private List<Link> links;
+    private QueryParams queryParameters;
 
 
-	/**
+    /**
 	 * Add a REST link. The href property is URL encoded. In encoding fails, the
 	 * original href value is used.
 	 * 
@@ -73,4 +74,11 @@ public abstract class AbstractResultSet {
 		this.queryParameters = queryParameters;
 	}
 
+    public void setTotalBuckets(long totalBuckets) {
+        this.totalBuckets = totalBuckets;
+    }
+
+    public long getTotalBuckets() {
+        return totalBuckets;
+    }
 }

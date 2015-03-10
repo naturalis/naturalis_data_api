@@ -101,6 +101,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
     public SearchResultSet<MultiMediaObject> multiMediaObjectSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
         if (params.containsKey("_search")) {
+            params.remove("_andOr");
             params.add("_andOr", "OR");
         }
 
@@ -187,20 +188,17 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 
         evaluateSimpleSearch(params, allowedFieldNames, simpleSearchFieldNameExceptions);
         List<FieldMapping> fields = getSearchParamFieldMapping().getMultimediaMappingForFields(params);
-        List<FieldMapping> allowedFields = (allowedFieldNames == null)
-                ? fields
-                : filterAllowedFieldMappings(fields, allowedFieldNames);
+        List<FieldMapping> allowedFields = (allowedFieldNames == null) ? fields : filterAllowedFieldMappings(fields, allowedFieldNames);
 
-        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"), bioportalTaxonDao, true, getOperator(params), sessionId);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, nameResolutionQuery, sessionId);
+        QueryAndHighlightFields nameResolutionQuery = buildNameResolutionQuery(allowedFields, params.getParam("_search"), bioportalTaxonDao, true, getOperator(params), sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, MULTI_MEDIA_OBJECT_TYPE, nameResolutionQuery, sessionId, true);
 
         long totalHits = searchResponse.getHits().getTotalHits();
-        logger.info("Total hits: " + totalHits);
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.add("_offset", String.valueOf(totalHits - 1));
-            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, sessionId).getHits();
+            SearchHits hits = executeExtendedSearch(copy, allowedFields, MULTI_MEDIA_OBJECT_TYPE, true, sessionId, true).getHits();
             try {
                 if (hits != null && hits.getAt(0) != null && hits.hits().length != 0) {
                     minScore = hits.getAt(0).getScore();
@@ -337,7 +335,16 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 links.add(new Link("_multimedia", MULTIMEDIA_DETAIL_BASE_URL_TAXON + multiMediaObject.getUnitID()));
             }
             multiMediaObjectSearchResult.setLinks(links);
-            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            double percentage;
+            if(maxScore == minScore) {
+                if(hit.getScore() == maxScore) {
+                    percentage = 100;
+                } else {
+                    percentage = 0;
+                }
+            } else {
+                percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            }
             multiMediaObjectSearchResult.setPercentage(percentage);
 
             enhanceSearchResultWithMatchInfoAndScore(multiMediaObjectSearchResult, hit);

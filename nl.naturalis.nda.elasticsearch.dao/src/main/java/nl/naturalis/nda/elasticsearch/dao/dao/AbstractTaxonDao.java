@@ -46,14 +46,14 @@ public class AbstractTaxonDao extends AbstractDao {
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting, sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting, sessionId, false);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.add("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting, sessionId).getHits().getAt(0).getScore();
+            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting, sessionId, false).getHits().getAt(0).getScore();
         }
 
         return responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);
@@ -66,14 +66,14 @@ public class AbstractTaxonDao extends AbstractDao {
         List<FieldMapping> allowedFields = (allowedFieldNames == null)
                 ? fields
                 : filterAllowedFieldMappings(fields, allowedFieldNames);
-        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting, sessionId);
+        SearchResponse searchResponse = executeExtendedSearch(params, allowedFields, TAXON_TYPE, highlighting, sessionId, false);
 
         long totalHits = searchResponse.getHits().getTotalHits();
         float minScore = 0;
         if (totalHits > 1) {
             QueryParams copy = params.copy();
             copy.add("_offset", String.valueOf(totalHits - 1));
-            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting, sessionId).getHits().getAt(0).getScore();
+            minScore = executeExtendedSearch(copy, allowedFields, TAXON_TYPE, highlighting, sessionId, false).getHits().getAt(0).getScore();
         }
 
         ResultGroupSet<Taxon, String> taxonStringResultGroupSet = responseToTaxonSearchResultGroupSet(searchResponse, params, minScore);
@@ -120,7 +120,16 @@ public class AbstractTaxonDao extends AbstractDao {
             searchResult.addLink(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(taxon.getAcceptedName())));
             searchResult.setResult(taxon);
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
-            double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            double percentage;
+            if(maxScore == minScore) {
+                if(hit.getScore() == maxScore) {
+                    percentage = 100;
+                } else {
+                    percentage = 0;
+                }
+            } else {
+                percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
+            }
             searchResult.setPercentage(percentage);
 
             taxonsForName.addSearchResult(searchResult);

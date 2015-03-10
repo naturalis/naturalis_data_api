@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:unless="ant:unless" basedir="." name="common">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="common">
 
 	<!-- Load properties -->
 	<property environment="env" />
@@ -46,7 +46,8 @@
 
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
-		<delete includeemptydirs="true">
+		<available file="build" type="dir" property="build.dir.exists" />
+		<delete includeemptydirs="true" if:set="build.dir.exists">
 			<fileset dir="build" includes="**/*" />
 		</delete>
 		<mkdir dir="build" />

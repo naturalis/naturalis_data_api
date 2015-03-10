@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant"  xmlns:unless="ant:unless" basedir="." default="build" name="nl.naturalis.nda.build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.build">
 
 	<property file="build.properties" />
 
@@ -12,46 +12,43 @@
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
 
-
-	<target name="clean">
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.ejb/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.domain/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.client/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+	<!--
+		Fake task that only signals to other tasks that
+		they should first call the project's clean task
+	-->
+	<target name="rebuild">
+		<property name="rebuild" value="foo" />
 	</target>
 
-	<target name="build-domain">
+	<target name="clean">
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao./build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.ejb/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.load./build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+	</target>
+
+	<target name="domain">
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-ejb">
+	<target name="ejb">
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-rest">
+	<target name="rest">
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-ear" depends="build-domain,build-ejb,build-rest">
+	<target name="ear">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-client" depends="build-domain">
-		<ant antfile="../nl.naturalis.nda.client/build.xml" useNativeBasedir="true" inheritrefs="true" />
-	</target>
-
-	<target name="build-load">
+	<target name="load">
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-all" depends="build-ear,build-client" />
-
-	<target name="build" depends="build-all" />
-
-	<target name="bla">
-		<property name="${ant.project.name}.packaged" value="true" />
-		<echo message="hallo" unless:set="${ant.project.name}.packaged" />
-	</target>
+	<target name="all" depends="ear,load" />
 
 </project>

@@ -32,6 +32,11 @@
 		<property name="${ant.project.name}.packaged" value="true" />
 	</target>
 
-	<target name="build" depends="package" />
+	<target name="build">
+		<antcall target="clean" if:set="rebuild" />
+		<antcall target="package" />
+	</target>
+
+	<target name="rebuild" depends="clean,build" />
 
 </project>

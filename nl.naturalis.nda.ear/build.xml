@@ -46,6 +46,12 @@
 		<jar destfile="build/nba.${git.branch}.${git.revision}.ear" basedir="${assemblydir}" unless:set="${ant.project.name}.packaged" />
 	</target>
 
-	<target name="build" depends="package" />
+	<target name="build">
+		<antcall target="clean" if:set="rebuild" />
+		<antcall target="package" />
+	</target>
+
+
+	<target name="rebuild" depends="clean,build" />
 
 </project>

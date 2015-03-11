@@ -40,8 +40,6 @@
 			<arg value="--abbrev-ref" />
 			<arg value="HEAD" />
 		</exec>
-		<echo message="git commit: ${git.revision}" />
-		<echo message="git branch: ${git.branch}" />
 	</target>
 
 	<target name="clean">
@@ -141,7 +139,7 @@
 	<target name="templates">
 		<copy todir="${basedir}">
 			<fileset dir="${basedir}" includes="**/*.__template" />
-			<globmapper from="*.__template" to="*" />
+			<globmapper from="*.__tmpl__" to="*" />
 		</copy>
 	</target>
 

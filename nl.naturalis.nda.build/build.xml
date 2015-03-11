@@ -35,11 +35,33 @@
 		<property name="signal.clear" value="on" />
 	</target>
 
-	<target name="clean">
+	<target name="git.info" unless:set="git.got.info">
+		<exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
+			<arg value="log" />
+			<arg value='--pretty=format:"%H"' />
+			<arg value="-n" />
+			<arg value="1" />
+		</exec>
+		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
+			<arg value="rev-parse" />
+			<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+		</exec>
+		<echo unless:set="git.got.info" message=" " />
+		<echo unless:set="git.got.info" message="******************************************************************" />
+		<echo unless:set="git.got.info" message="* You are on branch: ${git.branch}" />
+		<echo unless:set="git.got.info" message="******************************************************************" />
+		<echo unless:set="git.got.info" message=" " />
+		<echo unless:set="git.got.info" message="Last commit: ${git.revision}" />
+		<sleep unless:set="git.got.info" seconds="3"/>
+		<property name="git.got.info" value="true" />
+	</target>
+
+	<target name="clean" depends="git.info">
 		<property name="signal.clean" value="on" />
 	</target>
 
-	<target name="pristine">
+	<target name="pristine" depends="git.info">
 		<property name="signal.pristine" value="on" />
 	</target>
 
@@ -58,7 +80,7 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="ejb">
+	<target name="ejb" depends="git.info">
 		<antcall target="check" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />

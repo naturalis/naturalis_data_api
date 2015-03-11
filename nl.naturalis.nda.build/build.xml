@@ -12,47 +12,97 @@
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
 
-	<!--
-		Fake task that only signals to subsequent tasks that
-		they should first do what they consider to be a cleanup
-	-->
+	<target name="check">
+		<!-- Check Ivy -->
+		<available file="${ivy.home}" type="dir" property="check.tmp0" />
+		<fail unless:set="check.tmp0" message="Invalid value for property &#34;ivy.home&#34;. Please install Ivy and/or check ${basedir}/build.properties" />
+		<!-- Make sure ivy-x.x.x.jar has been copied over to ant -->
+		<fail message="ivy-x.x.x.jar not found in ${ant.library.dir}. Please copy jar file from ${ivy.home}">
+			<condition>
+				<not>
+					<resourcecount count="1">
+						<fileset dir="${ant.library.dir}" includes="ivy-*.jar" />
+					</resourcecount>
+				</not>
+			</condition>
+		</fail>
+		<!-- Check Git -->
+		<exec executable="git" outputproperty="check.tmp2" failifexecutionfails="false">
+			<arg value="--version" />
+		</exec>
+		<fail unless:set="check.tmp2" message="Git not installed, or Git bin directory not added to PATH yet" />
+		<!-- We got clearance! -->
+		<property name="signal.clear" value="on" />
+	</target>
+
 	<target name="clean">
 		<property name="signal.clean" value="on" />
 	</target>
 
-	<!-- Clean all projects (without doing anything else) -->
-	<target name="cleanup">
-		<ant antfile="../nl.naturalis.nda.domain/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.elasticsearch.dao./build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.ejb/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="../nl.naturalis.nda.elasticsearch.load./build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
+	<target name="pristine">
+		<property name="signal.pristine" value="on" />
 	</target>
 
 	<target name="domain">
+		<antcall target="check" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
+	<target name="dao">
+		<antcall target="check" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" />
+	</target>
+
 	<target name="ejb">
+		<antcall target="check" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<target name="rest">
+		<antcall target="check" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<target name="ear">
+		<antcall target="check" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<target name="load">
+		<antcall target="check" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<target name="build" depends="ear,load" />
 
+	<target name="rebuild" depends="pristine,ear,load" />
+
 	<target name="eclipse">
+		<antcall target="check" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
 	</target>
 

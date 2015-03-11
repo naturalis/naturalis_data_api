@@ -37,20 +37,15 @@
 	</target>
 
 	<!-- Export ear file, but only if it does not exist already -->
-	<target name="package" depends="git.info" unless:set="${ant.project.name}.packaged">
+	<target name="build" depends="git.info" unless:set="${ant.project.name}.packaged">
 		<property name="earfile" value="build/nba.${git.branch}.${git.revision}.ear" />
 		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built.  Clean project to force rebuild." />
+		<echo unless:set="${ant.project.name}.packaged" message= "*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
 		<antcall target="assemble" unless:set="${ant.project.name}.packaged" />
 		<jar destfile="build/nba.${git.branch}.${git.revision}.ear" basedir="${assemblydir}" unless:set="${ant.project.name}.packaged" />
 	</target>
-
-	<target name="build">
-		<antcall target="clean" if:set="signal.clean" />
-		<antcall target="package" />
-	</target>
-
 
 	<target name="rebuild" depends="clean,build" />
 

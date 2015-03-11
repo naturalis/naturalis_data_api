@@ -18,6 +18,7 @@
 	<!-- Build projects that this project depends on -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
+		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="${nl.naturalis.nda.ejb.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>

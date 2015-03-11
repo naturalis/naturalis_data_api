@@ -10,6 +10,7 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -184,9 +185,10 @@ public class DwCAExporter
 		xmlspecimen.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
 		xmlspecimen.add(cores);
 		DwCAObjectToXML(xmlspecimen);
+		
 
-		Meta specFromFile = DwCAXMLToObject();
-		System.out.println(specFromFile.toString());
+//		Core specFromFile = DwCAXMLToObject();
+//		System.out.println(specFromFile.toString());
 
 		/* Create "EML" xml file */
 		logger.info("Creating the EML.xml file.");
@@ -210,20 +212,22 @@ public class DwCAExporter
 
 	}
 
-	private static Meta DwCAXMLToObject()
-	{
-		try
-		{
-			JAXBContext context = JAXBContext.newInstance(Meta.class);
-			Unmarshaller un = context.createUnmarshaller();
-			Meta xmlspecimen = (Meta) un.unmarshal(new File(outputdirectory + FILE_NAME_META));
-			return xmlspecimen;
-		} catch (JAXBException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	private static Core DwCAXMLToObject()
+//	{
+//		try
+//		{
+//			JAXBContext context = JAXBContext.newInstance(Core.class);
+//			Unmarshaller un = context.createUnmarshaller();
+//			Core xmlspecimen = (Core) un.unmarshal(new File(outputdirectory + FILE_NAME_META));
+//			logger.info(xmlspecimen.toString());
+//			return xmlspecimen;
+//			
+//		} catch (JAXBException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
 	private static void DwCAObjectToXML(Meta meta)
 	{
@@ -236,7 +240,9 @@ public class DwCAExporter
 
 			// Write to File
 			m.marshal(meta, new File(outputdirectory + FILE_NAME_META));
+			logger.info("Saved '" + FILE_NAME_META + "' to '" + outputdirectory +"'");
 			m.marshal(meta, System.out);
+			
 
 		} catch (JAXBException e)
 		{

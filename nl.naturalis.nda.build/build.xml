@@ -13,14 +13,14 @@
 	</tstamp>
 
 	<!--
-		Fake task that only signals to other tasks that
-		they should first call the project's clean task
+		Fake task that only signals to subsequent tasks that
+		they should first do what they consider to be a cleanup
 	-->
 	<target name="rebuild">
-		<property name="rebuild" value="foo" />
+		<property name="signal.clean" value="on" />
 	</target>
 
-	<target name="clean">
+	<target name="cleanup">
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao./build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" target="clean" useNativeBasedir="true" inheritrefs="true" />

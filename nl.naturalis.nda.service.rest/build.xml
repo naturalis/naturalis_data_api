@@ -37,7 +37,7 @@
 	</target>
 
 	<target name="build">
-		<antcall target="clean" if:set="rebuild" />
+		<antcall target="clean" if:set="signal.clean" />
 		<antcall target="package" />
 	</target>
 

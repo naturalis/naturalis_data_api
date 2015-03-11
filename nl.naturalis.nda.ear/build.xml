@@ -47,7 +47,7 @@
 	</target>
 
 	<target name="build">
-		<antcall target="clean" if:set="rebuild" />
+		<antcall target="clean" if:set="signal.clean" />
 		<antcall target="package" />
 	</target>
 
@@ -55,7 +55,7 @@
 	<target name="rebuild" depends="clean,build" />
 
 	<target name="eclipse">
-		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="rebuild" />
+		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="signal.clean" />
 		<antcall target="templates" />
 	</target>
 

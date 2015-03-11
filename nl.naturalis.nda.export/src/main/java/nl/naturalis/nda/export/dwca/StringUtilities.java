@@ -10,7 +10,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Properties;
@@ -23,11 +26,10 @@ import org.slf4j.LoggerFactory;
 
 public class StringUtilities
 {
-	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
+	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
 	final static int BUFFER = 2048;
 	private static final String propertiesExtension = ".properties";
 	static String propertiesfilename = null;
-
 
 	public static int indexOfFirstContainedCharacter(String s1, String s2)
 	{
@@ -139,7 +141,7 @@ public class StringUtilities
 		return result.toLowerCase();
 	}
 
-	/* Create Output directory*/
+	/* Create Output directory */
 	public static void createOutPutDirectory()
 	{
 		File directory = new File(readPropertyvalue("OutPut", "Directory"));
@@ -183,13 +185,87 @@ public class StringUtilities
 		}
 	}
 
-	/* if value is '1' field will be added to CSV file otherwise if value is '0'. field will not be added.*/
+	/* Create Archive Zip directory. */
+	public static void createArchiveZipDirectory()
+	{
+		File directory = new File(readPropertyvalue("OutPut", "ZipArchiveDirectory"));
+		boolean result = false;
+		if (!directory.exists())
+		{
+			try
+			{
+				directory.mkdir();
+				result = true;
+			} catch (SecurityException se)
+			{
+				se.printStackTrace();
+			}
+			if (result)
+			{
+				logger.info("DwCAZipArchive directory was created successfull.");
+			}
+		}
+	}
+
+	/*
+	 * if value is '1' field will be added to CSV file otherwise if value is
+	 * '0'. field will not be added.
+	 */
 	public static boolean isFieldChecked(String propertyname, String value)
 	{
 		int commaindex = StringUtilities.getPropertyValue(propertyname, value).length() - 1;
 		String result = StringUtilities.getPropertyValue(propertyname, value);
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
+	}
+
+	public static void backupZipFile(File sourceFile, File DestinationFile) throws IOException
+	{
+		InputStream inputstream = null;
+		OutputStream outputstream = null;
+		try
+		{
+			inputstream = new FileInputStream(sourceFile);
+			outputstream = new FileOutputStream(DestinationFile);
+			byte[] buffer = new byte[2048];
+			int length;
+			while ((length = inputstream.read(buffer)) > 0)
+			{
+				outputstream.write(buffer, 0, length);
+			}
+		} finally
+		{
+			inputstream.close();
+			outputstream.close();
+		}
+		
+		/* Renamed the zip file into bak in de Archive map */
+		renameDwCAZipFile(DestinationFile);
+	}
+	
+	private static void renameDwCAZipFile(File fileToRenamed)
+	{
+		if (fileToRenamed.exists())
+		{
+			int index = fileToRenamed.getName().indexOf(".");
+			String filename = fileToRenamed.getName().substring(0, index);
+			File path = fileToRenamed.getParentFile();
+			String bakpath = path + "\\" + filename + ".bak";
+			File filebak = new  File(bakpath);
+			if (filebak.exists())
+			{
+				filebak.delete();
+				logger.info("File '" + filebak + "' successfull deleted.");
+			}
+			boolean success = fileToRenamed.renameTo(new File(bakpath));
+			if (success)
+			{
+				logger.info("File successfull renamed to '" + bakpath + "'");
+			} else
+			{
+				logger.info("File in '" + fileToRenamed +"' not successfull renamed.");
+			}
+		}
 	}
 
 }

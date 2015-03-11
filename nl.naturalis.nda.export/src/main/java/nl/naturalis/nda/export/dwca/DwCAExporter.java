@@ -59,7 +59,10 @@ public class DwCAExporter
 	static String result = null;
 	static String resultprop = null;
 	static String namecollectiontype = null;
-
+	static String collectionname = null;
+	List<ESSpecimen> list;
+	static String ziparchivedirectory = null;
+	
 	/**
 	 * @param args
 	 * @throws Exception
@@ -73,29 +76,45 @@ public class DwCAExporter
 		/* Create NBA Directory */
 		StringUtilities.createOutPutDirectory();
 		StringUtilities.createZipOutPutDirectory();
+		StringUtilities.createArchiveZipDirectory();
 
 		/* Get the arguments: "OutPut", "Size", "Mammalia" */
 		logger.info("Start reading properties value from OutPut.properties");
 		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
-		/* args[2] Get the Collectionname */
+
+		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
+		if (args[2] != null)
+		{
+			sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystemcode");
+		}
+		
+		/* args[2] Get the Collectiontype */
 		try
 		{
-			namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
+			if(sourcesystemcode.equals("CRS"))
+			{
+				namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
+			}
+			else
+			{
+				namecollectiontype = "Brahms";
+			}
 		}
 		catch (Exception ex)
 		{
 			logger.info(args[2] + " properties filename is not correct.");
 		}
-		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
-		sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystemcode");
+		
 		/* Get the Ocurrencefields value */
 		MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(args[2], "Ocurrencefields");
 
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
 		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
-
+        /* Directoy where zipfile will be created */     
 		zipoutputdirectory = StringUtilities.readPropertyvalue(args[0], "ZipDirectory") + "\\";
+        /* Copy the DwCAZip file to the DwCAZipArchive directory. */		
+		ziparchivedirectory = StringUtilities.readPropertyvalue(args[0], "ZipArchiveDirectory") + "\\";
 
 		/* Get the directory and zipfilename */
 		String zipfilename = zipoutputdirectory + namecollectiontype;
@@ -175,7 +194,19 @@ public class DwCAExporter
 
 		/* Create the zipfile with a given filename */
 		createZipFiles(zipFileName);
-		/* always close the csv writer object after use */
+		
+		File source = new File(zipFileName + zipExtension);
+		File destination = null;
+		if (sourcesystemcode.toUpperCase().equals("CRS"))
+		{
+			destination = new File(ziparchivedirectory + namecollectiontype + zipExtension); 
+		}
+		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
+		{
+			destination = new File(ziparchivedirectory + sourcesystemcode + zipExtension); 
+		}
+		/* Backup the zipfile */
+		StringUtilities.backupZipFile(source, destination);
 
 	}
 
@@ -336,10 +367,9 @@ public class DwCAExporter
 		ZipDwCA zip = new ZipDwCA();
 		try
 		{
-			logger.info("Creating the zipfile:" + zipFileName + zipExtension);
+			logger.info("Creating the zipfile: '" + zipFileName + zipExtension + "'");
 			zip.zipDirectory(outputdirectory, zipFileName + zipExtension);
-			System.out.println("Zipfile '" + zipFileName + "' created successfull.");
-			logger.info("Zipfile '" + zipFileName + "' created successfull.");
+			logger.info("Zipfile '" + zipFileName + zipExtension + "' created successfull.");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -353,8 +383,16 @@ public class DwCAExporter
 		{ /* Create new CSV File object and output File */
 			filewriter = new CsvFileWriter(outputdirectory + csvOutPutFile);
 			/* Get the result from ElasticSearch */
-			List<ESSpecimen> list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
-					sourcesystemcode, Integer.parseInt(totalsize), ESSpecimen.class);
+			if (sourcesystemcode.equals("CRS"))
+			{
+				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype,
+						sourcesystemcode, Integer.parseInt(totalsize), ESSpecimen.class);
+			}
+			else
+			{
+				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, null,
+						sourcesystemcode, Integer.parseInt(totalsize), ESSpecimen.class);	
+			}
 
 			headerRow = filewriter.new CsvRow();
 
@@ -389,7 +427,7 @@ public class DwCAExporter
 			filewriter.WriteRow(headerRow);
 			logger.info("CSV Fieldsheader: " + headerRow.toString());
 
-
+            /* Zoology Occurrence */
 			if (MAPPING_FILE_NAME.equals("zoology"))
 			{
 				/* Add the value from ElasticSearch to the CSV File */
@@ -397,13 +435,23 @@ public class DwCAExporter
 				Zoology zoology = new Zoology();
 				zoology.addZoologyOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
 			}
+			
+			/* Geology Occurrence*/
 			if (MAPPING_FILE_NAME.equals("geology"))
 			{
 				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 				Geology geo = new Geology();				
 				geo.addGeologyOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
 			}
+			/* BRAHMS Occurrence */
+			if (MAPPING_FILE_NAME.equals("botany"))
+			{
+				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+				Brahms brahms = new Brahms();				
+				brahms.addBrahmsOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
+			}
 
+           
 		} catch (IOException e)
 		{
 			e.printStackTrace();

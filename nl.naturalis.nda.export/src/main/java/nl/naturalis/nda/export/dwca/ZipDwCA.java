@@ -7,9 +7,13 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ZipDwCA
 {
 
+	static final Logger logger = LoggerFactory.getLogger(ZipDwCA.class);
 	final static int BUFFER = 2048;
 	public ZipDwCA() 
 	{
@@ -65,7 +69,8 @@ public class ZipDwCA
 				byte[] buf = new byte[BUFFER];
 				int len;
 				FileInputStream fis = new FileInputStream(srcFile);
-				System.out.println("Writing '" + folder.getName() + "' to zip file");
+				//System.out.println("Writing '" + folder.getName() + "' to zip file");
+				logger.info("Writing '" + folder.getName() + "' to zip file");
 				zip.putNextEntry(new ZipEntry(folder.getName())); 
 				while ((len = fis.read(buf)) > 0)
 				{
@@ -75,5 +80,7 @@ public class ZipDwCA
 			}
 		}
 	}
+	
+	
 
 }

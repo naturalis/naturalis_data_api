@@ -7,7 +7,6 @@ import java.util.List;
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow;
 
 public class Brahms
 {
@@ -139,14 +138,18 @@ public class Brahms
 			/* 19_identifications.identifiers.fullName | BRAHMS ONLY ?? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "identifiedBy,1"))
 			{
-				Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator().next();
-				if (ag instanceof Person)
+				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
 				{
-					Person per = (Person) ag;
-					dataRow.add(per.getFullName());
-				} else
-				{
-					dataRow.add("");
+					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator()
+							.next();
+					if (ag instanceof Person)
+					{
+						Person per = (Person) ag;
+						dataRow.add(per.getFullName());
+					} else
+					{
+						dataRow.add("");
+					}
 				}
 			}
 
@@ -160,7 +163,8 @@ public class Brahms
 
 			/* 22_InfraspecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraSpecificEpithet,1"))
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+						.getInfraspecificEpithet());
 
 			/* 23_Island */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,0"))
@@ -174,7 +178,8 @@ public class Brahms
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
 				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+							.getKingdom());
 				}
 			/* 26_PhaseOrStage */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "lifeStage,0"))
@@ -202,11 +207,13 @@ public class Brahms
 
 			/* 32_Order */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "order,1"))
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder());
+				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+						.getOrder());
 
 			/* 33_Phylum */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "phylum,1"))
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getPhylum());
+				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+						.getPhylum());
 
 			/* 34_PreparationType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "preparations,0"))
@@ -216,7 +223,8 @@ public class Brahms
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "recordedBy,1"))
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
+					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
+							.getFullName());
 				}
 
 			/* 36_FullScientificName */
@@ -226,7 +234,8 @@ public class Brahms
 
 			/* 37_AuthorshipVerbatim */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificnameAuthorship,1"))
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+						.getAuthorshipVerbatim());
 
 			/* 38_Sex */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "sex,1"))
@@ -234,7 +243,8 @@ public class Brahms
 
 			/* 39_SpecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "specificEpithet,1"))
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
+				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+						.getSpecificEpithet());
 
 			/* 40_ProvinceState */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "stateProvince,1"))
@@ -260,7 +270,7 @@ public class Brahms
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
 				}
-			}	
+			}
 
 			/* 44_TypeStatus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "typeStatus,1"))

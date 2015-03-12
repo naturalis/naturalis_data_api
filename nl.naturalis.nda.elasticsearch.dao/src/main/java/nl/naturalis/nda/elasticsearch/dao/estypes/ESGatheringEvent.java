@@ -2,6 +2,9 @@ package nl.naturalis.nda.elasticsearch.dao.estypes;
 
 import nl.naturalis.nda.domain.Organization;
 import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.BioStratigraphy;
+import nl.naturalis.nda.domain.ChronoStratigraphy;
+import nl.naturalis.nda.domain.LithoStratigraphy;
 
 import java.util.Date;
 import java.util.List;
@@ -29,6 +32,16 @@ public class ESGatheringEvent {
     private List<Person> gatheringPersons;
     private List<Organization> gatheringOrganizations;
     private List<ESGatheringSiteCoordinates> siteCoordinates;
+    
+    /* Add by: 	Reinier Kartowikromo 
+     * Date: 	13-01-2015 
+     * Descr:	BioStratigraphy properties
+     * 			ChronoStratigraphy properties
+     * 			LithoStratigraphy properties
+    */
+    private List<BioStratigraphy> bioStratigraphy;
+    private List<ChronoStratigraphy> chronoStratigraphy;
+    private List<LithoStratigraphy> lithoStratigraphy;
 
 
     public String getProjectTitle() {
@@ -239,4 +252,40 @@ public class ESGatheringEvent {
     public void setSiteCoordinates(List<ESGatheringSiteCoordinates> siteCoordinates) {
         this.siteCoordinates = siteCoordinates;
     }
+
+
+	public List<BioStratigraphy> getBioStratigraphy()
+	{
+		return bioStratigraphy;
+	}
+
+
+	public void setBioStratigraphy(List<BioStratigraphy> bioStratigraphy)
+	{
+		this.bioStratigraphy = bioStratigraphy;
+	}
+
+
+	public List<ChronoStratigraphy> getChronoStratigraphy()
+	{
+		return chronoStratigraphy;
+	}
+
+
+	public void setChronoStratigraphy(List<ChronoStratigraphy> chronoStratigraphy)
+	{
+		this.chronoStratigraphy = chronoStratigraphy;
+	}
+
+
+	public List<LithoStratigraphy> getLithoStratigraphy()
+	{
+		return lithoStratigraphy;
+	}
+
+
+	public void setLithoStratigraphy(List<LithoStratigraphy> lithoStratigraphy)
+	{
+		this.lithoStratigraphy = lithoStratigraphy;
+	}
 }

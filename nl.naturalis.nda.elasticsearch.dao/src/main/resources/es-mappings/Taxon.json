@@ -65,6 +65,16 @@
           }
         }
       },
+      "locality": {
+        "type": "string",
+        "index": "not_analyzed",
+        "fields": {
+          "raw": {
+            "type": "string",
+            "index": "not_analyzed"
+          }
+        }
+      },      
       "identifyingEpithets": {
         "type": "string",
         "index": "not_analyzed",

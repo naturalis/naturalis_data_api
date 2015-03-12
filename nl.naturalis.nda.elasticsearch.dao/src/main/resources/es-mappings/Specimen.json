@@ -460,8 +460,197 @@
                 "type": "geo_shape"
               }
             }
+          },
+          "chronoStratigraphy": {
+          	"type": "nested",
+          	"properties": {
+          	  "youngRegionalSubstage": {
+          		"type": "string"	
+              },
+              "youngRegionalStage": {
+          		"type": "string"	
+              },
+              "youngRegionalSeries": {
+          		"type": "string"	
+              },
+              "youngDatingQualifier": {
+          		"type": "string"	
+              },
+              "youngInternSystem": {
+          		"type": "string"	
+              },
+              "youngInternSubstage": {
+          		"type": "string"	
+              },
+              "youngInternStage": {
+          		"type": "string"	
+              },
+              "youngInternSeries": {
+          		"type": "string"	
+              },
+              "youngInternErathem": {
+          		"type": "string"	
+              },
+              "youngInternEonothem": {
+          		"type": "string"	
+              },
+              "youngChronoName": {
+          		"type": "string"	
+              },
+              "youngCertainty": {
+          		"type": "string"	
+              },
+              "oldDatingQualifier": {
+          		"type": "string"	
+              },
+              "chronoPreferredFlag": {
+          		"type": "boolean"	
+              },
+              "oldRegionalSubstage": {
+          		"type": "string"	
+              },
+              "oldRegionalStage": {
+          		"type": "string"	
+              },
+              "oldRegionalSeries": {
+          		"type": "string"	
+              },
+              "oldInternSystem": {
+          		"type": "string"	
+              },
+              "oldInternSubstage": {
+          		"type": "string"	
+              },
+              "oldInternStage": {
+          		"type": "string"	
+              },
+              "oldInternSeries": {
+          		"type": "string"	
+              },
+              "oldInternErathem": {
+          		"type": "string"	
+              },
+              "oldInternEonothem": {
+          		"type": "string"	
+              },
+              "oldChronoName": {
+          		"type": "string"	
+              },
+              "chronoIdentifier": {
+          		"type": "string"	
+              },
+              "oldCertainty": {
+          		"type": "string"	
+              }
+            }
+          },
+          "lithoStratigraphy": {
+          	"type": "nested",
+          	"properties": {
+          	  "qualifier": {
+          		"type": "string"	
+              },
+               "preferredFlag": {
+          		"type": "boolean"	
+              },
+               "member2": {
+          		"type": "string"	
+              },
+               "member": {
+          		"type": "string"	
+              },
+               "informalName2": {
+          		"type": "string"	
+              },
+               "informalName": {
+          		"type": "string"	
+              },
+               "importedName2": {
+          		"type": "string"	
+              },
+               "importedName1": {
+          		"type": "string"	
+              },
+               "lithoIdentifier": {
+          		"type": "string"	
+              },
+               "formation2": {
+          		"type": "string"	
+              },
+               "formationGroup2": {
+          		"type": "string"	
+              },
+               "formationGroup": {
+          		"type": "string"	
+              },
+               "formation": {
+          		"type": "string"	
+              },
+               "certainty2": {
+          		"type": "string"	
+              },
+               "certainty": {
+          		"type": "string"	
+              },
+               "bed2": {
+          		"type": "string"	
+              },
+               "bed": {
+          		"type": "string"	
+              }
+            }
+          },
+          "bioStratigraphy": {
+          	"type": "nested",
+          	"properties": {
+          	  "youngBioDatingQualifier": {
+          		"type": "string"	
+              },
+               "youngBioName": {
+          		"type": "string"	
+              },
+               "youngFossilZone": {
+          		"type": "string"	
+              },
+               "youngFossilSubZone": {
+          		"type": "string"	
+              },
+               "youngBioCertainty": {
+          		"type": "string"	
+              },
+               "youngStratType": {
+          		"type": "string"	
+              },
+               "bioDatingQualifier": {
+          		"type": "string"	
+              },
+               "bioPreferredFlag": {
+          		"type": "boolean"	
+              },
+               "rangePosition": {
+          		"type": "string"	
+              },
+               "oldBioName": {
+          		"type": "string"	
+              },
+               "bioIdentifier": {
+          		"type": "string"	
+              },
+               "oldFossilzone": {
+          		"type": "string"	
+              },
+               "oldFossilSubzone": {
+          		"type": "string"	
+              },
+               "oldBioCertainty": {
+          		"type": "string"	
+              },
+               "oldBioStratType": {
+          		"type": "string"	
+              }              
+            }
           }
-        }
+         }
       },
       "identifyingEpithets": {
         "type": "string",

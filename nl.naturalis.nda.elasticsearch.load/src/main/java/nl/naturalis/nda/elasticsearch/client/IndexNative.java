@@ -310,39 +310,60 @@ public class IndexNative implements Index
 		return null;
 	}
 
-
-
-	public <T> List<T> getResultsList(String type, String namecollectiontype, String sourcesystemcode, int size, Class<T> targetClass)
+	public <T> List<T> getResultsList(String type, String namecollectiontype, String sourcesystemcode,
+			int size, Class<T> targetClass)
 	{
-		SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch()
-				.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType", "sourceSystem.code"))
-				.setSearchType(SearchType.SCAN)
-				.setExplain(true)
-				.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
+		SearchRequestBuilder searchRequestBuilder = null;
+		if (sourcesystemcode.toUpperCase().equals("CRS"))
+		{
+			logger.info("Querying the data for CRS");
+			searchRequestBuilder = esClient
+					.prepareSearch()
+					.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype.toUpperCase(), "collectionType",	"sourceSystem.code"))
+					.setSearchType(SearchType.SCAN)
+					//.setExplain(true)
+					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
+		}
+		/* BRAHMS */
+		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
+		{
+			logger.info("Querying the data for BRAHMS");
+			searchRequestBuilder = esClient
+					.prepareSearch()
+					.setQuery(QueryBuilders.multiMatchQuery(sourcesystemcode.toUpperCase(), "sourceSystem.code"))
+					.setSearchType(SearchType.SCAN)
+					//.setExplain(true)
+					.setScroll(new TimeValue(60000))
+					.setIndices(indexName).setTypes(type).setSize(size);
+		}
 
 		SearchResponse response = searchRequestBuilder.execute().actionGet();
-		
-		System.out.println("Status: " + response.status());
-		
-		System.out.println("Scrollid:" + response.getScrollId());
+
+		logger.info("Status: " + response.status());
+		//System.out.println("Status: " + response.status());
+
+		logger.info("Scrollid:" + response.getScrollId());
+		//System.out.println("Scrollid:" + response.getScrollId());
 
 		long totalHitCount = response.getHits().getTotalHits();
-		System.out.println("Total hits: " + totalHitCount);
+		logger.info("Total hits: " + totalHitCount);
+        //System.out.println("Total hits: " + totalHitCount);
 
 		/* Show response properties */
 		String output = response.toString();
-		System.out.println(output);
-		
-		
+		logger.info(output);
+		//System.out.println(output);
+
 		List<T> list = new ArrayList<T>();
 		while (true)
 		{
 			response = esClient.prepareSearchScroll(response.getScrollId())
 					.setScrollId(response.getScrollId()).setScroll(new TimeValue(600000)).execute()
 					.actionGet();
-			
+
 			SearchHit[] results = response.getHits().getHits();
-			System.out.println("Result: " + results.length);
+			logger.info("Total records in occurrence file: " + results.length);
+			//System.out.println("Result: " + results.length);
 
 			try
 			{

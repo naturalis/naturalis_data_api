@@ -17,6 +17,8 @@ import javax.management.Query;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
+import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
+import org.apache.lucene.search.TermQuery;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -47,6 +49,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -314,23 +317,38 @@ public class IndexNative implements Index
 			int size, Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = null;
+		
 		if (sourcesystemcode.toUpperCase().equals("CRS"))
 		{
 			logger.info("Querying the data for CRS");
 			searchRequestBuilder = esClient
 					.prepareSearch()
-					.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype.toUpperCase(), "collectionType",	"sourceSystem.code"))
+					.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType",	"sourceSystem.code"))
 					.setSearchType(SearchType.SCAN)
 					//.setExplain(true)
 					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
+			
+
+			
+			/*BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+					.must(QueryBuilders.termQuery("collectionType", namecollectiontype))
+					//.must(QueryBuilders.termQuery("collectionType", namecollectiontype))
+					.must(QueryBuilders.termQuery("sourceSystem.code", sourcesystemcode));
+			
+			searchRequestBuilder =  esClient
+					.prepareSearch()
+					.setQuery(boolQuery)
+					.setSearchType(SearchType.SCAN)
+					.setExplain(true)
+					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);*/
 		}
 		/* BRAHMS */
-		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
+		if (sourcesystemcode.equals("BRAHMS"))
 		{
 			logger.info("Querying the data for BRAHMS");
 			searchRequestBuilder = esClient
 					.prepareSearch()
-					.setQuery(QueryBuilders.multiMatchQuery(sourcesystemcode.toUpperCase(), "sourceSystem.code"))
+					.setQuery(QueryBuilders.multiMatchQuery(sourcesystemcode, "sourceSystem.code"))
 					.setSearchType(SearchType.SCAN)
 					//.setExplain(true)
 					.setScroll(new TimeValue(60000))
@@ -340,19 +358,15 @@ public class IndexNative implements Index
 		SearchResponse response = searchRequestBuilder.execute().actionGet();
 
 		logger.info("Status: " + response.status());
-		//System.out.println("Status: " + response.status());
 
 		logger.info("Scrollid:" + response.getScrollId());
-		//System.out.println("Scrollid:" + response.getScrollId());
 
 		long totalHitCount = response.getHits().getTotalHits();
 		logger.info("Total hits: " + totalHitCount);
-        //System.out.println("Total hits: " + totalHitCount);
 
 		/* Show response properties */
 		String output = response.toString();
 		logger.info(output);
-		//System.out.println(output);
 
 		List<T> list = new ArrayList<T>();
 		while (true)
@@ -363,7 +377,6 @@ public class IndexNative implements Index
 
 			SearchHit[] results = response.getHits().getHits();
 			logger.info("Total records in occurrence file: " + results.length);
-			//System.out.println("Result: " + results.length);
 
 			try
 			{

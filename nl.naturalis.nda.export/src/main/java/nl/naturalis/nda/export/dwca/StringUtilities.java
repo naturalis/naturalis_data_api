@@ -138,7 +138,7 @@ public class StringUtilities
 		{
 			ex.printStackTrace();
 		}
-		return result.toLowerCase();
+		return result;
 	}
 
 	/* Create Output directory */

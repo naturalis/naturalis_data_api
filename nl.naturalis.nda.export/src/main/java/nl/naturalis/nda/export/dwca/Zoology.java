@@ -25,32 +25,46 @@ public class Zoology
 			
 			/* 01_RecordBasis */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "basisOfRecord,1"))
+			{
 				dataRow.add(specimen.getRecordBasis());
-
+			}
+				
 			/* 02_CatalogNumber */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "catalogNumber,1"))
+			{
 				dataRow.add(specimen.getSourceSystemId());
-
+			}
+				
 			/* 03_ClassName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
-
+			}
+				
 			/* 04_CollectionType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "collectionCode,1"))
+			{
 				dataRow.add(specimen.getCollectionType());
-            
+			}
+				
 			/* 05_Continent */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "continent,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+			}
             
 			/* 06_Country */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "country,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getCountry());
+			}
 
 			/* ToDo: GetCity moet County worden. */
 			/* 07_County */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "county,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getCity());
+			}
 
 			/* 08_DateIdentified */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "dateIdentified,1"))
@@ -189,7 +203,7 @@ public class Zoology
 						
 			/* 30_Dummy6 ToDO ?  */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "nomenclaturalCode,1"))
-				dataRow.add(null);
+				dataRow.add("ICZN");
 			
 			/* 31_DummyDefault */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "occurrenceID,1"))

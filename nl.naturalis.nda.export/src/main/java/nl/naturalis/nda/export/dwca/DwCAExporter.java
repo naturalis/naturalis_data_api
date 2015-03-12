@@ -10,7 +10,6 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.TreeMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -186,10 +184,6 @@ public class DwCAExporter
 		xmlspecimen.add(cores);
 		DwCAObjectToXML(xmlspecimen);
 		
-
-//		Core specFromFile = DwCAXMLToObject();
-//		System.out.println(specFromFile.toString());
-
 		/* Create "EML" xml file */
 		logger.info("Creating the EML.xml file.");
 		CreateEmlObjectToXML();
@@ -212,22 +206,6 @@ public class DwCAExporter
 
 	}
 
-//	private static Core DwCAXMLToObject()
-//	{
-//		try
-//		{
-//			JAXBContext context = JAXBContext.newInstance(Core.class);
-//			Unmarshaller un = context.createUnmarshaller();
-//			Core xmlspecimen = (Core) un.unmarshal(new File(outputdirectory + FILE_NAME_META));
-//			logger.info(xmlspecimen.toString());
-//			return xmlspecimen;
-//			
-//		} catch (JAXBException e)
-//		{
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
 
 	private static void DwCAObjectToXML(Meta meta)
 	{

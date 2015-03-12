@@ -137,10 +137,15 @@
 	</target>
 
 	<target name="templates">
+		<echo message="Creating/modifying Eclipse metadata files" />
 		<copy todir="${basedir}">
 			<fileset dir="${basedir}" includes="**/*.__template" />
 			<globmapper from="*.__tmpl__" to="*" />
 		</copy>
+		<echo message=" " />
+		<echo message="****************************************************************" />
+		<echo message="Install the IvyDE Eclipse plugin before importing your projects!" />
+		<echo message="****************************************************************" />
 	</target>
 
 

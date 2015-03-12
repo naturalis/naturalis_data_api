@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.build" default="help">
 
 	<property file="build.properties" />
 
@@ -12,10 +12,10 @@
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
 
-	<target name="check">
+	<target name="verify">
 		<!-- Check Ivy -->
-		<available file="${ivy.home}" type="dir" property="check.tmp0" />
-		<fail unless:set="check.tmp0" message="Invalid value for property &#34;ivy.home&#34;. Please install Ivy and/or check ${basedir}/build.properties" />
+		<available file="${ivy.home}" type="dir" property="verify.tmp0" />
+		<fail unless:set="verify.tmp0" message="Invalid value for property &#34;ivy.home&#34;. Please install Ivy and/or check ${basedir}/build.properties" />
 		<!-- Make sure ivy-x.x.x.jar has been copied over to ant -->
 		<fail message="ivy-x.x.x.jar not found in ${ant.library.dir}. Please copy jar file from ${ivy.home}">
 			<condition>
@@ -27,12 +27,32 @@
 			</condition>
 		</fail>
 		<!-- Check Git -->
-		<exec executable="git" outputproperty="check.tmp2" failifexecutionfails="false">
+		<exec executable="git" outputproperty="verify.tmp2" failifexecutionfails="false">
 			<arg value="--version" />
 		</exec>
-		<fail unless:set="check.tmp2" message="Git not installed, or Git bin directory not added to PATH yet" />
+		<fail unless:set="verify.tmp2" message="Git not installed, or Git bin directory not added to PATH yet" />
 		<!-- We got clearance! -->
 		<property name="signal.clear" value="on" />
+	</target>
+
+	<target name="help">
+		<echo message="Build all projects                                  : ant build" />
+		<echo message="Clean all projects and then rebuild                 : ant rebuild" />
+		<echo message="                                                    : ant pristine build" />
+		<echo message="Build ear project (creates ear file)                : ant ear" />
+		<echo message="Rebuild ear project                                 : ant clean ear" />
+		<echo message="Rebuild ear project and dependent projects          : ant pristine ear" />
+		<echo message="Build one project                                   : ant &lt;project-name&gt;" />
+		<echo message="                                                    : ant domain" />
+		<echo message="                                                    : ant dao" />
+		<echo message="                                                    : ant ejb" />
+		<echo message="                                                    : ant rest" />
+		<echo message="                                                    : ant ear" />
+		<echo message="                                                    : ant load" />
+		<echo message="Rebuild one project                                 : ant clean &lt;project-name&gt;" />
+		<echo message="Rebuild one project and dependent projects          : ant pristine &lt;project-name&gt;" />
+		<echo message="Create/modify Eclipse metadata files                : ant eclipse" />
+		<echo message="Delete and create Eclipse metadata files            : ant clean eclipse" />
 	</target>
 
 	<target name="git.info" unless:set="git.got.info">
@@ -48,12 +68,13 @@
 			<arg value="HEAD" />
 		</exec>
 		<echo unless:set="git.got.info" message=" " />
-		<echo unless:set="git.got.info" message="******************************************************************" />
-		<echo unless:set="git.got.info" message="* You are on branch: ${git.branch}" />
-		<echo unless:set="git.got.info" message="******************************************************************" />
+		<echo unless:set="git.got.info" message="****************************************************************" />
+		<echo unless:set="git.got.info" message="You are on branch: ${git.branch}" />
+		<echo unless:set="git.got.info" message="****************************************************************" />
 		<echo unless:set="git.got.info" message=" " />
 		<echo unless:set="git.got.info" message="Last commit: ${git.revision}" />
-		<sleep unless:set="git.got.info" seconds="3"/>
+		<!-- Allow some time for a heart attack -->
+		<sleep unless:set="git.got.info" seconds="3" />
 		<property name="git.got.info" value="true" />
 	</target>
 
@@ -66,14 +87,14 @@
 	</target>
 
 	<target name="domain">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<target name="dao">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
@@ -81,7 +102,7 @@
 	</target>
 
 	<target name="ejb" depends="git.info">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
@@ -90,7 +111,7 @@
 	</target>
 
 	<target name="rest">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
@@ -100,7 +121,7 @@
 	</target>
 
 	<target name="ear">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
@@ -111,7 +132,7 @@
 	</target>
 
 	<target name="load">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
@@ -124,7 +145,7 @@
 	<target name="rebuild" depends="pristine,ear,load" />
 
 	<target name="eclipse">
-		<antcall target="check" unless:set="signal.clear" />
+		<antcall target="verify" unless:set="signal.clear" />
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
 	</target>
 

@@ -51,6 +51,7 @@
 
 	<target name="eclipse">
 		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="signal.clean" />
+		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="signal.pristine" />
 		<antcall target="templates" />
 	</target>
 

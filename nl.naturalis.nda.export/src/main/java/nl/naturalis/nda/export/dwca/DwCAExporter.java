@@ -26,6 +26,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.export.dwca.Eml;
+import nl.naturalis.nda.export.dwca.FindFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class DwCAExporter
 	static String collectionname = null;
 	List<ESSpecimen> list;
 	static String ziparchivedirectory = null;
+	static String emldirectory = null;
 
 	/**
 	 * @param args
@@ -81,6 +83,7 @@ public class DwCAExporter
 		logger.info("Start reading properties value from OutPut.properties");
 		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
+		String emldirectory = StringUtilities.readPropertyvalue(args[0], "EMLDirectory");
 
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
 		if (args[2] != null)
@@ -95,9 +98,21 @@ public class DwCAExporter
 			{
 				namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
 			}
-			/*
-			 * else { namecollectiontype = "BRAHMS"; }
-			 */
+			
+			String filename = null;
+			String result = null;
+			File[] filelist = FindFile.getFileList(emldirectory);
+            for(File file : filelist)
+            {
+            	filename = file.getName();
+            	if (filename.toUpperCase().contains(namecollectiontype.toUpperCase()))
+            	{
+            		result = file.getName();
+            		break;
+            	}
+            }
+			
+
 		} catch (Exception ex)
 		{
 			logger.info(args[2] + " properties filename is not correct.");

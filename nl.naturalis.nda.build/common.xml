@@ -139,7 +139,7 @@
 	<target name="templates">
 		<echo message="Creating/modifying Eclipse metadata files" />
 		<copy todir="${basedir}">
-			<fileset dir="${basedir}" includes="**/*.__template" />
+			<fileset dir="${basedir}" includes="**/*.__tmpl__" />
 			<globmapper from="*.__tmpl__" to="*" />
 		</copy>
 		<echo message=" " />

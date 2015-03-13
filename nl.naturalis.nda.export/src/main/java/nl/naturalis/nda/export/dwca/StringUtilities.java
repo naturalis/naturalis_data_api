@@ -219,7 +219,8 @@ public class StringUtilities
 		return resultprop.matches("1(.*)");
 	}
 
-	public static void backupZipFile(File sourceFile, File DestinationFile) throws IOException
+	/* Copy a file from a Source directory to a Destination directory */
+	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
 	{
 		InputStream inputstream = null;
 		OutputStream outputstream = null;
@@ -238,12 +239,10 @@ public class StringUtilities
 			inputstream.close();
 			outputstream.close();
 		}
-		
-		/* Renamed the zip file into bak in de Archive map */
-		renameDwCAZipFile(DestinationFile);
 	}
 	
-	private static void renameDwCAZipFile(File fileToRenamed)
+	/* Renamed the zipfile extension ".zip" file to ".bak"*/
+	public static void renameDwCAZipFile(File fileToRenamed)
 	{
 		if (fileToRenamed.exists())
 		{
@@ -266,6 +265,44 @@ public class StringUtilities
 				logger.info("File in '" + fileToRenamed +"' not successfull renamed.");
 			}
 		}
+	}
+	
+	/* Renamed the predifined eml.xml file from source directory to eml.xml */
+	public static void renameDwCAEMLFile(File emlFileToRenamed)
+	{
+		if (emlFileToRenamed.exists())
+		{
+			int index = emlFileToRenamed.getName().indexOf(".");
+			String filename = emlFileToRenamed.getName().substring(index-3);
+			File path = emlFileToRenamed.getParentFile();
+			String emlpath = path + "\\" + filename; // + ".xml";
+			File emlfile = new  File(emlpath);
+			if (emlfile.exists())
+			{
+				emlfile.delete();
+				logger.info("File '" + emlfile + "' successfull deleted.");
+			}
+			boolean success = emlFileToRenamed.renameTo(new File(emlpath));
+			if (success)
+			{
+				logger.info("File successfull renamed to '" + emlpath + "'");
+			} else
+			{
+				logger.info("File in '" + emlpath +"' not successfull renamed.");
+			}
+		}
+	}
+	
+	public static boolean stringContainsItemFromList(String inputString, String[] items)
+	{
+	    for(int i =0; i < items.length; i++)
+	    {
+	        if(inputString.contains(items[i]))
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
 }

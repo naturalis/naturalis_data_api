@@ -10,7 +10,6 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -25,7 +24,6 @@ import javax.xml.bind.Marshaller;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.export.dwca.Eml;
 import nl.naturalis.nda.export.dwca.FindFile;
 
 import org.slf4j.Logger;
@@ -44,30 +42,33 @@ public class DwCAExporter
 	public static final String CSVComma = "\t";
 	private static final String csvOutPutFile = "occurence.txt";
 	private static final String FILE_NAME_META = "meta.xml";
-	private static final String FILE_NAME_EML = "eml.xml";
+    private static File FILE_NAME_EML = null;
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
 	private static final String zipExtension = ".zip";
 	private static final String propertiesExtension = ".properties";
 	private static String MAPPING_FILE_NAME = null;
 	CsvFileWriter.CsvRow headerRow = null;
-	static String outputdirectory = null;
-	static String sourcesystemcode = null;
-	static String zipoutputdirectory = null;
-	static String propertyName = null;
-	static String propertyValue = null;
-	List<String> listfield = new ArrayList<>();
-	static String result = null;
-	static String resultprop = null;
-	static String namecollectiontype = null;
-	static String collectionname = null;
+	private static String outputdirectory = null;
+	private static String sourcesystemcode = null;
+	private static String zipoutputdirectory = null;
+	private static String propertyName = null;
+	private static String propertyValue = null;
+	private static String result = null;
+	private static String namecollectiontypecrs = null;
+	private static String namecollectiontypebrahms = null;
 	List<ESSpecimen> list;
-	static String ziparchivedirectory = null;
-	static String emldirectory = null;
+	private static String ziparchivedirectory = null;
+	private static String emldirectory = null;
+	private static File destinationpatheml = null;
+	private static String namecollectiontypeand = null;
+	private static String collectionname = null;
+	
 
 	/**
 	 * @param args
 	 * @throws Exception
 	 */
+
 	public static void main(String[] args) throws Exception
 	{
 
@@ -83,12 +84,20 @@ public class DwCAExporter
 		logger.info("Start reading properties value from OutPut.properties");
 		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
-		String emldirectory = StringUtilities.readPropertyvalue(args[0], "EMLDirectory");
+		emldirectory = StringUtilities.readPropertyvalue(args[0], "EMLDirectory");
+		
+		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
+		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
 
+		collectionname = StringUtilities.readPropertyvalue(args[0], "Collectionname");
+		
+		
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
-		if (args[2] != null)
+		if (collectionname != null)
 		{
-			sourcesystemcode = StringUtilities.readPropertyvalue(args[2], "sourceSystemcode");
+			sourcesystemcode = StringUtilities.readPropertyvalue(collectionname, "sourceSystemcode");
+			/* Get the Ocurrencefields value */
+			MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(collectionname, "Ocurrencefields");
 		}
 
 		/* args[2] Get the Collectiontype */
@@ -96,44 +105,44 @@ public class DwCAExporter
 		{
 			if (sourcesystemcode.equals("CRS"))
 			{
-				namecollectiontype = StringUtilities.readPropertyvalue(args[2], "collectionType");
+				namecollectiontypecrs = StringUtilities.readPropertyvalue(collectionname, "collectionType");
+				
+				if (namecollectiontypecrs.contains(","))
+				{
+					String resultcoltype = namecollectiontypecrs;
+					int index = resultcoltype.indexOf(",");
+					int collength = resultcoltype.length();
+					namecollectiontypecrs = namecollectiontypecrs.substring(0, index);
+					namecollectiontypeand = resultcoltype.substring(index + 2, collength);
+				}
+			}
+			if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
+			{
+				collectionname = StringUtilities.readPropertyvalue(collectionname, "Collectionname");
+				namecollectiontypebrahms = collectionname;
 			}
 			
-			String filename = null;
-			String result = null;
-			File[] filelist = FindFile.getFileList(emldirectory);
-            for(File file : filelist)
-            {
-            	filename = file.getName();
-            	if (filename.toUpperCase().contains(namecollectiontype.toUpperCase()))
-            	{
-            		result = file.getName();
-            		break;
-            	}
-            }
-			
-
 		} catch (Exception ex)
 		{
-			logger.info(args[2] + " properties filename is not correct.");
+			logger.info(collectionname + " properties filename is not correct.");
 		}
+		
 
-		/* Get the Ocurrencefields value */
-		MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(args[2], "Ocurrencefields");
-
-		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
-		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
 		/* Directoy where zipfile will be created */
 		zipoutputdirectory = StringUtilities.readPropertyvalue(args[0], "ZipDirectory") + "\\";
 		/* Copy the DwCAZip file to the DwCAZipArchive directory. */
 		ziparchivedirectory = StringUtilities.readPropertyvalue(args[0], "ZipArchiveDirectory") + "\\";
 
 		/* Get the directory and zipfilename */
-		String zipfilename = zipoutputdirectory + namecollectiontype;
+		String zipfilename = null;
+		if (sourcesystemcode.toUpperCase().equals("CRS") || sourcesystemcode.toUpperCase().equals("BRAHMS"))
+		{
+		  zipfilename = zipoutputdirectory + collectionname;
+		}
+		
 
 		logger.info("Loading Elastcisearch");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required(
-				"elasticsearch.index.name"));
+		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 		try
 		{
 			DwCAExporter exp = new DwCAExporter(index);
@@ -143,13 +152,36 @@ public class DwCAExporter
 			{
 				logger.info("The file " + csvOutPutFile + " has been successfully deleted");
 			}
-			exp.ExportDwca(zipfilename, namecollectiontype, totalsize);
+			if (sourcesystemcode.toUpperCase().equals("CRS"))
+			{
+				exp.ExportDwca(zipfilename, namecollectiontypecrs, totalsize);
+			}
+			if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
+			{
+				exp.ExportDwca(zipfilename, namecollectiontypebrahms, totalsize);
+			}
 		} finally
 		{
 			index.getClient().close();
 		}
 
 		logger.info("Ready");
+	}
+
+	private static String GetEmlFileName(String emlDir, String emlfilename)
+	{
+		String filename = null;
+		File[] filelist = FindFile.getFileList(emlDir);
+		for (File file : filelist)
+		{
+			filename = file.getName();
+			if (filename.toUpperCase().contains(emlfilename.toUpperCase()))
+			{
+				result = file.getName();
+				break;
+			}
+		}
+		return result;
 	}
 
 	public DwCAExporter(IndexNative index)
@@ -199,27 +231,48 @@ public class DwCAExporter
 		DwCAObjectToXML(xmlspecimen);
 
 		/* Create "EML" xml file */
-		logger.info("Creating the EML.xml file.");
-		CreateEmlObjectToXML();
+		// logger.info("Creating the EML.xml file.");
+		// CreateEmlObjectToXML();
+		
+		String emlfilefromdir = null;
+		if (sourcesystemcode.equals("CRS"))
+		{
+			emlfilefromdir = GetEmlFileName(emldirectory, namecollectiontype); 
+			logger.info("Reading the file from: '" + emldirectory + "\\" + emlfilefromdir + "'.");
+			FILE_NAME_EML = new File(emldirectory + "\\" + emlfilefromdir);
+			destinationpatheml = new File(outputdirectory + "\\" + emlfilefromdir);
+			logger.info("Copy the file to: '" + outputdirectory + emlfilefromdir + "'.");
+		}
+		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
+		{
+			namecollectiontypebrahms = sourcesystemcode;
+			emlfilefromdir = GetEmlFileName(emldirectory, MAPPING_FILE_NAME.toLowerCase());
+			logger.info("Reading the file from: '" + emldirectory + "\\" + emlfilefromdir + "'.");
+			FILE_NAME_EML = new File(emldirectory + "\\" + emlfilefromdir);
+			destinationpatheml = new File(outputdirectory + "\\" + emlfilefromdir);
+			logger.info("Copy the file to: '" + outputdirectory + emlfilefromdir + "'.");
+		}
+		StringUtilities.CopyAFile(FILE_NAME_EML, destinationpatheml);
+		StringUtilities.renameDwCAEMLFile(destinationpatheml);
+		
 
 		/* Create the zipfile with a given filename */
 		createZipFiles(zipFileName);
 
 		File source = new File(zipFileName + zipExtension);
 		File destination = null;
-		if (sourcesystemcode.equals("CRS"))
+		if (sourcesystemcode.equals("CRS") || sourcesystemcode.toUpperCase().equals("BRAHMS"))
 		{
-			destination = new File(ziparchivedirectory + namecollectiontype + zipExtension);
+			destination = new File(ziparchivedirectory + collectionname + zipExtension);
 		}
-		if (sourcesystemcode.equals("BRAHMS"))
-		{
-			destination = new File(ziparchivedirectory + sourcesystemcode + zipExtension);
-		}
+		
 		/* Backup the zipfile */
-		StringUtilities.backupZipFile(source, destination);
-
+		StringUtilities.CopyAFile(source, destination);
+		/* Renamed the zip file into bak in de Archive map */
+		StringUtilities.renameDwCAZipFile(destination);
 	}
 
+	/* Creating the Meta.xml */
 	private static void DwCAObjectToXML(Meta meta)
 	{
 		try
@@ -240,124 +293,7 @@ public class DwCAExporter
 		}
 	}
 
-	private static void CreateEmlObjectToXML()
-	{
-		try
-		{
-			/* Element Role info for Contact */
-			Role role = new Role();
-			role.setPosition("Application Developer");
-
-			/* Element Name info for Contact */
-			IndividualName indi = new IndividualName();
-			indi.setGivenname("Reinier");
-			indi.setSurname("Kartowikromo");
-
-			/* Element Role info for Creator */
-			Role rolecreator = new Role();
-			rolecreator.setPosition("Analist");
-
-			/* Element Name info for Creator */
-			IndividualName individual = new IndividualName();
-			individual.setGivenname("Wilfred");
-			individual.setSurname("Gerritsen");
-
-			/* Element Role info for Provider */
-			Role roleprovider = new Role();
-			roleprovider.setPosition("Lead Software Developer");
-
-			/* Element Name info for Provider */
-			IndividualName individualprovider = new IndividualName();
-			individualprovider.setGivenname("Ayco");
-			individualprovider.setSurname("Holleman");
-
-			/* Element info "address" */
-			Address address = new Address();
-			address.setDeliveryPoint("Darwinweg 2");
-			address.setCity("Leiden");
-			address.setStateProvince("South Holland");
-			address.setCountry("Netherlands");
-			address.setPostalCode("NL-2300RA");
-
-			/* Element info "contact" */
-			Contact contact = new Contact();
-			contact.setOrganisation("Naturalis Biodiversity Center");
-			contact.setPhone("0102150587");
-			contact.setEmailAddress("contact@naturalis.nl");
-			contact.setOnlineUrl("http://www.naturalis.nl");
-			contact.setRole(role);
-			contact.setIndividualName(indi);
-			contact.setAddress(address);
-
-			/* Element info "creator" */
-			Creator creator = new Creator();
-			creator.setOrganisation("Naturalis Biodiversity Center");
-			creator.setPhone("0102151088");
-			creator.setEmailAddress("contact@naturalis.nl");
-			creator.setOnlineUrl("http://www.naturalis.nl");
-			creator.setRole(rolecreator);
-			creator.setIndividualName(individual);
-			creator.setAddress(address);
-
-			/* Element info "provider" */
-			Provider provider = new Provider();
-			provider.setOrganisation("Naturalis Biodiversity Center");
-			provider.setPhone("0102151088");
-			provider.setEmailAddress("contact@naturalis.nl");
-			provider.setOnlineUrl("http://www.naturalis.nl");
-			provider.setRole(roleprovider);
-			provider.setIndividualName(individualprovider);
-			provider.setAddress(address);
-
-			/* Element info "dataset" */
-			Dataset ds = new Dataset();
-			ds.setTitle("Naturalis Biodiversity Center(NL)");
-			ds.setDescription("Test description");
-			ds.setMetadatalanguage("English");
-			ds.setResourcelanguage("Multiple language");
-			ds.setType("Occurence");
-			ds.setSubtype("Specimen");
-			ds.setContacts(contact);
-			ds.setCreator(creator);
-			ds.setProvider(provider);
-
-			/* Header info Element "eml" */
-			Eml eml = new Eml();
-			eml.add(ds);
-			eml.setEmlxmlns("eml://ecoinformatics.org/eml-2.1.1");
-			eml.setXmlnsmd("eml://ecoinformatics.org/methods-2.1.1");
-			eml.setXmlnsproj("eml://ecoinformatics.org/project-2.1.1");
-			eml.setXmlnsd("eml://ecoinformatics.org/dataset-2.1.1");
-			eml.setXmlnsres("eml://ecoinformatics.org/resource-2.1.1");
-			eml.setXmlnsdc("http://purl.org/dc/terms/");
-			eml.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
-			eml.setXsischemaLocation("eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.0.2/eml.xsd");
-			eml.setPackageId("2015-02-18");
-			eml.setSystem("NBA 1.0");
-			eml.setScope("system");
-			eml.setXmllang("eng");
-			eml.setXmlns("eml");
-
-			JAXBContext jaxbContext = JAXBContext.newInstance(Eml.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-			/* set this flag to true to format the output */
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			/*
-			 * marshaling of java objects in xml (output to file and standard
-			 * output)
-			 */
-			jaxbMarshaller.marshal(eml, new File(outputdirectory + FILE_NAME_EML));
-			jaxbMarshaller.marshal(eml, System.out);
-
-		} catch (JAXBException e)
-		{
-			e.printStackTrace();
-		}
-
-	}
-
+    /* Creating the zip file */
 	public static void createZipFiles(String zipFileName)
 	{
 		ZipDwCA zip = new ZipDwCA();
@@ -372,8 +308,10 @@ public class DwCAExporter
 		}
 	}
 
+	/* Printing tghe records to a CSV file named: "Occurrence.txt" */
 	private void printHeaderRowAndDataForCSV(String namecollectiontype, String totalsize)
 	{
+		//String [] searchvalue = {namecollectiontypecrs, namecollectiontypeand}; 
 		CsvFileWriter filewriter = null;
 		try
 		{ /* Create new CSV File object and output File */
@@ -384,7 +322,7 @@ public class DwCAExporter
 				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype, sourcesystemcode,
 						Integer.parseInt(totalsize), ESSpecimen.class);
 			}
-			if (sourcesystemcode.equals("BRAHMS"))
+			if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
 			{
 				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, null, sourcesystemcode,
 						Integer.parseInt(totalsize), ESSpecimen.class);
@@ -415,8 +353,9 @@ public class DwCAExporter
 				propertyValue = configFile.getProperty(propertyName);
 				/* Add the headers to the CSV File */
 				if (propertyValue.contains("1"))
+				{
 					headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
-				listfield.add(propertyName);
+				}
 				// System.out.println(propertyName + ": " + propertyValue);
 			}
 			/* Write the headers columns */

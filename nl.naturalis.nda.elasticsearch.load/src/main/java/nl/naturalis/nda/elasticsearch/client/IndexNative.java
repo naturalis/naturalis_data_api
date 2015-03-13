@@ -6,19 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.management.Query;
-
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-
-import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
-import org.apache.lucene.search.TermQuery;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -49,9 +40,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder.Operator;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
@@ -321,36 +313,57 @@ public class IndexNative implements Index
 		if (sourcesystemcode.toUpperCase().equals("CRS"))
 		{
 			logger.info("Querying the data for CRS");
-			searchRequestBuilder = esClient
+			/*searchRequestBuilder = esClient
 					.prepareSearch()
 					.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType",	"sourceSystem.code"))
 					.setSearchType(SearchType.SCAN)
 					//.setExplain(true)
-					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
+					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);*/
 			
-
+//			String element = null;
+//			String nextElement = null;
+//			String queryvalue = null;
+//			
+//			for( int i = 0; i < namecollectiontype.length - 1; i++)
+//			{
+//			    if(Arrays.asList(namecollectiontype).contains("null"))
+//			    {
+//			    	element = namecollectiontype[i];
+//			    	System.out.println(element);
+//			    	queryvalue = element;
+//			    }	
+//			    else
+//			    {
+//			    	element = namecollectiontype[i];
+//			        nextElement = namecollectiontype[i+1];
+//				    System.out.println(nextElement);
+//				
+//				    queryvalue = element + ", " + nextElement;
+//			    }
+//			}
 			
-			/*BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
-					.must(QueryBuilders.termQuery("collectionType", namecollectiontype))
-					//.must(QueryBuilders.termQuery("collectionType", namecollectiontype))
-					.must(QueryBuilders.termQuery("sourceSystem.code", sourcesystemcode));
-			
+			Operator op = Operator.OR;
+			MultiMatchQueryBuilder qb = QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType")
+					.operator(op);
+					
+			System.out.println(qb);
 			searchRequestBuilder =  esClient
 					.prepareSearch()
-					.setQuery(boolQuery)
+					.setQuery(qb)
 					.setSearchType(SearchType.SCAN)
 					.setExplain(true)
-					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);*/
+					.setTypes("best_fields")
+					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
 		}
 		/* BRAHMS */
-		if (sourcesystemcode.equals("BRAHMS"))
+		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
 		{
 			logger.info("Querying the data for BRAHMS");
 			searchRequestBuilder = esClient
 					.prepareSearch()
-					.setQuery(QueryBuilders.multiMatchQuery(sourcesystemcode, "sourceSystem.code"))
+					.setQuery(QueryBuilders.multiMatchQuery(sourcesystemcode.toUpperCase(), "sourceSystem.code"))
 					.setSearchType(SearchType.SCAN)
-					//.setExplain(true)
+					.setExplain(true)
 					.setScroll(new TimeValue(60000))
 					.setIndices(indexName).setTypes(type).setSize(size);
 		}

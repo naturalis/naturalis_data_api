@@ -175,7 +175,7 @@ public class DwCAExporter
 		for (File file : filelist)
 		{
 			filename = file.getName();
-			if (filename.toUpperCase().contains(emlfilename.toUpperCase()))
+			if (filename.toLowerCase().contains(emlfilename.toLowerCase()))
 			{
 				result = file.getName();
 				break;
@@ -237,7 +237,7 @@ public class DwCAExporter
 		String emlfilefromdir = null;
 		if (sourcesystemcode.equals("CRS"))
 		{
-			emlfilefromdir = GetEmlFileName(emldirectory, namecollectiontype); 
+			emlfilefromdir = GetEmlFileName(emldirectory, collectionname); 
 			logger.info("Reading the file from: '" + emldirectory + "\\" + emlfilefromdir + "'.");
 			FILE_NAME_EML = new File(emldirectory + "\\" + emlfilefromdir);
 			destinationpatheml = new File(outputdirectory + "\\" + emlfilefromdir);

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.load"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
 	<classpathentry kind="src" output="build/main" path="src/main/java"/>
 	<classpathentry kind="src" output="build/main" path="src/test/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
 	<classpathentry kind="src" output="build/test" path="src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA_EAR_LIB"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.load"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.export&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
+	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.jar"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

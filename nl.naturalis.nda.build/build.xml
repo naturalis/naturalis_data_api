@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.build" default="help">
 
+	<!--
 	<property file="build.properties" />
 
 	<path id="ivy.lib.path">
 		<fileset dir="${ivy.home}" includes="*.jar" />
 	</path>
 	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
-
+-->
 	<tstamp>
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
 
 	<target name="verify">
-		<!-- Check Ivy -->
-		<available file="${ivy.home}" type="dir" property="verify.tmp0" />
-		<fail unless:set="verify.tmp0" message="Invalid value for property &#34;ivy.home&#34;. Please install Ivy and/or check ${basedir}/build.properties" />
 		<!-- Make sure ivy-x.x.x.jar has been copied over to ant -->
-		<fail message="ivy-x.x.x.jar not found in ${ant.library.dir}. Please copy jar file from ${ivy.home}">
+		<fail message="ivy-x.x.x.jar not found in ${ant.library.dir}. Please copy jar file from your Ivy installation directory.">
 			<condition>
 				<not>
 					<resourcecount count="1">
@@ -49,6 +47,7 @@
 		<echo message="                                                    : ant rest" />
 		<echo message="                                                    : ant ear" />
 		<echo message="                                                    : ant load" />
+		<echo message="                                                    : ant export" />
 		<echo message="Rebuild one project                                 : ant clean &lt;project-name&gt;" />
 		<echo message="Rebuild one project and dependent projects          : ant pristine &lt;project-name&gt;" />
 		<echo message="Create/modify Eclipse metadata files                : ant eclipse" />
@@ -140,9 +139,19 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build" depends="ear,load" />
+	<target name="export">
+		<antcall target="verify" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.pristine" />
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" />
+	</target>
 
-	<target name="rebuild" depends="pristine,ear,load" />
+	<target name="build" depends="ear,load,export" />
+
+	<target name="rebuild" depends="pristine,ear,load,export" />
 
 	<target name="eclipse">
 		<antcall target="verify" unless:set="signal.clear" />

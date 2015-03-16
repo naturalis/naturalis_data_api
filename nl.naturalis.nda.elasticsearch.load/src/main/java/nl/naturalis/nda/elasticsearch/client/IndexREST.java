@@ -1,11 +1,9 @@
 package nl.naturalis.nda.elasticsearch.client;
 
-import static org.domainobject.util.http.SimpleHttpRequest.*;
+import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
+import static org.domainobject.util.http.SimpleHttpRequest.MIME_JSON;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.http.SimpleHttpDelete;

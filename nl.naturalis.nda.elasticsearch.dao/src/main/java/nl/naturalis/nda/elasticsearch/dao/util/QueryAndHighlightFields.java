@@ -1,12 +1,10 @@
 package nl.naturalis.nda.elasticsearch.dao.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Quinten Krijger

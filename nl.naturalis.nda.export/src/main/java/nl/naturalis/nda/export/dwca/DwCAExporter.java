@@ -48,7 +48,7 @@ public class DwCAExporter
 	private static final String propertiesExtension = ".properties";
 	private static String MAPPING_FILE_NAME = null;
 	CsvFileWriter.CsvRow headerRow = null;
-	private static String outputdirectory = null;
+	private static String outputDirectory = null;
 	private static String sourcesystemcode = null;
 	private static String zipoutputdirectory = null;
 	private static String propertyName = null;
@@ -87,7 +87,7 @@ public class DwCAExporter
 		emldirectory = StringUtilities.readPropertyvalue(args[0], "EMLDirectory");
 		
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
-		outputdirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
+		outputDirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
 
 		collectionname = StringUtilities.readPropertyvalue(args[0], "Collectionname");
 		
@@ -147,7 +147,7 @@ public class DwCAExporter
 		{
 			DwCAExporter exp = new DwCAExporter(index);
 			/* Delete the CSV file if Exists */
-			boolean success = (new File(outputdirectory + csvOutPutFile)).delete();
+			boolean success = (new File(outputDirectory + csvOutPutFile)).delete();
 			if (success)
 			{
 				logger.info("The file " + csvOutPutFile + " has been successfully deleted");
@@ -240,8 +240,8 @@ public class DwCAExporter
 			emlfilefromdir = GetEmlFileName(emldirectory, collectionname); 
 			logger.info("Reading the file from: '" + emldirectory + "\\" + emlfilefromdir + "'.");
 			FILE_NAME_EML = new File(emldirectory + "\\" + emlfilefromdir);
-			destinationpatheml = new File(outputdirectory + "\\" + emlfilefromdir);
-			logger.info("Copy the file to: '" + outputdirectory + emlfilefromdir + "'.");
+			destinationpatheml = new File(outputDirectory + "\\" + emlfilefromdir);
+			logger.info("Copy the file to: '" + outputDirectory + emlfilefromdir + "'.");
 		}
 		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
 		{
@@ -249,8 +249,8 @@ public class DwCAExporter
 			emlfilefromdir = GetEmlFileName(emldirectory, MAPPING_FILE_NAME.toLowerCase());
 			logger.info("Reading the file from: '" + emldirectory + "\\" + emlfilefromdir + "'.");
 			FILE_NAME_EML = new File(emldirectory + "\\" + emlfilefromdir);
-			destinationpatheml = new File(outputdirectory + "\\" + emlfilefromdir);
-			logger.info("Copy the file to: '" + outputdirectory + emlfilefromdir + "'.");
+			destinationpatheml = new File(outputDirectory + "\\" + emlfilefromdir);
+			logger.info("Copy the file to: '" + outputDirectory + emlfilefromdir + "'.");
 		}
 		StringUtilities.CopyAFile(FILE_NAME_EML, destinationpatheml);
 		StringUtilities.renameDwCAEMLFile(destinationpatheml);
@@ -283,8 +283,8 @@ public class DwCAExporter
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
 			// Write to File
-			m.marshal(meta, new File(outputdirectory + FILE_NAME_META));
-			logger.info("Saved '" + FILE_NAME_META + "' to '" + outputdirectory + "'");
+			m.marshal(meta, new File(outputDirectory + FILE_NAME_META));
+			logger.info("Saved '" + FILE_NAME_META + "' to '" + outputDirectory + "'");
 			m.marshal(meta, System.out);
 
 		} catch (JAXBException e)
@@ -300,7 +300,7 @@ public class DwCAExporter
 		try
 		{
 			logger.info("Creating the zipfile: '" + zipFileName + zipExtension + "'");
-			zip.zipDirectory(outputdirectory, zipFileName + zipExtension);
+			zip.zipDirectory(outputDirectory, zipFileName + zipExtension);
 			logger.info("Zipfile '" + zipFileName + zipExtension + "' created successfull.");
 		} catch (IOException e)
 		{
@@ -315,7 +315,7 @@ public class DwCAExporter
 		CsvFileWriter filewriter = null;
 		try
 		{ /* Create new CSV File object and output File */
-			filewriter = new CsvFileWriter(outputdirectory + csvOutPutFile);
+			filewriter = new CsvFileWriter(outputDirectory + csvOutPutFile);
 			/* Get the result from ElasticSearch */
 			if (sourcesystemcode.equals("CRS"))
 			{

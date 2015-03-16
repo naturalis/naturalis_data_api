@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.export">
+
+	<import file="../nl.naturalis.nda.build/common.xml" />
+	
+	
+	
+	
+</project>

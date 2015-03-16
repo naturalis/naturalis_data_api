@@ -18,7 +18,7 @@ General
 ----------------------------------------------------------------
 Executing ant builds from command prompt
 ----------------------------------------------------------------
-No further preparations necessary
+No further preparations necessary.
 
 
 
@@ -35,4 +35,5 @@ Executing ant builds from within Eclipse
 [4] Go to Window -> Show View -> Other ... -> Ant -> Ant
 [5] Drag build.xml files from projects you like to build to the
     Ant view
-[6] Double click on the Ant target you wish to execute
+[6] Double click on the Ant target you wish to execute (or
+    hit Run button in button bar of Ant view)

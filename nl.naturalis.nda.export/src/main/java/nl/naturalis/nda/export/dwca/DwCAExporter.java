@@ -175,7 +175,13 @@ public class DwCAExporter
 		for (File file : filelist)
 		{
 			filename = file.getName();
-			if (filename.toLowerCase().contains(emlfilename.toLowerCase()))
+			String eml = null;
+			if (filename.contains("_eml"))
+			{
+			   int index = filename.indexOf("_eml");
+			   eml = filename.substring(0, index);
+			}
+			if (eml.toLowerCase().contains(emlfilename.toLowerCase()) && eml.equalsIgnoreCase(emlfilename))
 			{
 				result = file.getName();
 				break;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
+import org.apache.lucene.search.TermQuery;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -43,6 +45,7 @@ import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,10 +60,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author ayco_holleman
  * 
  */
-public class IndexNative implements Index
-{
+public class IndexNative implements Index {
 
-	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	final Client esClient;
@@ -77,17 +80,16 @@ public class IndexNative implements Index
 	 *            The index for which to create this instance. All methods,
 	 *            except a few, will operate against this index.
 	 */
-	public IndexNative(Client client, String indexName)
-	{
+	public IndexNative(Client client, String indexName) {
 		this.indexName = indexName;
 		this.esClient = client;
 		admin = esClient.admin().indices();
 	}
 
 	@Override
-	public boolean exists()
-	{
-		logger.info(String.format("Verifying existence of index \"%s\"", indexName));
+	public boolean exists() {
+		logger.info(String.format("Verifying existence of index \"%s\"",
+				indexName));
 		IndicesExistsRequestBuilder irb = admin.prepareExists();
 		irb.setIndices(indexName);
 		IndicesExistsResponse response = irb.execute().actionGet();
@@ -95,48 +97,40 @@ public class IndexNative implements Index
 	}
 
 	@Override
-	public boolean typeExists(String type)
-	{
+	public boolean typeExists(String type) {
 		logger.info(String.format("Verifying existence of type \"%s\"", type));
 		TypesExistsRequestBuilder terb = admin.prepareTypesExists();
-		terb.setIndices(new String[]
-		{ indexName });
+		terb.setIndices(new String[] { indexName });
 		terb.setTypes(type);
 		TypesExistsResponse response = terb.execute().actionGet();
 		return response.isExists();
 	}
 
 	@Override
-	public String describe()
-	{
+	public String describe() {
 		GetMappingsRequest request = new GetMappingsRequest();
 		request.indices(indexName);
 		GetMappingsResponse response = admin.getMappings(request).actionGet();
-		try
-		{
+		try {
 			return objectMapper.writeValueAsString(response.getMappings());
-		} catch (JsonProcessingException e)
-		{
+		} catch (JsonProcessingException e) {
 			throw ExceptionUtil.smash(e);
 		}
 	}
 
 	@Override
-	public String describeAllIndices()
-	{
+	public String describeAllIndices() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void create()
-	{
+	public void create() {
 		create(1, 0);
 	}
 
 	@Override
-	public void create(int numShards, int numReplicas)
-	{
+	public void create(int numShards, int numReplicas) {
 		logger.info("Creating index " + indexName);
 		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
 		HashMap<String, Object> settings = new HashMap<String, Object>();
@@ -144,22 +138,20 @@ public class IndexNative implements Index
 		settings.put("number_of_replicas", numReplicas);
 		request.setSettings(settings);
 		CreateIndexResponse response = request.execute().actionGet();
-		if (!response.isAcknowledged())
-		{
+		if (!response.isAcknowledged()) {
 			throw new IndexException("Failed to create index " + indexName);
 		}
 		logger.info("Index created");
 	}
 
 	@Override
-	public void create(String settings)
-	{
+	public void create(String settings) {
 		logger.info("Creating index " + indexName);
 		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
-		request.setSettings(ImmutableSettings.settingsBuilder().loadFromSource(settings).build());
+		request.setSettings(ImmutableSettings.settingsBuilder()
+				.loadFromSource(settings).build());
 		CreateIndexResponse response = request.execute().actionGet();
-		if (!response.isAcknowledged())
-		{
+		if (!response.isAcknowledged()) {
 			throw new IndexException("Failed to create index " + indexName);
 		}
 		logger.info("Index created");
@@ -171,95 +163,84 @@ public class IndexNative implements Index
 	 * @return {@code true} if the index existed and was successfully deleted;
 	 *         {@code false} if the index did not exist.
 	 */
-	public boolean delete()
-	{
+	public boolean delete() {
 		logger.info("Deleting index " + indexName);
 		DeleteIndexRequest request = new DeleteIndexRequest(indexName);
-		try
-		{
+		try {
 			DeleteIndexResponse response = admin.delete(request).actionGet();
-			if (!response.isAcknowledged())
-			{
+			if (!response.isAcknowledged()) {
 				throw new IndexException("Failed to delete index " + indexName);
 			}
 			logger.info("Index deleted");
 			return true;
-		} catch (IndexMissingException e)
-		{
-			logger.info(String.format("No such index \"%s\" (nothing deleted)", indexName));
+		} catch (IndexMissingException e) {
+			logger.info(String.format("No such index \"%s\" (nothing deleted)",
+					indexName));
 			return false;
 		}
 	}
 
 	@Override
-	public void deleteAllIndices()
-	{
+	public void deleteAllIndices() {
 		logger.info("Deleting all indices in cluster");
 		DeleteIndexRequest request = new DeleteIndexRequest("_all");
-		try
-		{
+		try {
 			DeleteIndexResponse response = admin.delete(request).actionGet();
-			if (!response.isAcknowledged())
-			{
+			if (!response.isAcknowledged()) {
 				throw new IndexException("Failed to delete index " + indexName);
 			}
 			logger.info("Indices deleted");
-		} catch (Exception e)
-		{
-			logger.info("Failed to delete all indices in cluster: " + e.getMessage());
+		} catch (Exception e) {
+			logger.info("Failed to delete all indices in cluster: "
+					+ e.getMessage());
 		}
 	}
 
-	public void addType(String name, String mapping)
-	{
+	public void addType(String name, String mapping) {
 		logger.info(String.format("Creating type \"%s\"", name));
 		PutMappingRequest request = new PutMappingRequest(indexName);
 		request.source(mapping);
 		request.type(name);
 		PutMappingResponse response = admin.putMapping(request).actionGet();
-		if (!response.isAcknowledged())
-		{
-			throw new IndexException(String.format("Failed to create type \"%s\"", name));
+		if (!response.isAcknowledged()) {
+			throw new IndexException(String.format(
+					"Failed to create type \"%s\"", name));
 		}
 	}
 
 	@Override
-	public boolean deleteType(String name)
-	{
+	public boolean deleteType(String name) {
 		logger.info(String.format("Deleting type \"%s\"", name));
-		DeleteMappingRequestBuilder request = esClient.admin().indices().prepareDeleteMapping();
+		DeleteMappingRequestBuilder request = esClient.admin().indices()
+				.prepareDeleteMapping();
 		request.setIndices(indexName);
 		request.setType(name);
-		try
-		{
+		try {
 			DeleteMappingResponse response = request.execute().actionGet();
-			if (!response.isAcknowledged())
-			{
-				throw new IndexException(String.format("Failed to delete type \"%s\"", name));
+			if (!response.isAcknowledged()) {
+				throw new IndexException(String.format(
+						"Failed to delete type \"%s\"", name));
 			}
 			logger.info("Type deleted");
 			return true;
-		} catch (TypeMissingException e)
-		{
-			logger.info(String.format("No such type \"%s\" (nothing deleted)", name));
+		} catch (TypeMissingException e) {
+			logger.info(String.format("No such type \"%s\" (nothing deleted)",
+					name));
 			return false;
 		}
 	}
 
-	public <T> T get(String type, String id, Class<T> targetClass)
-	{
+	public <T> T get(String type, String id, Class<T> targetClass) {
 		GetRequestBuilder grb = esClient.prepareGet();
 		grb.setIndex(indexName);
 		grb.setType(type);
 		grb.setId(id);
 		GetResponse response = grb.execute().actionGet();
-		if (response.isExists())
-		{
-			try
-			{
-				return objectMapper.readValue(response.getSourceAsString(), targetClass);
-			} catch (Exception e)
-			{
+		if (response.isExists()) {
+			try {
+				return objectMapper.readValue(response.getSourceAsString(),
+						targetClass);
+			} catch (Exception e) {
 				throw new IndexException(e);
 			}
 		}
@@ -269,8 +250,7 @@ public class IndexNative implements Index
 	/*
 	 * Create by Reinier Description: for the DwCA export Date: 29-01-2015
 	 */
-	public <T> T getAll(String type, String id, Class<T> targetClass)
-	{
+	public <T> T getAll(String type, String id, Class<T> targetClass) {
 		GetRequestBuilder reqbld = esClient.prepareGet();
 
 		/* Sets the index of the document to fetch. */
@@ -285,83 +265,78 @@ public class IndexNative implements Index
 		GetResponse resp = reqbld.execute().actionGet();
 
 		/* if result exists from the response */
-		if (resp.isExists())
-		{
-			try
-			{
+		if (resp.isExists()) {
+			try {
 				/* read from the file and convert it to the targetClass */
-				return objectMapper.readValue(resp.getSourceAsString(), targetClass);
-			} catch (Exception e)
-			{
+				return objectMapper.readValue(resp.getSourceAsString(),
+						targetClass);
+			} catch (Exception e) {
 				throw new IndexException(e);
 			}
 		}
 		return null;
 	}
 
-	public <T> List<T> getResultsList(String type, String namecollectiontype, String sourcesystemcode,
-			int size, Class<T> targetClass)
-	{
+	public <T> List<T> getResultsList(String type, String namecollectiontype,
+			String sourcesystemcode, int size, Class<T> targetClass) {
 		SearchRequestBuilder searchRequestBuilder = null;
-		
-		if (sourcesystemcode.toUpperCase().equals("CRS"))
-		{
+
+		if (sourcesystemcode.toUpperCase().equals("CRS")) {
 			logger.info("Querying the data for CRS");
-			/*searchRequestBuilder = esClient
-					.prepareSearch()
-					.setQuery(QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType",	"sourceSystem.code"))
-					.setSearchType(SearchType.SCAN)
-					//.setExplain(true)
-					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);*/
+			/*
+			 * searchRequestBuilder = esClient .prepareSearch()
+			 * .setQuery(QueryBuilders.multiMatchQuery(namecollectiontype,
+			 * "collectionType", "sourceSystem.code"))
+			 * .setSearchType(SearchType.SCAN) //.setExplain(true)
+			 * .setScroll(new
+			 * TimeValue(60000)).setIndices(indexName).setTypes(type
+			 * ).setSize(size);
+			 */
+
+			// Operator op = Operator.OR;
+			// MultiMatchQueryBuilder qb =
+			// QueryBuilders.multiMatchQuery(namecollectiontype,
+			// "collectionType")
+			// .operator(op);
 			
-//			String element = null;
-//			String nextElement = null;
-//			String queryvalue = null;
-//			
-//			for( int i = 0; i < namecollectiontype.length - 1; i++)
-//			{
-//			    if(Arrays.asList(namecollectiontype).contains("null"))
-//			    {
-//			    	element = namecollectiontype[i];
-//			    	System.out.println(element);
-//			    	queryvalue = element;
-//			    }	
-//			    else
-//			    {
-//			    	element = namecollectiontype[i];
-//			        nextElement = namecollectiontype[i+1];
-//				    System.out.println(nextElement);
-//				
-//				    queryvalue = element + ", " + nextElement;
-//			    }
-//			}
+			BoolQueryBuilder qb = null;
+			String nameCollectionType1 = null;
+			String nameCollectionType2 = null;
 			
-			Operator op = Operator.OR;
-			MultiMatchQueryBuilder qb = QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType");
-//					.operator(op);
-					
-			logger.info(qb.toString());
-			System.out.println(qb);
-			searchRequestBuilder =  esClient
-					.prepareSearch()
-					.setQuery(qb)
-					.setSearchType(SearchType.SCAN)
-					.setExplain(true)
-					.setTypes("best_fields")
-					.setScroll(new TimeValue(60000)).setIndices(indexName).setTypes(type).setSize(size);
-		}
+			if (namecollectiontype.contains(",")) 
+			{
+				int index = namecollectiontype.indexOf(",");
+				nameCollectionType1 = namecollectiontype.substring(0, index);
+				nameCollectionType2 = namecollectiontype.substring(index, namecollectiontype.length());
+				qb = QueryBuilders.boolQuery()
+						.should(QueryBuilders.termQuery("collectionType", nameCollectionType1))
+						.should(QueryBuilders.termQuery("collectionType", nameCollectionType2));
+				
+				} 
+				else
+				{
+					qb =  QueryBuilders.boolQuery()
+							.should(QueryBuilders.termQuery("collectionType.raw", namecollectiontype));
+	
+				}
+				logger.info(qb.toString());
+				System.out.println(qb);
+				searchRequestBuilder = esClient.prepareSearch()
+						.setQuery(qb)
+						.setSearchType(SearchType.SCAN).setExplain(true)
+						.setTypes("best_fields")
+						.setScroll(new TimeValue(60000)).setIndices(indexName)
+						.setTypes(type).setSize(size);
+			}
 		/* BRAHMS */
-		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
-		{
-			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(sourcesystemcode.toUpperCase(), "sourceSystem.code");
+		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) {
+			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
+					sourcesystemcode.toUpperCase(), "sourceSystem.code");
 			logger.info("Querying the data for BRAHMS");
 			logger.info(querybrahms.toString());
-			searchRequestBuilder = esClient
-					.prepareSearch()
-					.setQuery(querybrahms)
-					.setSearchType(SearchType.SCAN)
-					.setExplain(true)
-					.setScroll(new TimeValue(60000))
+			searchRequestBuilder = esClient.prepareSearch()
+					.setQuery(querybrahms).setSearchType(SearchType.SCAN)
+					.setExplain(true).setScroll(new TimeValue(60000))
 					.setIndices(indexName).setTypes(type).setSize(size);
 		}
 
@@ -379,31 +354,27 @@ public class IndexNative implements Index
 		logger.info(output);
 
 		List<T> list = new ArrayList<T>();
-		while (true)
-		{
+		while (true) {
 			response = esClient.prepareSearchScroll(response.getScrollId())
-					.setScrollId(response.getScrollId()).setScroll(new TimeValue(600000)).execute()
-					.actionGet();
+					.setScrollId(response.getScrollId())
+					.setScroll(new TimeValue(600000)).execute().actionGet();
 
 			SearchHit[] results = response.getHits().getHits();
 			logger.info("Total records in occurrence file: " + results.length);
 
-			try
-			{
-				for (SearchHit hit : response.getHits())
-				{
-					T result = objectMapper.convertValue(hit.getSource(), targetClass);
+			try {
+				for (SearchHit hit : response.getHits()) {
+					T result = objectMapper.convertValue(hit.getSource(),
+							targetClass);
 					list.add(result);
 
 					// Break condition: No hits are returned
-					if (response.getHits().hits().length == 0)
-					{
+					if (response.getHits().hits().length == 0) {
 						logger.info("No hits");
 						break;
 					}
 				}
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				throw new IndexException(e);
 			}
 			return list;
@@ -411,8 +382,7 @@ public class IndexNative implements Index
 	}
 
 	@Override
-	public boolean deleteDocument(String type, String id)
-	{
+	public boolean deleteDocument(String type, String id) {
 		DeleteRequestBuilder drb = esClient.prepareDelete();
 		drb.setId(id);
 		drb.setType(type);
@@ -422,49 +392,44 @@ public class IndexNative implements Index
 	}
 
 	@Override
-	public void deleteWhere(String type, String field, String value)
-	{
-		logger.info(String.format("Deleting %s documents where %s equals \"%s\"", type, field, value));
+	public void deleteWhere(String type, String field, String value) {
+		logger.info(String.format(
+				"Deleting %s documents where %s equals \"%s\"", type, field,
+				value));
 		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
 		request.setTypes(type);
 		TermFilterBuilder filter = FilterBuilders.termFilter(field, value);
-		FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
+		FilteredQueryBuilder query = QueryBuilders.filteredQuery(
+				QueryBuilders.matchAllQuery(), filter);
 		request.setQuery(query);
 		request.execute().actionGet();
 	}
 
 	@Override
-	public void saveDocument(String type, String json, String id)
-	{
+	public void saveDocument(String type, String json, String id) {
 		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type, id);
 		irb.setSource(json);
 		irb.execute().actionGet();
 	}
 
 	@Override
-	public void saveObject(String type, Object obj, String id)
-	{
+	public void saveObject(String type, Object obj, String id) {
 		saveObject(type, obj, id, null);
 	}
 
 	@Override
-	public void saveObject(String type, Object obj, String id, String parentId)
-	{
+	public void saveObject(String type, Object obj, String id, String parentId) {
 		final String json;
-		try
-		{
+		try {
 			json = objectMapper.writeValueAsString(obj);
-		} catch (JsonProcessingException e)
-		{
+		} catch (JsonProcessingException e) {
 			throw new IndexException(e);
 		}
 		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
-		if (id != null)
-		{
+		if (id != null) {
 			irb.setId(id);
 		}
-		if (parentId != null)
-		{
+		if (parentId != null) {
 			irb.setParent(parentId);
 		}
 		irb.setSource(json);
@@ -472,51 +437,42 @@ public class IndexNative implements Index
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs)
-	{
+	public void saveObjects(String type, List<?> objs) {
 		saveObjects(type, objs, null, null);
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids)
-	{
+	public void saveObjects(String type, List<?> objs, List<String> ids) {
 		saveObjects(type, objs, ids, null);
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
-	{
+	public void saveObjects(String type, List<?> objs, List<String> ids,
+			List<String> parentIds) {
 		BulkRequestBuilder brb = esClient.prepareBulk();
-		for (int i = 0; i < objs.size(); ++i)
-		{
+		for (int i = 0; i < objs.size(); ++i) {
 			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
-			try
-			{
+			try {
 				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
-				if (ids != null)
-				{
+				if (ids != null) {
 					irb.setId(ids.get(i));
 				}
-				if (parentIds != null)
-				{
+				if (parentIds != null) {
 					irb.setParent(parentIds.get(i));
 				}
-			} catch (JsonProcessingException e)
-			{
+			} catch (JsonProcessingException e) {
 				throw new IndexException(e);
 			}
 			brb.add(irb);
 		}
 		BulkResponse response = brb.execute().actionGet();
-		if (response.hasFailures())
-		{
+		if (response.hasFailures()) {
 			String message = response.buildFailureMessage();
 			throw new RuntimeException(message);
 		}
 	}
 
-	public Client getClient()
-	{
+	public Client getClient() {
 		return esClient;
 	}
 

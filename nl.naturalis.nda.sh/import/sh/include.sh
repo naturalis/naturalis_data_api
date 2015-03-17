@@ -1,10 +1,9 @@
 #!/bin/sh
 
-ndaImportHome=/data/nda-import
+ndaImportHome=@nda.import.install.dir@
 
 ndaConfDir=${ndaImportHome}/conf
 libDir=${ndaImportHome}/lib
-dataDir=${ndaImportHome}/data
 loadPackage=nl.naturalis.nda.elasticsearch.load
 
 # Make ${ndaConfDir} the first entry on the classpath so

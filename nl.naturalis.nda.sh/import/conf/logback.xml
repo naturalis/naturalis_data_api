@@ -10,7 +10,7 @@
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>/data/nda-import/log/nda-es-import.${date}.log</file>
+		<file>@nda.import.logdir@/nda-es-import.${date}.log</file>
 		<append>true</append>
 		<encoder>
 			<pattern>%d %5p | %t | %-55logger{55} | %m %n</pattern>

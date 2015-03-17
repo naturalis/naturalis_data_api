@@ -15,7 +15,7 @@
 		</filelist>
 	</path>
 
-	<!-- Build projects that this project depends on -->
+	<!-- Build referenced projects -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
 		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />

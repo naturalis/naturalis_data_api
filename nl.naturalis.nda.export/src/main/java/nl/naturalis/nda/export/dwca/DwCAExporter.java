@@ -113,7 +113,7 @@ public class DwCAExporter
 					int index = resultcoltype.indexOf(",");
 					int collength = resultcoltype.length();
 					nameCollectiontypeCrs = nameCollectiontypeCrs.substring(0, index);
-					namecollectiontypeand = resultcoltype.substring(index + 2, collength);
+					setNameCollectiontypeAnd(resultcoltype.substring(index + 2, collength));
 				}
 			}
 			if (sourceSystemCode.toUpperCase().equals("BRAHMS"))
@@ -407,5 +407,13 @@ public class DwCAExporter
 			}
 
 		}
+	}
+
+	public static String getNameCollectiontypeAnd() {
+		return nameCollectiontypeAnd;
+	}
+
+	public static void setNameCollectiontypeAnd(String nameCollectiontypeAnd) {
+		DwCAExporter.nameCollectiontypeAnd = nameCollectiontypeAnd;
 	}
 }

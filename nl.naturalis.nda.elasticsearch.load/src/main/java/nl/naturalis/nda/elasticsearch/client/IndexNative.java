@@ -337,9 +337,10 @@ public class IndexNative implements Index
 //			}
 			
 			Operator op = Operator.OR;
-			MultiMatchQueryBuilder qb = QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType")
-					.operator(op);
+			MultiMatchQueryBuilder qb = QueryBuilders.multiMatchQuery(namecollectiontype, "collectionType");
+//					.operator(op);
 					
+			logger.info(qb.toString());
 			System.out.println(qb);
 			searchRequestBuilder =  esClient
 					.prepareSearch()
@@ -352,10 +353,12 @@ public class IndexNative implements Index
 		/* BRAHMS */
 		if (sourcesystemcode.toUpperCase().equals("BRAHMS"))
 		{
+			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(sourcesystemcode.toUpperCase(), "sourceSystem.code");
 			logger.info("Querying the data for BRAHMS");
+			logger.info(querybrahms.toString());
 			searchRequestBuilder = esClient
 					.prepareSearch()
-					.setQuery(QueryBuilders.multiMatchQuery(sourcesystemcode.toUpperCase(), "sourceSystem.code"))
+					.setQuery(querybrahms)
 					.setSearchType(SearchType.SCAN)
 					.setExplain(true)
 					.setScroll(new TimeValue(60000))

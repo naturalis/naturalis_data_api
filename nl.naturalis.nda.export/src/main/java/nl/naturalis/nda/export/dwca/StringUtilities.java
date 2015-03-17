@@ -24,26 +24,21 @@ import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StringUtilities
-{
+public class StringUtilities {
 	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
 	final static int BUFFER = 2048;
 	private static final String propertiesExtension = ".properties";
 	static String propertiesfilename = null;
 
-	public static int indexOfFirstContainedCharacter(String s1, String s2)
-	{
+	public static int indexOfFirstContainedCharacter(String s1, String s2) {
 		if (s1 == null || s1.isEmpty())
 			return -1;
 		Set<Character> set = new HashSet<Character>();
-		for (int i = 0; i < s2.length(); i++)
-		{
+		for (int i = 0; i < s2.length(); i++) {
 			set.add(s2.charAt(i)); // Build a constant-time lookup table.
 		}
-		for (int i = 0; i < s1.length(); i++)
-		{
-			if (set.contains(s1.charAt(i)))
-			{
+		for (int i = 0; i < s1.length(); i++) {
+			if (set.contains(s1.charAt(i))) {
 				return i; // Found a character in s1 also in s2.
 			}
 		}
@@ -66,9 +61,8 @@ public class StringUtilities
 	 * (IOException e) { e.printStackTrace(); }
 	 */
 	/* Zip multiple files */
-	public static void addToZipFile(String fileName, ZipOutputStream zos) throws FileNotFoundException,
-			IOException
-	{
+	public static void addToZipFile(String fileName, ZipOutputStream zos)
+			throws FileNotFoundException, IOException {
 		System.out.println("Writing '" + fileName + "' to zip file");
 		logger.info("Writing '" + fileName + "' to zip file");
 
@@ -82,8 +76,7 @@ public class StringUtilities
 		zos.putNextEntry(zipEntry);
 
 		int length;
-		while ((length = origin.read(data, 0, BUFFER)) != -1)
-		{
+		while ((length = origin.read(data, 0, BUFFER)) != -1) {
 			zos.write(data, 0, length);
 			zos.flush();
 		}
@@ -93,115 +86,96 @@ public class StringUtilities
 	}
 
 	/* Read the value from properties file */
-	public static String getPropertyValue(String propertyname, String value)
-	{
+	public static String getPropertyValue(String propertyname, String value) {
 		propertiesfilename = propertyname + propertiesExtension;
 		String result = null;
 		boolean found = false;
 		Properties prop = new Properties();
-		try
-		{
+		try {
 			/* load a properties file */
-			prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
+			prop.load(StringUtilities.class.getClassLoader()
+					.getResourceAsStream(propertiesfilename));
 			Enumeration<?> e = prop.propertyNames();
-			while (e.hasMoreElements() && !found)
-			{
+			while (e.hasMoreElements() && !found) {
 				String propertyName = (String) e.nextElement();
 				result = prop.getProperty(propertyName);
 				// System.out.println("Result: " + result);
-				if (result.equals(value))
-				{
+				if (result.equals(value)) {
 					found = true;
 					break;
 				}
 			}
-		} catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 		return result;
 	}
 
 	/* Read the value from properties file */
-	public static String readPropertyvalue(String propertyname, String key)
-	{
+	public static String readPropertyvalue(String propertyname, String key) {
 		propertiesfilename = propertyname + propertiesExtension;
 		String result = null;
 		Properties prop = new Properties();
-		try
-		{
+		try {
 			/* load a properties file */
-			prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-			result = prop.getProperty(key);
+			if (propertiesfilename != null) {
+				prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
+				result = prop.getProperty(key);
+			}
 
-		} catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 		return result;
 	}
 
 	/* Create Output directory */
-	public static void createOutPutDirectory()
-	{
+	public static void createOutPutDirectory() {
 		File directory = new File(readPropertyvalue("OutPut", "Directory"));
 		boolean result = false;
-		if (!directory.exists())
-		{
-			try
-			{
+		if (!directory.exists()) {
+			try {
 				directory.mkdir();
 				result = true;
-			} catch (SecurityException se)
-			{
+			} catch (SecurityException se) {
 				se.printStackTrace();
 			}
-			if (result)
-			{
+			if (result) {
 				logger.info("DwCAExport directory was created successfull.");
 			}
 		}
 	}
 
 	/* Create Output Zip directory. */
-	public static void createZipOutPutDirectory()
-	{
+	public static void createZipOutPutDirectory() {
 		File directory = new File(readPropertyvalue("OutPut", "ZipDirectory"));
 		boolean result = false;
-		if (!directory.exists())
-		{
-			try
-			{
+		if (!directory.exists()) {
+			try {
 				directory.mkdir();
 				result = true;
-			} catch (SecurityException se)
-			{
+			} catch (SecurityException se) {
 				se.printStackTrace();
 			}
-			if (result)
-			{
+			if (result) {
 				logger.info("DwCAExportZip directory was created successfull.");
 			}
 		}
 	}
 
 	/* Create Archive Zip directory. */
-	public static void createArchiveZipDirectory()
-	{
-		File directory = new File(readPropertyvalue("OutPut", "ZipArchiveDirectory"));
+	public static void createArchiveZipDirectory() {
+		File directory = new File(readPropertyvalue("OutPut",
+				"ZipArchiveDirectory"));
 		boolean result = false;
-		if (!directory.exists())
-		{
-			try
-			{
+		if (!directory.exists()) {
+			try {
 				directory.mkdir();
 				result = true;
-			} catch (SecurityException se)
-			{
+			} catch (SecurityException se) {
 				se.printStackTrace();
 			}
-			if (result)
-			{
+			if (result) {
 				logger.info("DwCAZipArchive directory was created successfull.");
 			}
 		}
@@ -211,98 +185,85 @@ public class StringUtilities
 	 * if value is '1' field will be added to CSV file otherwise if value is
 	 * '0'. field will not be added.
 	 */
-	public static boolean isFieldChecked(String propertyname, String value)
-	{
-		int commaindex = StringUtilities.getPropertyValue(propertyname, value).length() - 1;
+	public static boolean isFieldChecked(String propertyname, String value) {
+		int commaindex = StringUtilities.getPropertyValue(propertyname, value)
+				.length() - 1;
 		String result = StringUtilities.getPropertyValue(propertyname, value);
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
 	}
 
 	/* Copy a file from a Source directory to a Destination directory */
-	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
-	{
+	public static void CopyAFile(File sourceFile, File DestinationFile)
+			throws IOException {
 		InputStream inputstream = null;
 		OutputStream outputstream = null;
-		try
-		{
+		try {
 			inputstream = new FileInputStream(sourceFile);
 			outputstream = new FileOutputStream(DestinationFile);
 			byte[] buffer = new byte[2048];
 			int length;
-			while ((length = inputstream.read(buffer)) > 0)
-			{
+			while ((length = inputstream.read(buffer)) > 0) {
 				outputstream.write(buffer, 0, length);
 			}
-		} finally
-		{
+		} finally {
 			inputstream.close();
 			outputstream.close();
 		}
 	}
-	
-	/* Renamed the zipfile extension ".zip" file to ".bak"*/
-	public static void renameDwCAZipFile(File fileToRenamed)
-	{
-		if (fileToRenamed.exists())
-		{
+
+	/* Renamed the zipfile extension ".zip" file to ".bak" */
+	public static void renameDwCAZipFile(File fileToRenamed) {
+		if (fileToRenamed.exists()) {
 			int index = fileToRenamed.getName().indexOf(".");
 			String filename = fileToRenamed.getName().substring(0, index);
 			File path = fileToRenamed.getParentFile();
 			String bakpath = path + "\\" + filename + ".bak";
-			File filebak = new  File(bakpath);
-			if (filebak.exists())
-			{
+			File filebak = new File(bakpath);
+			if (filebak.exists()) {
 				filebak.delete();
 				logger.info("File '" + filebak + "' successfull deleted.");
 			}
 			boolean success = fileToRenamed.renameTo(new File(bakpath));
-			if (success)
-			{
+			if (success) {
 				logger.info("File successfull renamed to '" + bakpath + "'");
-			} else
-			{
-				logger.info("File in '" + fileToRenamed +"' not successfull renamed.");
+			} else {
+				logger.info("File in '" + fileToRenamed
+						+ "' not successfull renamed.");
 			}
 		}
 	}
-	
+
 	/* Renamed the predifined eml.xml file from source directory to eml.xml */
-	public static void renameDwCAEMLFile(File emlFileToRenamed)
-	{
-		if (emlFileToRenamed.exists())
-		{
+	public static void renameDwCAEMLFile(File emlFileToRenamed) {
+		if (emlFileToRenamed.exists()) {
 			int index = emlFileToRenamed.getName().indexOf(".");
-			String filename = emlFileToRenamed.getName().substring(index-3);
+			String filename = emlFileToRenamed.getName().substring(index - 3);
 			File path = emlFileToRenamed.getParentFile();
 			String emlpath = path + "\\" + filename; // + ".xml";
-			File emlfile = new  File(emlpath);
-			if (emlfile.exists())
-			{
+			File emlfile = new File(emlpath);
+			if (emlfile.exists()) {
 				emlfile.delete();
 				logger.info("File '" + emlfile + "' successfull deleted.");
 			}
 			boolean success = emlFileToRenamed.renameTo(new File(emlpath));
-			if (success)
-			{
+			if (success) {
 				logger.info("File successfull renamed to '" + emlpath + "'");
-			} else
-			{
-				logger.info("File in '" + emlpath +"' not successfull renamed.");
+			} else {
+				logger.info("File in '" + emlpath
+						+ "' not successfull renamed.");
 			}
 		}
 	}
-	
-	public static boolean stringContainsItemFromList(String inputString, String[] items)
-	{
-	    for(int i =0; i < items.length; i++)
-	    {
-	        if(inputString.contains(items[i]))
-	        {
-	            return true;
-	        }
-	    }
-	    return false;
+
+	public static boolean stringContainsItemFromList(String inputString,
+			String[] items) {
+		for (int i = 0; i < items.length; i++) {
+			if (inputString.contains(items[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -20,6 +20,16 @@
 		<exec executable="git" outputproperty="git.ok" failifexecutionfails="false">
 			<arg value="--version" />
 		</exec>
+		<!-- Make sure build.properties.tpl has been copied to build.properties -->
+		<fail message="Copy build.properties.tpl to build.properties first and make sure it contains the right settings">
+			<condition>
+				<not>
+					<resourcecount count="1">
+						<fileset dir="${basedir}" includes="build.properties" />
+					</resourcecount>
+				</not>
+			</condition>
+		</fail>		
 		<fail unless:set="git.ok" message="Git not installed, or Git bin directory not added to PATH yet" />
 		<!-- We got clearance! -->
 		<property name="signal.clear" value="on" />

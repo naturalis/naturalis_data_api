@@ -107,14 +107,14 @@ public class DwCAExporter
 			{
 				nameCollectiontypeCrs = StringUtilities.readPropertyvalue(collectionName, "collectionType");
 				
-				if (nameCollectiontypeCrs.contains(","))
-				{
-					String resultcoltype = nameCollectiontypeCrs;
-					int index = resultcoltype.indexOf(",");
-					int collength = resultcoltype.length();
-					nameCollectiontypeCrs = nameCollectiontypeCrs.substring(0, index);
-					setNameCollectiontypeAnd(resultcoltype.substring(index + 2, collength));
-				}
+//				if (nameCollectiontypeCrs.contains(","))
+//				{
+//					String resultcoltype = nameCollectiontypeCrs;
+//					int index = resultcoltype.indexOf(",");
+//					int collength = resultcoltype.length();
+//					nameCollectiontypeCrs = nameCollectiontypeCrs.substring(0, index);
+//					setNameCollectiontypeAnd(resultcoltype.substring(index + 2, collength));
+//				}
 			}
 			if (sourceSystemCode.toUpperCase().equals("BRAHMS"))
 			{

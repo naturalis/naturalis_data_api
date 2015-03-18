@@ -1,10 +1,15 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
+import org.apache.lucene.queryparser.xml.builders.TermsFilterBuilder;
 import org.apache.lucene.search.TermQuery;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
@@ -36,6 +41,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder.Operator;
@@ -293,11 +299,12 @@ public class IndexNative implements Index {
 			 * ).setSize(size);
 			 */
 
-			// Operator op = Operator.OR;
+			 //Operator op = Operator.OR;
 			// MultiMatchQueryBuilder qb =
 			// QueryBuilders.multiMatchQuery(namecollectiontype,
 			// "collectionType")
 			// .operator(op);
+			
 			
 			BoolQueryBuilder qb = null;
 			String nameCollectionType1 = null;
@@ -307,11 +314,10 @@ public class IndexNative implements Index {
 			{
 				int index = namecollectiontype.indexOf(",");
 				nameCollectionType1 = namecollectiontype.substring(0, index);
-				nameCollectionType2 = namecollectiontype.substring(index, namecollectiontype.length());
+				nameCollectionType2 = namecollectiontype.substring(index + 2, namecollectiontype.length());
 				qb = QueryBuilders.boolQuery()
-						.should(QueryBuilders.termQuery("collectionType", nameCollectionType1))
-						.should(QueryBuilders.termQuery("collectionType", nameCollectionType2));
-				
+						.must(QueryBuilders.termQuery("collectionType.raw", nameCollectionType1))
+						.should(QueryBuilders.termQuery("collectionType.raw", nameCollectionType2));
 				} 
 				else
 				{
@@ -322,6 +328,7 @@ public class IndexNative implements Index {
 				logger.info(qb.toString());
 				System.out.println(qb);
 				searchRequestBuilder = esClient.prepareSearch()
+						//.setQuery(filteredQuery(qb, nameCollectionType1))
 						.setQuery(qb)
 						.setSearchType(SearchType.SCAN).setExplain(true)
 						.setTypes("best_fields")
@@ -331,7 +338,7 @@ public class IndexNative implements Index {
 		/* BRAHMS */
 		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) {
 			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
-					sourcesystemcode.toUpperCase(), "sourceSystem.code");
+					sourcesystemcode.toUpperCase(), "sourceSystem.code.raw");
 			logger.info("Querying the data for BRAHMS");
 			logger.info(querybrahms.toString());
 			searchRequestBuilder = esClient.prepareSearch()
@@ -380,6 +387,7 @@ public class IndexNative implements Index {
 			return list;
 		}
 	}
+
 
 	@Override
 	public boolean deleteDocument(String type, String id) {

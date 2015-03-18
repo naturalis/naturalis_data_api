@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.ejb" default="build">
 
-	<!--
-		Currently the EJB project does not contain serious
-		code, but it is still included in the ear file.
-		In the future, when we implement more typical EJB
-		functionality like authentication/authorization, we
-		should probably move the EJBs out of the REST project
-		and into this project. That's why we keep it around.
-		The REST project can then ditch its dependency on the
-		DAO project, while this project will come to depend on
-		the DAO project.
-	-->
-
+	<import file="../nl.naturalis.nda.build/properties.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
+	<property file="../nl.naturalis.nda.build/build.properties" />
+	<property environment="env" />
 
+	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
 	<path id="non-ivy-dependencies" />
 
-	<!-- Build projects that this project depends on -->
+	<!-- Build referenced projects -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
 	</target>
 
 	<!-- Export a jar file, but only if it does not exist already -->
 	<target name="build" unless:set="${ant.project.name}.packaged">
-		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
+		<available file="build/${ejb.module.artifact}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built.  Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="projects" unless:set="${ant.project.name}.packaged" />

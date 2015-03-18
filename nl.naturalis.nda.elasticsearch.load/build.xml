@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.elasticsearch.load" default="build">
 
+	<import file="../nl.naturalis.nda.build/properties.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
+	<property file="../nl.naturalis.nda.build/build.properties" />
+	<property environment="env" />
 
+	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
 	<path id="non-ivy-dependencies">
 		<!-- projects that this project depends on -->
-		<filelist dir="${nl.naturalis.nda.domain.location}/build" files="nl.naturalis.nda.domain.jar" />
-		<filelist dir="${nl.naturalis.nda.elasticsearch.dao.location}/build" files="nl.naturalis.nda.elasticsearch.dao.jar" />
+		<filelist dir="${domain.module.location}/build" files="${domain.module.artifact}" />
+		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
 		<!-- libraries not inside this project's lib dir -->
-		<filelist dir="${nl.naturalis.nda.build.location}/lib">
+		<filelist dir="${build.module.location}/lib">
 			<file name="org.domainobject.util.jar" />
 			<file name="org.domainobject.util.debug.jar" />
 			<file name="org.domainobject.util.http.jar" />
@@ -18,13 +22,13 @@
 	<!-- Build referenced projects -->
 	<target name="projects">
 		<echo message="Building required projects for ${ant.project.name}" />
-		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<!-- Export jar file, but only if it does not exist already -->
 	<target name="build" unless:set="${ant.project.name}.packaged">
-		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
+		<available file="build/${load.module.artifact}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="projects" unless:set="${ant.project.name}.packaged" />

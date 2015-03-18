@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.ear" default="build">
 
+	<import file="../nl.naturalis.nda.build/properties.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
+	<property file="../nl.naturalis.nda.build/build.properties" />
+	<property environment="env" />
 
-	<!-- Build projects that this project depends on -->
+	<!-- Build referenced projects -->
 	<target name="projects">
-		<echo message="Building required projects for ${ant.project.name}" />
-		<ant antfile="${nl.naturalis.nda.domain.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${nl.naturalis.nda.elasticsearch.dao.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${nl.naturalis.nda.ejb.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${nl.naturalis.nda.service.rest.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<echo message="Building referenced projects for ${ant.project.name}" />
+		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${ejb.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${rest.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
 	<!-- Directory into which to collect the contents of the ear file -->
@@ -21,15 +24,15 @@
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
 		<mkdir dir="${assemblydir}/lib" />
-		<copy file="${nl.naturalis.nda.ejb.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
-		<copy file="${nl.naturalis.nda.service.rest.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
-		<copy file="${nl.naturalis.nda.domain.location}/build/nl.naturalis.nda.domain.jar" todir="${assemblydir}/lib" />
-		<copy file="${nl.naturalis.nda.elasticsearch.dao.location}/build/nl.naturalis.nda.elasticsearch.dao.jar" todir="${assemblydir}/lib" />
+		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${assemblydir}/lib" />
+		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${assemblydir}/lib" />
+		<copy file="${ejb.module.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
+		<copy file="${rest.module.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
 		<copy todir="${assemblydir}/lib">
-			<fileset dir="${nl.naturalis.nda.ejb.location}/build/classpath" />
-			<fileset dir="${nl.naturalis.nda.service.rest.location}/build/classpath" />
-			<fileset dir="${nl.naturalis.nda.domain.location}/build/classpath" />
-			<fileset dir="${nl.naturalis.nda.elasticsearch.dao.location}/build/classpath" />
+			<fileset dir="${domain.module.location}/build/classpath" />
+			<fileset dir="${dao.module.location}/build/classpath" />
+			<fileset dir="${ejb.module.location}/build/classpath" />
+			<fileset dir="${rest.module.location}/build/classpath" />
 		</copy>
 		<copy todir="${assemblydir}/META-INF">
 			<fileset dir="EarContent/META-INF" />
@@ -39,12 +42,12 @@
 	<!-- Export ear file, but only if it does not exist already -->
 	<target name="build" depends="git.info" unless:set="${ant.project.name}.packaged">
 		<property name="earfile" value="build/nba.${git.branch}.${git.revision}.ear" />
-		<available file="build/${ant.project.name}.jar" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built.  Clean project to force rebuild." />
-		<echo unless:set="${ant.project.name}.packaged" message= "*************** [ Building ${ant.project.name} ] ***************" />
+		<available file="${earfile}" property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built for branch ${git.branch}. Clean project to force rebuild." />
+		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
 		<antcall target="assemble" unless:set="${ant.project.name}.packaged" />
-		<jar destfile="build/nba.${git.branch}.${git.revision}.ear" basedir="${assemblydir}" unless:set="${ant.project.name}.packaged" />
+		<jar destfile="${earfile}" basedir="${assemblydir}" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="rebuild" depends="clean,build" />

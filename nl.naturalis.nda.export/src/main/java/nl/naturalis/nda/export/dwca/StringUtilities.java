@@ -119,7 +119,8 @@ public class StringUtilities {
 		try {
 			/* load a properties file */
 			if (propertiesfilename != null) {
-				prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
+				prop.load(StringUtilities.class.getClassLoader()
+						.getResourceAsStream(propertiesfilename));
 				result = prop.getProperty(key);
 			}
 
@@ -164,9 +165,9 @@ public class StringUtilities {
 	}
 
 	/* Create Archive Zip directory. */
-	public static void createArchiveZipDirectory() {
-		File directory = new File(readPropertyvalue("OutPut",
-				"ZipArchiveDirectory"));
+	public static void createArchiveZipDirectory() 
+	{
+		File directory = new File(readPropertyvalue("OutPut", "ZipArchiveDirectory"));
 		boolean result = false;
 		if (!directory.exists()) {
 			try {
@@ -206,15 +207,24 @@ public class StringUtilities {
 			while ((length = inputstream.read(buffer)) > 0) {
 				outputstream.write(buffer, 0, length);
 			}
-		} finally {
-			inputstream.close();
-			outputstream.close();
+		} finally 
+		{
+			if (inputstream != null) 
+			{
+				inputstream.close();
+			}
+			if (outputstream != null) 
+			{
+				outputstream.close();
+			}
 		}
 	}
 
 	/* Renamed the zipfile extension ".zip" file to ".bak" */
-	public static void renameDwCAZipFile(File fileToRenamed) {
-		if (fileToRenamed.exists()) {
+	public static void renameDwCAZipFile(File fileToRenamed) 
+	{
+		if (fileToRenamed.exists()) 
+		{
 			int index = fileToRenamed.getName().indexOf(".");
 			String filename = fileToRenamed.getName().substring(0, index);
 			File path = fileToRenamed.getParentFile();
@@ -225,9 +235,11 @@ public class StringUtilities {
 				logger.info("File '" + filebak + "' successfull deleted.");
 			}
 			boolean success = fileToRenamed.renameTo(new File(bakpath));
-			if (success) {
+			if (success) 
+			{
 				logger.info("File successfull renamed to '" + bakpath + "'");
-			} else {
+			} else 
+			{
 				logger.info("File in '" + fileToRenamed
 						+ "' not successfull renamed.");
 			}
@@ -235,14 +247,17 @@ public class StringUtilities {
 	}
 
 	/* Renamed the predifined eml.xml file from source directory to eml.xml */
-	public static void renameDwCAEMLFile(File emlFileToRenamed) {
-		if (emlFileToRenamed.exists()) {
+	public static void renameDwCAEMLFile(File emlFileToRenamed) 
+	{
+		if (emlFileToRenamed.exists()) 
+		{
 			int index = emlFileToRenamed.getName().indexOf(".");
 			String filename = emlFileToRenamed.getName().substring(index - 3);
 			File path = emlFileToRenamed.getParentFile();
-			String emlpath = path + "\\" + filename; // + ".xml";
+			String emlpath = path + "\\" + filename; 
 			File emlfile = new File(emlpath);
-			if (emlfile.exists()) {
+			if (emlfile.exists()) 
+			{
 				emlfile.delete();
 				logger.info("File '" + emlfile + "' successfull deleted.");
 			}

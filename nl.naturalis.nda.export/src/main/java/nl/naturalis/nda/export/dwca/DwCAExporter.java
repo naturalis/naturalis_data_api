@@ -187,7 +187,7 @@ public class DwCAExporter {
 		}
 		else
 		{
-			logger.info("Eml files not found");
+			logger.info("Eml files not found '" + emlDir + "'");
 		}
 		return result;
 	}
@@ -236,10 +236,6 @@ public class DwCAExporter {
 		xmlspecimen.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
 		xmlspecimen.add(cores);
 		DwCAObjectToXML(xmlspecimen);
-
-		/* Create "EML" xml file */
-		// logger.info("Creating the EML.xml file.");
-		// CreateEmlObjectToXML();
 
 		String emlfilefromdir = null;
 		if (sourceSystemCode.equals("CRS")) {
@@ -318,10 +314,8 @@ public class DwCAExporter {
 	}
 
 	/* Printing tghe records to a CSV file named: "Occurrence.txt" */
-	private void printHeaderRowAndDataForCSV(String namecollectiontype,
-			String totalsize) {
-		// String [] searchvalue = {namecollectiontypecrs,
-		// namecollectiontypeand};
+	private void printHeaderRowAndDataForCSV(String namecollectiontype,	String totalsize) 
+	{
 		CsvFileWriter filewriter = null;
 		try { /* Create new CSV File object and output File */
 			filewriter = new CsvFileWriter(outputDirectory + csvOutPutFile);

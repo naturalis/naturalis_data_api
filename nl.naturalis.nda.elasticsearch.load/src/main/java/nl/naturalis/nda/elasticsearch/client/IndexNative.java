@@ -316,7 +316,7 @@ public class IndexNative implements Index {
 				nameCollectionType1 = namecollectiontype.substring(0, index);
 				nameCollectionType2 = namecollectiontype.substring(index + 2, namecollectiontype.length());
 				qb = QueryBuilders.boolQuery()
-						.must(QueryBuilders.termQuery("collectionType.raw", nameCollectionType1))
+						.should(QueryBuilders.termQuery("collectionType.raw", nameCollectionType1))
 						.should(QueryBuilders.termQuery("collectionType.raw", nameCollectionType2));
 				} 
 				else
@@ -326,7 +326,7 @@ public class IndexNative implements Index {
 	
 				}
 				logger.info(qb.toString());
-				System.out.println(qb);
+
 				searchRequestBuilder = esClient.prepareSearch()
 						//.setQuery(filteredQuery(qb, nameCollectionType1))
 						.setQuery(qb)

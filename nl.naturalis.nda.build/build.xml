@@ -29,7 +29,7 @@
 					</resourcecount>
 				</not>
 			</condition>
-		</fail>		
+		</fail>
 		<fail unless:set="git.ok" message="Git not installed, or Git bin directory not added to PATH yet" />
 		<!-- We got clearance! -->
 		<property name="signal.clear" value="on" />
@@ -154,6 +154,11 @@
 	<target name="build" depends="ear,load,export" />
 
 	<target name="rebuild" depends="pristine,ear,load,export" />
+
+	<target name="shell-scripts">
+		<antcall target="verify" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
+	</target>
 
 	<target name="eclipse">
 		<antcall target="verify" unless:set="signal.clear" />

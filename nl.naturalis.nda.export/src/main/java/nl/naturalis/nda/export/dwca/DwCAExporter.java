@@ -81,30 +81,26 @@ public class DwCAExporter {
 		logger.info("Start reading properties value from OutPut.properties");
 		/* args[1] get the total records from ElasticSearch */
 		String totalsize = StringUtilities.readPropertyvalue(args[0], args[1]);
-		emlDirectory = StringUtilities.readPropertyvalue(args[0],
-				"EMLDirectory");
+		emlDirectory = StringUtilities.readPropertyvalue(args[0], "EMLDirectory");
 
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
 		outputDirectory = StringUtilities.readPropertyvalue(args[0],
 				"Directory") + "\\";
 
-		collectionName = StringUtilities.readPropertyvalue(args[0],
-				"Collectionname");
+		collectionName = StringUtilities.readPropertyvalue(args[0],	"Collectionname");
 
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
-		if (collectionName != null) {
-			sourceSystemCode = StringUtilities.readPropertyvalue(
-					collectionName, "sourceSystemcode");
+		if (collectionName != null) 
+		{
+			sourceSystemCode = StringUtilities.readPropertyvalue(collectionName, "sourceSystemcode");
 			/* Get the Ocurrencefields value */
-			MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(
-					collectionName, "Ocurrencefields");
+			MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(collectionName, "Ocurrencefields");
 		}
 
 		/* args[2] Get the Collectiontype */
 		try {
 			if (sourceSystemCode.equals("CRS")) {
-				nameCollectiontypeCrs = StringUtilities.readPropertyvalue(
-						collectionName, "collectionType");
+				nameCollectiontypeCrs = StringUtilities.readPropertyvalue(collectionName, "collectionType");
 
 				// if (nameCollectiontypeCrs.contains(","))
 				// {
@@ -117,9 +113,9 @@ public class DwCAExporter {
 				// collength));
 				// }
 			}
-			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
-				collectionName = StringUtilities.readPropertyvalue(
-						collectionName, "Collectionname");
+			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+			{
+				collectionName = StringUtilities.readPropertyvalue(collectionName, "Collectionname");
 				nameCollectiontypeBrahms = collectionName;
 			}
 
@@ -128,16 +124,14 @@ public class DwCAExporter {
 		}
 
 		/* Directoy where zipfile will be created */
-		zipOutputDirectory = StringUtilities.readPropertyvalue(args[0],
-				"ZipDirectory") + "\\";
+		zipOutputDirectory = StringUtilities.readPropertyvalue(args[0],	"ZipDirectory") + "\\";
 		/* Copy the DwCAZip file to the DwCAZipArchive directory. */
-		zipArchiveDirectory = StringUtilities.readPropertyvalue(args[0],
-				"ZipArchiveDirectory") + "\\";
+		zipArchiveDirectory = StringUtilities.readPropertyvalue(args[0], "ZipArchiveDirectory") + "\\";
 
 		/* Get the directory and zipfilename */
 		String zipfilename = null;
-		if (sourceSystemCode.toUpperCase().equals("CRS")
-				|| sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+		if (sourceSystemCode.toUpperCase().equals("CRS") || sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+		{
 			zipfilename = zipOutputDirectory + collectionName;
 		}
 
@@ -147,16 +141,16 @@ public class DwCAExporter {
 		try {
 			DwCAExporter exp = new DwCAExporter(index);
 			/* Delete the CSV file if Exists */
-			boolean success = (new File(outputDirectory + csvOutPutFile))
-					.delete();
+			boolean success = (new File(outputDirectory + csvOutPutFile)).delete();
 			if (success) {
-				logger.info("The file " + csvOutPutFile
-						+ " has been successfully deleted");
+				logger.info("The file " + csvOutPutFile	+ " has been successfully deleted");
 			}
-			if (sourceSystemCode.toUpperCase().equals("CRS")) {
+			if (sourceSystemCode.toUpperCase().equals("CRS")) 
+			{
 				exp.ExportDwca(zipfilename, nameCollectiontypeCrs, totalsize);
 			}
-			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+			{
 				exp.ExportDwca(zipfilename, nameCollectiontypeBrahms, totalsize);
 			}
 		} finally {
@@ -221,12 +215,11 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 		Iterator<String> fieldIter = headerRow.iterator();
-		while (fieldIter.hasNext()) {
+		while (fieldIter.hasNext()) 
+		{
 			cnt = Integer.valueOf(cnt.intValue() + 1);
-			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg
-					+ fieldIter.next());
+			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg	+ fieldIter.next());
 			cores.addField(field);
-
 		}
 
 		/* Create Meta.xml file for NBA */
@@ -238,27 +231,22 @@ public class DwCAExporter {
 		DwCAObjectToXML(xmlspecimen);
 
 		String emlfilefromdir = null;
-		if (sourceSystemCode.equals("CRS")) {
+		if (sourceSystemCode.equals("CRS")) 
+		{
 			emlfilefromdir = GetEmlFileName(emlDirectory, collectionName);
-			logger.info("Reading the file from: '" + emlDirectory + "\\"
-					+ emlfilefromdir + "'.");
+			logger.info("Reading the file from: '" + emlDirectory + "\\" + emlfilefromdir + "'.");
 			FILE_NAME_EML = new File(emlDirectory + "\\" + emlfilefromdir);
-			destinationPathEml = new File(outputDirectory + "\\"
-					+ emlfilefromdir);
-			logger.info("Copy the file to: '" + outputDirectory
-					+ emlfilefromdir + "'.");
+			destinationPathEml = new File(outputDirectory + "\\" + emlfilefromdir);
+			logger.info("Copy the file to: '" + outputDirectory + emlfilefromdir + "'.");
 		}
-		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+		{
 			nameCollectiontypeBrahms = sourceSystemCode;
-			emlfilefromdir = GetEmlFileName(emlDirectory,
-					MAPPING_FILE_NAME.toLowerCase());
-			logger.info("Reading the file from: '" + emlDirectory + "\\"
-					+ emlfilefromdir + "'.");
+			emlfilefromdir = GetEmlFileName(emlDirectory, MAPPING_FILE_NAME.toLowerCase());
+			logger.info("Reading the file from: '" + emlDirectory + "\\"+ emlfilefromdir + "'.");
 			FILE_NAME_EML = new File(emlDirectory + "\\" + emlfilefromdir);
-			destinationPathEml = new File(outputDirectory + "\\"
-					+ emlfilefromdir);
-			logger.info("Copy the file to: '" + outputDirectory
-					+ emlfilefromdir + "'.");
+			destinationPathEml = new File(outputDirectory + "\\" + emlfilefromdir);
+			logger.info("Copy the file to: '" + outputDirectory + emlfilefromdir + "'.");
 		}
 		StringUtilities.CopyAFile(FILE_NAME_EML, destinationPathEml);
 		StringUtilities.renameDwCAEMLFile(destinationPathEml);
@@ -268,10 +256,9 @@ public class DwCAExporter {
 
 		File source = new File(zipFileName + zipExtension);
 		File destination = null;
-		if (sourceSystemCode.equals("CRS")
-				|| sourceSystemCode.toUpperCase().equals("BRAHMS")) {
-			destination = new File(zipArchiveDirectory + collectionName
-					+ zipExtension);
+		if (sourceSystemCode.equals("CRS")|| sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+		{
+			destination = new File(zipArchiveDirectory + collectionName	+ zipExtension);
 		}
 
 		/* Backup the zipfile */
@@ -317,17 +304,20 @@ public class DwCAExporter {
 	private void printHeaderRowAndDataForCSV(String namecollectiontype,	String totalsize) 
 	{
 		CsvFileWriter filewriter = null;
+		if (list != null)
+		{
+     		list.clear();
+		}
 		try { /* Create new CSV File object and output File */
 			filewriter = new CsvFileWriter(outputDirectory + csvOutPutFile);
 			/* Get the result from ElasticSearch */
 			if (sourceSystemCode.equals("CRS")) {
-				list = index.getResultsList(LUCENE_TYPE_SPECIMEN,
-						namecollectiontype, sourceSystemCode,
+				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype, sourceSystemCode,
 						Integer.parseInt(totalsize), ESSpecimen.class);
 			}
-			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
-				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, null,
-						sourceSystemCode, Integer.parseInt(totalsize),
+			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+			{
+				list = index.getResultsList(LUCENE_TYPE_SPECIMEN, null,	sourceSystemCode, Integer.parseInt(totalsize),
 						ESSpecimen.class);
 			}
 
@@ -335,14 +325,11 @@ public class DwCAExporter {
 
 			Properties configFile = new Properties();
 			try { /* load the values from the properties file */
-				logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension
-						+ "' Ocurrencefields.");
-				configFile.load(getClass().getClassLoader()
-						.getResourceAsStream(
-								MAPPING_FILE_NAME + propertiesExtension));
-			} catch (IOException e) {
-				logger.info("Fault: property file '" + MAPPING_FILE_NAME
-						+ "' not found in the classpath");
+				logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension	+ "' Ocurrencefields.");
+				configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME + propertiesExtension));
+			} catch (IOException e) 
+			{
+				logger.info("Fault: property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
 				// System.out.println("property file '" + MAPPING_FILE_NAME +
 				// "' not found in the classpath");
 				return;
@@ -352,13 +339,14 @@ public class DwCAExporter {
 					configFile);
 			Set<?> keySet = sortedSystemProperties.keySet();
 			Iterator<?> iterator = keySet.iterator();
-			while (iterator.hasNext()) {
+			while (iterator.hasNext()) 
+			{
 				propertyName = (String) iterator.next();
 				propertyValue = configFile.getProperty(propertyName);
 				/* Add the headers to the CSV File */
-				if (propertyValue.contains("1")) {
-					headerRow.add(propertyValue.substring(0,
-							propertyValue.length() - 2));
+				if (propertyValue.contains("1")) 
+				{
+					headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
 				}
 				// System.out.println(propertyName + ": " + propertyValue);
 			}
@@ -368,33 +356,27 @@ public class DwCAExporter {
 			logger.info("CSV Fieldsheader: " + headerRow.toString());
 
 			/* Zoology Occurrence */
-			if (MAPPING_FILE_NAME.equals("Zoology")) {
+			if (MAPPING_FILE_NAME.equals("Zoology")) 
+			{
 				/* Add the value from ElasticSearch to the CSV File */
-				logger.info("Writing values from ElasticSearch to the '"
-						+ namecollectiontype + "' '" + MAPPING_FILE_NAME
-						+ "' Occurence.txt file.");
+				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 				Zoology zoology = new Zoology();
-				zoology.addZoologyOccurrencefield(list, filewriter,
-						MAPPING_FILE_NAME);
+				zoology.addZoologyOccurrencefield(list, filewriter,	MAPPING_FILE_NAME);
 			}
 
 			/* Geology Occurrence */
-			if (MAPPING_FILE_NAME.equals("Geology")) {
-				logger.info("Writing values from ElasticSearch to the '"
-						+ namecollectiontype + "' '" + MAPPING_FILE_NAME
-						+ "' Occurence.txt file.");
+			if (MAPPING_FILE_NAME.equals("Geology")) 
+			{
+				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 				Geology geo = new Geology();
-				geo.addGeologyOccurrencefield(list, filewriter,
-						MAPPING_FILE_NAME);
+				geo.addGeologyOccurrencefield(list, filewriter,	MAPPING_FILE_NAME);
 			}
 			/* BRAHMS Occurrence */
-			if (MAPPING_FILE_NAME.equals("Botany")) {
-				logger.info("Writing values from ElasticSearch to the '"
-						+ namecollectiontype + "' '" + MAPPING_FILE_NAME
-						+ "' Occurence.txt file.");
+			if (MAPPING_FILE_NAME.equals("Botany")) 
+			{
+				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 				Brahms brahms = new Brahms();
-				brahms.addBrahmsOccurrencefield(list, filewriter,
-						MAPPING_FILE_NAME);
+				brahms.addBrahmsOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
 			}
 
 		} catch (IOException e) {

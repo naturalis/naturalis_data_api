@@ -220,7 +220,7 @@ public class StringUtilities {
 		}
 	}
 
-	/* Renamed the zipfile extension ".zip" file to ".bak" */
+	/* Renamed the zipfile extension ".zip" file to ".zip.bak" */
 	public static void renameDwCAZipFile(File fileToRenamed) 
 	{
 		if (fileToRenamed.exists()) 
@@ -228,7 +228,7 @@ public class StringUtilities {
 			int index = fileToRenamed.getName().indexOf(".");
 			String filename = fileToRenamed.getName().substring(0, index);
 			File path = fileToRenamed.getParentFile();
-			String bakpath = path + "\\" + filename + ".bak";
+			String bakpath = path + "\\" + filename + ".zip.bak";
 			File filebak = new File(bakpath);
 			if (filebak.exists()) {
 				filebak.delete();

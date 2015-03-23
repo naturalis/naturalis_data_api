@@ -42,6 +42,10 @@ public class Zoology
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 04_CollectionType */
@@ -75,9 +79,12 @@ public class Zoology
 				if (specimen.getIdentifications().iterator().next().getDateIdentified() != null)
 				{
 					SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
-					String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next()
-							.getDateIdentified());
+					String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next().getDateIdentified());
 					dataRow.add(dateiden);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -85,21 +92,34 @@ public class Zoology
 			{
 				/* 09_LatitudeDecimal */
 				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLatitude,1"))
+				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLatitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLatitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(null);
+					}
+				}
+				   
 
 				/* 10_LongitudeDecimal */
 				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
+				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLongitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLongitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(null);
+					}
+				}
 			}
 
 			/* 11_DateTimeBegin */
@@ -110,6 +130,10 @@ public class Zoology
 					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
 					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(datebegin);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -122,29 +146,43 @@ public class Zoology
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					dataRow.add(dateEnd);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 13_Family */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,0"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
 						.getFamily());
+			}
 
 			/* 14_GenusOrMonomial */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "genus,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getGenusOrMonomial());
+			}
 
 			/* 15_Dummy1 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "geodeticDatum,1"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 16_Dummy2 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "habitat,0"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 17_Dummy3 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "higherClassification,0"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 18_SourceSystemId */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "id,1"))
@@ -165,31 +203,41 @@ public class Zoology
 						dataRow.add(per.getFullName());
 					} else
 					{
-						dataRow.add("");
+						dataRow.add(null);
 					}
 				}
 			}
 
 			/* 20_NumberOfSpecimen */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "individualCount,1"))
+			{
 				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+			}
 
 			/* 21_DummyDefault ToDO */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "informationWithheld,1"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 22_InfraspecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraSpecificEpithet,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getInfraspecificEpithet());
+			}
 
 			/* 23_Island */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,0"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getIsland());
+			}
 
 			/* 24_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
+			{
 				dataRow.add(specimen.getSourceInstitutionID());
+			}
 
 			/* 25_Kingdom */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
@@ -198,7 +246,10 @@ public class Zoology
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
 				}
-				
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 		
 			/* 26_PhaseOrStage */
@@ -265,6 +316,10 @@ public class Zoology
 					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
 							.getFullName());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 36_FullScientificName */
@@ -313,6 +368,10 @@ public class Zoology
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 43_Remarks */
@@ -321,6 +380,10 @@ public class Zoology
 				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -350,6 +413,10 @@ public class Zoology
 					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
 					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(datebegin);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 

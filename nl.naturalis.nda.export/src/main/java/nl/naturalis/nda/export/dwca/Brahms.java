@@ -19,6 +19,7 @@ public class Brahms
 	public void addBrahmsOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME)
 	{
+		
 		for (ESSpecimen specimen : list)
 		{
 			CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();

@@ -4,7 +4,7 @@
 	<!-- Load properties -->
 	<property environment="env" />
 	<property file="build.properties" />
-	
+
 	<!-- Configure Ivy. Only required for ant builds within Eclipse. -->
 	<path id="ivy.lib.path">
 		<fileset dir="${env.IVY_HOME}" includes="**/*.jar" />
@@ -16,6 +16,8 @@
 	<property name="javac.debug" value="source,lines,vars" />
 
 	<property name="home" location="${basedir}/../" />
+
+	<!-- Deprecated -->
 	<property name="nl.naturalis.nda.build.location" location="${home}/nl.naturalis.nda.build" />
 	<property name="nl.naturalis.nda.ear.location" location="${home}/nl.naturalis.nda.ear" />
 	<property name="nl.naturalis.nda.service.rest.location" location="${home}/nl.naturalis.nda.service.rest" />
@@ -25,6 +27,7 @@
 	<property name="nl.naturalis.nda.elasticsearch.dao.location" location="${home}/nl.naturalis.nda.elasticsearch.dao" />
 	<property name="nl.naturalis.nda.elasticsearch.load.location" location="${home}/nl.naturalis.nda.elasticsearch.load" />
 	<property name="nl.naturalis.nda.export.location" location="${home}/nl.naturalis.nda.export" />
+
 
 
 	<!-- =============== TASKS =============== -->

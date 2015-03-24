@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.build" default="help">
 
-	<!--
-	<property file="build.properties" />
-
-	<path id="ivy.lib.path">
-		<fileset dir="${ivy.home}" includes="*.jar" />
-	</path>
-	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
--->
 	<tstamp>
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
@@ -25,10 +17,20 @@
 			</condition>
 		</fail>
 		<!-- Check Git -->
-		<exec executable="git" outputproperty="verify.tmp2" failifexecutionfails="false">
+		<exec executable="git" outputproperty="git.ok" failifexecutionfails="false">
 			<arg value="--version" />
 		</exec>
-		<fail unless:set="verify.tmp2" message="Git not installed, or Git bin directory not added to PATH yet" />
+		<!-- Make sure build.properties.tpl has been copied to build.properties -->
+		<fail message="Copy build.properties.tpl to build.properties first and make sure it contains the right settings">
+			<condition>
+				<not>
+					<resourcecount count="1">
+						<fileset dir="${basedir}" includes="build.properties" />
+					</resourcecount>
+				</not>
+			</condition>
+		</fail>
+		<fail unless:set="git.ok" message="Git not installed, or Git bin directory not added to PATH yet" />
 		<!-- We got clearance! -->
 		<property name="signal.clear" value="on" />
 	</target>
@@ -152,6 +154,11 @@
 	<target name="build" depends="ear,load,export" />
 
 	<target name="rebuild" depends="pristine,ear,load,export" />
+
+	<target name="shell-scripts">
+		<antcall target="verify" unless:set="signal.clear" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
+	</target>
 
 	<target name="eclipse">
 		<antcall target="verify" unless:set="signal.clear" />

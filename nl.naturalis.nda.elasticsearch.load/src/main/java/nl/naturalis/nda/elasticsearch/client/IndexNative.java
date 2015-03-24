@@ -2,8 +2,7 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 
-
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
@@ -288,7 +288,7 @@ public class IndexNative implements Index {
 		SearchRequestBuilder searchRequestBuilder = null;
 
 		if (sourcesystemcode.toUpperCase().equals("CRS")) {
-			logger.info("Querying the data for CRS");
+			logger.info("Querying the data for '" + sourcesystemcode + "'");
 			/*
 			 * searchRequestBuilder = esClient .prepareSearch()
 			 * .setQuery(QueryBuilders.multiMatchQuery(namecollectiontype,
@@ -299,95 +299,135 @@ public class IndexNative implements Index {
 			 * ).setSize(size);
 			 */
 
-			 //Operator op = Operator.OR;
+			// Operator op = Operator.OR;
 			// MultiMatchQueryBuilder qb =
 			// QueryBuilders.multiMatchQuery(namecollectiontype,
 			// "collectionType")
 			// .operator(op);
-			
-			
+
 			BoolQueryBuilder qb = null;
 			String nameCollectionType1 = null;
 			String nameCollectionType2 = null;
-			
-			if (namecollectiontype.contains(",")) 
-			{
+
+			if (namecollectiontype.contains(",")) {
 				int index = namecollectiontype.indexOf(",");
 				nameCollectionType1 = namecollectiontype.substring(0, index);
 				nameCollectionType2 = namecollectiontype.substring(index + 2, namecollectiontype.length());
-				qb = QueryBuilders.boolQuery()
-						.should(QueryBuilders.termQuery("collectionType.raw", nameCollectionType1))
-						.should(QueryBuilders.termQuery("collectionType.raw", nameCollectionType2));
-				} 
-				else
-				{
-					qb =  QueryBuilders.boolQuery()
-							.should(QueryBuilders.termQuery("collectionType.raw", namecollectiontype));
-	
-				}
-				logger.info(qb.toString());
+				qb = QueryBuilders
+						.boolQuery()
+						.must(QueryBuilders.termQuery("collectionType.raw",	nameCollectionType1))
+						.must(QueryBuilders.termQuery("collectionType.raw", nameCollectionType2));
+			} else {
+				qb = QueryBuilders.boolQuery().must(
+						QueryBuilders.termQuery("collectionType.raw", namecollectiontype));
 
-				searchRequestBuilder = esClient.prepareSearch()
-						//.setQuery(filteredQuery(qb, nameCollectionType1))
-						.setQuery(qb)
-						.setSearchType(SearchType.SCAN).setExplain(true)
-						.setTypes("best_fields")
+			}
+			logger.info(qb.toString());
+
+			if (size <= 0) {
+				CountResponse res = esClient.prepareCount().setQuery(qb)
+						.execute().actionGet();
+				size = (int) res.getCount();
+			}
+
+			if (size > 0) {
+				searchRequestBuilder = esClient
+						.prepareSearch()
+						.setVersion(true)
+						// .setQuery(filteredQuery(qb, nameCollectionType1))
+						.setQuery(qb).setSearchType(SearchType.SCAN)
+						.setExplain(true).setTypes("best_fields")
 						.setScroll(new TimeValue(60000)).setIndices(indexName)
 						.setTypes(type).setSize(size);
 			}
-		/* BRAHMS */
-		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) {
-			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
-					sourcesystemcode.toUpperCase(), "sourceSystem.code.raw");
-			logger.info("Querying the data for BRAHMS");
-			logger.info(querybrahms.toString());
-			searchRequestBuilder = esClient.prepareSearch()
-					.setQuery(querybrahms).setSearchType(SearchType.SCAN)
-					.setExplain(true).setScroll(new TimeValue(60000))
-					.setIndices(indexName).setTypes(type).setSize(size);
 		}
 
-		SearchResponse response = searchRequestBuilder.execute().actionGet();
+		/* BRAHMS */
+		SearchResponse response = null;
+		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) 
+		{
+			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
+					sourcesystemcode.toUpperCase(), "sourceSystem.code");
+			logger.info("Querying the data for BRAHMS");
+			logger.info(querybrahms.toString());
+
+			if (size <= 0) 
+			{
+				CountResponse res = esClient.prepareCount()
+						.setQuery(querybrahms).execute().actionGet();
+				size = (int) res.getCount();
+			}
+
+			if (size > 0) 
+			{
+				searchRequestBuilder = esClient.prepareSearch()
+						.setVersion(true)
+						.setQuery(querybrahms).setSearchType(SearchType.SCAN)
+						.setExplain(true).setScroll(TimeValue.timeValueMinutes(60000)) // new TimeValue(60000))
+						.setIndices(indexName).setTypes(type).setSize(size);
+				
+				/* response = esClient.prepareSearch()
+				 .setSearchType(SearchType.SCAN) 
+				 .setScroll(new TimeValue(60000)) 
+				 .setQuery(querybrahms) 
+				 .setSize(size)
+				 .execute().actionGet();*/
+				
+			}
+		}
+
+		response = searchRequestBuilder.execute().actionGet();
 
 		logger.info("Status: " + response.status());
 
 		logger.info("Scrollid:" + response.getScrollId());
 
-		long totalHitCount = response.getHits().getTotalHits();
+		long totalHitCount = 0;
+		totalHitCount = response.getHits().getTotalHits();
 		logger.info("Total hits: " + totalHitCount);
 
 		/* Show response properties */
 		String output = response.toString();
 		logger.info(output);
 
+		logger.info("Total records in occurrence file: " + totalHitCount);
 		List<T> list = new ArrayList<T>();
-		while (true) {
-			response = esClient.prepareSearchScroll(response.getScrollId())
-					.setScrollId(response.getScrollId())
-					.setScroll(new TimeValue(600000)).execute().actionGet();
-
-			SearchHit[] results = response.getHits().getHits();
-			logger.info("Total records in occurrence file: " + results.length);
-
-			try {
-				for (SearchHit hit : response.getHits()) {
-					T result = objectMapper.convertValue(hit.getSource(),
-							targetClass);
+		//int count = 0;
+		while (true) 
+		{
+			try 
+			{
+				for (SearchHit hit : response.getHits()) 
+				{
+					T result = objectMapper.convertValue(hit.getSource(), targetClass); 
+					//System.out.println((Integer) count++);
 					list.add(result);
-
-					// Break condition: No hits are returned
-					if (response.getHits().hits().length == 0) {
-						logger.info("No hits");
-						break;
-					}
 				}
-			} catch (Exception e) {
-				throw new IndexException(e);
+				
+				response = esClient.prepareSearchScroll(response.getScrollId())
+						.setScrollId(response.getScrollId())
+						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
+				
+				//SearchHit[] results = response.getHits().getHits();
+				//logger.info("Total records in occurrence file: " + results.length);
+				
+				// Break condition: No hits are returned
+				if (response.getHits().hits().length == 0) 
+				{
+					logger.info("No hits");
+						break;
+				}
+			 // }
 			}
-			return list;
-		}
+			 catch (Exception e) {
+				 e.printStackTrace();
+				 logger.info("Failed to copy data from index " + response.getScrollId() + " into " + size + ".", e);
+				//throw new IndexException(e);
+			}
+		// return list;
+		 }
+		return list;
 	}
-
 
 	@Override
 	public boolean deleteDocument(String type, String id) {

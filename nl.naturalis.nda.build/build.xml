@@ -34,7 +34,7 @@
 		</fail>
 		<!-- We got clearance! -->
 		<property name="signal.clear" value="on" />
-		<echo message="Seems like you're good to go!" />
+		<echo message="You got clearance!" />
 	</target>
 
 	<target name="verify" description="Verify preconditions for doing NBA builds with Ant">

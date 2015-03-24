@@ -63,13 +63,26 @@
 			<arg value="--abbrev-ref" />
 			<arg value="HEAD" />
 		</exec>
+		<exec executable="git" outputproperty="git.status" failifexecutionfails="false">
+			<arg value="status" />
+			<arg value="-s" />
+		</exec>
+		<condition property="git.committed">
+			<and>
+				<equals arg1="${git.status}" arg2="" trim="true" />
+				<isset property="git.got.info" />
+			</and>
+		</condition>
 		<echo unless:set="git.got.info" message=" " />
 		<echo unless:set="git.got.info" message="****************************************************************" />
 		<echo unless:set="git.got.info" message="You are on branch: ${git.branch}" />
 		<echo unless:set="git.got.info" message="****************************************************************" />
 		<echo unless:set="git.got.info" message=" " />
 		<echo unless:set="git.got.info" message="Last commit: ${git.revision}" />
+		<echo unless:true="git.committed" message=" " />
+		<echo unless:true="git.committed" message="Warning: there are uncommitted changes in ${git.branch}" />
 		<!-- Allow some time for a heart attack -->
+		<echo unless:set="git.got.info" message="You got 3 seconds before the build continues ..." />
 		<sleep unless:set="git.got.info" seconds="3" />
 		<property name="git.got.info" value="true" />
 	</target>

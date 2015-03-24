@@ -70,7 +70,6 @@
 		<condition property="git.committed">
 			<and>
 				<equals arg1="${git.status}" arg2="" trim="true" />
-				<isset property="git.got.info" />
 			</and>
 		</condition>
 		<echo message="" />

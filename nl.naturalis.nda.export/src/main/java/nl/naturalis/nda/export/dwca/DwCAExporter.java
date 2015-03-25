@@ -10,12 +10,15 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,13 +27,11 @@ import javax.xml.bind.Marshaller;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.export.dwca.FindFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.naturalis.nda.export.dwca.StringUtilities;
-import nl.naturalis.nda.export.dwca.Zoology;
+
 
 /**
  * @author Reinier.Kartowikromo
@@ -84,35 +85,24 @@ public class DwCAExporter {
 		emlDirectory = StringUtilities.readPropertyvalue(args[0], "EMLDirectory");
 
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
-		outputDirectory = StringUtilities.readPropertyvalue(args[0],
-				"Directory") + "\\";
+		outputDirectory = StringUtilities.readPropertyvalue(args[0], "Directory") + "\\";
 
 		collectionName = StringUtilities.readPropertyvalue(args[0],	"Collectionname");
 
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
 		if (collectionName != null) 
 		{
-			sourceSystemCode = StringUtilities.readPropertyvalue(collectionName, "sourceSystemcode");
+			sourceSystemCode = StringUtilities.readPropertyvalue(collectionName, "sourceSystemCode");
 			/* Get the Ocurrencefields value */
-			MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(collectionName, "Ocurrencefields");
+			MAPPING_FILE_NAME = StringUtilities.readPropertyvalue(collectionName, "occurrenceFields");
 		}
 
 		/* args[2] Get the Collectiontype */
 		try {
 			if (sourceSystemCode.equals("CRS")) {
 				nameCollectiontypeCrs = StringUtilities.readPropertyvalue(collectionName, "collectionType");
-
-				// if (nameCollectiontypeCrs.contains(","))
-				// {
-				// String resultcoltype = nameCollectiontypeCrs;
-				// int index = resultcoltype.indexOf(",");
-				// int collength = resultcoltype.length();
-				// nameCollectiontypeCrs = nameCollectiontypeCrs.substring(0,
-				// index);
-				// setNameCollectiontypeAnd(resultcoltype.substring(index + 2,
-				// collength));
-				// }
 			}
+			
 			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
 			{
 				collectionName = StringUtilities.readPropertyvalue(collectionName, "Collectionname");
@@ -193,7 +183,8 @@ public class DwCAExporter {
 	private final IndexNative index;
 
 	public void ExportDwca(String zipFileName, String namecollectiontype,
-			String totalsize) throws Exception {
+			String totalsize) throws Exception 
+	{
 		printHeaderRowAndDataForCSV(namecollectiontype, totalsize);
 
 		logger.info("Creating the Meta.xml file.");
@@ -233,22 +224,30 @@ public class DwCAExporter {
 		String emlfilefromdir = null;
 		if (sourceSystemCode.equals("CRS")) 
 		{
+			/* Get the EML Filename */
 			emlfilefromdir = GetEmlFileName(emlDirectory, collectionName);
 			logger.info("Reading the file from: '" + emlDirectory + "\\" + emlfilefromdir + "'.");
+			/* Directory Source EML File */
 			FILE_NAME_EML = new File(emlDirectory + "\\" + emlfilefromdir);
+			/* Destination directory for eml file */
 			destinationPathEml = new File(outputDirectory + "\\" + emlfilefromdir);
 			logger.info("Copy the file to: '" + outputDirectory + emlfilefromdir + "'.");
 		}
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
 		{
 			nameCollectiontypeBrahms = sourceSystemCode;
+			/* Get the EML Filename */
 			emlfilefromdir = GetEmlFileName(emlDirectory, MAPPING_FILE_NAME.toLowerCase());
 			logger.info("Reading the file from: '" + emlDirectory + "\\"+ emlfilefromdir + "'.");
+			/* Directory Source EML File */
 			FILE_NAME_EML = new File(emlDirectory + "\\" + emlfilefromdir);
+			/* Destination directory for eml file */
 			destinationPathEml = new File(outputDirectory + "\\" + emlfilefromdir);
 			logger.info("Copy the file to: '" + outputDirectory + emlfilefromdir + "'.");
 		}
+		/* Copy the file from the source directory to the Destination directory */
 		StringUtilities.CopyAFile(FILE_NAME_EML, destinationPathEml);
+		/* Rename the (example: amphibia_and_reptilia_eml.xml) eml file to the exact name "eml.xml" */
 		StringUtilities.renameDwCAEMLFile(destinationPathEml);
 
 		/* Create the zipfile with a given filename */
@@ -360,23 +359,41 @@ public class DwCAExporter {
 			{
 				/* Add the value from ElasticSearch to the CSV File */
 				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+				long lStartTime = new Date().getTime();
 				Zoology zoology = new Zoology();
 				zoology.addZoologyOccurrencefield(list, filewriter,	MAPPING_FILE_NAME);
+				long lEndTime = new Date().getTime();
+				long difference = lEndTime - lStartTime;
+				//int minutes = (int) ((difference / (1000*60)) % 60);
+				//logger.info("CSV file written in : '" + minutes + " minutes. '");
+				logger.info("CSV file written in : '" + TimeUnit.MILLISECONDS.toMinutes(difference) + " minutes.'");
 			}
 
 			/* Geology Occurrence */
 			if (MAPPING_FILE_NAME.equals("Geology")) 
 			{
 				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+				long lStartGeoTime = new Date().getTime();
 				Geology geo = new Geology();
 				geo.addGeologyOccurrencefield(list, filewriter,	MAPPING_FILE_NAME);
+				long lEndGeoTime = new Date().getTime();
+				long differenceGeo = lEndGeoTime - lStartGeoTime;
+				//int minutesGeo = (int) ((differenceGeo / (1000*60)) % 60);
+				//logger.info("CSV file written in : '" + minutesGeo + " minutes. '");
+				logger.info("CSV file written in : '" + TimeUnit.MILLISECONDS.toMinutes(differenceGeo) + " minutes.'");
 			}
 			/* BRAHMS Occurrence */
 			if (MAPPING_FILE_NAME.equals("Botany")) 
 			{
 				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+				long lStartBrahmsTime = new Date().getTime();
 				Brahms brahms = new Brahms();
 				brahms.addBrahmsOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
+				long lEndBrahmsTime = new Date().getTime();
+				long differenceBrahms = lEndBrahmsTime - lStartBrahmsTime;
+				//int minutesBrahms = (int) ((differenceBrahms / (1000*60)) % 60);
+				//logger.info("CSV file written in : '" + minutesBrahms + " minutes. '");
+				logger.info("CSV file written in : '" + TimeUnit.MILLISECONDS.toMinutes(differenceBrahms) + " minutes.'");
 			}
 
 		} catch (IOException e) {
@@ -400,4 +417,6 @@ public class DwCAExporter {
 	public static void setNameCollectiontypeAnd(String nameCollectiontypeAnd) {
 		DwCAExporter.nameCollectiontypeAnd = nameCollectiontypeAnd;
 	}
+	
+	
 }

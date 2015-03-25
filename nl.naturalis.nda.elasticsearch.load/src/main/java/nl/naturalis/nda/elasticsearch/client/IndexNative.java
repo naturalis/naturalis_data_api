@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.apache.lucene.queryparser.xml.builders.TermsFilterBuilder;
@@ -19,6 +20,7 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequestBuilder;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
@@ -39,8 +41,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.engine.Engine.Flush;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
@@ -289,23 +293,8 @@ public class IndexNative implements Index {
 
 		if (sourcesystemcode.toUpperCase().equals("CRS")) {
 			logger.info("Querying the data for '" + sourcesystemcode + "'");
-			/*
-			 * searchRequestBuilder = esClient .prepareSearch()
-			 * .setQuery(QueryBuilders.multiMatchQuery(namecollectiontype,
-			 * "collectionType", "sourceSystem.code"))
-			 * .setSearchType(SearchType.SCAN) //.setExplain(true)
-			 * .setScroll(new
-			 * TimeValue(60000)).setIndices(indexName).setTypes(type
-			 * ).setSize(size);
-			 */
 
-			// Operator op = Operator.OR;
-			// MultiMatchQueryBuilder qb =
-			// QueryBuilders.multiMatchQuery(namecollectiontype,
-			// "collectionType")
-			// .operator(op);
-
-			BoolQueryBuilder qb = null;
+			FilteredQueryBuilder builder = null;
 			String nameCollectionType1 = null;
 			String nameCollectionType2 = null;
 
@@ -313,31 +302,44 @@ public class IndexNative implements Index {
 				int index = namecollectiontype.indexOf(",");
 				nameCollectionType1 = namecollectiontype.substring(0, index);
 				nameCollectionType2 = namecollectiontype.substring(index + 2, namecollectiontype.length());
-				qb = QueryBuilders
-						.boolQuery()
-						.must(QueryBuilders.termQuery("collectionType.raw",	nameCollectionType1))
-						.must(QueryBuilders.termQuery("collectionType.raw", nameCollectionType2));
-			} else {
-				qb = QueryBuilders.boolQuery().must(
-						QueryBuilders.termQuery("collectionType.raw", namecollectiontype));
-
+				
+				builder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
+						.must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode)),
+                        FilterBuilders.orFilter(FilterBuilders.termFilter("collectionType.raw", nameCollectionType1),
+                                		        FilterBuilders.termFilter("collectionType.raw", nameCollectionType2)));
 			}
-			logger.info(qb.toString());
+			else 
+			{
+				if (namecollectiontype != null)
+				{
+					builder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
+							  .must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode))
+							  .must(QueryBuilders.matchQuery("collectionType.raw", namecollectiontype)), null);
+				}
+			}
+			
+			if (builder != null)
+			{
+				logger.info(builder.toString());
+			}
 
 			if (size <= 0) {
-				CountResponse res = esClient.prepareCount().setQuery(qb)
+				CountResponse res = esClient.prepareCount().setQuery(builder)
 						.execute().actionGet();
 				size = (int) res.getCount();
 			}
 
-			if (size > 0) {
+			if (size > 0) 
+			{
 				searchRequestBuilder = esClient
 						.prepareSearch()
 						.setVersion(true)
-						// .setQuery(filteredQuery(qb, nameCollectionType1))
-						.setQuery(qb).setSearchType(SearchType.SCAN)
-						.setExplain(true).setTypes("best_fields")
-						.setScroll(new TimeValue(60000)).setIndices(indexName)
+						.setQuery(builder)
+						.setSearchType(SearchType.SCAN)
+						.setExplain(true)
+						.setTypes("best_fields")
+						.setScroll(new TimeValue(60000))
+						.setIndices(indexName)
 						.setTypes(type).setSize(size);
 			}
 		}
@@ -363,16 +365,8 @@ public class IndexNative implements Index {
 				searchRequestBuilder = esClient.prepareSearch()
 						.setVersion(true)
 						.setQuery(querybrahms).setSearchType(SearchType.SCAN)
-						.setExplain(true).setScroll(TimeValue.timeValueMinutes(60000)) // new TimeValue(60000))
+						.setExplain(true).setScroll(TimeValue.timeValueMinutes(60000))
 						.setIndices(indexName).setTypes(type).setSize(size);
-				
-				/* response = esClient.prepareSearch()
-				 .setSearchType(SearchType.SCAN) 
-				 .setScroll(new TimeValue(60000)) 
-				 .setQuery(querybrahms) 
-				 .setSize(size)
-				 .execute().actionGet();*/
-				
 			}
 		}
 
@@ -402,32 +396,30 @@ public class IndexNative implements Index {
 					T result = objectMapper.convertValue(hit.getSource(), targetClass); 
 					//System.out.println((Integer) count++);
 					list.add(result);
+					Requests.flushRequest(indexName);
+					Requests.refreshRequest(indexName);
 				}
 				
 				response = esClient.prepareSearchScroll(response.getScrollId())
 						.setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
 				
-				//SearchHit[] results = response.getHits().getHits();
-				//logger.info("Total records in occurrence file: " + results.length);
-				
 				// Break condition: No hits are returned
 				if (response.getHits().hits().length == 0) 
 				{
-					logger.info("No hits");
-						break;
+					logger.info("no more hits.'" + response.getHits().hits().length + "'");
+					break;
 				}
-			 // }
 			}
 			 catch (Exception e) {
-				 e.printStackTrace();
-				 logger.info("Failed to copy data from index " + response.getScrollId() + " into " + size + ".", e);
-				//throw new IndexException(e);
+				// e.printStackTrace();
+				 logger.info("Failed to copy data from index " + indexName + " into " + size + ".", e);
 			}
-		// return list;
 		 }
 		return list;
 	}
+
+
 
 	@Override
 	public boolean deleteDocument(String type, String id) {

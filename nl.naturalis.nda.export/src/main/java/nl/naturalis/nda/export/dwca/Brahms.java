@@ -43,6 +43,10 @@ public class Brahms
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 04_CollectionType */
@@ -79,6 +83,10 @@ public class Brahms
 					String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next().getDateIdentified());
 					dataRow.add(dateiden);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
@@ -92,6 +100,10 @@ public class Brahms
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLatitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(" ");
+					}
 				}
 				
 				/* 10_LongitudeDecimal */
@@ -100,6 +112,10 @@ public class Brahms
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
+					}
+					else
+					{
+						dataRow.add(" ");
 					}
 				}
 			}
@@ -113,6 +129,10 @@ public class Brahms
 					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(datebegin);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 12_DateTimeEnd */
@@ -123,6 +143,10 @@ public class Brahms
 					SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					dataRow.add(dateEnd);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -161,6 +185,10 @@ public class Brahms
 					String family = specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily();
 					dataRow.add(kingdom + "|" + classname + "|" + order + "|" + family);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 18_SourceSystemId */
@@ -182,8 +210,12 @@ public class Brahms
 						dataRow.add(per.getFullName());
 					} else
 					{
-						dataRow.add("");
+						dataRow.add(null);
 					}
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -214,7 +246,14 @@ public class Brahms
 			/* 24_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
 			{
-				dataRow.add(specimen.getSourceInstitutionID());
+				if(specimen.getSourceInstitutionID().contains("Naturalis"))
+				{
+    			  dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+				}
+				else
+				{
+					  dataRow.add(specimen.getSourceInstitutionID());
+				}
 			}
 
 			/* 25_Kingdom */
@@ -223,6 +262,10 @@ public class Brahms
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 				
@@ -287,6 +330,10 @@ public class Brahms
 				{
 					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 36_FullScientificName */
@@ -332,6 +379,10 @@ public class Brahms
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 43_Remarks */
@@ -340,6 +391,10 @@ public class Brahms
 				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -352,7 +407,14 @@ public class Brahms
 			/* 45_Depth */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,0"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getDepth());
+				if (specimen.getGatheringEvent().getDepth() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getDepth());
+				}
+				else
+				{
+					dataRow.add(" ");
+				}
 			}
 
 			/* 46_AltitudeUnifOfMeasurement */
@@ -369,6 +431,10 @@ public class Brahms
 					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
 					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(datebegin);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 

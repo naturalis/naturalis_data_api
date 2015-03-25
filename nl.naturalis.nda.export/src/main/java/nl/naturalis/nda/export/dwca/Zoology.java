@@ -101,7 +101,7 @@ public class Zoology
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				   
@@ -117,7 +117,7 @@ public class Zoology
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 			}
@@ -217,7 +217,7 @@ public class Zoology
 			/* 21_DummyDefault ToDO */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "informationWithheld,1"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 22_InfraspecificEpithet */
@@ -236,7 +236,14 @@ public class Zoology
 			/* 24_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
 			{
-				dataRow.add(specimen.getSourceInstitutionID());
+				if(specimen.getSourceInstitutionID().contains("Naturalis"))
+				{
+    			  dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+				}
+				else
+				{
+					  dataRow.add(specimen.getSourceInstitutionID());
+				}
 			}
 
 			/* 25_Kingdom */
@@ -396,7 +403,14 @@ public class Zoology
 			/* 45_Depth */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getDepth());
+				if (specimen.getGatheringEvent().getDepth() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getDepth());
+				}
+				else
+				{
+					dataRow.add(" ");
+				}
 			}
 			
 			/* 46_AltitudeUnifOfMeasurement */

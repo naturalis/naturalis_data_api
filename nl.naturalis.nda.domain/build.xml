@@ -9,14 +9,17 @@
 	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
 	<path id="non-ivy-dependencies" />
 
-	<!-- Export jar file, but only if it does not exist already -->
-	<target name="build" unless:set="${ant.project.name}.packaged">
+	<!-- Build referenced projects -->
+	<target name="-projects" />
+
+	<!-- Create jar file, but only if it does not exist already -->
+	<target name="-package" depends="-projects,compile-sources,package" />
+
+	<target name="build">
 		<available file="build/${domain.module.artifact}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
-		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
-		<antcall target="common.package" unless:set="${ant.project.name}.packaged" />
-		<property name="${ant.project.name}.packaged" value="true" />
+		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="rebuild" depends="clean,build" />

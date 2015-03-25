@@ -17,7 +17,7 @@ public class Brahms
 	}
 
 	public void addBrahmsOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
-			String MAPPING_FILE_NAME)
+			String MAPPING_FILE_NAME) throws Exception 
 	{
 		
 		for (ESSpecimen specimen : list)
@@ -102,7 +102,7 @@ public class Brahms
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(null);
 					}
 				}
 				
@@ -115,7 +115,7 @@ public class Brahms
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(null);
 					}
 				}
 			}
@@ -413,7 +413,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(null);
 				}
 			}
 

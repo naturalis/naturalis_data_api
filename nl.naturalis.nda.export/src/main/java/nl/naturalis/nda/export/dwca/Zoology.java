@@ -101,7 +101,7 @@ public class Zoology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(null);
 					}
 				}
 				   
@@ -117,7 +117,7 @@ public class Zoology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(null);
 					}
 				}
 			}
@@ -195,8 +195,7 @@ public class Zoology
 			{
 				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
 				{
-					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator()
-							.next();
+					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator().next();
 					if (ag instanceof Person)
 					{
 						Person per = (Person) ag;
@@ -409,7 +408,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(null);
 				}
 			}
 			

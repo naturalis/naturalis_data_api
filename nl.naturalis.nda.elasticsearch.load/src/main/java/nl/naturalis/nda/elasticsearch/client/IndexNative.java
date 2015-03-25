@@ -336,9 +336,6 @@ public class IndexNative implements Index {
 		SearchResponse response = null;
 		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) 
 		{
-/*			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
-					sourcesystemcode.toUpperCase(), "sourceSystem.code");*/
-			
 			FilteredQueryBuilder brahmsBuilder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
 					  .must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode.toUpperCase())), null);
 					  
@@ -385,7 +382,6 @@ public class IndexNative implements Index {
 
 		logger.info("Total records in occurrence file: " + totalHitCount);
 		List<T> list = new ArrayList<T>();
-		//int count = 0;
 		while (true) 
 		{
 			try 
@@ -393,7 +389,6 @@ public class IndexNative implements Index {
 				for (SearchHit hit : response.getHits()) 
 				{
 					T result = objectMapper.convertValue(hit.getSource(), targetClass); 
-					//System.out.println((Integer) count++);
 					list.add(result);
 					Requests.flushRequest(indexName);
 					Requests.refreshRequest(indexName);

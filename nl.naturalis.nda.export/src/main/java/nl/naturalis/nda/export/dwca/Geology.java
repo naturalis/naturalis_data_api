@@ -96,7 +96,7 @@ public class Geology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(null);
 					}
 				}
 
@@ -111,7 +111,7 @@ public class Geology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(null);
 					}
 				}
 			}
@@ -232,11 +232,11 @@ public class Geology
 			{
 				if(specimen.getSourceInstitutionID().contains("Naturalis"))
 				{
-    			  dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+					dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
 				}
 				else
 				{
-					  dataRow.add(specimen.getSourceInstitutionID());
+					dataRow.add(specimen.getSourceInstitutionID());
 				}
 			}
 
@@ -404,7 +404,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(null);
 				}
 			}
 

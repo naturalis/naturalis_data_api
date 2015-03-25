@@ -300,7 +300,7 @@ public class DwCAExporter {
 	}
 
 	/* Printing tghe records to a CSV file named: "Occurrence.txt" */
-	private void printHeaderRowAndDataForCSV(String namecollectiontype,	String totalsize) 
+	private void printHeaderRowAndDataForCSV(String namecollectiontype,	String totalsize) throws IOException 
 	{
 		CsvFileWriter filewriter = null;
 		if (list != null)
@@ -388,7 +388,14 @@ public class DwCAExporter {
 				logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 				long lStartBrahmsTime = new Date().getTime();
 				Brahms brahms = new Brahms();
-				brahms.addBrahmsOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
+				if (brahms != null)
+				{
+					try {
+						brahms.addBrahmsOccurrencefield(list, filewriter, MAPPING_FILE_NAME);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 				long lEndBrahmsTime = new Date().getTime();
 				long differenceBrahms = lEndBrahmsTime - lStartBrahmsTime;
 				//int minutesBrahms = (int) ((differenceBrahms / (1000*60)) % 60);

@@ -1,16 +1,9 @@
 package nl.naturalis.nda.elasticsearch.client;
 
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
-import org.apache.lucene.queryparser.xml.builders.TermsFilterBuilder;
-import org.apache.lucene.search.TermQuery;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -20,7 +13,6 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
-import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequestBuilder;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
@@ -44,18 +36,14 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.engine.Engine.Flush;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder.Operator;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -348,15 +336,22 @@ public class IndexNative implements Index {
 		SearchResponse response = null;
 		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) 
 		{
-			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
-					sourcesystemcode.toUpperCase(), "sourceSystem.code");
+/*			MultiMatchQueryBuilder querybrahms = QueryBuilders.multiMatchQuery(
+					sourcesystemcode.toUpperCase(), "sourceSystem.code");*/
+			
+			FilteredQueryBuilder brahmsBuilder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
+					  .must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode.toUpperCase())), null);
+					  
 			logger.info("Querying the data for BRAHMS");
-			logger.info(querybrahms.toString());
+			if(brahmsBuilder != null)
+			{
+				logger.info(brahmsBuilder.toString());
+			}
 
 			if (size <= 0) 
 			{
 				CountResponse res = esClient.prepareCount()
-						.setQuery(querybrahms).execute().actionGet();
+						.setQuery(brahmsBuilder).execute().actionGet();
 				size = (int) res.getCount();
 			}
 
@@ -364,9 +359,13 @@ public class IndexNative implements Index {
 			{
 				searchRequestBuilder = esClient.prepareSearch()
 						.setVersion(true)
-						.setQuery(querybrahms).setSearchType(SearchType.SCAN)
-						.setExplain(true).setScroll(TimeValue.timeValueMinutes(60000))
-						.setIndices(indexName).setTypes(type).setSize(size);
+						.setQuery(brahmsBuilder)
+						.setSearchType(SearchType.SCAN)
+						.setExplain(true)
+						.setScroll(TimeValue.timeValueMinutes(60000))
+						.setIndices(indexName)
+						.setTypes(type)
+						.setSize(size);
 			}
 		}
 

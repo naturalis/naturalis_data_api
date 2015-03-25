@@ -148,8 +148,12 @@
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="sh" depends="git-info" description="Install Unix shell script wrappers for the import and export programs">
+	<target name="sh" depends="load,export" description="Install Unix shell script wrappers for the import and export programs">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
+	</target>
+
+	<target name="sh-config" description="Re-installs the shell scripts without building the load and export modules (useful if build.properties has changed)">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="update-import" />
 	</target>
 
 	<target name="build" depends="ear,load,export" description="Build ear file, import programs and export programs" />
@@ -161,7 +165,7 @@
 	</target>
 
 	<target name="help" description="Show help text">
-		<echo message="Show all build options                            : ant -p" />
+		<echo message="Show all build target                             : ant -p" />
 		<echo message="Build all modules                                 : ant build" />
 		<echo message="Clean all modules and then rebuild                : ant rebuild | pristine build" />
 		<echo message="Build ear file                                    : ant ear" />

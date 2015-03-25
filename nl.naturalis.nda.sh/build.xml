@@ -10,13 +10,6 @@
 		<delete dir="${nda.import.install.dir}" />
 	</target>
 
-	<target name="-build-load-module">
-		<ant antfile="${nl.naturalis.nda.build.location}/build.xml" useNativeBasedir="true" inheritrefs="true">
-			<target name="pristine" />
-			<target name="load" />
-		</ant>
-	</target>
-
 	<!--
 		Reinstalls shell scripts and configuration files using the
 		latest version of build.properties, but avoids rebuilding
@@ -37,7 +30,7 @@
 		</copy>
 	</target>
 
-	<target name="install-import" depends="-build-load-module">
+	<target name="install-import">
 		<mkdir dir="${nda.import.install.dir}" />
 		<antcall target="update-import" />
 		<echo message="Installing libraries into ${nda.import.install.dir}/lib" />

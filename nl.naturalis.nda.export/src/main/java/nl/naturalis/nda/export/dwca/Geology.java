@@ -25,33 +25,47 @@ public class Geology
 
 			/* 01_RecordBasis */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "basisOfRecord,1"))
+			{
 				dataRow.add(specimen.getRecordBasis());
+			}
 
 			/* 02_CatalogNumber */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "catalogNumber,1"))
+			{
 				dataRow.add(specimen.getSourceSystemId());
-
+			}
+			
 			/* 03_ClassName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,0"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
 						.getClassName());
+			}
 
 			/* 04_CollectionType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "collectionCode,1"))
+			{	
 				dataRow.add(specimen.getCollectionType());
-
+			}
+				
 			/* 05_Continent */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "continent,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
-
+			}
+				
 			/* 06_Country */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "country,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getCountry());
+			}
 
 			/* ToDo: GetCity moet County worden. */
 			/* 07_County */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "county,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getCity());
+			}
 
 			/* 08_DateIdentified */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "dateIdentified,1"))
@@ -63,72 +77,138 @@ public class Geology
 							.getDateIdentified());
 					dataRow.add(dateiden);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 			{
 				/* 09_LatitudeDecimal */
 				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLatitude,1"))
+				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLatitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLatitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(null);
+					}
+				}
 
 				/* 10_LongitudeDecimal */
 				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
+				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLongitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLongitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(null);
+					}
+				}
 			}
 
 			/* 11_DateTimeBegin */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
 				{
-					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(datebegin);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateEnd);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
 			/* 12_DateTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				if (specimen.getGatheringEvent().getDateTimeEnd() != null)
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() != null)
 				{
-					SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					dataRow.add(dateEnd);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
 			/* 13_Family */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,0"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
 						.getFamily());
-
+			}
+			
 			/* 14_GenusOrMonomial */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "genus,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getGenusOrMonomial());
+			}
 
 			/* 15_Dummy1 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "geodeticDatum,1"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 16_Dummy2 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "habitat,1"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 17_Dummy3 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "higherClassification,0"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 18_SourceSystemId */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "id,1"))
@@ -149,31 +229,48 @@ public class Geology
 						dataRow.add(per.getFullName());
 					} else
 					{
-						dataRow.add("");
+						dataRow.add(null);
 					}
 				}
 			}
 
 			/* 20_NumberOfSpecimen */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "individualCount,1"))
+			{
 				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+			}
 
 			/* 21_DummyDefault ToDO */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "informationWithheld,1"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 22_InfraspecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraSpecificEpithet,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getInfraspecificEpithet());
+			}
 
 			/* 23_Island */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,0"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getIsland());
+			}
 
 			/* 24_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
-				dataRow.add(specimen.getSourceInstitutionID());
+			{
+				if(specimen.getSourceInstitutionID().contains("Naturalis"))
+				{
+					dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+				}
+				else
+				{
+					dataRow.add(specimen.getSourceInstitutionID());
+				}
+			}
 
 			/* 25_Kingdom */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
@@ -183,45 +280,81 @@ public class Geology
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
 							.getKingdom());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 26_PhaseOrStage */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "lifeStage,1"))
+			{
 				dataRow.add(specimen.getPhaseOrStage());
+			}
 
 			/* 27_Locality */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "locality,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getLocality());
+			}
 
 			/* 28_Dummy4 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "maximumElevationInMeters,0"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getLocality());
+			}
 
 			/* 29_Dummy5 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "minimumElevationInMeters,0"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getLocality());
+			}
 
 			/* 30_Dummy6 ToDO ? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "nomenclaturalCode,1"))
+			{
 				dataRow.add(null);
+			}
 
 			/* 31_DummyDefault */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "occurrenceID,1"))
-				dataRow.add(specimen.getSourceSystemId());
+			{
+				String institutionCode = null;
+				String objectType = "specimen";
+				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
+				{
+					if(specimen.getSourceInstitutionID().contains("Naturalis"))
+					{
+	    			   institutionCode = specimen.getSourceInstitutionID().substring(0, 9);
+					}
+					else
+					{
+						institutionCode = specimen.getSourceInstitutionID();	
+					}
+				}
+				/* PersitentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
+				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
+			}
 
 			/* 32_Order */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "order,0"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
 						.getOrder());
+			}
 
 			/* 33_Phylum */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "phylum,0"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
 						.getPhylum());
+			}
 
 			/* 34_PreparationType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "preparations,1"))
+			{
 				dataRow.add(specimen.getPreparationType());
+			}
 
 			/* 35_gatheringEvent.gatheringAgents.fullName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "recordedBy,1"))
@@ -231,34 +364,50 @@ public class Geology
 					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next()
 							.getFullName());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 36_FullScientificName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificName,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getFullScientificName());
+			}
 
 			/* 37_AuthorshipVerbatim */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificnameAuthorship,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getAuthorshipVerbatim());
+			}
 
 			/* 38_Sex */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "sex,1"))
+			{
 				dataRow.add(specimen.getSex());
+			}
 
 			/* 39_SpecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "specificEpithet,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
 						.getSpecificEpithet());
+			}
 
 			/* 40_ProvinceState */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "stateProvince,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getProvinceState());
+			}
 
 			/* 41_Subgenus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "subGenus,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
+			}
 
 			/* 42_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,0"))
@@ -266,6 +415,10 @@ public class Geology
 				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -276,19 +429,36 @@ public class Geology
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 44_TypeStatus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "typeStatus,1"))
+			{
 				dataRow.add(specimen.getTypeStatus());
+			}
 
 			/* 45_Depth */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,1"))
-				dataRow.add(specimen.getGatheringEvent().getDepth());
+			{
+				if (specimen.getGatheringEvent().getDepth() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getDepth());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
+			}
 
 			/* 46_AltitudeUnifOfMeasurement */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimElevation,1"))
+			{
 				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
+			}
 
 			/* 47_Dummy7 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
@@ -299,11 +469,17 @@ public class Geology
 					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(datebegin);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 48_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimTaxonRank,1"))
+			{
 				dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+			}
 
 			/**
 			 * adding data row

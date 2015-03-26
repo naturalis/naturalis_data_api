@@ -14,6 +14,8 @@ import java.util.ArrayList;
  
 public class CsvFileWriter extends BufferedWriter
 {
+	
+	public static final String httpUrl = "http://data.biodiverstitydata.nl/";
     /**
      * Parameterized constructor
      * @param fileName

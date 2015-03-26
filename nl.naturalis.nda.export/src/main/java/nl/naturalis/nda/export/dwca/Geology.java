@@ -119,11 +119,27 @@ public class Geology
 			/* 11_DateTimeBegin */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
 				{
-					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(datebegin);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateEnd);
 				}
 				else
 				{
@@ -134,9 +150,25 @@ public class Geology
 			/* 12_DateTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				if (specimen.getGatheringEvent().getDateTimeEnd() != null)
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() != null)
 				{
-					SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					dataRow.add(dateEnd);
 				}
@@ -287,7 +319,21 @@ public class Geology
 			/* 31_DummyDefault */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "occurrenceID,1"))
 			{
-				dataRow.add(specimen.getSourceSystemId());
+				String institutionCode = null;
+				String objectType = "specimen";
+				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
+				{
+					if(specimen.getSourceInstitutionID().contains("Naturalis"))
+					{
+	    			   institutionCode = specimen.getSourceInstitutionID().substring(0, 9);
+					}
+					else
+					{
+						institutionCode = specimen.getSourceInstitutionID();	
+					}
+				}
+				/* PersitentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
+				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
 			}
 
 			/* 32_Order */

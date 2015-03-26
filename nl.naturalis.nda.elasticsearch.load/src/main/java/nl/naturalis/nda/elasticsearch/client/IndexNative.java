@@ -38,7 +38,6 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
@@ -49,6 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 
 /**
  * Wrapper around ElasticSearch's Native (Java) client. Since the API seems to
@@ -66,7 +67,7 @@ public class IndexNative implements Index {
 
 	final Client esClient;
 	final IndicesAdminClient admin;
-	final String indexName;
+	public final String indexName;
 
 	/**
 	 * Create an instance manipulating the specified index using the specified
@@ -404,6 +405,7 @@ public class IndexNative implements Index {
 					logger.info("no more hits.'" + response.getHits().hits().length + "'");
 					break;
 				}
+				
 			}
 			 catch (Exception e) {
 				// e.printStackTrace();

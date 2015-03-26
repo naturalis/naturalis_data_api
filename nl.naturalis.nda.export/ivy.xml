@@ -12,6 +12,7 @@
 		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.10"/>
 		<dependency org="ch.qos.logback" name="logback-classic" rev="1.1.2"/>
 		<dependency org="org.elasticsearch" name="elasticsearch" rev="1.3.4"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.5.1"/>
 	</dependencies>
 	
 </ivy-module>

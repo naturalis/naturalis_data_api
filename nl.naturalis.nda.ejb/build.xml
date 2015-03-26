@@ -7,22 +7,32 @@
 	<property environment="env" />
 
 	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
-	<path id="non-ivy-dependencies" />
+	<path id="non-ivy-dependencies">
+		<!-- project dependencies -->
+		<filelist dir="${domain.module.location}/build" files="${domain.module.artifact}" />
+		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
+		<!-- required libraries not inside the lib directory -->
+		<filelist dir="${build.module.location}/lib">
+			<file name="org.domainobject.util.jar" />
+			<file name="org.domainobject.util.debug.jar" />
+		</filelist>
+	</path>
 
 	<!-- Build referenced projects -->
-	<target name="projects">
+	<target name="-projects">
 		<echo message="Building required projects for ${ant.project.name}" />
+		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<!-- Export a jar file, but only if it does not exist already -->
+	<!-- Create jar file, but only if it does not exist already -->
+	<target name="-package" depends="-projects,compile-sources,package" />
+
 	<target name="build" unless:set="${ant.project.name}.packaged">
 		<available file="build/${ejb.module.artifact}" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built.  Clean project to force rebuild." />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
-		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
-		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
-		<antcall target="common.package" unless:set="${ant.project.name}.packaged" />
-		<property name="${ant.project.name}.packaged" value="true" />
+		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="rebuild" depends="clean,build" />

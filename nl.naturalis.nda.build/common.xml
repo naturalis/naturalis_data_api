@@ -32,7 +32,7 @@
 
 	<!-- =============== TASKS =============== -->
 
-	<target name="git.info" unless:set="git.revision">
+	<target name="git-info" unless:set="git.revision">
 		<exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
 			<arg value="log" />
 			<arg value='--pretty=format:"%H"' />
@@ -136,7 +136,6 @@
 	</target>
 
 	<target name="package">
-		<echo message="Creating ${basedir}/build/${ant.project.name}.jar" />
 		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" />
 	</target>
 

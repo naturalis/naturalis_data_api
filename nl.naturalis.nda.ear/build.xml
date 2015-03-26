@@ -6,8 +6,11 @@
 	<property file="../nl.naturalis.nda.build/build.properties" />
 	<property environment="env" />
 
+	<!-- Directory into which to collect the contents of the ear file -->
+	<property name="assemblydir" location="${basedir}/build/assemble" />
+
 	<!-- Build referenced projects -->
-	<target name="projects">
+	<target name="-projects">
 		<echo message="Building referenced projects for ${ant.project.name}" />
 		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
@@ -15,11 +18,8 @@
 		<ant antfile="${rest.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<!-- Directory into which to collect the contents of the ear file -->
-	<property name="assemblydir" location="${basedir}/build/assemble" />
-
 	<!-- Collect stuff for ear file -->
-	<target name="assemble">
+	<target name="-assemble">
 		<echo message="Collecting files for ear file" />
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
@@ -39,22 +39,33 @@
 		</copy>
 	</target>
 
-	<!-- Export ear file, but only if it does not exist already -->
-	<target name="build" depends="git.info" unless:set="${ant.project.name}.packaged">
+	<!-- Create ear file, but only if it does not exist already -->
+	<target name="-package" depends="-projects,-assemble">
+		<jar destfile="${earfile}" basedir="${assemblydir}" />
+	</target>
+
+	<!-- Override clean in common.xml -->
+	<target name="clean">
+		<echo message="Performing cleanup for ${ant.project.name}" />
+		<available file="build" type="dir" property="build.dir.exists" />
+		<delete includeemptydirs="true" if:set="build.dir.exists">
+			<fileset dir="build" includes="**/*" />
+		</delete>
+		<mkdir dir="build" />
+		<mkdir dir="build/assemble" />
+	</target>
+
+	<target name="build" depends="git-info">
 		<property name="earfile" value="build/nba.${git.branch}.${git.revision}.ear" />
 		<available file="${earfile}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built for branch ${git.branch}. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
-		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
-		<antcall target="assemble" unless:set="${ant.project.name}.packaged" />
-		<jar destfile="${earfile}" basedir="${assemblydir}" unless:set="${ant.project.name}.packaged" />
+		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="rebuild" depends="clean,build" />
 
 	<target name="eclipse">
-		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="signal.clean" />
-		<delete file=".settings/org.eclipse.wst.common.project.facet.core.xml" failonerror="false" if:set="signal.pristine" />
 		<antcall target="templates" />
 	</target>
 

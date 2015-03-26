@@ -19,22 +19,21 @@
 	</path>
 
 	<!-- Build referenced projects -->
-	<target name="projects">
+	<target name="-projects">
 		<echo message="Building required projects for ${ant.project.name}" />
 		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 		<ant antfile="${load.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<!-- Export jar file, but only if it does not exist already -->
-	<target name="build" unless:set="${ant.project.name}.packaged">
+	<!-- Create jar file, but only if it does not exist already -->
+	<target name="-package" depends="-projects,compile-sources,package" />
+
+	<target name="build">
 		<available file="build/${export.module.artifact}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
-		<antcall target="projects" unless:set="${ant.project.name}.packaged" />
-		<antcall target="compile-sources" unless:set="${ant.project.name}.packaged" />
-		<antcall target="common.package" unless:set="${ant.project.name}.packaged" />
-		<property name="${ant.project.name}.packaged" value="true" />
+		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="rebuild" depends="clean,build" />

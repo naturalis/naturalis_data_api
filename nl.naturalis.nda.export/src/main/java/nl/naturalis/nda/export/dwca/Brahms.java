@@ -17,7 +17,7 @@ public class Brahms
 	}
 
 	public void addBrahmsOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
-			String MAPPING_FILE_NAME)
+			String MAPPING_FILE_NAME) throws Exception 
 	{
 		
 		for (ESSpecimen specimen : list)
@@ -42,6 +42,10 @@ public class Brahms
 				if(specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -79,6 +83,10 @@ public class Brahms
 					String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next().getDateIdentified());
 					dataRow.add(dateiden);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
@@ -92,6 +100,10 @@ public class Brahms
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLatitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(null);
+					}
 				}
 				
 				/* 10_LongitudeDecimal */
@@ -101,28 +113,72 @@ public class Brahms
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
 					}
+					else
+					{
+						dataRow.add(null);
+					}
 				}
 			}
 
 			/* 11_DateTimeBegin */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
 				{
-					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(datebegin);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateEnd);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
 			/* 12_DateTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				if (specimen.getGatheringEvent().getDateTimeEnd() != null)
+				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+				
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() != null)
 				{
-					SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					dataRow.add(dateEnd);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -161,6 +217,10 @@ public class Brahms
 					String family = specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily();
 					dataRow.add(kingdom + "|" + classname + "|" + order + "|" + family);
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 18_SourceSystemId */
@@ -182,8 +242,12 @@ public class Brahms
 						dataRow.add(per.getFullName());
 					} else
 					{
-						dataRow.add("");
+						dataRow.add(null);
 					}
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -214,7 +278,14 @@ public class Brahms
 			/* 24_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
 			{
-				dataRow.add(specimen.getSourceInstitutionID());
+				if(specimen.getSourceInstitutionID().contains("Naturalis"))
+				{
+    			  dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+				}
+				else
+				{
+					  dataRow.add(specimen.getSourceInstitutionID());
+				}
 			}
 
 			/* 25_Kingdom */
@@ -223,6 +294,10 @@ public class Brahms
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 				
@@ -259,7 +334,21 @@ public class Brahms
 			/* 31_DummyDefault */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "occurrenceID,1"))
 			{
-				dataRow.add(specimen.getSourceSystemId());
+				String institutionCode = null;
+				String objectType = "specimen";
+				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
+				{
+					if(specimen.getSourceInstitutionID().contains("Naturalis"))
+					{
+	    			   institutionCode = specimen.getSourceInstitutionID().substring(0, 9);
+					}
+					else
+					{
+						institutionCode = specimen.getSourceInstitutionID();	
+					}
+				}
+				/* PersitentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
+				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
 			}
 
 			/* 32_Order */
@@ -286,6 +375,10 @@ public class Brahms
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
 				{
 					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -332,6 +425,10 @@ public class Brahms
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 43_Remarks */
@@ -340,6 +437,10 @@ public class Brahms
 				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -352,7 +453,14 @@ public class Brahms
 			/* 45_Depth */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,0"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getDepth());
+				if (specimen.getGatheringEvent().getDepth() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getDepth());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 46_AltitudeUnifOfMeasurement */
@@ -369,6 +477,10 @@ public class Brahms
 					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
 					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(datebegin);
+				}
+				else
+				{
+					dataRow.add(null);
 				}
 			}
 
@@ -390,4 +502,6 @@ public class Brahms
 			}
 		}
 	}
+	
+	
 }

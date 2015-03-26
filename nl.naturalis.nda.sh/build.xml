@@ -49,6 +49,14 @@
 		</copy>
 	</target>
 
+	<target name="cron">
+		<condition property="nda.import.crs.specimens.cron.notempty">
+			<equals arg1="${nda.import.crs.specimens.cron}" arg2="" trim="true" />
+		</condition>
+		<exec if:set="nda.import.crs.specimens.cron.notempty">
+		</exec>
+	</target>
+
 	<target name="build" depends="install-import" />
 
 </project>

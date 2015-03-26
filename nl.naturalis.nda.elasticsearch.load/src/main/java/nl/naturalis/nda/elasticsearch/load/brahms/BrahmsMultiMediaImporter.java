@@ -45,7 +45,6 @@ import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvFie
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,36 +56,26 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-		}
-		else {
-			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-		}
-
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsvFiles();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
 	private static final String ID_PREFIX = "BRAHMS-";
-
-	private final boolean rename;
-
 
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
@@ -100,7 +89,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		prop = System.getProperty("maxRecords", "0");
 		setMaxRecords(Integer.parseInt(prop));
 		prop = System.getProperty("rename", "false");
-		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
 
 
@@ -109,7 +97,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 		ThematicSearchConfig.getInstance().resetMatchCounters();
 
-		BrahmsExportEncodingConverter.convertFiles();
+		BrahmsDumpUtil.convertFiles();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
@@ -129,10 +117,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		}
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
-			if (rename) {
-				String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
-				f.renameTo(new File(f.getCanonicalPath() + "." + now + ".bak"));
-			}
 		}
 
 		ThematicSearchConfig.getInstance().logMatchInfo();
@@ -168,15 +152,15 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		for (int i = 0; i < ids.size(); ++i) {
 			ids.set(i, ID_PREFIX + ids.get(i));
 		}
-		//		String base = ID_PREFIX + val(record, BARCODE.ordinal());
-		//		List<String> ids = new ArrayList<String>(4);
-		//		String s = val(record, IMAGELIST.ordinal());
-		//		if (s != null) {
-		//			String[] urls = s.split(",");
-		//			for (int i = 0; i < urls.length; ++i) {
-		//				ids.add(base + "_" + i);
-		//			}
-		//		}
+		// String base = ID_PREFIX + val(record, BARCODE.ordinal());
+		// List<String> ids = new ArrayList<String>(4);
+		// String s = val(record, IMAGELIST.ordinal());
+		// if (s != null) {
+		// String[] urls = s.split(",");
+		// for (int i = 0; i < urls.length; ++i) {
+		// ids.add(base + "_" + i);
+		// }
+		// }
 		return ids;
 	}
 
@@ -185,14 +169,18 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 		String specimenUnitId = val(record, BARCODE.ordinal());
 		if (specimenUnitId == null) {
-			logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+			}
 			return null;
 		}
 		try {
 			checkSpData(record);
 		}
 		catch (Exception e) {
-			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
+			}
 			return null;
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();

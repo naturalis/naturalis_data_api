@@ -40,7 +40,6 @@ import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,27 +51,20 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
 		// Check thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_SPECIMEN);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-		}
-		else {
-			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-		}
-
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
 			importer.importCsvFiles();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
 
@@ -185,9 +177,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
 	private static final String ID_PREFIX = "BRAHMS-";
 
-	private final boolean rename;
-
-
 	public BrahmsSpecimensImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_SPECIMEN);
@@ -200,7 +189,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		prop = System.getProperty("maxRecords", "0");
 		setMaxRecords(Integer.parseInt(prop));
 		prop = System.getProperty("rename", "false");
-		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
 
 
@@ -208,8 +196,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 
 		ThematicSearchConfig.getInstance().resetMatchCounters();
-		
-		BrahmsExportEncodingConverter.convertFiles();
+
+		BrahmsDumpUtil.convertFiles();
 
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
@@ -229,10 +217,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		}
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
-			if (rename) {
-				String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
-				f.renameTo(new File(f.getCanonicalPath() + "." + now + ".bak"));
-			}
 		}
 
 		ThematicSearchConfig.getInstance().logMatchInfo();
@@ -245,21 +229,22 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 		String barcode = val(record, CsvField.BARCODE.ordinal());
 		if (barcode == null) {
-			logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+			}
 			return null;
 		}
 
-//		According to Marian vd Meij and Jeroen Creuwels, this check should not be done
-//		(even though it's in the QAW templates for GBIF/IPT.
-//		try {
-//			checkSpData(record);
-//		}
-//		catch (Exception e) {
-//			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
-//			return null;
-//		}
-		
-	
+		//		According to Marian vd Meij and Jeroen Creuwels, this check should not be done
+		//		(even though it's in the QAW templates for GBIF/IPT.
+		//		try {
+		//			checkSpData(record);
+		//		}
+		//		catch (Exception e) {
+		//			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
+		//			return null;
+		//		}
+
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSourceSystemId(barcode);
@@ -397,7 +382,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	static ScientificName getScientificName(CSVRecord record)
 	{
-		final ScientificName sn = new ScientificName();
+		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(record, CsvField.SPECIES.ordinal()));
 		sn.setAuthorshipVerbatim(getAuthor(record));
 		sn.setGenusOrMonomial(val(record, CsvField.GENUS.ordinal()));
@@ -440,7 +425,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
 	{
-		final DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
+		DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
 		// Phylum deliberately not set
 		dc.setClassName(val(record, CsvField.FAMCLASS.ordinal()));
@@ -520,7 +505,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
 		}
 		catch (Exception e) {
-			logger.debug(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
+			}
 			return null;
 		}
 	}
@@ -578,7 +565,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return (int) Float.parseFloat(s);
 		}
 		catch (NumberFormatException e) {
-			logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
+			}
 			return null;
 		}
 	}
@@ -594,7 +583,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return Double.valueOf(s);
 		}
 		catch (NumberFormatException e) {
-			logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
+			}
 			return null;
 		}
 	}

@@ -124,7 +124,7 @@ public class DwCAExporter {
 			
 			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
 			{
-				collectionName = StringUtilities.readPropertyvalue(collectionName, "Collectionname");
+				collectionName = StringUtilities.readPropertyvalue(collectionName, "collectionName");
 				nameCollectiontypeBrahms = collectionName;
 			}
 

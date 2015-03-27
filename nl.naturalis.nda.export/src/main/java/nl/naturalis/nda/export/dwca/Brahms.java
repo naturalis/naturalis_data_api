@@ -19,6 +19,8 @@ public class Brahms
 	public void addBrahmsOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME) throws Exception 
 	{
+		SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
 		
 		for (ESSpecimen specimen : list)
 		{
@@ -27,13 +29,27 @@ public class Brahms
 			/* 01_RecordBasis */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "basisOfRecord,1"))
 			{
-				dataRow.add(specimen.getRecordBasis());
+				if (specimen.getRecordBasis() != null)
+				{
+					dataRow.add(specimen.getRecordBasis());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 02_CatalogNumber */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "catalogNumber,1"))
 			{
-				dataRow.add(specimen.getSourceSystemId());  
+				if (specimen.getSourceSystemId() != null)
+				{
+					dataRow.add(specimen.getSourceSystemId());  
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 03_ClassName */
@@ -52,27 +68,56 @@ public class Brahms
 			/* 04_CollectionType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "collectionCode,1"))
 			{
-				dataRow.add(specimen.getCollectionType());
+				if (specimen.getCollectionType() != null)
+				{
+					dataRow.add(specimen.getCollectionType());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 				
 			/* 05_Continent */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "continent,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+				if (specimen.getGatheringEvent().getWorldRegion() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
-				
+			
 			/* 06_Country */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "country,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getCountry());
+				if(specimen.getGatheringEvent().getCountry() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getCountry());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* ToDo: GetCity moet County worden. */
 			/* 07_County */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "county,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getCity());
+				if(specimen.getGatheringEvent().getCity() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getCity());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
+
 
 			/* 08_DateIdentified */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "dateIdentified,1"))
@@ -89,10 +134,11 @@ public class Brahms
 				}
 			}
 
-			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+			
+			/* 09_LatitudeDecimal */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLatitude,1"))
 			{
-				/* 09_LatitudeDecimal */
-				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLatitude,1"))
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLatitudeDecimal() != null)
@@ -105,9 +151,12 @@ public class Brahms
 						dataRow.add(null);
 					}
 				}
+			}
 				
 				/* 10_LongitudeDecimal */
-				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
+			{
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
 					{
@@ -119,13 +168,39 @@ public class Brahms
 					}
 				}
 			}
+			
+			/* 11_verbatimCoordinates */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimCoordinates,1"))
+			{
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+				{
+					String latitudeDecimal = null;
+					String longitudeDecimal = null;
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal() != null)
+					{
+						latitudeDecimal = Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal());
+					}
+				
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
+					{
+						longitudeDecimal = Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal());
+					}
+				
+					if (latitudeDecimal != null && longitudeDecimal != null)
+					{
+						dataRow.add(latitudeDecimal + ", " + longitudeDecimal);
+					}
+					else
+					{
+						dataRow.add(null);
+					}
+				}
+			}
+			
 
-			/* 11_DateTimeBegin */
+			/* 12_DateTimeBegin en EndTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-				
 				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
 				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
 				{
@@ -151,60 +226,47 @@ public class Brahms
 				}
 			}
 
-			/* 12_DateTimeEnd */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
+
+			/* 13_Family */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,1"))
 			{
-				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-				
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() != null)
+				if(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily() != null)
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(dateBegin + " / " + dateEnd);
-				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
-				{
-					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(dateBegin);
-				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
-				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily());
 				}
 				else
 				{
 					dataRow.add(null);
 				}
 			}
-
-			/* 13_Family */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,1"))
-			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily());
-			}
+			
 				
 			/* 14_GenusOrMonomial */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "genus,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
+				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
-
+			
 			/* 15_Dummy1 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "geodeticDatum,0"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "geodeticDatum,1"))
 			{
 				dataRow.add(null);
 			}
+			
 
 			/* 16_Dummy2 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "habitat,1"))
 			{
 				dataRow.add(null);
 			}
+			
 
 			/* 17_Dummy3 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "higherClassification,1"))
@@ -223,13 +285,21 @@ public class Brahms
 				}
 			}
 
-			/* 18_SourceSystemId */
+			/* 18_SourceSystemId 
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "id,1"))
 			{
-				dataRow.add(specimen.getSourceSystemId());
-			}
+				if(specimen.getSourceSystemId() != null)
+				{
+					dataRow.add(specimen.getSourceSystemId());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 
-			/* 19_identifications.identifiers.fullName | BRAHMS ONLY ?? */
+			}*/
+			
+			/* 18_identifications.identifiers.fullName | BRAHMS ONLY ?? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "identifiedBy,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
@@ -251,44 +321,70 @@ public class Brahms
 				}
 			}
 
-			/* 20_NumberOfSpecimen */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "individualCount,0"))
+			/* 19_NumberOfSpecimen */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "individualCount,1"))
 			{
-				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+				if (Integer.toString(specimen.getNumberOfSpecimen()) != null)
+				{
+					dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
+			
 
-			/* 21_DummyDefault ToDO */
+			/* 20_DummyDefault ToDO */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "informationWithheld,1"))
 			{
 				dataRow.add(null);
 			}
-
-			/* 22_InfraspecificEpithet */
+			
+			/* 21_InfraspecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraSpecificEpithet,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
+				if (specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 23_Island */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,0"))
+			/* 22_Island */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getIsland());
+				if (specimen.getGatheringEvent().getIsland() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getIsland());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
-
-			/* 24_SourceInstitutionID */
+			
+			/* 23_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
 			{
 				if(specimen.getSourceInstitutionID().contains("Naturalis"))
 				{
-    			  dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+					dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
+				}
+				else if(specimen.getSourceInstitutionID() != null)
+				{
+					dataRow.add(specimen.getSourceInstitutionID());
 				}
 				else
 				{
-					  dataRow.add(specimen.getSourceInstitutionID());
+					dataRow.add(null);
 				}
 			}
 
-			/* 25_Kingdom */
+			/* 24_Kingdom */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
@@ -301,37 +397,51 @@ public class Brahms
 				}
 			}
 				
-			/* 26_PhaseOrStage */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "lifeStage,0"))
+			/* 25_PhaseOrStage */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "lifeStage,1"))
 			{
-				dataRow.add(specimen.getPhaseOrStage());
+				if(specimen.getPhaseOrStage() != null)
+				{
+					dataRow.add(specimen.getPhaseOrStage());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 27_Locality */
+			/* 26_Locality */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "locality,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getLocality());
+				if (specimen.getGatheringEvent().getLocality() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getLocality());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 28_Dummy4 */
+			/* 27_Dummy4 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "maximumElevationInMeters,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getLocality());
+    			dataRow.add(null);
 			}
 
-			/* 29_Dummy5 */
+			/* 28_Dummy5 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "minimumElevationInMeters,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getLocality());
+				dataRow.add(null);
 			}
 
-			/* 30_Dummy6 ToDO ? */
+			/* 29_Dummy6 ToDO ? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "nomenclaturalCode,1"))
 			{
 				dataRow.add("ICN");
 			}
 
-			/* 31_DummyDefault */
+			/* 30_DummyDefault */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "occurrenceID,1"))
 			{
 				String institutionCode = null;
@@ -351,25 +461,46 @@ public class Brahms
 				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
 			}
 
-			/* 32_Order */
+			/* 31_Order */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "order,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder());
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 33_Phylum */
+			/* 32_Phylum */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "phylum,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getPhylum());
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getPhylum() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getPhylum());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 34_PreparationType */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "preparations,0"))
+			/* 33_PreparationType */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "preparations,1"))
 			{
-				dataRow.add(specimen.getPreparationType());
+				if (specimen.getPreparationType() != null)
+				{	
+					dataRow.add(specimen.getPreparationType());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 35_gatheringEvent.gatheringAgents.fullName */
+			/* 34_gatheringEvent.gatheringAgents.fullName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "recordedBy,1"))
 			{
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
@@ -382,43 +513,85 @@ public class Brahms
 				}
 			}
 
-			/* 36_FullScientificName */
+			/* 35_FullScientificName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificName,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
-			}
-
-			/* 37_AuthorshipVerbatim */
+				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
+			}	
+			
+			/* 36_AuthorshipVerbatim */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificnameAuthorship,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
+				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 38_Sex */
+			/* 37_Sex */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "sex,1"))
 			{
-				dataRow.add(specimen.getSex());
+				if (specimen.getSex() != null)
+				{
+					dataRow.add(specimen.getSex());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 39_SpecificEpithet */
+			/* 38_SpecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "specificEpithet,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
+				if (specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 40_ProvinceState */
+			/* 39_ProvinceState */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "stateProvince,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getProvinceState());
+				if (specimen.getGatheringEvent().getProvinceState() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getProvinceState());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 41_Subgenus */
+			/* 40_Subgenus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "subGenus,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
+				if (specimen.getIdentifications().iterator().next().getScientificName().getSubgenus() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 42_TaxonRank */
+			/* 41_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
@@ -431,7 +604,7 @@ public class Brahms
 				}
 			}
 
-			/* 43_Remarks */
+			/* 42_Remarks */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRemarks,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
@@ -444,14 +617,21 @@ public class Brahms
 				}
 			}
 
-			/* 44_TypeStatus */
+			/* 43_TypeStatus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "typeStatus,1"))
 			{
-				dataRow.add(specimen.getTypeStatus());
+				if (specimen.getTypeStatus() != null)
+				{
+					dataRow.add(specimen.getTypeStatus());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 45_Depth */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,0"))
+			/* 44_Depth */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,1"))
 			{
 				if (specimen.getGatheringEvent().getDepth() != null)
 				{
@@ -463,20 +643,12 @@ public class Brahms
 				}
 			}
 
-			/* 46_AltitudeUnifOfMeasurement */
+			/* 45_AltitudeUnifOfMeasurement */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimElevation,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
-			}
-
-			/* 47_Dummy7 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
-			{
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+				if (specimen.getGatheringEvent().getAltitudeUnifOfMeasurement() != null)
 				{
-					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(datebegin);
+					dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
 				}
 				else
 				{
@@ -484,10 +656,45 @@ public class Brahms
 				}
 			}
 
-			/* 48_TaxonRank */
+			/* 46_Dummy7 */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
+			{
+				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateBegin + " / " + dateEnd);
+				}
+				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
+				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateEnd);
+				}
+				else
+				{
+					dataRow.add(null);
+				}
+			}
+
+			/* 47_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimTaxonRank,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/**

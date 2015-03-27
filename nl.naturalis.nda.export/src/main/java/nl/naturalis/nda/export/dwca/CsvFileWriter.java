@@ -41,7 +41,7 @@ public class CsvFileWriter extends BufferedWriter
             {
                 if (StringUtilities.indexOfFirstContainedCharacter(column, "\"+-,") !=-1){
                     column = column.replaceAll("\"", "\"\"");
-                    builder.append(String.format("\"%s\"",column));;
+                    builder.append(String.format("\"%s\"",column));
                 }
                 else
                     builder.append(column);

@@ -67,7 +67,7 @@ public class IndexNative implements Index {
 
 	final Client esClient;
 	final IndicesAdminClient admin;
-	public final String indexName;
+	final String indexName;
 
 	/**
 	 * Create an instance manipulating the specified index using the specified

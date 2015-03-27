@@ -187,8 +187,7 @@ public class StringUtilities {
 	 * '0'. field will not be added.
 	 */
 	public static boolean isFieldChecked(String propertyname, String value) {
-		int commaindex = StringUtilities.getPropertyValue(propertyname, value)
-				.length() - 1;
+		int commaindex = StringUtilities.getPropertyValue(propertyname, value).length() - 1;
 		String result = StringUtilities.getPropertyValue(propertyname, value);
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");

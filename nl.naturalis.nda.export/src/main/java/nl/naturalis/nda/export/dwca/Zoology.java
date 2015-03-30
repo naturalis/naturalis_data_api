@@ -185,7 +185,6 @@ public class Zoology
 			/* 11_verbatimCoordinates */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimCoordinates,1"))
 			{
-				
 				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
 					String latitudeDecimal1 = null;
@@ -196,37 +195,30 @@ public class Zoology
 					int record2 = 2;
 					int count = 0;
 					
-					Iterator<ESGatheringSiteCoordinates> iterator = specimen.getGatheringEvent().getSiteCoordinates().iterator();
-					while(iterator.hasNext())
-				    {
-  			        	count++;
-  						if (count == record1)
-  						{
-  							//if (iterator.next().getLatitudeDecimal() != null)
-  						//	{
+					if (specimen.getGatheringEvent().getSiteCoordinates().size() > 1)
+					{	
+						Iterator<ESGatheringSiteCoordinates> iterator = specimen.getGatheringEvent().getSiteCoordinates().iterator();
+					
+						while(iterator.hasNext())
+						{
+							count++;
+							if (count == record1)
+							{
   								latitudeDecimal1 = Double.toString(iterator.next().getLatitudeDecimal());
   								longitudeDecimal1 = Double.toString(iterator.next().getLongitudeDecimal());
-  							//}
-  						}
+							}
   						
-  						if (count == record2)
-  						{
-  							//if (iterator.next().getLatitudeDecimal() != null)
-  							//{
+							if (count == record2)
+							{
   								latitudeDecimal2 = Double.toString(iterator.next().getLatitudeDecimal());
   								longitudeDecimal2 = Double.toString(iterator.next().getLongitudeDecimal());
-  							//}
-  						}
-  					
-  						if (latitudeDecimal1 != null && longitudeDecimal1 != null && latitudeDecimal2 != null && longitudeDecimal2 != null)
-  						{
+							}
+						}
+						if (latitudeDecimal1 != null && longitudeDecimal1 != null && latitudeDecimal2 != null && longitudeDecimal2 != null)
+						{
   							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
   						}
-  						else
-  						{
-  							dataRow.add(null);
-  						}
-				    }
+ 				    }
 				}
 				else
 				{

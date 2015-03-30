@@ -514,7 +514,7 @@ public class Geology
 			}
 
 			/* 36_AuthorshipVerbatim */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificnameAuthorship,1"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificNameAuthorship,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName() != null)
 				{

@@ -2,10 +2,12 @@ package nl.naturalis.nda.export.dwca;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.List;
 
 public class Zoology
@@ -152,10 +154,14 @@ public class Zoology
 						dataRow.add(null);
 					}
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 				   
 
-				/* 10_LongitudeDecimal */
+			/* 10_LongitudeDecimal */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
 			{
 				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
@@ -170,33 +176,57 @@ public class Zoology
 						dataRow.add(null);
 					}
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 			
 			/* 11_verbatimCoordinates */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimCoordinates,1"))
 			{
+				
 				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
-					String latitudeDecimal = null;
-					String longitudeDecimal = null;
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal() != null)
-					{
-						latitudeDecimal = Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal());
-					}
-				
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
-					{
-						longitudeDecimal = Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal());
-					}
-				
-					if (latitudeDecimal != null && longitudeDecimal != null)
-					{
-						dataRow.add(latitudeDecimal + ", " + longitudeDecimal);
-					}
-					else
-					{
-						dataRow.add(null);
-					}
+					String latitudeDecimal1 = null;
+					String longitudeDecimal1 = null;
+					String latitudeDecimal2 = null;
+					String longitudeDecimal2 = null;
+					int record1 = 1;
+					int record2 = 2;
+					int count = 0;
+					
+					Iterator<ESGatheringSiteCoordinates> iterator = specimen.getGatheringEvent().getSiteCoordinates().iterator();
+					while(iterator.hasNext())
+				    {
+  			        	count++;
+  						if (count == record1)
+  						{
+  							//if (iterator.next().getLatitudeDecimal() != null)
+  						//	{
+  								latitudeDecimal1 = Double.toString(iterator.next().getLatitudeDecimal());
+  								longitudeDecimal1 = Double.toString(iterator.next().getLongitudeDecimal());
+  							//}
+  						}
+  						
+  						if (count == record2)
+  						{
+  							//if (iterator.next().getLatitudeDecimal() != null)
+  							//{
+  								latitudeDecimal2 = Double.toString(iterator.next().getLatitudeDecimal());
+  								longitudeDecimal2 = Double.toString(iterator.next().getLongitudeDecimal());
+  							//}
+  						}
+  					
+  						if (latitudeDecimal1 != null && longitudeDecimal1 != null && latitudeDecimal2 != null && longitudeDecimal2 != null)
+  						{
+  							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
+  						}
+  						else
+  						{
+  							dataRow.add(null);
+  						}
+				    }
 				}
 				else
 				{
@@ -204,7 +234,7 @@ public class Zoology
 				}
 			}
 			
-			/* 11_DateTimeBegin en EndTimeEnd */
+			/* 12_DateTimeBegin en EndTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
 				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
@@ -318,16 +348,16 @@ public class Zoology
 			}
 
 			/* 22_InfraspecificEpithet */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraSpecificEpithet,1"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraspecificEpithet,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet() != null)
+				if(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
 				}
 				else
 				{
 					dataRow.add(null);
-				}
+				}	
 			}
 
 			/* 22_Island */
@@ -504,7 +534,7 @@ public class Zoology
 			}
 
 			/* 36_AuthorshipVerbatim */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificnameAuthorship,1"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificNameAuthorship,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null)
 				{
@@ -686,38 +716,4 @@ public class Zoology
 			}
 		}
 	}
-	
-	private void getBeginDateEndDateVerbatimDate(List<ESSpecimen> list, CsvFileWriter.CsvRow dataRow)
-	{
-		for( ESSpecimen specimen: list)
-		{
-			SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-		
-			/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-			if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() != null)
-			{
-				String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-				String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-				dataRow.add(dateBegin + " / " + dateEnd);
-			}
-			/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-			else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
-			{
-				String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-				dataRow.add(dateBegin);
-			}
-			/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-			else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
-			{
-				String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-				dataRow.add(dateEnd);
-			}
-			else
-			{
-				dataRow.add(null);
-			}
-		}
-	}
-
 }

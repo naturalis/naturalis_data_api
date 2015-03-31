@@ -7,6 +7,7 @@ package nl.naturalis.nda.export.dwca;
  */
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +26,10 @@ public class CsvFileWriter extends BufferedWriter
         super(new FileWriter(fileName));
     }
     
+    public CsvFileWriter(File file) throws IOException{
+        super(new FileWriter(file));
+    }
+    
     /**
      * Writes a single row to a CSV file.
      * @param row
@@ -41,7 +46,7 @@ public class CsvFileWriter extends BufferedWriter
             {
                 if (StringUtilities.indexOfFirstContainedCharacter(column, "\"+-,") !=-1){
                     column = column.replaceAll("\"", "\"\"");
-                    builder.append(String.format("\"%s\"",column));;
+                    builder.append(String.format("\"%s\"",column));
                 }
                 else
                     builder.append(column);

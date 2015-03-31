@@ -67,7 +67,7 @@ public class IndexNative implements Index {
 
 	final Client esClient;
 	final IndicesAdminClient admin;
-	public final String indexName;
+	final String indexName;
 
 	/**
 	 * Create an instance manipulating the specified index using the specified
@@ -276,147 +276,7 @@ public class IndexNative implements Index {
 		return null;
 	}
 
-	public <T> List<T> getResultsList(String type, String namecollectiontype,
-			String sourcesystemcode, int size, Class<T> targetClass) {
-		SearchRequestBuilder searchRequestBuilder = null;
-
-		if (sourcesystemcode.toUpperCase().equals("CRS")) {
-			logger.info("Querying the data for '" + sourcesystemcode + "'");
-
-			FilteredQueryBuilder builder = null;
-			String nameCollectionType1 = null;
-			String nameCollectionType2 = null;
-
-			if (namecollectiontype.contains(",")) {
-				int index = namecollectiontype.indexOf(",");
-				nameCollectionType1 = namecollectiontype.substring(0, index);
-				nameCollectionType2 = namecollectiontype.substring(index + 2, namecollectiontype.length());
-				
-				builder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
-						.must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode)),
-                        FilterBuilders.orFilter(FilterBuilders.termFilter("collectionType.raw", nameCollectionType1),
-                                		        FilterBuilders.termFilter("collectionType.raw", nameCollectionType2)));
-			}
-			else 
-			{
-				if (namecollectiontype != null)
-				{
-					builder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
-							  .must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode))
-							  .must(QueryBuilders.matchQuery("collectionType.raw", namecollectiontype)), null);
-				}
-			}
-			
-			if (builder != null)
-			{
-				logger.info(builder.toString());
-			}
-
-			if (size <= 0) {
-				CountResponse res = esClient.prepareCount().setQuery(builder)
-						.execute().actionGet();
-				size = (int) res.getCount();
-			}
-
-			if (size > 0) 
-			{
-				searchRequestBuilder = esClient
-						.prepareSearch()
-						.setVersion(true)
-						.setQuery(builder)
-						.setSearchType(SearchType.SCAN)
-						.setExplain(true)
-						.setTypes("best_fields")
-						.setScroll(new TimeValue(60000))
-						.setIndices(indexName)
-						.setTypes(type).setSize(size);
-			}
-		}
-
-		/* BRAHMS */
-		SearchResponse response = null;
-		if (sourcesystemcode.toUpperCase().equals("BRAHMS")) 
-		{
-			FilteredQueryBuilder brahmsBuilder = QueryBuilders.filteredQuery(QueryBuilders.boolQuery()
-					  .must(QueryBuilders.matchQuery("sourceSystem.code.raw", sourcesystemcode.toUpperCase())), null);
-					  
-			logger.info("Querying the data for BRAHMS");
-			if(brahmsBuilder != null)
-			{
-				logger.info(brahmsBuilder.toString());
-			}
-
-			if (size <= 0) 
-			{
-				CountResponse res = esClient.prepareCount()
-						.setQuery(brahmsBuilder).execute().actionGet();
-				size = (int) res.getCount();
-			}
-
-			if (size > 0) 
-			{
-				searchRequestBuilder = esClient.prepareSearch()
-						.setVersion(true)
-						.setQuery(brahmsBuilder)
-						.setSearchType(SearchType.SCAN)
-						.setExplain(true)
-						.setScroll(TimeValue.timeValueMinutes(60000))
-						.setIndices(indexName)
-						.setTypes(type)
-						.setSize(size);
-			}
-		}
-
-		response = searchRequestBuilder.execute().actionGet();
-
-		logger.info("Status: " + response.status());
-
-		logger.info("Scrollid:" + response.getScrollId());
-
-		long totalHitCount = 0;
-		totalHitCount = response.getHits().getTotalHits();
-		logger.info("Total hits: " + totalHitCount);
-
-		/* Show response properties */
-		String output = response.toString();
-		logger.info(output);
-
-		logger.info("Total records in occurrence file: " + totalHitCount);
-		List<T> list = new ArrayList<T>();
-		while (true) 
-		{
-			try 
-			{
-				for (SearchHit hit : response.getHits()) 
-				{
-					T result = objectMapper.convertValue(hit.getSource(), targetClass); 
-					list.add(result);
-					Requests.flushRequest(indexName);
-					Requests.refreshRequest(indexName);
-				}
-				
-				response = esClient.prepareSearchScroll(response.getScrollId())
-						.setScrollId(response.getScrollId())
-						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
-				
-				// Break condition: No hits are returned
-				if (response.getHits().hits().length == 0) 
-				{
-					logger.info("no more hits.'" + response.getHits().hits().length + "'");
-					break;
-				}
-				
-			}
-			 catch (Exception e) {
-				// e.printStackTrace();
-				 logger.info("Failed to copy data from index " + indexName + " into " + size + ".", e);
-			}
-		 }
-		return list;
-	}
-
-
-
+	
 	@Override
 	public boolean deleteDocument(String type, String id) {
 		DeleteRequestBuilder drb = esClient.prepareDelete();

@@ -2,10 +2,12 @@ package nl.naturalis.nda.export.dwca;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.List;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 public class Geology
@@ -19,6 +21,9 @@ public class Geology
 	public void addGeologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME)
 	{
+		SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+		
 		for (ESSpecimen specimen : list)
 		{
 			CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();
@@ -26,45 +31,93 @@ public class Geology
 			/* 01_RecordBasis */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "basisOfRecord,1"))
 			{
-				dataRow.add(specimen.getRecordBasis());
+				if (specimen.getRecordBasis() != null)
+				{
+					dataRow.add(specimen.getRecordBasis());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 02_CatalogNumber */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "catalogNumber,1"))
 			{
-				dataRow.add(specimen.getSourceSystemId());
+				if (specimen.getSourceSystemId() != null)
+				{
+					dataRow.add(specimen.getSourceSystemId());  
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 			
 			/* 03_ClassName */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,0"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
-						.getClassName());
+				if(specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 04_CollectionType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "collectionCode,1"))
 			{	
-				dataRow.add(specimen.getCollectionType());
+				if (specimen.getCollectionType() != null)
+				{
+					dataRow.add(specimen.getCollectionType());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 				
 			/* 05_Continent */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "continent,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+				if (specimen.getGatheringEvent().getWorldRegion() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 				
 			/* 06_Country */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "country,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getCountry());
+				if(specimen.getGatheringEvent().getCountry() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getCountry());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* ToDo: GetCity moet County worden. */
 			/* 07_County */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "county,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getCity());
+				if(specimen.getGatheringEvent().getCity() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getCity());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 08_DateIdentified */
@@ -83,10 +136,11 @@ public class Geology
 				}
 			}
 
-			if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+			
+			/* 09_LatitudeDecimal */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLatitude,1"))
 			{
-				/* 09_LatitudeDecimal */
-				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLatitude,1"))
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLatitudeDecimal() != null)
@@ -99,12 +153,19 @@ public class Geology
 						dataRow.add(null);
 					}
 				}
-
-				/* 10_LongitudeDecimal */
-				if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
+				else
 				{
-					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
-							.getLongitudeDecimal() != null)
+					dataRow.add(null);
+				}
+			}	
+
+			
+			/* 10_LongitudeDecimal */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "decimalLongitude,1"))
+			{  
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
+				{
+					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
 					{
 						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLongitudeDecimal()));
@@ -114,63 +175,89 @@ public class Geology
 						dataRow.add(null);
 					}
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
-
-			/* 11_DateTimeBegin */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
+			
+			/* 11_verbatimCoordinates */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimCoordinates,1"))
 			{
-				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-				
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
+				if (specimen.getGatheringEvent().getSiteCoordinates() != null)
 				{
-					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateBegin + " / " + dateEnd);
-				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
-				{
-					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(dateBegin);
-				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
-				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					String latitudeDecimal1 = null;
+					String longitudeDecimal1 = null;
+					String latitudeDecimal2 = null;
+					String longitudeDecimal2 = null;
+					int record1 = 1;
+					int record2 = 2;
+					int count = 0;
+					
+					if (specimen.getGatheringEvent().getSiteCoordinates().size() > 1)
+					{	
+						Iterator<ESGatheringSiteCoordinates> iterator = specimen.getGatheringEvent().getSiteCoordinates().iterator();
+					
+						while(iterator.hasNext())
+						{
+							count++;
+							if (count == record1)
+							{
+  								latitudeDecimal1 = Double.toString(iterator.next().getLatitudeDecimal());
+  								longitudeDecimal1 = Double.toString(iterator.next().getLongitudeDecimal());
+							}
+  						
+							if (count == record2)
+							{
+  								latitudeDecimal2 = Double.toString(iterator.next().getLatitudeDecimal());
+  								longitudeDecimal2 = Double.toString(iterator.next().getLongitudeDecimal());
+							}
+						}
+						if (latitudeDecimal1 != null && longitudeDecimal1 != null && latitudeDecimal2 != null && longitudeDecimal2 != null)
+						{
+  							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
+  						}
+ 				    }
+					else
+					{
+						dataRow.add(null);
+					}
 				}
 				else
 				{
 					dataRow.add(null);
 				}
 			}
+			
 
-			/* 12_DateTimeEnd */
+			/* 12_DateTimeBegin en EndTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-				SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-				
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() != null)
+				/* if BeginDate and EndDate both has values and not equal then get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null &&
+					!specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()))
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(dateBegin + " / " + dateEnd);
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateBegin + " | " + dateEnd);
 				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				/* if BeginDate is equal to EndDate then only the value of BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && 
+						specimen.getGatheringEvent().getDateTimeBegin() == specimen.getGatheringEvent().getDateTimeEnd())
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(dateBegin);
 				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				/* if only begindate has a value then get the value of begindate */
+				else if(specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null)
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
+				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					dataRow.add(null);
 				}
 				else
 				{
@@ -179,17 +266,31 @@ public class Geology
 			}
 
 			/* 13_Family */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,0"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
-						.getFamily());
+				if(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily() != null &&
+				   specimen.getIdentifications().iterator().next().isPreferred() == true)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 			
 			/* 14_GenusOrMonomial */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "genus,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getGenusOrMonomial());
+				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null &&
+				   specimen.getIdentifications().iterator().next().isPreferred() == true)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/* 15_Dummy1 */
@@ -205,21 +306,16 @@ public class Geology
 			}
 
 			/* 17_Dummy3 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "higherClassification,0"))
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "higherClassification,1"))
 			{
 				dataRow.add(null);
 			}
 
-			/* 18_SourceSystemId */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "id,1"))
-			{
-				dataRow.add(specimen.getSourceSystemId());
-			}
-
-			/* 19_identifications.identifiers.fullName | BRAHMS ONLY ?? */
+			/* 18_identifications.identifiers.fullName | BRAHMS ONLY ?? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "identifiedBy,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
+				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator()
 							.next();
@@ -232,47 +328,77 @@ public class Geology
 						dataRow.add(null);
 					}
 				}
+				else
+				{
+					dataRow.add(null);
+				}
+				
 			}
 
-			/* 20_NumberOfSpecimen */
+			/* 19_NumberOfSpecimen */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "individualCount,1"))
 			{
-				dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+				if (Integer.toString(specimen.getNumberOfSpecimen()) != null)
+				{
+					dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 21_DummyDefault ToDO */
+			/* 20_DummyDefault ToDO */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "informationWithheld,1"))
 			{
 				dataRow.add(null);
 			}
 
-			/* 22_InfraspecificEpithet */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraSpecificEpithet,1"))
+			/* 21_InfraspecificEpithet */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraspecificEpithet,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getInfraspecificEpithet());
+				if (specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 23_Island */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,0"))
+			/* 22_Island */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "island,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getIsland());
+				if (specimen.getGatheringEvent().getIsland() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getIsland());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 24_SourceInstitutionID */
+			/* 23_SourceInstitutionID */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "institutionCode,1"))
 			{
 				if(specimen.getSourceInstitutionID().contains("Naturalis"))
 				{
 					dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
 				}
-				else
+				else if(specimen.getSourceInstitutionID() != null)
 				{
 					dataRow.add(specimen.getSourceInstitutionID());
 				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 25_Kingdom */
+			/* 24_Kingdom */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
@@ -286,37 +412,51 @@ public class Geology
 				}
 			}
 
-			/* 26_PhaseOrStage */
+			/* 25_PhaseOrStage */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "lifeStage,1"))
 			{
-				dataRow.add(specimen.getPhaseOrStage());
+				if (specimen.getPhaseOrStage() != null)
+				{
+					dataRow.add(specimen.getPhaseOrStage());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 27_Locality */
+			/* 26_Locality */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "locality,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getLocality());
+				if (specimen.getGatheringEvent().getLocality() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getLocality());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 28_Dummy4 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "maximumElevationInMeters,0"))
+			/* 27_Dummy4 */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "maximumElevationInMeters,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getLocality());
+				dataRow.add(null);
 			}
 
-			/* 29_Dummy5 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "minimumElevationInMeters,0"))
+			/* 28_Dummy5 */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "minimumElevationInMeters,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getLocality());
+				dataRow.add(null);
 			}
 
-			/* 30_Dummy6 ToDO ? */
+			/* 29_Dummy6 ToDO ? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "nomenclaturalCode,1"))
 			{
 				dataRow.add(null);
 			}
 
-			/* 31_DummyDefault */
+			/* 30_DummyDefault */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "occurrenceID,1"))
 			{
 				String institutionCode = null;
@@ -336,27 +476,46 @@ public class Geology
 				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
 			}
 
-			/* 32_Order */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "order,0"))
+			/* 31_Order */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "order,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
-						.getOrder());
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 33_Phylum */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "phylum,0"))
+			/* 32_Phylum */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "phylum,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
-						.getPhylum());
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getPhylum() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getPhylum());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 34_PreparationType */
+			/* 33_PreparationType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "preparations,1"))
 			{
-				dataRow.add(specimen.getPreparationType());
+				if (specimen.getPreparationType() != null)
+				{	
+					dataRow.add(specimen.getPreparationType());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 35_gatheringEvent.gatheringAgents.fullName */
+			/* 34_gatheringEvent.gatheringAgents.fullName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "recordedBy,1"))
 			{
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
@@ -370,49 +529,92 @@ public class Geology
 				}
 			}
 
-			/* 36_FullScientificName */
+			/* 35_FullScientificName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificName,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getFullScientificName());
+				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null  &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 37_AuthorshipVerbatim */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificnameAuthorship,1"))
+			/* 36_AuthorshipVerbatim */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificNameAuthorship,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getAuthorshipVerbatim());
+				if (specimen.getIdentifications().iterator().next().getScientificName() != null  &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 38_Sex */
+			/* 37_Sex */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "sex,1"))
 			{
-				dataRow.add(specimen.getSex());
+				if (specimen.getSex() != null)
+				{
+					dataRow.add(specimen.getSex());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 39_SpecificEpithet */
+			/* 38_SpecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "specificEpithet,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
-						.getSpecificEpithet());
+				if (specimen.getIdentifications().iterator().next().getScientificName() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 40_ProvinceState */
+			/* 39_ProvinceState */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "stateProvince,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getProvinceState());
+				if (specimen.getGatheringEvent() != null)
+				{
+					dataRow.add(specimen.getGatheringEvent().getProvinceState());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 41_Subgenus */
+			/* 40_Subgenus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "subGenus,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
+				if (specimen.getIdentifications().iterator().next().getScientificName() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 42_TaxonRank */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,0"))
+			/* 41_TaxonRank */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
 				}
@@ -422,8 +624,8 @@ public class Geology
 				}
 			}
 
-			/* 43_Remarks */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRemarks,0"))
+			/* 42_Remarks */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRemarks,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
 				{
@@ -435,16 +637,23 @@ public class Geology
 				}
 			}
 
-			/* 44_TypeStatus */
+			/* 43_TypeStatus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "typeStatus,1"))
 			{
-				dataRow.add(specimen.getTypeStatus());
+				if (specimen.getTypeStatus() != null)
+				{
+					dataRow.add(specimen.getTypeStatus());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
-			/* 45_Depth */
+			/* 44_Depth */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimDepth,1"))
 			{
-				if (specimen.getGatheringEvent().getDepth() != null)
+				if (specimen.getGatheringEvent() != null)
 				{
 					dataRow.add(specimen.getGatheringEvent().getDepth());
 				}
@@ -454,20 +663,12 @@ public class Geology
 				}
 			}
 
-			/* 46_AltitudeUnifOfMeasurement */
+			/* 45_AltitudeUnifOfMeasurement */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimElevation,1"))
 			{
-				dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
-			}
-
-			/* 47_Dummy7 */
-			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
-			{
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null)
+				if (specimen.getGatheringEvent() != null)
 				{
-					SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
-					String datebegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
-					dataRow.add(datebegin);
+					dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
 				}
 				else
 				{
@@ -475,10 +676,52 @@ public class Geology
 				}
 			}
 
-			/* 48_TaxonRank */
+			/* 46_Dummy7 */
+			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
+			{
+				/* if BeginDate and EndDate both has values and not equal then get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null &&
+					!specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()))
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
+					dataRow.add(dateBegin + " | " + dateEnd);
+				}
+				/* if BeginDate is equal to EndDate then only the value of BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && 
+						specimen.getGatheringEvent().getDateTimeBegin() == specimen.getGatheringEvent().getDateTimeEnd())
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if only begindate has a value then get the value of begindate */
+				else if(specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null)
+				{
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
+				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					dataRow.add(null);
+				}
+				else
+				{
+					dataRow.add(null);
+				}
+			}
+
+			/* 47_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimTaxonRank,1"))
 			{
-				dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
+				{
+					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+				}
+				else
+				{
+					dataRow.add(null);
+				}
 			}
 
 			/**

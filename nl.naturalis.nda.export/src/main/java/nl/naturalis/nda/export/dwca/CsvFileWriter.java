@@ -7,6 +7,7 @@ package nl.naturalis.nda.export.dwca;
  */
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class CsvFileWriter extends BufferedWriter
      */
     public CsvFileWriter(String fileName) throws IOException{
         super(new FileWriter(fileName));
+    }
+    
+    public CsvFileWriter(File file) throws IOException{
+        super(new FileWriter(file));
     }
     
     /**

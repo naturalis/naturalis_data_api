@@ -31,7 +31,22 @@ public class Brahms
 			/* 01_RecordBasis */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "basisOfRecord,1"))
 			{
-				if (specimen.getRecordBasis() != null)
+				if (specimen.getRecordBasis().contains("Herbariumsheet"))
+				{
+					dataRow.add("PreservedSpecimen");
+				}
+				else if (specimen.getRecordBasis().contains("extra sheet"))
+				{
+					dataRow.add("PreservedSpecimen");
+				}
+				else if (specimen.getRecordBasis().contains("wood sample"))
+				{
+					dataRow.add("PreservedSpecimen");
+				}
+				else if (specimen.getRecordBasis() != null &&
+						 !specimen.getRecordBasis().contains("Herbariumsheet") &&
+						 !specimen.getRecordBasis().contains("extra sheet") &&
+						 !specimen.getRecordBasis().contains("wood sample"))
 				{
 					dataRow.add(specimen.getRecordBasis());
 				}
@@ -57,11 +72,11 @@ public class Brahms
 			/* 03_ClassName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "class,1"))
 			{
-				if(specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
+				/*if(specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
 				}
-				else
+				else*/
 				{
 					dataRow.add(null);
 				}
@@ -70,13 +85,13 @@ public class Brahms
 			/* 04_CollectionType */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "collectionCode,1"))
 			{
-				if (specimen.getCollectionType() != null)
+				/*if (specimen.getCollectionType() != null)
 				{
 					dataRow.add(specimen.getCollectionType());
 				}
-				else
+				else*/
 				{
-					dataRow.add(null);
+					dataRow.add("Botany");
 				}
 			}
 				
@@ -208,6 +223,10 @@ public class Brahms
   							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
   						}
  				    }
+					else
+					{
+						dataRow.add(null);
+					}
 				}
 				else
 				{
@@ -219,24 +238,31 @@ public class Brahms
 			/* 12_DateTimeBegin en EndTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
+				/* if BeginDate and EndDate both has values and not equal then get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null &&
+					!specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()))
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateBegin + " / " + dateEnd);
+					dataRow.add(dateBegin + " | " + dateEnd);
 				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				/* if BeginDate is equal to EndDate then only the value of BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && 
+						specimen.getGatheringEvent().getDateTimeBegin() == specimen.getGatheringEvent().getDateTimeEnd())
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(dateBegin);
 				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				/* if only begindate has a value then get the value of begindate */
+				else if(specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null)
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
+				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					dataRow.add(null);
 				}
 				else
 				{
@@ -392,10 +418,10 @@ public class Brahms
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "kingdom,1"))
 			{
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
-				{
+				/*{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
 				}
-				else
+				else*/
 				{
 					dataRow.add(null);
 				}
@@ -598,7 +624,22 @@ public class Brahms
 			/* 41_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
+				if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp."))
+				{
+					dataRow.add("subspecies");
+				}	
+				else if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("var."))
+				{
+					dataRow.add("variety");
+				}
+				else if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("f."))
+				{
+					dataRow.add("form");
+				}	
+				else if (specimen.getIdentifications().iterator().next().getTaxonRank() != null &&
+						!specimen.getIdentifications().iterator().next().getTaxonRank().contains("f.") &&
+						!specimen.getIdentifications().iterator().next().getTaxonRank().contains("var.") &&
+						!specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp."))
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
 				}
@@ -663,24 +704,31 @@ public class Brahms
 			/* 46_Dummy7 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
 			{
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
+				/* if BeginDate and EndDate both has values and not equal then get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null &&
+					!specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()))
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateBegin + " / " + dateEnd);
+					dataRow.add(dateBegin + " | " + dateEnd);
 				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				/* if BeginDate is equal to EndDate then only the value of BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && 
+						specimen.getGatheringEvent().getDateTimeBegin() == specimen.getGatheringEvent().getDateTimeEnd())
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(dateBegin);
 				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				/* if only begindate has a value then get the value of begindate */
+				else if(specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null)
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
+				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					dataRow.add(null);
 				}
 				else
 				{

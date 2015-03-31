@@ -386,18 +386,4 @@ public class IndexREST implements Index {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-	@Override
-	public <T> List<T> getResultsList(String type, String namecollectiontype, String sourcesystemcode, int size, Class<T> targetClass)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-
-
-
 }

@@ -219,6 +219,10 @@ public class Zoology
   							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
   						}
  				    }
+					else
+					{
+						dataRow.add(null);
+					}
 				}
 				else
 				{
@@ -229,24 +233,31 @@ public class Zoology
 			/* 12_DateTimeBegin en EndTimeEnd */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "eventDate,1"))
 			{
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
+				/* if BeginDate and EndDate both has values and not equal then get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null &&
+					!specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()))
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateBegin + " / " + dateEnd);
+					dataRow.add(dateBegin + " | " + dateEnd);
 				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				/* if BeginDate is equal to EndDate then only the value of BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && 
+						specimen.getGatheringEvent().getDateTimeBegin() == specimen.getGatheringEvent().getDateTimeEnd())
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(dateBegin);
 				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				/* if only begindate has a value then get the value of begindate */
+				else if(specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null)
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
+				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					dataRow.add(null);
 				}
 				else
 				{
@@ -258,7 +269,8 @@ public class Zoology
 			/* 13_Family */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "family,1"))
 			{
-				if(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily() != null)
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily());
 				}
@@ -271,7 +283,8 @@ public class Zoology
 			/* 14_GenusOrMonomial */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "genus,1"))
 			{
-				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null)
+				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null &&
+				   specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
 				}
@@ -302,7 +315,8 @@ public class Zoology
 			/* 18_identifications.identifiers.fullName | BRAHMS ONLY ?? */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "identifiedBy,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
+				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator().next();
 					if (ag instanceof Person)
@@ -342,7 +356,8 @@ public class Zoology
 			/* 22_InfraspecificEpithet */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "infraspecificEpithet,1"))
 			{
-				if(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet() != null)
+				if(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet() != null &&
+				   specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getInfraspecificEpithet());
 				}
@@ -515,7 +530,8 @@ public class Zoology
 			/* 35_FullScientificName */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificName,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null)
+				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
 				}
@@ -528,7 +544,8 @@ public class Zoology
 			/* 36_AuthorshipVerbatim */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "scientificNameAuthorship,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null)
+				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
 				}
@@ -580,7 +597,8 @@ public class Zoology
 			/* 40_Subgenus */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "subGenus,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getScientificName().getSubgenus() != null)
+				if (specimen.getIdentifications().iterator().next().getScientificName().getSubgenus() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSubgenus());
 				}
@@ -593,7 +611,8 @@ public class Zoology
 			/* 41_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
 				}
@@ -658,24 +677,31 @@ public class Zoology
 			/* 46_Dummy7 */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "verbatimEventDate,1"))
 			{
-				/* if BeginDate and EndDate both has values get the value of the BeginDate and EndDate */
-				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null )
+				/* if BeginDate and EndDate both has values and not equal then get the value of the BeginDate and EndDate */
+				if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() != null &&
+					!specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()))
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateBegin + " / " + dateEnd);
+					dataRow.add(dateBegin + " | " + dateEnd);
 				}
-				/* if BeginDate has a value and EndDate has no value get the value of the BeginDate */
-				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null )
+				/* if BeginDate is equal to EndDate then only the value of BeginDate */
+				else if (specimen.getGatheringEvent().getDateTimeBegin() != null && 
+						specimen.getGatheringEvent().getDateTimeBegin() == specimen.getGatheringEvent().getDateTimeEnd())
 				{
 					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 					dataRow.add(dateBegin);
 				}
-				/* if EndDate has a value and Begindate has no value get the value of the Enddate */
-				else if(specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				/* if only begindate has a value then get the value of begindate */
+				else if(specimen.getGatheringEvent().getDateTimeBegin() != null && specimen.getGatheringEvent().getDateTimeEnd() == null)
 				{
-					String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
-					dataRow.add(dateEnd);
+					String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+					dataRow.add(dateBegin);
+				}
+				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
+				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
+				{
+					dataRow.add(null);
 				}
 				else
 				{

@@ -14,10 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
 public class StringUtilities {
 	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
 	final static int BUFFER = 2048;
-	private static final String propertiesExtension = ".properties";
 	static String propertiesfilename = null;
 
 
@@ -98,28 +95,6 @@ public class StringUtilities {
 	public static String getPropertyValue(String propertyname, String value)
 	{
 		return  getProperty(propertyname,value);
-//		propertiesfilename = propertyname + propertiesExtension;
-//		String result = null;
-//		boolean found = false;
-//		Properties prop = new Properties();
-//		try {
-//			/* load a properties file */
-//			prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-//			Enumeration<?> e = prop.propertyNames();
-//			while (e.hasMoreElements() && !found) {
-//				String propertyName = (String) e.nextElement();
-//				result = prop.getProperty(propertyName);
-//				// System.out.println("Result: " + result);
-//				if (result.equals(value)) {
-//					found = true;
-//					break;
-//				}
-//			}
-//		}
-//		catch (IOException ex) {
-//			ex.printStackTrace();
-//		}
-//		return result;
 	}
 
 
@@ -127,21 +102,6 @@ public class StringUtilities {
 	public static String readPropertyvalue(String propertyname, String key)
 	{
 		return  getProperty(propertyname,key);
-//		propertiesfilename = propertyname + propertiesExtension;
-//		String result = null;
-//		Properties prop = new Properties();
-//		try {
-//			/* load a properties file */
-//			if (propertiesfilename != null) {
-//				prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-//				result = prop.getProperty(key);
-//			}
-//
-//		}
-//		catch (IOException ex) {
-//			ex.printStackTrace();
-//		}
-//		return result;
 	}
 
 
@@ -196,7 +156,7 @@ public class StringUtilities {
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
 	}
-
+	
 
 	/* Copy a file from a Source directory to a Destination directory */
 	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
@@ -436,6 +396,15 @@ public class StringUtilities {
 	public static String getProperty(String collectionName, String propertyName)
 	{
 		return getProperties(collectionName).required(propertyName);
+	}
+	
+	public boolean isEnabled(String collectionName, String propertyName) {
+		String val = getProperty(collectionName, propertyName);
+		String[] chunks = val.split(",");
+		if(chunks[1].equals("1")) {
+			return true;
+		}
+		return false;
 	}
 
 }

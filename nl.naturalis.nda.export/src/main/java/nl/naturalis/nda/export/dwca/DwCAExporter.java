@@ -464,7 +464,7 @@ public class DwCAExporter {
 	private void writeBrahmsCsvHeader(List<ESSpecimen> listBrahms, String namecollectiontype, String occurrenceFields) throws IOException
 	{
 		/* BRAHMS Occurrence */
-		if (MAPPING_FILE_NAME.equals(occurrenceFields)) {
+		if (MAPPING_FILE_NAME.equalsIgnoreCase(occurrenceFields)) {
 			Brahms brahms = new Brahms();
 			if (brahms != null) {
 				try {
@@ -602,7 +602,7 @@ public class DwCAExporter {
 				}
 
 				if (sourcesystemcode.equalsIgnoreCase("BRAHMS")) {
-					writeBrahmsCsvHeader((List<ESSpecimen>) list, sourcesystemcode.toUpperCase(), "Botany");
+					writeBrahmsCsvHeader((List<ESSpecimen>) list, sourcesystemcode.toLowerCase(), "botany");
 				}
 				Requests.flushRequest(indexname);
 				Requests.refreshRequest(indexname);

@@ -97,49 +97,51 @@ public class StringUtilities {
 	/* Read the value from properties file */
 	public static String getPropertyValue(String propertyname, String value)
 	{
-		propertiesfilename = propertyname + propertiesExtension;
-		String result = null;
-		boolean found = false;
-		Properties prop = new Properties();
-		try {
-			/* load a properties file */
-			prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-			Enumeration<?> e = prop.propertyNames();
-			while (e.hasMoreElements() && !found) {
-				String propertyName = (String) e.nextElement();
-				result = prop.getProperty(propertyName);
-				// System.out.println("Result: " + result);
-				if (result.equals(value)) {
-					found = true;
-					break;
-				}
-			}
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return result;
+		return  getProperty(propertyname,value);
+//		propertiesfilename = propertyname + propertiesExtension;
+//		String result = null;
+//		boolean found = false;
+//		Properties prop = new Properties();
+//		try {
+//			/* load a properties file */
+//			prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
+//			Enumeration<?> e = prop.propertyNames();
+//			while (e.hasMoreElements() && !found) {
+//				String propertyName = (String) e.nextElement();
+//				result = prop.getProperty(propertyName);
+//				// System.out.println("Result: " + result);
+//				if (result.equals(value)) {
+//					found = true;
+//					break;
+//				}
+//			}
+//		}
+//		catch (IOException ex) {
+//			ex.printStackTrace();
+//		}
+//		return result;
 	}
 
 
 	/* Read the value from properties file */
 	public static String readPropertyvalue(String propertyname, String key)
 	{
-		propertiesfilename = propertyname + propertiesExtension;
-		String result = null;
-		Properties prop = new Properties();
-		try {
-			/* load a properties file */
-			if (propertiesfilename != null) {
-				prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-				result = prop.getProperty(key);
-			}
-
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return result;
+		return  getProperty(propertyname,key);
+//		propertiesfilename = propertyname + propertiesExtension;
+//		String result = null;
+//		Properties prop = new Properties();
+//		try {
+//			/* load a properties file */
+//			if (propertiesfilename != null) {
+//				prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
+//				result = prop.getProperty(key);
+//			}
+//
+//		}
+//		catch (IOException ex) {
+//			ex.printStackTrace();
+//		}
+//		return result;
 	}
 
 

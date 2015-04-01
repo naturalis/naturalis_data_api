@@ -31,22 +31,22 @@ public class Brahms
 			/* 01_RecordBasis */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "basisOfRecord,1"))
 			{
-				if (specimen.getRecordBasis().contains("Herbariumsheet"))
+				if (specimen.getRecordBasis().contains("Herbarium sheet"))
 				{
 					dataRow.add("PreservedSpecimen");
 				}
-				else if (specimen.getRecordBasis().contains("extra sheet"))
+				else if (specimen.getRecordBasis().contains("Extra sheet"))
 				{
 					dataRow.add("PreservedSpecimen");
 				}
-				else if (specimen.getRecordBasis().contains("wood sample"))
+				else if (specimen.getRecordBasis().contains("Wood sample"))
 				{
 					dataRow.add("PreservedSpecimen");
 				}
 				else if (specimen.getRecordBasis() != null &&
-						 !specimen.getRecordBasis().contains("Herbariumsheet") &&
-						 !specimen.getRecordBasis().contains("extra sheet") &&
-						 !specimen.getRecordBasis().contains("wood sample"))
+						 !specimen.getRecordBasis().contains("Herbarium sheet") &&
+						 !specimen.getRecordBasis().contains("Extra sheet") &&
+						 !specimen.getRecordBasis().contains("Wood sample"))
 				{
 					dataRow.add(specimen.getRecordBasis());
 				}
@@ -217,11 +217,12 @@ public class Brahms
   								latitudeDecimal2 = Double.toString(iterator.next().getLatitudeDecimal());
   								longitudeDecimal2 = Double.toString(iterator.next().getLongitudeDecimal());
 							}
+							if (latitudeDecimal1 != null && longitudeDecimal1 != null && latitudeDecimal2 != null && longitudeDecimal2 != null)
+							{
+	  							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
+	  						}
 						}
-						if (latitudeDecimal1 != null && longitudeDecimal1 != null && latitudeDecimal2 != null && longitudeDecimal2 != null)
-						{
-  							dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | " + longitudeDecimal1 + ", "+ longitudeDecimal2);
-  						}
+						
  				    }
 					else
 					{

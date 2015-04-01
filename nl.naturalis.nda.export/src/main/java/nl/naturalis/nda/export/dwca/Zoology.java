@@ -7,6 +7,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -625,9 +626,21 @@ public class Zoology
 			/* 42_Remarks */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRemarks,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
+				//if (specimen.getIdentifications().iterator().next().getRemarks() != null)
+				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
+					/*int j = 0; // initilisation
+					while (specimen.getIdentifications().size() > j) { // condition checking
+						List<?> listFullname = new ArrayList<Object>();
+						listFullname.get(j);
+						dataRow.add(listFullname.toString());
+						j++; // iteration
+					}*/
+					if (specimen.getIdentifications().size() > 1)
+						{
+							dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
+						}
 				}
 				else
 				{

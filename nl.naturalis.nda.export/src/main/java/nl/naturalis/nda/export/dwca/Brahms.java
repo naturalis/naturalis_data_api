@@ -624,24 +624,31 @@ public class Brahms
 			/* 41_TaxonRank */
 			if (StringUtilities.isFieldChecked(MAPPING_FILE_NAME, "taxonRank,1"))
 			{
-				if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp."))
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null)
 				{
-					dataRow.add("subspecies");
-				}	
-				else if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("var."))
-				{
-					dataRow.add("variety");
-				}
-				else if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("f."))
-				{
-					dataRow.add("form");
-				}	
-				else if (specimen.getIdentifications().iterator().next().getTaxonRank() != null &&
-						!specimen.getIdentifications().iterator().next().getTaxonRank().contains("f.") &&
-						!specimen.getIdentifications().iterator().next().getTaxonRank().contains("var.") &&
-						!specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp."))
-				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+					if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp."))
+					{
+						dataRow.add("subspecies");
+					}	
+					else if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("var."))
+					{
+						dataRow.add("variety");
+					}
+					else if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("f."))
+					{
+						dataRow.add("form");
+					}	
+					else if (specimen.getIdentifications().iterator().next().getTaxonRank() != null &&
+							!specimen.getIdentifications().iterator().next().getTaxonRank().contains("f.") &&
+							!specimen.getIdentifications().iterator().next().getTaxonRank().contains("var.") &&
+							!specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp."))
+					{
+						dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+					}
+					else
+					{
+						dataRow.add(null);
+					}
 				}
 				else
 				{

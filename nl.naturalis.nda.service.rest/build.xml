@@ -1,21 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." name="nl.naturalis.nda.service.rest" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.service.rest" default="build">
 
-    <import file="../nl.naturalis.nda.build/common.xml" />
+	<import file="../nl.naturalis.nda.build/properties.xml" />
+	<import file="../nl.naturalis.nda.build/common.xml" />
+	<property file="../nl.naturalis.nda.build/build.properties" />
+	<property environment="env" />
 
-    <target name="clean" depends="common.clean">
-        <delete file="build/nda.war">
-        </delete>
-    </target>
+	<path id="non-ivy-dependencies">
+		<!-- projects that this project depends on -->
+		<filelist dir="${domain.module.location}/build" files="${domain.module.artifact}" />
+		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
+		<filelist dir="${ejb.module.location}/build" files="${ejb.module.artifact}" />
+		<!-- libraries not inside this project's lib dir -->
+		<filelist dir="${nl.naturalis.nda.build.location}/lib">
+			<file name="org.domainobject.util.jar" />
+			<file name="org.domainobject.util.debug.jar" />
+		</filelist>
+	</path>
 
-    <target name="package" depends="compile">
-        <war destfile="build/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
-            <lib dir="WebContent/WEB-INF/lib" />
-            <classes dir="build/main" />
-            <fileset dir="WebContent" />
-        </war>
-    </target>
+	<!-- Build projects that this project depends on -->
+	<target name="-projects">
+		<echo message="Building required projects for ${ant.project.name}" />
+		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${ejb.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+	</target>
 
-    <target name="build" depends="package" />
+	<target name="-package" depends="-projects,compile-sources">
+		<war destfile="build/${rest.module.artifact}" webxml="WebContent/WEB-INF/web.xml">
+			<lib dir="WebContent/WEB-INF/lib" />
+			<classes dir="build/main" excludes="**/.git*" />
+			<fileset dir="WebContent" />
+		</war>
+	</target>
+
+	<!-- Export war file, but only if it does not exist already -->
+	<target name="build">
+		<available file="build/${rest.module.artifact}" property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
+		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
+		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
+	</target>
+
+	<target name="rebuild" depends="clean,build" />
 
 </project>

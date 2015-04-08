@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class CsvFileWriter extends BufferedWriter
 {
 	
-	public static final String httpUrl = "http://data.biodiverstitydata.nl/";
+	public static final String httpUrl = "http://data.biodiversitydata.nl/";
     /**
      * Parameterized constructor
      * @param fileName
@@ -44,13 +44,15 @@ public class CsvFileWriter extends BufferedWriter
                 builder.append('\t');
             if(column != null)
             {
-                if (StringUtilities.indexOfFirstContainedCharacter(column, "\"+-,") !=-1){
+            	 builder.append(column);
+                 firstColumn = false;
+/*                if (StringUtilities.indexOfFirstContainedCharacter(column, "\"+-,") !=-1)
+                {
                     column = column.replaceAll("\"", "\"\"");
-                    builder.append(String.format("\"%s\"",column));
+                  // builder.append(String.format("\"%s\"",column));
                 }
                 else
-                    builder.append(column);
-                firstColumn = false;
+*/             
             }
         }
         row.lineText = builder.toString();

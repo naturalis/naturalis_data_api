@@ -353,6 +353,8 @@ public class DwCAExporter {
 		Properties configFile = new Properties();
 		try { /* load the values from the properties file */
 			logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
+			StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
+
 			configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME + propertiesExtension));
 		}
 		catch (IOException e) {
@@ -374,8 +376,10 @@ public class DwCAExporter {
 		}
 		/* Write the headers columns */
 		logger.info("Writing headers row to the Occurence.txt file.");
+		StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurence.txt file.");
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
+		StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
 	}
 
 

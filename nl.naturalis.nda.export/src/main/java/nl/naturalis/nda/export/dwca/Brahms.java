@@ -95,7 +95,7 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getWorldRegion() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getWorldRegion());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getWorldRegion()));
 				}
 				else
 				{
@@ -108,7 +108,7 @@ public class Brahms
 			{
 				if(specimen.getGatheringEvent().getCountry() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getCountry());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCountry()));
 				}
 				else
 				{
@@ -121,7 +121,7 @@ public class Brahms
 			{
 				if(specimen.getGatheringEvent().getCity() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getCity());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCity()));
 				}
 				else
 				{
@@ -154,7 +154,7 @@ public class Brahms
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
 							.getLatitudeDecimal() != null)
 					{
-						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates()
+						dataRow.add(String.format("%s", specimen.getGatheringEvent().getSiteCoordinates()
 								.iterator().next().getLatitudeDecimal()));
 					}
 					else
@@ -175,7 +175,7 @@ public class Brahms
 				{
 					if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal() != null)
 					{
-						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
+						dataRow.add(String.format("%s", specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLongitudeDecimal()));
 					}
 					else
 					{
@@ -244,7 +244,7 @@ public class Brahms
 			{
 				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null)
 				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial()));
 				}
 				else
 				{
@@ -312,7 +312,7 @@ public class Brahms
 					if (ag instanceof Person)
 					{
 						Person per = (Person) ag;
-						dataRow.add(per.getFullName());
+						dataRow.add(strutil.convertStringToUTF8(per.getFullName()));
 					} else
 					{
 						dataRow.add(null);
@@ -327,7 +327,7 @@ public class Brahms
 			/* 18_NumberOfSpecimen is individualCount */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "18_NumberOfSpecimen"))
 			{
-				if (Integer.toString(specimen.getNumberOfSpecimen()) != null)
+				if (Integer.toString(specimen.getNumberOfSpecimen()) != null && specimen.getNumberOfSpecimen() > 0)
 				{
 					dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
 				}
@@ -362,7 +362,7 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getIsland() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getIsland());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getIsland()));
 				}
 				else
 				{
@@ -418,7 +418,7 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getLocality());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));
 				}
 				else
 				{
@@ -505,7 +505,7 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName()));
 				}
 				else
 				{
@@ -518,7 +518,7 @@ public class Brahms
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null)
 				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName()));
 				}
 				else
 				{
@@ -531,7 +531,7 @@ public class Brahms
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null)
 				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim()));
 				}
 				else
 				{
@@ -557,7 +557,7 @@ public class Brahms
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet() != null)
 				{
-					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet()));
 				}
 				else
 				{
@@ -570,7 +570,7 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getProvinceState() != null)
 				{
-					dataRow.add(specimen.getGatheringEvent().getProvinceState());
+					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getProvinceState()));
 				}
 				else
 				{

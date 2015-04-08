@@ -113,7 +113,13 @@ public interface Index {
 	 */
 	<T> T get(String type, String id, Class<T> targetClass);
 
+	
+	<T> T getAll(String type, String id, Class<T> targetClass);
+	//HashMap<String,Object> getResultsMap(String type, int size);
 
+
+
+	
 	/**
 	 * Delete the document with the specified id
 	 * 

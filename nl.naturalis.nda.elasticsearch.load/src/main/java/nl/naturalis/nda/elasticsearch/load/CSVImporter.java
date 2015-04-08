@@ -120,7 +120,9 @@ public abstract class CSVImporter<T> {
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
 				if (line.trim().length() == 0) {
-					logger.debug("Ignoring empty line: " + lineNo);
+					if (logger.isDebugEnabled()) {
+						logger.debug("Ignoring empty line: " + lineNo);
+					}
 					continue;
 				}
 				++processed;
@@ -197,7 +199,7 @@ public abstract class CSVImporter<T> {
 	}
 
 
-	@SuppressWarnings({ "static-method", "unused" })
+	@SuppressWarnings({ "static-method" })
 	protected boolean skipRecord(CSVRecord record)
 	{
 		return false;
@@ -207,14 +209,14 @@ public abstract class CSVImporter<T> {
 	protected abstract List<T> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception;
 
 
-	@SuppressWarnings({ "static-method", "unused" })
+	@SuppressWarnings({ "static-method" })
 	protected List<String> getIds(CSVRecord record)
 	{
 		return null;
 	}
 
 
-	@SuppressWarnings({ "static-method", "unused" })
+	@SuppressWarnings({ "static-method" })
 	protected List<String> getParentIds(CSVRecord record)
 	{
 		return null;

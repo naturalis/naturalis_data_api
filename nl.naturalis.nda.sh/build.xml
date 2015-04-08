@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.sh" default="build">
+
+	<import file="../nl.naturalis.nda.build/properties.xml" />
+	<import file="../nl.naturalis.nda.build/common.xml" />
+	<property file="../nl.naturalis.nda.build/build.properties" />
+	<property environment="env" />
+
+	<target name="clean">
+		<delete dir="${nda.import.install.dir}" />
+	</target>
+
+	<!--
+		Reinstalls shell scripts and configuration files using the
+		latest version of build.properties, but avoids rebuilding
+		the load project.
+	-->
+	<target name="update-import">
+		<available file="${nda.import.install.dir}" type="dir" property="sh.module.installed" />
+		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. Please run &#034;ant install-import&#034; first" />
+		<echo message="Installing configuration files into ${nda.import.install.dir}/conf" />
+		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
+			<fileset dir="import/conf" excludes="**/*.git*" />
+			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		</copy>
+		<echo message="Installing shell scripts into ${nda.import.install.dir}/sh" />
+		<copy todir="${nda.import.install.dir}/sh" overwrite="true">
+			<fileset dir="import/sh" excludes="**/*.git*" />
+			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		</copy>
+	</target>
+
+	<target name="install-import">
+		<mkdir dir="${nda.import.install.dir}" />
+		<antcall target="update-import" />
+		<echo message="Installing libraries into ${nda.import.install.dir}/lib" />
+		<mkdir dir="${nda.import.install.dir}/lib" />
+		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.import.install.dir}/lib" />
+		<copy todir="${nda.import.install.dir}/lib">
+			<fileset dir="${domain.module.location}/build/classpath" />
+		</copy>
+		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${nda.import.install.dir}/lib" />
+		<copy todir="${nda.import.install.dir}/lib">
+			<fileset dir="${dao.module.location}/build/classpath" />
+		</copy>
+		<copy file="${load.module.location}/build/${load.module.artifact}" todir="${nda.import.install.dir}/lib" />
+		<copy todir="${nda.import.install.dir}/lib">
+			<fileset dir="${load.module.location}/build/classpath" />
+		</copy>
+	</target>
+
+	<target name="cron">
+		<condition property="nda.import.crs.specimens.cron.notempty">
+			<equals arg1="${nda.import.crs.specimens.cron}" arg2="" trim="true" />
+		</condition>
+		<exec if:set="nda.import.crs.specimens.cron.notempty">
+		</exec>
+	</target>
+
+	<target name="build" depends="install-import" />
+
+</project>

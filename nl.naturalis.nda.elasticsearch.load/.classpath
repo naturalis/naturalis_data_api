@@ -6,12 +6,17 @@
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/8">
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA_LOAD_LIB"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ELASTIC_SEARCH"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 8.x Runtime">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.utility"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/7">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/NBA_LOAD_LIB"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ELASTIC_SEARCH"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

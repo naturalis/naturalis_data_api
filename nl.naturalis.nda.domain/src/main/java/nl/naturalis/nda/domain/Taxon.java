@@ -19,6 +19,7 @@ public class Taxon extends NdaTraceableObject {
 	private List<Expert> experts;
 
 	private List<Specimen> specimens;
+	private List<String> localities;
 
 
 	public String getSourceSystemParentId()
@@ -184,5 +185,17 @@ public class Taxon extends NdaTraceableObject {
 	public void setSpecimens(List<Specimen> specimens)
 	{
 		this.specimens = specimens;
+	}
+
+
+	public List<String> getLocalities()
+	{
+		return localities;
+	}
+
+
+	public void setLocalities(List<String> localities)
+	{
+		this.localities = localities;
 	}
 }

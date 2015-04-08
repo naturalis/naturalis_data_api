@@ -32,5 +32,5 @@ nda.import.col.year=2014
 # Directory into which to write log files for the import
 # scripts. If you want to finetune logging, you will have to
 # manually edit ${nda.import.install.dir}/conf/logback.xml
-nda.import.log.dir=C:/test/nda-import/log
+nda.import.log.dir=/data/nda-import/log
 

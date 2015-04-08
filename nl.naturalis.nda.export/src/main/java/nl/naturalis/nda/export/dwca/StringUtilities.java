@@ -11,13 +11,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -29,10 +32,35 @@ import org.domainobject.util.ConfigObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileWriter;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import javax.json.Json;
+import javax.json.stream.JsonGeneratorFactory;
+
+import org.json.simple.parser.ParseException;
+
+import java.util.*;
+
+import javax.json.stream.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonWriter;
+
+
 public class StringUtilities {
 	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
 	final static int BUFFER = 2048;
-	private static final String propertiesExtension = ".properties";
 	static String propertiesfilename = null;
 
 
@@ -97,49 +125,14 @@ public class StringUtilities {
 	/* Read the value from properties file */
 	public static String getPropertyValue(String propertyname, String value)
 	{
-		propertiesfilename = propertyname + propertiesExtension;
-		String result = null;
-		boolean found = false;
-		Properties prop = new Properties();
-		try {
-			/* load a properties file */
-			prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-			Enumeration<?> e = prop.propertyNames();
-			while (e.hasMoreElements() && !found) {
-				String propertyName = (String) e.nextElement();
-				result = prop.getProperty(propertyName);
-				// System.out.println("Result: " + result);
-				if (result.equals(value)) {
-					found = true;
-					break;
-				}
-			}
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return result;
+		return  getProperty(propertyname,value);
 	}
 
 
 	/* Read the value from properties file */
 	public static String readPropertyvalue(String propertyname, String key)
 	{
-		propertiesfilename = propertyname + propertiesExtension;
-		String result = null;
-		Properties prop = new Properties();
-		try {
-			/* load a properties file */
-			if (propertiesfilename != null) {
-				prop.load(StringUtilities.class.getClassLoader().getResourceAsStream(propertiesfilename));
-				result = prop.getProperty(key);
-			}
-
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return result;
+		return  getProperty(propertyname,key);
 	}
 
 
@@ -194,7 +187,7 @@ public class StringUtilities {
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
 	}
-
+	
 
 	/* Copy a file from a Source directory to a Destination directory */
 	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
@@ -434,6 +427,158 @@ public class StringUtilities {
 	public static String getProperty(String collectionName, String propertyName)
 	{
 		return getProperties(collectionName).required(propertyName);
+	}
+	
+	public boolean isEnabled(String collectionName, String propertyName) {
+		String val = getProperty(collectionName, propertyName);
+		String[] chunks = val.split(",");
+		if(chunks[1].equals("1")) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	public String convertStringToUTF8(String text)
+	{
+		String value = null;
+		byte ptext[];
+		try 
+		{
+			if (text != null)
+			{
+				ptext = text.getBytes("ISO-8859-1");
+				value = new String(ptext, "UTF-8"); 
+			}
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			e.printStackTrace();
+		}
+		return value;
+	}
+	
+	public static String crunchifyPrettyJSONUtility(String simpleJSON) {
+		JsonParser crunhifyParser = new JsonParser();
+		JsonObject json = crunhifyParser.parse(simpleJSON).getAsJsonObject();
+ 
+		Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+		String prettyJson = prettyGson.toJson(json);
+ 
+		return prettyJson;
+	}
+	
+	/**
+     * Convert a JSON string to pretty print version
+     * @param jsonString
+     * @return
+     */
+    public static String toPrettyFormat(String jsonString) 
+    {
+        JsonParser parser = new JsonParser();
+        JsonObject json = parser.parse(jsonString).getAsJsonObject();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String prettyJson = gson.toJson(json);
+
+        return prettyJson;
+    }
+    
+
+	@SuppressWarnings("unchecked")
+	public static void writeLogToJSON(String collectionName, String messages) throws IOException
+	{
+		
+		/*String Filename = "c:\\Temp\\" + collectionName + ".json";
+		try(Writer writer = new OutputStreamWriter(new FileOutputStream(Filename, true) , "UTF-8"))
+		{
+            Gson gson = new GsonBuilder().create();
+            gson.toJsonTree(collectionName);
+            gson.toJson(collectionName, writer);
+            gson.toJson("Author: Reinier.Kartowikromo", writer);
+            gson.toJson("INFO: " + messages, writer);
+        }		*/
+		
+		
+		
+		
+		
+		String Filename = "c:\\Temp\\" + collectionName + ".json";
+		
+		JSONObject collection = new JSONObject();  
+		collection.put("Collectionname", collectionName);  
+        collection.put("Author", "Reinier.Kartowikromo");  
+  
+        JSONArray listOfMessages = new JSONArray();  
+        listOfMessages.add(messages);  
+  
+        collection.put("INFO", listOfMessages);  
+  
+        try {  
+              
+            // Writing to a file  
+            File file=new File(Filename);  
+            file.createNewFile();  
+            FileWriter fileWriter = new FileWriter(file, true);  
+            System.out.println("Writing JSON object to file");  
+            System.out.println("-----------------------");  
+            System.out.print(collection);  
+  
+            fileWriter.write(collection.toJSONString());  
+            fileWriter.flush();  
+            fileWriter.close();
+            
+ 
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        } 
+
+
+		
+		
+		/*JSONObject json = new JSONObject(); 
+		json.put("Collectionname", collectionName); 
+		json.put("Author", "Reinier.Kartowikromo"); 
+		
+		JSONArray jsonArray = new JSONArray(); 
+		jsonArray.add(messages); 
+		jsonArray.spliterator();
+
+		json.put("INFO", jsonArray); 
+		try 
+			{ 
+				System.out.println("Writting JSON into file ..."); 
+				System.out.println(json); 
+				
+				FileWriter jsonFileWriter = new FileWriter(Filename, true); 
+				jsonFileWriter.write(json.toJSONString()); 
+				jsonFileWriter.flush(); 
+				jsonFileWriter.close(); 
+				System.out.println("Done"); 
+	 		} catch (IOException e) 
+		{
+         e.printStackTrace();
+		}
+		*/
+/*		String Filename = collectionName + ".json";
+		
+		JsonFactory jfactory = new JsonFactory();
+		JsonGenerator jGenerator = jfactory.createGenerator(new File("c:\\Temp\\" + Filename), JsonEncoding.UTF8); 
+
+		jGenerator.writeStartObject(); 
+		jGenerator.writeStringField("Collectionname", collectionName); 
+		jGenerator.writeStringField("Author", "Reinier.Kartowikromo"); 
+	 
+		jGenerator.writeFieldName("INFO"); 
+		jGenerator.writeStartArray(); // [
+	 
+		jGenerator.writeString(messages); // messages
+			 
+		jGenerator.writeEndArray(); // ]
+	 
+		jGenerator.writeEndObject(); // }
+	 
+		jGenerator.close();*/
 	}
 
 }

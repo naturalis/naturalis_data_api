@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." name="nl.naturalis.nda.client" default="build">
 
-    <import file="../nl.naturalis.nda.build/common.xml" />
+	<import file="../nl.naturalis.nda.build/properties.xml" />
+	<import file="../nl.naturalis.nda.build/common.xml" />
+	<property file="../nl.naturalis.nda.build/build.properties" />
+	<property environment="env" />
 
-    <target name="package" depends="test">
-        <jar destfile="build/${ant.project.name}.jar">
-            <fileset dir="build/main" />
-        </jar>
-    </target>
-
-    <target name="build" depends="package" />
+	<target name="build" />
 
 </project>

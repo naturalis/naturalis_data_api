@@ -7,16 +7,6 @@
 
 	<target name="-verify">
 		<echo message="Verifying build environment" />
-		<!-- Make sure ivy jar has been copied over to Ant's lib directory -->
-		<fail message="ivy-x.x.x.jar not found in ${ant.library.dir}. Please copy jar file from your Ivy installation directory.">
-			<condition>
-				<not>
-					<resourcecount count="1">
-						<fileset dir="${ant.library.dir}" includes="ivy-*.jar" />
-					</resourcecount>
-				</not>
-			</condition>
-		</fail>
 		<!-- Do we have a Git command line client? -->
 		<exec executable="git" outputproperty="git.ok" failifexecutionfails="false">
 			<arg value="branch" />
@@ -140,7 +130,7 @@
 	</target>
 
 	<target name="help" description="Show help text">
-		<echo message="Show all build target                             : ant -p" />
+		<echo message="Show all build targets                            : ant -p" />
 		<echo message="Build all modules                                 : ant build" />
 		<echo message="Clean all modules and then rebuild                : ant rebuild | ant clean build" />
 		<echo message="Build ear file                                    : ant ear" />

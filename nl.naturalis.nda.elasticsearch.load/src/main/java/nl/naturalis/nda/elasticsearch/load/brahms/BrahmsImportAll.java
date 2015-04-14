@@ -1,8 +1,14 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
@@ -19,22 +25,15 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();
-
-		IndexNative index = null;
-
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			BrahmsImportAll importer = new BrahmsImportAll(index);
-			importer.importAll();
+			importer.importCsvFiles();
 		}
 		catch (Throwable t) {
-			logger.error("Brahms import Failed!");
+			logger.error("Brahms import failed!");
 			logger.error(t.getMessage(), t);
 		}
 		logger.info("Ready");
@@ -42,6 +41,8 @@ public class BrahmsImportAll {
 
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);
 
+	private final String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
+	
 	private final IndexNative index;
 	private final boolean backup;
 
@@ -54,41 +55,51 @@ public class BrahmsImportAll {
 	}
 
 
+	/**
+	 * This method first imports all specimens, then all multimedia.
+	 * 
+	 * @throws Exception
+	 */
 	public void importAll() throws Exception
 	{
-		// Make sure thematic search is configured properly by
-		// instantiating the one & only instance.
+		// Make sure thematic search is configured properly
 		ThematicSearchConfig.getInstance();
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
 		specimenImporter.importCsvFiles();
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
 		multiMediaImporter.importCsvFiles();
 		if (backup) {
-			BrahmsDumpUtil.backup();
+			File[] files = getCsvFiles();
+			for (File f : files) {
+				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
+			}
 		}
 	}
 
 
+	/**
+	 * This method processed dump files one by one and for each imports the
+	 * specimens first and then the multimedia.
+	 * 
+	 * @throws Exception
+	 */
 	public void importCsvFiles() throws Exception
 	{
-		BrahmsDumpUtil.convertFiles();
+		//BrahmsDumpUtil.convertFiles();
+		ThematicSearchConfig.getInstance();
 		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
 		}
-		File[] files = file.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name)
-			{
-				return name.toLowerCase().endsWith(BrahmsDumpUtil.FILE_EXT_IMPORTABLE);
-			}
-		});
+		File[] files = getCsvFiles();
 		if (files.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
-		int maxRecords = Integer.parseInt(System.getProperty("maxRecords", "0"));
+		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+		index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+		int maxRecords = Integer.parseInt(System.getProperty(SYSPROP_MAXRECORDS, "0"));
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
 		specimenImporter.setMaxRecords(maxRecords);
 		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
@@ -97,8 +108,9 @@ public class BrahmsImportAll {
 			specimenImporter.importCsv(f.getAbsolutePath());
 			mediaImporter.importCsv(f.getAbsolutePath());
 			if (backup) {
-				f.renameTo(new File(f.getCanonicalPath() + BrahmsDumpUtil.FILE_EXT_IMPORTED));
+				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
 			}
 		}
+		ThematicSearchConfig.getInstance().logMatchInfo();
 	}
 }

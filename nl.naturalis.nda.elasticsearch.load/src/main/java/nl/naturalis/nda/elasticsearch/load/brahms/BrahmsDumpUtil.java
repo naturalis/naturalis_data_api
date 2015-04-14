@@ -20,6 +20,16 @@ import org.slf4j.LoggerFactory;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
+/**
+ * Utility class for determining file encoding of Brahms dumps, and for
+ * converting them to UTF-8. This class is not used any longer because the
+ * conversion is now done on the fly (while importing specimens/multimedia).
+ * 
+ * @deprecated
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class BrahmsDumpUtil {
 
 	public static void main(String[] args) throws Exception
@@ -48,11 +58,11 @@ public class BrahmsDumpUtil {
 
 	/**
 	 * Utility method to detect character set in Brahms dumps. Not part of the
-	 * import program. Two different character set detector libraries are used:
-	 * universalchardet (Mozilla) en ICU (IBM). Mozilla could not detect any
-	 * character set at all. ICU settled on ISO-8859-1. Nonetheless, we assume
-	 * the character set in the Brahms dumps is CP-1252, because that seemed to
-	 * give the best results (least "funny" characters).
+	 * import work flow. Two different character set detector libraries are
+	 * used: universalchardet (Mozilla) en ICU (IBM). Mozilla could not detect
+	 * any character set at all. ICU settled on ISO-8859-1. Nonetheless, we
+	 * assume the character set in the Brahms dumps is CP-1252, because that
+	 * seemed to give the best results (least "funny" characters).
 	 * 
 	 * @throws IOException
 	 */

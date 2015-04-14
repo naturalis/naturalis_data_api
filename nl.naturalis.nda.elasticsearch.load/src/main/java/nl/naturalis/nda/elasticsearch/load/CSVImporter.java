@@ -1,8 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,11 +85,22 @@ public abstract class CSVImporter<T> {
 	private boolean specifyId = false;
 	private boolean specifyParent = false;
 
+	/*
+	 * Is first line in CSV file a header containing field names?
+	 */
+	protected boolean skipHeader = true;
+	protected CSVFormat csvFormat;
 	protected char delimiter = '\t';
+	/*
+	 * Character set used in the CSV file
+	 */
+	protected Charset charset = Charset.forName("UTF-8");
 
-	// Will log errors as debug messages. Specifically
-	// useful when expecting huge amounts of errors, as
-	// with Brahms.
+	/*
+	 * Will log errors as debug messages. Specifically useful when expecting
+	 * huge amounts of errors, as with Brahms, and logging itself becomes a
+	 * performance drain.
+	 */
 	protected boolean suppressErrors = false;
 
 
@@ -101,10 +114,35 @@ public abstract class CSVImporter<T> {
 	public void importCsv(String path) throws IOException
 	{
 		logger.info(String.format("[%s] Processing CSV file \"%s\"", getClass().getSimpleName(), path));
-		CSVFormat format = CSVFormat.DEFAULT;
-		format = format.withDelimiter(delimiter);
-		format = format.withRecordSeparator("\r\n");
-		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
+		if (csvFormat == null) {
+			csvFormat = CSVFormat.DEFAULT.withDelimiter(delimiter);
+		}
+		//format = format.withRecordSeparator("\r\n");
+
+		/*
+		 * Make sure default encoding is UTF-8. The main reason we want this to
+		 * be the case is that CSVParser.parse(String, CSVFormat) parses the
+		 * String using the default encoding; you cannot specify an arbitrary
+		 * encoding (sad but true). Just before we pass a line to
+		 * CSVParser.parse, we make sure it is UTF8-encoded, thus the default
+		 * encoding HAS to be UTF-8. However, it might anyhow be a good idea to
+		 * do this check for all import programs. Finally, note that for the
+		 * CSVParser it actually probably doesn't really matter whether it gets
+		 * UTF-8, ISO-8995-1 or Cp1252, because all delimiters (end-of-field,
+		 * end-of-record) are probably encoded identically in all of these
+		 * character sets. Nevertheless, we JUST WANT THINGS TO BE UTF-8.
+		 */
+		Charset utf8 = Charset.forName("UTF-8");
+		if (!Charset.defaultCharset().equals(utf8)) {
+			logger.error("Invalid default character encoding: " + Charset.defaultCharset().name());
+			logger.error(getClass().getSimpleName() + " can only run with UTF-8 as default character encoding");
+			logger.error("Please add the following command line argument when running " + getClass().getSimpleName() + ": -Dfile.encoding=UTF-8");
+			logger.error("Program aborted");
+			return;
+		}
+
+		InputStreamReader isr = new InputStreamReader(new FileInputStream(path), charset);
+		LineNumberReader lnr = new LineNumberReader(isr);
 
 		int lineNo = 0;
 		int processed = 0;
@@ -121,8 +159,10 @@ public abstract class CSVImporter<T> {
 
 		try {
 
-			++lineNo;
-			lnr.readLine(); // Skip header; TODO: make configurable
+			if (skipHeader) {
+				++lineNo;
+				lnr.readLine();
+			}
 
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
@@ -134,7 +174,10 @@ public abstract class CSVImporter<T> {
 				}
 				++processed;
 				try {
-					record = CSVParser.parse(line, format).iterator().next();
+					if (!charset.equals(utf8)) {
+						line = new String(line.getBytes(utf8));
+					}
+					record = CSVParser.parse(line, csvFormat).iterator().next();
 					if (skipRecord(record)) {
 						++skipped;
 					}
@@ -178,8 +221,8 @@ public abstract class CSVImporter<T> {
 						logger.error("Error at line " + lineNo + ": " + t.getMessage());
 					}
 					if (logger.isDebugEnabled()) {
-						logger.debug("Line: [[" + line + "]]");
-						logger.debug("Stack trace: ", t);
+						logger.debug(line);
+						//logger.debug("Stack trace: ", t);
 					}
 				}
 				if (maxRecords > 0 && processed >= maxRecords) {

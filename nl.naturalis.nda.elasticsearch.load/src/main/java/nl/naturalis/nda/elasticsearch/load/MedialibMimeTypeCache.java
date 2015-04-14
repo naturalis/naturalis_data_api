@@ -267,6 +267,9 @@ public class MedialibMimeTypeCache implements Closeable {
 	}
 
 
+	/*
+	 * Build cache from file system file, if it exists.
+	 */
 	private void buildCache() throws FileNotFoundException, IOException
 	{
 		cache = new TreeMap<String, String>();

@@ -4,12 +4,13 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDate;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDefaultClassification;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getScientificName;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSystemClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.checkSpData;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDate;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDefaultClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getGatheringEvent;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getScientificName;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getSystemClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.DAYIDENT;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.IMAGELIST;
@@ -21,6 +22,7 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,13 +51,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();
-
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
@@ -78,6 +75,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
 		this.delimiter = ',';
+		this.charset = Charset.forName("Windows-1252");
 		//this.suppressErrors = true;
 		setSpecifyId(true);
 		setSpecifyParent(false);
@@ -90,23 +88,16 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public void importCsvFiles() throws Exception
 	{
-
 		ThematicSearchConfig.getInstance().resetMatchCounters();
-
-		BrahmsDumpUtil.convertFiles();
-
-		File[] csvFiles = BrahmsDumpUtil.getImportableFiles();
+		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
 			return;
 		}
-
 		index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}
-
 		ThematicSearchConfig.getInstance().logMatchInfo();
 
 	}
@@ -192,11 +183,11 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		try {
-			URI uri = new URI(imageUrl);
+			URI uri = new URI(imageUrl.trim());
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));
 		}
 		catch (URISyntaxException e) {
-			throw new Exception("Invalid URL: " + imageUrl);
+			throw new Exception(String.format("Invalid URL: \"%s\"", imageUrl));
 		}
 
 		return mmo;

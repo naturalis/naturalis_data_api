@@ -339,18 +339,8 @@ public class CrsMultiMediaImporter {
 		return xml;
 	}
 
-	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
 
-
-	@SuppressWarnings("unused")
-	static String getLocalPath(String resToken)
-	{
-		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/multimedia.%s.oai.xml", testDir, DF.format(new Date()));
-	}
-
-
-	private static Iterator<File> getLocalFileIterator()
+	static Iterator<File> getLocalFileIterator()
 	{
 		logger.debug("Retrieving file list");
 		String path = LoadUtil.getConfig().required("crs.local_dir");
@@ -378,12 +368,21 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	private static boolean isDeletedRecord(Element record)
+	static boolean isDeletedRecord(Element record)
 	{
 		if (!DOMUtil.getChild(record, "header").hasAttribute("status")) {
 			return false;
 		}
 		return DOMUtil.getChild(record, "header").getAttribute("status").equals("deleted");
+	}
+
+	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
+
+
+	static String getLocalPath(String resToken)
+	{
+		String testDir = LoadUtil.getConfig().required("crs.local_dir");
+		return String.format("%s/multimedia.%s.oai.xml", testDir, DF.format(new Date()));
 	}
 
 

@@ -19,6 +19,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
+import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
@@ -31,14 +32,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
+import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
+
+
 public class CrsMultiMediaTransfer {
+
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
+	private static final MedialibMimeTypeCache mimetypeCache = MedialibMimeTypeCache.getCRSInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
-	private static final String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
 	private static final SimpleHttpHead httpHead = new SimpleHttpHead();
 
 
@@ -101,16 +106,21 @@ public class CrsMultiMediaTransfer {
 			String contentType = null;
 
 			if (url.startsWith(MEDIALIB_URL_START)) {
+				// Tease out the unitID from the URL
 				unitID = url.substring(MEDIALIB_URL_START.length() + 1);
 				int x = unitID.indexOf('/');
 				if (x != -1) {
 					unitID = unitID.substring(0, x);
+					// NBA must link to large medialib images, but the CRS OAI interface
+					// provides links to the small versions, so do some mangling of the URL 
 					url = url.replace("/small", "/large");
 				}
 				if (title == null) {
 					title = unitID;
-					String msg = String.format("Missing title for record with identifier %s. Set to specimen UnitID: %s", identifier, title);
-					logger.debug(msg);
+					if (logger.isDebugEnabled()) {
+						String msg = String.format("Missing title for record with identifier %s. Set to specimen UnitID: %s", identifier, title);
+						logger.debug(msg);
+					}
 				}
 				logger.debug("Retrieving content type for URL " + url);
 				contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
@@ -118,8 +128,10 @@ public class CrsMultiMediaTransfer {
 			else {
 				if (title == null) {
 					title = associatedSpecimenReference + ':' + String.valueOf(url.hashCode()).replace('-', '0');
-					String msg = String.format("Missing title for record with identifier %s. Assigned title: %s", identifier, title);
-					logger.debug(msg);
+					if (logger.isDebugEnabled()) {
+						String msg = String.format("Missing title for record with identifier %s. Assigned title: %s", identifier, title);
+						logger.debug(msg);
+					}
 				}
 				unitID = title;
 			}

@@ -12,8 +12,6 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTI
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,7 +55,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
 			importer.importCsvFiles();
 		}
@@ -177,18 +174,18 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
 	private static final String ID_PREFIX = "BRAHMS-";
 
+
 	public BrahmsSpecimensImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_SPECIMEN);
 		this.delimiter = ',';
-		this.suppressErrors = true;
+		//this.suppressErrors = true;
 		setSpecifyId(true);
 		setSpecifyParent(false);
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
 		setBulkRequestSize(Integer.parseInt(prop));
-		prop = System.getProperty("maxRecords", "0");
+		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
 		setMaxRecords(Integer.parseInt(prop));
-		prop = System.getProperty("rename", "false");
 	}
 
 
@@ -199,22 +196,14 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 		BrahmsDumpUtil.convertFiles();
 
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
-		File file = new File(csvDir);
-		if (!file.isDirectory()) {
-			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
-		}
-		File[] csvFiles = file.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name)
-			{
-				return name.toLowerCase().endsWith(".csv");
-			}
-		});
+		File[] csvFiles = BrahmsDumpUtil.getImportableFiles();
 		if (csvFiles.length == 0) {
-			logger.info("No CSV files to process");
+			logger.info("No new CSV files to import");
 			return;
 		}
+
+		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}

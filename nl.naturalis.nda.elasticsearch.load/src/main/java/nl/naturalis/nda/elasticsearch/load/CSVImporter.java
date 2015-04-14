@@ -27,6 +27,13 @@ public abstract class CSVImporter<T> {
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
 
 
+	/**
+	 * Get the value of field {@code fieldNo} in the specified CSV record.
+	 * 
+	 * @param record
+	 * @param fieldNo
+	 * @return
+	 */
 	public static String val(CSVRecord record, int fieldNo)
 	{
 		if (fieldNo < record.size()) {
@@ -68,8 +75,8 @@ public abstract class CSVImporter<T> {
 		}
 	}
 
-	private final Index index;
-	private final String type;
+	protected final Index index;
+	protected final String type;
 
 	private int bulkRequestSize = 1000;
 	private int maxRecords = 0;

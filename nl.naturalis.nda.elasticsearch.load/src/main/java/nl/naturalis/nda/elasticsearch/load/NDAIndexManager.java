@@ -15,8 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for creating/managing/updating the ElasticSearch index for the
- * NDA.
+ * Utility class for creating/managing/updating the NBA document store.
  * 
  * @author ayco_holleman
  * 

@@ -418,7 +418,7 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));
+					dataRow.add(strutil.convertStringFrom_ISO8859_2_ToUTF8(specimen.getGatheringEvent().getLocality()));
 				}
 				else
 				{

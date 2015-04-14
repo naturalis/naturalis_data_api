@@ -302,7 +302,7 @@ public class DwCAExporter {
 		try {
 			logger.info("Creating the zipfile: '" + zipFileName + zipExtension + "'");
 			zip.zipDirectory(outputDirectory.getAbsolutePath(), zipFileName + zipExtension);
-			logger.info("Zipfile '" + zipFileName + zipExtension + "' created successfull.");
+			logger.info("Zipfile '" + zipFileName + zipExtension + "' created successful.");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -595,7 +595,7 @@ public class DwCAExporter {
 
 				response = eslasticClient.prepareSearchScroll(response.getScrollId()).setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
-				logger.info("Shard hit.'" + count++ + "' succesfull");
+				logger.info("Shard hit.'" + count++ + "' successful");
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS") && MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
 					writeCRSZoologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Zoology");

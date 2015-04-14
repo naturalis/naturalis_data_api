@@ -1,7 +1,6 @@
 package nl.naturalis.nda.export.dwca;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -235,8 +234,8 @@ public class Geology
 			/* 13_GenusOrMonomial is genus */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "13_GenusOrMonomial"))
 			{
-				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null &&
-				   specimen.getIdentifications().iterator().next().isPreferred() == true)
+				if (specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null &&  
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial()));
 				}

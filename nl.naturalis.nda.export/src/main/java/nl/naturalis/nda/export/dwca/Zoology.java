@@ -6,7 +6,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,7 +36,7 @@ public class Zoology
 			/* 01_RecordBasis is basisOfRecord */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "01_RecordBasis"))
 			{
-				if (specimen.getRecordBasis() != null)
+				if (specimen.getRecordBasis() != null && !specimen.getRecordBasis().contains("PreservedSpecimen"))
 				{
 					dataRow.add(specimen.getRecordBasis());
 				}

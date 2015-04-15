@@ -2,11 +2,13 @@ package nl.naturalis.nda.export.dwca;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.export.dwca.StringUtilities;
@@ -629,14 +631,34 @@ public class Brahms
 			/* 41_Remarks is taxonRemarks */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "41_Remarks"))
 			{
-				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
+				List<String> listFullname = new ArrayList<String>();
+				Iterator<SpecimenIdentification> identIterator = specimen.getIdentifications().iterator();
+				while(identIterator.hasNext())
+				{	
+					listFullname.add(identIterator.next().getScientificName().getFullScientificName()); 
+					if (specimen.getIdentifications().size() > 1)
+					{	
+						listFullname.add(" | ");
+					}
+				}
+
+				if (listFullname.size() > 0)
+				{
+					dataRow.add(strutil.convertStringToUTF8(listFullname.toString()));
+					listFullname.clear();
+				}
+				else
+				{
+					dataRow.add(null);
+				}
+				/*if (specimen.getIdentifications().iterator().next().getRemarks() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
 				}
 				else
 				{
 					dataRow.add(null);
-				}
+				}*/
 			}
 
 			/* 42_TypeStatus is typeStatus */

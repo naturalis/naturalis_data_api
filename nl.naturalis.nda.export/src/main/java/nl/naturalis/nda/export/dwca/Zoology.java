@@ -2,6 +2,7 @@ package nl.naturalis.nda.export.dwca;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
@@ -36,7 +37,7 @@ public class Zoology
 			/* 01_RecordBasis is basisOfRecord */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "01_RecordBasis"))
 			{
-				if (specimen.getRecordBasis() != null && !specimen.getRecordBasis().contains("PreservedSpecimen"))
+				if (specimen.getRecordBasis() != null) // !specimen.getRecordBasis().contains("PreservedSpecimen"))
 				{
 					dataRow.add(specimen.getRecordBasis());
 				}
@@ -576,26 +577,27 @@ public class Zoology
 			/* 41_Remarks is taxonRemarks */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "41_Remarks"))
 			{
-				//if (specimen.getIdentifications().iterator().next().getRemarks() != null)
-				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null &&
-					specimen.getIdentifications().iterator().next().isPreferred() == true)
-				{
-					int j = 0; // initilisation
-					while (specimen.getIdentifications().size() > j) { // condition checking
-						List<?> listFullname = new ArrayList<Object>();
-						listFullname.get(j);
-						dataRow.add(strutil.convertStringToUTF8(listFullname.toString()) + " | ");
-						j++; // iteration
+				List<String> listFullname = new ArrayList<String>();
+				Iterator<SpecimenIdentification> identIterator = specimen.getIdentifications().iterator();
+				while(identIterator.hasNext())
+				{	
+					listFullname.add(identIterator.next().getScientificName().getFullScientificName()); 
+					if (specimen.getIdentifications().size() > 1)
+					{	
+						listFullname.add(" | ");
 					}
-/*					if (specimen.getIdentifications().size() > 1)
-						{
-							dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
-						}
-*/				}
+				}
+
+				if (listFullname.size() > 0)
+				{
+					dataRow.add(strutil.convertStringToUTF8(listFullname.toString()));
+					listFullname.clear();
+				}
 				else
 				{
 					dataRow.add(null);
-				}
+				}			
+		
 			}
 
 			/* 42_TypeStatus is typeStatus */

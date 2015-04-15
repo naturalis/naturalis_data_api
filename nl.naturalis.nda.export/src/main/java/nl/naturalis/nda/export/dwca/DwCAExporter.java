@@ -353,7 +353,7 @@ public class DwCAExporter {
 		Properties configFile = new Properties();
 		try { /* load the values from the properties file */
 			logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
-			StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
+			//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
 
 			configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME + propertiesExtension));
 		}
@@ -369,17 +369,21 @@ public class DwCAExporter {
 			propertyName = (String) iterator.next();
 			propertyValue = configFile.getProperty(propertyName);
 			/* Add the headers to the CSV File */
-			if (propertyValue.contains("1")) {
+			String[] chunks = propertyValue.split(",");
+			if (chunks[1].equals("1")) 
+			{
 				headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
+			//if (propertyValue.contains("1")) {
+     		//		headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
 			}
 			// System.out.println(propertyName + ": " + propertyValue);
 		}
 		/* Write the headers columns */
 		logger.info("Writing headers row to the Occurence.txt file.");
-		StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurence.txt file.");
+		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurence.txt file.");
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
-		StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
+		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
 	}
 
 

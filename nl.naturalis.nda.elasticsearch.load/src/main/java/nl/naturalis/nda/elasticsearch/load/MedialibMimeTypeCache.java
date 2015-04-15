@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
-
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -53,20 +51,38 @@ public class MedialibMimeTypeCache implements Closeable {
 	private static final byte[] NEWLINE_BYTES = "\n".getBytes(CACHE_FILE_CHARSET);
 	private static final Logger logger = LoggerFactory.getLogger(MedialibMimeTypeCache.class);
 
+	private static final String CACHE_FILE_NAME = ".mimetypes";
 	private static final String CRS_CACHE_FILE_NAME = ".crs-mimetypes";
 	private static final String BRAHMS_CACHE_FILE_NAME = ".brahms-mimetypes";
 	private static final String NSR_CACHE_FILE_NAME = ".nsr-mimetypes";
 
+	private static MedialibMimeTypeCache instance;
 	private static MedialibMimeTypeCache crsInstance;
 	private static MedialibMimeTypeCache brahmsInstance;
 	private static MedialibMimeTypeCache nsrInstance;
 
 
 	/**
-	 * Get a mime type cache for CRS UnitIDs.
+	 * Get a generic mime type cache.
 	 * 
 	 * @return
 	 */
+	public static MedialibMimeTypeCache getInstance()
+	{
+		if (instance == null) {
+			instance = new MedialibMimeTypeCache(CACHE_FILE_NAME);
+		}
+		return instance;
+	}
+
+
+	/**
+	 * Get a mime type cache for CRS UnitIDs. Since the cache only contains
+	 * UnitIDs from CRS, lookups are potentially faster
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public static MedialibMimeTypeCache getCRSInstance()
 	{
 		if (crsInstance == null) {
@@ -77,10 +93,12 @@ public class MedialibMimeTypeCache implements Closeable {
 
 
 	/**
-	 * Get a mime type cache for Brahms UnitIDs.
+	 * Get a mime type cache for Brahms UnitIDs. Since the cache only contains
+	 * UnitIDs from Brahms, lookups are potentially faster
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public static MedialibMimeTypeCache getBrahmsInstance()
 	{
 		if (brahmsInstance == null) {
@@ -91,13 +109,12 @@ public class MedialibMimeTypeCache implements Closeable {
 
 
 	/**
-	 * Get a mime type cache for NSR UnitIDs.
+	 * Get a mime type cache for NSR UnitIDs. Since the cache only contains
+	 * UnitIDs from NSR, lookups are potentially faster
 	 * 
 	 * @return
 	 */
-	/*
-	 * Future use. Currently, NSR does not store its media in the medialib.
-	 */
+	@Deprecated
 	public static MedialibMimeTypeCache getNSRInstance()
 	{
 		if (nsrInstance == null) {
@@ -232,37 +249,51 @@ public class MedialibMimeTypeCache implements Closeable {
 
 
 	/**
-	 * Closes the cache. Notably, it saves the in-memory cache to the file
-	 * system, from where it will be loaded again into memory the next time the
-	 * cache is used. Therefore you SHOULD always call this method once you're
-	 * done using the cache. Otherwise, new cache entries for new media objects
-	 * will not get saved to the file system.
+	 * Forces the in-memory cache to be saved to the local file system, from
+	 * where it will be loaded into memory again the next time the cache is
+	 * instantiated. Saving the cache is also part of closing the cache (see
+	 * {@link #close()}.
+	 * 
+	 * @throws IOException
+	 */
+	public void save() throws IOException
+	{
+		if (cacheFile.isFile()) {
+			if (!cacheFile.delete()) {
+				throw new IOException("Failed to delete " + cacheFile.getAbsolutePath());
+			}
+		}
+		logger.info("Saving mime type cache to file system: " + cacheFile.getAbsolutePath());
+		ZipOutputStream zos = null;
+		try {
+			zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(cacheFile)));
+			ZipEntry zipEntry = new ZipEntry("mimetypes");
+			zos.putNextEntry(zipEntry);
+			for (Map.Entry<String, String> entry : cache.entrySet()) {
+				zos.write(entry.getKey().getBytes(CACHE_FILE_CHARSET));
+				zos.write(NEWLINE_BYTES);
+				zos.write(entry.getValue().getBytes(CACHE_FILE_CHARSET));
+				zos.write(NEWLINE_BYTES);
+			}
+		}
+		finally {
+			zos.close();
+		}
+	}
+
+
+	/**
+	 * Closes the cache. Notably, if the cache has changed since it was
+	 * instantiated, it is saved back to the file system. Therefore you should
+	 * always call this method once you're done using the cache. Otherwise, new
+	 * cache entries for new media objects will not get saved to the file
+	 * system, causing repeated, expensive calls to the medialib.
 	 */
 	public void close() throws IOException
 	{
 		httpHead.shutdown();
 		if (changed) {
-			if (cacheFile.isFile()) {
-				if (!cacheFile.delete()) {
-					throw new IOException("Failed to delete " + cacheFile.getAbsolutePath());
-				}
-			}
-			logger.info("Saving mime type cache to file system: " + cacheFile.getAbsolutePath());
-			ZipOutputStream zos = null;
-			try {
-				zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(cacheFile)));
-				ZipEntry zipEntry = new ZipEntry("mimetypes");
-				zos.putNextEntry(zipEntry);
-				for (Map.Entry<String, String> entry : cache.entrySet()) {
-					zos.write(entry.getKey().getBytes(CACHE_FILE_CHARSET));
-					zos.write(NEWLINE_BYTES);
-					zos.write(entry.getValue().getBytes(CACHE_FILE_CHARSET));
-					zos.write(NEWLINE_BYTES);
-				}
-			}
-			finally {
-				zos.close();
-			}
+			save();
 		}
 	}
 

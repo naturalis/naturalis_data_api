@@ -48,7 +48,7 @@ public class CrsMimeTypeRetriever {
 
 	public CrsMimeTypeRetriever()
 	{
-		crsCache = MedialibMimeTypeCache.getCRSInstance();
+		crsCache = MedialibMimeTypeCache.getInstance();
 	}
 
 

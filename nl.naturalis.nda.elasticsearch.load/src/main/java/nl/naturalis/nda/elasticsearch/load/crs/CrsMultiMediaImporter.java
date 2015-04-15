@@ -22,6 +22,7 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
 import org.domainobject.util.ConfigObject;
@@ -146,6 +147,12 @@ public class CrsMultiMediaImporter {
 		try {
 
 			ThematicSearchConfig.getInstance().resetMatchCounters();
+
+			/*
+			 * Make sure we can create the mime type cache, otherwise we get
+			 * opaque class initialization errors in CrsMultiMediaTransfer
+			 */
+			MedialibMimeTypeCache.getInstance();
 
 			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
 				processLocal();

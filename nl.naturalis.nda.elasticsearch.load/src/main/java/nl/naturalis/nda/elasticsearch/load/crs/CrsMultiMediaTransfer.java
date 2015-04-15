@@ -34,14 +34,12 @@ import org.w3c.dom.Element;
 
 import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
 
-
 public class CrsMultiMediaTransfer {
-
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
-	private static final MedialibMimeTypeCache mimetypeCache = MedialibMimeTypeCache.getCRSInstance();
+	private static final MedialibMimeTypeCache mimetypeCache = MedialibMimeTypeCache.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
 	private static final SimpleHttpHead httpHead = new SimpleHttpHead();
@@ -112,7 +110,7 @@ public class CrsMultiMediaTransfer {
 				if (x != -1) {
 					unitID = unitID.substring(0, x);
 					// NBA must link to large medialib images, but the CRS OAI interface
-					// provides links to the small versions, so do some mangling of the URL 
+					// spits out links to the small images 
 					url = url.replace("/small", "/large");
 				}
 				if (title == null) {
@@ -123,7 +121,7 @@ public class CrsMultiMediaTransfer {
 					}
 				}
 				logger.debug("Retrieving content type for URL " + url);
-				contentType = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
+				contentType = mimetypeCache.getMimeType(unitID);
 			}
 			else {
 				if (title == null) {

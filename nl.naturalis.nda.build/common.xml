@@ -17,34 +17,30 @@
 
 	<property name="home" location="${basedir}/../" />
 
-	<!-- Deprecated -->
-	<property name="nl.naturalis.nda.build.location" location="${home}/nl.naturalis.nda.build" />
-	<property name="nl.naturalis.nda.ear.location" location="${home}/nl.naturalis.nda.ear" />
-	<property name="nl.naturalis.nda.service.rest.location" location="${home}/nl.naturalis.nda.service.rest" />
-	<property name="nl.naturalis.nda.ejb.location" location="${home}/nl.naturalis.nda.ejb" />
-	<property name="nl.naturalis.nda.domain.location" location="${home}/nl.naturalis.nda.domain" />
-	<property name="nl.naturalis.nda.client.location" location="${home}/nl.naturalis.nda.client" />
-	<property name="nl.naturalis.nda.elasticsearch.dao.location" location="${home}/nl.naturalis.nda.elasticsearch.dao" />
-	<property name="nl.naturalis.nda.elasticsearch.load.location" location="${home}/nl.naturalis.nda.elasticsearch.load" />
-	<property name="nl.naturalis.nda.export.location" location="${home}/nl.naturalis.nda.export" />
-
-
 
 	<!-- =============== TASKS =============== -->
 
-	<target name="git-info" unless:set="git.revision">
-		<exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
+	<target name="git-info" description="Retrieve current git branch, tag and commit">
+		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
 			<arg value="log" />
 			<arg value='--pretty=format:"%H"' />
 			<arg value="-n" />
 			<arg value="1" />
+		</exec>
+		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
+			<arg value="describe" />
+			<arg value="--abbrev=0" />
 		</exec>
 		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
 			<arg value="rev-parse" />
 			<arg value="--abbrev-ref" />
 			<arg value="HEAD" />
 		</exec>
+		<echo message="branch=${git.branch};tag=${git.tag};commit=${git.commit}" />
+		<property name="got-git-info" value="true" />
 	</target>
+
+
 
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />

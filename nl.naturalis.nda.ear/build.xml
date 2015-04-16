@@ -56,7 +56,7 @@
 	</target>
 
 	<target name="build" depends="git-info">
-		<property name="earfile" value="build/nba.${git.branch}.${git.revision}.ear" />
+		<property name="earfile" value="build/nba.${git.tag}.ear" />
 		<available file="${earfile}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built for branch ${git.branch}. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />

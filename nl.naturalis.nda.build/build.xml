@@ -32,11 +32,15 @@
 	</target>
 
 	<target name="-git-get-info" depends="verify">
-		<exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
+		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
 			<arg value="log" />
 			<arg value='--pretty=format:"%H"' />
 			<arg value="-n" />
 			<arg value="1" />
+		</exec>
+		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
+			<arg value="describe" />
+			<arg value="--abbrev=0" />
 		</exec>
 		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
 			<arg value="rev-parse" />
@@ -50,10 +54,10 @@
 		<echo message="" />
 		<echo message="" />
 		<echo message="****************************************************************" />
-		<echo message="You are on branch: ${git.branch}" />
+		<echo message="You are on branch: ${git.branch} (${git.tag})" />
 		<echo message="****************************************************************" />
 		<echo message="" />
-		<echo message="Last commit: ${git.revision}" />
+		<echo message="Last commit: ${git.commit}" />
 		<condition property="git.show.status">
 			<not>
 				<equals arg1="${git.status}" arg2="" trim="true" />
@@ -69,7 +73,7 @@
 		<property name="git.got.info" value="true" />
 	</target>
 
-	<target name="git-info" description="Show information about the Git branch you will be doing your builds on">
+	<target name="git-info" description="Show information about the Git branch you will be doing your build on">
 		<antcall target="-git-get-info" unless:set="git.got.info" />
 	</target>
 

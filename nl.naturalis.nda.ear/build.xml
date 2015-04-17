@@ -44,7 +44,7 @@
 		<jar destfile="${ear.module.artifact}" basedir="${assemblydir}" />
 	</target>
 
-	<!-- Overrides clean in common.xml! -->
+	<!-- Overrides clean in common.xml -->
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
 		<available file="build" type="dir" property="build.dir.exists" />
@@ -56,7 +56,8 @@
 	</target>
 
 	<target name="build" depends="git-info">
-		<property name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.tag}.ear" />
+		<property unless:set="signal.nightly" name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.tag}.ear" />
+		<property if:set="signal.nightly" name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.commit}.ear" />
 		<available file="${ear.module.artifact}" property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
@@ -65,22 +66,22 @@
 
 	<target name="rebuild" depends="clean,build" />
 
-	<!-- A "fake" target that only signals that we want to deploy to ${ear.install.scp.host0} -->
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host0} -->
 	<target name="host0">
 		<property name="deploy.to.host0" value="true" />
 	</target>
 
-	<!-- A "fake" target that only signals that we want to deploy to ${ear.install.scp.host1} -->
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host1} -->
 	<target name="host1">
 		<property name="deploy.to.host1" value="true" />
 	</target>
 
-	<!-- A "fake" target that only signals that we want to deploy to ${ear.install.scp.host2} -->
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host2} -->
 	<target name="host2">
 		<property name="deploy.to.host2" value="true" />
 	</target>
 
-	<!-- A "fake" target that only signals that we want to deploy to ${ear.install.scp.host3} -->
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host3} -->
 	<target name="host3">
 		<property name="deploy.to.host3" value="true" />
 	</target>
@@ -121,7 +122,7 @@
 			Otherwise we assume we want to do a deployment from our
 			PC/laptop.
 		-->
-		
+
 		<property name="scp" value="${build.module.location}/pscp.exe" />
 
 		<echo if:set="deploy.to.host0" message="Deploying to ${ear.install.scp.host0} ..." />

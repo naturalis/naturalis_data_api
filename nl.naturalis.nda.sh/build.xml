@@ -7,7 +7,9 @@
 	<property environment="env" />
 
 	<target name="clean">
-		<delete dir="${nda.import.install.dir}" />
+		<delete dir="${nda.import.install.dir}/lib" />
+		<delete dir="${nda.import.install.dir}/conf" />
+		<delete dir="${nda.import.install.dir}/sh" />
 	</target>
 
 	<!--
@@ -47,14 +49,6 @@
 		<copy todir="${nda.import.install.dir}/lib">
 			<fileset dir="${load.module.location}/build/classpath" />
 		</copy>
-	</target>
-
-	<target name="cron">
-		<condition property="nda.import.crs.specimens.cron.notempty">
-			<equals arg1="${nda.import.crs.specimens.cron}" arg2="" trim="true" />
-		</condition>
-		<exec if:set="nda.import.crs.specimens.cron.notempty">
-		</exec>
 	</target>
 
 	<target name="build" depends="install-import" />

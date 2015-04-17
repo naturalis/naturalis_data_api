@@ -133,6 +133,31 @@
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
 	</target>
 
+	<target name="host0">
+		<property name="deploy.to.host0" value="true" />
+	</target>
+
+	<target name="host1">
+		<property name="deploy.to.host1" value="true" />
+	</target>
+
+	<target name="host2">
+		<property name="deploy.to.host2" value="true" />
+	</target>
+
+	<target name="host3">
+		<property name="deploy.to.host3" value="true" />
+	</target>
+
+	<target name="deploy">
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritAll="true" inheritrefs="true" target="deploy" />
+	</target>
+
+
+
+
+
+
 	<target name="help" description="Show help text">
 		<echo message="Show all build targets                            : ant -p" />
 		<echo message="Build all modules                                 : ant build" />

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="common">
 
-	<!-- Load properties -->
-	<property environment="env" />
 	<property file="build.properties" />
+
+	<!-- Prefix for environment variables -->
+	<property environment="env" />
 
 	<!-- Configure Ivy. Only required for ant builds within Eclipse. -->
 	<path id="ivy.lib.path">
@@ -18,7 +19,7 @@
 	<property name="home" location="${basedir}/../" />
 
 
-	<!-- =============== TASKS =============== -->
+	<!-- ===============[ TASKS ]=============== -->
 
 	<target name="git-info" description="Retrieve current git branch, tag and commit">
 		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">

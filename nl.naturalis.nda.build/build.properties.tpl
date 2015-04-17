@@ -15,6 +15,11 @@ elasticsearch.index.name=nda
 elasticsearch.index.numshards=9
 elasticsearch.index.numreplicas=1
 
+# Directory to which to copy ear file such that
+# gets picked up automatically by wildfly
+nda.ear.install.dir=/opt/wildfly_deployments
+
+
 # Directory to which to copy the shell scripts. This directory
 # will contain an sh directory (shell scripts), a conf
 # directory (config files), and a lib directory (jar files)

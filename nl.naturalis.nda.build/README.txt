@@ -27,6 +27,30 @@ General
     directory. Insert the variable near the top of the script
     and make it point to the directory where you installed
     Ivy.
+[9] Remove or comment out default wildfly welcome page:
+        <subsystem xmlns="urn:jboss:domain:undertow:1.1">
+            <buffer-cache name="default"/>
+            <server name="default-server">
+                <http-listener name="default" socket-binding="http"/>
+                <!-- host name="default-host" alias="localhost" -->
+                    <location name="/" handler="welcome-content"/>
+                    <filter-ref name="server-header"/>
+                    <filter-ref name="x-powered-by-header"/>
+                </host>
+            </server>
+            <servlet-container name="default">
+                <jsp-config/>
+            </servlet-container>
+            <!--
+            <handlers>
+                <file name="welcome-content" path="${jboss.home.dir}/welcome-content"/>
+            </handlers>
+            -->
+            <filters>
+                <response-header name="server-header" header-name="Server" header-value="WildFly/8"/>
+                <response-header name="x-powered-by-header" header-name="X-Powered-By" header-value="Undertow/1"/>
+            </filters>
+        </subsystem>
 
 
 

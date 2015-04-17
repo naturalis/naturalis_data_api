@@ -44,9 +44,9 @@ public class CsvFileWriter extends BufferedWriter
                 builder.append('\t');
             if(column != null)
             {
-            	column = column.replace('\r', ' ');
-            	column = column.replace('\n', ' ');
-            	builder.append(column);
+           		column = column.replace('\r', ' ');
+           		column = column.replace('\n', ' ');
+           		builder.append(column);
             	firstColumn = false;
             }
         }

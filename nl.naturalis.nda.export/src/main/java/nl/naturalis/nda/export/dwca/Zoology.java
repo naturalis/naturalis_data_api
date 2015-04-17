@@ -43,7 +43,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -56,7 +56,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -69,7 +69,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -82,7 +82,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -95,7 +95,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -108,7 +108,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -121,7 +121,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -136,7 +136,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -153,12 +153,12 @@ public class Zoology
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 				   
@@ -175,12 +175,12 @@ public class Zoology
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -212,11 +212,11 @@ public class Zoology
 				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
 				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -231,7 +231,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -245,26 +245,26 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
 			/* 14_DummyDefault is geodeticDatum */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "14_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 15_DummyDefault is habitat */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "15_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 16_Dummy2 is higherClassification */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "16_Dummy2"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 17_identifications_identifiers_fullName is identifiedBy */
@@ -280,12 +280,12 @@ public class Zoology
 						dataRow.add(strutil.convertStringToUTF8(per.getFullName()));
 					} else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -298,7 +298,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -318,7 +318,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}	
 			}
 
@@ -331,7 +331,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -348,7 +348,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -361,7 +361,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 		
@@ -374,7 +374,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -387,20 +387,20 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
 			/* 26_DummyDefault is maximumElevationInMeters */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "26_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 27_DummyDefault is minimumElevationInMeters */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "27_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 28_DummyDefault is nomenclaturalCode */
@@ -435,7 +435,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -448,7 +448,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -461,7 +461,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -475,7 +475,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -489,7 +489,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -503,7 +503,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -516,7 +516,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -529,7 +529,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -542,7 +542,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -556,7 +556,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -570,7 +570,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -595,7 +595,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}			
 		
 			}
@@ -609,7 +609,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -652,12 +652,12 @@ public class Zoology
  				    }
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -671,7 +671,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -684,7 +684,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -715,11 +715,11 @@ public class Zoology
 				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
 				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -732,7 +732,7 @@ public class Zoology
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 

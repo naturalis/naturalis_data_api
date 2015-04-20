@@ -17,8 +17,10 @@ public class Meta
 	private String metadata;
 	@XmlAttribute(name = "xmlns:xsi")
 	private String xmlnsxsi;
-	@XmlAttribute(name = "xmlns:tdwg")
+	@XmlAttribute(name = "xmlns")
 	private String xmlnstdwg;
+	@XmlAttribute(name = "targetNamespace")
+	private String xmltargetNamespace;
 	@XmlElement(name = "core")
 	List<Core> cores;
 
@@ -29,6 +31,7 @@ public class Meta
 		return metadata;
 	}
 
+	
 	public void setMetadata(String metadata)
 	{
 		this.metadata = metadata;
@@ -73,5 +76,20 @@ public class Meta
 		this.cores.add(cores);
 
 	}
+
+
+	public String getXmltargetNamespace() 
+	{
+		return xmltargetNamespace;
+	}
+
+
+	public void setXmltargetNamespace(String xmltargetNamespace) 
+	{
+		this.xmltargetNamespace = xmltargetNamespace;
+	}
+	
+
+
 
 }

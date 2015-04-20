@@ -588,9 +588,14 @@ public class Zoology
 					}
 				}
 
-				if (listFullname.size() > 0)
+				if (listFullname.size() > 1)
 				{
-					dataRow.add(strutil.convertStringToUTF8(listFullname.toString()));
+					String resultFullName = listFullname.toString()
+					.replace(",", "")
+					.replace("[", "")
+					.replace("]", "")
+					.trim();
+					dataRow.add(strutil.convertStringToUTF8(resultFullName));
 					listFullname.clear();
 				}
 				else

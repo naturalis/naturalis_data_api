@@ -58,6 +58,7 @@ public class DwCAExporter {
 	private static final String FILE_NAME_META = "meta.xml";
 	private static File FILE_NAME_EML = null;
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
+	private static final String dwcTargetName = "http://rs.tdwg.org/dwc/text/";
 	private static final String zipExtension = ".zip";
 	private static final String propertiesExtension = ".properties";
 	private static String MAPPING_FILE_NAME = null;
@@ -224,7 +225,8 @@ public class DwCAExporter {
 		Meta xmlspecimen = new Meta();
 		xmlspecimen.setMetadata("eml.xml");
 		xmlspecimen.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
-		xmlspecimen.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
+		xmlspecimen.setXmlnstdwg(dwcTargetName);
+		//xmlspecimen.setXmltargetNamespace(dwcTargetName);
 		xmlspecimen.add(cores);
 		dwcaObjectToXML(xmlspecimen);
 

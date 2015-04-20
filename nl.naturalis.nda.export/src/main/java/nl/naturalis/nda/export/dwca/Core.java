@@ -24,8 +24,8 @@ public class Core
 	private String linesTerminatedBy;
 	@XmlAttribute(name="ignoreHeaderLines")
 	private String ignoreHeaderLines;
-	@XmlAttribute(name="rowtype")
-	private String rowtype;
+	@XmlAttribute(name="rowType")
+	private String rowType;
 	
 	@XmlElement(name = "files")
 	Files files;
@@ -123,13 +123,13 @@ public class Core
 
 	public String getRowtype()
 	{
-		return rowtype;
+		return rowType;
 	}
 
 
-	public void setRowtype(String rowtype)
+	public void setRowtype(String rowType)
 	{
-		this.rowtype = rowtype;
+		this.rowType = rowType;
 	}
 
 

@@ -35,7 +35,26 @@ public class Brahms
 			/* 01_Dummy1 is basisOfRecord */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "01_Dummy1"))
 			{
-				if (specimen.getRecordBasis().contains("Herbarium sheet"))
+				
+				/*switch(specimen.getRecordBasis()) {
+				  case "Herbarium sheet":
+					  dataRow.add("PreservedSpecimen");
+				       break;
+				  case "Extra sheet":
+					  dataRow.add("PreservedSpecimen");
+				       break;
+				  case "Wood sample":
+					  dataRow.add("PreservedSpecimen");
+				       break;
+				  case "Mykonos":
+				       System.out.println("User wants to visit Mykonos");
+				       break;
+				 default:
+				       System.out.println("Unknown Island");
+		               break;
+				 }*/
+				
+/*				if (specimen.getRecordBasis().contains("Herbarium sheet"))
 				{
 					dataRow.add("PreservedSpecimen");
 				}
@@ -47,12 +66,17 @@ public class Brahms
 				{
 					dataRow.add("PreservedSpecimen");
 				}
-				else if (specimen.getRecordBasis() != null &&
-						 !specimen.getRecordBasis().contains("Herbarium sheet") &&
-						 !specimen.getRecordBasis().contains("Extra sheet") &&
-						 !specimen.getRecordBasis().contains("Wood sample"))
+				else */ 
+					if (specimen.getRecordBasis() != null &&
+						 !specimen.getRecordBasis().contains("photo(copy) of herbarium sheet") && 
+						 !specimen.getRecordBasis().contains("Illustration") &&
+						 !specimen.getRecordBasis().contains("Photographs, negatives") &&
+						 !specimen.getRecordBasis().contains("DNA sample from sheet") &&
+						 !specimen.getRecordBasis().contains("Slides") &&
+						 !specimen.getRecordBasis().contains("Observation"))
 				{
-					dataRow.add(specimen.getRecordBasis());
+					//dataRow.add(specimen.getRecordBasis());
+					dataRow.add("PreservedSpecimen");
 				}
 				else
 				{
@@ -307,10 +331,9 @@ public class Brahms
 			/* 17_identifications_identifiers_fullName is identifiedBy */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "17_identifications_identifiers_fullName"))
 			{
-				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
+/*				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
 				{
-					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator()
-							.next();
+					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator().next();
 					if (ag instanceof Person)
 					{
 						Person per = (Person) ag;
@@ -323,7 +346,42 @@ public class Brahms
 				else
 				{
 					dataRow.add(" ");
+				}*/
+				
+				List<String> listAgentFullname = new ArrayList<String>();
+				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
+				{
+					Iterator<Agent> identifiedByIterator = specimen.getIdentifications().iterator().next().getIdentifiers().iterator();
+					while(identifiedByIterator.hasNext())
+					{	
+					    if (identifiedByIterator instanceof Person)
+					    {
+					    	Person per = (Person) identifiedByIterator;
+					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName())); 
+					    }
+						
+					    if (listAgentFullname.size() > 1)
+						{	
+							listAgentFullname.add(" | ");
+						}
+					}
 				}
+
+				if (listAgentFullname.size() > 0)
+				{
+				    String resultAgentFullName = listAgentFullname.toString()
+				    .replace(",", " ")
+				    .replace("[", " ")
+				    .replace("]", " ")
+				    .trim();
+				
+				    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+				}
+				else
+				{
+					dataRow.add(" ");
+				}
+				
 			}
 
 			/* 18_NumberOfSpecimen is individualCount */
@@ -420,7 +478,12 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
-					dataRow.add(strutil.convertStringFrom_ISO8859_2_ToUTF8(specimen.getGatheringEvent().getLocality()));
+					String localityResult = specimen.getGatheringEvent().getLocality()
+					.replace('\r', ' ')
+	           		.replace('\n', ' ')
+	           		.trim();
+					dataRow.add(strutil.convertStringToUTF8(localityResult));
+//					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));
 				}
 				else
 				{
@@ -505,9 +568,30 @@ public class Brahms
 			/* 33_gatheringEvent.gatheringAgents.fullName is recordedBy */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "33_gatheringEvent.gatheringAgents.fullName"))
 			{
+				List<String> listFullname = new ArrayList<String>();
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName()));
+					Iterator<Person> fullnameIterator = specimen.getGatheringEvent().getGatheringPersons().iterator();
+					while(fullnameIterator.hasNext())
+					{	
+						listFullname.add(fullnameIterator.next().getFullName()); 
+						
+						if (specimen.getGatheringEvent().getGatheringPersons().size() > 1)
+						{	
+							listFullname.add(" | ");
+						}
+					}
+				}
+
+				if (listFullname.size() > 0)
+				{
+				    String resultFullName = listFullname.toString()
+				    .replace(",", " ")
+				    .replace("[", " ")
+				    .replace("]", " ")
+				    .trim();
+				
+				    dataRow.add(strutil.convertStringToUTF8(resultFullName));
 				}
 				else
 				{

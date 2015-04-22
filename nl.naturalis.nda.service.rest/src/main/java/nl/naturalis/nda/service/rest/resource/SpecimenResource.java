@@ -45,7 +45,7 @@ public class SpecimenResource {
 
 	@GET
 	@Path("/get-specimen")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	public SearchResultSet<Specimen> getSpecimenDetail(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		logger.debug("getSpecimenDetail");
@@ -70,7 +70,7 @@ public class SpecimenResource {
 
 	@GET
 	@Path("/get-specimen-within-result-set")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetGET(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
@@ -91,7 +91,7 @@ public class SpecimenResource {
 
 	@POST
 	@Path("/get-specimen-within-result-set")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
@@ -114,7 +114,7 @@ public class SpecimenResource {
 
 	@GET
 	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	public SearchResultSet<Specimen> searchGET(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {
@@ -158,7 +158,7 @@ public class SpecimenResource {
 
 	@GET
 	@Path("/name-search")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	public ResultGroupSet<Specimen, String> nameSearchGET(@Context UriInfo uriInfo, @Context HttpServletRequest request)
 	{
 		try {

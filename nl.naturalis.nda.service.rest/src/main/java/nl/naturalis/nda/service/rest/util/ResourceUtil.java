@@ -11,6 +11,8 @@ import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
 
 public class ResourceUtil {
+	
+	public static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 
 	private static final String ERROR_AS_JSON = "_jsonError";
 

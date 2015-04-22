@@ -99,7 +99,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			importCsv(f.getCanonicalPath());
 		}
 		ThematicSearchConfig.getInstance().logMatchInfo();
-
 	}
 
 	private ArrayList<String> multimediaIds;

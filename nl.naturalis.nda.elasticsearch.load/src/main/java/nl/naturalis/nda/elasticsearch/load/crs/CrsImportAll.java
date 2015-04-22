@@ -20,31 +20,8 @@ public class CrsImportAll {
 
 		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_SPECIMEN);
-			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-			mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-		}
-		else {
-			if (index.typeExists(LUCENE_TYPE_SPECIMEN)) {
-				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.CRS.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-				index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-			}
-			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
-				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-			}
-		}
+		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.CRS.getCode());
+		index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
 		try {
 			CrsImportAll crsImportAll = new CrsImportAll(index);

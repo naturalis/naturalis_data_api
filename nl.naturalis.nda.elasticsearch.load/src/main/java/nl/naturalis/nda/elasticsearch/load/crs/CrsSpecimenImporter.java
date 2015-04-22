@@ -32,23 +32,18 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 
 		// Set up thematic search and make sure it's configured OK.
 		ThematicSearchConfig.getInstance();
-		
+
 		String unitIDToCheck = System.getProperty("check");
-		if(unitIDToCheck != null) {
+		if (unitIDToCheck != null) {
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(null);
 			importer.checkSpecimen(unitIDToCheck);
 			return;
-		}		
-		
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_SPECIMEN);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-			index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 		}
-		else {
+
+		IndexNative index = null;
+		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+
 			if (index.typeExists(LUCENE_TYPE_SPECIMEN)) {
 				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.CRS.getCode());
 			}
@@ -56,14 +51,13 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
 				index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 			}
-		}
-
-		try {
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
 			importer.importSpecimens();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 		logger.info("Ready");
 

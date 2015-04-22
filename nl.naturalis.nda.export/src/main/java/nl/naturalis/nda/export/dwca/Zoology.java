@@ -427,8 +427,9 @@ public class Zoology
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
-							.replace('\r', ' ')
-			           		.replace('\n', ' ')
+							.replace(". ", "")
+							.replace("\r", "")
+			           		.replace("\n", "")
 			           		.trim();
     				dataRow.add(strutil.convertStringToUTF8(localityResult));
 				    //dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));

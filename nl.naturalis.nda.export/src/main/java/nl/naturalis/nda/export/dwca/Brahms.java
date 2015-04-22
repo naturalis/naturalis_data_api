@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.SpecimenIdentification;
@@ -16,6 +19,8 @@ import nl.naturalis.nda.export.dwca.StringUtilities;
 public class Brahms
 {
 
+	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
+	
 	public Brahms()
 	{
 		// TODO Auto-generated constructor stub
@@ -43,6 +48,8 @@ public class Brahms
 					specimen.getRecordBasis().contains("Slides") &&
 					specimen.getRecordBasis().contains("Observation"))
 				{
+					System.out.println("Not included in Brahms CSV: " + specimen.getRecordBasis());
+					logger.info("Not included in Brahms CSV: " + specimen.getRecordBasis());
 					return;
 				}
 				else
@@ -489,9 +496,10 @@ public class Brahms
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
-					.replace('\r', ' ')
-	           		.replace('\n', ' ')
-	           		.trim();
+							.replace(". ", "")
+							.replace("\r", "")
+			           		.replace("\n", "")
+			           		.trim();
 					dataRow.add(strutil.convertStringToUTF8(localityResult));
 				}
 				else

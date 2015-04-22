@@ -320,7 +320,6 @@ public abstract class AbstractSpecimenImporter {
 	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
 
 
-	@SuppressWarnings("unused")
 	static String getLocalPath(String resToken)
 	{
 		String testDir = LoadUtil.getConfig().required("crs.local_dir");

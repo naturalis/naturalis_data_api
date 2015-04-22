@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,12 +28,9 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
-
-import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
 
 public class CrsMultiMediaTransfer {
 
@@ -42,7 +40,6 @@ public class CrsMultiMediaTransfer {
 	private static final MedialibMimeTypeCache mimetypeCache = MedialibMimeTypeCache.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
-	private static final SimpleHttpHead httpHead = new SimpleHttpHead();
 
 
 	public static List<ESMultiMediaObject> transfer(Element recordElement, CrsMultiMediaImporter crsMultiMediaImporter)
@@ -120,7 +117,9 @@ public class CrsMultiMediaTransfer {
 						logger.debug(msg);
 					}
 				}
-				logger.debug("Retrieving content type for URL " + url);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Retrieving content type for URL " + url);
+				}
 				contentType = mimetypeCache.getMimeType(unitID);
 			}
 			else {

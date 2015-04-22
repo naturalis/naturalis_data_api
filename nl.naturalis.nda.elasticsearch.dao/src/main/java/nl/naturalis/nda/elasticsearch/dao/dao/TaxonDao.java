@@ -34,8 +34,8 @@ public class TaxonDao extends AbstractTaxonDao {
      * @return the search results
      */
     public SearchResultSet<Taxon> getTaxonDetail(QueryParams params) {
-        String sessionId = params.getParam("_SESSION_ID");
-        params.remove("_SESSION_ID");
+        String sessionId = params.getParam("_session_id");
+        params.remove("_session_id");
         Map<String, String> fields = fieldNamesToValues(params);
         String genus = fields.get(ACCEPTEDNAME_GENUS_OR_MONOMIAL);
         String subgenus = fields.get(ACCEPTEDNAME_SUBGENUS);

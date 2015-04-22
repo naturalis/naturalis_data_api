@@ -32,8 +32,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
             SYNONYMS_SUBGENUS,
             SYNONYMS_SPECIFIC_EPITHET,
             SYNONYMS_INFRASPECIFIC_EPITHET,
-            SYNONYMS_EXPERTS_FULLNAME,
-            SYNONYMS_EXPERTS_ORGANIZATION_NAME,
+            SYNONYMS_EXPERT_FULLNAME,
+            SYNONYMS_EXPERT_ORGANIZATION_NAME,
             SYNONYMS_TAXONOMIC_STATUS,
             DEFAULT_CLASSIFICATION_KINGDOM,
             DEFAULT_CLASSIFICATION_PHYLUM,
@@ -79,12 +79,11 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
      */
     public ResultGroupSet<Taxon, String> taxonSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
-        if (params.containsKey("_search")) {
-            params.remove("_andOr");
+        if(params.containsKey("_search")) {
             params.add("_andOr", "OR");
         }
-        String sessionId = params.getParam("_SESSION_ID");
-        params.remove("_SESSION_ID");
+        String sessionId = params.getParam("_session_id");
+        params.remove("_session_id");
         return search(params, allowedFieldNamesForSearch, allowedFieldNamesForSearch_simpleSearchExceptions, true, sessionId);
     }
 

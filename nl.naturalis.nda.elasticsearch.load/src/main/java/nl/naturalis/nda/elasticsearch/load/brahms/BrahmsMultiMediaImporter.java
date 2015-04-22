@@ -4,12 +4,13 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDate;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDefaultClassification;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getScientificName;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSystemClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.checkSpData;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDate;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getDefaultClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getGatheringEvent;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getScientificName;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getSystemClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.DAYIDENT;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.IMAGELIST;
@@ -19,13 +20,11 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.YEARIDENT;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nda.domain.DefaultClassification;
@@ -52,17 +51,11 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		// Check thematic search is configured properly
-		ThematicSearchConfig.getInstance();
-
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsvFiles();
 		}
@@ -77,48 +70,34 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
 	private static final String ID_PREFIX = "BRAHMS-";
 
+
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
 		this.delimiter = ',';
-		this.suppressErrors = true;
+		this.charset = Charset.forName("Windows-1252");
+		//this.suppressErrors = true;
 		setSpecifyId(true);
 		setSpecifyParent(false);
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
 		setBulkRequestSize(Integer.parseInt(prop));
-		prop = System.getProperty("maxRecords", "0");
+		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
 		setMaxRecords(Integer.parseInt(prop));
-		prop = System.getProperty("rename", "false");
 	}
 
 
 	public void importCsvFiles() throws Exception
 	{
-
 		ThematicSearchConfig.getInstance().resetMatchCounters();
-
-		BrahmsDumpUtil.convertFiles();
-
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
-		File file = new File(csvDir);
-		if (!file.isDirectory()) {
-			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
-		}
-		File[] csvFiles = file.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name)
-			{
-				return name.toLowerCase().endsWith(".csv");
-			}
-		});
+		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
-			logger.info("No CSV files to process");
+			logger.info("No new CSV files to import");
 			return;
 		}
+		index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}
-
 		ThematicSearchConfig.getInstance().logMatchInfo();
 
 	}
@@ -204,11 +183,11 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		try {
-			URI uri = new URI(imageUrl);
+			URI uri = new URI(imageUrl.trim());
 			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));
 		}
 		catch (URISyntaxException e) {
-			throw new Exception("Invalid URL: " + imageUrl);
+			throw new Exception(String.format("Invalid URL: \"%s\"", imageUrl));
 		}
 
 		return mmo;

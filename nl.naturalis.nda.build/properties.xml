@@ -10,7 +10,7 @@
 	<property name="build.module.name" value="nl.naturalis.nda.build" />
 	<property name="build.module.location" location="${home}/${build.module.name}" />	
 	
-	<property name="ear.module.name" value="${home}/nl.naturalis.nda.ear" />
+	<property name="ear.module.name" value="nl.naturalis.nda.ear" />
 	<property name="ear.module.location" location="${home}/${ear.module.name}" />	
 	
 	<property name="rest.module.name" value="nl.naturalis.nda.service.rest" />

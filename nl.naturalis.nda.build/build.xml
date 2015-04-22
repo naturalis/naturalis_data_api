@@ -5,18 +5,10 @@
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
 
+	<property file="build.properties" />
+
 	<target name="-verify">
 		<echo message="Verifying build environment" />
-		<!-- Make sure ivy jar has been copied over to Ant's lib directory -->
-		<fail message="ivy-x.x.x.jar not found in ${ant.library.dir}. Please copy jar file from your Ivy installation directory.">
-			<condition>
-				<not>
-					<resourcecount count="1">
-						<fileset dir="${ant.library.dir}" includes="ivy-*.jar" />
-					</resourcecount>
-				</not>
-			</condition>
-		</fail>
 		<!-- Do we have a Git command line client? -->
 		<exec executable="git" outputproperty="git.ok" failifexecutionfails="false">
 			<arg value="branch" />
@@ -42,11 +34,15 @@
 	</target>
 
 	<target name="-git-get-info" depends="verify">
-		<exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
+		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
 			<arg value="log" />
 			<arg value='--pretty=format:"%H"' />
 			<arg value="-n" />
 			<arg value="1" />
+		</exec>
+		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
+			<arg value="describe" />
+			<arg value="--abbrev=0" />
 		</exec>
 		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
 			<arg value="rev-parse" />
@@ -60,10 +56,10 @@
 		<echo message="" />
 		<echo message="" />
 		<echo message="****************************************************************" />
-		<echo message="You are on branch: ${git.branch}" />
+		<echo message="You are on branch: ${git.branch} (${git.tag})" />
 		<echo message="****************************************************************" />
 		<echo message="" />
-		<echo message="Last commit: ${git.revision}" />
+		<echo message="Last commit: ${git.commit}" />
 		<condition property="git.show.status">
 			<not>
 				<equals arg1="${git.status}" arg2="" trim="true" />
@@ -79,12 +75,22 @@
 		<property name="git.got.info" value="true" />
 	</target>
 
-	<target name="git-info" description="Show information about the Git branch you will be doing your builds on">
+	<target name="git-info" description="Show information about the Git branch you will be doing your build on">
 		<antcall target="-git-get-info" unless:set="git.got.info" />
 	</target>
 
 	<target name="clean" description="Force a clean build of the subsequently specified module">
 		<property name="signal.clean" value="on" />
+	</target>
+
+	<target name="nightly" description="Make a night build (use in combination with build target)">
+		<fail message="Cannot make nightly build and release build at the same time" if:set="signal.release" />
+		<property name="signal.nightly" value="on" />
+	</target>
+
+	<target name="release" description="Make a release build (use in combination with build target)">
+		<fail message="Cannot make nightly build and release build at the same time" if:set="signal.nightly" />
+		<property name="signal.release" value="on" />
 	</target>
 
 	<target name="domain" depends="git-info" description="Build domain module">
@@ -107,9 +113,9 @@
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="ear" depends="rest" description="Build ear module (will create the NBA ear file)">
+	<target name="ear" depends="rest" description="Build ear module (will create the ear file)">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
 	</target>
 
 	<target name="load" depends="dao" description="Build load module (import programs)">
@@ -139,17 +145,42 @@
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
 	</target>
 
+	<target name="host0" description="Deploy to ${ear.install.scp.host0}">
+		<property name="deploy.to.host0" value="true" />
+	</target>
+
+	<target name="host1" description="Deploy to ${ear.install.scp.host1}">
+		<property name="deploy.to.host1" value="true" />
+	</target>
+
+	<target name="host2" description="Deploy to ${ear.install.scp.host2}">
+		<property name="deploy.to.host2" value="true" />
+	</target>
+
+	<target name="host3" description="Deploy to ${ear.install.scp.host3}">
+		<property name="deploy.to.host3" value="true" />
+	</target>
+
+	<target name="deploy" depends="ear" description="Deploy (local or remote)">
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritAll="true" inheritrefs="true" target="deploy" />
+	</target>
+
 	<target name="help" description="Show help text">
-		<echo message="Show all build target                             : ant -p" />
+		<echo message="Show all build targets                            : ant -p" />
 		<echo message="Build all modules                                 : ant build" />
 		<echo message="Clean all modules and then rebuild                : ant rebuild | ant clean build" />
-		<echo message="Build ear file                                    : ant ear" />
-		<echo message="Rebuild ear module                                : ant clean ear" />
+		<echo message="Build ear file (release version)                  : ant [release] ear" />
+		<echo message="Rebuild ear module (release version)              : ant [release] clean ear" />
+		<echo message="Build ear file (nightly build)                    : ant nightly ear" />
+		<echo message="Rebuild ear module (nightly build)                : ant clean nightly ear" />
 		<echo message="Build module(s)                                   : ant &lt;module-name&gt; [&lt;module-name&gt; ...]" />
 		<echo message="Valid module names: domain, dao, ejb, rest, ear, load, export, sh" />
 		<echo message="Rebuild module(s)                                 : ant clean &lt;module-name&gt; [&lt;module-name&gt; ...]" />
 		<echo message="Create/modify Eclipse metadata files              : ant eclipse" />
 		<echo message="Delete and create Eclipse metadata files          : ant clean eclipse" />
+		<echo message="Deploy ear file (on server)                       : ant [clean] deploy" />
+		<echo message="Remote deploy to host0 (ear.install.scp.host0)    : ant [clean] host0 deploy" />
+		<echo message="Remote deploy to host0 and host1                  : ant [clean] host0 host1 deploy" />
 	</target>
 
 

@@ -1,100 +1,33 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nda.search.*;
-import org.junit.Test;
+import static java.util.Arrays.asList;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.INDEX_NAME;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDaoTest.createTestTaxon;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.*;
-import static org.hamcrest.Matchers.is;
+import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
+import nl.naturalis.nda.search.Link;
+import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nda.search.ResultGroup;
+import nl.naturalis.nda.search.ResultGroupSet;
+import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.search.StringMatchInfo;
+
+import org.junit.Test;
 
 public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
-
-    @Test
-    public void testNewSearch() throws Exception {
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE).setSource(getMapping("test-specimen-mapping.json")).execute().actionGet();
-        ESSpecimen esSpecimen = createSpecimen();
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
-
-        QueryParams params = new QueryParams();
-        params.add("unitID", "L  0191413");
-        params.add("localityText", "Leiden");
-        params.add("gatheringAgent", "Van der Meijer Tussennaam W.");
-        params.add("_andOr", "AND");
-
-        SearchResultSet<Specimen> result = dao.specimenSearch(params);
-        assertEquals(2, result.getTotalSize());
-    }
-
-    @Test
-    public void testNewSearch2() throws Exception {
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE).setSource(getMapping("test-specimen-mapping.json")).execute().actionGet();
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(TAXON_TYPE).setSource(getMapping("test-taxon-mapping.json")).execute().actionGet();
-        ESSpecimen esSpecimen = createSpecimen();
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
-
-        ESTaxon esTaxon = createTestTaxon();
-        DefaultClassification defaultClassification = new DefaultClassification();
-        defaultClassification.setKingdom("Plantae");
-        esTaxon.setDefaultClassification(defaultClassification);
-        esTaxon.setAcceptedName(esSpecimen.getIdentifications().get(0).getScientificName());
-        esTaxon.getSynonyms().get(0).setGenusOrMonomial("geslacht");
-        esTaxon.getSynonyms().get(0).setSpecificEpithet("specifiek");
-        esTaxon.getSynonyms().get(0).setInfraspecificEpithet("infra");
-        client().prepareIndex(INDEX_NAME, TAXON_TYPE, "1").setSource(objectMapper.writeValueAsString(esTaxon)).setRefresh(true).execute().actionGet();
-
-        QueryParams params = new QueryParams();
-        params.add("genus", "Xylopia");
-        params.add("specificEpithet", "ferruginea ");
-        params.add("kingdom", "Plantae");
-        params.add("_andOr", "AND");
-
-        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(2, result.getResultGroups().get(0).getTotalSize());
-    }
-
-    @Test
-    public void textNewNameSearch() throws Exception {
-        createIndex(INDEX_NAME);
-
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE).setSource(getMapping("test-specimen-mapping.json")).execute().actionGet();
-        ESSpecimen esSpecimen = createSpecimen();
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
-
-        DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
-        esSpecimen.setUnitID("L  01914100");
-        classification.setKingdom("fake");
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
-
-        QueryParams params = new QueryParams();
-        params.add("kingdom", "Plantae");
-        params.add("identifications.scientificName.genusOrMonomial", "Xylopia");
-        params.add("_andOr", "OR");
-
-        assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(2l));
-
-        ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-
-        assertEquals(2, result.getResultGroups().get(0).getTotalSize());
-    }
 
     @Test
     public void testSpecimenSearch() throws Exception {
@@ -189,11 +122,10 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen))
                 .setRefresh(true).execute().actionGet();
-
         DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
-        esSpecimen.getIdentifications().get(0).getScientificName().setFullScientificName("test");
-        classification.setKingdom("fake");
         esSpecimen.setUnitID("L  01914100");
+        classification.setKingdom("fake");
+
         client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
                 .setRefresh(true).execute().actionGet();
 
@@ -206,22 +138,27 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getResultGroups().get(0).getTotalSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test
     public void testExtendedNameSearch_nested_OR_query() throws Exception {
         createIndex(INDEX_NAME);
 
-        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE).setSource(getMapping("test-specimen-mapping.json")).execute().actionGet();
+        client().admin().indices().preparePutMapping(INDEX_NAME).setType(SPECIMEN_TYPE)
+                .setSource(getMapping("test-specimen-mapping.json"))
+                .execute().actionGet();
 
         ESSpecimen esSpecimen = createSpecimen();
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
 
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "1").setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
         DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
         esSpecimen.setUnitID("L  01914100");
         classification.setKingdom("fake");
-        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen)).setRefresh(true).execute().actionGet();
+
+        client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
+                .setRefresh(true).execute().actionGet();
 
         QueryParams params = new QueryParams();
         params.add("kingdom", "Plantae");
@@ -232,7 +169,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(2, result.getResultGroups().get(0).getTotalSize());
+        assertEquals(2, result.getTotalSize());
     }
 
     @Test
@@ -257,7 +194,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(2, result.getResultGroups().get(0).getTotalSize());
+        assertEquals(2, result.getTotalSize());
         assertEquals(1, result.getResultGroups().get(0).getSearchResults().get(0).getLinks().size());
         assertEquals(1, result.getResultGroups().get(0).getSearchResults().get(1).getLinks().size());
     }
@@ -277,7 +214,6 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         DefaultClassification classification = esSpecimen.getIdentifications().get(0).getDefaultClassification();
         esSpecimen.setUnitID("L  01914100");
         classification.setKingdom("fake");
-        esSpecimen.getIdentifications().get(0).getScientificName().setFullScientificName("test");
 
         client().prepareIndex(INDEX_NAME, SPECIMEN_TYPE, "2").setSource(objectMapper.writeValueAsString(esSpecimen))
                 .setRefresh(true).execute().actionGet();
@@ -291,7 +227,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getResultGroups().get(0).getTotalSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test

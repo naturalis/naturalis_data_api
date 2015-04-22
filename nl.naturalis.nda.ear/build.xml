@@ -41,10 +41,10 @@
 
 	<!-- Create ear file, but only if it does not exist already -->
 	<target name="-package" depends="-projects,-assemble">
-		<jar destfile="${earfile}" basedir="${assemblydir}" />
+		<jar destfile="${ear.module.artifact}" basedir="${assemblydir}" />
 	</target>
 
-	<!-- Override clean in common.xml -->
+	<!-- Overrides clean in common.xml -->
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
 		<available file="build" type="dir" property="build.dir.exists" />
@@ -56,14 +56,116 @@
 	</target>
 
 	<target name="build" depends="git-info">
-		<property name="earfile" value="build/nba.${git.branch}.${git.revision}.ear" />
-		<available file="${earfile}" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built for branch ${git.branch}. Clean project to force rebuild." />
+		<property unless:set="signal.nightly" name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.tag}.ear" />
+		<property if:set="signal.nightly" name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.commit}.ear" />
+		<available file="${ear.module.artifact}" property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="rebuild" depends="clean,build" />
+
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host0} -->
+	<target name="host0">
+		<property name="deploy.to.host0" value="true" />
+	</target>
+
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host1} -->
+	<target name="host1">
+		<property name="deploy.to.host1" value="true" />
+	</target>
+
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host2} -->
+	<target name="host2">
+		<property name="deploy.to.host2" value="true" />
+	</target>
+
+	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host3} -->
+	<target name="host3">
+		<property name="deploy.to.host3" value="true" />
+	</target>
+
+	<target name="deploy" depends="build">
+		<!--
+			Hot deployment through dropping the earfile into the
+		    wildfly deployments directory requires the ear file
+		    to be named nba.ear
+		-->
+		<available file="${ear.module.location}/build/nba.ear" property="earfile.renamed" />
+		<copy file="${ear.module.artifact}" tofile="${ear.module.location}/build/nba.ear" />
+		<condition property="deploy.local">
+			<and>
+				<not>
+					<isset property="deploy.to.host0" />
+				</not>
+				<not>
+					<isset property="deploy.to.host1" />
+				</not>
+				<not>
+					<isset property="deploy.to.host2" />
+				</not>
+				<not>
+					<isset property="deploy.to.host3" />
+				</not>
+			</and>
+		</condition>
+
+		<!--
+			If no host was specified through one of the above host
+			targets, we assume we are on the server and do a local
+			deployment.
+		-->
+		<move if:set="deploy.local" file="${ear.module.location}/build/nba.ear" todir="${ear.install.dir}" />
+
+		<!--
+			Otherwise we assume we want to do a deployment from our
+			PC/laptop.
+		-->
+
+		<property name="scp" value="${build.module.location}/pscp.exe" />
+
+		<echo if:set="deploy.to.host0" message="Deploying to ${ear.install.scp.host0} ..." />
+		<exec if:set="deploy.to.host0" executable="${scp}" errorproperty="host0.deploy.error" outputproperty="host0.deploy.output" failifexecutionfails="true">
+			<arg value="-i" />
+			<arg value="${ear.install.scp.keyfile}" />
+			<arg value="${ear.module.location}/build/nba.ear" />
+			<arg value="${ear.install.scp.user}@${ear.install.scp.host0}:${ear.install.dir}" />
+		</exec>
+		<echo if:set="host0.deploy.error" message="${host0.deploy.error}" />
+		<echo if:set="host0.deploy.output" message="${host0.deploy.output}" />
+
+		<echo if:set="deploy.to.host1" message="Deploying to ${ear.install.scp.host1} ..." />
+		<exec if:set="deploy.to.host1" executable="${scp}" errorproperty="host1.deploy.error" outputproperty="host1.deploy.output" failifexecutionfails="true">
+			<arg value="-i" />
+			<arg value="${ear.install.scp.keyfile}" />
+			<arg value="${ear.module.location}/build/nba.ear" />
+			<arg value="${ear.install.scp.user}@${ear.install.scp.host1}:${ear.install.dir}" />
+		</exec>
+		<echo if:set="host1.deploy.error" message="${host1.deploy.error}" />
+		<echo if:set="host1.deploy.output" message="${host1.deploy.output}" />
+
+		<echo if:set="deploy.to.host2" message="Deploying to ${ear.install.scp.host2} ..." />
+		<exec if:set="deploy.to.host2" executable="${scp}" errorproperty="host2.deploy.error" outputproperty="host2.deploy.output" failifexecutionfails="true">
+			<arg value="-i" />
+			<arg value="${ear.install.scp.keyfile}" />
+			<arg value="${ear.module.location}/build/nba.ear" />
+			<arg value="${ear.install.scp.user}@${ear.install.scp.host2}:${ear.install.dir}" />
+		</exec>
+		<echo if:set="host2.deploy.error" message="${host2.deploy.error}" />
+		<echo if:set="host2.deploy.output" message="${host2.deploy.output}" />
+
+		<echo if:set="deploy.to.host3" message="Deploying to ${ear.install.scp.host3} ..." />
+		<exec if:set="deploy.to.host3" executable="${scp}" errorproperty="host3.deploy.error" outputproperty="host3.deploy.output" failifexecutionfails="true">
+			<arg value="-i" />
+			<arg value="${ear.install.scp.keyfile}" />
+			<arg value="${ear.module.location}/build/nba.ear" />
+			<arg value="${ear.install.scp.user}@${ear.install.scp.host3}:${ear.install.dir}" />
+		</exec>
+		<echo if:set="host3.deploy.error" message="${host3.deploy.error}" />
+		<echo if:set="host3.deploy.output" message="${host3.deploy.output}" />
+
+	</target>
 
 	<target name="eclipse">
 		<antcall target="templates" />

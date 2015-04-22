@@ -1,6 +1,10 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.*;
+import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -38,12 +42,9 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
 
         ESGatheringEvent gatheringEvent = new ESGatheringEvent();
         gatheringEvent.setGatheringPersons(asList(new Person("Van der Meijer Tussennaam W.")));
-        gatheringEvent.setGatheringOrganizations(asList(new Organization("Van der Meijer Tussennaam W.")));
         gatheringEvent.setSiteCoordinates(asList(new ESGatheringSiteCoordinates(55.7958149, 9.6373151)));
         gatheringEvent.setDateTimeBegin(new DateTime().withMillis(-299725200000L).toDate());
         gatheringEvent.setDateTimeEnd(new DateTime().withMillis(-299725200000L).toDate());
-        gatheringEvent.setLocalityText("Leiden");
-
         esSpecimen.setGatheringEvent(gatheringEvent);
 
         SpecimenIdentification specimenIdentification = new SpecimenIdentification();
@@ -55,7 +56,6 @@ public class AbstractBioportalSpecimenDaoTest extends DaoIntegrationTest {
         ScientificName scientificName = new ScientificName();
         scientificName.setGenusOrMonomial("Xylopia");
         scientificName.setSpecificEpithet("ferruginea");
-        scientificName.setFullScientificName("Xylopia ferruginea, 1988");
         specimenIdentification.setScientificName(scientificName);
 
         VernacularName vernacularName = new VernacularName();

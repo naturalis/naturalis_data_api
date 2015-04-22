@@ -10,6 +10,8 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -58,6 +60,7 @@ public class DwCAExporter {
 	private static final String FILE_NAME_META = "meta.xml";
 	private static File FILE_NAME_EML = null;
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
+	private static final String dwcTargetName = "http://rs.tdwg.org/dwc/text/";
 	private static final String zipExtension = ".zip";
 	private static final String propertiesExtension = ".properties";
 	private static String MAPPING_FILE_NAME = null;
@@ -203,10 +206,10 @@ public class DwCAExporter {
 
 		Core cores = new Core();
 		cores.setEncoding("UTF-8");
-		cores.setFieldsEnclosedBy("'");
+		cores.setFieldsEnclosedBy("");
 		cores.setFieldsTerminatedBy("\t");
 		cores.setLinesTerminatedBy("\n");
-		cores.setIgnoreHeaderLines("0");
+		cores.setIgnoreHeaderLines("1");
 		cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
 		cores.setFiles(files);
 		cores.setId(id);
@@ -214,7 +217,8 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 		Iterator<String> fieldIter = headerRow.iterator();
-		while (fieldIter.hasNext()) {
+		while (fieldIter.hasNext()) 
+		{
 			cnt = Integer.valueOf(cnt.intValue() + 1);
 			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
 			cores.addField(field);
@@ -224,7 +228,7 @@ public class DwCAExporter {
 		Meta xmlspecimen = new Meta();
 		xmlspecimen.setMetadata("eml.xml");
 		xmlspecimen.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
-		xmlspecimen.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
+		xmlspecimen.setXmlnstdwg(dwcTargetName);
 		xmlspecimen.add(cores);
 		dwcaObjectToXML(xmlspecimen);
 
@@ -282,6 +286,7 @@ public class DwCAExporter {
 			Marshaller m = context.createMarshaller();
 			// for pretty-print XML in JAXB
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
 			// Write to File
 			m.marshal(meta, newFile(outputDirectory, FILE_NAME_META));
@@ -302,7 +307,7 @@ public class DwCAExporter {
 		try {
 			logger.info("Creating the zipfile: '" + zipFileName + zipExtension + "'");
 			zip.zipDirectory(outputDirectory.getAbsolutePath(), zipFileName + zipExtension);
-			logger.info("Zipfile '" + zipFileName + zipExtension + "' created successfull.");
+			logger.info("Zipfile '" + zipFileName + zipExtension + "' created successful.");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -353,7 +358,7 @@ public class DwCAExporter {
 		Properties configFile = new Properties();
 		try { /* load the values from the properties file */
 			logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
-			StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
+			//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
 
 			configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME + propertiesExtension));
 		}
@@ -369,17 +374,21 @@ public class DwCAExporter {
 			propertyName = (String) iterator.next();
 			propertyValue = configFile.getProperty(propertyName);
 			/* Add the headers to the CSV File */
-			if (propertyValue.contains("1")) {
+			String[] chunks = propertyValue.split(",");
+			if (chunks[1].equals("1")) 
+			{
 				headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
+			//if (propertyValue.contains("1")) {
+     		//		headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
 			}
 			// System.out.println(propertyName + ": " + propertyValue);
 		}
 		/* Write the headers columns */
 		logger.info("Writing headers row to the Occurence.txt file.");
-		StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurence.txt file.");
+		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurence.txt file.");
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
-		StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
+		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
 	}
 
 
@@ -595,7 +604,7 @@ public class DwCAExporter {
 
 				response = eslasticClient.prepareSearchScroll(response.getScrollId()).setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
-				logger.info("Shard hit.'" + count++ + "' succesfull");
+				logger.info("Shard hit.'" + count++ + "' successful");
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS") && MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
 					writeCRSZoologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Zoology");

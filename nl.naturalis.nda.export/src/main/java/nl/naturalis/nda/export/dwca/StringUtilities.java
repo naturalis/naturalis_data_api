@@ -11,16 +11,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -33,29 +29,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-
-import javax.json.Json;
-import javax.json.stream.JsonGeneratorFactory;
-
-import org.json.simple.parser.ParseException;
-
-import java.util.*;
-
-import javax.json.stream.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonWriter;
 
 
 public class StringUtilities {
@@ -439,23 +424,46 @@ public class StringUtilities {
 	}
 	
 	
-	public String convertStringToUTF8(String text)
+	public String convertStringToUTF8(String text) 
 	{
 		String value = null;
 		byte ptext[];
-		try 
+		if (text != null)
 		{
-			if (text != null)
-			{
-				ptext = text.getBytes("ISO-8859-1");
-				value = new String(ptext, "UTF-8"); 
-			}
-		} 
-		catch (UnsupportedEncodingException e) 
-		{
-			e.printStackTrace();
+			ptext = text.getBytes();
+			value = new String(ptext, Charset.forName("UTF-8")); 
 		}
 		return value;
+	}
+	
+	
+	public String convertStringFrom_ISO8859_2_ToUTF8(String text) throws UnsupportedEncodingException
+	{
+		String value = null;
+		byte ptext[];
+		if (text != null)
+		{
+			ptext = encode(text.getBytes());
+			value = new String(ptext, Charset.forName("UTF-8")); 
+		}
+		return value;
+	}
+	
+	static byte[] encode(byte[] arr)
+	{
+	        Charset utf8charset = Charset.forName("UTF-8");
+	        Charset iso88591charset = Charset.forName("ISO-8859-4");
+
+	        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
+
+	        // decode UTF-8
+	        CharBuffer data = iso88591charset.decode(inputBuffer);
+
+	        // encode ISO-8559-1
+	        ByteBuffer outputBuffer = utf8charset.encode(data);
+	        byte[] outputData = outputBuffer.array();
+
+	        return outputData;
 	}
 	
 	public static String crunchifyPrettyJSONUtility(String simpleJSON) {

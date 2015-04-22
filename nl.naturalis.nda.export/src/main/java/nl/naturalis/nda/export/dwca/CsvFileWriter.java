@@ -44,15 +44,10 @@ public class CsvFileWriter extends BufferedWriter
                 builder.append('\t');
             if(column != null)
             {
-            	 builder.append(column);
-                 firstColumn = false;
-/*                if (StringUtilities.indexOfFirstContainedCharacter(column, "\"+-,") !=-1)
-                {
-                    column = column.replaceAll("\"", "\"\"");
-                  // builder.append(String.format("\"%s\"",column));
-                }
-                else
-*/             
+           		column = column.replace('\r', ' ');
+           		column = column.replace('\n', ' ');
+           		builder.append(column);
+            	firstColumn = false;
             }
         }
         row.lineText = builder.toString();

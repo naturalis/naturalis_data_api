@@ -2,11 +2,13 @@ package nl.naturalis.nda.export.dwca;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.export.dwca.StringUtilities;
@@ -33,7 +35,28 @@ public class Brahms
 			/* 01_Dummy1 is basisOfRecord */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "01_Dummy1"))
 			{
-				if (specimen.getRecordBasis().contains("Herbarium sheet"))
+				if (specimen.getRecordBasis() != null &&
+					specimen.getRecordBasis().contains("photo(copy) of herbarium sheet") && 
+					specimen.getRecordBasis().contains("Illustration") &&
+					specimen.getRecordBasis().contains("Photographs, negatives") &&
+					specimen.getRecordBasis().contains("DNA sample from sheet") &&
+					specimen.getRecordBasis().contains("Slides") &&
+					specimen.getRecordBasis().contains("Observation"))
+				{
+					return;
+				}
+				else
+				if (specimen.getRecordBasis() != null)
+				{
+					//dataRow.add(specimen.getRecordBasis());
+					dataRow.add("PreservedSpecimen");
+				}
+				else
+				{
+					dataRow.add(" ");
+				}
+				
+				/*if (specimen.getRecordBasis().contains("Herbarium sheet"))
 				{
 					dataRow.add("PreservedSpecimen");
 				}
@@ -45,17 +68,8 @@ public class Brahms
 				{
 					dataRow.add("PreservedSpecimen");
 				}
-				else if (specimen.getRecordBasis() != null &&
-						 !specimen.getRecordBasis().contains("Herbarium sheet") &&
-						 !specimen.getRecordBasis().contains("Extra sheet") &&
-						 !specimen.getRecordBasis().contains("Wood sample"))
-				{
-					dataRow.add(specimen.getRecordBasis());
-				}
-				else
-				{
-					dataRow.add(null);
-				}
+				else*/ 
+					
 			}
 
 			/* 02_SourceSystemId is catalogNumber */
@@ -67,7 +81,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -80,7 +94,7 @@ public class Brahms
 				}
 				else*/
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -99,7 +113,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -112,7 +126,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -125,7 +139,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -141,7 +155,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -159,12 +173,12 @@ public class Brahms
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 				
@@ -179,12 +193,12 @@ public class Brahms
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -216,11 +230,11 @@ public class Brahms
 				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
 				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -234,7 +248,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -248,21 +262,21 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
 			/* 14_DummyDefault is geodeticDatum */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "14_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 			
 
 			/* 15_DummyDefault is  habitat */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "15_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 			
 
@@ -298,30 +312,70 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
 			/* 17_identifications_identifiers_fullName is identifiedBy */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "17_identifications_identifiers_fullName"))
 			{
-				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
+/*				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
 				{
-					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator()
-							.next();
+					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator().next();
 					if (ag instanceof Person)
 					{
 						Person per = (Person) ag;
 						dataRow.add(strutil.convertStringToUTF8(per.getFullName()));
 					} else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
+				}*/
+				
+				
+				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
+				{
+					List<String> listAgentFullname = new ArrayList<String>();
+					Iterator<Agent> identifiedByIterator = specimen.getIdentifications().iterator().next().getIdentifiers().iterator();
+					while(identifiedByIterator.hasNext())
+					{	
+						Agent ag = identifiedByIterator.next();
+					    if (ag instanceof Person)
+					    {
+					    	Person per = (Person) ag;
+					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName())); 
+					    }
+						
+					    if (listAgentFullname.size() > 1)
+						{	
+							listAgentFullname.add(" | ");
+						}
+					}
+					
+					if (listAgentFullname.size() > 0)
+					{
+					    String resultAgentFullName = listAgentFullname.toString()
+					    .replace(",", " ")
+					    .replace("[", " ")
+					    .replace("]", " ")
+					    .trim();
+					
+					    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+					}
+					else
+					{
+						dataRow.add(" ");
+					}
 				}
+				else
+				{
+					dataRow.add(" ");
+				}
+				
 			}
 
 			/* 18_NumberOfSpecimen is individualCount */
@@ -333,7 +387,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -341,7 +395,7 @@ public class Brahms
 			/* 19_DummyDefault is informationWithheld */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "19_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 			
 			/* 20_InfraspecificEpithet is infraSpecificEpithet */
@@ -353,7 +407,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -366,7 +420,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -383,7 +437,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -391,12 +445,28 @@ public class Brahms
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "23_DummyDefault"))
 			{
 				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
-				/*{
-					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
-				}
-				else*/
 				{
-					dataRow.add(null);
+					String family = specimen.getIdentifications().iterator().next().getDefaultClassification().getFamily();
+					if (family != null)
+					{
+						if (family.contains("Fungi"))
+						{
+							dataRow.add("fungi");
+						}
+						else
+						{
+							dataRow.add("Plantae");
+							//dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
+						}
+					}
+					else
+					{
+						dataRow.add(" ");
+					}
+				}
+				else
+				{
+					dataRow.add(" ");
 				}
 			}
 				
@@ -409,7 +479,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -418,24 +488,28 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));
+					String localityResult = specimen.getGatheringEvent().getLocality()
+					.replace('\r', ' ')
+	           		.replace('\n', ' ')
+	           		.trim();
+					dataRow.add(strutil.convertStringToUTF8(localityResult));
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
 			/* 26_DummyDefault maximumElevationInMeters */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "26_DummyDefault"))
 			{
-    			dataRow.add(null);
+    			dataRow.add(" ");
 			}
 
 			/* 27_DummyDefault is minimumElevationInMeters */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "27_DummyDefault"))
 			{
-				dataRow.add(null);
+				dataRow.add(" ");
 			}
 
 			/* 28_DummyDefault is nomenclaturalCode */
@@ -470,7 +544,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -483,7 +557,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -496,20 +570,45 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
 			/* 33_gatheringEvent.gatheringAgents.fullName is recordedBy */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "33_gatheringEvent.gatheringAgents.fullName"))
 			{
+				List<String> listFullname = new ArrayList<String>();
 				if (specimen.getGatheringEvent().getGatheringPersons() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getGatheringPersons().iterator().next().getFullName()));
+					Iterator<Person> fullnameIterator = specimen.getGatheringEvent().getGatheringPersons().iterator();
+					while(fullnameIterator.hasNext())
+					{	
+						listFullname.add(fullnameIterator.next().getFullName()); 
+						
+						if (specimen.getGatheringEvent().getGatheringPersons().size() > 1)
+						{	
+							listFullname.add(" | ");
+						}
+					}
+
+					if (listFullname.size() > 0)
+					{
+					    String resultFullName = listFullname.toString()
+					    //.replace(",", " ")
+					    .replace("[", " ")
+					    .replace("]", " ")
+					    .trim();
+					
+					    dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					}
+					else
+					{
+						dataRow.add(" ");
+					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -522,7 +621,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}	
 			
@@ -535,7 +634,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -548,7 +647,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -561,7 +660,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -574,7 +673,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -587,7 +686,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -617,26 +716,52 @@ public class Brahms
 					}
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
 			/* 41_Remarks is taxonRemarks */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "41_Remarks"))
 			{
-				if (specimen.getIdentifications().iterator().next().getRemarks() != null)
+				List<String> listFullname = new ArrayList<String>();
+				Iterator<SpecimenIdentification> identIterator = specimen.getIdentifications().iterator();
+				while(identIterator.hasNext())
+				{	
+					listFullname.add(identIterator.next().getScientificName().getFullScientificName()); 
+					if (specimen.getIdentifications().size() > 1)
+					{	
+						listFullname.add(" | ");
+					}
+				}
+
+				if (listFullname.size() > 1)
+				{
+				    String resultFullName = listFullname.toString()
+				    .replace(",", " ")
+				    .replace("[", " ")
+				    .replace("]", " ")
+				    .trim();
+				   
+					dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					listFullname.clear();
+				}
+				else
+				{
+					dataRow.add(" ");
+				}
+				/*if (specimen.getIdentifications().iterator().next().getRemarks() != null)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getRemarks());
 				}
 				else
 				{
-					dataRow.add(null);
-				}
+					dataRow.add(" ");
+				}*/
 			}
 
 			/* 42_TypeStatus is typeStatus */
@@ -648,7 +773,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -692,12 +817,12 @@ public class Brahms
  				    }
 					else
 					{
-						dataRow.add(null);
+						dataRow.add(" ");
 					}
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 			
@@ -710,7 +835,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -723,7 +848,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -754,11 +879,11 @@ public class Brahms
 				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
 				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 
@@ -771,7 +896,7 @@ public class Brahms
 				}
 				else
 				{
-					dataRow.add(null);
+					dataRow.add(" ");
 				}
 			}
 

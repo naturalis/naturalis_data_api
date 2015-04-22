@@ -1,7 +1,6 @@
 package nl.naturalis.nda.export.dwca;
 
 import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.GatheringEvent;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
@@ -64,7 +63,8 @@ public class Zoology
 			/* 03_ClassName is class */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "03_ClassName"))
 			{
-				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getClassName());
 				}
@@ -296,9 +296,10 @@ public class Zoology
 					Iterator<Agent> identifiedByIterator = specimen.getIdentifications().iterator().next().getIdentifiers().iterator();
 					while(identifiedByIterator.hasNext())
 					{	
-					    if (identifiedByIterator instanceof Person)
+						Agent ag = identifiedByIterator.next();
+					    if (ag instanceof Person)
 					    {
-					    	Person per = (Person) identifiedByIterator;
+					    	Person per = (Person) ag;
 					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName())); 
 					    }
 						
@@ -307,17 +308,21 @@ public class Zoology
 							listAgentFullname.add(" | ");
 						}
 					}
-				}
-
-				if (listAgentFullname.size() > 0)
-				{
-				    String resultAgentFullName = listAgentFullname.toString()
-				    .replace(",", " ")
-				    .replace("[", " ")
-				    .replace("]", " ")
-				    .trim();
-				
-				    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+					
+					if (listAgentFullname.size() > 0)
+					{
+					    String resultAgentFullName = listAgentFullname.toString()
+					    .replace(",", " ")
+					    .replace("[", " ")
+					    .replace("]", " ")
+					    .trim();
+					
+					    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+					}
+					else
+					{
+						dataRow.add(" ");
+					}
 				}
 				else
 				{
@@ -392,7 +397,8 @@ public class Zoology
 			/* 23_Kingdom is kingdom */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "23_Kingdom"))
 			{
-				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null)
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getKingdom());
 				}
@@ -471,7 +477,8 @@ public class Zoology
 			/* 30_Order is order */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "30_Order"))
 			{
-				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder() != null)
+				if (specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder() != null &&
+					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification().getOrder());
 				}
@@ -523,17 +530,21 @@ public class Zoology
 							listFullname.add(" | ");
 						}
 					}
-				}
-
-				if (listFullname.size() > 0)
-				{
-				    String resultFullName = listFullname.toString()
-				    .replace(",", " ")
-				    .replace("[", " ")
-				    .replace("]", " ")
-				    .trim();
-				
-				    dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					
+					if (listFullname.size() > 0)
+					{
+					    String resultFullName = listFullname.toString()
+					    .replace(",", " ")
+					    .replace("[", " ")
+					    .replace("]", " ")
+					    .trim();
+					
+					    dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					}
+					else
+					{
+						dataRow.add(" ");
+					}
 				}
 				else
 				{
@@ -640,26 +651,33 @@ public class Zoology
 			/* 41_Remarks is taxonRemarks */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "41_Remarks"))
 			{
-				List<String> listFullname = new ArrayList<String>();
-				Iterator<SpecimenIdentification> identIterator = specimen.getIdentifications().iterator();
-				while(identIterator.hasNext())
-				{	
-					listFullname.add(identIterator.next().getScientificName().getFullScientificName()); 
-					if (specimen.getIdentifications().size() > 1)
-					{	
-						listFullname.add(" | ");
-					}
-				}
-
-				if (listFullname.size() > 1)
+				if(specimen.getIdentifications() != null)
 				{
-					String resultFullName = listFullname.toString()
-					.replace(",", "")
-					.replace("[", "")
-					.replace("]", "")
-					.trim();
-					dataRow.add(strutil.convertStringToUTF8(resultFullName));
-					listFullname.clear();
+					List<String> listFullname = new ArrayList<String>();
+					Iterator<SpecimenIdentification> identIterator = specimen.getIdentifications().iterator();
+					while(identIterator.hasNext())
+					{	
+						listFullname.add(identIterator.next().getScientificName().getFullScientificName()); 
+						if (specimen.getIdentifications().size() > 1)
+						{	
+							listFullname.add(" | ");
+						}
+					}
+
+					if (listFullname.size() > 1)
+					{
+						String resultFullName = listFullname.toString()
+								.replace(",", "")
+								.replace("[", "")
+								.replace("]", "")
+								.trim();
+						dataRow.add(strutil.convertStringToUTF8(resultFullName));
+						listFullname.clear();
+					}
+					else
+					{
+						dataRow.add(" ");
+					}
 				}
 				else
 				{

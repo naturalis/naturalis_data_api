@@ -10,6 +10,8 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SP
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -204,10 +206,10 @@ public class DwCAExporter {
 
 		Core cores = new Core();
 		cores.setEncoding("UTF-8");
-		cores.setFieldsEnclosedBy("'");
+		cores.setFieldsEnclosedBy("");
 		cores.setFieldsTerminatedBy("\t");
 		cores.setLinesTerminatedBy("\n");
-		cores.setIgnoreHeaderLines("0");
+		cores.setIgnoreHeaderLines("1");
 		cores.setRowtype("http://rs.tdwg.org/dwc/terms/Occurrence");
 		cores.setFiles(files);
 		cores.setId(id);
@@ -215,7 +217,8 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 		Iterator<String> fieldIter = headerRow.iterator();
-		while (fieldIter.hasNext()) {
+		while (fieldIter.hasNext()) 
+		{
 			cnt = Integer.valueOf(cnt.intValue() + 1);
 			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
 			cores.addField(field);
@@ -226,7 +229,6 @@ public class DwCAExporter {
 		xmlspecimen.setMetadata("eml.xml");
 		xmlspecimen.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
 		xmlspecimen.setXmlnstdwg(dwcTargetName);
-		//xmlspecimen.setXmltargetNamespace(dwcTargetName);
 		xmlspecimen.add(cores);
 		dwcaObjectToXML(xmlspecimen);
 
@@ -284,6 +286,7 @@ public class DwCAExporter {
 			Marshaller m = context.createMarshaller();
 			// for pretty-print XML in JAXB
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
 			// Write to File
 			m.marshal(meta, newFile(outputDirectory, FILE_NAME_META));

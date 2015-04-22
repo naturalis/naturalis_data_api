@@ -1,29 +1,41 @@
-# Configuration file driving various Ant targets.
+##########################################################
+#    Configuration file driving various Ant targets      #
+##########################################################
+
 # You must make a copy of this file named build.properties
 # before you can start executing Ant targets. Adjust the
 # properties in this file as appropriate before executing
 # Ant targets.
 
-# ES configuration (read by all modules)
+# ElasticSearch configuration (all modules)
 elasticsearch.cluster.name=14110822-6ec5-487c-92b7-66402521ceb1
 elasticsearch.transportaddress.host=172.16.14.12
 elasticsearch.transportaddress.port=9300
 elasticsearch.index.name=nda
 
-# ES configuration (read by import module only; see
-# ${nda.import.install.dir}/conf/es-settings.json)
+# ElasticSearch configuration (load module only)
 elasticsearch.index.numshards=9
 elasticsearch.index.numreplicas=1
 
-# Directory to which to copy ear file such that
-# gets picked up automatically by wildfly
-nda.ear.install.dir=/opt/wildfly_deployments
+# Directory to which to copy ear file such that gets
+# picked up automatically by wildfly
+ear.install.dir=/opt/wildfly_deployments
 
+# Settings for remote deployments:
+ear.install.scp.keyfile=C:/Users/admin.ayco.holleman/ayco.ppk
+ear.install.scp.user=ayco.holleman
+# You can specify at most 4 remote hosts to which to
+# deploy the ear file. Install dir, ssh key file and
+# user are assumed to be the same for all hosts
+ear.install.scp.host0=10.42.1.146
+ear.install.scp.host1=
+ear.install.scp.host2=
+ear.install.scp.host3=
 
 # Directory to which to copy the shell scripts. This directory
 # will contain an sh directory (shell scripts), a conf
 # directory (config files), and a lib directory (jar files)
-nda.import.install.dir=C:/test/nda-import-home-test
+nda.import.install.dir=/data/nda-import
 
 # Directories containing the CSV dumps, XML dumps, etc.
 nda.import.crs.datadir=/data/nda-import/data/crs

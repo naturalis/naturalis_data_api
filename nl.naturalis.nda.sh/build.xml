@@ -89,6 +89,9 @@
 		<copy todir="${nda.export.install.dir}/lib">
 			<fileset dir="${load.module.location}/build/classpath" />
 		</copy>
+		<copy todir="${nda.export.install.dir}/lib">
+			<fileset dir="${export.module.location}/build/classpath" />
+		</copy>
 	</target>
 
 	<target name="build">

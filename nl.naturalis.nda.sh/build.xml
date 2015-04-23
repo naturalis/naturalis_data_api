@@ -74,7 +74,7 @@
 
 	<target name="install-export">
 		<mkdir dir="${nda.export.install.dir}" />
-		<antcall target="update-import" />
+		<antcall target="patch-export" />
 		<echo message="Installing libraries into ${nda.export.install.dir}/lib" />
 		<mkdir dir="${nda.export.install.dir}/lib" />
 		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.export.install.dir}/lib" />

@@ -32,9 +32,10 @@ ear.install.scp.host1=
 ear.install.scp.host2=
 ear.install.scp.host3=
 
-# Directory to which to copy the shell scripts. This directory
-# will contain an sh directory (shell scripts), a conf
-# directory (config files), and a lib directory (jar files)
+# Directory to which to copy the shell scripts for the
+# import programs. Will contain an sh directory (shell
+# scripts), a conf directory (config files), and a lib
+# directory (jar files).
 nda.import.install.dir=/data/nda-import
 
 # Directories containing the CSV dumps, XML dumps, etc.
@@ -50,4 +51,11 @@ nda.import.col.year=2014
 # scripts. If you want to finetune logging, you will have to
 # manually edit ${nda.import.install.dir}/conf/logback.xml
 nda.import.log.dir=/data/nda-import/log
+
+# Directory to which to copy the shell scripts for the
+# DwCA export programs. Will contain an sh directory (shell
+# scripts), a conf directory (config files), and a lib
+# directory (jar files).  
+nda.export.install.dir=/data/nda-export
+nda.export.output.dir=/data/nda-export/output
 

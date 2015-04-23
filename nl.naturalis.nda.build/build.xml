@@ -123,18 +123,27 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="export" depends="load" description="Build export module">
+	<target name="install-import-module" depends="load" description="Install the import programs on the server">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
+	</target>
+
+	<target name="patch-import-module" depends="verify" description="Apply changes made to build.properties to shell scripts and config files">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="update-import" />
+	</target>
+
+	<target name="export" depends="dao" description="Build export module">
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="sh" depends="load,export" description="Install Unix shell script wrappers for the import and export programs">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
+	<target name="install-export-module" depends="load" description="Install the export programs on the server">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-export" if:set="signal.clean" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-export" />
 	</target>
 
-	<target name="sh-config" description="Re-installs the shell scripts without building the load and export modules (useful if build.properties has changed)">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="update-import" />
+	<target name="patch-export-module" depends="verify" description="Apply changes made to build.properties to shell scripts and config files">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="patch-import" />
 	</target>
 
 	<target name="build" depends="ear,load,export" description="Build ear file, import programs and export programs" />

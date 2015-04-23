@@ -6,18 +6,24 @@
 	<property file="../nl.naturalis.nda.build/build.properties" />
 	<property environment="env" />
 
-	<target name="clean">
+	<target name="clean-import">
 		<delete dir="${nda.import.install.dir}/lib" />
 		<delete dir="${nda.import.install.dir}/conf" />
 		<delete dir="${nda.import.install.dir}/sh" />
 	</target>
 
+	<target name="clean-export">
+		<delete dir="${nda.export.install.dir}/lib" />
+		<delete dir="${nda.export.install.dir}/conf" />
+		<delete dir="${nda.export.install.dir}/sh" />
+	</target>
+
 	<!--
-		Reinstalls shell scripts and configuration files using the
-		latest version of build.properties, but avoids rebuilding
-		the load project.
+		Re-installs shell scripts and configuration files using the
+		latest version of build.properties, but does not build or
+		rebuild the load project.
 	-->
-	<target name="update-import">
+	<target name="patch-import">
 		<available file="${nda.import.install.dir}" type="dir" property="sh.module.installed" />
 		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. Please run &#034;ant install-import&#034; first" />
 		<echo message="Installing configuration files into ${nda.import.install.dir}/conf" />
@@ -34,7 +40,7 @@
 
 	<target name="install-import">
 		<mkdir dir="${nda.import.install.dir}" />
-		<antcall target="update-import" />
+		<antcall target="patch-import" />
 		<echo message="Installing libraries into ${nda.import.install.dir}/lib" />
 		<mkdir dir="${nda.import.install.dir}/lib" />
 		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.import.install.dir}/lib" />
@@ -51,6 +57,42 @@
 		</copy>
 	</target>
 
-	<target name="build" depends="install-import" />
+	<target name="patch-export">
+		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
+		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. Please run &#034;ant install-import&#034; first" />
+		<echo message="Installing configuration files into ${nda.export.install.dir}/conf" />
+		<copy todir="${nda.export.install.dir}/conf" overwrite="true">
+			<fileset dir="import/conf" excludes="**/*.git*" />
+			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		</copy>
+		<echo message="Installing shell scripts into ${nda.export.install.dir}/sh" />
+		<copy todir="${nda.export.install.dir}/sh" overwrite="true">
+			<fileset dir="import/sh" excludes="**/*.git*" />
+			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		</copy>
+	</target>
+
+	<target name="install-export">
+		<mkdir dir="${nda.export.install.dir}" />
+		<antcall target="update-import" />
+		<echo message="Installing libraries into ${nda.export.install.dir}/lib" />
+		<mkdir dir="${nda.export.install.dir}/lib" />
+		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.export.install.dir}/lib" />
+		<copy todir="${nda.export.install.dir}/lib">
+			<fileset dir="${domain.module.location}/build/classpath" />
+		</copy>
+		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${nda.export.install.dir}/lib" />
+		<copy todir="${nda.export.install.dir}/lib">
+			<fileset dir="${dao.module.location}/build/classpath" />
+		</copy>
+		<copy file="${load.module.location}/build/${load.module.artifact}" todir="${nda.export.install.dir}/lib" />
+		<copy todir="${nda.export.install.dir}/lib">
+			<fileset dir="${load.module.location}/build/classpath" />
+		</copy>
+	</target>
+
+	<target name="build">
+		<echo message="Please be more specific" />
+	</target>
 
 </project>

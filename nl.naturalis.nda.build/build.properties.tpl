@@ -5,7 +5,7 @@
 # You must make a copy of this file named build.properties
 # before you can start executing Ant targets. Adjust the
 # properties in this file as appropriate before executing
-# Ant targets.
+# Ant targets. 
 
 # ElasticSearch configuration (all modules)
 elasticsearch.cluster.name=14110822-6ec5-487c-92b7-66402521ceb1

@@ -62,12 +62,12 @@
 		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. Please run &#034;ant install-import&#034; first" />
 		<echo message="Installing configuration files into ${nda.export.install.dir}/conf" />
 		<copy todir="${nda.export.install.dir}/conf" overwrite="true">
-			<fileset dir="import/conf" excludes="**/*.git*" />
+			<fileset dir="export/conf" excludes="**/*.git*" />
 			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
 		</copy>
 		<echo message="Installing shell scripts into ${nda.export.install.dir}/sh" />
 		<copy todir="${nda.export.install.dir}/sh" overwrite="true">
-			<fileset dir="import/sh" excludes="**/*.git*" />
+			<fileset dir="export/sh" excludes="**/*.git*" />
 			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
 		</copy>
 	</target>

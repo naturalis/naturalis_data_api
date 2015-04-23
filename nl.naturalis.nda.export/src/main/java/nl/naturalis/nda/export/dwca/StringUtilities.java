@@ -11,39 +11,38 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.export.ExportException;
+import nl.naturalis.nda.export.ExportUtil;
 
 import org.domainobject.util.ConfigObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileWriter;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
 public class StringUtilities {
+
 	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
 	final static int BUFFER = 2048;
 	static String propertiesfilename = null;
@@ -110,14 +109,14 @@ public class StringUtilities {
 	/* Read the value from properties file */
 	public static String getPropertyValue(String propertyname, String value)
 	{
-		return  getProperty(propertyname,value);
+		return getProperty(propertyname, value);
 	}
 
 
 	/* Read the value from properties file */
 	public static String readPropertyvalue(String propertyname, String key)
 	{
-		return  getProperty(propertyname,key);
+		return getProperty(propertyname, key);
 	}
 
 
@@ -172,7 +171,7 @@ public class StringUtilities {
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
 	}
-	
+
 
 	/* Copy a file from a Source directory to a Destination directory */
 	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
@@ -279,12 +278,25 @@ public class StringUtilities {
 	 */
 	public static File getDwcaExportDir()
 	{
-		String path = LoadUtil.getConfig().required("dwca.export.dir");
-		File rootDir = new File(path);
-		if (!rootDir.isDirectory() || !rootDir.canWrite()) {
-			throw new ExportException(String.format("Directory does not exist or is not writable: \"%s\"", path));
+		String outputRoot = ExportUtil.getConfig().required("nda.export.output.dir");
+		Path path = FileSystems.getDefault().getPath(outputRoot, "dwca");
+		File exportDir = path.toFile();
+		if (exportDir.isDirectory()) {
+			if (!exportDir.canWrite()) {
+				throw new ExportException(String.format(
+						"Invalid value specified for \"nda.export.output.dir\". Directory does not exist or is not writable: \"%s\"", path));
+			}
 		}
-		return rootDir;
+		else {
+			logger.warn(String.format("No such directory (nda.export.output.dir): \"%s\". Will attempt to create it", path));
+			try {
+				java.nio.file.Files.createDirectories(path);
+			}
+			catch (IOException e) {
+				throw new ExportException(String.format("Failed to create directory \"%s\"", path), e);
+			}
+		}
+		return exportDir;
 	}
 
 
@@ -295,11 +307,11 @@ public class StringUtilities {
 	 */
 	public static File getWorkingDirectory()
 	{
-		File outputDir = newFile(getDwcaExportDir(), "output");
-		if (!outputDir.isDirectory()) {
-			outputDir.mkdir();
+		File dir = newFile(getDwcaExportDir(), "output");
+		if (!dir.isDirectory()) {
+			dir.mkdir();
 		}
-		return outputDir;
+		return dir;
 	}
 
 
@@ -335,49 +347,22 @@ public class StringUtilities {
 
 
 	/**
-	 * Root directory for input for the DwCA export program
+	 * Directory containing eml files and properties files
 	 * 
 	 * @return
 	 */
-	public static File getDwcaConfigDir()
+	public static File getCollectionConfigDir()
 	{
-		String path = LoadUtil.getConfig().required("dwca.config.dir");
-		File confDir = new File(path);
-		if (!confDir.isDirectory()) {
-			throw new ExportException(String.format("No such directory: \"%s\"", path));
+		String path = ExportUtil.getConfig().required("nda.export.conf.dir");
+		File dir = new File(path);
+		if (!dir.isDirectory()) {
+			throw new ExportException(String.format("Invalid value specified for \"nda.export.conf.dir\". Directory does not exist: \"%s\"", path));
 		}
-		return confDir;
-	}
-
-
-	/**
-	 * Directory containing EML files: ${dwcaConfigDir}/eml
-	 * 
-	 * @return
-	 */
-	public static File getEmlDirectory()
-	{
-		File emlDir = newFile(getDwcaConfigDir(), "eml");
-		if (!emlDir.isDirectory()) {
-			throw new ExportException(String.format("No such directory: \"%s\"", emlDir.getAbsolutePath()));
+		dir = newFile(dir, "dwca");
+		if (!dir.isDirectory()) {
+			throw new ExportException(String.format("No such directory: \"%s\"", dir.getAbsolutePath()));
 		}
-		return emlDir;
-	}
-
-
-	/**
-	 * Directory containing collection-related property files:
-	 * ${dwcaConfigDir}/config
-	 * 
-	 * @return
-	 */
-	public static File getPropertiesDir()
-	{
-		File propsDir = newFile(getDwcaConfigDir(), "config");
-		if (!propsDir.isDirectory()) {
-			throw new ExportException(String.format("No such directory: \"%s\"", propsDir.getAbsolutePath()));
-		}
-		return propsDir;
+		return dir;
 	}
 
 	// Cache for collection configuration settings
@@ -390,11 +375,14 @@ public class StringUtilities {
 	 * @param collectionName
 	 * @return
 	 */
-	public static ConfigObject getProperties(String collectionName)
+	public static ConfigObject getCollectionConfiguration(String collectionName)
 	{
 		ConfigObject cfg = collectionProps.get(collectionName);
 		if (cfg == null) {
-			File propsFile = newFile(getPropertiesDir(), collectionName + ".properties");
+			File propsFile = newFile(getCollectionConfigDir(), collectionName + ".properties");
+			if (!propsFile.isFile()) {
+				throw new ExportException(String.format("No such file: \"%s\"", propsFile.getAbsolutePath()));
+			}
 			cfg = new ConfigObject(propsFile);
 			collectionProps.put(collectionName, cfg);
 		}
@@ -411,182 +399,173 @@ public class StringUtilities {
 	 */
 	public static String getProperty(String collectionName, String propertyName)
 	{
-		return getProperties(collectionName).required(propertyName);
+		return getCollectionConfiguration(collectionName).required(propertyName);
 	}
-	
-	public boolean isEnabled(String collectionName, String propertyName) {
+
+
+	public boolean isEnabled(String collectionName, String propertyName)
+	{
 		String val = getProperty(collectionName, propertyName);
 		String[] chunks = val.split(",");
-		if(chunks[1].equals("1")) {
+		if (chunks[1].equals("1")) {
 			return true;
 		}
 		return false;
 	}
-	
-	
-	public String convertStringToUTF8(String text) 
+
+
+	public String convertStringToUTF8(String text)
 	{
 		String value = null;
 		byte ptext[];
-		if (text != null)
-		{
+		if (text != null) {
 			ptext = text.getBytes();
-			value = new String(ptext, Charset.forName("UTF-8")); 
+			value = new String(ptext, Charset.forName("UTF-8"));
 		}
 		return value;
 	}
-	
-	
+
+
 	public String convertStringFrom_ISO8859_2_ToUTF8(String text) throws UnsupportedEncodingException
 	{
 		String value = null;
 		byte ptext[];
-		if (text != null)
-		{
+		if (text != null) {
 			ptext = encode(text.getBytes());
-			value = new String(ptext, Charset.forName("UTF-8")); 
+			value = new String(ptext, Charset.forName("UTF-8"));
 		}
 		return value;
 	}
-	
+
+
 	static byte[] encode(byte[] arr)
 	{
-	        Charset utf8charset = Charset.forName("UTF-8");
-	        Charset iso88591charset = Charset.forName("ISO-8859-4");
+		Charset utf8charset = Charset.forName("UTF-8");
+		Charset iso88591charset = Charset.forName("ISO-8859-4");
 
-	        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
+		ByteBuffer inputBuffer = ByteBuffer.wrap(arr);
 
-	        // decode UTF-8
-	        CharBuffer data = iso88591charset.decode(inputBuffer);
+		// decode UTF-8
+		CharBuffer data = iso88591charset.decode(inputBuffer);
 
-	        // encode ISO-8559-1
-	        ByteBuffer outputBuffer = utf8charset.encode(data);
-	        byte[] outputData = outputBuffer.array();
+		// encode ISO-8559-1
+		ByteBuffer outputBuffer = utf8charset.encode(data);
+		byte[] outputData = outputBuffer.array();
 
-	        return outputData;
+		return outputData;
 	}
-	
-	public static String crunchifyPrettyJSONUtility(String simpleJSON) {
+
+
+	public static String crunchifyPrettyJSONUtility(String simpleJSON)
+	{
 		JsonParser crunhifyParser = new JsonParser();
 		JsonObject json = crunhifyParser.parse(simpleJSON).getAsJsonObject();
- 
+
 		Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 		String prettyJson = prettyGson.toJson(json);
- 
+
 		return prettyJson;
 	}
-	
+
+
 	/**
-     * Convert a JSON string to pretty print version
-     * @param jsonString
-     * @return
-     */
-    public static String toPrettyFormat(String jsonString) 
-    {
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(jsonString).getAsJsonObject();
+	 * Convert a JSON string to pretty print version
+	 * 
+	 * @param jsonString
+	 * @return
+	 */
+	public static String toPrettyFormat(String jsonString)
+	{
+		JsonParser parser = new JsonParser();
+		JsonObject json = parser.parse(jsonString).getAsJsonObject();
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String prettyJson = gson.toJson(json);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String prettyJson = gson.toJson(json);
 
-        return prettyJson;
-    }
-    
+		return prettyJson;
+	}
+
 
 	@SuppressWarnings("unchecked")
 	public static void writeLogToJSON(String collectionName, String messages) throws IOException
 	{
-		
-		/*String Filename = "c:\\Temp\\" + collectionName + ".json";
-		try(Writer writer = new OutputStreamWriter(new FileOutputStream(Filename, true) , "UTF-8"))
-		{
-            Gson gson = new GsonBuilder().create();
-            gson.toJsonTree(collectionName);
-            gson.toJson(collectionName, writer);
-            gson.toJson("Author: Reinier.Kartowikromo", writer);
-            gson.toJson("INFO: " + messages, writer);
-        }		*/
-		
-		
-		
-		
-		
+
+		/*
+		 * String Filename = "c:\\Temp\\" + collectionName + ".json"; try(Writer
+		 * writer = new OutputStreamWriter(new FileOutputStream(Filename, true)
+		 * , "UTF-8")) { Gson gson = new GsonBuilder().create();
+		 * gson.toJsonTree(collectionName); gson.toJson(collectionName, writer);
+		 * gson.toJson("Author: Reinier.Kartowikromo", writer);
+		 * gson.toJson("INFO: " + messages, writer); }
+		 */
+
 		String Filename = "c:\\Temp\\" + collectionName + ".json";
-		
-		JSONObject collection = new JSONObject();  
-		collection.put("Collectionname", collectionName);  
-        collection.put("Author", "Reinier.Kartowikromo");  
-  
-        JSONArray listOfMessages = new JSONArray();  
-        listOfMessages.add(messages);  
-  
-        collection.put("INFO", listOfMessages);  
-  
-        try {  
-              
-            // Writing to a file  
-            File file=new File(Filename);  
-            file.createNewFile();  
-            FileWriter fileWriter = new FileWriter(file, true);  
-            System.out.println("Writing JSON object to file");  
-            System.out.println("-----------------------");  
-            System.out.print(collection);  
-  
-            fileWriter.write(collection.toJSONString());  
-            fileWriter.flush();  
-            fileWriter.close();
-            
- 
-        } catch (IOException e) {  
-            e.printStackTrace();  
-        } 
 
+		JSONObject collection = new JSONObject();
+		collection.put("Collectionname", collectionName);
+		collection.put("Author", "Reinier.Kartowikromo");
 
-		
-		
-		/*JSONObject json = new JSONObject(); 
-		json.put("Collectionname", collectionName); 
-		json.put("Author", "Reinier.Kartowikromo"); 
-		
-		JSONArray jsonArray = new JSONArray(); 
-		jsonArray.add(messages); 
-		jsonArray.spliterator();
+		JSONArray listOfMessages = new JSONArray();
+		listOfMessages.add(messages);
 
-		json.put("INFO", jsonArray); 
-		try 
-			{ 
-				System.out.println("Writting JSON into file ..."); 
-				System.out.println(json); 
-				
-				FileWriter jsonFileWriter = new FileWriter(Filename, true); 
-				jsonFileWriter.write(json.toJSONString()); 
-				jsonFileWriter.flush(); 
-				jsonFileWriter.close(); 
-				System.out.println("Done"); 
-	 		} catch (IOException e) 
-		{
-         e.printStackTrace();
+		collection.put("INFO", listOfMessages);
+
+		try {
+
+			// Writing to a file  
+			File file = new File(Filename);
+			file.createNewFile();
+			FileWriter fileWriter = new FileWriter(file, true);
+			System.out.println("Writing JSON object to file");
+			System.out.println("-----------------------");
+			System.out.print(collection);
+
+			fileWriter.write(collection.toJSONString());
+			fileWriter.flush();
+			fileWriter.close();
+
 		}
-		*/
-/*		String Filename = collectionName + ".json";
-		
-		JsonFactory jfactory = new JsonFactory();
-		JsonGenerator jGenerator = jfactory.createGenerator(new File("c:\\Temp\\" + Filename), JsonEncoding.UTF8); 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 
-		jGenerator.writeStartObject(); 
-		jGenerator.writeStringField("Collectionname", collectionName); 
-		jGenerator.writeStringField("Author", "Reinier.Kartowikromo"); 
-	 
-		jGenerator.writeFieldName("INFO"); 
-		jGenerator.writeStartArray(); // [
-	 
-		jGenerator.writeString(messages); // messages
-			 
-		jGenerator.writeEndArray(); // ]
-	 
-		jGenerator.writeEndObject(); // }
-	 
-		jGenerator.close();*/
+		/*
+		 * JSONObject json = new JSONObject(); json.put("Collectionname",
+		 * collectionName); json.put("Author", "Reinier.Kartowikromo");
+		 * 
+		 * JSONArray jsonArray = new JSONArray(); jsonArray.add(messages);
+		 * jsonArray.spliterator();
+		 * 
+		 * json.put("INFO", jsonArray); try {
+		 * System.out.println("Writting JSON into file ...");
+		 * System.out.println(json);
+		 * 
+		 * FileWriter jsonFileWriter = new FileWriter(Filename, true);
+		 * jsonFileWriter.write(json.toJSONString()); jsonFileWriter.flush();
+		 * jsonFileWriter.close(); System.out.println("Done"); } catch
+		 * (IOException e) { e.printStackTrace(); }
+		 */
+		/*
+		 * String Filename = collectionName + ".json";
+		 * 
+		 * JsonFactory jfactory = new JsonFactory(); JsonGenerator jGenerator =
+		 * jfactory.createGenerator(new File("c:\\Temp\\" + Filename),
+		 * JsonEncoding.UTF8);
+		 * 
+		 * jGenerator.writeStartObject();
+		 * jGenerator.writeStringField("Collectionname", collectionName);
+		 * jGenerator.writeStringField("Author", "Reinier.Kartowikromo");
+		 * 
+		 * jGenerator.writeFieldName("INFO"); jGenerator.writeStartArray(); // [
+		 * 
+		 * jGenerator.writeString(messages); // messages
+		 * 
+		 * jGenerator.writeEndArray(); // ]
+		 * 
+		 * jGenerator.writeEndObject(); // }
+		 * 
+		 * jGenerator.close();
+		 */
 	}
 
 }

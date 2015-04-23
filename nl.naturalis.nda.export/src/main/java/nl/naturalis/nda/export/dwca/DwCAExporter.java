@@ -6,12 +6,12 @@
  */
 package nl.naturalis.nda.export.dwca;
 
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
+import static nl.naturalis.nda.export.dwca.StringUtilities.getFullPath;
+import static nl.naturalis.nda.export.dwca.StringUtilities.getProperty;
+import static nl.naturalis.nda.export.dwca.StringUtilities.newFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -26,9 +26,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.export.ExportUtil;
 
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -41,19 +40,19 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.*;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static nl.naturalis.nda.export.dwca.StringUtilities.*;
 
 /**
  * @author Reinier.Kartowikromo
  *
  */
 public class DwCAExporter {
+
 	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
 	public static final String CSVComma = "\t";
 	private static final String csvOutPutFile = "occurence.txt";
@@ -75,8 +74,10 @@ public class DwCAExporter {
 	private static File destinationPathEml = null;
 	private static String nameCollectiontypeAnd = null;
 	private static String collectionName = null;
-	static IndexNative index = null;
-	static String indexname = LoadUtil.getConfig().required("elasticsearch.index.name").toString();
+
+	// This sort of initializations is risky, because if
+	// anything goes wrong, the Java VM won't start
+	static String indexname = null; //ExportUtil.getConfig().required("elasticsearch.index.name").toString();
 	private static Client eslasticClient = null;
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private static CsvFileWriter filewriter = null;
@@ -100,11 +101,13 @@ public class DwCAExporter {
 
 		String totalsize = System.getProperty("nl.naturalis.nda.export.dwca.batchsize", "1000");
 
-		emlDirectory = StringUtilities.getEmlDirectory();
+		emlDirectory = StringUtilities.getCollectionConfigDir();
 		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
 		outputDirectory = StringUtilities.getWorkingDirectory();
 		zipOutputDirectory = StringUtilities.getZipOutputDirectory();
 		zipArchiveDirectory = StringUtilities.getBackupDirectory();
+		
+		indexname = ExportUtil.getConfig().required("elasticsearch.index.name");
 
 		collectionName = args.length > 0 ? args[0] : null;
 
@@ -137,24 +140,17 @@ public class DwCAExporter {
 			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
 		}
 
-		logger.info("Loading Elastcisearch");
-		index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-		try {
-			DwCAExporter exp = new DwCAExporter(LoadUtil.getESClient(), index, indexname);
-			/* Delete the CSV file if Exists */
-			boolean success = newFile(outputDirectory, csvOutPutFile).delete();
-			if (success) {
-				logger.info("The file " + csvOutPutFile + " has been successfully deleted");
-			}
-			if (sourceSystemCode.toUpperCase().equals("CRS")) {
-				exp.exportDwca(zipfilename, nameCollectiontypeCrs, totalsize);
-			}
-			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
-				exp.exportDwca(zipfilename, nameCollectiontypeBrahms, totalsize);
-			}
+		DwCAExporter exp = new DwCAExporter(ExportUtil.getESClient(), indexname);
+		/* Delete the CSV file if Exists */
+		boolean success = newFile(outputDirectory, csvOutPutFile).delete();
+		if (success) {
+			logger.info("The file " + csvOutPutFile + " has been successfully deleted");
 		}
-		finally {
-			index.getClient().close();
+		if (sourceSystemCode.toUpperCase().equals("CRS")) {
+			exp.exportDwca(zipfilename, nameCollectiontypeCrs, totalsize);
+		}
+		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+			exp.exportDwca(zipfilename, nameCollectiontypeBrahms, totalsize);
 		}
 
 		logger.info("Ready");
@@ -186,9 +182,8 @@ public class DwCAExporter {
 	}
 
 
-	public DwCAExporter(Client client, IndexNative index, String indexname)
+	public DwCAExporter(Client client, String indexname)
 	{
-		DwCAExporter.index = index;
 		DwCAExporter.eslasticClient = client;
 		DwCAExporter.indexname = indexname;
 	}
@@ -217,8 +212,7 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 		Iterator<String> fieldIter = headerRow.iterator();
-		while (fieldIter.hasNext()) 
-		{
+		while (fieldIter.hasNext()) {
 			cnt = Integer.valueOf(cnt.intValue() + 1);
 			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
 			cores.addField(field);
@@ -355,17 +349,7 @@ public class DwCAExporter {
 
 		headerRow = filewriter.new CsvRow();
 
-		Properties configFile = new Properties();
-		try { /* load the values from the properties file */
-			logger.info("Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
-			//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Load '" + MAPPING_FILE_NAME + propertiesExtension + "' Ocurrencefields.");
-
-			configFile.load(getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME + propertiesExtension));
-		}
-		catch (IOException e) {
-			logger.info("Fault: property file '" + MAPPING_FILE_NAME + "' not found in the classpath");
-			return;
-		}
+		Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
 		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<Object, Object>(configFile);
 		Set<?> keySet = sortedSystemProperties.keySet();
@@ -375,11 +359,10 @@ public class DwCAExporter {
 			propertyValue = configFile.getProperty(propertyName);
 			/* Add the headers to the CSV File */
 			String[] chunks = propertyValue.split(",");
-			if (chunks[1].equals("1")) 
-			{
+			if (chunks[1].equals("1")) {
 				headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
-			//if (propertyValue.contains("1")) {
-     		//		headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
+				//if (propertyValue.contains("1")) {
+				//		headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
 			}
 			// System.out.println(propertyName + ": " + propertyValue);
 		}
@@ -400,7 +383,7 @@ public class DwCAExporter {
 			/* Add the value from ElasticSearch to the CSV File */
 			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 			long lStartTime = new Date().getTime();
-			getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
+			getResultsList("Specimen", namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 			long lEndTime = new Date().getTime();
 			long difference = lEndTime - lStartTime;
 			//int minutes = (int) ((difference / (1000*60)) % 60);
@@ -418,7 +401,7 @@ public class DwCAExporter {
 			writeCSVHeader();
 			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 			long lStartGeoTime = new Date().getTime();
-			getResultsList(LUCENE_TYPE_SPECIMEN, namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
+			getResultsList("Specimen", namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 			long lEndGeoTime = new Date().getTime();
 			long differenceGeo = lEndGeoTime - lStartGeoTime;
 			//int minutesGeo = (int) ((differenceGeo / (1000*60)) % 60);
@@ -438,7 +421,7 @@ public class DwCAExporter {
 			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
 			long lStartBrahmsTime = new Date().getTime();
 
-			getResultsList(LUCENE_TYPE_SPECIMEN, null, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
+			getResultsList("Specimen", null, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 
 			long lEndBrahmsTime = new Date().getTime();
 			long differenceBrahms = lEndBrahmsTime - lStartBrahmsTime;

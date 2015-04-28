@@ -138,13 +138,14 @@
 	</target>
 
 	<target name="build-export-module" depends="dao" description="Compile and create jar file for export module">
-		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" />
 	</target>
 
 	<target name="install-export-module" depends="build-export-module" description="Install the export programs on the server">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-export" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-export" />
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" if:set="signal.clean" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
 	</target>
 
 	<target name="patch-export-module" depends="verify" description="Re-install shell scripts and config files. Especially useful when build.properties has changed">

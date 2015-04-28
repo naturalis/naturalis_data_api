@@ -7,15 +7,15 @@
 	<property environment="env" />
 
 	<target name="clean-import">
-		<delete dir="${nda.import.install.dir}/lib" />
-		<delete dir="${nda.import.install.dir}/conf" />
-		<delete dir="${nda.import.install.dir}/sh" />
+		<delete includeemptydirs="true">
+			<fileset dir="${nda.import.install.dir}" includes="**/*" />
+		</delete>
 	</target>
 
 	<target name="clean-export">
-		<delete dir="${nda.export.install.dir}/lib" />
-		<delete dir="${nda.export.install.dir}/conf" />
-		<delete dir="${nda.export.install.dir}/sh" />
+		<delete includeemptydirs="true">
+			<fileset dir="${nda.export.install.dir}" includes="**/*" />
+		</delete>
 	</target>
 
 	<!--

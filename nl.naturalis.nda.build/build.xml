@@ -143,7 +143,6 @@
 	</target>
 
 	<target name="install-export-module" depends="build-export-module" description="Install the export programs on the server">
-		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
 	</target>

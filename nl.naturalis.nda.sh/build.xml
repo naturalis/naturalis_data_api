@@ -57,6 +57,11 @@
 		</copy>
 	</target>
 
+	<!--
+		Copy the conf and sh directory into the installation directory
+		for the export module while replacing any ant tokens with
+		actual values from build.properties
+	-->
 	<target name="patch-export">
 		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
 		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. Please run &#034;ant install-import&#034; first" />
@@ -73,24 +78,27 @@
 	</target>
 
 	<target name="install-export">
+		<!-- Create installation directory if it does not exist yet -->
 		<mkdir dir="${nda.export.install.dir}" />
+		<!-- Copy shell scripts and config files to installation directory -->
 		<antcall target="patch-export" />
-		<echo message="Installing libraries into ${nda.export.install.dir}/lib" />
-		<mkdir dir="${nda.export.install.dir}/lib" />
-		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.export.install.dir}/lib" />
-		<copy todir="${nda.export.install.dir}/lib">
+		<!-- Copy libraries to installation directory -->
+		<property name="libdir" value="${nda.export.install.dir}/lib" />
+		<echo message="Installing libraries into ${libdir}" />
+		<mkdir dir="${libdir}" />
+		<!-- Copy domain module jar and its dependencies to lib dir -->
+		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${libdir}" />
+		<copy todir="${libdir}">
 			<fileset dir="${domain.module.location}/build/classpath" />
 		</copy>
-		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${nda.export.install.dir}/lib" />
-		<copy todir="${nda.export.install.dir}/lib">
+		<!-- Copy dao module jar and its dependencies to lib dir -->
+		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${libdir}" />
+		<copy todir="${libdir}">
 			<fileset dir="${dao.module.location}/build/classpath" />
 		</copy>
-		<copy file="${load.module.location}/build/${load.module.artifact}" todir="${nda.export.install.dir}/lib" />
-		<copy todir="${nda.export.install.dir}/lib">
-			<fileset dir="${load.module.location}/build/classpath" />
-		</copy>
-		<copy file="${export.module.location}/build/${export.module.artifact}" todir="${nda.export.install.dir}/lib" />
-		<copy todir="${nda.export.install.dir}/lib">
+		<!-- Copy export module jar and its dependencies to lib dir -->
+		<copy file="${export.module.location}/build/${export.module.artifact}" todir="${libdir}" />
+		<copy todir="${libdir}">
 			<fileset dir="${export.module.location}/build/classpath" />
 		</copy>
 	</target>

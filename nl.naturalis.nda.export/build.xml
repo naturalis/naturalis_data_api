@@ -11,7 +11,6 @@
 		<!-- projects that this project depends on -->
 		<filelist dir="${domain.module.location}/build" files="${domain.module.artifact}" />
 		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
-		<filelist dir="${load.module.location}/build" files="${load.module.artifact}" />
 		<!-- libraries not inside this project's lib dir -->
 		<filelist dir="${build.module.location}/lib">
 			<file name="org.domainobject.util.jar" />

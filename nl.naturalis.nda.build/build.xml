@@ -132,23 +132,28 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="update-import" />
 	</target>
 
-	<target name="export" depends="dao" description="Build export module">
+	<target name="clean-export-module" depends="dao" description="Perform cleanup for export module, without subsequently building it">
+		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" />
+	</target>
+
+	<target name="build-export-module" depends="dao" description="Compile and create jar file for export module">
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="install-export-module" depends="export" description="Install the export programs on the server">
+	<target name="install-export-module" depends="build-export-module" description="Install the export programs on the server">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-export" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-export" />
 	</target>
 
-	<target name="patch-export-module" depends="verify" description="Apply changes made to build.properties to shell scripts and config files">
+	<target name="patch-export-module" depends="verify" description="Re-install shell scripts and config files. Especially useful when build.properties has changed">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="patch-import" />
 	</target>
 
-	<target name="build" depends="ear,load,export" description="Build ear file, import programs and export programs" />
+	<target name="build" depends="ear,load,build-export-module" description="Build ear file, import programs and export programs" />
 
-	<target name="rebuild" depends="clean,ear,load,export" description="Build ear file, import programs and export programs from scratch" />
+	<target name="rebuild" depends="clean,ear,load,build-export-module" description="Build ear file, import programs and export programs from scratch" />
 
 	<target name="eclipse" depends="git-info" description="Create/adjust Eclipse metadata files">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />

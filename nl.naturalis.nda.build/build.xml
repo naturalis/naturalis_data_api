@@ -147,6 +147,10 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
 	</target>
 
+	<target name="test-export-module" depends="install-export-module" description="Run the DwCA export program from a vanilla installation">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="test-export" />
+	</target>
+
 	<target name="patch-export-module" depends="verify" description="Re-install shell scripts and config files. Especially useful when build.properties has changed">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="patch-import" />
 	</target>

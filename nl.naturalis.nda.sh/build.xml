@@ -114,8 +114,14 @@
 		<chmod dir="${nda.export.install.dir}/sh" perm="ugo+rx" includes="**/*.sh" />
 	</target>
 
+	<target name="test-export">
+		<exec command="${nda.export.install.dir}/sh/export-dwca.sh">
+			<arg value="mammalia"/>
+		</exec>
+	</target>
+
 	<target name="build">
-		<echo message="Please be more specific" />
+		<echo message="Shell module does not have a default build sequence" />
 	</target>
 
 </project>

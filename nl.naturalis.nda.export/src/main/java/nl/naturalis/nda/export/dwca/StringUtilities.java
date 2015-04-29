@@ -374,7 +374,6 @@ public class StringUtilities {
 	public static File getCollectionConfigDir()
 	{
 		File dir = newFile(getConfigRootDir(), "dwca");
-		logger.error("XXXXXXXXXXXXXXXXX: " + dir.getAbsolutePath());
 		if (!dir.isDirectory()) {
 			throw new ExportException(String.format("No such directory: \"%s\"", dir.getAbsolutePath()));
 		}

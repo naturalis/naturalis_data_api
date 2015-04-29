@@ -15,11 +15,11 @@
 	<target name="clean-export">
 		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
 		<echo unless:set="export.module.installed" message="Installation directory does not exist: ${nda.export.install.dir} (nothing to clean)" />
-		<echo if:set="export.module.installed" message="Deleting shell scripts (${nda.export.install.dir}/sh)" />
+		<echo if:set="export.module.installed" message="Deleting shell scripts in ${nda.export.install.dir}/sh" />
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/sh" />
-		<echo if:set="export.module.installed" message="Deleting configuration files (${nda.export.install.dir}/conf)" />
+		<echo if:set="export.module.installed" message="Deleting configuration files in${nda.export.install.dir}/conf" />
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/conf" />
-		<echo if:set="export.module.installed" message="Deleting Java libraries (${nda.export.install.dir}/lib)" />
+		<echo if:set="export.module.installed" message="Deleting Java libraries in ${nda.export.install.dir}/lib" />
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/lib" />
 	</target>
 

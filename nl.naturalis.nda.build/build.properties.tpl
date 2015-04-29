@@ -1,11 +1,23 @@
 ##########################################################
-#    Configuration file driving various Ant targets      #
 ##########################################################
+##                                                      ##
+##         Configuration file for Ant builds            ##
+##                                                      ##
+##########################################################
+##########################################################
+
 
 # You must make a copy of this file named build.properties
 # before you can start executing Ant targets. Adjust the
 # properties in this file as appropriate before executing
 # Ant targets.
+
+
+
+
+##########################################################
+# General settings
+##########################################################
 
 # ElasticSearch configuration (all modules)
 elasticsearch.cluster.name=14110822-6ec5-487c-92b7-66402521ceb1
@@ -21,7 +33,13 @@ elasticsearch.index.numreplicas=1
 # picked up automatically by wildfly
 ear.install.dir=/opt/wildfly_deployments
 
-# Settings for remote deployments:
+
+
+
+##########################################################
+# Remote deployment (from development PC/laptop)
+##########################################################
+
 ear.install.scp.keyfile=C:/Users/admin.ayco.holleman/ayco.ppk
 ear.install.scp.user=ayco.holleman
 # You can specify at most 4 remote hosts to which to
@@ -31,6 +49,13 @@ ear.install.scp.host0=10.42.1.146
 ear.install.scp.host1=
 ear.install.scp.host2=
 ear.install.scp.host3=
+
+
+
+
+##########################################################
+# Export module
+##########################################################
 
 # Directory to which to copy the shell scripts for the
 # import programs. Will contain an sh directory (shell
@@ -48,12 +73,20 @@ nda.import.nsr.datadir=/data/nda-import/data/nsr
 nda.import.col.year=2014
 
 # Directory into which to write log files for the import
-# scripts. If you want to finetune logging, you will have to
+# module. If you want to finetune logging, you will have to
 # manually edit ${nda.import.install.dir}/conf/logback.xml
 nda.import.log.dir=/data/nda-import/log
 
+
+
+
+##########################################################
+# Export module
+##########################################################
+
 # Directory into which to install the export module.
 nda.export.install.dir=/data/nda-export
+
 # Top directory below which the export programs are
 # assumed to write their output. Under this directory the
 # installation procedure will create and populate an
@@ -61,7 +94,7 @@ nda.export.install.dir=/data/nda-export
 # for configuration files, and a lib directory for Java
 # libraries (jar files).
 nda.export.output.dir=/data/nda-export/output
-nda.export.log.dir=/data/nda-export/log
+
 # Top directory for user-editable configuration files
 # and other files picked up or read by the export programs
 # (e.g. the eml and properties files for the DwCA export
@@ -81,3 +114,10 @@ nda.export.log.dir=/data/nda-export/log
 # export module expects the eml files to reside in
 # ${nda.export.user.conf.dir}/dwca.
 nda.export.user.conf.dir=/data/nda-export/conf
+
+# Directory into which to write log files for the import
+# module. If you want to finetune logging, you will have to
+# manually edit ${nda.import.install.dir}/conf/logback.xml
+nda.export.log.dir=/data/nda-import/log
+
+

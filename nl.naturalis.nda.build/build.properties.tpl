@@ -61,6 +61,7 @@ nda.export.install.dir=/data/nda-export
 # for configuration files, and a lib directory for Java
 # libraries (jar files).
 nda.export.output.dir=/data/nda-export/output
+nda.export.log.dir=/data/nda-export/log
 # Top directory for user-editable configuration files
 # and other files picked up or read by the export programs
 # (e.g. the eml and properties files for the DwCA export
@@ -80,4 +81,3 @@ nda.export.output.dir=/data/nda-export/output
 # export module expects the eml files to reside in
 # ${nda.export.user.conf.dir}/dwca.
 nda.export.user.conf.dir=/data/nda-export/conf
-

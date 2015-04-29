@@ -61,7 +61,6 @@ public class DwCAExporter {
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
 	private static final String dwcTargetName = "http://rs.tdwg.org/dwc/text/";
 	private static final String zipExtension = ".zip";
-	private static final String propertiesExtension = ".properties";
 	private static String MAPPING_FILE_NAME = null;
 	CsvFileWriter.CsvRow headerRow = null;
 	private static String sourceSystemCode = null;

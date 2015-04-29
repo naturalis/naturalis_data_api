@@ -344,6 +344,27 @@ public class StringUtilities {
 		return bakDir;
 	}
 
+	private static File configRootDir = null;
+
+
+	private static File getConfigRootDir()
+	{
+		if (configRootDir == null) {
+			String path = ExportUtil.getConfig().required("nda.export.conf.dir");
+			try {
+				configRootDir = new File(path).getCanonicalFile();
+				if (!configRootDir.isDirectory()) {
+					String template = "Invalid value specified for \"nda.export.conf.dir\". Directory does not exist: \"%s\"";
+					throw new ExportException(String.format(template, path));
+				}
+			}
+			catch (IOException e) {
+				throw new ExportException(e);
+			}
+		}
+		return configRootDir;
+	}
+
 
 	/**
 	 * Directory containing eml files and properties files
@@ -352,12 +373,8 @@ public class StringUtilities {
 	 */
 	public static File getCollectionConfigDir()
 	{
-		String path = ExportUtil.getConfig().required("nda.export.conf.dir");
-		File dir = new File(path);
-		if (!dir.isDirectory()) {
-			throw new ExportException(String.format("Invalid value specified for \"nda.export.conf.dir\". Directory does not exist: \"%s\"", path));
-		}
-		dir = newFile(dir, "dwca");
+		File dir = newFile(getConfigRootDir(), "dwca");
+		logger.error("XXXXXXXXXXXXXXXXX: " + dir.getAbsolutePath());
 		if (!dir.isDirectory()) {
 			throw new ExportException(String.format("No such directory: \"%s\"", dir.getAbsolutePath()));
 		}

@@ -10,10 +10,10 @@
 	<target name="-verify">
 		<echo message="Verifying build environment" />
 		<!-- Do we have a Git command line client? -->
-		<exec executable="git" outputproperty="git.ok" failifexecutionfails="false">
+		<exec executable="git" outputproperty="git.available" failifexecutionfails="false">
 			<arg value="branch" />
 		</exec>
-		<fail unless:set="git.ok" message="Git not installed, or Git bin directory not added to PATH yet" />
+		<fail unless:set="git.available" message="Git not installed, or Git bin directory not added to PATH yet" />
 		<!-- Do we have build.properties? -->
 		<fail message="Copy build.properties.tpl to build.properties and make sure it contains the correct settings">
 			<condition>
@@ -24,7 +24,7 @@
 				</not>
 			</condition>
 		</fail>
-		<!-- We got clearance! -->
+		<!-- We're good to go -->
 		<property name="signal.clear" value="on" />
 		<echo message="You got clearance!" />
 	</target>
@@ -93,43 +93,53 @@
 		<property name="signal.release" value="on" />
 	</target>
 
-	<target name="domain" depends="git-info" description="Build domain module">
+	<target name="build-domain-module" depends="git-info" description="Compile and create jar file for domain module">
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="dao" depends="domain" description="Build dao module">
+	<target name="build-dao-module" depends="build-domain-module" description="Compile and create jar file for dao module">
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="ejb" depends="dao" description="Build ejb module">
+	<target name="build-ejb-module" depends="build-dao-module" description="Compile and create jar file for ejb module">
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="rest" depends="ejb" description="Build rest module">
+	<target name="build-rest-module" depends="build-ejb-module" description="Compile and create war file for rest module">
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="ear" depends="rest" description="Build ear module (will create the ear file)">
+	<target name="build-ear-file" depends="build-rest-module" description="Create the NBA ear file">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
 	</target>
 
-	<target name="load" depends="dao" description="Build load module (import programs)">
+	<target name="clean-import-module" description="Perform cleanup for import module, without subsequently building/installing it">
+		<ant antfile="../nl.naturalis.nda.load/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />
+	</target>
+	
+	<target name="build-import-module" depends="build-dao-module" description="Compile and create jar file for import module">
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="install-import-module" depends="load" description="Install the import programs on the server">
+	<target name="install-import-module" depends="build-import-module" description="Install the shell scripts for the import module">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
 	</target>
 
-	<target name="patch-import-module" depends="verify" description="Apply changes made to build.properties to shell scripts and config files">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="update-import" />
+	<target name="patch-import-module" depends="verify" description="Re-install import shell scripts and config files. Especially useful when build.properties has changed">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="update-import" />
+	</target>
+
+
+	<target name="test-import-module" depends="install-import-module" description="Test installation of the import module">
+		<echo message="Coming soon" />
 	</target>
 
 	<target name="clean-export-module" description="Perform cleanup for export module, without subsequently building/installing it">
@@ -137,7 +147,7 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" />
 	</target>
 
-	<target name="build-export-module" depends="dao" description="Compile and create jar file for export module">
+	<target name="build-export-module" depends="build-dao-module" description="Compile and create jar file for export module">
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" />
 	</target>
@@ -151,54 +161,41 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="test-export" />
 	</target>
 
-	<target name="patch-export-module" depends="verify" description="Re-install shell scripts and config files. Especially useful when build.properties has changed">
+	<target name="patch-export-module" depends="verify" description="Re-install export shell scripts and config files. Especially useful when build.properties has changed">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="patch-import" />
 	</target>
 
-	<target name="build" depends="ear,load,build-export-module" description="Build ear file, import programs and export programs" />
+	<target name="build" depends="build-ear-file" description="Create the NBA ear file" />
 
-	<target name="rebuild" depends="clean,ear,load,build-export-module" description="Build ear file, import programs and export programs from scratch" />
+	<target name="rebuild" depends="clean,build" description="Rebuild the NBA ear file from scratch" />
 
 	<target name="eclipse" depends="git-info" description="Create/adjust Eclipse metadata files">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
 	</target>
 
-	<target name="host0" description="Deploy to ${ear.install.scp.host0}">
+	<target name="host0" description="Remote deployment to ear.install.scp.host0 (see build.properties)">
 		<property name="deploy.to.host0" value="true" />
 	</target>
 
-	<target name="host1" description="Deploy to ${ear.install.scp.host1}">
+	<target name="host1" description="Remote deployment to ear.install.scp.host1 (see build.properties)">
 		<property name="deploy.to.host1" value="true" />
 	</target>
 
-	<target name="host2" description="Deploy to ${ear.install.scp.host2}">
+	<target name="host2" description="Remote deployment to ear.install.scp.host2 (see build.properties)">
 		<property name="deploy.to.host2" value="true" />
 	</target>
 
-	<target name="host3" description="Deploy to ${ear.install.scp.host3}">
+	<target name="host3" description="Remote deployment to ear.install.scp.host3 (see build.properties)">
 		<property name="deploy.to.host3" value="true" />
 	</target>
 
-	<target name="deploy" depends="ear" description="Deploy (local or remote)">
+	<target name="deploy-ear-file" depends="build-ear-file" description="Deploy the NBA ear file (remote if preced by hostX target, local otherwise)">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritAll="true" inheritrefs="true" target="deploy" />
 	</target>
 
 	<target name="help" description="Show help text">
-		<echo message="Show all build targets                            : ant -p" />
-		<echo message="Build all modules                                 : ant build" />
-		<echo message="Clean all modules and then rebuild                : ant rebuild | ant clean build" />
-		<echo message="Build ear file (release version)                  : ant [release] ear" />
-		<echo message="Rebuild ear module (release version)              : ant [release] clean ear" />
-		<echo message="Build ear file (nightly build)                    : ant nightly ear" />
-		<echo message="Rebuild ear module (nightly build)                : ant clean nightly ear" />
-		<echo message="Build module(s)                                   : ant &lt;module-name&gt; [&lt;module-name&gt; ...]" />
-		<echo message="Valid module names: domain, dao, ejb, rest, ear, load, export, sh" />
-		<echo message="Rebuild module(s)                                 : ant clean &lt;module-name&gt; [&lt;module-name&gt; ...]" />
-		<echo message="Create/modify Eclipse metadata files              : ant eclipse" />
-		<echo message="Delete and create Eclipse metadata files          : ant clean eclipse" />
-		<echo message="Deploy ear file (on server)                       : ant [clean] deploy" />
-		<echo message="Remote deploy to host0 (ear.install.scp.host0)    : ant [clean] host0 deploy" />
-		<echo message="Remote deploy to host0 and host1                  : ant [clean] host0 host1 deploy" />
+		<echo message="Show all build targets ...............................: ant -p" />
+		<echo message="More help is on the way" />
 	</target>
 
 

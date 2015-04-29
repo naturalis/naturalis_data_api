@@ -119,5 +119,3 @@ nda.export.user.conf.dir=/data/nda-export/conf
 # module. If you want to finetune logging, you will have to
 # manually edit ${nda.import.install.dir}/conf/logback.xml
 nda.export.log.dir=/data/nda-import/log
-
-

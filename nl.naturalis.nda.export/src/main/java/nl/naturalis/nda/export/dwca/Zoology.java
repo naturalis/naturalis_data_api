@@ -427,7 +427,8 @@ public class Zoology
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
-							.replace(". ", "")
+							.replace('"', ' ')
+							.replace("\t", "")
 							.replace("\r", "")
 			           		.replace("\n", "")
 			           		.trim();

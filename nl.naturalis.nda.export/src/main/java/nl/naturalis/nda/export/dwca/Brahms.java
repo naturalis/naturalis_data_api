@@ -496,7 +496,10 @@ public class Brahms
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
-							.replace(". ", "")
+							.replace('"', ' ')
+							.replace(' ', ' ')
+							.replace('.', ' ')
+							.replace('\t', ' ')
 							.replace("\r", "")
 			           		.replace("\n", "")
 			           		.trim();

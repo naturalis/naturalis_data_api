@@ -452,7 +452,7 @@ public class StringUtilities {
 	static byte[] encode(byte[] arr)
 	{
 	        Charset utf8charset = Charset.forName("UTF-8");
-	        Charset iso88591charset = Charset.forName("ISO-8859-4");
+	        Charset iso88591charset = Charset.forName("ISO-8859-2");
 
 	        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
 

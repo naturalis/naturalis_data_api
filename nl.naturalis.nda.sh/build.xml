@@ -112,10 +112,16 @@
 		</copy>
 		<!-- Make shell scripts executable -->
 		<chmod dir="${nda.export.install.dir}/sh" perm="ugo+rx" includes="**/*.sh" />
+		<!--
+			Make sure export program can write to output directory, if it exists
+			(otherwise they'll create it themselves)
+		-->
+		<available file="${nda.export.output.dir}" type="dir" property="nda.export.output.dir.exists" />
+		<chmod if:set="nda.export.output.dir.exists" perm="ug+rw" dir="${nda.export.output.dir}" includes="**/*"/>
 	</target>
 
 	<target name="test-export">
-		<exec command="${nda.export.install.dir}/sh/export-dwca.sh">
+		<exec executable="${nda.export.install.dir}/sh/export-dwca.sh" dir="${nda.export.install.dir}/sh">
 			<arg value="mammalia"/>
 		</exec>
 	</target>

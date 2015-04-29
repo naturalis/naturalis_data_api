@@ -2,7 +2,7 @@
 
 . ./include.sh
 
-collection=${0}
+collection="${1}"
 
 if [ ${collection} != "" ]
 then

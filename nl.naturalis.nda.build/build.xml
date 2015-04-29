@@ -189,7 +189,7 @@
 		<property name="deploy.to.host3" value="true" />
 	</target>
 
-	<target name="deploy-ear-file" depends="build-ear-file" description="Deploy the NBA ear file (remote if preced by hostX target, local otherwise)">
+	<target name="deploy-ear-file" depends="build-ear-file" description="Deploy the NBA ear file (remote if preceded by host0, host1, ...; otherwise local)">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritAll="true" inheritrefs="true" target="deploy" />
 	</target>
 

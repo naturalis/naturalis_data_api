@@ -283,8 +283,7 @@ public class StringUtilities {
 		File exportDir = path.toFile();
 		if (exportDir.isDirectory()) {
 			if (!exportDir.canWrite()) {
-				throw new ExportException(String.format(
-						"Invalid value specified for \"nda.export.output.dir\". Directory does not exist or is not writable: \"%s\"", path));
+				throw new ExportException(String.format("Directory not writable: \"%s\"", path));
 			}
 		}
 		else {

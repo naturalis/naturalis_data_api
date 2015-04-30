@@ -498,11 +498,9 @@ public class Brahms
 					String localityResult = specimen.getGatheringEvent().getLocality()
 							.replace('"', ' ')
 							.replace(' ', ' ')
-							.replace('.', ' ')
 							.replace('\t', ' ')
 							.replace("\r", "")
-			           		.replace("\n", "")
-			           		.trim();
+			           		.replace("\n", "");
 					dataRow.add(strutil.convertStringToUTF8(localityResult));
 				}
 				else

@@ -430,6 +430,8 @@ public class Geology
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
 							.replace('"', ' ')
+							.replace(' ', ' ')
+							.replace('\t', ' ')
 							.replace("\r", "")
 			           		.replace("\n", "")
 			           		.trim();
@@ -571,7 +573,7 @@ public class Geology
 			/* 35_AuthorshipVerbatim IS scientificNameAuthorship */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "35_AuthorshipVerbatim"))
 			{
-				if (specimen.getIdentifications().iterator().next().getScientificName() != null  &&
+				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null  &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim()));
@@ -612,7 +614,7 @@ public class Geology
 			/* 38_ProvinceState is stateProvince */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "38_ProvinceState"))
 			{
-				if (specimen.getGatheringEvent() != null)
+				if (specimen.getGatheringEvent().getProvinceState() != null)
 				{
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getProvinceState()));
 				}

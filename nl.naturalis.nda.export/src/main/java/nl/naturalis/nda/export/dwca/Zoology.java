@@ -428,12 +428,12 @@ public class Zoology
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
 							.replace('"', ' ')
-							.replace("\t", "")
+							.replace(' ', ' ')
+							.replace('\t', ' ')
 							.replace("\r", "")
 			           		.replace("\n", "")
 			           		.trim();
     				dataRow.add(strutil.convertStringToUTF8(localityResult));
-				    //dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));
 				}
 				else
 				{
@@ -472,7 +472,7 @@ public class Zoology
 				{
 					institutionCode = specimen.getSourceInstitutionID();	
 				}
-				/* PersitentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
+				/* PersistentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
 				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
 			}
 

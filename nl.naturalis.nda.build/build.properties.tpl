@@ -6,7 +6,12 @@
 ##########################################################
 ##########################################################
 
-
+# This is a master configuration file that is read during
+# Ant builds to generate application configuration files
+# like nda-import.properties, nda-export.properties, 
+# logback.xml, and various other files (e.g. unix shell
+# scripts).
+#
 # You must make a copy of this file named build.properties
 # before you can start executing Ant targets. Adjust the
 # properties in this file as appropriate before executing
@@ -20,8 +25,8 @@
 ##########################################################
 
 # ElasticSearch configuration (all modules)
-elasticsearch.cluster.name=14110822-6ec5-487c-92b7-66402521ceb1
-elasticsearch.transportaddress.host=172.16.14.12
+elasticsearch.cluster.name=87f9c32f-84d6-4d9f-b6e3-b9b80bace7cb
+elasticsearch.transportaddress.host=172.16.14.2
 elasticsearch.transportaddress.port=9300
 elasticsearch.index.name=nda
 
@@ -54,7 +59,7 @@ ear.install.scp.host3=
 
 
 ##########################################################
-# Export module
+# Import module
 ##########################################################
 
 # Directory to which to copy the shell scripts for the
@@ -107,9 +112,8 @@ nda.export.output.dir=/data/nda-export/output
 # case nda.export.user.conf.dir must be set to the 
 # directory to which the sysadmin has moved those
 # user-editable files. Note that nda.export.user.conf.dir
-# is a program-agnostic TOP directory. Paths for
-# program-specific subdirectories and files are generated
-# by the individual programs themselves, relative to
+# is a TOP directory. Indivual programs will use program-
+# specific subdirectories, relative to
 # ${nda.export.user.conf.dir}. For example, the DwCA
 # export module expects the eml files to reside in
 # ${nda.export.user.conf.dir}/dwca.
@@ -117,5 +121,5 @@ nda.export.user.conf.dir=/data/nda-export/conf
 
 # Directory into which to write log files for the import
 # module. If you want to finetune logging, you will have to
-# manually edit ${nda.import.install.dir}/conf/logback.xml
-nda.export.log.dir=/data/nda-import/log
+# manually edit ${nda.export.install.dir}/conf/logback.xml
+nda.export.log.dir=/data/nda-export/log

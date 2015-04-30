@@ -429,11 +429,13 @@ public class Geology
 				if (specimen.getGatheringEvent().getLocality() != null)
 				{
 					String localityResult = specimen.getGatheringEvent().getLocality()
-							.replace('\r', ' ')
-			           		.replace('\n', ' ')
+							.replace('"', ' ')
+							.replace(' ', ' ')
+							.replace('\t', ' ')
+							.replace("\r", "")
+			           		.replace("\n", "")
 			           		.trim();
 					dataRow.add(strutil.convertStringToUTF8(localityResult));
-					//dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getLocality()));
 				}
 				else
 				{
@@ -472,7 +474,7 @@ public class Geology
 				{
 					institutionCode = specimen.getSourceInstitutionID();	
 				}
-				/* PersitentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
+				/* PersistentID is: Example: occurrence id = http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012 */
 				dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType + "/" + specimen.getSourceSystemId());
 			}
 
@@ -571,7 +573,7 @@ public class Geology
 			/* 35_AuthorshipVerbatim IS scientificNameAuthorship */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "35_AuthorshipVerbatim"))
 			{
-				if (specimen.getIdentifications().iterator().next().getScientificName() != null  &&
+				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null  &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim()));
@@ -612,7 +614,7 @@ public class Geology
 			/* 38_ProvinceState is stateProvince */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "38_ProvinceState"))
 			{
-				if (specimen.getGatheringEvent() != null)
+				if (specimen.getGatheringEvent().getProvinceState() != null)
 				{
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getProvinceState()));
 				}

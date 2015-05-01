@@ -55,7 +55,7 @@ public class DwCAExporter {
 
 	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
 	public static final String CSVComma = "\t";
-	private static final String csvOutPutFile = "occurence.txt";
+	private static final String csvOutPutFile = "occurrence.txt";
 	private static final String FILE_NAME_META = "meta.xml";
 	private static File FILE_NAME_EML = null;
 	private static final String dwcUrlTdwgOrg = "http://rs.tdwg.org/dwc/terms/";
@@ -111,7 +111,8 @@ public class DwCAExporter {
 		collectionName = args.length > 0 ? args[0] : null;
 
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
-		if (collectionName != null) {
+		if (collectionName != null) 
+		{
 			sourceSystemCode = getProperty(collectionName, "sourceSystemCode");
 			/* Get the Ocurrencefields value */
 			MAPPING_FILE_NAME = getProperty(collectionName, "occurrenceFields");
@@ -119,11 +120,13 @@ public class DwCAExporter {
 
 		/* args[2] Get the Collectiontype */
 		try {
-			if (sourceSystemCode.equals("CRS")) {
+			if (sourceSystemCode.equals("CRS")) 
+			{
 				nameCollectiontypeCrs = getProperty(collectionName, "collectionType");
 			}
 
-			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+			if (sourceSystemCode.toUpperCase().equals("BRAHMS")) 
+			{
 				collectionName = getProperty(collectionName, "collectionName");
 				nameCollectiontypeBrahms = collectionName;
 			}
@@ -194,7 +197,7 @@ public class DwCAExporter {
 
 		logger.info("Creating the Meta.xml file.");
 		Files files = new Files();
-		files.setLocation("occurence.txt");
+		files.setLocation("occurrence.txt");
 		Id id = new Id();
 		id.setIndex(0);
 
@@ -366,8 +369,8 @@ public class DwCAExporter {
 			// System.out.println(propertyName + ": " + propertyValue);
 		}
 		/* Write the headers columns */
-		logger.info("Writing headers row to the Occurence.txt file.");
-		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurence.txt file.");
+		logger.info("Writing headers row to the Occurrence.txt file.");
+		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurrence.txt file.");
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
 		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
@@ -380,7 +383,7 @@ public class DwCAExporter {
 		if (MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
 			writeCSVHeader();
 			/* Add the value from ElasticSearch to the CSV File */
-			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurrence.txt file.");
 			long lStartTime = new Date().getTime();
 			getResultsList("Specimen", namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 			long lEndTime = new Date().getTime();
@@ -398,7 +401,7 @@ public class DwCAExporter {
 	{
 		if (MAPPING_FILE_NAME.equalsIgnoreCase("Geology")) {
 			writeCSVHeader();
-			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurrence.txt file.");
 			long lStartGeoTime = new Date().getTime();
 			getResultsList("Specimen", namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 			long lEndGeoTime = new Date().getTime();
@@ -417,7 +420,7 @@ public class DwCAExporter {
 	{
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
 			writeCSVHeader();
-			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurence.txt file.");
+			logger.info("Writing values from ElasticSearch to the '" + namecollectiontype + "' '" + MAPPING_FILE_NAME + "' Occurrence.txt file.");
 			long lStartBrahmsTime = new Date().getTime();
 
 			getResultsList("Specimen", null, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
@@ -573,7 +576,7 @@ public class DwCAExporter {
 
 		logger.info("Total records in occurrence file: " + totalHitCount);
 		logger.info("Indexname '" + indexname + "'");
-		logger.info("Start writing data to occurence file.");
+		logger.info("Start writing data to occurrence file.");
 		int count = response.getSuccessfulShards();
 		while (true) {
 			try {

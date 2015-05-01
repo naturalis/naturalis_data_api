@@ -34,26 +34,26 @@ elasticsearch.index.name=nda
 elasticsearch.index.numshards=9
 elasticsearch.index.numreplicas=1
 
+
+
+
+##########################################################
+# NBA service
+##########################################################
+
+# The context root a.k.a. base URL for this installation
+# of the NBA REST service
+nl.naturalis.nda.baseurl=v0
+
+# Directory containing nda.properties and logback.xml
+# For now, you must maintain this variable both here and
+# in Wildfly's standalone.xml. I will change the code
+# soon such that you will only have to set it here.
+nl.naturalis.nda.conf.dir=/etc/nba
+
 # Directory to which to copy ear file such that gets
 # picked up automatically by wildfly
 ear.install.dir=/opt/wildfly_deployments
-
-
-
-
-##########################################################
-# Remote deployment (from development PC/laptop)
-##########################################################
-
-ear.install.scp.keyfile=C:/Users/admin.ayco.holleman/ayco.ppk
-ear.install.scp.user=ayco.holleman
-# You can specify at most 4 remote hosts to which to
-# deploy the ear file. Install dir, ssh key file and
-# user are assumed to be the same for all hosts
-ear.install.scp.host0=10.42.1.146
-ear.install.scp.host1=
-ear.install.scp.host2=
-ear.install.scp.host3=
 
 
 
@@ -81,6 +81,7 @@ nda.import.col.year=2014
 # module. If you want to finetune logging, you will have to
 # manually edit ${nda.import.install.dir}/conf/logback.xml
 nda.import.log.dir=/data/nda-import/log
+
 
 
 
@@ -123,3 +124,20 @@ nda.export.user.conf.dir=/data/nda-export/conf
 # module. If you want to finetune logging, you will have to
 # manually edit ${nda.export.install.dir}/conf/logback.xml
 nda.export.log.dir=/data/nda-export/log
+
+
+
+
+##########################################################
+# Remote deployment (from development PC/laptop)
+##########################################################
+
+ear.install.scp.keyfile=C:/Users/admin.ayco.holleman/ayco.ppk
+ear.install.scp.user=ayco.holleman
+# You can specify at most 4 remote hosts to which to
+# deploy the ear file. Install dir, ssh key file and
+# user are assumed to be the same for all hosts
+ear.install.scp.host0=10.42.1.146
+ear.install.scp.host1=
+ear.install.scp.host2=
+ear.install.scp.host3=

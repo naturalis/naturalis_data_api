@@ -1,5 +1,7 @@
 package nl.naturalis.nda.service.rest.resource;
 
+import java.io.File;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -9,6 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -155,6 +158,30 @@ public class SpecimenResource {
 		}
 	}
 
+	@GET
+	@Path("/search/dwca")
+	@Produces("application/zip")
+	public File searchDwca(@Context UriInfo uriInfo)
+	{
+		try {
+			logger.debug("search/dwca");
+			String collection = uriInfo.getQueryParameters().getFirst("collection");
+			if(collection == null) {
+				throw new WebApplicationException("Missing required parameter: collection");
+			}
+			String outputDir = registry.getNDA().getConfig().required("nda.export.output.dir");
+			String path = outputDir + "/dwca/zip/" + collection + ".zip";
+			File f = new File(path);
+			if(!f.isFile()) {
+				logger.error("No such file: " + f.getAbsolutePath());
+				throw new WebApplicationException("The requested collection does not exist, or no DwCA file is generated for it yet", 404);
+			}
+			return f;
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
 
 	@GET
 	@Path("/name-search")

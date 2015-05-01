@@ -31,7 +31,7 @@ public class VersionResource {
 
 	@GET
 	@Path("/")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces("text/plain;charset=UTF-8")
 	public String show(@Context UriInfo uriInfo)
 	{
 		try {

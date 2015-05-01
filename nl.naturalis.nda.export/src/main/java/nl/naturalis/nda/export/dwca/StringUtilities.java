@@ -205,7 +205,7 @@ public class StringUtilities {
 			int index = fileToRenamed.getName().indexOf(".");
 			String filename = fileToRenamed.getName().substring(0, index);
 			File path = fileToRenamed.getParentFile();
-			String bakpath = path + "\\" + filename + ".zip.bak";
+			String bakpath = path + "/" + filename + ".zip.bak";
 			File filebak = new File(bakpath);
 			if (filebak.exists()) {
 				filebak.delete();
@@ -229,7 +229,7 @@ public class StringUtilities {
 			int index = emlFileToRenamed.getName().indexOf(".");
 			String filename = emlFileToRenamed.getName().substring(index - 3);
 			File path = emlFileToRenamed.getParentFile();
-			String emlpath = path + "\\" + filename;
+			String emlpath = path + "/" + filename;
 			File emlfile = new File(emlpath);
 			if (emlfile.exists()) {
 				emlfile.delete();

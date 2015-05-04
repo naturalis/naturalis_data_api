@@ -91,7 +91,6 @@ public class DwCAExporter {
 	 * @param args
 	 * @throws Exception
 	 */
-
 	public static void main(String[] args) throws Exception
 	{
 
@@ -110,6 +109,28 @@ public class DwCAExporter {
 
 		collectionName = args.length > 0 ? args[0] : null;
 
+	    if (collectionName != null) 
+		{
+	    	executeDwCaExport(zipOutputDirectory, totalsize);
+		}
+	    else
+	    {
+	    	StringBuilder sb = new StringBuilder();
+	    	sb.append(StringUtilities.searchUsingBufferedReader(emlDirectory, "collectionName"));
+	    	String[] lines = sb.toString().split("\\n");
+	    	for(String value: lines)
+	    	{
+	    		collectionName = value;
+	    		executeDwCaExport(zipOutputDirectory, totalsize);
+	    	}
+	    }
+		
+		logger.info("Ready");
+	}
+	
+		
+	private static void executeDwCaExport(File pZipOutPutDirectory, String ptotalSize) throws Exception
+	{
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
 		if (collectionName != null) 
 		{
@@ -149,13 +170,12 @@ public class DwCAExporter {
 			logger.info("The file " + csvOutPutFile + " has been successfully deleted");
 		}
 		if (sourceSystemCode.toUpperCase().equals("CRS")) {
-			exp.exportDwca(zipfilename, nameCollectiontypeCrs, totalsize);
+			exp.exportDwca(zipfilename, nameCollectiontypeCrs, ptotalSize);
 		}
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
-			exp.exportDwca(zipfilename, nameCollectiontypeBrahms, totalsize);
+			exp.exportDwca(zipfilename, nameCollectiontypeBrahms, ptotalSize);
 		}
-
-		logger.info("Ready");
+		
 	}
 
 
@@ -363,10 +383,7 @@ public class DwCAExporter {
 			String[] chunks = propertyValue.split(",");
 			if (chunks[1].equals("1")) {
 				headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
-				//if (propertyValue.contains("1")) {
-				//		headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
 			}
-			// System.out.println(propertyName + ": " + propertyValue);
 		}
 		/* Write the headers columns */
 		logger.info("Writing headers row to the Occurrence.txt file.");
@@ -578,6 +595,8 @@ public class DwCAExporter {
 		logger.info("Indexname '" + indexname + "'");
 		logger.info("Start writing data to occurrence file.");
 		int count = response.getSuccessfulShards();
+		
+		//int count = (int) totalHitCount / 1000;//(int) (totalHitCount / response.getSuccessfulShards());
 		while (true) {
 			try {
 				List<T> list = new ArrayList<T>();
@@ -589,7 +608,11 @@ public class DwCAExporter {
 
 				response = eslasticClient.prepareSearchScroll(response.getScrollId()).setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
+				//count = count + 1000;
 				logger.info("Shard hit.'" + count++ + "' successful");
+				//logger.info("Number of records '"+ totalHitCount / count + "' process per shard");
+				//logger.info(Integer.toString(response.getHits()));
+
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS") && MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
 					writeCRSZoologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Zoology");

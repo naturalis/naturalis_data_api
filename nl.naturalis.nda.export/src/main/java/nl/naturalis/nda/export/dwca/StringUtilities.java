@@ -7,22 +7,23 @@ package nl.naturalis.nda.export.dwca;
  */
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -40,6 +41,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+
 
 public class StringUtilities {
 
@@ -429,7 +432,7 @@ public class StringUtilities {
 	}
 
 
-	public String convertStringToUTF8(String text)
+	/*public String convertStringToUTF8(String text)
 	{
 		String value = null;
 		byte ptext[];
@@ -438,38 +441,74 @@ public class StringUtilities {
 			value = new String(ptext, Charset.forName("UTF-8"));
 		}
 		return value;
-	}
-
-
-	public String convertStringFrom_ISO8859_2_ToUTF8(String text) throws UnsupportedEncodingException
+	}*/
+	
+	public String convertStringToUTF8(String text)
 	{
 		String value = null;
-		byte ptext[];
-		if (text != null) {
-			ptext = encode(text.getBytes());
-			value = new String(ptext, Charset.forName("UTF-8"));
+		byte[] bytes = text.getBytes(Charset.forName("ISO-8859-1"));
+		byte ptext[] = text.getBytes(Charset.forName("UTF-8"));
+		if (!validUTF8(bytes))
+		  return text;   
+		if (validUTF8(ptext))
+		{
+			value = text; 
 		}
 		return value;
 	}
+	
 
-
-	static byte[] encode(byte[] arr)
+	public static boolean validUTF8(byte[] input) 
 	{
-		Charset utf8charset = Charset.forName("UTF-8");
-		Charset iso88591charset = Charset.forName("ISO-8859-4");
+		int i = 0;
+		// Check for BOM
+		if (input.length >= 3 && (input[0] & 0xFF) == 0xEF && 
+		   (input[1] & 0xFF) == 0xBB & (input[2] & 0xFF) == 0xBF) 
+		{
+		   i = 3;
+		}
 
-		ByteBuffer inputBuffer = ByteBuffer.wrap(arr);
+		int end = 0;
+		for (int j = input.length; i < j; ++i) 
+		{
+		   int octet = input[i];
+		   if ((octet & 0x80) == 0) 
+		   {
+			   continue; // ASCII
+		   }
 
-		// decode UTF-8
-		CharBuffer data = iso88591charset.decode(inputBuffer);
+		   // Check for UTF-8 leading byte
+		   if ((octet & 0xE0) == 0xC0) 
+		   {
+			   end = i + 1;
+		   } 
+		   else if ((octet & 0xF0) == 0xE0) 
+		   {
+			   end = i + 2;
+		   } 
+		   else if ((octet & 0xF8) == 0xF0) 
+		   {
+			   end = i + 3;
+		   } 
+		   else 
+		   {
+			   // Java only supports BMP so 3 is max
+			   return false;
+		   }
 
-		// encode ISO-8559-1
-		ByteBuffer outputBuffer = utf8charset.encode(data);
-		byte[] outputData = outputBuffer.array();
-
-		return outputData;
+		   while (i < end) 
+		   {
+			   i++;
+			   octet = input[i-1];
+			   if ((octet & 0xC0) != 0x80) 
+			   {
+				   // Not a valid trailing byte
+				   return false;
+			   }
+		   }
+		}
+		return true;
 	}
-
 
 	public static String crunchifyPrettyJSONUtility(String simpleJSON)
 	{
@@ -582,5 +621,50 @@ public class StringUtilities {
 		 * jGenerator.close();
 		 */
 	}
+	
+	
+	
+	public static String searchUsingBufferedReader(File emlDirectory, String searchQuery) throws IOException
+    {
+        searchQuery = searchQuery.trim();
+    	//List<String> fileresult = new ArrayList<String>();
+    	StringBuilder builder = new StringBuilder();
+    	String extensions = ".properties";
+    	FilenameFilter filter = new FilenameFilter()
+    	{
+    		 public boolean accept(File dir, String name) {
+    	            return name.endsWith(extensions);
+    	        }
+    	};
+    	
+       
+        if (emlDirectory.exists()) 
+        {
+        	try
+        	{
+        		File[] listOfFiles = emlDirectory.listFiles(filter);
+        	    for (File file : listOfFiles)
+        	    {
+        	    	ConfigObject cfg = new ConfigObject(file);
+        	    	if (cfg.hasProperty(searchQuery))
+        	    	{
+        	    		cfg.required("collectionName");
+         	    		builder.append(cfg.get(searchQuery));
+         	    		builder.append("\n");
+        	    		//fileresult.add(cfg.get(searchQuery));
+        	    	}
+        	    }
+        	}
+       		catch (Exception e)
+       		{
+       			System.err.println(e.toString());
+       		}
+        }
+
+        return builder.toString(); // fileresult.toString();
+        
+    }
+
+
 
 }

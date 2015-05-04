@@ -13,9 +13,14 @@
 	<!-- ****************************************************** -->
 
 	<target name="clean-import">
-		<delete includeemptydirs="true">
-			<fileset dir="${nda.import.install.dir}" includes="**/*" />
-		</delete>
+		<available file="${nda.import.install.dir}" type="dir" property="import.module.installed" />
+		<echo unless:set="import.module.installed" message="Installation directory does not exist: ${nda.import.install.dir} (nothing to clean)" />
+		<echo if:set="import.module.installed" message="Deleting shell scripts in ${nda.import.install.dir}/sh" />
+		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/sh" />
+		<echo if:set="import.module.installed" message="Deleting configuration files in ${nda.import.install.dir}/conf" />
+		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/conf" />
+		<echo if:set="import.module.installed" message="Deleting Java libraries in ${nda.import.install.dir}/lib" />
+		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/lib" />
 	</target>
 
 	<!--
@@ -77,7 +82,7 @@
 		<echo unless:set="export.module.installed" message="Installation directory does not exist: ${nda.export.install.dir} (nothing to clean)" />
 		<echo if:set="export.module.installed" message="Deleting shell scripts in ${nda.export.install.dir}/sh" />
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/sh" />
-		<echo if:set="export.module.installed" message="Deleting configuration files in${nda.export.install.dir}/conf" />
+		<echo if:set="export.module.installed" message="Deleting configuration files in ${nda.export.install.dir}/conf" />
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/conf" />
 		<echo if:set="export.module.installed" message="Deleting Java libraries in ${nda.export.install.dir}/lib" />
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/lib" />

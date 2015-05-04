@@ -134,7 +134,7 @@
 	</target>
 
 	<target name="patch-import-module" depends="verify" description="Re-install import shell scripts and config files. Especially useful when build.properties has changed">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="update-import" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="patch-import" />
 	</target>
 
 
@@ -162,7 +162,7 @@
 	</target>
 
 	<target name="patch-export-module" depends="verify" description="Re-install export shell scripts and config files. Especially useful when build.properties has changed">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="patch-import" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="patch-export" />
 	</target>
 
 	<target name="build" depends="build-ear-file" description="Create the NBA ear file" />

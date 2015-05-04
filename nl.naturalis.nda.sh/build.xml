@@ -6,27 +6,22 @@
 	<property file="../nl.naturalis.nda.build/build.properties" />
 	<property environment="env" />
 
+
+
+	<!-- ****************************************************** -->
+	<!-- ******************** [ IMPORT ] ********************** -->
+	<!-- ****************************************************** -->
+
 	<target name="clean-import">
 		<delete includeemptydirs="true">
 			<fileset dir="${nda.import.install.dir}" includes="**/*" />
 		</delete>
 	</target>
 
-	<target name="clean-export">
-		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
-		<echo unless:set="export.module.installed" message="Installation directory does not exist: ${nda.export.install.dir} (nothing to clean)" />
-		<echo if:set="export.module.installed" message="Deleting shell scripts in ${nda.export.install.dir}/sh" />
-		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/sh" />
-		<echo if:set="export.module.installed" message="Deleting configuration files in${nda.export.install.dir}/conf" />
-		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/conf" />
-		<echo if:set="export.module.installed" message="Deleting Java libraries in ${nda.export.install.dir}/lib" />
-		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/lib" />
-	</target>
-
 	<!--
-		Re-installs the shell scripts and configuration files using
-		the latest version of build.properties, but does not build or
-		rebuild the load project.
+		Re-installs shell scripts and config files using latest
+		version of build.properties, but does not rebuild load
+		module
 	-->
 	<target name="patch-import">
 		<!--
@@ -34,7 +29,7 @@
 			there's nothing to patch
 		-->
 		<available file="${nda.import.install.dir}" type="dir" property="sh.module.installed" />
-		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. Please run &#034;ant install-import&#034; first" />
+		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. You have problably never installed the import module before." />
 		<echo message="Installing configuration files into ${nda.import.install.dir}/conf" />
 		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
 			<fileset dir="import/conf" excludes="**/*.git*" />
@@ -66,14 +61,34 @@
 		</copy>
 	</target>
 
+
+
+
+
+
+	<!-- ****************************************************** -->
+	<!-- ******************** [ EXPORT ] ********************** -->
+	<!-- ****************************************************** -->
+
+	<target name="clean-export">
+		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
+		<echo unless:set="export.module.installed" message="Installation directory does not exist: ${nda.export.install.dir} (nothing to clean)" />
+		<echo if:set="export.module.installed" message="Deleting shell scripts in ${nda.export.install.dir}/sh" />
+		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/sh" />
+		<echo if:set="export.module.installed" message="Deleting configuration files in${nda.export.install.dir}/conf" />
+		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/conf" />
+		<echo if:set="export.module.installed" message="Deleting Java libraries in ${nda.export.install.dir}/lib" />
+		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/lib" />
+	</target>
+
 	<!--
-		Copy the conf and sh directory into the installation directory
-		for the export module while replacing any ant tokens with
-		actual values from build.properties
+		Re-installs shell scripts and config files using latest
+		version of build.properties, but does not rebuild load
+		module
 	-->
 	<target name="patch-export">
 		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
-		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. Please run &#034;ant install-import&#034; first" />
+		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. You have problably never installed the export module before." />
 		<echo message="Installing configuration files into ${nda.export.install.dir}/conf" />
 		<copy todir="${nda.export.install.dir}/conf" overwrite="true">
 			<fileset dir="export/conf" excludes="**/*.git*" />
@@ -117,12 +132,12 @@
 			(otherwise they'll create it themselves)
 		-->
 		<available file="${nda.export.output.dir}" type="dir" property="nda.export.output.dir.exists" />
-		<chmod if:set="nda.export.output.dir.exists" perm="ug+rw" dir="${nda.export.output.dir}" includes="**/*"/>
+		<chmod if:set="nda.export.output.dir.exists" perm="ug+rw" dir="${nda.export.output.dir}" includes="**/*" />
 	</target>
 
 	<target name="test-export">
 		<exec executable="${nda.export.install.dir}/sh/export-dwca.sh" dir="${nda.export.install.dir}/sh">
-			<arg value="mammalia"/>
+			<arg value="mammalia" />
 		</exec>
 	</target>
 

@@ -59,6 +59,8 @@
 		<copy todir="${nda.import.install.dir}/lib">
 			<fileset dir="${load.module.location}/build/classpath" />
 		</copy>
+		<!-- Make shell scripts executable -->
+		<chmod dir="${nda.import.install.dir}/sh" perm="ugo+rx" includes="**/*.sh" />
 	</target>
 
 

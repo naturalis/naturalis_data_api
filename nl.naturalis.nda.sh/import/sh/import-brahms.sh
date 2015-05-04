@@ -12,16 +12,17 @@ JAVA_OPTS="$JAVA_OPTS -Drename=${rename}"
 
 type="${1}"
 
-if [ $type = specimens ]
+if [ "$type" = specimens ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.brahms.BrahmsSpecimensImporter
-elif [ $type = multimedia ]
+	echo "WARNING: When not loading both specimens and multimedia file backup is disabled"
+elif [ "$type" = multimedia ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.brahms.BrahmsMultiMediaImporter
-elif [ $type = "" ]
+	echo "WARNING: When not loading both specimens and multimedia file backup is disabled"
+elif [ "$type" = "" ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.brahms.BrahmsSpecimensImporter
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.brahms.BrahmsMultiMediaImporter
+    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.brahms.BrahmsImportAll
 else
     echo "Don't know how to import \"$type\""
 fi

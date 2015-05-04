@@ -23,7 +23,7 @@
         <postalCode>NL-2300 RA</postalCode>
         <country>NL</country>
     </address>
-    <phone>+31.71.5687600</phone>
+    <phone>+31.71.7519600</phone>
     <electronicMailAddress>informatiemanagement@naturalis.nl</electronicMailAddress>
     <onlineUrl>http://science.naturalis.nl</onlineUrl>
 </creator>
@@ -41,7 +41,7 @@
         <postalCode>NL-2300 RA</postalCode>
         <country>NL</country>
     </address>
-    <phone>+31.71.5687600</phone>
+    <phone>+31.71.7519600</phone>
     <electronicMailAddress>informatiemanagement@naturalis.nl</electronicMailAddress>
     <onlineUrl>http://science.naturalis.nl</onlineUrl>
 </metadataProvider>
@@ -59,13 +59,13 @@
         <postalCode>NL-2300 RA</postalCode>
         <country>NL</country>
     </address>
-    <phone>+31.71.5687600</phone>
+    <phone>+31.71.7519600</phone>
     <electronicMailAddress>informatiemanagement@naturalis.nl</electronicMailAddress>
     <onlineUrl>http://science.naturalis.nl</onlineUrl>
     <role>user</role>
     </associatedParty>
 <pubDate>
-      	2015-03-16
+      	2015-05-04
 </pubDate>
 <language>mul</language>
 <abstract>
@@ -114,7 +114,7 @@
         <postalCode>NL-2300 RA</postalCode>
         <country>NL</country>
     </address>
-    <phone>+31.71.5687600</phone>
+    <phone>+31.71.7519600</phone>
     <electronicMailAddress>collectie@naturalis.nl</electronicMailAddress>
     <onlineUrl>http://science.naturalis.nl</onlineUrl>
   </contact>

@@ -11,6 +11,7 @@ import static nl.naturalis.nda.export.dwca.StringUtilities.getProperty;
 import static nl.naturalis.nda.export.dwca.StringUtilities.newFile;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +30,7 @@ import javax.xml.bind.Marshaller;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.export.ExportUtil;
 
+import org.domainobject.util.ConfigObject;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -115,14 +117,54 @@ public class DwCAExporter {
 		}
 	    else
 	    {
-	    	StringBuilder sb = new StringBuilder();
-	    	sb.append(StringUtilities.searchUsingBufferedReader(emlDirectory, "collectionName"));
+	    	/*StringBuilder sb = new StringBuilder();
+	    	sb.append(StringUtilities.searchForCollectionName(StringUtilities.getCollectionConfigDir(), "collectionName"));
 	    	String[] lines = sb.toString().split("\\n");
 	    	for(String value: lines)
 	    	{
 	    		collectionName = value;
 	    		executeDwCaExport(zipOutputDirectory, totalsize);
-	    	}
+	    	}*/
+	    	
+	    	StringBuilder builder = new StringBuilder();
+	    	String extensions = ".properties";
+	    	FilenameFilter filter = new FilenameFilter()
+	    	{
+	    		 public boolean accept(File dir, String name) {
+	    	            return name.endsWith(extensions);
+	    	        }
+	    	};
+	    	
+	    	int cnt = 0;
+        	try
+        	{
+        		File[] listOfFiles = emlDirectory.listFiles(filter);
+        	    for (File file : listOfFiles)
+        	    {
+        	    	cnt++; 
+        	    	ConfigObject config = new ConfigObject(file);
+        	    	if (config.hasProperty("collectionName"))
+        	    	{
+        	    		config.required("collectionName");
+         	    		collectionName = config.get("collectionName");
+         	    		builder.append(collectionName);
+         	    		builder.append("\n");
+         	    		
+         	    		if(cnt > 1)
+         	    		{	
+         	    			logger.info(" ");
+         	    			logger.info("=================================");
+         	    			logger.info("Start with execution collectioname: " + collectionName);
+         	    		}
+        	    		executeDwCaExport(zipOutputDirectory, totalsize);
+        	    	}
+        	    }
+        	    logger.info("All collection successful executed: " + builder.toString());
+        	}
+       		catch (Exception e)
+       		{
+       			System.err.println(e.toString());
+       		}
 	    }
 		
 		logger.info("Ready");

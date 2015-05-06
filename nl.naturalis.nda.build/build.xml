@@ -123,7 +123,7 @@
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
 	</target>
 
-	<target name="clean-import-module" description="Perform cleanup for import module, without subsequently building/installing it">
+	<target name="clean-import-module" description="Perform cleanup for import module, but do not build or install">
 		<ant antfile="../nl.naturalis.nda.load/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />
 	</target>
@@ -133,21 +133,20 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="install-import-module" depends="-build-import-module" description="Install the export programs on the server">
+	<target name="install-import-cli" depends="verify" description="Install the command line interface (shell scripts, config files). Use when build.properties has changed, but source code has not.">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-cli" />
+	</target>
+
+	<target name="install-import-module" depends="-build-import-module" description="Install import module (Java libraries, shell scripts, config files)">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
 	</target>
-
-	<target name="patch-import-module" depends="verify" description="Re-install shell scripts. Use when build.properties has changed, but source code has not.">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="patch-import" />
-	</target>
-
 
 	<target name="test-import-module" depends="install-import-module" description="Test installation of the import module">
 		<echo message="Coming soon" />
 	</target>
 
-	<target name="clean-export-module" description="Perform cleanup for export module, without subsequently building/installing it">
+	<target name="clean-export-module" description="Perform cleanup for export module, but do not build or install">
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" />
 	</target>
@@ -157,17 +156,17 @@
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" />
 	</target>
 
-	<target name="install-export-module" depends="-build-export-module" description="Install the export programs on the server">
+	<target name="install-export-cli" depends="verify" description="Install the command line interface (shell scripts, config files). Use when build.properties has changed, but source code has not.">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export-cli" />
+	</target>
+
+	<target name="install-export-module" depends="-build-export-module" description="Install import module (Java libraries, shell scripts, config files)">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
 	</target>
 
 	<target name="test-export-module" depends="install-export-module" description="Run the DwCA export program from a vanilla installation">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="test-export" />
-	</target>
-
-	<target name="patch-export-module" depends="verify" description="Re-install shell scripts. Use when build.properties has changed, but source code has not.">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="patch-export" />
 	</target>
 
 	<target name="build" depends="build-ear-file" description="Create the NBA ear file" />

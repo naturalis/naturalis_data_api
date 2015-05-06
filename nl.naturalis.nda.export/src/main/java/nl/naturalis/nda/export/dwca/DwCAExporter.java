@@ -129,15 +129,16 @@ public class DwCAExporter {
 	    	int cnt = 0;
         	try
         	{
-        		File[] listOfFiles = emlDirectory.listFiles(filter);
+        		File configpath = StringUtilities.getCollectionConfigDir();
+        		File[] listOfFiles = configpath.listFiles(filter);
         	    for (File file : listOfFiles)
         	    {
         	    	cnt++; 
         	    	ConfigObject config = new ConfigObject(file);
         	    	if (config.hasProperty("collectionName"))
         	    	{
-        	    		config.required("collectionName");
-         	    		collectionName = config.get("collectionName");
+        	    		//config.required("collectionName");
+         	    		collectionName = config.required("collectionName");
          	    		builder.append(collectionName);
          	    		builder.append("\n");
          	    		
@@ -192,9 +193,15 @@ public class DwCAExporter {
 
 		/* Get the directory and zipfilename */
 		String zipfilename = null;
-		if (sourceSystemCode.toUpperCase().equals("CRS") || sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+		if (sourceSystemCode.toUpperCase().equals("CRS")) 
+		{
 			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
 		}
+		else if (sourceSystemCode.toUpperCase().equals("BRAHMS"))
+		{
+			zipfilename = newFile(zipOutputDirectory, "botany").getAbsolutePath();
+		}
+			
 
 		DwCAExporter exp = new DwCAExporter(ExportUtil.getESClient(), indexname);
 		/* Delete the CSV file if Exists */
@@ -316,9 +323,16 @@ public class DwCAExporter {
 
 		File source = new File(zipFileName + zipExtension);
 		File destination = null;
-		if (sourceSystemCode.equals("CRS") || sourceSystemCode.toUpperCase().equals("BRAHMS")) {
+		if (sourceSystemCode.equals("CRS"))
+		{
 			destination = newFile(zipArchiveDirectory, collectionName + zipExtension);
 		}
+		
+		if(sourceSystemCode.toUpperCase().equals("BRAHMS"))
+		{
+			destination = newFile(zipArchiveDirectory, "botany" + zipExtension);
+		}
+			
 
 		/* Backup the zipfile */
 		StringUtilities.CopyAFile(source, destination);

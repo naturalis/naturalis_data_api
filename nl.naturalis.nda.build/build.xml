@@ -34,21 +34,26 @@
 	</target>
 
 	<target name="-git-get-info" depends="verify">
+		<!-- Which branch ar we on? -->
+		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
+			<arg value="rev-parse" />
+			<arg value="--abbrev-ref" />
+			<arg value="HEAD" />
+		</exec>
+		<!-- What's the most recent tag on that branch? -->
+		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
+			<arg value="describe" />
+			<arg value="--tags" />
+			<arg value="--abbrev=0" />
+		</exec>
+		<!-- From which commit are we building? -->
 		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
 			<arg value="log" />
 			<arg value='--pretty=format:"%H"' />
 			<arg value="-n" />
 			<arg value="1" />
 		</exec>
-		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
-			<arg value="describe" />
-			<arg value="--abbrev=0" />
-		</exec>
-		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
-			<arg value="rev-parse" />
-			<arg value="--abbrev-ref" />
-			<arg value="HEAD" />
-		</exec>
+		<!-- Do we have uncommitted changes? -->
 		<exec executable="git" outputproperty="git.status" failifexecutionfails="true">
 			<arg value="status" />
 			<arg value="-s" />
@@ -59,7 +64,7 @@
 		<echo message="You are on branch: ${git.branch} (${git.tag})" />
 		<echo message="****************************************************************" />
 		<echo message="" />
-		<echo message="Last commit: ${git.commit}" />
+		<echo message="Commit: ${git.commit}" />
 		<condition property="git.show.status">
 			<not>
 				<equals arg1="${git.status}" arg2="" trim="true" />
@@ -122,7 +127,7 @@
 		<ant antfile="../nl.naturalis.nda.load/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />
 	</target>
-	
+
 	<target name="-build-import-module" depends="-build-dao-module">
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />

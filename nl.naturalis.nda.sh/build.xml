@@ -23,18 +23,10 @@
 		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/lib" />
 	</target>
 
-	<!--
-		Re-installs shell scripts and config files using latest
-		version of build.properties, but does not rebuild load
-		module
-	-->
-	<target name="patch-import">
-		<!--
-			Check if the installation directory is present; otherwise
-			there's nothing to patch
-		-->
+	<target name="install-import-cli">		
+		<!-- Check if the installation directory is present -->
 		<available file="${nda.import.install.dir}" type="dir" property="sh.module.installed" />
-		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. You have problably never installed the import module before." />
+		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. You have problably never installed the import module before." />		
 		<echo message="Installing configuration files into ${nda.import.install.dir}/conf" />
 		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
 			<fileset dir="import/conf" excludes="**/*.git*" />
@@ -88,12 +80,7 @@
 		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/lib" />
 	</target>
 
-	<!--
-		Re-installs shell scripts and config files using latest
-		version of build.properties, but does not rebuild load
-		module
-	-->
-	<target name="patch-export">
+	<target name="install-export-cli">
 		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
 		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. You have problably never installed the export module before." />
 		<echo message="Installing configuration files into ${nda.export.install.dir}/conf" />

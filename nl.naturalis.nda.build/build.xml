@@ -197,8 +197,29 @@
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritAll="true" target="deploy" />
 	</target>
 
+	<target name="build-config" description="List all settings in build.properties">
+		<echoproperties>
+			<propertyset>
+				<propertyref prefix="elasticsearch" />
+				<propertyref prefix="nda" />
+				<propertyref prefix="ear" />
+				<propertyref prefix="nl.naturalis" />
+			</propertyset>
+		</echoproperties>
+	</target>
+
 	<target name="help" description="Show help text">
 		<echo message="Show all build targets ...............................: ant -p" />
+		<echo message="Examples" />
+		<echo message="*    Deploy ear file to Wildfly:" />
+		<echo message="         ant deploy-ear-file" />
+		<echo message="     Note: if the ear file does not exist yet, it will be built first; otherwise the current ear file is deployed" />
+		<echo message="*    Deploy ear file to Wildfly:" />
+		<echo message="         ant clean deploy-ear-file" />
+		<echo message="     Note: this will discard the current ear file (if any) and build a new one from scratch" />
+		<echo message="*    Remote deployment (from your PC/laptop to Wildfly server)" />
+		<echo message="         ant host0 deploy-ear-file" />
+		<echo message="     Note: this will scp the ear file to a host specified by a property in build.properties (ear.install.scp.host0)" />
 		<echo message="More help is on the way" />
 	</target>
 

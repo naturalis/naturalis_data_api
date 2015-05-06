@@ -29,7 +29,7 @@
 		<echo message="You got clearance!" />
 	</target>
 
-	<target name="verify" description="Verify preconditions for doing NBA builds with Ant">
+	<target name="verify" description="Make sure everything is in place to do Ant builds for the NBA">
 		<antcall target="-verify" unless:set="signal.clear" />
 	</target>
 
@@ -79,41 +79,41 @@
 		<antcall target="-git-get-info" unless:set="git.got.info" />
 	</target>
 
-	<target name="clean" description="Force a clean build of the subsequently specified module">
+	<target name="clean" description="Signal that you want to clean up before executing the subsequently specified target">
 		<property name="signal.clean" value="on" />
 	</target>
 
-	<target name="nightly" description="Make a night build (use in combination with build target)">
+	<target name="nightly" description="Signal that you want to make a nightly build of the ear file (use before build or build-ear-file)">
 		<fail message="Cannot make nightly build and release build at the same time" if:set="signal.release" />
 		<property name="signal.nightly" value="on" />
 	</target>
 
-	<target name="release" description="Make a release build (use in combination with build target)">
+	<target name="release" description="Signal that you want to make a release build of the ear file (use before build or build-ear-file)">
 		<fail message="Cannot make nightly build and release build at the same time" if:set="signal.nightly" />
 		<property name="signal.release" value="on" />
 	</target>
 
-	<target name="build-domain-module" depends="git-info" description="Compile and create jar file for domain module">
+	<target name="-build-domain-module" depends="git-info">
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-dao-module" depends="build-domain-module" description="Compile and create jar file for dao module">
+	<target name="-build-dao-module" depends="-build-domain-module">
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-ejb-module" depends="build-dao-module" description="Compile and create jar file for ejb module">
+	<target name="-build-ejb-module" depends="-build-dao-module">
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-rest-module" depends="build-ejb-module" description="Compile and create war file for rest module">
+	<target name="-build-rest-module" depends="-build-ejb-module">
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="build-ear-file" depends="build-rest-module" description="Create the NBA ear file">
+	<target name="build-ear-file" depends="-build-rest-module" description="Create the NBA ear file">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
 	</target>
@@ -123,17 +123,17 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />
 	</target>
 	
-	<target name="build-import-module" depends="build-dao-module" description="Compile and create jar file for import module">
+	<target name="-build-import-module" depends="-build-dao-module">
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="install-import-module" depends="build-import-module" description="Install the shell scripts for the import module">
+	<target name="install-import-module" depends="-build-import-module" description="Install the export programs on the server">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
 	</target>
 
-	<target name="patch-import-module" depends="verify" description="Re-install import shell scripts and config files. Especially useful when build.properties has changed">
+	<target name="patch-import-module" depends="verify" description="Re-install shell scripts. Use when build.properties has changed, but source code has not.">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="patch-import" />
 	</target>
 
@@ -147,12 +147,12 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" />
 	</target>
 
-	<target name="build-export-module" depends="build-dao-module" description="Compile and create jar file for export module">
+	<target name="-build-export-module" depends="-build-dao-module">
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" />
 	</target>
 
-	<target name="install-export-module" depends="build-export-module" description="Install the export programs on the server">
+	<target name="install-export-module" depends="-build-export-module" description="Install the export programs on the server">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
 	</target>
@@ -161,7 +161,7 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="test-export" />
 	</target>
 
-	<target name="patch-export-module" depends="verify" description="Re-install export shell scripts and config files. Especially useful when build.properties has changed">
+	<target name="patch-export-module" depends="verify" description="Re-install shell scripts. Use when build.properties has changed, but source code has not.">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="patch-export" />
 	</target>
 
@@ -173,19 +173,19 @@
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
 	</target>
 
-	<target name="host0" description="Remote deployment to ear.install.scp.host0 (see build.properties)">
+	<target name="host0" description="Signal that you want to remotely deploy to ear.install.scp.host0 (see build.properties)">
 		<property name="deploy.to.host0" value="true" />
 	</target>
 
-	<target name="host1" description="Remote deployment to ear.install.scp.host1 (see build.properties)">
+	<target name="host1" description="Signal that you want to remotely deploy to ear.install.scp.host1 (see build.properties)">
 		<property name="deploy.to.host1" value="true" />
 	</target>
 
-	<target name="host2" description="Remote deployment to ear.install.scp.host2 (see build.properties)">
+	<target name="host2" description="Signal that you want to remotely deploy to ear.install.scp.host2 (see build.properties)">
 		<property name="deploy.to.host2" value="true" />
 	</target>
 
-	<target name="host3" description="Remote deployment to ear.install.scp.host3 (see build.properties)">
+	<target name="host3" description="Signal that you want to remotely deploy to ear.install.scp.host3 (see build.properties)">
 		<property name="deploy.to.host3" value="true" />
 	</target>
 

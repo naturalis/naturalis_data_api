@@ -39,8 +39,25 @@
 		</copy>
 	</target>
 
+	<target name="-assemble-hack">
+		<echo message="Collecting files for ear file" />
+		<mkdir dir="${assemblydir}" />
+		<mkdir dir="${assemblydir}/META-INF" />
+		<mkdir dir="${assemblydir}/lib" />
+		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${assemblydir}/lib" />
+		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${assemblydir}/lib" />
+		<copy file="${ejb.module.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
+		<copy file="${rest.module.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
+		<copy todir="${assemblydir}/META-INF">
+			<fileset dir="EarContent/META-INF" />
+		</copy>
+		<copy todir="${assemblydir}/lib">
+			<fileset dir="EarContent/lib" />
+		</copy>
+	</target>
+
 	<!-- Create ear file, but only if it does not exist already -->
-	<target name="-package" depends="-projects,-assemble">
+	<target name="-package" depends="-projects,-assemble-hack">
 		<jar destfile="${ear.module.artifact}" basedir="${assemblydir}" />
 	</target>
 

@@ -118,7 +118,7 @@ public class DwCAExporter {
 	    else
 	    {
 	    	StringBuilder builder = new StringBuilder();
-	    	String extensions = ".properties";
+	    	final String extensions = ".properties";
 	    	FilenameFilter filter = new FilenameFilter()
 	    	{
 	    		 public boolean accept(File dir, String name) {

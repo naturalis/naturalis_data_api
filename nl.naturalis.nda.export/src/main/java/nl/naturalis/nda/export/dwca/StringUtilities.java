@@ -624,7 +624,7 @@ public class StringUtilities {
 	
 	
 	
-	public static String searchForCollectionName(File emlDir, String searchQuery) throws IOException
+	/*public static String searchForCollectionName(File emlDir, String searchQuery) throws IOException
     {
         searchQuery = searchQuery.trim();
     	//List<String> fileresult = new ArrayList<String>();
@@ -664,7 +664,7 @@ public class StringUtilities {
         return builder.toString(); // fileresult.toString();
         
     }
-
+*/
 
 
 }

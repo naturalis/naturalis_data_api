@@ -117,15 +117,6 @@ public class DwCAExporter {
 		}
 	    else
 	    {
-	    	/*StringBuilder sb = new StringBuilder();
-	    	sb.append(StringUtilities.searchForCollectionName(StringUtilities.getCollectionConfigDir(), "collectionName"));
-	    	String[] lines = sb.toString().split("\\n");
-	    	for(String value: lines)
-	    	{
-	    		collectionName = value;
-	    		executeDwCaExport(zipOutputDirectory, totalsize);
-	    	}*/
-	    	
 	    	StringBuilder builder = new StringBuilder();
 	    	String extensions = ".properties";
 	    	FilenameFilter filter = new FilenameFilter()

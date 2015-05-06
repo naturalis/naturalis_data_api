@@ -595,6 +595,8 @@ public class DwCAExporter {
 		logger.info("Indexname '" + indexname + "'");
 		logger.info("Start writing data to occurrence file.");
 		int count = response.getSuccessfulShards();
+		int restvalue = 0;
+		int resultrecord = 0;
 		
 		//int count = (int) totalHitCount / 1000;//(int) (totalHitCount / response.getSuccessfulShards());
 		while (true) {
@@ -609,8 +611,11 @@ public class DwCAExporter {
 				response = eslasticClient.prepareSearchScroll(response.getScrollId()).setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
 				//count = count + 1000;
+				//count++;
+				restvalue = (int) (totalHitCount / count);
+				resultrecord = restvalue - resultrecord;
 				logger.info("Shard hit.'" + count++ + "' successful");
-				//logger.info("Number of records '"+ totalHitCount / count + "' process per shard");
+				//logger.info("Number of records '"+ resultrecord + "' process per shard");
 				//logger.info(Integer.toString(response.getHits()));
 
 

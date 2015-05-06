@@ -624,7 +624,7 @@ public class StringUtilities {
 	
 	
 	
-	public static String searchUsingBufferedReader(File emlDirectory, String searchQuery) throws IOException
+	public static String searchUsingBufferedReader(File emlDir, String searchQuery) throws IOException
     {
         searchQuery = searchQuery.trim();
     	//List<String> fileresult = new ArrayList<String>();
@@ -638,18 +638,18 @@ public class StringUtilities {
     	};
     	
        
-        if (emlDirectory.exists()) 
+        if (emlDir.exists()) 
         {
         	try
         	{
-        		File[] listOfFiles = emlDirectory.listFiles(filter);
+        		File[] listOfFiles = emlDir.listFiles(filter);
         	    for (File file : listOfFiles)
         	    {
-        	    	ConfigObject cfg = new ConfigObject(file);
-        	    	if (cfg.hasProperty(searchQuery))
+        	    	ConfigObject config = new ConfigObject(file);
+        	    	if (config.hasProperty(searchQuery))
         	    	{
-        	    		cfg.required("collectionName");
-         	    		builder.append(cfg.get(searchQuery));
+        	    		config.required("collectionName");
+         	    		builder.append(config.get(searchQuery));
          	    		builder.append("\n");
         	    		//fileresult.add(cfg.get(searchQuery));
         	    	}

@@ -102,7 +102,7 @@ public class DwCAExporter {
 		String totalsize = System.getProperty("nl.naturalis.nda.export.dwca.batchsize", "1000");
 
 		emlDirectory = StringUtilities.getCollectionConfigDir();
-		/* Output directory for the files EML.xml, Meta.xml and Ocurrence.txt */
+		/* Output directory for the files EML.xml, Meta.xml and Occurrence.txt */
 		outputDirectory = StringUtilities.getWorkingDirectory();
 		zipOutputDirectory = StringUtilities.getZipOutputDirectory();
 		zipArchiveDirectory = StringUtilities.getBackupDirectory();
@@ -113,7 +113,7 @@ public class DwCAExporter {
 
 	    if (collectionName != null) 
 		{
-	    	executeDwCaExport(zipOutputDirectory, totalsize);
+	    	executeDwCaExport(collectionName, zipOutputDirectory, totalsize);
 		}
 	    else
 	    {
@@ -137,7 +137,7 @@ public class DwCAExporter {
         	    	ConfigObject config = new ConfigObject(file);
         	    	if (config.hasProperty("collectionName"))
         	    	{
-        	    		//config.required("collectionName");
+         	    		//config.required("collectionName");
          	    		collectionName = config.required("collectionName");
          	    		builder.append(collectionName);
          	    		builder.append("\n");
@@ -148,7 +148,7 @@ public class DwCAExporter {
          	    			logger.info("=================================");
          	    			logger.info("Start with execution collectioname: " + collectionName);
          	    		}
-        	    		executeDwCaExport(zipOutputDirectory, totalsize);
+        	    		executeDwCaExport(collectionName, zipOutputDirectory, totalsize);
         	    	}
         	    }
         	    logger.info("All collection successful executed: " + builder.toString());
@@ -163,13 +163,17 @@ public class DwCAExporter {
 	}
 	
 		
-	private static void executeDwCaExport(File pZipOutPutDirectory, String ptotalSize) throws Exception
+	private static void executeDwCaExport(String collectionName, File pZipOutPutDirectory, String ptotalSize) throws Exception
 	{
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
 		if (collectionName != null) 
 		{
-			sourceSystemCode = getProperty(collectionName, "sourceSystemCode");
-			/* Get the Ocurrencefields value */
+			if (collectionName.contains("botany"))
+			{
+               collectionName = "brahms";				
+			}	
+			sourceSystemCode = getProperty(collectionName, "sourceSystemCode"); 
+			/* Get the Occurrencefields value */
 			MAPPING_FILE_NAME = getProperty(collectionName, "occurrenceFields");
 		}
 
@@ -193,14 +197,14 @@ public class DwCAExporter {
 
 		/* Get the directory and zipfilename */
 		String zipfilename = null;
-		if (sourceSystemCode.toUpperCase().equals("CRS")) 
+		if (sourceSystemCode.toUpperCase().equals("CRS") || sourceSystemCode.toUpperCase().equals("BRAHMS")) 
 		{
 			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
 		}
-		else if (sourceSystemCode.toUpperCase().equals("BRAHMS"))
+		/*else if ()
 		{
-			zipfilename = newFile(zipOutputDirectory, "botany").getAbsolutePath();
-		}
+			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
+		}*/
 			
 
 		DwCAExporter exp = new DwCAExporter(ExportUtil.getESClient(), indexname);

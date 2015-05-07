@@ -3,8 +3,8 @@ NBA Service descriptions
 ========================
 
 .. note:: | nog doen
-          | • toevoegen voorstellen Wouter icm best practice Seranno - curl, errors, view page source link
-          | • actualiteit van de data per service of over geheel heen
+          | â€¢ toevoegen voorstellen Wouter icm best practice Seranno - curl, errors, view page source link
+          | â€¢ actualiteit van de data per service of over geheel heen
 
 -------------------------
 Document management
@@ -463,7 +463,7 @@ b. field aliases, e.g. <base url>/taxon/search/?genus=Abies
 
 general meta parameters in an url
 `````````````````````````````````
-For both types of searches optional extra request parameters – so called meta parameters - can be added to the request. These meta-parameters instruct the NBA on how to execute a query.
+For both types of searches optional extra request parameters â€“ so called meta parameters - can be added to the request. These meta-parameters instruct the NBA on how to execute a query.
 
 Paging parameters
 
@@ -474,17 +474,17 @@ Paging parameters
    * - Name
      - Description
    * - _maxResults
-     - | • _maxResults instructs NBA to return maximum amount of search results per page
-       | • default NBA setting maxResults: 10 (for requests without _maxResults parameter)                  
-       | • example: request results in a list of maximum 60 documents
+     - | â€¢ _maxResults instructs NBA to return maximum amount of search results per page
+       | â€¢ default NBA setting maxResults: 10 (for requests without _maxResults parameter)                  
+       | â€¢ example: request results in a list of maximum 60 documents
         
        .. code:: html
 
           <base url>/taxon/search/?_search=Abies&_maxResults=20,
    * - _offset
-     - | • _offset instructs NBA to start filling first response from search result no = offset value + 1
-       | • default NBA setting offset: 0 (for requests without _offset parameter)
-       | • example: request results in a list with search result no 21 as first document in list
+     - | â€¢ _offset instructs NBA to start filling first response from search result no = offset value + 1
+       | â€¢ default NBA setting offset: 0 (for requests without _offset parameter)
+       | â€¢ example: request results in a list with search result no 21 as first document in list
 
        .. code:: html
 
@@ -499,19 +499,19 @@ Sorting parameters
    * - Name
      - Description
    * - _sort
-     - | • _sort instructs NBA to return responses sorted on a single specified indexed field included in taxon documents          
-       | • default NBA setting sort: _score (for requests without _score parameter)
-       | • remarks: _sort parameter can be used for all fields in a taxon document. Sort parameter values should be fieldpaths, e.g. gatheringEvent.locality
-       | • example: request results in list sorted on unitID (in ascending order)
+     - | â€¢ _sort instructs NBA to return responses sorted on a single specified indexed field included in taxon documents          
+       | â€¢ default NBA setting sort: _score (for requests without _score parameter)
+       | â€¢ remarks: _sort parameter can be used for all fields in a taxon document. Sort parameter values should be fieldpaths, e.g. gatheringEvent.locality
+       | â€¢ example: request results in list sorted on unitID (in ascending order)
                    
        .. code:: html
  
           <base url>/taxon/search/?genus=Abies&_sort=defaultClassification.specificEpithet
 
    * - _sortDirection
-     - | • _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
-       | • default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
-       | • example: request results in list sorted on unitID in descending order
+     - | â€¢ _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
+       | â€¢ default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
+       | â€¢ example: request results in list sorted on unitID in descending order
      
        .. code:: html
 
@@ -529,9 +529,9 @@ For indexed field search extra meta parameters are available.
    * - Name
      - Description
    * - _andOr
-     - | • _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
-       | • default NBA setting andOr: AND (for requests without _andOR parameter)
-       | • example: request results in list with result of OR search on genus = Parus and species = major
+     - | â€¢ _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
+       | â€¢ default NBA setting andOr: AND (for requests without _andOR parameter)
+       | â€¢ example: request results in list with result of OR search on genus = Parus and species = major
 
        .. code:: html
                
@@ -690,10 +690,10 @@ Geospatial parameter
    * - Name
      - Description
    * - _geoShape
-     - | • _geoshape instructs NBA to return specimen documents which are  gathered by collectors during field research in a specific area
-       | • default NBA setting geoshape: not applicable
-       | • remarks: use lat/long coordinates.
-       | • example: request results in list of specimen gathered in Jordan
+     - | â€¢ _geoshape instructs NBA to return specimen documents which are  gathered by collectors during field research in a specific area
+       | â€¢ default NBA setting geoshape: not applicable
+       | â€¢ remarks: use lat/long coordinates.
+       | â€¢ example: request results in list of specimen gathered in Jordan
                  
        .. code:: html
  
@@ -710,7 +710,7 @@ b. field aliases, e.g. <base url>/specimen/search/?genus=Abies
 
 general meta parameters in an url
 `````````````````````````````````
-For both types of searches optional extra request parameters – so called meta parameters - can be added to the request. These meta-parameters instruct the NBA on how to execute a query.
+For both types of searches optional extra request parameters â€“ so called meta parameters - can be added to the request. These meta-parameters instruct the NBA on how to execute a query.
 
 Paging parameters
 
@@ -721,17 +721,17 @@ Paging parameters
    * - Name
      - Description
    * - _maxResults
-     - | • _maxResults instructs NBA to return maximum amount of search results per page
-       | • default NBA setting maxResults: 10 (for requests without _maxResults parameter)
-       | • example: request results in a list of maximum 60 documents
+     - | â€¢ _maxResults instructs NBA to return maximum amount of search results per page
+       | â€¢ default NBA setting maxResults: 10 (for requests without _maxResults parameter)
+       | â€¢ example: request results in a list of maximum 60 documents
         
        .. code:: html
                
           <base url>/specimen/search/?_search=male&_maxResults=20
    * - _offset
-     - | • _offset instructs NBA to start filling first response from search result no = offset value + 1
-       | • default NBA setting offset: 0 (for requests without _offset parameter)
-       | • example: request results in a list with search result in which first document is search result no 21
+     - | â€¢ _offset instructs NBA to start filling first response from search result no = offset value + 1
+       | â€¢ default NBA setting offset: 0 (for requests without _offset parameter)
+       | â€¢ example: request results in a list with search result in which first document is search result no 21
 
        .. code:: html
 
@@ -746,19 +746,19 @@ Sorting parameters
    * - Name
      - Description
    * - _sort
-     - | • _sort instructs NBA to return responses sorted on a single specified indexed field included in specimen documents          
-       | • default NBA setting sort: _score (for requests without _score parameter)
-       | • remarks: _sort parameter can be used for all fields in a specimen document. Sort parameter values should be fieldpaths, e.g. gatheringEvent.locality
-       | • example: request results in list sorted on unitID (sortDirection is default Ascending) 
+     - | â€¢ _sort instructs NBA to return responses sorted on a single specified indexed field included in specimen documents          
+       | â€¢ default NBA setting sort: _score (for requests without _score parameter)
+       | â€¢ remarks: _sort parameter can be used for all fields in a specimen document. Sort parameter values should be fieldpaths, e.g. gatheringEvent.locality
+       | â€¢ example: request results in list sorted on unitID (sortDirection is default Ascending) 
                    
        .. code:: html
 
           <base url>/specimen/search/?typeStatus=holotype&_sort=unitID
 
    * - _sortDirection
-     - | • _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
-       | • default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
-       | • example: request results in list sorted on unitID and sortDirection is descending
+     - | â€¢ _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
+       | â€¢ default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
+       | â€¢ example: request results in list sorted on unitID and sortDirection is descending
 
        .. code:: html
 
@@ -775,9 +775,9 @@ For indexed field search extra meta parameters are available.
    * - Name
      - Description
    * - _andOr
-     - | • _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
-       | • default NBA setting andOr: AND (for requests without _andOR parameter)
-       | • example: request results in list based on OR search
+     - | â€¢ _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
+       | â€¢ default NBA setting andOr: AND (for requests without _andOR parameter)
+       | â€¢ example: request results in list based on OR search
 
        .. code:: html
                   
@@ -890,10 +890,10 @@ Geospatial parameter
    * - Name
      - Description
    * - _geoShape
-     - | • _geoshape instructs NBA to return specimen documents which are  gathered by collectors during field research in a specific area
-       | • default NBA setting geoshape: not applicable
-       | • remarks: use lat/long coordinates.
-       | • example: request results in list of specimen gathered in Jordan
+     - | â€¢ _geoshape instructs NBA to return specimen documents which are  gathered by collectors during field research in a specific area
+       | â€¢ default NBA setting geoshape: not applicable
+       | â€¢ remarks: use lat/long coordinates.
+       | â€¢ example: request results in list of specimen gathered in Jordan
                  
        .. code:: html
  
@@ -922,7 +922,7 @@ The full scientific names of the taxon documents in the responses are input for 
 
 general meta parameters
 ```````````````````````
-For both free text and indexed field search requests optional extra request parameters – so called meta parameters - can be added. These parameters instruct the NBA on how to execute a query.
+For both free text and indexed field search requests optional extra request parameters â€“ so called meta parameters - can be added. These parameters instruct the NBA on how to execute a query.
 
 Paging parameters
 
@@ -933,17 +933,17 @@ Paging parameters
    * - Name
      - Description
    * - _maxResults
-     - | • _maxResults instructs NBA to return maximum amount of search results per page
-       | • default NBA setting maxResults: 10 (for requests without _maxResults parameter)
-       | • example: request results in list of maximum 50 documents included.
+     - | â€¢ _maxResults instructs NBA to return maximum amount of search results per page
+       | â€¢ default NBA setting maxResults: 10 (for requests without _maxResults parameter)
+       | â€¢ example: request results in list of maximum 50 documents included.
 
        .. code:: html                 
 
           <base url>/specimen/name-search/?_search=bloem&_maxResults=50
    * - _offset
-     - | • _offset instructs NBA to start filling first response from search result no = offset value + 1
-       | • default NBA setting offset: 0 (for requests without _offset parameter)
-       | • example: request results in list in which first document is search result no 21. 
+     - | â€¢ _offset instructs NBA to start filling first response from search result no = offset value + 1
+       | â€¢ default NBA setting offset: 0 (for requests without _offset parameter)
+       | â€¢ example: request results in list in which first document is search result no 21. 
                 
        .. code:: html
 
@@ -958,19 +958,19 @@ Sorting parameters
    * - Name
      - Description
    * - _sort
-     - | • _sort instructs NBA to return responses sorted on a single specified indexed field included in Specimen documents          
-       | • default NBA setting sort: _score (for requests without _score parameter)
-       | • remarks: _sort parameter can be used for all fields in a specimen document. Sort parameter values should be fieldpaths
-       | • example: request results in list sorted on genus
+     - | â€¢ _sort instructs NBA to return responses sorted on a single specified indexed field included in Specimen documents          
+       | â€¢ default NBA setting sort: _score (for requests without _score parameter)
+       | â€¢ remarks: _sort parameter can be used for all fields in a specimen document. Sort parameter values should be fieldpaths
+       | â€¢ example: request results in list sorted on genus
 
        .. code:: html
 
           <base url>/specimen/name-search/?genus=Larus&_sort=identifications.scientificName.genusOrMonomial.
 
    * - _sortDirection
-     - | • _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
-       | • default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
-       | • example: request results in list sorted on genus and with sort direction descending. 
+     - | â€¢ _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
+       | â€¢ default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
+       | â€¢ example: request results in list sorted on genus and with sort direction descending. 
 
        .. code:: html
 
@@ -987,9 +987,9 @@ For indexed fields search specific search meta parameters are available.
    * - Name
      - Description
    * - _andOr
-     - | • _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
-       | • default NBA setting andOr: AND (for requests without _andOR parameter)
-       | • example: request results in list based on OR search
+     - | â€¢ _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
+       | â€¢ default NBA setting andOr: AND (for requests without _andOR parameter)
+       | â€¢ example: request results in list based on OR search
 
        .. code:: html
 
@@ -1134,7 +1134,7 @@ The basic request url for specimen collection search is:
 
 .. code:: html
  
-   <base url>/specimen/search/dwca/?_search=[collection name], e.g. http:/api.biodiversitydata.nl/v0/specimen/search/dwca/?_search=Mammalia
+   <base url>/specimen/search/dwca/?collection=[collection name], e.g. http:/api.biodiversitydata.nl/v0/specimen/search/dwca/?collection=mammalia
 
 .. _specimen collection response section:
 
@@ -1155,27 +1155,27 @@ DwCA zip file features
      - Description
      - Compliancy
    * - occurrence.txt file
-     - | • Core data file with specimen occurrence data
-       | • Required file in zip file
-       | • csv text file, tab delimiter, use of stable identifier = occurrence id (= sourceSystem.Id) per row
+     - | â€¢ Core data file with specimen occurrence data
+       | â€¢ Required file in zip file
+       | â€¢ csv text file, tab delimiter, use of stable identifier = occurrence id (= sourceSystem.Id) per row
      - | Occurrence file complies to
-       | • Mandatory DwC terms standard as stated in the `Annex of this GBIF guideline`_
-       | • `DwC terms guideliness`_
+       | â€¢ Mandatory DwC terms standard as stated in the `Annex of this GBIF guideline`_
+       | â€¢ `DwC terms guideliness`_
    * - eml.xml file
-     - | • EML profile
-       | • Required file in zip file
+     - | â€¢ EML profile
+       | â€¢ Required file in zip file
      - | EML profile complies to 
-       | • `GBIF metadata profile`_. 
-       | • Minimum set of five mandatory elements as mentiond in the appendix of this `GBIF guideline`_. 
+       | â€¢ `GBIF metadata profile`_. 
+       | â€¢ Minimum set of five mandatory elements as mentiond in the appendix of this `GBIF guideline`_. 
    * - meta.xml file
-     - | • Descriptor metafile
-       | • Required file in zip file
+     - | â€¢ Descriptor metafile
+       | â€¢ Required file in zip file
      - | Descriptor metafile complies to
-       | • `GBIF reference guide to the XML descriptor file`_ 
-       | • `DwC text guideliness`_ 
+       | â€¢ `GBIF reference guide to the XML descriptor file`_ 
+       | â€¢ `DwC text guideliness`_ 
    * - extension file
-     - | • Extension files are *not* included in this DwCA zip file
-       | • Optional file in zip file
+     - | â€¢ Extension files are *not* included in this DwCA zip file
+       | â€¢ Optional file in zip file
      -     
 
 .. _GBIF reference guide to the XML descriptor file: http://www.gbif.org/resource/80639
@@ -1406,19 +1406,19 @@ Download all available specimen occurrences in Naturalis Mammalia collection (pa
   
 .. code:: html
   
-   http://api.biodiversitydata.nl/v0/specimen/search/dwca/?_search=Mammalia
+   http://api.biodiversitydata.nl/v0/specimen/search/dwca/?collection=mammalia
 
 Download all available specimen occurrences in Naturalis Botany collection (Botany domain as a whole)
 
 .. code:: html
   
-   http://api.biodiversitydata.nl/v0/specimen/search/dwca/?_search=Botany
+   http://api.biodiversitydata.nl/v0/specimen/search/dwca/?collection=botany
 
 Download all available specimen occurrences in Naturalis Cainozoic mollusca collection (part of Geology domain)
 
 .. code:: html
   
-   http://api.biodiversitydata.nl/v0/specimen/search/dwca/?_search=Cainozoic Mollusca
+   http://api.biodiversitydata.nl/v0/specimen/search/dwca/?collection=cainozoic_mollusca
 
 ------------------------
 Multimedia data services
@@ -1470,10 +1470,10 @@ Geospatial parameter
    * - Name
      - Description
    * - _geoShape
-     - | • _geoshape instructs NBA to return specimen documents which are  gathered by collectors during field research in a specific area
-       | • default NBA setting geoshape: not applicable
-       | • remarks: use lat/long coordinates.
-       | • example: request results in list of specimen gathered in Jordan 
+     - | â€¢ _geoshape instructs NBA to return specimen documents which are  gathered by collectors during field research in a specific area
+       | â€¢ default NBA setting geoshape: not applicable
+       | â€¢ remarks: use lat/long coordinates.
+       | â€¢ example: request results in list of specimen gathered in Jordan 
 
        .. code:: html
            
@@ -1500,7 +1500,7 @@ The full scientific names of the taxon documents in the responses are input for 
 
 general meta parameters
 ```````````````````````
-For both free text and indexed field search requests optional extra request parameters – so called meta parameters - can be added. These parameters instruct the NBA on how to execute a query.
+For both free text and indexed field search requests optional extra request parameters â€“ so called meta parameters - can be added. These parameters instruct the NBA on how to execute a query.
 
 Paging parameters
 
@@ -1511,17 +1511,17 @@ Paging parameters
    * - Name
      - Description
    * - _maxResults
-     - | • _maxResults instructs NBA to return maximum amount of search results per page
-       | • default NBA setting maxResults: 10 (for requests without _maxResults parameter)
-       | • example: request results in list of maximum 20 documents
+     - | â€¢ _maxResults instructs NBA to return maximum amount of search results per page
+       | â€¢ default NBA setting maxResults: 10 (for requests without _maxResults parameter)
+       | â€¢ example: request results in list of maximum 20 documents
 
        .. code:: html
 
           <base url>/multimedia/search/?_search=Larus&_maxResults=20
    * - _offset
-     - | • _offset instructs NBA to start filling first response from search result no = offset value + 1
-       | • default NBA setting offset: 0 (for requests without _offset parameter)
-       | • example: request results in list in which first document is search result no 21.
+     - | â€¢ _offset instructs NBA to start filling first response from search result no = offset value + 1
+       | â€¢ default NBA setting offset: 0 (for requests without _offset parameter)
+       | â€¢ example: request results in list in which first document is search result no 21.
 
        .. code:: html
 
@@ -1536,19 +1536,19 @@ Sorting parameters
    * - Name
      - Description
    * - _sort
-     - | • _sort instructs NBA to return responses sorted on a single specified indexed field included in multimedia documents          
-       | • default NBA setting sort: _score (for requests without _score parameter)
-       | • remarks: _sort parameter can be used for all fields in a multimedia document. Sort parameter values should be a fieldpath, e.g. identifications.scientificName.subgenus
-       | •  example: request results in list sorted on unitID
+     - | â€¢ _sort instructs NBA to return responses sorted on a single specified indexed field included in multimedia documents          
+       | â€¢ default NBA setting sort: _score (for requests without _score parameter)
+       | â€¢ remarks: _sort parameter can be used for all fields in a multimedia document. Sort parameter values should be a fieldpath, e.g. identifications.scientificName.subgenus
+       | â€¢  example: request results in list sorted on unitID
 
        .. code:: html
 
           <base url>/multimedia/search/?genus=Larus&_sort=unitID
 
    * - _sortDirection
-     - | • _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
-       | • default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
-       | • example: request results in list sorted on unitID and sort direction is descending
+     - | â€¢ _sortDirection instructs NBA on sorting direction, i.e. either descending (DESC) or ascending (ASC)
+       | â€¢ default NBA setting sortDirection: ASC (for requests without _sortDirection parameter)
+       | â€¢ example: request results in list sorted on unitID and sort direction is descending
 
        .. code:: html
 
@@ -1565,9 +1565,9 @@ For indexed field search extra meta parameters are available.
    * - Name
      - Description
    * - _andOr
-     - | • _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
-       | • default NBA setting andOr: AND (for requests without _andOR parameter)
-       | • example: request results in list based on OR search
+     - | â€¢ _andOr instructs NBA to use logical operator AND (conjunction) for multiple indexed field search
+       | â€¢ default NBA setting andOr: AND (for requests without _andOR parameter)
+       | â€¢ example: request results in list based on OR search
 
        .. code:: html
 

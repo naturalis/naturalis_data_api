@@ -31,6 +31,19 @@ public class Geology
 		{
 			CsvFileWriter.CsvRow dataRow = filewriter.new CsvRow();
 
+			/* 00_Dummy0 is ID */
+			if (strutil.isEnabled(MAPPING_FILE_NAME, "00_Dummy0"))
+			{
+				if (specimen.getSourceSystemId() != null)
+				{
+					dataRow.add(specimen.getSourceSystemId());  
+				}
+				else
+				{
+					dataRow.add(" ");
+				}
+			}
+			
 			/* 01_RecordBasis is basisOfRecord */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "01_RecordBasis"))
 			{

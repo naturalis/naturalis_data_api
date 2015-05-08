@@ -2,4 +2,4 @@
 
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${JAVA_ROOT_PACKAGE}.dwca.DwCAExporter "${1}"
+java -cp ${classpath} $JAVA_OPTS ${JAVA_ROOT_PACKAGE}.dwca.DwCAExporter "${@}"

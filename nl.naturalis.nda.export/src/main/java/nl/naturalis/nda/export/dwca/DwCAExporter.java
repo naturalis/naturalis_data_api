@@ -201,11 +201,7 @@ public class DwCAExporter {
 		{
 			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
 		}
-		/*else if ()
-		{
-			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
-		}*/
-			
+
 
 		DwCAExporter exp = new DwCAExporter(ExportUtil.getESClient(), indexname);
 		/* Delete the CSV file if Exists */
@@ -278,7 +274,8 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 		Iterator<String> fieldIter = headerRow.iterator();
-		while (fieldIter.hasNext()) {
+		while (fieldIter.hasNext()) 
+		{
 			cnt = Integer.valueOf(cnt.intValue() + 1);
 			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
 			cores.addField(field);
@@ -432,8 +429,12 @@ public class DwCAExporter {
 			propertyValue = configFile.getProperty(propertyName);
 			/* Add the headers to the CSV File */
 			String[] chunks = propertyValue.split(",");
-			if (chunks[1].equals("1")) {
-				headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
+			if (chunks[1].equals("1")) 
+			{
+				if (!chunks[0].equalsIgnoreCase("id"))
+				{
+					headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
+				}
 			}
 		}
 		/* Write the headers columns */

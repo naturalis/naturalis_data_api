@@ -14,7 +14,8 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 public class Geology
 {
-
+	private static final String EMPTY_STRING = "";
+	
 	public Geology()
 	{
 		// TODO Auto-generated constructor stub
@@ -40,7 +41,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 			
@@ -53,7 +54,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -66,7 +67,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 			
@@ -80,7 +81,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -93,7 +94,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 				
@@ -106,7 +107,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 				
@@ -119,7 +120,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -132,7 +133,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -149,7 +150,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -167,12 +168,12 @@ public class Geology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(EMPTY_STRING);
 					}
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}	
 
@@ -189,12 +190,12 @@ public class Geology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(EMPTY_STRING);
 					}
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 			
@@ -226,11 +227,11 @@ public class Geology
 				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
 				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -244,7 +245,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 			
@@ -258,26 +259,26 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
 			/* 14_DummyDefault is geodeticDatum */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "14_DummyDefault"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 15_DummyDefault is habitat */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "15_DummyDefault"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 16_Dummy2 is higherClassification */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "16_Dummy2"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 17_identifications_identifiers_fullName is identifiedBy | BRAHMS ONLY ?? */
@@ -294,12 +295,12 @@ public class Geology
 						dataRow.add(strutil.convertStringToUTF8(per.getFullName()));
 					} else
 					{
-						dataRow.add(" ");
+						dataRow.add(EMPTY_STRING);
 					}
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}*/
 				
 				
@@ -334,12 +335,12 @@ public class Geology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(EMPTY_STRING);
 					}
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 				
 				
@@ -354,14 +355,14 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
 			/* 19_DummyDefault is informationWithheld */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "19_DummyDefault"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 20_InfraspecificEpithet is infraspecificEpithet */
@@ -374,7 +375,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -387,7 +388,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -404,7 +405,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -419,7 +420,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -432,7 +433,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -452,26 +453,26 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
 			/* 26_DummyDefault is maximumElevationInMeters */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "26_DummyDefault"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 27_DummyDefault is minimumElevationInMeters */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "27_DummyDefault"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 28_DummyDefault is nomenclaturalCode */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "28_DummyDefault"))
 			{
-				dataRow.add(" ");
+				dataRow.add(EMPTY_STRING);
 			}
 
 			/* 29_DummyDefault is occurrenceID */
@@ -501,7 +502,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -514,7 +515,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -527,7 +528,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -560,12 +561,12 @@ public class Geology
 					}
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(EMPTY_STRING);
 					}
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -579,7 +580,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -593,7 +594,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -606,7 +607,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -620,7 +621,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -633,7 +634,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -647,7 +648,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -661,7 +662,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -692,7 +693,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -705,7 +706,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 			
@@ -748,12 +749,12 @@ public class Geology
  				    }
 					else
 					{
-						dataRow.add(" ");
+						dataRow.add(EMPTY_STRING);
 					}
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 			
@@ -766,7 +767,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -779,7 +780,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -810,11 +811,11 @@ public class Geology
 				/* if EndDate has a value and Begindate has no value set the value of null for Enddate */
 				else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null)
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 
@@ -827,7 +828,7 @@ public class Geology
 				}
 				else
 				{
-					dataRow.add(" ");
+					dataRow.add(EMPTY_STRING);
 				}
 			}
 

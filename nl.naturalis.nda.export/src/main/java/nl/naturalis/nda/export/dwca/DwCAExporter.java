@@ -273,14 +273,53 @@ public class DwCAExporter {
 
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
-		Iterator<String> fieldIter = headerRow.iterator();
+		/*Iterator<String> fieldIter = headerRow.iterator();
+		String propertyName = "";
+		//Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
 		while (fieldIter.hasNext()) 
 		{
 			cnt = Integer.valueOf(cnt.intValue() + 1);
-			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + fieldIter.next());
-			cores.addField(field);
+			System.out.println(fieldIter.next());
+			if (!fieldIter.next().contains("id")) 
+			{
+			if (fieldIter.next() != null)
+			{	
+				propertyName = fieldIter.next().toString().trim();
+				
+			}
+			//}
+			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + propertyName);// fieldIter.next());
+		    cores.addField(field);
+		}*/
+		
+		Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
+		/* Sort the value from the properties file when loaded */
+		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<Object, Object>(configFile);
+		Set<?> keySet = sortedSystemProperties.keySet();
+		Iterator<?> iterator = keySet.iterator();
+		String resultvalue = null;
+		while (iterator.hasNext()) {
+			
+			propertyName = (String) iterator.next();
+			propertyValue = configFile.getProperty(propertyName);
+			/* Add the headers to the CSV File */
+			String[] chunks = propertyValue.split(",");
+			if (chunks[1].equals("1")) 
+			{
+				int index = propertyValue.indexOf(",");
+				if (!propertyValue.equalsIgnoreCase("id,1"))
+				{
+					resultvalue = propertyValue.substring(0, index);
+				}
+				if (resultvalue != null)
+				{
+					cnt = Integer.valueOf(cnt.intValue() + 1);
+					Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + resultvalue);
+					cores.addField(field);
+				}
+			}
 		}
-
+		
 		/* Create Meta.xml file for NBA */
 		Meta xmlspecimen = new Meta();
 		xmlspecimen.setMetadata("eml.xml");
@@ -431,10 +470,7 @@ public class DwCAExporter {
 			String[] chunks = propertyValue.split(",");
 			if (chunks[1].equals("1")) 
 			{
-				if (!chunks[0].equalsIgnoreCase("id"))
-				{
-					headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
-				}
+				headerRow.add(propertyValue.substring(0, propertyValue.length() - 2));
 			}
 		}
 		/* Write the headers columns */

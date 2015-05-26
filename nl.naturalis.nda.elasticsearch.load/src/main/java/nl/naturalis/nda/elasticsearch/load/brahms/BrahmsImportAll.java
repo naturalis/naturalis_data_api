@@ -41,8 +41,6 @@ public class BrahmsImportAll {
 
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);
 
-	private final String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
-	
 	private final IndexNative index;
 	private final boolean backup;
 
@@ -69,6 +67,7 @@ public class BrahmsImportAll {
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
 		multiMediaImporter.importCsvFiles();
 		if (backup) {
+			String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
 			File[] files = getCsvFiles();
 			for (File f : files) {
 				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
@@ -104,6 +103,7 @@ public class BrahmsImportAll {
 		specimenImporter.setMaxRecords(maxRecords);
 		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
 		mediaImporter.setMaxRecords(maxRecords);
+		String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
 		for (File f : files) {
 			specimenImporter.importCsv(f.getAbsolutePath());
 			mediaImporter.importCsv(f.getAbsolutePath());

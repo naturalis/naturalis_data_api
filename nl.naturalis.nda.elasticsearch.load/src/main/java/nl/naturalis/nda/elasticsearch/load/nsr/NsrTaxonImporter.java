@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.nsr;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,45 +19,34 @@ import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
 import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Class that imports taxa from NSR.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class NsrTaxonImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_TAXON);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-			index.addType(LUCENE_TYPE_TAXON, mapping);
-		}
-		else {
-			if (index.typeExists(LUCENE_TYPE_TAXON)) {
-				index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.NSR.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-				index.addType(LUCENE_TYPE_TAXON, mapping);
-			}
-		}
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			NsrTaxonImporter importer = new NsrTaxonImporter(index);
 			importer.importXmlFiles();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
-		logger.info("NsrTaxonImporter finished");
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonImporter.class);
@@ -67,7 +55,7 @@ public class NsrTaxonImporter {
 	private final Index index;
 
 	private final int bulkRequestSize;
-	private final boolean rename;
+	private final boolean backup;
 
 	private int totalProcessed = 0;
 	private int totalIndexed = 0;
@@ -78,45 +66,40 @@ public class NsrTaxonImporter {
 	public NsrTaxonImporter(Index index)
 	{
 		this.index = index;
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(NsrImportAll.SYSPROP_BATCHSIZE, "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty("rename", "0");
-		rename = prop.equals("1") || prop.equalsIgnoreCase("true");
+		prop = System.getProperty(NsrImportAll.SYSPROP_BACKUP, "0");
+		backup = prop.equals("1") || prop.equalsIgnoreCase("true");
 	}
 
 
 	public void importXmlFiles() throws Exception
 	{
-		String xmlDir = LoadUtil.getConfig().required("nsr.xml_dir");
-		File file = new File(xmlDir);
-		if (!file.isDirectory()) {
-			throw new Exception(String.format("No such directory: \"%s\"", xmlDir));
-		}
-		File[] xmlFiles = file.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name)
-			{
-				return name.toLowerCase().endsWith(".xml");
-			}
-		});
+		File[] xmlFiles = NsrImportUtil.getXMLFiles();
 		if (xmlFiles.length == 0) {
 			logger.info("No XML files to process");
 			return;
 		}
+		logger.info("Deleting old NSR taxon documents from document store");
+		index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.NSR.getCode());
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
 		for (File xmlFile : xmlFiles) {
 			logger.info("Processing file " + xmlFile.getCanonicalPath());
 			Document document = builder.parse(xmlFile);
 			importXmlFile(document);
-			if (rename) {
+			if (backup) {
 				xmlFile.renameTo(new File(xmlFile.getCanonicalPath() + ".bak"));
 			}
+		}
+		if(backup) {
+			NsrImportUtil.backupXMLFiles();
 		}
 		logger.info("Skipped records            (total) : " + String.format("%5d", totalSkipped));
 		logger.info("Malformed/rejected records (total) : " + String.format("%5d", totalRejected));
 		logger.info("Records indexed            (total) : " + String.format("%5d", totalIndexed));
 		logger.info("Records processed          (total) : " + String.format("%5d", totalProcessed));
+		logger.info(getClass().getSimpleName() + " finished");
 	}
 
 

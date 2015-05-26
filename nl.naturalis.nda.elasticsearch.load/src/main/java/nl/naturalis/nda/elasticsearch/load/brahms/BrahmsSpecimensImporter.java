@@ -192,7 +192,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			importCsv(f.getCanonicalPath());
 		}
 		ThematicSearchConfig.getInstance().logMatchInfo();
-
 	}
 
 

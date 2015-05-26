@@ -84,7 +84,7 @@ public abstract class AbstractSpecimenImporter {
 
 			ThematicSearchConfig.getInstance().resetMatchCounters();
 
-			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
+			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
 				importLocal();
 			}
 			else {
@@ -116,6 +116,7 @@ public abstract class AbstractSpecimenImporter {
 			}
 		}
 	}
+
 
 	protected abstract void saveSpecimens(List<ESSpecimen> specimens, List<String> ids);
 
@@ -201,7 +202,7 @@ public abstract class AbstractSpecimenImporter {
 			}
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
-		if (config.getBoolean("crs.save_local")) {
+		if (config.isTrue("crs.save_local")) {
 			String path = getLocalPath(resumptionToken);
 			logger.debug("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);

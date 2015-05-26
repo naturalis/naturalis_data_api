@@ -154,7 +154,7 @@ public class CrsMultiMediaImporter {
 			 */
 			MedialibMimeTypeCache.getInstance();
 
-			if (LoadUtil.getConfig().getBoolean("crs.use_local")) {
+			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
 				processLocal();
 			}
 			else {
@@ -338,7 +338,7 @@ public class CrsMultiMediaImporter {
 			}
 			xml = xml.substring(xml.indexOf("<?xml"));
 		}
-		if (config.getBoolean("crs.save_local")) {
+		if (config.isTrue("crs.save_local")) {
 			String path = getLocalPath(resumptionToken);
 			logger.debug("Saving XML to local file system: " + path);
 			FileUtil.setContents(path, xml);

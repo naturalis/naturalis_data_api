@@ -22,13 +22,9 @@ public class NsrImportUtil {
 
 	static File[] getXMLFiles() throws Exception
 	{
-		String xmlDir = LoadUtil.getConfig().required("nsr.xml_dir");
-		logger.info("Searching for new XML files in " + xmlDir);
-		File file = new File(xmlDir);
-		if (!file.isDirectory()) {
-			throw new Exception(String.format("No such directory: \"%s\"", xmlDir));
-		}
-		return file.listFiles(new FilenameFilter() {
+		File dir = LoadUtil.getConfig().getDirectory("nsr.xml_dir");
+		logger.info("Searching for new XML files in " + dir.getAbsolutePath());
+		return dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{

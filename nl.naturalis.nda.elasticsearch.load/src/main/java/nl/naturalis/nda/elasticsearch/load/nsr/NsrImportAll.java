@@ -52,7 +52,7 @@ public class NsrImportAll {
 
 
 	/**
-	 * First import all taxa, then all multimedia
+	 * First imports all taxa, then all multimedia
 	 * 
 	 * @throws Exception
 	 */
@@ -74,7 +74,7 @@ public class NsrImportAll {
 
 
 	/**
-	 * For each XML file, first import taxa, then multimedia
+	 * For each XML file, first imports taxa, then multimedia
 	 * 
 	 * @throws Exception
 	 */

@@ -3,11 +3,9 @@ package nl.naturalis.nda.elasticsearch.load;
 import java.util.Arrays;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsMultiMediaImporter;
-import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter;
+import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
-import nl.naturalis.nda.elasticsearch.load.crs.CrsMultiMediaImporter;
-import nl.naturalis.nda.elasticsearch.load.crs.CrsSpecimenImporter;
+import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
 import nl.naturalis.nda.elasticsearch.load.nsr.NsrImportAll;
 
 import org.domainobject.util.StringUtil;
@@ -56,50 +54,30 @@ public class NDAIndexManager {
 		logger.info("[>--- Starting NSR import ---<]");
 		try {
 			NsrImportAll nsrImportAll = new NsrImportAll(index);
-			nsrImportAll.importXmlFiles();
+			nsrImportAll.importAllPerType();
 		}
 		catch (Throwable t) {
 			logger.error("NSR import Failed!");
 			logger.error(t.getMessage(), t);
 		}
 
-		logger.info("[>--- Starting Brahms specimen import ---<]");
+		logger.info("[>--- Starting Brahms import ---<]");
 		try {
-			BrahmsSpecimensImporter brahmsSpecimenImporter = new BrahmsSpecimensImporter(index);
-			brahmsSpecimenImporter.importCsvFiles();
+			BrahmsImportAll brahmsImportAll = new BrahmsImportAll(index);
+			brahmsImportAll.importAllPerType();
 		}
 		catch (Throwable t) {
-			logger.error("Brahms specimen import Failed!");
+			logger.error("Brahms import Failed!");
 			logger.error(t.getMessage(), t);
 		}
 
-		logger.info("[>--- Starting Brahms multimedia import ---<]");
+		logger.info("[>--- Starting CRS import ---<]");
 		try {
-			BrahmsMultiMediaImporter brahmsMultiMediaImporter = new BrahmsMultiMediaImporter(index);
-			brahmsMultiMediaImporter.importCsvFiles();
-		}
-		catch (Throwable t) {
-			logger.error("Brahms multimedia import Failed!");
-			logger.error(t.getMessage(), t);
-		}
-
-		logger.info("[>--- Starting CRS specimen import ---<]");
-		try {
-			CrsSpecimenImporter crsSpecimenImporter = new CrsSpecimenImporter(index);
-			crsSpecimenImporter.importSpecimens();
+			CrsImportAll crsImportAll = new CrsImportAll(index);
+			crsImportAll.importAll();
 		}
 		catch (Throwable t) {
 			logger.error("CRS specimen import Failed!");
-			logger.error(t.getMessage(), t);
-		}
-
-		logger.info("[>--- Starting CRS multimedia import ---<]");
-		try {
-			CrsMultiMediaImporter crsMultiMediaImporter = new CrsMultiMediaImporter(index);
-			crsMultiMediaImporter.importMultiMedia();
-		}
-		catch (Throwable t) {
-			logger.error("CRS multimedia import Failed!");
 			logger.error(t.getMessage(), t);
 		}
 

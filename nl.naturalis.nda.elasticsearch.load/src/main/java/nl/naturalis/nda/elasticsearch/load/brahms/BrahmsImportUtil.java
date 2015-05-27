@@ -42,12 +42,8 @@ class BrahmsImportUtil {
 
 	static File[] getCsvFiles()
 	{
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
-		File file = new File(csvDir);
-		if (!file.isDirectory()) {
-			throw new RuntimeException(String.format("No such directory: \"%s\"", csvDir));
-		}
-		File[] files = file.listFiles(new FilenameFilter() {
+		File dir = LoadUtil.getConfig().getDirectory("brahms.csv_dir");
+		File[] files = dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{

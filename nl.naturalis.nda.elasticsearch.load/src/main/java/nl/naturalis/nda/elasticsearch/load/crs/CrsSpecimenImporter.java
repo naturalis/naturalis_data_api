@@ -11,7 +11,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +32,8 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 		// Set up thematic search and make sure it's configured OK.
 		ThematicSearchConfig.getInstance();
 
+		// Debug functionality: just see what a particular specimen in
+		// source data looks like
 		String unitIDToCheck = System.getProperty("check");
 		if (unitIDToCheck != null) {
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(null);
@@ -40,17 +41,10 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 			return;
 		}
 
+		// For real
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
-			if (index.typeExists(LUCENE_TYPE_SPECIMEN)) {
-				index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.CRS.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-				index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-			}
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
 			importer.importSpecimens();
 		}
@@ -59,8 +53,6 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 				index.getClient().close();
 			}
 		}
-		logger.info("Ready");
-
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
@@ -73,6 +65,13 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 	{
 		super();
 		this.index = index;
+	}
+
+
+	@Override
+	protected void beforeFirst()
+	{
+		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.CRS.getCode());
 	}
 
 

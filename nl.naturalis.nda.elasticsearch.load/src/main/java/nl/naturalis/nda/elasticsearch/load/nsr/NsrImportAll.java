@@ -27,7 +27,7 @@ public class NsrImportAll {
 		try {
 			IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			NsrImportAll importer = new NsrImportAll(index);
-			importer.importXmlFiles();
+			importer.importAllPerType();
 		}
 		catch (Throwable t) {
 			logger.error("NSR import failed!");
@@ -52,11 +52,11 @@ public class NsrImportAll {
 
 
 	/**
-	 * First imports all taxa, then all multimedia
+	 * First import all taxa from all files, then all multimedia from all files.
 	 * 
 	 * @throws Exception
 	 */
-	public void importXmlFiles() throws Exception
+	public void importAllPerType() throws Exception
 	{
 		if (NsrImportUtil.getXMLFiles().length == 0) {
 			logger.info("No XML files to process");
@@ -74,15 +74,14 @@ public class NsrImportAll {
 
 
 	/**
-	 * For each XML file, first imports taxa, then multimedia
+	 * For each XML file, first import all taxa contained in it, then all
+	 * multimedia.
 	 * 
 	 * @throws Exception
 	 */
-	@Deprecated
-	public void importXmlFiles2() throws Exception
+	public void importAllPerFile() throws Exception
 	{
-		File[] xmlFiles = NsrImportUtil.getXMLFiles();
-		if (xmlFiles.length == 0) {
+		if (NsrImportUtil.getXMLFiles().length == 0) {
 			logger.info("No XML files to process");
 			return;
 		}
@@ -90,7 +89,7 @@ public class NsrImportAll {
 		NsrMultiMediaImporter multimediaImporter = new NsrMultiMediaImporter(index);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		for (File xmlFile : xmlFiles) {
+		for (File xmlFile : NsrImportUtil.getXMLFiles()) {
 			logger.info("Processing file " + xmlFile.getCanonicalPath());
 			Document document = builder.parse(xmlFile);
 			taxonImporter.importXmlFile(document);
@@ -99,6 +98,7 @@ public class NsrImportAll {
 		if (backup) {
 			NsrImportUtil.backupXMLFiles();
 		}
+		logger.info(getClass().getSimpleName() + " finished");
 	}
 
 }

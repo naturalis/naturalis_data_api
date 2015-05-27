@@ -83,20 +83,20 @@ public abstract class AbstractSpecimenImporter {
 		try {
 
 			ThematicSearchConfig.getInstance().resetMatchCounters();
-
+			beforeFirst();
 			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
 				importLocal();
 			}
 			else {
 				importRemote();
 			}
-
+			afterLast();
 			ThematicSearchConfig.getInstance().logMatchInfo();
 
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
 			logger.info("Documents indexed: " + indexed);
-			logger.info(getClass().getSimpleName() + " finished successfully");
+			logger.info(getClass().getSimpleName() + " finished");
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
@@ -115,6 +115,26 @@ public abstract class AbstractSpecimenImporter {
 				break;
 			}
 		}
+	}
+
+
+	/**
+	 * Will be called just before processing the very first record (either
+	 * coming back from the first OAI request or within within the first locally
+	 * stored OAI XML file).
+	 */
+	protected void beforeFirst()
+	{
+
+	}
+
+
+	/**
+	 * Will be called just after the last record has been processed
+	 */
+	protected void afterLast()
+	{
+
 	}
 
 

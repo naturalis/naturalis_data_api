@@ -50,41 +50,21 @@ public class CrsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
-		// Check thematic search is configured properly
+		// Make sure thematic search is configured properly
 		ThematicSearchConfig.getInstance();
-
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_MULTIMEDIA_OBJECT);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-			index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-		}
-		else {
-			if (index.typeExists(LUCENE_TYPE_MULTIMEDIA_OBJECT)) {
-				index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-				index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-			}
-		}
-
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			CrsMultiMediaImporter importer = new CrsMultiMediaImporter(index);
 			importer.importMultiMedia();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
-
-		logger.info("Ready");
-
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
@@ -153,6 +133,7 @@ public class CrsMultiMediaImporter {
 			 * opaque class initialization errors in CrsMultiMediaTransfer
 			 */
 			MedialibMimeTypeCache.getInstance();
+			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
 			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
 				processLocal();

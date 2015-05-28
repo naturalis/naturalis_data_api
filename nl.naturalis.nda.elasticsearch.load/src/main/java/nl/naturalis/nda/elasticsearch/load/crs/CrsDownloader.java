@@ -1,5 +1,14 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -7,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.DOMUtil;
+import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,34 +47,22 @@ public class CrsDownloader {
 			CrsDownloader downloader = new CrsDownloader();
 
 			if (args.length == 0) {
-				downloader.download(Type.SPECIMEN, null);
-				downloader.download(Type.MULTIMEDIA, null);
+				downloader.downloadSpecimens();
+				downloader.downloadMultiMedia();
 			}
 
 			else if (args.length == 1) {
 				if (args[0].toLowerCase().equals("specimens")) {
-					downloader.download(Type.SPECIMEN, null);
+					downloader.downloadSpecimens();
 				}
 				else if (args[0].toLowerCase().equals("multimedia")) {
-					downloader.download(Type.MULTIMEDIA, null);
+					downloader.downloadMultiMedia();
 				}
 				else {
 					logger.error(USAGE);
 				}
 			}
-
-			else if (args.length == 2) {
-				if (args[0].toLowerCase().equals("specimens")) {
-					downloader.download(Type.SPECIMEN, args[1]);
-				}
-				else if (args[0].toLowerCase().equals("multimedia")) {
-					downloader.download(Type.MULTIMEDIA, args[1]);
-				}
-				else {
-					logger.error(USAGE);
-				}
-			}
-
+			
 			else {
 				logger.error(USAGE);
 			}
@@ -74,7 +72,7 @@ public class CrsDownloader {
 			logger.error(t.getMessage(), t);
 			logger.error("Download did not complete successfully");
 		}
-		
+
 		logger.info("Ready");
 
 	}
@@ -90,53 +88,140 @@ public class CrsDownloader {
 	private final DocumentBuilder builder;
 
 
-	public CrsDownloader() throws ParserConfigurationException
+	public CrsDownloader()
 	{
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
-		builder = builderFactory.newDocumentBuilder();
+		try {
+			builder = builderFactory.newDocumentBuilder();
+		}
+		catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 
-	public void download(Type type, String resToken) throws Exception
+	public void downloadSpecimens()
 	{
-		String s = type == Type.SPECIMEN ? "specimens" : "multimedia";
-		logger.info("Downloading " + s);
-
-		if (resToken != null) {
-			logger.info(String.format("Resuming with resumption token \"%s\"", resToken));
+		logger.info("Downloading specimens");
+		String xml = CrsSpecimenImporter.callOaiService(getFromDate(Type.SPECIMEN));
+		xml = CrsImportUtil.cleanupXml(xml);
+		String resumptionToken = saveXml(Type.SPECIMEN, xml);
+		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
+			xml = CrsSpecimenImporter.callOaiService(resumptionToken);
+			xml = CrsImportUtil.cleanupXml(xml);
+			resumptionToken = saveXml(Type.SPECIMEN, xml);
 		}
+		logger.info("Successfully downloaded specimens");
+	}
 
-		// Override/ignore some properties which are only relevant while
-		// indexing (within CrsSpecimenImporter or CrsMultiMediaImporter):
-		LoadUtil.getConfig().set("crs.save_local", "true");
 
-		do {
-			String xml;
-			if (type == Type.SPECIMEN) {
-				xml = CrsSpecimenImporter.callOaiService(resToken);
-			}
-			else {
-				xml = CrsMultiMediaImporter.callOaiService(resToken);
-			}
-			Document doc = builder.parse(StringUtil.asInputStream(xml));
-			if (!doc.getDocumentElement().getTagName().equals("OAI-PMH")) {
-				throw new Exception("XML output is not OAI-PMH");
-			}
-			Element e = DOMUtil.getDescendant(doc.getDocumentElement(), "error");
-			if (e == null) {
-				logger.debug("Extracting resumption token from output");
-				resToken = DOMUtil.getDescendantValue(doc, "resumptionToken");
-				if (resToken != null) {
-					logger.info("Resumption token used for next call: " + resToken);
+	public void downloadMultiMedia()
+	{
+		logger.info("Downloading multimedia");
+		String xml = CrsMultiMediaImporter.callOaiService(getFromDate(Type.MULTIMEDIA));
+		xml = CrsImportUtil.cleanupXml(xml);
+		String resumptionToken = saveXml(Type.MULTIMEDIA, xml);
+		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
+			xml = CrsMultiMediaImporter.callOaiService(resumptionToken);
+			xml = CrsImportUtil.cleanupXml(xml);
+			resumptionToken = saveXml(Type.MULTIMEDIA, xml);
+		}
+		logger.info("Successfully downloaded multimedia");
+	}
+
+
+	public String saveXml(Type type, String xml)
+	{
+		Document doc;
+		try {
+			doc = builder.parse(StringUtil.asInputStream(xml));
+		}
+		catch (Exception exc) {
+			throw new RuntimeException(exc);
+		}
+		if (!doc.getDocumentElement().getTagName().equals("OAI-PMH")) {
+			throw new RuntimeException("XML output is not OAI-PMH");
+		}
+		Element e = DOMUtil.getDescendant(doc.getDocumentElement(), "error");
+		if (e != null) {
+			String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
+			throw new RuntimeException(msg);
+		}
+		File file = getLocalPath(type, doc);
+		logger.info("Saving XML to " + file.getAbsolutePath());
+		FileUtil.setContents(file, xml);
+		return DOMUtil.getDescendantValue(doc, "resumptionToken");
+	}
+
+	private static final SimpleDateFormat oaiDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	private static final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+
+
+	private static File getLocalPath(Type type, Document doc)
+	{
+		Element e = DOMUtil.getChild(doc.getDocumentElement(), "ListRecords");
+		if (e == null) {
+			throw new RuntimeException("Missing <ListRecords> element in OAI output");
+		}
+		List<Element> records = DOMUtil.getChildren(e, "record");
+		try {
+			String s = DOMUtil.getDescendantValue(records.get(0), "datestamp");
+			String date0 = fileNameDateFormat.format(oaiDateFormat.parse(s));
+			s = DOMUtil.getDescendantValue(records.get(records.size() - 1), "datestamp");
+			String date1 = fileNameDateFormat.format(oaiDateFormat.parse(s));
+			s = type == Type.SPECIMEN ? "specimens" : "multimedia";
+			String fileName = s + "." + date0 + "." + date1 + ".oai.xml";
+			File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
+			return new File(dir.getAbsolutePath() + "/" + fileName);
+		}
+		catch (ParseException exc) {
+			throw new RuntimeException(exc);
+		}
+	}
+
+
+	private static Date getFromDate(final Type type)
+	{
+		File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
+		File[] files = dir.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name)
+			{
+				if (!name.endsWith(".oai.xml")) {
+					return false;
 				}
+				if (type == Type.SPECIMEN && name.startsWith("specimens")) {
+					return true;
+				}
+				if (type == Type.MULTIMEDIA && name.startsWith("multimedia")) {
+					return true;
+				}
+				return false;
 			}
-			else {
-				String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
-				throw new Exception(msg);
+		});
+		if (files.length == 0) {
+			// There are no XML files yet in the directory
+			return null;
+		}
+		Arrays.sort(files, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2)
+			{
+				// Reverse sort!
+				return o2.getName().compareTo(o1.getName());
 			}
-		} while (resToken != null && resToken.trim().length() != 0);
-		logger.info("Successfully downloaded " + s);
+		});
+		/*
+		 * File names look like this: specimens.fromdate.todate.oai.xml
+		 */
+		String fromDateString = files[0].getName().split("\\.")[2];
+		try {
+			return fileNameDateFormat.parse(fromDateString);
+		}
+		catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

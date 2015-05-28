@@ -169,34 +169,41 @@ public class CrsMultiMediaImporter {
 	private void processRemote() throws IOException
 	{
 		int batch = 0;
-		String resToken;
+		String resumptionToken;
 		File resTokenFile = getResumptionTokenFile();
 		logger.info(String.format("Looking for resumption token file: %s", resTokenFile.getCanonicalPath()));
 		if (!resTokenFile.exists()) {
 			logger.info("Resumption token file not found. Will start from scratch");
-			resToken = null;
+			resumptionToken = null;
 			batch = 0;
 		}
 		else {
 			if (forceRestart) {
 				resTokenFile.delete();
 				logger.info("Resumption token file found but ignored and deleted (forceRestart=true). Will start from scratch");
-				resToken = null;
+				resumptionToken = null;
 				batch = 0;
 			}
 			else {
 				String[] elements = FileUtil.getContents(resTokenFile).split(",");
 				batch = Integer.parseInt(elements[0]);
-				resToken = elements[1];
-				logger.info(String.format("Will resume with resumption token %s (batch %s)", resToken, batch));
+				resumptionToken = elements[1];
+				logger.info(String.format("Will resume with resumption token %s (batch %s)", resumptionToken, batch));
 			}
 		}
+
 		do {
 			logger.info("Processing batch " + batch);
-			String xml = callOaiService(resToken);
+			String xml = callOaiService(resumptionToken);
+			xml = CrsImportUtil.cleanupXml(xml);
+			if (LoadUtil.getConfig().isTrue("crs.save_local")) {
+				CrsDownloader downloader = new CrsDownloader();
+				downloader.saveXml(CrsDownloader.Type.MULTIMEDIA, xml);
+			}
 			++batch;
-			resToken = index(xml);
-		} while (resToken != null);
+			resumptionToken = index(xml);
+		} while (resumptionToken != null);
+
 		logger.info("Deleting resumption token file");
 		if (resTokenFile.exists()) {
 			resTokenFile.delete();
@@ -290,41 +297,37 @@ public class CrsMultiMediaImporter {
 		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 
+	private static final SimpleDateFormat oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
+
 
 	static String callOaiService(String resumptionToken)
 	{
 		String url;
-		ConfigObject config = LoadUtil.getConfig();
 		if (resumptionToken == null) {
-			url = config.required("crs.multimedia.url.initial");
-			int maxAge = config.required("crs.max_age", int.class);
+			url = LoadUtil.getConfig().required("crs.multimedia.url.initial");
+			int maxAge = LoadUtil.getConfig().required("crs.max_age", int.class);
 			if (maxAge != 0) {
 				DateTime now = new DateTime();
 				DateTime wayback = now.minusHours(maxAge);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
-				url += "&from=" + sdf.format(wayback.toDate());
+				url += "&from=" + oaiDateFormatter.format(wayback.toDate());
 			}
 		}
 		else {
-			url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
+			url = String.format(LoadUtil.getConfig().required("crs.multimedia.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
-		// Avoid "Content is not allowed in prolog"
-		String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
-		if (!xml.startsWith("<?xml")) {
-			if (xml.indexOf("<?xml") == -1) {
-				logger.error("Unexpected response:");
-				logger.error(xml);
-				return null;
-			}
-			xml = xml.substring(xml.indexOf("<?xml"));
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+	}
+
+
+	static String callOaiService(Date fromDate)
+	{
+		String url = LoadUtil.getConfig().required("crs.multimedia.url.initial");
+		if(fromDate != null) {
+			url += "&from=" + oaiDateFormatter.format(fromDate);
 		}
-		if (config.isTrue("crs.save_local")) {
-			String path = getLocalPath(resumptionToken);
-			logger.debug("Saving XML to local file system: " + path);
-			FileUtil.setContents(path, xml);
-		}
-		return xml;
+		logger.info("Calling service: " + url);
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
 	}
 
 

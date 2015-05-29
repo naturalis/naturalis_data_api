@@ -21,7 +21,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
-import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
@@ -223,11 +222,14 @@ public abstract class AbstractSpecimenImporter {
 	}
 
 
-	static String callOaiService(Date fromDate)
+	static String callOaiService(Date fromDate, Date untilDate)
 	{
 		String url = LoadUtil.getConfig().required("crs.specimens.url.initial");
 		if(fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
+		}
+		if(untilDate != null) {
+			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();

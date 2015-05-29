@@ -25,7 +25,6 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 
-import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
@@ -133,6 +132,7 @@ public class CrsMultiMediaImporter {
 			 * opaque class initialization errors in CrsMultiMediaTransfer
 			 */
 			MedialibMimeTypeCache.getInstance();
+
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
 			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
@@ -320,11 +320,14 @@ public class CrsMultiMediaImporter {
 	}
 
 
-	static String callOaiService(Date fromDate)
+	static String callOaiService(Date fromDate, Date untilDate)
 	{
 		String url = LoadUtil.getConfig().required("crs.multimedia.url.initial");
-		if(fromDate != null) {
+		if (fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
+		}
+		if (untilDate != null) {
+			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();

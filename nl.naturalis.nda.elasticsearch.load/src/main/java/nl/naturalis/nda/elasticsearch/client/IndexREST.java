@@ -252,7 +252,8 @@ public class IndexREST implements Index {
 	 */
 	public String getResponse()
 	{
-		return lastRequest.getResponse();
+		// TODO
+		return null;
 	}
 
 

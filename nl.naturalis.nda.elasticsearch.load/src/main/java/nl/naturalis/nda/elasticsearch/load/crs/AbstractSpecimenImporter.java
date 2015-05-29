@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -218,21 +219,23 @@ public abstract class AbstractSpecimenImporter {
 			url = String.format(LoadUtil.getConfig().required("crs.specimens.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		return new String(response, Charset.forName("UTF-8"));
 	}
 
 
 	static String callOaiService(Date fromDate, Date untilDate)
 	{
 		String url = LoadUtil.getConfig().required("crs.specimens.url.initial");
-		if(fromDate != null) {
+		if (fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
 		}
-		if(untilDate != null) {
+		if (untilDate != null) {
 			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		return new String(response, Charset.forName("UTF-8"));
 	}
 
 

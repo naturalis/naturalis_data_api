@@ -133,9 +133,11 @@ public class CrsDownloader {
 		}
 		String xml = CrsSpecimenImporter.callOaiService(fromDate, untilDate);
 		xml = CrsImportUtil.cleanupXml(xml);
+		FileUtil.setContents("C:/temp/" + System.currentTimeMillis() + ".xml", xml);
 		String resumptionToken = saveXml(Type.SPECIMEN, xml);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsSpecimenImporter.callOaiService(resumptionToken);
+			FileUtil.setContents("C:/temp/" + System.currentTimeMillis() + ".xml", xml);
 			xml = CrsImportUtil.cleanupXml(xml);
 			resumptionToken = saveXml(Type.SPECIMEN, xml);
 		}

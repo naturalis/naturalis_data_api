@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import java.nio.charset.Charset;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,7 +48,8 @@ public class CrsPing {
 		try {
 			for (int i = 0; i < numTests; ++i) {
 				logger.info("Calling service: " + url);
-				String xml = new SimpleHttpGet().setBaseUrl(url).execute().getResponse().trim();
+				byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+				String xml = new String(response, Charset.forName("UTF-8"));
 				if (!xml.startsWith("<?xml")) {
 					if (xml.indexOf("<?xml") == -1) {
 						logger.error(xml);

@@ -5,6 +5,7 @@ import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MU
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -316,7 +317,8 @@ public class CrsMultiMediaImporter {
 			url = String.format(LoadUtil.getConfig().required("crs.multimedia.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		return new String(response, Charset.forName("UTF-8"));
 	}
 
 
@@ -330,7 +332,8 @@ public class CrsMultiMediaImporter {
 			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		return new String(response, Charset.forName("UTF-8"));
 	}
 
 

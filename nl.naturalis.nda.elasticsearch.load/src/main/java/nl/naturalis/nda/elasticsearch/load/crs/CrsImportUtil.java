@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class CrsImportUtil {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(CrsImportUtil.class);
 
 

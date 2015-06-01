@@ -48,7 +48,7 @@ public class CrsPing {
 		try {
 			for (int i = 0; i < numTests; ++i) {
 				logger.info("Calling service: " + url);
-				byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+				byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 				String xml = new String(response, Charset.forName("UTF-8"));
 				if (!xml.startsWith("<?xml")) {
 					if (xml.indexOf("<?xml") == -1) {

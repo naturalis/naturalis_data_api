@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
-import static org.domainobject.util.http.SimpleHttpRequest.MIME_JSON;
+import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
 
 import java.util.List;
 
@@ -226,7 +226,7 @@ public class IndexREST implements Index {
 		lastRequest = httpPut;
 		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
 		httpPut.setPath(sb.toString());
-		httpPut.setContentType(MIME_JSON);
+		httpPut.setContentType(MIMETYPE_JSON);
 		httpPut.setObject(obj);
 		execute();
 		if (!isSuccess()) {

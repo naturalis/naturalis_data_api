@@ -129,16 +129,14 @@ public class CrsDownloader {
 	{
 		logger.info("Downloading specimens");
 		if (fromDate == null) {
-			fromDate = getFromDate(Type.SPECIMEN);
+			fromDate = getFromDateFromFile(Type.SPECIMEN);
 		}
 		String xml = CrsSpecimenImporter.callOaiService(fromDate, untilDate);
-		xml = CrsImportUtil.cleanupXml(xml);
-		FileUtil.setContents("C:/temp/" + System.currentTimeMillis() + ".xml", xml);
+		//xml = CrsImportUtil.cleanupXml(xml);
 		String resumptionToken = saveXml(Type.SPECIMEN, xml);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsSpecimenImporter.callOaiService(resumptionToken);
-			FileUtil.setContents("C:/temp/" + System.currentTimeMillis() + ".xml", xml);
-			xml = CrsImportUtil.cleanupXml(xml);
+			//xml = CrsImportUtil.cleanupXml(xml);
 			resumptionToken = saveXml(Type.SPECIMEN, xml);
 		}
 		logger.info("Successfully downloaded specimens");
@@ -149,14 +147,14 @@ public class CrsDownloader {
 	{
 		logger.info("Downloading multimedia");
 		if (fromDate == null) {
-			fromDate = getFromDate(Type.MULTIMEDIA);
+			fromDate = getFromDateFromFile(Type.MULTIMEDIA);
 		}
 		String xml = CrsMultiMediaImporter.callOaiService(fromDate, untilDate);
-		xml = CrsImportUtil.cleanupXml(xml);
+		//xml = CrsImportUtil.cleanupXml(xml);
 		String resumptionToken = saveXml(Type.MULTIMEDIA, xml);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsMultiMediaImporter.callOaiService(resumptionToken);
-			xml = CrsImportUtil.cleanupXml(xml);
+			//xml = CrsImportUtil.cleanupXml(xml);
 			resumptionToken = saveXml(Type.MULTIMEDIA, xml);
 		}
 		logger.info("Successfully downloaded multimedia");
@@ -217,9 +215,10 @@ public class CrsDownloader {
 	 * multimedia.fromdate.untildate.oai.xml. So we need the 3rd chunk after
 	 * splitting the file name across the '.' character.
 	 */
-	private static Date getFromDate(final Type type)
+	private static Date getFromDateFromFile(final Type type)
 	{
 		File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
+		logger.info(String.format("Searching %s for most recently downloaded file", dir.getAbsolutePath()));
 		File[] files = dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
@@ -238,6 +237,8 @@ public class CrsDownloader {
 		});
 		if (files.length == 0) {
 			// There are no XML files yet in the directory
+			String pattern = "No %s files present yet in %s. Will do full harvest!";
+			logger.info(String.format(pattern, type.name().toLowerCase(), dir.getAbsolutePath()));
 			return null;
 		}
 		Arrays.sort(files, new Comparator<File>() {
@@ -248,7 +249,9 @@ public class CrsDownloader {
 				return o2.getName().compareTo(o1.getName());
 			}
 		});
+
 		String fromDateString = files[0].getName().split("\\.")[2];
+		logger.info(String.format("Using file %s to infer resumption date (%s)", files[0].getName(), fromDateString));
 		try {
 			return fileNameDateFormat.parse(fromDateString);
 		}

@@ -317,7 +317,7 @@ public class CrsMultiMediaImporter {
 			url = String.format(LoadUtil.getConfig().required("crs.multimedia.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
-		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 		return new String(response, Charset.forName("UTF-8"));
 	}
 
@@ -332,7 +332,7 @@ public class CrsMultiMediaImporter {
 			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
-		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponse();
+		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 		return new String(response, Charset.forName("UTF-8"));
 	}
 

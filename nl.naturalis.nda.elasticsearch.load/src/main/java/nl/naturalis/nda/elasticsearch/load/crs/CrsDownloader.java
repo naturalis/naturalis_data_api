@@ -199,7 +199,13 @@ public class CrsDownloader {
 	{
 		String dir = LoadUtil.getConfig().getDirectory("crs.local_dir").getAbsolutePath();
 		String typeString = type == Type.SPECIMEN ? "specimens" : "multimedia";
-		String dateString = fileNameDateFormat.format(fromDate);
+		String dateString;
+		if (fromDate == null) {
+			dateString = "00000000000000";
+		}
+		else {
+			dateString = fileNameDateFormat.format(fromDate);
+		}
 		String requestString = new DecimalFormat("000000").format(request);
 		String path = dir + "/" + typeString + "." + dateString + "." + requestString + ".oai.xml";
 		return new File(path);

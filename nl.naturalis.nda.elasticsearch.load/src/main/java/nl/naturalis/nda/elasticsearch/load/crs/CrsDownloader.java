@@ -1,13 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -129,16 +126,26 @@ public class CrsDownloader {
 	{
 		logger.info("Downloading specimens");
 		if (fromDate == null) {
-			fromDate = getFromDateFromFile(Type.SPECIMEN);
+			fromDate = getFromDateFromAdminFile(Type.SPECIMEN);
 		}
+		if (untilDate == null) {
+			untilDate = new Date();
+		}
+		int request = 0;
 		String xml = CrsSpecimenImporter.callOaiService(fromDate, untilDate);
-		//xml = CrsImportUtil.cleanupXml(xml);
-		String resumptionToken = saveXml(Type.SPECIMEN, xml);
+		String resumptionToken = saveXml(Type.SPECIMEN, xml, fromDate, request++);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsSpecimenImporter.callOaiService(resumptionToken);
-			//xml = CrsImportUtil.cleanupXml(xml);
-			resumptionToken = saveXml(Type.SPECIMEN, xml);
+			resumptionToken = saveXml(Type.SPECIMEN, xml, fromDate, request++);
 		}
+		/*
+		 * If we make it to here, the next time we harvest we can take the
+		 * current "until" date as the new "from" date. Otherwise we have no
+		 * choice but to start from the original date in the admin file. In
+		 * other words, if we make it to here, we can legitimately overwrite the
+		 * "from" date in the admin file.
+		 */
+		FileUtil.setContents(getAdminFile(Type.SPECIMEN), fileNameDateFormat.format(untilDate));
 		logger.info("Successfully downloaded specimens");
 	}
 
@@ -147,21 +154,24 @@ public class CrsDownloader {
 	{
 		logger.info("Downloading multimedia");
 		if (fromDate == null) {
-			fromDate = getFromDateFromFile(Type.MULTIMEDIA);
+			fromDate = getFromDateFromAdminFile(Type.MULTIMEDIA);
 		}
+		if (untilDate == null) {
+			untilDate = new Date();
+		}
+		int request = 0;
 		String xml = CrsMultiMediaImporter.callOaiService(fromDate, untilDate);
-		//xml = CrsImportUtil.cleanupXml(xml);
-		String resumptionToken = saveXml(Type.MULTIMEDIA, xml);
+		String resumptionToken = saveXml(Type.MULTIMEDIA, xml, fromDate, request++);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsMultiMediaImporter.callOaiService(resumptionToken);
-			//xml = CrsImportUtil.cleanupXml(xml);
-			resumptionToken = saveXml(Type.MULTIMEDIA, xml);
+			resumptionToken = saveXml(Type.MULTIMEDIA, xml, fromDate, request++);
 		}
+		FileUtil.setContents(getAdminFile(Type.SPECIMEN), fileNameDateFormat.format(untilDate));
 		logger.info("Successfully downloaded multimedia");
 	}
 
 
-	public String saveXml(Type type, String xml)
+	public String saveXml(Type type, String xml, Date fromDate, int request)
 	{
 		Document doc;
 		try {
@@ -178,86 +188,43 @@ public class CrsDownloader {
 			String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
 			throw new RuntimeException(msg);
 		}
-		File file = getLocalPath(type, doc);
+		File file = getLocalPath(type, fromDate, request);
 		logger.info("Saving XML to " + file.getAbsolutePath());
 		FileUtil.setContents(file, xml);
 		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 
 
-	private static File getLocalPath(Type type, Document doc)
+	private static File getLocalPath(Type type, Date fromDate, int request)
 	{
-		Element e = DOMUtil.getChild(doc.getDocumentElement(), "ListRecords");
-		if (e == null) {
-			throw new RuntimeException("Missing <ListRecords> element in OAI output");
-		}
-		List<Element> records = DOMUtil.getChildren(e, "record");
-		try {
-			String s = DOMUtil.getDescendantValue(records.get(0), "datestamp");
-			String date0 = fileNameDateFormat.format(oaiDateFormat.parse(s));
-			s = DOMUtil.getDescendantValue(records.get(records.size() - 1), "datestamp");
-			String date1 = fileNameDateFormat.format(oaiDateFormat.parse(s));
-			s = type == Type.SPECIMEN ? "specimens" : "multimedia";
-			String fileName = s + "." + date0 + "." + date1 + ".oai.xml";
-			File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
-			return new File(dir.getAbsolutePath() + "/" + fileName);
-		}
-		catch (ParseException exc) {
-			throw new RuntimeException(exc);
-		}
+		String dir = LoadUtil.getConfig().getDirectory("crs.local_dir").getAbsolutePath();
+		String typeString = type == Type.SPECIMEN ? "specimens" : "multimedia";
+		String dateString = fileNameDateFormat.format(fromDate);
+		String requestString = new DecimalFormat("000000").format(request);
+		String path = dir + "/" + typeString + "." + dateString + "." + requestString + ".oai.xml";
+		return new File(path);
 	}
 
 
-	/*
-	 * Extract the date of the latest record from the name of the most recently
-	 * downloaded file. File names look like this:
-	 * specimens.fromdate.untildate.oai.xml or
-	 * multimedia.fromdate.untildate.oai.xml. So we need the 3rd chunk after
-	 * splitting the file name across the '.' character.
-	 */
-	private static Date getFromDateFromFile(final Type type)
+	private static Date getFromDateFromAdminFile(Type type)
 	{
-		File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
-		logger.info(String.format("Searching %s for most recently downloaded file", dir.getAbsolutePath()));
-		File[] files = dir.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name)
-			{
-				if (!name.endsWith(".oai.xml")) {
-					return false;
-				}
-				if (type == Type.SPECIMEN && name.startsWith("specimens")) {
-					return true;
-				}
-				if (type == Type.MULTIMEDIA && name.startsWith("multimedia")) {
-					return true;
-				}
-				return false;
-			}
-		});
-		if (files.length == 0) {
-			// There are no XML files yet in the directory
-			String pattern = "No %s files present yet in %s. Will do full harvest!";
-			logger.info(String.format(pattern, type.name().toLowerCase(), dir.getAbsolutePath()));
+		File adminFile = getAdminFile(type);
+		if (!adminFile.exists()) {
 			return null;
 		}
-		Arrays.sort(files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2)
-			{
-				// Reverse sort!
-				return o2.getName().compareTo(o1.getName());
-			}
-		});
-
-		String fromDateString = files[0].getName().split("\\.")[2];
-		logger.info(String.format("Using file %s to infer resumption date (%s)", files[0].getName(), fromDateString));
 		try {
-			return fileNameDateFormat.parse(fromDateString);
+			return fileNameDateFormat.parse(FileUtil.getContents(adminFile));
 		}
 		catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	private static File getAdminFile(Type type)
+	{
+		File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
+		return new File(dir.getAbsolutePath() + "/." + type.name().toLowerCase() + ".oai-admin");
 	}
 
 

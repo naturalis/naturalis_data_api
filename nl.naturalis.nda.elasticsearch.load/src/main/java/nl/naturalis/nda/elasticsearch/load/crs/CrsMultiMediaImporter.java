@@ -196,11 +196,6 @@ public class CrsMultiMediaImporter {
 		do {
 			logger.info("Processing batch " + batch);
 			String xml = callOaiService(resumptionToken);
-			xml = CrsImportUtil.cleanupXml(xml);
-			if (LoadUtil.getConfig().isTrue("crs.save_local")) {
-				CrsDownloader downloader = new CrsDownloader();
-				downloader.saveXml(CrsDownloader.Type.MULTIMEDIA, xml);
-			}
 			++batch;
 			resumptionToken = index(xml);
 		} while (resumptionToken != null);

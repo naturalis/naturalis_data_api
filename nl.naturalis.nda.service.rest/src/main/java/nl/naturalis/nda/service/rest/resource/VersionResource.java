@@ -41,9 +41,9 @@ public class VersionResource {
 			PrintWriter pw = new PrintWriter(sw);
 			pw.println("Netherlands Biodiversity API (NBA)");
 			pw.println();
-			String version = props.getProperty("git.tag").substring(8);
-			pw.println("version: " + version);
-			pw.println("build date: " + props.getProperty("built"));
+			String version = props.getProperty("git.tag");
+			pw.println("Version: " + version);
+			pw.println("Build date: " + props.getProperty("built"));
 			pw.println("Git branch: " + props.getProperty("git.branch"));
 			pw.println("Git commit: " + props.getProperty("git.commit"));
 			return sw.toString();

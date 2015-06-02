@@ -30,14 +30,17 @@ public class CoLTaxonSynonymEnricher {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
 
@@ -51,10 +54,10 @@ public class CoLTaxonSynonymEnricher {
 
 	public CoLTaxonSynonymEnricher(Index index)
 	{
-		this.index = index;
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		this.index = index;		
+		String prop = System.getProperty(CoLImportAll.SYSPROP_BATCHSIZE, "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty("maxRecords", "0");
+		prop = System.getProperty(CoLImportAll.SYSPROP_MAXRECORDS, "0");
 		maxRecords = Integer.parseInt(prop);
 	}
 
@@ -99,10 +102,10 @@ public class CoLTaxonSynonymEnricher {
 					}
 					else {
 						String taxonId = val(record, CsvField.acceptedNameUsageID.ordinal());
-						String esId = CoLTaxonImporter.ID_PREFIX + taxonId;
-						
+						String esId = CoLImportAll.ID_PREFIX + taxonId;
+
 						String synonym = val(record, CsvField.scientificName.ordinal());
-						
+
 						taxon = findTaxonInBatch(taxonId, objects);
 						if (taxon == null) {
 							taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);

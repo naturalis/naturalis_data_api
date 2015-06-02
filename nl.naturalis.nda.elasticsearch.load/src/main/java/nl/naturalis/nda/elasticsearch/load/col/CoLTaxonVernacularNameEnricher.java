@@ -48,9 +48,9 @@ public class CoLTaxonVernacularNameEnricher {
 	public CoLTaxonVernacularNameEnricher(Index index)
 	{
 		this.index = index;
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(CoLImportAll.SYSPROP_BATCHSIZE, "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty("maxRecords", "0");
+		prop = System.getProperty(CoLImportAll.SYSPROP_MAXRECORDS, "0");
 		maxRecords = Integer.parseInt(prop);
 	}
 
@@ -90,12 +90,12 @@ public class CoLTaxonVernacularNameEnricher {
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String taxonId = val(record, CsvField.taxonID.ordinal());
-					String esId = CoLTaxonImporter.ID_PREFIX + taxonId;
+					String esId = CoLImportAll.ID_PREFIX + taxonId;
 
 					vn = new VernacularName();
 					vn.setName(val(record, CsvField.vernacularName.ordinal()));
 					vn.setLanguage(val(record, CsvField.language.ordinal()));
-					
+
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {
 						taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);

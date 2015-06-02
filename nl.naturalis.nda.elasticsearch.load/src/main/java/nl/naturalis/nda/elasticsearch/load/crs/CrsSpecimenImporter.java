@@ -56,7 +56,6 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
-	private static final String ID_PREFIX = SourceSystem.CRS.getCode() + '-';
 
 	private final Index index;
 
@@ -79,7 +78,7 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 	protected void saveSpecimens(List<ESSpecimen> specimens, List<String> databaseIds)
 	{
 		for (int i = 0; i < databaseIds.size(); ++i) {
-			databaseIds.set(i, ID_PREFIX + databaseIds.get(i));
+			databaseIds.set(i, CrsImportAll.ID_PREFIX + databaseIds.get(i));
 		}
 		index.saveObjects(LUCENE_TYPE_SPECIMEN, specimens, databaseIds);
 	}
@@ -88,7 +87,7 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 	@Override
 	protected void deleteSpecimen(String databaseId)
 	{
-		databaseId = ID_PREFIX + databaseId;
+		databaseId = CrsImportAll.ID_PREFIX + databaseId;
 		index.deleteDocument(LUCENE_TYPE_SPECIMEN, databaseId);
 	}
 

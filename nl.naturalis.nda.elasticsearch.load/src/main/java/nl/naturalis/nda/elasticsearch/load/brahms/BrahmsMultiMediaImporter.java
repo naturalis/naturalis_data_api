@@ -68,9 +68,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
-	private static final String ID_PREFIX = "BRAHMS-";
-
-
+	
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
@@ -128,7 +126,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 		ArrayList<String> ids = new ArrayList<String>(multimediaIds);
 		for (int i = 0; i < ids.size(); ++i) {
-			ids.set(i, ID_PREFIX + ids.get(i));
+			ids.set(i, BrahmsImportAll.ID_PREFIX + ids.get(i));
 		}
 		// String base = ID_PREFIX + val(record, BARCODE.ordinal());
 		// List<String> ids = new ArrayList<String>(4);

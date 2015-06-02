@@ -35,10 +35,12 @@ public class NsrImportAll {
 		}
 	}
 
-	static final Logger logger = LoggerFactory.getLogger(NsrImportAll.class);
-	static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.nsr.backup";
-	static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.nsr.batchsize";
+	public static final String ID_PREFIX = "NSR-";
+	public static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.nsr.backup";
+	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.nsr.batchsize";
 
+	private static final Logger logger = LoggerFactory.getLogger(NsrImportAll.class);
+	
 	private final IndexNative index;
 	private final boolean backup;
 

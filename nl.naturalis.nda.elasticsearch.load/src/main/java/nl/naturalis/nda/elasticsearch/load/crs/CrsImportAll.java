@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
@@ -19,9 +20,15 @@ public class CrsImportAll {
 			crsImportAll.importAll();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
+
+	public static final String ID_PREFIX = "CRS-";
+	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.crs.batchsize";
+	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.crs.maxrecords";
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsImportAll.class);
 

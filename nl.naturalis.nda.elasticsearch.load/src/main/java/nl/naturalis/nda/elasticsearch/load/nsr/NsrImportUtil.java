@@ -36,13 +36,13 @@ public class NsrImportUtil {
 
 	static void backupXMLFiles()
 	{
-		NsrImportAll.logger.info("Creating backups of XML files");
+		logger.info("Creating backups of XML files");
 		File[] xmlFiles;
 		try {
 			xmlFiles = getXMLFiles();
 		}
 		catch (Exception e) {
-			NsrImportAll.logger.error("Backup failed");
+			logger.error("Backup failed");
 			return;
 		}
 		String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";

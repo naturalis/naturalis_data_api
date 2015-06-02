@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
@@ -45,7 +46,15 @@ public abstract class AbstractSpecimenImporter {
 
 	private final int bulkRequestSize;
 	private final int maxRecords;
-	private final boolean forceRestart;
+
+	/*
+	 * Whether or not to look for a file containing the last resumption token
+	 * and use that for this first OAI call, or just start from scratch.
+	 * However, it seems like resumption tokens become invalid if there is too
+	 * much time between OAI calls (e.g. when resuming the next day after an
+	 * aborted/failed attempt to harvest). Needs to be figured out first.
+	 */
+	private final boolean forceRestart = true;
 
 	private int processed;
 	private int bad;
@@ -55,14 +64,10 @@ public abstract class AbstractSpecimenImporter {
 
 	public AbstractSpecimenImporter() throws Exception
 	{
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-
-		prop = System.getProperty("maxRecords", "0");
+		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
 		maxRecords = Integer.parseInt(prop);
-
-		prop = System.getProperty("forceRestart", "true");
-		forceRestart = Boolean.parseBoolean(prop);
 
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);

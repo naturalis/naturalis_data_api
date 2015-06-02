@@ -2,12 +2,9 @@ package nl.naturalis.nda.elasticsearch.load.col;
 
 import java.io.IOException;
 
-import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.*;
 
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,37 +12,25 @@ public class CoLImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_TAXON);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-			index.addType(LUCENE_TYPE_TAXON, mapping);
-		}
-		else {
-			if (index.typeExists(LUCENE_TYPE_TAXON)) {
-				index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.COL.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-				index.addType(LUCENE_TYPE_TAXON, mapping);
-			}
-		}
-
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			CoLImportAll colImportAll = new CoLImportAll(index);
 			colImportAll.importAll();
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 		logger.info("Ready");
 	}
+
+	public static final String ID_PREFIX = "COL-";
+	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.col.batchsize";
+	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.col.maxrecords";
 
 	private static final Logger logger = LoggerFactory.getLogger(CoLImportAll.class);
 
@@ -70,6 +55,6 @@ public class CoLImportAll {
 		CoLTaxonReferenceEnricher referenceEnricher = new CoLTaxonReferenceEnricher(index);
 		referenceEnricher.importCsv(dwcaDir + "/reference.txt");
 		CoLTaxonDistributionEnricher distributionEnricher = new CoLTaxonDistributionEnricher(index);
-		distributionEnricher.importCsv(dwcaDir + "/distribution.txt"); 
+		distributionEnricher.importCsv(dwcaDir + "/distribution.txt");
 	}
 }

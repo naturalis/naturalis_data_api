@@ -30,14 +30,17 @@ public class CoLTaxonReferenceEnricher {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			CoLTaxonReferenceEnricher enricher = new CoLTaxonReferenceEnricher(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/reference.txt");
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
 
@@ -51,9 +54,9 @@ public class CoLTaxonReferenceEnricher {
 	public CoLTaxonReferenceEnricher(Index index)
 	{
 		this.index = index;
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(CoLImportAll.SYSPROP_BATCHSIZE, "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty("maxRecords", "0");
+		prop = System.getProperty(CoLImportAll.SYSPROP_MAXRECORDS, "0");
 		maxRecords = Integer.parseInt(prop);
 	}
 
@@ -93,7 +96,7 @@ public class CoLTaxonReferenceEnricher {
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String taxonId = val(record, CsvField.taxonID.ordinal());
-					String esId = CoLTaxonImporter.ID_PREFIX + taxonId;
+					String esId = CoLImportAll.ID_PREFIX + taxonId;
 
 					reference = new Reference();
 					reference.setTitleCitation(val(record, CsvField.title.ordinal()));
@@ -101,7 +104,7 @@ public class CoLTaxonReferenceEnricher {
 					Date pubDate = TransferUtil.parseDate(val(record, CsvField.date.ordinal()));
 					reference.setPublicationDate(pubDate);
 					reference.setAuthor(new Person(val(record, CsvField.creator.ordinal())));
-					
+
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {
 						taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);

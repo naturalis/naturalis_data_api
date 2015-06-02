@@ -34,13 +34,12 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		// Check thematic search is configured properly
+		/*
+		 *  Check thematic search is configured properly
+		 */
 		ThematicSearchConfig.getInstance();
-
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
@@ -161,7 +160,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
-	private static final String ID_PREFIX = "BRAHMS-";
 
 
 	public BrahmsSpecimensImporter(IndexNative index)
@@ -239,7 +237,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			specimen.setRecordBasis(recordBasis);
 		}
 
-		specimen.setAssemblageID(ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
+		specimen.setAssemblageID(BrahmsImportAll.ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
 		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
 		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
 		String notOnline = val(record, CsvField.NOTONLINE.ordinal());
@@ -258,7 +256,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String id = ID_PREFIX + val(record, CsvField.BARCODE.ordinal());
+		String id = BrahmsImportAll.ID_PREFIX + val(record, CsvField.BARCODE.ordinal());
 		return Arrays.asList(id);
 	}
 

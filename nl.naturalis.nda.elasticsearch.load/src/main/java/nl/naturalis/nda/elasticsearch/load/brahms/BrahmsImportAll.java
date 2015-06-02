@@ -15,11 +15,6 @@ import org.slf4j.LoggerFactory;
 
 public class BrahmsImportAll {
 
-	public static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.brahms.backup";
-	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.brahms.batchsize";
-	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.brahms.maxrecords";
-
-
 	public static void main(String[] args) throws Exception
 	{
 		logger.info("-----------------------------------------------------------------");
@@ -35,6 +30,12 @@ public class BrahmsImportAll {
 		}
 		logger.info("Ready");
 	}
+
+	public static final String ID_PREFIX = "BRAHMS-";
+	public static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.brahms.backup";
+	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.brahms.batchsize";
+	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.brahms.maxrecords";
+
 
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);
 

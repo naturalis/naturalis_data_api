@@ -68,7 +68,6 @@ public class CrsMultiMediaImporter {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
-	private static final String ID_PREFIX = "CRS-";
 
 	private final DocumentBuilder builder;
 
@@ -259,7 +258,7 @@ public class CrsMultiMediaImporter {
 				if (extractedMedia != null) {
 					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
 					for (ESMultiMediaObject mo : extractedMedia) {
-						extractedIds.add(ID_PREFIX + mo.getSourceSystemId());
+						extractedIds.add(CrsImportAll.ID_PREFIX + mo.getSourceSystemId());
 					}
 					mediaObjects.addAll(extractedMedia);
 					ids.addAll(extractedIds);

@@ -25,22 +25,23 @@ import org.slf4j.LoggerFactory;
  * @author Reinier.Kartowikromo
  *
  */
-public class CoLTaxonDistributionEnricher
-{
+public class CoLTaxonDistributionEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-		try
-		{
+		IndexNative index = null;
+		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/distribution.txt");
-		} finally
-		{
-			index.getClient().close();
+		}
+		finally {
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
 
@@ -49,6 +50,7 @@ public class CoLTaxonDistributionEnricher
 	private final Index index;
 	private final int bulkRequestSize;
 	private final int maxRecords;
+
 
 	/**
 	 * 
@@ -62,6 +64,7 @@ public class CoLTaxonDistributionEnricher
 		prop = System.getProperty("maxRecords", "0");
 		maxRecords = Integer.parseInt(prop);
 	}
+
 
 	public void importCsv(String path) throws IOException
 	{
@@ -81,79 +84,68 @@ public class CoLTaxonDistributionEnricher
 		String line;
 		CSVRecord record;
 
-		try
-		{
+		try {
 
 			++lineNo;
 			lnr.readLine(); // Skip header
 
 			ESTaxon taxon;
-			while ((line = lnr.readLine()) != null)
-			{
+			while ((line = lnr.readLine()) != null) {
 				++lineNo;
-				if (line.trim().length() == 0)
-				{
+				if (line.trim().length() == 0) {
 					logger.info("Ignoring empty line: " + lineNo);
 					continue;
 				}
 				++processed;
-				try
-				{
+				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String taxonId = val(record, CsvField.taxonID.ordinal());
-					String esId = CoLTaxonImporter.ID_PREFIX + taxonId;
+					String esId = CoLImportAll.ID_PREFIX + taxonId;
 					String loc = val(record, CsvField.locality.ordinal());
 
 					taxon = findTaxonInBatch(taxonId, objects);
-					if (taxon == null)
-					{
+					if (taxon == null) {
 						taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);
 					}
-					if (taxon == null)
-					{
+					if (taxon == null) {
 						logger.debug("Distribution locality: " + loc);
-					} else if (taxon.getLocalities() == null || !taxon.getLocalities().contains(loc))
-					{
+					}
+					else if (taxon.getLocalities() == null || !taxon.getLocalities().contains(loc)) {
 						taxon.addLocality(loc);
 						objects.add(taxon);
 						ids.add(esId);
-						if (objects.size() >= bulkRequestSize)
-						{
-							try
-							{
+						if (objects.size() >= bulkRequestSize) {
+							try {
 								index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
 								indexed += objects.size();
-							} finally
-							{
+							}
+							finally {
 								objects.clear();
 								ids.clear();
 							}
 						}
 					}
 
-				} catch (Throwable t)
-				{
+				}
+				catch (Throwable t) {
 					++bad;
 					logger.error("Error at line " + lineNo + ": " + t.getMessage());
 					logger.error("Line: [[" + line + "]]");
 					logger.debug("Stack trace: ", t);
 				}
-				if (maxRecords > 0 && processed >= maxRecords)
-				{
+				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
 				}
-				if (processed % 50000 == 0)
-				{
+				if (processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
 				}
 			}
-			if (!objects.isEmpty())
-			{
+			if (!objects.isEmpty()) {
 				index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
 				indexed += objects.size();
 			}
-		} finally
-		{
+		}
+		finally {
 			lnr.close();
 		}
 		logger.info("Records processed: " + processed);
@@ -161,12 +153,11 @@ public class CoLTaxonDistributionEnricher
 		logger.info("Documents indexed: " + indexed);
 	}
 
+
 	private static ESTaxon findTaxonInBatch(String taxonId, ArrayList<ESTaxon> batch)
 	{
-		for (ESTaxon taxon : batch)
-		{
-			if (taxonId.equals(taxon.getSourceSystemId()))
-			{
+		for (ESTaxon taxon : batch) {
+			if (taxonId.equals(taxon.getSourceSystemId())) {
 				return taxon;
 			}
 		}

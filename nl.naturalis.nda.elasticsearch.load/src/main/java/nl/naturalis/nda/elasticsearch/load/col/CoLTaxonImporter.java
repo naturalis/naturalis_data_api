@@ -12,6 +12,7 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUPER_FAMILY;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,6 @@ import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.apache.commons.csv.CSVRecord;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,37 +37,20 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 	public static void main(String[] args) throws Exception
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
-
-		String rebuild = System.getProperty("rebuild", "false");
-		if (rebuild.equalsIgnoreCase("true") || rebuild.equals("1")) {
-			index.deleteType(LUCENE_TYPE_TAXON);
-			String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-			index.addType(LUCENE_TYPE_TAXON, mapping);
-		}
-		else {
-			if (index.typeExists(LUCENE_TYPE_TAXON)) {
-				index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.COL.getCode());
-			}
-			else {
-				String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-				index.addType(LUCENE_TYPE_TAXON, mapping);
-			}
-		}
-
+		IndexNative index = null;
 		try {
+			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
-			index.getClient().close();
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
-
 	}
 
 	//@formatter:off
@@ -105,9 +88,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	}
 	//@formatter:on
 
-	static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
-	static final String ID_PREFIX = "COL-";
-
+	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
 	private static final String ANNUAL_CHECKLIST_URL_COMPONENT = "annual-checklist";
 	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "infraspecies");
 
@@ -119,11 +100,19 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		super(index, LUCENE_TYPE_TAXON);
 		setSpecifyId(true);
 		setSpecifyParent(false);
-		String prop = System.getProperty("bulkRequestSize", "1000");
+		String prop = System.getProperty(CoLImportAll.SYSPROP_BATCHSIZE, "1000");
 		setBulkRequestSize(Integer.parseInt(prop));
-		prop = System.getProperty("maxRecords", "0");
-		setMaxRecords(Integer.parseInt(prop));
+		prop = System.getProperty(CoLImportAll.SYSPROP_MAXRECORDS, "0");
+		setMaxRecords(Integer.parseInt(prop));		
 		colYear = LoadUtil.getConfig().required("col.year");
+	}
+
+
+	@Override
+	public void importCsv(String path) throws IOException
+	{
+		index.deleteWhere(LUCENE_TYPE_TAXON, "sourceSystem.code", SourceSystem.COL.getCode());
+		super.importCsv(path);
 	}
 
 
@@ -141,7 +130,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 		taxon.setSourceSystem(SourceSystem.COL);
 		taxon.setSourceSystemId(val(record, CsvField.taxonID.ordinal()));
-		
+
 		String references = val(record, CsvField.references.ordinal());
 		if (references == null) {
 			logger.warn("Missing URL for taxon " + taxon.getSourceSystemId());
@@ -212,7 +201,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String id = ID_PREFIX + val(record, CsvField.taxonID.ordinal());
+		String id = CoLImportAll.ID_PREFIX + val(record, CsvField.taxonID.ordinal());
 		return Arrays.asList(id);
 	}
 

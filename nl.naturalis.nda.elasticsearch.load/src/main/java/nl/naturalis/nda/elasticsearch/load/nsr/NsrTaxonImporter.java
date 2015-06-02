@@ -50,8 +50,7 @@ public class NsrTaxonImporter {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonImporter.class);
-	private static final String ID_PREFIX = "NSR-";
-
+	
 	private final Index index;
 
 	private final int bulkRequestSize;
@@ -126,7 +125,7 @@ public class NsrTaxonImporter {
 				taxon = NsrTaxonTransfer.transfer(taxonElement);
 				if (taxon != null) {
 					taxa.add(taxon);
-					ids.add(ID_PREFIX + taxon.getSourceSystemId());
+					ids.add(NsrImportAll.ID_PREFIX + taxon.getSourceSystemId());
 					if (taxa.size() >= bulkRequestSize) {
 						try {
 							index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);

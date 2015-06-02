@@ -1,10 +1,7 @@
 package nl.naturalis.nda.service.rest.resource;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJB;

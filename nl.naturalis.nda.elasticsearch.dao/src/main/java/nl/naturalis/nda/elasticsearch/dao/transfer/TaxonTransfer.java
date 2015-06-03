@@ -27,7 +27,8 @@ public class TaxonTransfer {
 		taxon.setDescriptions(esTaxon.getDescriptions());
 		taxon.setReferences(esTaxon.getReferences());
 		taxon.setExperts(esTaxon.getExperts());
-		taxon.setLocalities(esTaxon.getLocalities());
+		// Distribution data not yet disclosed through domain model
+		//taxon.setLocalities(esTaxon.getLocalities());
 		return taxon;
 	}
 }

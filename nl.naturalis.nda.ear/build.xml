@@ -133,7 +133,12 @@
 			targets, we assume we are on the server and do a local
 			deployment.
 		-->
-		<move if:set="deploy.local" file="${ear.module.location}/build/nba.ear" todir="${ear.install.dir}" />
+		<move if:set="deploy.local" file="${ear.module.location}/build/nba.ear" todir="${ear.install.dir}" />	
+		<echo if:set="deploy.local" message="Copying configuration files to ${nl.naturalis.nda.conf.dir}" />
+		<copy if:set="deploy.local" todir="${nl.naturalis.nda.conf.dir}" file="nda.properties" overwrite="true">
+			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		</copy>
+
 
 		<!--
 			Otherwise we assume we want to do a deployment from our

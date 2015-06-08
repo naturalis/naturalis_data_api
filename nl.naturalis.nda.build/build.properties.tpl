@@ -90,34 +90,17 @@ nda.import.log.dir=/data/nda-import/log
 # Export module
 ##########################################################
 
-# Directory into which to install the export module.
+# Directory into which to install the export module
 nda.export.install.dir=/data/nda-export
 
-# Top directory below which the export programs are
-# assumed to write their output. Under this directory the
-# installation procedure will create and populate an
-# sh directory for the shell scripts, a conf directory
-# for configuration files, and a lib directory for Java
-# libraries (jar files).
+# Top directory for output from the export programs.
+# The DwCA export program will create and write to
+# a subdirectory named "dwca".
 nda.export.output.dir=/data/nda-export/output
 
-# Top directory for user-editable configuration files
-# and other files picked up or read by the export programs
-# (e.g. the eml and properties files for the DwCA export
-# module). Ordinarily this directory will be
-# "${nda.export.install.dir}/conf". However, sysadmins
-# may want to keep "low-level", sysadmin-related config
-# files (es-settings.json, nda-export.properties and
-# logback.xml) separate from "high-level" user-editable
-# files (e.g. the eml files for the DwCA export). In that
-# case nda.export.user.conf.dir must be set to the 
-# directory to which the sysadmin has moved those
-# user-editable files. Note that nda.export.user.conf.dir
-# is a TOP directory. Indivual programs will use program-
-# specific subdirectories, relative to
-# ${nda.export.user.conf.dir}. For example, the DwCA
-# export module expects the eml files to reside in
-# ${nda.export.user.conf.dir}/dwca.
+# Top directory for user-editable configuration files.
+# The DwCA export program expects the eml files to reside
+# in ${nda.export.user.conf.dir}/dwca.
 nda.export.user.conf.dir=/data/nda-export/conf
 
 # Directory into which to write log files for the import

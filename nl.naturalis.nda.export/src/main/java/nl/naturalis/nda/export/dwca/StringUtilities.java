@@ -39,8 +39,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
-
 public class StringUtilities {
 
 	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
@@ -350,17 +348,7 @@ public class StringUtilities {
 	private static File getConfigRootDir()
 	{
 		if (configRootDir == null) {
-			String path = ExportUtil.getConfig().required("nda.export.conf.dir");
-			try {
-				configRootDir = new File(path).getCanonicalFile();
-				if (!configRootDir.isDirectory()) {
-					String template = "Invalid value specified for \"nda.export.conf.dir\". Directory does not exist: \"%s\"";
-					throw new ExportException(String.format(template, path));
-				}
-			}
-			catch (IOException e) {
-				throw new ExportException(e);
-			}
+			configRootDir = ExportUtil.getConfig().getDirectory("nda.export.user.conf.dir");
 		}
 		return configRootDir;
 	}
@@ -429,83 +417,68 @@ public class StringUtilities {
 	}
 
 
-	/*public String convertStringToUTF8(String text)
-	{
-		String value = null;
-		byte ptext[];
-		if (text != null) {
-			ptext = text.getBytes();
-			value = new String(ptext, Charset.forName("UTF-8"));
-		}
-		return value;
-	}*/
-	
+	/*
+	 * public String convertStringToUTF8(String text) { String value = null;
+	 * byte ptext[]; if (text != null) { ptext = text.getBytes(); value = new
+	 * String(ptext, Charset.forName("UTF-8")); } return value; }
+	 */
+
 	public String convertStringToUTF8(String text)
 	{
 		String value = null;
 		byte[] bytes = text.getBytes(Charset.forName("ISO-8859-1"));
 		byte ptext[] = text.getBytes(Charset.forName("UTF-8"));
 		if (!validUTF8(bytes))
-		  return text;   
-		if (validUTF8(ptext))
-		{
-			value = text; 
+			return text;
+		if (validUTF8(ptext)) {
+			value = text;
 		}
 		return value;
 	}
-	
 
-	public static boolean validUTF8(byte[] input) 
+
+	public static boolean validUTF8(byte[] input)
 	{
 		int i = 0;
 		// Check for BOM
-		if (input.length >= 3 && (input[0] & 0xFF) == 0xEF && 
-		   (input[1] & 0xFF) == 0xBB & (input[2] & 0xFF) == 0xBF) 
-		{
-		   i = 3;
+		if (input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB & (input[2] & 0xFF) == 0xBF) {
+			i = 3;
 		}
 
 		int end = 0;
-		for (int j = input.length; i < j; ++i) 
-		{
-		   int octet = input[i];
-		   if ((octet & 0x80) == 0) 
-		   {
-			   continue; // ASCII
-		   }
+		for (int j = input.length; i < j; ++i) {
+			int octet = input[i];
+			if ((octet & 0x80) == 0) {
+				continue; // ASCII
+			}
 
-		   // Check for UTF-8 leading byte
-		   if ((octet & 0xE0) == 0xC0) 
-		   {
-			   end = i + 1;
-		   } 
-		   else if ((octet & 0xF0) == 0xE0) 
-		   {
-			   end = i + 2;
-		   } 
-		   else if ((octet & 0xF8) == 0xF0) 
-		   {
-			   end = i + 3;
-		   } 
-		   else 
-		   {
-			   // Java only supports BMP so 3 is max
-			   return false;
-		   }
+			// Check for UTF-8 leading byte
+			if ((octet & 0xE0) == 0xC0) {
+				end = i + 1;
+			}
+			else if ((octet & 0xF0) == 0xE0) {
+				end = i + 2;
+			}
+			else if ((octet & 0xF8) == 0xF0) {
+				end = i + 3;
+			}
+			else {
+				// Java only supports BMP so 3 is max
+				return false;
+			}
 
-		   while (i < end) 
-		   {
-			   i++;
-			   octet = input[i-1];
-			   if ((octet & 0xC0) != 0x80) 
-			   {
-				   // Not a valid trailing byte
-				   return false;
-			   }
-		   }
+			while (i < end) {
+				i++;
+				octet = input[i - 1];
+				if ((octet & 0xC0) != 0x80) {
+					// Not a valid trailing byte
+					return false;
+				}
+			}
 		}
 		return true;
 	}
+
 
 	public static String crunchifyPrettyJSONUtility(String simpleJSON)
 	{
@@ -618,50 +591,27 @@ public class StringUtilities {
 		 * jGenerator.close();
 		 */
 	}
-	
-	
-	
-	/*public static String searchForCollectionName(File emlDir, String searchQuery) throws IOException
-    {
-        searchQuery = searchQuery.trim();
-    	//List<String> fileresult = new ArrayList<String>();
-    	StringBuilder builder = new StringBuilder();
-    	String extensions = ".properties";
-    	FilenameFilter filter = new FilenameFilter()
-    	{
-    		 public boolean accept(File dir, String name) {
-    	            return name.endsWith(extensions);
-    	        }
-    	};
-    	
-       
-        if (emlDir.exists()) 
-        {
-        	try
-        	{
-        		File[] listOfFiles = emlDir.listFiles(filter);
-        	    for (File file : listOfFiles)
-        	    {
-        	    	ConfigObject config = new ConfigObject(file);
-        	    	if (config.hasProperty(searchQuery))
-        	    	{
-        	    		config.required("collectionName");
-         	    		builder.append(config.get(searchQuery));
-         	    		builder.append("\n");
-        	    		//fileresult.add(cfg.get(searchQuery));
-        	    	}
-        	    }
-        	}
-       		catch (Exception e)
-       		{
-       			System.err.println(e.toString());
-       		}
-        }
 
-        return builder.toString(); // fileresult.toString();
-        
-    }
-*/
-
+	/*
+	 * public static String searchForCollectionName(File emlDir, String
+	 * searchQuery) throws IOException { searchQuery = searchQuery.trim();
+	 * //List<String> fileresult = new ArrayList<String>(); StringBuilder
+	 * builder = new StringBuilder(); String extensions = ".properties";
+	 * FilenameFilter filter = new FilenameFilter() { public boolean accept(File
+	 * dir, String name) { return name.endsWith(extensions); } };
+	 * 
+	 * 
+	 * if (emlDir.exists()) { try { File[] listOfFiles =
+	 * emlDir.listFiles(filter); for (File file : listOfFiles) { ConfigObject
+	 * config = new ConfigObject(file); if (config.hasProperty(searchQuery)) {
+	 * config.required("collectionName");
+	 * builder.append(config.get(searchQuery)); builder.append("\n");
+	 * //fileresult.add(cfg.get(searchQuery)); } } } catch (Exception e) {
+	 * System.err.println(e.toString()); } }
+	 * 
+	 * return builder.toString(); // fileresult.toString();
+	 * 
+	 * }
+	 */
 
 }

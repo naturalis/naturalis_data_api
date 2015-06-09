@@ -2,10 +2,11 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,6 @@ import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
-import org.domainobject.util.StringUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -194,9 +194,9 @@ public class CrsMultiMediaImporter {
 
 		do {
 			logger.info("Processing batch " + batch);
-			String xml = callOaiService(resumptionToken);
+			byte[] response = callOaiService(resumptionToken);
 			++batch;
-			resumptionToken = index(xml);
+			resumptionToken = index(response);
 		} while (resumptionToken != null);
 
 		logger.info("Deleting resumption token file");
@@ -213,17 +213,17 @@ public class CrsMultiMediaImporter {
 		while (localFileIterator.hasNext()) {
 			f = localFileIterator.next();
 			logger.info("Processing file " + f.getCanonicalPath());
-			index(FileUtil.getContents(f));
+			index(Files.readAllBytes(f.toPath()));
 		}
 	}
 
 
-	private String index(String xml)
+	private String index(byte[] xml)
 	{
 		Document doc;
 		logger.debug("Parsing XML");
 		try {
-			doc = builder.parse(StringUtil.asInputStream(xml));
+			doc = builder.parse(new ByteArrayInputStream(xml));
 		}
 		catch (SAXException | IOException e) {
 			throw ExceptionUtil.smash(e);
@@ -295,7 +295,7 @@ public class CrsMultiMediaImporter {
 	private static final SimpleDateFormat oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 
 
-	static String callOaiService(String resumptionToken)
+	static byte[] callOaiService(String resumptionToken)
 	{
 		String url;
 		if (resumptionToken == null) {
@@ -311,12 +311,11 @@ public class CrsMultiMediaImporter {
 			url = String.format(LoadUtil.getConfig().required("crs.multimedia.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
-		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
-		return new String(response, Charset.forName("UTF-8"));
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
 
-	static String callOaiService(Date fromDate, Date untilDate)
+	static byte[] callOaiService(Date fromDate, Date untilDate)
 	{
 		String url = LoadUtil.getConfig().required("crs.multimedia.url.initial");
 		if (fromDate != null) {
@@ -326,8 +325,7 @@ public class CrsMultiMediaImporter {
 			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
-		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
-		return new String(response, Charset.forName("UTF-8"));
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
 
@@ -366,16 +364,6 @@ public class CrsMultiMediaImporter {
 		}
 		return DOMUtil.getChild(record, "header").getAttribute("status").equals("deleted");
 	}
-
-	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
-
-
-	static String getLocalPath(String resToken)
-	{
-		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/multimedia.%s.oai.xml", testDir, DF.format(new Date()));
-	}
-
 
 	private static File getResumptionTokenFile()
 	{

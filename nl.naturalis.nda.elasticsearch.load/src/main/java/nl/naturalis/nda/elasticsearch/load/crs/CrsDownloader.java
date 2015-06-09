@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -14,20 +15,15 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.FileUtil;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Harvests the CRS OAI service and saves its output to local files. Since the
- * OAI service is very slow, it pays to first store its output into files, and
- * then process those, if we often need to do a full harvest. You can also
- * instruct the {@link CrsSpecimenImporter} and the
- * {@link CrsMultiMediaImporter} to save local copies of the XML output from the
- * OAI service by setting the "crs.save_local" property in the configuration
- * file to "true".
+ * Harvests the CRS OAI service and saves its output to files on the local file
+ * system (from where they can be processed by the specimen and multimedia
+ * import programs).
  * 
  * @author Ayco Holleman
  * 
@@ -128,24 +124,22 @@ public class CrsDownloader {
 		if (fromDate == null) {
 			fromDate = getFromDateFromAdminFile(Type.SPECIMEN);
 		}
-		if (untilDate == null) {
-			untilDate = new Date();
-		}
+		/*
+		 * If all goes well, this is the date we are going to write to a hidden
+		 * file in the data directory, so next time we harvest we can use that
+		 * date as the from date.
+		 */
+		Date successDate = untilDate == null ? new Date() : untilDate;
 		int request = 0;
-		String xml = CrsSpecimenImporter.callOaiService(fromDate, untilDate);
-		String resumptionToken = saveXml(Type.SPECIMEN, xml, fromDate, request++);
+		byte[] xml = CrsSpecimenImporter.callOaiService(fromDate, untilDate);
+		FileUtil.setContents(getLocalPath(Type.SPECIMEN, fromDate, request++), xml);
+		String resumptionToken = getResumptionToken(xml);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsSpecimenImporter.callOaiService(resumptionToken);
-			resumptionToken = saveXml(Type.SPECIMEN, xml, fromDate, request++);
+			FileUtil.setContents(getLocalPath(Type.SPECIMEN, fromDate, request++), xml);
+			resumptionToken = getResumptionToken(xml);
 		}
-		/*
-		 * If we make it to here, the next time we harvest we can take the
-		 * current "until" date as the new "from" date. Otherwise we have no
-		 * choice but to start from the original date in the admin file. In
-		 * other words, if we make it to here, we can legitimately overwrite the
-		 * "from" date in the admin file.
-		 */
-		FileUtil.setContents(getAdminFile(Type.SPECIMEN), fileNameDateFormat.format(untilDate));
+		FileUtil.setContents(getAdminFile(Type.SPECIMEN), fileNameDateFormat.format(successDate));
 		logger.info("Successfully downloaded specimens");
 	}
 
@@ -156,26 +150,26 @@ public class CrsDownloader {
 		if (fromDate == null) {
 			fromDate = getFromDateFromAdminFile(Type.MULTIMEDIA);
 		}
-		if (untilDate == null) {
-			untilDate = new Date();
-		}
+		Date successDate = untilDate == null ? new Date() : untilDate;
 		int request = 0;
-		String xml = CrsMultiMediaImporter.callOaiService(fromDate, untilDate);
-		String resumptionToken = saveXml(Type.MULTIMEDIA, xml, fromDate, request++);
+		byte[] xml = CrsMultiMediaImporter.callOaiService(fromDate, untilDate);
+		FileUtil.setContents(getLocalPath(Type.MULTIMEDIA, fromDate, request++), xml);
+		String resumptionToken = getResumptionToken(xml);
 		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
 			xml = CrsMultiMediaImporter.callOaiService(resumptionToken);
-			resumptionToken = saveXml(Type.MULTIMEDIA, xml, fromDate, request++);
+			FileUtil.setContents(getLocalPath(Type.MULTIMEDIA, fromDate, request++), xml);
+			resumptionToken = getResumptionToken(xml);
 		}
-		FileUtil.setContents(getAdminFile(Type.SPECIMEN), fileNameDateFormat.format(untilDate));
+		FileUtil.setContents(getAdminFile(Type.MULTIMEDIA), fileNameDateFormat.format(successDate));
 		logger.info("Successfully downloaded multimedia");
 	}
 
 
-	public String saveXml(Type type, String xml, Date fromDate, int request)
+	public String getResumptionToken(byte[] xml)
 	{
 		Document doc;
 		try {
-			doc = builder.parse(StringUtil.asInputStream(xml));
+			doc = builder.parse(new ByteArrayInputStream(xml));
 		}
 		catch (Exception exc) {
 			throw new RuntimeException(exc);
@@ -188,9 +182,6 @@ public class CrsDownloader {
 			String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
 			throw new RuntimeException(msg);
 		}
-		File file = getLocalPath(type, fromDate, request);
-		logger.info("Saving XML to " + file.getAbsolutePath());
-		FileUtil.setContents(file, xml);
 		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 

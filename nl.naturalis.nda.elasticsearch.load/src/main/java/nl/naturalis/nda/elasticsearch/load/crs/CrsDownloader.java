@@ -134,7 +134,7 @@ public class CrsDownloader {
 		byte[] xml = CrsSpecimenImporter.callOaiService(fromDate, untilDate);
 		FileUtil.setContents(getLocalPath(Type.SPECIMEN, fromDate, request++), xml);
 		String resumptionToken = getResumptionToken(xml);
-		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
+		while (resumptionToken != null) {
 			xml = CrsSpecimenImporter.callOaiService(resumptionToken);
 			FileUtil.setContents(getLocalPath(Type.SPECIMEN, fromDate, request++), xml);
 			resumptionToken = getResumptionToken(xml);
@@ -155,7 +155,7 @@ public class CrsDownloader {
 		byte[] xml = CrsMultiMediaImporter.callOaiService(fromDate, untilDate);
 		FileUtil.setContents(getLocalPath(Type.MULTIMEDIA, fromDate, request++), xml);
 		String resumptionToken = getResumptionToken(xml);
-		while (resumptionToken != null && resumptionToken.trim().length() != 0) {
+		while (resumptionToken != null) {
 			xml = CrsMultiMediaImporter.callOaiService(resumptionToken);
 			FileUtil.setContents(getLocalPath(Type.MULTIMEDIA, fromDate, request++), xml);
 			resumptionToken = getResumptionToken(xml);
@@ -182,7 +182,8 @@ public class CrsDownloader {
 			String msg = String.format("OAI Error (code=\"%s\"): \"%s\"", e.getAttribute("code"), e.getTextContent());
 			throw new RuntimeException(msg);
 		}
-		return DOMUtil.getDescendantValue(doc, "resumptionToken");
+		String s = DOMUtil.getDescendantValue(doc, "resumptionToken");
+		return (s == null || s.trim().isEmpty()) ? null : s;
 	}
 
 
@@ -199,6 +200,7 @@ public class CrsDownloader {
 		}
 		String requestString = new DecimalFormat("000000").format(request);
 		String path = dir + "/" + typeString + "." + dateString + "." + requestString + ".oai.xml";
+		logger.info("Saving response to " + path);
 		return new File(path);
 	}
 

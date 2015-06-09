@@ -209,10 +209,13 @@ public class CrsDownloader {
 	{
 		File adminFile = getAdminFile(type);
 		if (!adminFile.exists()) {
+			logger.info(String.format("File not found: %s. Will harvest from scratch", adminFile.getAbsolutePath()));
 			return null;
 		}
 		try {
-			return fileNameDateFormat.parse(FileUtil.getContents(adminFile));
+			String fromDate = FileUtil.getContents(adminFile);
+			logger.info(String.format("Found file %s. Will harvest from date %s", adminFile.getAbsolutePath(), fromDate));
+			return fileNameDateFormat.parse(fromDate);
 		}
 		catch (ParseException e) {
 			throw new RuntimeException(e);

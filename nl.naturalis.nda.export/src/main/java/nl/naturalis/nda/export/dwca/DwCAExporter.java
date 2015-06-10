@@ -152,6 +152,8 @@ public class DwCAExporter {
         	    	}
         	    }
         	    logger.info("All collection successful executed: " + builder.toString());
+        	    builder.setLength(0);
+        	    builder.trimToSize();
         	}
        		catch (Exception e)
        		{
@@ -273,24 +275,6 @@ public class DwCAExporter {
 
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
-		/*Iterator<String> fieldIter = headerRow.iterator();
-		String propertyName = "";
-		//Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
-		while (fieldIter.hasNext()) 
-		{
-			cnt = Integer.valueOf(cnt.intValue() + 1);
-			System.out.println(fieldIter.next());
-			if (!fieldIter.next().contains("id")) 
-			{
-			if (fieldIter.next() != null)
-			{	
-				propertyName = fieldIter.next().toString().trim();
-				
-			}
-			//}
-			Field field = new Field(cnt.toString(), dwcUrlTdwgOrg + propertyName);// fieldIter.next());
-		    cores.addField(field);
-		}*/
 		
 		Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
@@ -319,6 +303,9 @@ public class DwCAExporter {
 				}
 			}
 		}
+		/* Clear the map and keySet */
+		sortedSystemProperties.clear();
+		keySet.clear();
 		
 		/* Create Meta.xml file for NBA */
 		Meta xmlspecimen = new Meta();
@@ -479,6 +466,9 @@ public class DwCAExporter {
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
 		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
+		/* Clear the Sotred map and KeySet */
+		sortedSystemProperties.clear();
+		keySet.clear();
 	}
 
 
@@ -686,7 +676,6 @@ public class DwCAExporter {
 		int restvalue = 0;
 		int resultrecord = 0;
 		
-		//int count = (int) totalHitCount / 1000;//(int) (totalHitCount / response.getSuccessfulShards());
 		while (true) {
 			try {
 				List<T> list = new ArrayList<T>();
@@ -698,14 +687,9 @@ public class DwCAExporter {
 
 				response = eslasticClient.prepareSearchScroll(response.getScrollId()).setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
-				//count = count + 1000;
-				//count++;
 				restvalue = (int) (totalHitCount / count);
 				resultrecord = restvalue - resultrecord;
 				logger.info("Shard hit.'" + count++ + "' successful");
-				//logger.info("Number of records '"+ resultrecord + "' process per shard");
-				//logger.info(Integer.toString(response.getHits()));
-
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS") && MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
 					writeCRSZoologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Zoology");
@@ -727,10 +711,8 @@ public class DwCAExporter {
 					logger.info("Finished writing data to occurrence file.");
 					break;
 				}
-				//return list;
 			}
 			catch (Exception e) {
-				// e.printStackTrace();
 				logger.info("Failed to copy data from index " + indexname + " into " + size + ".", e);
 			}
 		}

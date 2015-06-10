@@ -52,7 +52,9 @@ public class CsvFileWriter extends BufferedWriter
         }
         row.lineText = builder.toString();
         write(row.lineText);
-        newLine(); 
+        newLine();
+        builder.setLength(0);
+        builder.trimToSize();
     }
      
     /**

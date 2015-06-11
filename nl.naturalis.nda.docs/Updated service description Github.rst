@@ -2,10 +2,6 @@
 NBA Service descriptions
 ========================
 
-.. note:: | nog doen
-          | • toevoegen voorstellen Wouter icm best practice Seranno - curl, errors, view page source link
-          | • actualiteit van de data per service of over geheel heen
-
 -------------------------
 Document management
 -------------------------
@@ -19,9 +15,9 @@ Document management
    * - Document version
      - c1.1.
    * - Document publication date
-     - 04-05-2015
+     - 11-06-2015
    * - Content
-     - Description of data retrieval services in NBA API version 0
+     - Description of data retrieval services in NBA API v0.12.2
 
 -------------------------
 Summary

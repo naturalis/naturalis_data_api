@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 

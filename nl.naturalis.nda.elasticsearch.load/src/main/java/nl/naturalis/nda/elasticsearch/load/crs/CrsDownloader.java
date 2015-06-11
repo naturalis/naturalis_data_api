@@ -32,7 +32,6 @@ public class CrsDownloader {
 
 	public static void main(String[] args)
 	{
-
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
@@ -172,6 +171,7 @@ public class CrsDownloader {
 			doc = builder.parse(new ByteArrayInputStream(xml));
 		}
 		catch (Exception exc) {
+			System.out.println(new String(xml));
 			throw new RuntimeException(exc);
 		}
 		if (!doc.getDocumentElement().getTagName().equals("OAI-PMH")) {

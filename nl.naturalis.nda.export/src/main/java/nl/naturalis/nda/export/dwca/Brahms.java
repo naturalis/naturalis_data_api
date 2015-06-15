@@ -130,7 +130,10 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getWorldRegion() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getWorldRegion()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getWorldRegion());
 				}
 				else
 				{
@@ -143,7 +146,10 @@ public class Brahms
 			{
 				if(specimen.getGatheringEvent().getCountry() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCountry()));
+					*/
+    				dataRow.add(specimen.getGatheringEvent().getCountry());
 				}
 				else
 				{
@@ -156,7 +162,10 @@ public class Brahms
 			{
 				if(specimen.getGatheringEvent().getCity() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCity()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getCity());
 				}
 				else
 				{
@@ -279,7 +288,10 @@ public class Brahms
 			{
 				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
 				}
 				else
 				{
@@ -368,7 +380,10 @@ public class Brahms
 					    if (ag instanceof Person)
 					    {
 					    	Person per = (Person) ag;
-					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName())); 
+					    	/* NDA-303/372
+					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName()));
+					    	*/
+					    	listAgentFullname.add(per.getFullName()); 
 					    }
 						
 					    if (listAgentFullname.size() > 1)
@@ -384,8 +399,10 @@ public class Brahms
 					    .replace("[", " ")
 					    .replace("]", " ")
 					    .trim();
-					
+					    dataRow.add(resultAgentFullName);
+					    /* NDA-303/372
 					    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+					    */
 					}
 					else
 					{
@@ -437,7 +454,10 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getIsland() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getIsland()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getIsland());
 				}
 				else
 				{
@@ -515,7 +535,10 @@ public class Brahms
 							.replace('\t', ' ')
 							.replace("\r", "")
 			           		.replace("\n", "");
+					dataRow.add(localityResult);
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(localityResult));
+					*/
 				}
 				else
 				{
@@ -617,12 +640,13 @@ public class Brahms
 					if (listFullname.size() > 0)
 					{
 					    String resultFullName = listFullname.toString()
-					    //.replace(",", " ")
 					    .replace("[", " ")
 					    .replace("]", " ")
 					    .trim();
-					
+					    dataRow.add(resultFullName);
+					    /* NDA-303/372
 					    dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					    */
 					}
 					else
 					{
@@ -640,7 +664,10 @@ public class Brahms
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
 				}
 				else
 				{
@@ -653,7 +680,10 @@ public class Brahms
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
 				}
 				else
 				{
@@ -679,7 +709,10 @@ public class Brahms
 			{
 				if (specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
 				}
 				else
 				{
@@ -692,7 +725,10 @@ public class Brahms
 			{
 				if (specimen.getGatheringEvent().getProvinceState() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getProvinceState()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getProvinceState());					
 				}
 				else
 				{
@@ -769,8 +805,10 @@ public class Brahms
 				    .replace("[", " ")
 				    .replace("]", " ")
 				    .trim();
-				   
+				    dataRow.add(resultFullName);
+				    /* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					*/
 					listFullname.clear();
 				}
 				else

@@ -423,6 +423,8 @@ public class StringUtilities {
 	 * String(ptext, Charset.forName("UTF-8")); } return value; }
 	 */
 
+	/* Date: 15 juni 2015
+	 * Jira: NDA-303/NDA-372
 	public String convertStringToUTF8(String text)
 	{
 		String value = null;
@@ -435,6 +437,7 @@ public class StringUtilities {
 		}
 		return value;
 	}
+	*/
 
 
 	public static boolean validUTF8(byte[] input)

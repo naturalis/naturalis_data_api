@@ -21,6 +21,7 @@ public class Zoology
 		// TODO Auto-generated constructor stub
 	}
 
+
 	public void addZoologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME)
 	{
@@ -105,7 +106,10 @@ public class Zoology
 			{
 				if (specimen.getGatheringEvent().getWorldRegion() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getWorldRegion()));
+					/* NDA-303/372
+					 * dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getWorldRegion()));
+					 */
+					dataRow.add(specimen.getGatheringEvent().getWorldRegion());
 				}
 				else
 				{
@@ -118,7 +122,10 @@ public class Zoology
 			{
 				if(specimen.getGatheringEvent().getCountry() != null)
 				{
+					/*NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCountry()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getCountry());
 				}
 				else
 				{
@@ -131,7 +138,10 @@ public class Zoology
 			{
 				if(specimen.getGatheringEvent().getCity() != null)
 				{
+					/*NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCity()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getCity());
 				}
 				else
 				{
@@ -256,7 +266,8 @@ public class Zoology
 				if(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null &&
 				   specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial()));
+					/* NDA-303/372*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
 				}
 				else
 				{
@@ -313,7 +324,8 @@ public class Zoology
 					    if (ag instanceof Person)
 					    {
 					    	Person per = (Person) ag;
-					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName())); 
+					    	/*NDA-303/372*/
+					    	listAgentFullname.add(per.getFullName()); 
 					    }
 						
 					    if (listAgentFullname.size() > 1)
@@ -329,8 +341,8 @@ public class Zoology
 					    .replace("[", " ")
 					    .replace("]", " ")
 					    .trim();
-					
-					    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+					    dataRow.add(resultAgentFullName);
+					    /*NDA-303/372*/
 					}
 					else
 					{
@@ -382,7 +394,8 @@ public class Zoology
 			{
 				if (specimen.getGatheringEvent().getIsland() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getIsland()));
+					/*NDA-303/372*/
+					dataRow.add(specimen.getGatheringEvent().getIsland());
 				}
 				else
 				{
@@ -446,7 +459,8 @@ public class Zoology
 							.replace("\r", "")
 			           		.replace("\n", "")
 			           		.trim();
-    				dataRow.add(strutil.convertStringToUTF8(localityResult));
+					dataRow.add(localityResult);
+					/*NDA-303/372*/
 				}
 				else
 				{
@@ -553,8 +567,8 @@ public class Zoology
 					    .replace("[", " ")
 					    .replace("]", " ")
 					    .trim();
-					
-					    dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					    dataRow.add(resultFullName);
+					    /*NDA-303/372*/
 					}
 					else
 					{
@@ -573,7 +587,8 @@ public class Zoology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName()));
+					/*NDA-303/372*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
 				}
 				else
 				{
@@ -587,7 +602,8 @@ public class Zoology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim()));
+					/*NDA-303/372*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
 				}
 				else
 				{
@@ -614,7 +630,8 @@ public class Zoology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet() != null &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet()));
+					/*NDA-303/372*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
 				}
 				else
 				{
@@ -627,7 +644,8 @@ public class Zoology
 			{
 				if (specimen.getGatheringEvent().getProvinceState() != null)
 				{
-					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getProvinceState()));
+					/*NDA-303/372*/
+					dataRow.add(specimen.getGatheringEvent().getProvinceState());
 				}
 				else
 				{
@@ -686,7 +704,10 @@ public class Zoology
 								.replace("[", "")
 								.replace("]", "")
 								.trim();
+						/*NDA-303/372
 						dataRow.add(strutil.convertStringToUTF8(resultFullName));
+						*/
+						dataRow.add(resultFullName);
 						listFullname.clear();
 					}
 					else
@@ -848,5 +869,5 @@ public class Zoology
 				e.printStackTrace();
 			}
 		}
-	}
+	 }
 }

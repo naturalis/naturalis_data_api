@@ -103,7 +103,10 @@ public class Geology
 			{
 				if (specimen.getGatheringEvent().getWorldRegion() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getWorldRegion()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getWorldRegion());
 				}
 				else
 				{
@@ -116,7 +119,10 @@ public class Geology
 			{
 				if(specimen.getGatheringEvent().getCountry() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCountry()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getCountry());
 				}
 				else
 				{
@@ -129,7 +135,10 @@ public class Geology
 			{
 				if(specimen.getGatheringEvent().getCity() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getCity()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getCity());
 				}
 				else
 				{
@@ -164,7 +173,6 @@ public class Geology
 							.getLatitudeDecimal() != null)
 					{
 						dataRow.add(String.format("%s",specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal()));
-//						dataRow.add(Double.toString(specimen.getGatheringEvent().getSiteCoordinates().iterator().next().getLatitudeDecimal()));
 					}
 					else
 					{
@@ -255,7 +263,10 @@ public class Geology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial() != null &&  
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getGenusOrMonomial());
 				}
 				else
 				{
@@ -284,26 +295,6 @@ public class Geology
 			/* 17_identifications_identifiers_fullName is identifiedBy | BRAHMS ONLY ?? */
 			if (strutil.isEnabled(MAPPING_FILE_NAME, "17_identifications_identifiers_fullName"))
 			{
-				/*if (specimen.getIdentifications().iterator().next().getIdentifiers() != null &&
-					specimen.getIdentifications().iterator().next().isPreferred() == true)
-				{
-					Agent ag = specimen.getIdentifications().iterator().next().getIdentifiers().iterator()
-							.next();
-					if (ag instanceof Person)
-					{
-						Person per = (Person) ag;
-						dataRow.add(strutil.convertStringToUTF8(per.getFullName()));
-					} else
-					{
-						dataRow.add(EMPTY_STRING);
-					}
-				}
-				else
-				{
-					dataRow.add(EMPTY_STRING);
-				}*/
-				
-				
 				List<String> listAgentFullname = new ArrayList<String>();
 				if (specimen.getIdentifications().iterator().next().getIdentifiers() != null)
 				{
@@ -314,7 +305,10 @@ public class Geology
 					    if (ag instanceof Person)
 					    {
 					    	Person per = (Person) ag;
-					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName())); 
+					    	/* NDA-303/372
+					    	listAgentFullname.add(strutil.convertStringToUTF8(per.getFullName()));
+					    	*/
+					    	listAgentFullname.add(per.getFullName());
 					    }
 						
 					    if (listAgentFullname.size() > 1)
@@ -330,8 +324,9 @@ public class Geology
 					    .replace("[", " ")
 					    .replace("]", " ")
 					    .trim();
-					
-					    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));
+					    /* NDA-303/372
+					    dataRow.add(strutil.convertStringToUTF8(resultAgentFullName));*/
+					    dataRow.add(resultAgentFullName);
 					}
 					else
 					{
@@ -384,7 +379,10 @@ public class Geology
 			{
 				if (specimen.getGatheringEvent().getIsland() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getIsland()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getIsland());
 				}
 				else
 				{
@@ -449,7 +447,10 @@ public class Geology
 							.replace("\r", "")
 			           		.replace("\n", "")
 			           		.trim();
+					dataRow.add(localityResult);
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(localityResult));
+					*/
 				}
 				else
 				{
@@ -556,8 +557,10 @@ public class Geology
 					    .replace("[", " ")
 					    .replace("]", " ")
 					    .trim();
-					
+					    dataRow.add(resultFullName);
+					    /* NDA-303/372
 					    dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					    */
 					}
 					else
 					{
@@ -576,7 +579,10 @@ public class Geology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName() != null  &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getFullScientificName());
 				}
 				else
 				{
@@ -590,7 +596,10 @@ public class Geology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim() != null  &&
 					specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getAuthorshipVerbatim());
 				}
 				else
 				{
@@ -617,7 +626,10 @@ public class Geology
 				if (specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet() != null &&
 						specimen.getIdentifications().iterator().next().isPreferred() == true)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet()));
+					*/
+					dataRow.add(specimen.getIdentifications().iterator().next().getScientificName().getSpecificEpithet());
 				}
 				else
 				{
@@ -630,7 +642,10 @@ public class Geology
 			{
 				if (specimen.getGatheringEvent().getProvinceState() != null)
 				{
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(specimen.getGatheringEvent().getProvinceState()));
+					*/
+					dataRow.add(specimen.getGatheringEvent().getProvinceState());
 				}
 				else
 				{
@@ -688,7 +703,10 @@ public class Geology
 					.replace("[", "")
 					.replace("]", "")
 					.trim();
+					dataRow.add(resultFullName);
+					/* NDA-303/372
 					dataRow.add(strutil.convertStringToUTF8(resultFullName));
+					*/
 					listFullname.clear();
 				}
 				else

@@ -48,10 +48,9 @@
 		</exec>
 		<!-- From which commit are we building? -->
 		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
-			<arg value="log" />
-			<arg value='--pretty=format:"%H"' />
-			<arg value="-n" />
-			<arg value="1" />
+			<arg value="rev-parse" />
+			<arg value="--verify" />
+			<arg value="HEAD" />
 		</exec>
 		<!-- Do we have uncommitted changes? -->
 		<exec executable="git" outputproperty="git.status" failifexecutionfails="true">

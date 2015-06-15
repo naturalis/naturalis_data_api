@@ -23,10 +23,9 @@
 
 	<target name="git-info" description="Retrieve current git branch, tag and commit">
 		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
-			<arg value="log" />
-			<arg value='--pretty=format:"%H"' />
-			<arg value="-n" />
-			<arg value="1" />
+			<arg value="rev-parse" />
+			<arg value="--verify" />
+			<arg value="HEAD" />
 		</exec>
 		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
 			<arg value="describe" />

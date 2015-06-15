@@ -10,6 +10,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -44,6 +45,14 @@ public class SpecimenResource {
 
 	@EJB
 	Registry registry;
+	
+	@GET
+	@Path("/exists/{id}")
+	@Produces("text/plain;charset=UTF-8")	
+	public boolean exists(@PathParam("id") String unitID) {
+		SpecimenDao dao = registry.getSpecimenDao(null);
+		return dao.exists(unitID);		
+	}
 
 
 	@GET

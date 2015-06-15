@@ -1,11 +1,12 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,9 +178,9 @@ public abstract class AbstractSpecimenImporter {
 
 		do {
 			logger.info("Processing batch " + batch);
-			String xml = callOaiService(resumptionToken);
+			byte[] response = callOaiService(resumptionToken);
 			++batch;
-			resumptionToken = index(xml);
+			resumptionToken = index(response);
 		} while (resumptionToken != null);
 
 		logger.info("Deleting resumption token file");
@@ -196,14 +197,14 @@ public abstract class AbstractSpecimenImporter {
 		while (localFileIterator.hasNext()) {
 			f = localFileIterator.next();
 			logger.info("Processing file " + f.getCanonicalPath());
-			index(FileUtil.getContents(f));
+			index(Files.readAllBytes(f.toPath()));
 		}
 	}
 
 	private static final SimpleDateFormat oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 
 
-	static String callOaiService(String resumptionToken)
+	static byte[] callOaiService(String resumptionToken)
 	{
 		String url;
 		if (resumptionToken == null) {
@@ -219,12 +220,11 @@ public abstract class AbstractSpecimenImporter {
 			url = String.format(LoadUtil.getConfig().required("crs.specimens.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
-		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
-		return new String(response, Charset.forName("UTF-8"));
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
 
-	static String callOaiService(Date fromDate, Date untilDate)
+	static byte[] callOaiService(Date fromDate, Date untilDate)
 	{
 		String url = LoadUtil.getConfig().required("crs.specimens.url.initial");
 		if (fromDate != null) {
@@ -234,8 +234,7 @@ public abstract class AbstractSpecimenImporter {
 			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		logger.info("Calling service: " + url);
-		byte[] response = new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
-		return new String(response, Charset.forName("UTF-8"));
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
 
@@ -274,12 +273,12 @@ public abstract class AbstractSpecimenImporter {
 	}
 
 
-	private String index(String xml)
+	private String index(byte[] xml)
 	{
 		try {
 			Document doc;
 			logger.debug("Parsing XML");
-			doc = builder.parse(StringUtil.asInputStream(xml));
+			doc = builder.parse(new ByteArrayInputStream(xml));
 			doc.normalize();
 			NodeList records = doc.getElementsByTagName("record");
 			int numRecords = records.getLength();
@@ -345,16 +344,6 @@ public abstract class AbstractSpecimenImporter {
 			return null;
 		}
 	}
-
-	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyyMMddHHmmss");
-
-
-	static String getLocalPath(String resToken)
-	{
-		String testDir = LoadUtil.getConfig().required("crs.local_dir");
-		return String.format("%s/specimens.%s.oai.xml", testDir, DF.format(new Date()));
-	}
-
 
 	static Iterator<File> getLocalFileIterator()
 	{

@@ -1,5 +1,15 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
@@ -10,19 +20,10 @@ import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
-import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class SpecimenDao extends AbstractDao {
 
@@ -89,4 +90,20 @@ public class SpecimenDao extends AbstractDao {
         }
         return null;
     }
+
+	public boolean exists(String unitID)
+	{
+        SearchResponse response = newSearchRequest()
+                .setTypes(SPECIMEN_TYPE)
+                .setQuery(filteredQuery(
+                                matchAllQuery(),
+                                termFilter(
+                                        UNIT_ID + ".raw",
+                                        unitID
+                                )
+                        )
+                )
+                .execute().actionGet();
+		return response.getHits().getHits().length != 0;
+	}
 }

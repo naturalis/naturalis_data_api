@@ -6,9 +6,9 @@
  */
 package nl.naturalis.nda.export.dwca;
 
-import static nl.naturalis.nda.export.dwca.StringUtilities.getFullPath;
-import static nl.naturalis.nda.export.dwca.StringUtilities.getProperty;
-import static nl.naturalis.nda.export.dwca.StringUtilities.newFile;
+import static nl.naturalis.nda.export.dwca.ExportDwCAUtilities.getFullPath;
+import static nl.naturalis.nda.export.dwca.ExportDwCAUtilities.getProperty;
+import static nl.naturalis.nda.export.dwca.ExportDwCAUtilities.newFile;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -101,11 +101,11 @@ public class DwCAExporter {
 
 		String totalsize = System.getProperty("nl.naturalis.nda.export.dwca.batchsize", "1000");
 
-		emlDirectory = StringUtilities.getCollectionConfigDir();
+		emlDirectory = ExportDwCAUtilities.getCollectionConfigDir();
 		/* Output directory for the files EML.xml, Meta.xml and Occurrence.txt */
-		outputDirectory = StringUtilities.getWorkingDirectory();
-		zipOutputDirectory = StringUtilities.getZipOutputDirectory();
-		zipArchiveDirectory = StringUtilities.getBackupDirectory();
+		outputDirectory = ExportDwCAUtilities.getWorkingDirectory();
+		zipOutputDirectory = ExportDwCAUtilities.getZipOutputDirectory();
+		zipArchiveDirectory = ExportDwCAUtilities.getBackupDirectory();
 		
 		indexname = ExportUtil.getConfig().required("elasticsearch.index.name");
 
@@ -113,7 +113,7 @@ public class DwCAExporter {
 
 	    if (collectionName != null) 
 		{
-	    	executeDwCaExport(collectionName, zipOutputDirectory, totalsize);
+	    	executeDwCaExport(collectionName, totalsize);
 		}
 	    else
 	    {
@@ -129,7 +129,7 @@ public class DwCAExporter {
 	    	int cnt = 0;
         	try
         	{
-        		File configpath = StringUtilities.getCollectionConfigDir();
+        		File configpath = ExportDwCAUtilities.getCollectionConfigDir();
         		File[] listOfFiles = configpath.listFiles(filter);
         	    for (File file : listOfFiles)
         	    {
@@ -148,7 +148,7 @@ public class DwCAExporter {
          	    			logger.info("=================================");
          	    			logger.info("Start with execution collectioname: " + collectionName);
          	    		}
-        	    		executeDwCaExport(collectionName, zipOutputDirectory, totalsize);
+        	    		executeDwCaExport(collectionName, totalsize);
         	    	}
         	    }
         	    logger.info("All collection successful executed: " + builder.toString());
@@ -165,7 +165,7 @@ public class DwCAExporter {
 	}
 	
 		
-	private static void executeDwCaExport(String collectionName, File pZipOutPutDirectory, String ptotalSize) throws Exception
+	private static void executeDwCaExport(String collectionName, String ptotalSize) throws Exception
 	{
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
 		if (collectionName != null) 
@@ -191,7 +191,6 @@ public class DwCAExporter {
 				collectionName = getProperty(collectionName, "collectionName");
 				nameCollectiontypeBrahms = collectionName;
 			}
-
 		}
 		catch (Exception ex) {
 			logger.info(collectionName + " properties filename is not correct.");
@@ -203,7 +202,6 @@ public class DwCAExporter {
 		{
 			zipfilename = newFile(zipOutputDirectory, collectionName).getAbsolutePath();
 		}
-
 
 		DwCAExporter exp = new DwCAExporter(ExportUtil.getESClient(), indexname);
 		/* Delete the CSV file if Exists */
@@ -217,10 +215,9 @@ public class DwCAExporter {
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
 			exp.exportDwca(zipfilename, nameCollectiontypeBrahms, ptotalSize);
 		}
-		
 	}
 
-
+	/* Get the Eml File */
 	private static String getEmlFileName(String emlDir, String emlfilename)
 	{
 		String filename = null;
@@ -276,14 +273,13 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 		
-		Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
+		Properties configFile = ExportDwCAUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
 		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<Object, Object>(configFile);
 		Set<?> keySet = sortedSystemProperties.keySet();
 		Iterator<?> iterator = keySet.iterator();
 		String resultvalue = null;
 		while (iterator.hasNext()) {
-			
 			propertyName = (String) iterator.next();
 			propertyValue = configFile.getProperty(propertyName);
 			/* Add the headers to the CSV File */
@@ -321,9 +317,9 @@ public class DwCAExporter {
 			emlfilefromdir = getEmlFileName(emlDirectory.getAbsolutePath(), collectionName);
 			logger.info("Reading the file from: '" + getFullPath(emlDirectory, emlfilefromdir));
 			/* Directory Source EML File */
-			FILE_NAME_EML = StringUtilities.newFile(emlDirectory, emlfilefromdir);
+			FILE_NAME_EML = ExportDwCAUtilities.newFile(emlDirectory, emlfilefromdir);
 			/* Destination directory for eml file */
-			destinationPathEml = StringUtilities.newFile(outputDirectory, emlfilefromdir);
+			destinationPathEml = ExportDwCAUtilities.newFile(outputDirectory, emlfilefromdir);
 			logger.info("Copy the file to: '" + getFullPath(outputDirectory, emlfilefromdir));
 		}
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
@@ -332,18 +328,18 @@ public class DwCAExporter {
 			emlfilefromdir = getEmlFileName(emlDirectory.getAbsolutePath(), MAPPING_FILE_NAME.toLowerCase());
 			logger.info("Reading the file from: '" + getFullPath(emlDirectory, emlfilefromdir));
 			/* Directory Source EML File */
-			FILE_NAME_EML = StringUtilities.newFile(emlDirectory, emlfilefromdir);
+			FILE_NAME_EML = ExportDwCAUtilities.newFile(emlDirectory, emlfilefromdir);
 			/* Destination directory for eml file */
 			destinationPathEml = newFile(outputDirectory, emlfilefromdir);
 			logger.info("Copy the file to: '" + getFullPath(outputDirectory, emlfilefromdir));
 		}
 		/* Copy the file from the source directory to the Destination directory */
-		StringUtilities.CopyAFile(FILE_NAME_EML, destinationPathEml);
+		ExportDwCAUtilities.CopyAFile(FILE_NAME_EML, destinationPathEml);
 		/*
 		 * Rename the (example: amphibia_and_reptilia_eml.xml) eml file to the
 		 * exact name "eml.xml"
 		 */
-		StringUtilities.renameDwCAEMLFile(destinationPathEml);
+		ExportDwCAUtilities.renameDwCAEMLFile(destinationPathEml);
 
 		/* Create the zipfile with a given filename */
 		createZipFiles(zipFileName);
@@ -360,13 +356,11 @@ public class DwCAExporter {
 			destination = newFile(zipArchiveDirectory, "botany" + zipExtension);
 		}
 			
-
 		/* Backup the zipfile */
-		StringUtilities.CopyAFile(source, destination);
+		ExportDwCAUtilities.CopyAFile(source, destination);
 		/* Renamed the zip file into bak in de Archive map */
-		StringUtilities.renameDwCAZipFile(destination);
+		ExportDwCAUtilities.renameDwCAZipFile(destination);
 	}
-
 
 	/* Creating the Meta.xml */
 	private static void dwcaObjectToXML(Meta meta)
@@ -382,13 +376,11 @@ public class DwCAExporter {
 			m.marshal(meta, newFile(outputDirectory, FILE_NAME_META));
 			logger.info("Saved '" + FILE_NAME_META + "' to '" + outputDirectory.getAbsolutePath() + "'");
 			m.marshal(meta, System.out);
-
 		}
 		catch (JAXBException e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	/* Creating the zip file */
 	public static void createZipFiles(String zipFileName)
@@ -404,13 +396,11 @@ public class DwCAExporter {
 		}
 	}
 
-
 	/* Printing tghe records to a CSV file named: "Occurrence.txt" */
 	private void printHeaderRowAndDataForCSV(String namecollectiontype, String totalsize) throws IOException
 	{
 		try {
 			/* Create new CSV File object and output File */
-
 			/* Zoology Occurrence */
 			if (sourceSystemCode.equalsIgnoreCase("CRS")) {
 				runCrsZoologyElasticsearch(namecollectiontype, totalsize);
@@ -437,7 +427,7 @@ public class DwCAExporter {
 		}
 	}
 
-
+    /* Writing the Header of the CSV file  */
 	private void writeCSVHeader() throws IOException
 	{
 		/* Create new CSV File object and output File */
@@ -445,7 +435,7 @@ public class DwCAExporter {
 
 		headerRow = filewriter.new CsvRow();
 
-		Properties configFile = StringUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
+		Properties configFile = ExportDwCAUtilities.getCollectionConfiguration(MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
 		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<Object, Object>(configFile);
 		Set<?> keySet = sortedSystemProperties.keySet();
@@ -462,10 +452,8 @@ public class DwCAExporter {
 		}
 		/* Write the headers columns */
 		logger.info("Writing headers row to the Occurrence.txt file.");
-		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "Writing headers row to the Occurrence.txt file.");
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
-		//StringUtilities.writeLogToJSON(nameCollectiontypeCrs, "CSV Fieldsheader: " + headerRow.toString());
 		/* Clear the Sotred map and KeySet */
 		sortedSystemProperties.clear();
 		keySet.clear();
@@ -483,7 +471,6 @@ public class DwCAExporter {
 			getResultsList("Specimen", namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 			long lEndTime = new Date().getTime();
 			long difference = lEndTime - lStartTime;
-			//int minutes = (int) ((difference / (1000*60)) % 60);
 			String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(difference), TimeUnit.MILLISECONDS.toMinutes(difference)
 					% TimeUnit.HOURS.toMinutes(1), TimeUnit.MILLISECONDS.toSeconds(difference) % TimeUnit.MINUTES.toSeconds(1));
 			logger.info("CSV file written on : '" + hms + " hour(s)/minute(s)/second(s).'");
@@ -501,14 +488,12 @@ public class DwCAExporter {
 			getResultsList("Specimen", namecollectiontype, sourceSystemCode, Integer.parseInt(totalsize), ESSpecimen.class);
 			long lEndGeoTime = new Date().getTime();
 			long differenceGeo = lEndGeoTime - lStartGeoTime;
-			//int minutesGeo = (int) ((differenceGeo / (1000*60)) % 60);
 			String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(differenceGeo), TimeUnit.MILLISECONDS.toMinutes(differenceGeo)
 					% TimeUnit.HOURS.toMinutes(1), TimeUnit.MILLISECONDS.toSeconds(differenceGeo) % TimeUnit.MINUTES.toSeconds(1));
 			logger.info("CSV file written on : '" + hms + " hour(s)/minute(s)/second(s).'");
 			logger.info("CSV file written in : '" + TimeUnit.MILLISECONDS.toMinutes(differenceGeo) + " minutes.'");
 		}
 	}
-
 
 	/* Get the data from Elasticsearch for BRAHMS and write to CSV file */
 	private void runBrahmsElasticsearch(String namecollectiontype, String totalsize) throws IOException
@@ -522,7 +507,6 @@ public class DwCAExporter {
 
 			long lEndBrahmsTime = new Date().getTime();
 			long differenceBrahms = lEndBrahmsTime - lStartBrahmsTime;
-			//int minutesBrahms = (int) ((differenceBrahms / (1000*60)) % 60);
 			String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(differenceBrahms),
 					TimeUnit.MILLISECONDS.toMinutes(differenceBrahms) % TimeUnit.HOURS.toMinutes(1),
 					TimeUnit.MILLISECONDS.toSeconds(differenceBrahms) % TimeUnit.MINUTES.toSeconds(1));
@@ -532,44 +516,30 @@ public class DwCAExporter {
 
 	}
 
-
 	/* Create CRS Zoology Csv file. */
-	private void writeCRSZoologyCsvFile(List<ESSpecimen> listZoology, String namecollectiontype, String occurrenceFields) throws IOException
+	private static void writeCRSZoologyCsvFile(List<ESSpecimen> listZoology,  String occurrenceFields) throws IOException
 	{
 		if (MAPPING_FILE_NAME.equalsIgnoreCase(occurrenceFields)) {
-			Zoology zoology = new Zoology();
-			zoology.addZoologyOccurrencefield(listZoology, filewriter, MAPPING_FILE_NAME);
+			Zoology.addZoologyOccurrencefield(listZoology, filewriter, MAPPING_FILE_NAME);
 		}
 	}
 
-
 	/* Create CRS Zoology Csv file. */
-	private void writeCRSGeologyCsvFile(List<ESSpecimen> listGeology, String namecollectiontype, String occurrenceFields) throws IOException
+	private static void writeCRSGeologyCsvFile(List<ESSpecimen> listGeology, String occurrenceFields) throws IOException
 	{
 		if (MAPPING_FILE_NAME.equalsIgnoreCase(occurrenceFields)) {
-			Geology geo = new Geology();
-			geo.addGeologyOccurrencefield(listGeology, filewriter, MAPPING_FILE_NAME);
+			Geology.addGeologyOccurrencefield(listGeology, filewriter, MAPPING_FILE_NAME);
 		}
 	}
-
 
 	/* Create Brahms CSV file */
-	private void writeBrahmsCsvHeader(List<ESSpecimen> listBrahms, String namecollectiontype, String occurrenceFields) throws IOException
+	private static void writeBrahmsCsvHeader(List<ESSpecimen> listBrahms, String occurrenceFields) throws Exception
 	{
 		/* BRAHMS Occurrence */
 		if (MAPPING_FILE_NAME.equalsIgnoreCase(occurrenceFields)) {
-			Brahms brahms = new Brahms();
-			if (brahms != null) {
-				try {
-					brahms.addBrahmsOccurrencefield(listBrahms, filewriter, MAPPING_FILE_NAME);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+			Brahms.addBrahmsOccurrencefield(listBrahms, filewriter, MAPPING_FILE_NAME);
 		}
 	}
-
 
 	public static String getNameCollectiontypeAnd()
 	{
@@ -582,9 +552,9 @@ public class DwCAExporter {
 		DwCAExporter.nameCollectiontypeAnd = nameCollectiontypeAnd;
 	}
 
-
+	/* Uitvoeren Elasticsearch query */
 	@SuppressWarnings("unchecked")
-	public <T> void getResultsList(String type, String namecollectiontype, String sourcesystemcode, int size, Class<T> targetClass)
+	public static <T> void getResultsList(String type, String namecollectiontype, String sourcesystemcode, int size, Class<T> targetClass)
 	{
 		SearchRequestBuilder searchRequestBuilder = null;
 
@@ -686,21 +656,22 @@ public class DwCAExporter {
 				}
 
 				response = eslasticClient.prepareSearchScroll(response.getScrollId()).setScrollId(response.getScrollId())
-						.setScroll(TimeValue.timeValueMinutes(60000)).execute().actionGet();
+						   .setScroll(TimeValue.timeValueMinutes(6000)).execute().actionGet();
 				restvalue = (int) (totalHitCount / count);
 				resultrecord = restvalue - resultrecord;
 				logger.info("Shard hit.'" + count++ + "' successful");
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS") && MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
-					writeCRSZoologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Zoology");
+					//writeCRSZoologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Zoology");
+					writeCRSZoologyCsvFile((List<ESSpecimen>) list, "Zoology");
 				}
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS") && MAPPING_FILE_NAME.equalsIgnoreCase("Geology")) {
-					writeCRSGeologyCsvFile((List<ESSpecimen>) list, namecollectiontype.toUpperCase(), "Geology");
+					writeCRSGeologyCsvFile((List<ESSpecimen>) list, "Geology");
 				}
 
 				if (sourcesystemcode.equalsIgnoreCase("BRAHMS")) {
-					writeBrahmsCsvHeader((List<ESSpecimen>) list, sourcesystemcode.toLowerCase(), "botany");
+					writeBrahmsCsvHeader((List<ESSpecimen>) list,  "botany");
 				}
 				Requests.flushRequest(indexname);
 				Requests.refreshRequest(indexname);

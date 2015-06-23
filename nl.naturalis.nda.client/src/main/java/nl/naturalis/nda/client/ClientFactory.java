@@ -3,25 +3,37 @@ package nl.naturalis.nda.client;
 import java.util.HashMap;
 
 /**
+ * 
  * @author Ayco Holleman
  *
  */
 public class ClientFactory {
 
-	private static HashMap<ClientConfig, SpecimenClient> specimenClients = new HashMap<>(8);
+	private static HashMap<ClientConfig, ClientFactory> factories = new HashMap<>(8);
 
 
-	public static SpecimenClient createSpecimenClient(ClientConfig cfg)
+	public static ClientFactory getInstance(ClientConfig cfg)
 	{
-		SpecimenClient client = specimenClients.get(cfg);
-		if (client == null) {
-			client = new SpecimenClient(cfg);
-			specimenClients.put(cfg, client);
+		ClientFactory cf = factories.get(cfg);
+		if (cf == null) {
+			cf = new ClientFactory(cfg);
+			factories.put(cfg, cf);
 		}
-		return client;
+		return cf;
+	}
+
+
+	public SpecimenClient createSpecimenClient()
+	{
+		if (specimentClient == null) {
+			specimentClient = new SpecimenClient(cfg);
+		}
+		return specimentClient;
 	}
 
 	private final ClientConfig cfg;
+
+	private SpecimenClient specimentClient;
 
 
 	private ClientFactory(ClientConfig cfg)

@@ -14,19 +14,21 @@
 			<arg value="branch" />
 		</exec>
 		<fail unless:set="git.available" message="Git not installed, or Git bin directory not added to PATH yet" />
+		<echo if:set="git.available" message="Git available" />
 		<!-- Do we have build.properties? -->
-		<fail message="Copy build.properties.tpl to build.properties and make sure it contains the correct settings">
-			<condition>
-				<not>
-					<resourcecount count="1">
-						<fileset dir="${basedir}" includes="build.properties" />
-					</resourcecount>
-				</not>
-			</condition>
-		</fail>
+		<condition property="build.properties.missing">
+			<not>
+				<resourcecount count="1">
+					<fileset dir="${basedir}" includes="build.properties" />
+				</resourcecount>
+			</not>
+		</condition>
+		<fail if:set="build.properties.missing" message="Copy build.properties.tpl to build.properties and make sure it contains the correct settings" />
+		<echo unless:set="build.properties.missing" message="build.properties present" />
+
 		<!-- We're good to go -->
 		<property name="signal.clear" value="on" />
-		<echo message="You got clearance!" />
+		<echo message="You got clearance" />
 	</target>
 
 	<target name="verify" description="Make sure everything is in place to do Ant builds for the NBA">
@@ -117,6 +119,14 @@
 		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
+	<target name="clean-ear-module" description="Cleans up ear module and all modules it depends on">
+		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" target="clean" />
+	</target>
+
 	<target name="build-ear-file" depends="-build-rest-module" description="Create the NBA ear file">
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
@@ -141,10 +151,6 @@
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
 	</target>
 
-	<target name="test-import-module" depends="install-import-module" description="Test installation of the import module">
-		<echo message="Coming soon" />
-	</target>
-
 	<target name="clean-export-module" description="Perform cleanup for export module, but do not build or install">
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" />
@@ -162,10 +168,6 @@
 	<target name="install-export-module" depends="-build-export-module" description="Install import module (Java libraries, shell scripts, config files)">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
-	</target>
-
-	<target name="test-export-module" depends="install-export-module" description="Run the DwCA export program from a vanilla installation">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="test-export" />
 	</target>
 
 	<target name="build" depends="build-ear-file" description="Create the NBA ear file" />

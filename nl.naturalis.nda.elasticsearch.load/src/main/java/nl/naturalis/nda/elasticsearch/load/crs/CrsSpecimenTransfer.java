@@ -47,11 +47,25 @@ public class CrsSpecimenTransfer {
 
 	public static ESSpecimen transfer(Element recordElement)
 	{
+
 		String unitId = val(recordElement, "abcd:UnitID");
+		if (unitId == null) {
+			logger.error("Missing UnitID");
+			return null;
+		}
+
+		String recordBasis = val(recordElement, "abcd:RecordBasis");
+		if (recordBasis == null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Skipping virtual specimen record with UnitID " + unitId);
+			}
+			return null;
+		}
+
 		List<Element> determinationElements = DOMUtil.getDescendants(recordElement, "ncrsDetermination");
 		if (determinationElements == null) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Missing <ncrsDetermination> element for specimen with unitID " + unitId);
+				logger.debug("Missing <ncrsDetermination> element for specimen with UnitID " + unitId);
 			}
 			return null;
 		}
@@ -98,13 +112,14 @@ public class CrsSpecimenTransfer {
 		specimen.setTheme(themes);
 		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));
-		//specimen.setSourceInstitutionID(val(recordElement, "abcd:SourceInstitutionID"));
+		// specimen.setSourceInstitutionID(val(recordElement,
+		// "abcd:SourceInstitutionID"));
 		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		specimen.setOwner(SOURCE_INSTITUTION_ID);
 		specimen.setSourceID("CRS");
 		specimen.setLicenceType(LICENCE_TYPE);
 		specimen.setLicence(LICENCE);
-		specimen.setRecordBasis(val(recordElement, "abcd:RecordBasis"));
+		specimen.setRecordBasis(recordBasis);
 		specimen.setKindOfUnit(val(recordElement, "abcd:KindOfUnit"));
 		specimen.setCollectionType(val(recordElement, "abcd:CollectionType"));
 		specimen.setTitle(val(recordElement, "abcd:Title"));
@@ -454,7 +469,9 @@ public class CrsSpecimenTransfer {
 	{
 		String s = DOMUtil.getDescendantValue(e, tag);
 		if (s == null) {
-			logger.trace(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("No element \"%s\" under element \"%s\"", tag, e.getTagName()));
+			}
 			return null;
 		}
 		s = s.trim();

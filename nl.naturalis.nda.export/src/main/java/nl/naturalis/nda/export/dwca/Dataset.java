@@ -94,18 +94,6 @@ public class Dataset
 		this.subtype = subtype;
 	}
 
-
-	
-//	 public void addContact( Contact contact )
-//	    {
-//	        if( this.contacts == null )
-//	        {
-//	            this.contacts = new ArrayList<Contact>();
-//	        }
-//	        this.contacts.add( contact );
-//
-//	    }
-
 	public Contact getContacts()
 	{
 		return contacts;
@@ -135,29 +123,5 @@ public class Dataset
 	{
 		this.provider = provider;
 	}
-
-	/*
-	 List<Dataset> datasets;
-
-		public List<Dataset> getDatasets()
-		{
-			return datasets;
-		}
-
-		
-		public void setDatasets(List<Dataset> datasets)
-		{
-			this.datasets = datasets;
-		}
-
-		public void add(Dataset dataset)
-		{
-			if (this.datasets == null)
-			{
-				this.datasets = new ArrayList<Dataset>();
-			}
-			this.datasets.add(dataset);
-
-		}*/
 
 }

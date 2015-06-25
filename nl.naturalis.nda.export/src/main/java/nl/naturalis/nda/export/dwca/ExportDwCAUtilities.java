@@ -16,7 +16,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -39,9 +38,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class StringUtilities {
+public class ExportDwCAUtilities {
 
-	static final Logger logger = LoggerFactory.getLogger(StringUtilities.class);
+	static final Logger logger = LoggerFactory.getLogger(ExportDwCAUtilities.class);
 	final static int BUFFER = 2048;
 	static String propertiesfilename = null;
 
@@ -164,8 +163,8 @@ public class StringUtilities {
 	 */
 	public static boolean isFieldChecked(String propertyname, String value)
 	{
-		int commaindex = StringUtilities.getPropertyValue(propertyname, value).length() - 1;
-		String result = StringUtilities.getPropertyValue(propertyname, value);
+		int commaindex = ExportDwCAUtilities.getPropertyValue(propertyname, value).length() - 1;
+		String result = ExportDwCAUtilities.getPropertyValue(propertyname, value);
 		String resultprop = result.substring(commaindex);
 		return resultprop.matches("1(.*)");
 	}
@@ -406,7 +405,7 @@ public class StringUtilities {
 	}
 
 
-	public boolean isEnabled(String collectionName, String propertyName)
+	public static boolean isEnabled(String collectionName, String propertyName)
 	{
 		String val = getProperty(collectionName, propertyName);
 		String[] chunks = val.split(",");

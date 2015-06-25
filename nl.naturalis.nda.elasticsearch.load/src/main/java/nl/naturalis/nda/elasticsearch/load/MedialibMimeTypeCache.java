@@ -148,9 +148,7 @@ public class MedialibMimeTypeCache implements Closeable {
 		try {
 			cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
 			if (!cacheFile.isFile()) {
-				String fmt = "Missing cache file (.mimetypes). You should put it in %s. "
-						+ "You can get it from the src/main/resources/conf directory within "
-						+ "nl.naturalis.nda.elasticsearch.load.jar";
+				String fmt = "Missing cache file (.mimetypes). You should put it in %s. ";
 				String msg = String.format(fmt, ndaConfDir);
 				throw new RuntimeException(msg);
 			}

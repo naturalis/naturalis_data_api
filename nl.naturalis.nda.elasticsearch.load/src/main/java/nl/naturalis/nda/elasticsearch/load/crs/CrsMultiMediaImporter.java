@@ -76,16 +76,19 @@ public class CrsMultiMediaImporter {
 	private final int maxRecords;
 	private final boolean forceRestart;
 
-	int recordsProcessed;
-	int multimediaProcessed;
-
-	int recordsRejected;
-	int multimediaRejected;
 
 	int recordsSkipped;
+	/*
+	 * Records that are not skipped. recordsSkipped + recordsInvestigated =
+	 * recordsProcessed
+	 */
 	int recordsInvestigated;
-	int multimediaSkipped;
+	int recordsProcessed;
+	int recordsRejected;
 
+	int multimediaSkipped;
+	int multimediaProcessed;
+	int multimediaRejected;
 	int multimediaIndexed;
 
 
@@ -364,6 +367,7 @@ public class CrsMultiMediaImporter {
 		}
 		return DOMUtil.getChild(record, "header").getAttribute("status").equals("deleted");
 	}
+
 
 	private static File getResumptionTokenFile()
 	{

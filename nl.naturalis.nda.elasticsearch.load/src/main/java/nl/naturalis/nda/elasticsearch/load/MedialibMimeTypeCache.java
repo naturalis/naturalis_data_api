@@ -148,11 +148,11 @@ public class MedialibMimeTypeCache implements Closeable {
 		try {
 			cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
 			if (!cacheFile.isFile()) {
-				String fmt = "Missing mimetype cache file. You should put it in %s. "
-						+ "You can get it from the src/main/resources directory within "
-						+ "nl.naturalis.nda.elasticsearch.load.jar.";
+				String fmt = "Missing cache file (.mimetypes). You should put it in %s. "
+						+ "You can get it from the src/main/resources/conf directory within "
+						+ "nl.naturalis.nda.elasticsearch.load.jar";
 				String msg = String.format(fmt, ndaConfDir);
-				throw new FileNotFoundException(msg);
+				throw new RuntimeException(msg);
 			}
 			buildCache();
 		}
@@ -311,7 +311,7 @@ public class MedialibMimeTypeCache implements Closeable {
 	private void buildCache() throws FileNotFoundException, IOException
 	{
 		cache = new TreeMap<String, String>();
-		logger.info("Loading mime type cache from file system: " + cacheFile.getAbsolutePath());
+		logger.info("Initializing mime type cache");
 		LineNumberReader lnr = null;
 		ZipInputStream zis = null;
 		try {

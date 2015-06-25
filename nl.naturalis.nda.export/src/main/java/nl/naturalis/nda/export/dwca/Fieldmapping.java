@@ -30,7 +30,7 @@ public class Fieldmapping {
 	}
 
 	/* Get ID value */
-	public static void setDummyValue(String MAPPING_FILE_NAME,
+	public static void setDummyValue(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/* 00_Dummy0 is ID */
 		if (specimen.getSourceSystemId() != null) {
@@ -41,7 +41,7 @@ public class Fieldmapping {
 	}
 
 	/* Get RecordBasis value for Zoology and Geology */
-	public static void setBasisOfRecord(String MAPPING_FILE_NAME,
+	public static void setBasisOfRecord(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getRecordBasis() != null) {
 			dataRow.add(specimen.getRecordBasis());
@@ -51,7 +51,7 @@ public class Fieldmapping {
 	}
 
 	/* Get BasisOf record value For BRAHMS */
-	public static void setBasisOfRecord_Brahms(String MAPPING_FILE_NAME,
+	public static void setBasisOfRecord_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getRecordBasis() != null
 				&& specimen.getRecordBasis().contains(
@@ -74,8 +74,7 @@ public class Fieldmapping {
 	}
 
 	/* Get catalogNumber value */
-	public static void setCatalogNumber(String MAPPING_FILE_NAME,
-			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCatalogNumber(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getSourceSystemId() != null) {
 			dataRow.add(specimen.getSourceSystemId());
 		} else {
@@ -84,7 +83,7 @@ public class Fieldmapping {
 	}
 
 	/* Get ClassName value for Zoology and Geology */
-	public static void setClassName(String MAPPING_FILE_NAME,
+	public static void setClassName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification() != null
@@ -97,15 +96,16 @@ public class Fieldmapping {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	/* Get Classname for BRAHMS */
-	public static void setClassName_Brahms(String MAPPING_FILE_NAME,
+	public static void setClassName_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/* 03_DummyDefault class */
 		dataRow.add(EMPTY_STRING);
 	}
 
 	/* Get CollectionType value for Zoology and Geology */
-	public static void setCollectionType(String MAPPING_FILE_NAME,
+	public static void setCollectionType(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getCollectionType() != null) {
 			dataRow.add(specimen.getCollectionType());
@@ -114,14 +114,15 @@ public class Fieldmapping {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	/* Get CollectionCode value for Brahms */
-	public static void setCollectionCode_Brahms(String MAPPING_FILE_NAME,
-			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCollectionCode_Brahms(
+			 ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add("Botany");
 	}
 
 	/* Get Continent value */
-	public static void setContinent(String MAPPING_FILE_NAME,
+	public static void setContinent(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getWorldRegion() != null) {
 			dataRow.add(specimen.getGatheringEvent().getWorldRegion());
@@ -131,7 +132,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Country value */
-	public static void setCountry(String MAPPING_FILE_NAME,
+	public static void setCountry(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getCountry() != null) {
 			dataRow.add(specimen.getGatheringEvent().getCountry());
@@ -141,7 +142,7 @@ public class Fieldmapping {
 	}
 
 	/* Get County value */
-	public static void setCounty(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setCounty( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getCity() != null) {
 			dataRow.add(specimen.getGatheringEvent().getCity());
@@ -151,7 +152,7 @@ public class Fieldmapping {
 	}
 
 	/* Get DateIndentified value for Zoology and Geology */
-	public static void setDateIndentified(String MAPPING_FILE_NAME,
+	public static void setDateIndentified(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getDateIdentified() != null
 				&& specimen.getIdentifications().iterator().next()
@@ -167,7 +168,7 @@ public class Fieldmapping {
 	}
 
 	/* Get DateIndentified value for Brahms */
-	public static void setDateIndentified_Brahms(String MAPPING_FILE_NAME,
+	public static void setDateIndentified_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getDateIdentified() != null) {
 			SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
@@ -181,7 +182,7 @@ public class Fieldmapping {
 	}
 
 	/* Get LatitudeDecimal value */
-	public static void setLatitudeDecimal(String MAPPING_FILE_NAME,
+	public static void setLatitudeDecimal(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
 			if (specimen.getGatheringEvent().getSiteCoordinates().iterator()
@@ -198,7 +199,7 @@ public class Fieldmapping {
 	}
 
 	/* Get LongituDecimal value */
-	public static void setLongitudeDecimal(String MAPPING_FILE_NAME,
+	public static void setLongitudeDecimal(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
 			if (specimen.getGatheringEvent().getSiteCoordinates().iterator()
@@ -215,7 +216,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Eventdate value for Zoology and Geology */
-	public static void setEvendate(String MAPPING_FILE_NAME,
+	public static void setEvendate(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
@@ -259,7 +260,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Eventdate value for Brahms */
-	public static void setEvendate_Brahms(String MAPPING_FILE_NAME,
+	public static void setEvendate_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
@@ -303,7 +304,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Family value for Zoology and Geology */
-	public static void setFamily(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setFamily( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification().getFamily() != null
@@ -317,7 +318,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Family value for Brahms */
-	public static void setFamily_Brahms(String MAPPING_FILE_NAME,
+	public static void setFamily_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification().getFamily() != null) {
@@ -329,7 +330,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Genus value for Zoology and Geology */
-	public static void setGenus(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setGenus( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getGenusOrMonomial() != null
@@ -343,7 +344,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Genus value for Brahms */
-	public static void setGenus_Brahms(String MAPPING_FILE_NAME,
+	public static void setGenus_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/*
 		 * if (ExportDwCAUtilities.isEnabled(MAPPING_FILE_NAME,
@@ -359,26 +360,29 @@ public class Fieldmapping {
 		// }
 	}
 
+	@SuppressWarnings("unused")
 	/* Get Geodeticdatum value */
-	public static void setGeodeticDatum(String MAPPING_FILE_NAME,
+	public static void setGeodeticDatum(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
 
+	@SuppressWarnings("unused")
 	/* Get Habitat value */
-	public static void setHabitat(String MAPPING_FILE_NAME,
+	public static void setHabitat(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
 
+	@SuppressWarnings("unused")
 	/* Get HigherClassification value for Zoology and Geology */
-	public static void setHigherClassification(String MAPPING_FILE_NAME,
+	public static void setHigherClassification(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
 
 	/* Get HigherClassification value for Brahms */
-	public static void setHigherClassification_Brahms(String MAPPING_FILE_NAME,
+	public static void setHigherClassification_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification() != null) {
@@ -409,7 +413,7 @@ public class Fieldmapping {
 	}
 
 	/* Get IndentifiersFullname value for Zoology and Geology */
-	public static void setIdentifiersFullName(String MAPPING_FILE_NAME,
+	public static void setIdentifiersFullName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		List<String> listAgentFullname = new ArrayList<String>();
 		if (specimen.getIdentifications().iterator().next().getIdentifiers() != null) {
@@ -444,7 +448,7 @@ public class Fieldmapping {
 	}
 
 	/* Get IndentifiersFullname value for Brahms */
-	public static void setIdentifiersFullName_Brahms(String MAPPING_FILE_NAME,
+	public static void setIdentifiersFullName_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getIdentifiers() != null) {
 			List<String> listAgentFullname = new ArrayList<String>();
@@ -477,7 +481,7 @@ public class Fieldmapping {
 	}
 
 	/* Get NumberOfSpecimen value for Zoology and Geology */
-	public static void setNumberOfSpecimen(String MAPPING_FILE_NAME,
+	public static void setNumberOfSpecimen(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (Integer.toString(specimen.getNumberOfSpecimen()) != null
 				&& specimen.getNumberOfSpecimen() > 0) {
@@ -487,14 +491,15 @@ public class Fieldmapping {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	/* Get InformationWithHeld value for Zoology and Geology */
-	public static void setInformationWithHeld(String MAPPING_FILE_NAME,
+	public static void setInformationWithHeld(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
 
 	/* Get InfraspecificEpithet value for Zoology and Geology */
-	public static void setInfraspecificEpithet(String MAPPING_FILE_NAME,
+	public static void setInfraspecificEpithet(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getInfraspecificEpithet() != null
@@ -508,7 +513,7 @@ public class Fieldmapping {
 	}
 
 	/* Get InfraspecificEpithet value for Brahms */
-	public static void setInfraspecificEpithet_Brahms(String MAPPING_FILE_NAME,
+	public static void setInfraspecificEpithet_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getInfraspecificEpithet() != null) {
@@ -520,7 +525,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Island value for Zoology and Geology */
-	public static void setIsland(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setIsland( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getIsland() != null) {
 			dataRow.add(specimen.getGatheringEvent().getIsland());
@@ -530,7 +535,7 @@ public class Fieldmapping {
 	}
 
 	/* Get InstitudeCode value for Zoology and Geology */
-	public static void setInstitudeCode(String MAPPING_FILE_NAME,
+	public static void setInstitudeCode(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getSourceInstitutionID().contains("Naturalis")) {
 			dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
@@ -542,7 +547,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Kingdom value for Zoology and Geology */
-	public static void setKingdom(String MAPPING_FILE_NAME,
+	public static void setKingdom(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification() != null
@@ -556,7 +561,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Kingdom value for Brahms */
-	public static void setKingdom_Brahms(String MAPPING_FILE_NAME,
+	public static void setKingdom_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification() != null) {
@@ -578,7 +583,7 @@ public class Fieldmapping {
 	}
 
 	/* Get PhaseOrStage value for Zoology and Geology */
-	public static void setPhaseOrStage(String MAPPING_FILE_NAME,
+	public static void setPhaseOrStage(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getPhaseOrStage() != null) {
 			dataRow.add(specimen.getPhaseOrStage());
@@ -588,7 +593,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Locality value for Zoology and Geology */
-	public static void setLocality(String MAPPING_FILE_NAME,
+	public static void setLocality(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getLocality() != null) {
 			String localityResult = specimen.getGatheringEvent().getLocality()
@@ -601,38 +606,42 @@ public class Fieldmapping {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	/* Get MaximumElevationInMeters value */
-	public static void setMaximumElevationInMeters(String MAPPING_FILE_NAME,
+	public static void setMaximumElevationInMeters(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
-
+	
+	@SuppressWarnings("unused")
 	/* Get MinimumElevationInMeters value */
-	public static void setMinimumElevationInMeters(String MAPPING_FILE_NAME,
+	public static void setMinimumElevationInMeters(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
 
+	@SuppressWarnings("unused")
 	/* Get NomenclaturalCode value for Zoology */
-	public static void setNomenclaturalCode_Zoology(String MAPPING_FILE_NAME,
+	public static void setNomenclaturalCode_Zoology(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add("ICZN");
 	}
 
+	@SuppressWarnings("unused")
 	/* Get NomenclaturalCode value Geology */
-	public static void setNomenclaturalCode_Geology(String MAPPING_FILE_NAME,
+	public static void setNomenclaturalCode_Geology(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add(EMPTY_STRING);
 	}
 
+	@SuppressWarnings("unused")
 	/* Get NomenclaturalCode value for Brahms */
-	public static void setNomenclaturalCode_Brahms(String MAPPING_FILE_NAME,
-			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setNomenclaturalCode_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add("ICN");
 	}
 
 	/* Get OccurrenceID value for Zoology and Geology */
-	public static void setOccurrenceID(String MAPPING_FILE_NAME,
+	public static void setOccurrenceID(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		String institutionCode = null;
 		String objectType = "specimen";
@@ -650,7 +659,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Order value for Zoology and Geology */
-	public static void setOrder(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setOrder( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification().getOrder() != null
@@ -664,7 +673,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Order value for Brahms */
-	public static void setOrder_Brahms(String MAPPING_FILE_NAME,
+	public static void setOrder_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification().getOrder() != null) {
@@ -676,7 +685,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Phylum value for Zoology and Geology */
-	public static void setPhylum(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setPhylum( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next()
 				.getDefaultClassification().getPhylum() != null) {
@@ -688,7 +697,7 @@ public class Fieldmapping {
 	}
 
 	/* Get PreparationType value for Zoology and Geology */
-	public static void setPreparationType(String MAPPING_FILE_NAME,
+	public static void setPreparationType(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getPreparationType() != null) {
 			dataRow.add(specimen.getPreparationType());
@@ -698,7 +707,7 @@ public class Fieldmapping {
 	}
 
 	/* Get GatheringAgents_FullName value */
-	public static void setGatheringAgents_FullName(String MAPPING_FILE_NAME,
+	public static void setGatheringAgents_FullName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		List<String> listFullname = new ArrayList<String>();
 		if (specimen.getGatheringEvent().getGatheringPersons() != null) {
@@ -726,7 +735,7 @@ public class Fieldmapping {
 	}
 
 	/* Get FullScientificName value for Zoology and Geology */
-	public static void setFullScientificName(String MAPPING_FILE_NAME,
+	public static void setFullScientificName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getFullScientificName() != null
@@ -740,7 +749,7 @@ public class Fieldmapping {
 	}
 
 	/* Get FullScientificName value for Brahms */
-	public static void setFullScientificName_Brahms(String MAPPING_FILE_NAME,
+	public static void setFullScientificName_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getFullScientificName() != null) {
@@ -752,7 +761,7 @@ public class Fieldmapping {
 	}
 
 	/* Get AuthorshipVerbatim value for Zoology and Geology */
-	public static void setAuthorshipVerbatim(String MAPPING_FILE_NAME,
+	public static void setAuthorshipVerbatim(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getAuthorshipVerbatim() != null
@@ -766,7 +775,7 @@ public class Fieldmapping {
 	}
 
 	/* Get AuthorshipVerbatim value for Brahms */
-	public static void setAuthorshipVerbatim_Brahms(String MAPPING_FILE_NAME,
+	public static void setAuthorshipVerbatim_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getAuthorshipVerbatim() != null) {
@@ -778,7 +787,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Sex value for Zoology and Geology */
-	public static void setSex(String MAPPING_FILE_NAME, ESSpecimen specimen,
+	public static void setSex( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getSex() != null) {
 			dataRow.add(specimen.getSex());
@@ -788,7 +797,7 @@ public class Fieldmapping {
 	}
 
 	/* Get SpecificEpithet value for Zoology and Geology */
-	public static void setSpecificEpithet(String MAPPING_FILE_NAME,
+	public static void setSpecificEpithet(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getSpecificEpithet() != null
@@ -802,7 +811,7 @@ public class Fieldmapping {
 	}
 
 	/* Get SpecificEpithet value for Brahms */
-	public static void setSpecificEpithet_Brahms(String MAPPING_FILE_NAME,
+	public static void setSpecificEpithet_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getSpecificEpithet() != null) {
@@ -814,7 +823,7 @@ public class Fieldmapping {
 	}
 
 	/* Get ProvinceState value for Zoology and Geology */
-	public static void setProvinceState(String MAPPING_FILE_NAME,
+	public static void setProvinceState(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getProvinceState() != null) {
 			/* NDA-303/372 */
@@ -825,7 +834,7 @@ public class Fieldmapping {
 	}
 
 	/* Get SubGenus value for Zoology and Geology */
-	public static void setSubGenus(String MAPPING_FILE_NAME,
+	public static void setSubGenus(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getSubgenus() != null
@@ -839,7 +848,7 @@ public class Fieldmapping {
 	}
 
 	/* Get SubGenus value for Brahms */
-	public static void setSubGenus_Brahms(String MAPPING_FILE_NAME,
+	public static void setSubGenus_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getSubgenus() != null) {
@@ -851,7 +860,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Taxonrank value for Zoology and Geology */
-	public static void setTaxonrank(String MAPPING_FILE_NAME,
+	public static void setTaxonrank(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getTaxonRank() != null
 				&& specimen.getIdentifications().iterator().next()
@@ -864,7 +873,7 @@ public class Fieldmapping {
 	}
 
 	/* Get Taxonrank value for Brahms */
-	public static void setTaxonrank_Brahms(String MAPPING_FILE_NAME,
+	public static void setTaxonrank_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getTaxonRank() != null) {
 			if (specimen.getIdentifications().iterator().next().getTaxonRank()
@@ -895,7 +904,7 @@ public class Fieldmapping {
 	}
 
 	/* Get TaxonRemarks value for Zoology and Geology */
-	public static void setTaxonRemarks(String MAPPING_FILE_NAME,
+	public static void setTaxonRemarks(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications() != null) {
 			List<String> listFullname = new ArrayList<String>();
@@ -924,7 +933,7 @@ public class Fieldmapping {
 	}
 
 	/* Get TypeStatus value */
-	public static void setTypeStatus(String MAPPING_FILE_NAME,
+	public static void setTypeStatus(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getTypeStatus() != null) {
 			dataRow.add(specimen.getTypeStatus());
@@ -942,7 +951,7 @@ public class Fieldmapping {
 	static int count = 0;
 
 	/* Get VerbatimCoordinates value for Zoology and Geology */
-	public static void setVerbatimCoordinates(String MAPPING_FILE_NAME,
+	public static void setVerbatimCoordinates(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
 			if (specimen.getGatheringEvent().getSiteCoordinates().size() > 1) {
@@ -981,7 +990,7 @@ public class Fieldmapping {
 	}
 
 	/* Get VerbatimCoordinates value for Brahms */
-	public static void setVerbatimCoordinates_Brahms(String MAPPING_FILE_NAME,
+	public static void setVerbatimCoordinates_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
 			if (specimen.getGatheringEvent().getSiteCoordinates().size() > 1) {
@@ -1021,7 +1030,7 @@ public class Fieldmapping {
 	}
 
 	/* Get VerbatimDepth value */
-	public static void setVerbatimDepth(String MAPPING_FILE_NAME,
+	public static void setVerbatimDepth(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getDepth() != null) {
 			dataRow.add(specimen.getGatheringEvent().getDepth());
@@ -1031,7 +1040,7 @@ public class Fieldmapping {
 	}
 
 	/* Get AltitudeUnifOfMeasurement value */
-	public static void setAltitudeUnifOfMeasurement(String MAPPING_FILE_NAME,
+	public static void setAltitudeUnifOfMeasurement(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getGatheringEvent().getAltitudeUnifOfMeasurement() != null) {
 			dataRow.add(specimen.getGatheringEvent()
@@ -1042,7 +1051,7 @@ public class Fieldmapping {
 	}
 
 	/* Get VerbatimEventDate value for Zoology and Geology */
-	public static void setVerbatimEventDate(String MAPPING_FILE_NAME,
+	public static void setVerbatimEventDate(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
@@ -1086,7 +1095,7 @@ public class Fieldmapping {
 	}
 
 	/* Get VerbatimEventDate value for Brahms */
-	public static void setVerbatimEventDate_Brahms(String MAPPING_FILE_NAME,
+	public static void setVerbatimEventDate_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
@@ -1131,7 +1140,7 @@ public class Fieldmapping {
 
 	/* Get TaxonRank Is VerbatimTaxonRank value */
 	public static void setTaxonRank_Is_VerbatimTaxonRank(
-			String MAPPING_FILE_NAME, ESSpecimen specimen,
+			 ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getTaxonRank() != null) {
 			dataRow.add(specimen.getIdentifications().iterator().next()

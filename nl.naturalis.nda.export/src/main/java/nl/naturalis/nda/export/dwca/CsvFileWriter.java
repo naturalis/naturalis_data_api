@@ -22,11 +22,13 @@ public class CsvFileWriter extends BufferedWriter
      * @param fileName
      * @throws IOException
      */
-    public CsvFileWriter(String fileName) throws IOException{
+    @SuppressWarnings("resource")
+	public CsvFileWriter(String fileName) throws IOException{
         super(new FileWriter(fileName));
     }
     
-    public CsvFileWriter(File file) throws IOException{
+    @SuppressWarnings("resource")
+	public CsvFileWriter(File file) throws IOException{
         super(new FileWriter(file));
     }
     

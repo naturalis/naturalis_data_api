@@ -335,8 +335,8 @@ public class CrsMultiMediaImporter {
 	static Iterator<File> getLocalFileIterator()
 	{
 		logger.debug("Retrieving file list");
-		String path = LoadUtil.getConfig().required("crs.local_dir");
-		File[] files = new File(path).listFiles(new FilenameFilter() {
+		File path = LoadUtil.getConfig().getDirectory("crs.local_dir");
+		File[] files = path.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{

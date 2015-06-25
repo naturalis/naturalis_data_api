@@ -13,9 +13,9 @@ import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow;
 
-@SuppressWarnings("unused")
+
+
 public class Fieldmapping {
 
 	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);

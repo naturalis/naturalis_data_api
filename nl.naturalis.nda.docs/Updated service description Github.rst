@@ -73,9 +73,6 @@ Taxonomic data services
             - | Paging and sorting parameters are available. 
               |
               | Additional logical operator _andOr for indexed field search.  
-          * - *Data format*
-            - JSON
-            - JSON
           * - *Details*
             - | A response example can be viewed after calling a request example in the `free text taxon search examples section`_
             - | A response example can be viewed after calling a request example in the `indexed field taxon search examples section`_

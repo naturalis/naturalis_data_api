@@ -46,6 +46,16 @@ public class CrsMultiMediaTransfer {
 	{
 		String identifier = val(recordElement, "identifier");
 		Element dcElement = DOMUtil.getDescendant(recordElement, "oai_dc:dc");
+		
+		String recordBasis = val(dcElement, "abcd:RecordBasis");
+		if(recordBasis == null) {
+			++crsMultiMediaImporter.recordsSkipped;
+			if(logger.isDebugEnabled()) {
+				logger.debug("Skipping virtual specimen record with id " + identifier);
+			}
+			return null;
+		}
+		
 		List<Element> mediaFileElements = DOMUtil.getDescendants(dcElement, "frmDigitalebestanden");
 		String associatedSpecimenReference = val(dcElement, "ac:associatedSpecimenReference");
 		if (mediaFileElements == null) {
@@ -102,7 +112,7 @@ public class CrsMultiMediaTransfer {
 
 			if (url.startsWith(MEDIALIB_URL_START)) {
 				// Tease out the unitID from the URL
-				unitID = url.substring(MEDIALIB_URL_START.length() + 1);
+				unitID = url.substring(MEDIALIB_URL_START.length());
 				int x = unitID.indexOf('/');
 				if (x != -1) {
 					unitID = unitID.substring(0, x);

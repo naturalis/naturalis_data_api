@@ -56,6 +56,7 @@ public class ESConstants {
 			public static final String SPECIMEN_TYPE_STATUS = "specimenTypeStatus";
 			public static final String PHASES_OR_STAGES = "phasesOrStages";
 			public static final String GATHERINGEVENTS_SITECOORDINATES_POINT = "gatheringEvents.siteCoordinates.point";
+			public static final String COLLECTIONNAMES = "collectionnames";
 		}
 
 		public static class SpecimenFields {
@@ -72,6 +73,8 @@ public class ESConstants {
 			public static final String GATHERINGEVENT_LOCALITY_TEXT = "gatheringEvent.localityText";
 			public static final String GATHERINGEVENT_GATHERING_PERSONS_FULLNAME = "gatheringEvent.gatheringPersons.fullName";
 			public static final String GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME = "gatheringEvent.gatheringOrganizations.name";
+			/* NDA-386 By: Reinier Date: 26 june 2015 */
+			public static final String INST_COLL_SUBCOLL = "collectionname";
 		}
 
 		public static class TaxonFields {

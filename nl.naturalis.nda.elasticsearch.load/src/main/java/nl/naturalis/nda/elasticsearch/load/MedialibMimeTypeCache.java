@@ -51,10 +51,10 @@ public class MedialibMimeTypeCache implements Closeable {
 	private static final byte[] NEWLINE_BYTES = "\n".getBytes(CACHE_FILE_CHARSET);
 	private static final Logger logger = LoggerFactory.getLogger(MedialibMimeTypeCache.class);
 
-	private static final String CACHE_FILE_NAME = ".mimetypes";
-	private static final String CRS_CACHE_FILE_NAME = ".crs-mimetypes";
-	private static final String BRAHMS_CACHE_FILE_NAME = ".brahms-mimetypes";
-	private static final String NSR_CACHE_FILE_NAME = ".nsr-mimetypes";
+	private static final String CACHE_FILE_NAME = "mimetypes.cache";
+	private static final String CRS_CACHE_FILE_NAME = "crs-mimetypes.cache";
+	private static final String BRAHMS_CACHE_FILE_NAME = "brahms-mimetypes.cache";
+	private static final String NSR_CACHE_FILE_NAME = "nsr-mimetypes.cache";
 
 	private static MedialibMimeTypeCache instance;
 	private static MedialibMimeTypeCache crsInstance;

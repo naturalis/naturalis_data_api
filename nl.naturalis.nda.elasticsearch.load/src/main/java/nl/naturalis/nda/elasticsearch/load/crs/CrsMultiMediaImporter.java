@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -52,8 +51,14 @@ public class CrsMultiMediaImporter {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		// Make sure thematic search is configured properly
+		/*
+		 * Make sure thematic search and mime type cache can be instantiated,
+		 * otherwise we get obsure class initialization errors in
+		 * CrsMultiMediaTransfer.
+		 */
 		ThematicSearchConfig.getInstance();
+		MedialibMimeTypeCache.getInstance();
+
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
@@ -75,7 +80,6 @@ public class CrsMultiMediaImporter {
 	private final int bulkRequestSize;
 	private final int maxRecords;
 	private final boolean forceRestart;
-
 
 	int recordsSkipped;
 	/*
@@ -129,11 +133,6 @@ public class CrsMultiMediaImporter {
 		try {
 
 			ThematicSearchConfig.getInstance().resetMatchCounters();
-
-			/*
-			 * Make sure we can create the mime type cache, otherwise we get
-			 * opaque class initialization errors in CrsMultiMediaTransfer
-			 */
 			MedialibMimeTypeCache.getInstance();
 
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
@@ -243,9 +242,11 @@ public class CrsMultiMediaImporter {
 			++recordsProcessed;
 			Element record = (Element) records.item(i);
 			if (isDeletedRecord(record)) {
-				++recordsSkipped;
-				logger.debug("Skipped record with status \"deleted\"");
 				// TODO delete media from ES index
+				++recordsSkipped;
+				if (logger.isDebugEnabled()) {
+					logger.debug("Skipped record with status \"deleted\"");
+				}
 			}
 			else {
 				List<ESMultiMediaObject> extractedMedia = null;
@@ -350,12 +351,7 @@ public class CrsMultiMediaImporter {
 			}
 		});
 		logger.debug("Sorting file list");
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File f1, File f2)
-			{
-				return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-			}
-		});
+		Arrays.sort(files);
 		return Arrays.asList(files).iterator();
 	}
 

@@ -30,6 +30,8 @@ public class ESConstants {
 	public static class Fields {
 		public static final String UNIT_ID = "unitID";
 		public static final String SOURCE_SYSTEM_ID = "sourceSystemId";
+		/* NDA-387 By: Reinier Date: 30 june 2015 */
+		public static final String SOURCE_SYSTEM_NAME = "sourceSystem.code";
 
 		public static final String IDENTIFICATIONS_VERNACULAR_NAMES_NAME = "identifications.vernacularNames.name";
 		public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM = "identifications.defaultClassification.kingdom";
@@ -56,7 +58,10 @@ public class ESConstants {
 			public static final String SPECIMEN_TYPE_STATUS = "specimenTypeStatus";
 			public static final String PHASES_OR_STAGES = "phasesOrStages";
 			public static final String GATHERINGEVENTS_SITECOORDINATES_POINT = "gatheringEvents.siteCoordinates.point";
+			/* NDA-386 By: Reinier Date: 26 june 2015 */
 			public static final String COLLECTIONNAMES = "collectionnames";
+			/* NDA-387 By: Reinier Date: 30 june 2015 */
+			public static final String SOURCES_SYSTEM_NAMES = "sourceSystems.codes";
 		}
 
 		public static class SpecimenFields {

@@ -148,8 +148,8 @@ public class MedialibMimeTypeCache implements Closeable {
 		try {
 			cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
 			if (!cacheFile.isFile()) {
-				String fmt = "Missing cache file (.mimetypes). You should put it in %s. ";
-				String msg = String.format(fmt, ndaConfDir);
+				String fmt = "Missing cache file (%s). You should put it in %s. ";
+				String msg = String.format(fmt, CACHE_FILE_NAME, ndaConfDir);
 				throw new RuntimeException(msg);
 			}
 			buildCache();

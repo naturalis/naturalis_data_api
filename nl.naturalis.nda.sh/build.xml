@@ -29,7 +29,19 @@
 		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. You have problably never installed the import module before." />
 		<echo message="Installing configuration files into ${nda.import.install.dir}/conf" />
 		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
-			<fileset dir="import/conf" excludes="**/*.git*" />
+			<fileset dir="import/conf">
+				<exclude name="**/*.git*" />
+				<exclude name="es-settings.json" />
+				<exclude name="logback.xml" />
+				<exclude name="nda-import.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
+			<fileset dir="import/conf">
+				<include name="es-settings.json" />
+				<include name="logback.xml" />
+				<include name="nda-import.properties" />
+			</fileset>
 			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
 		</copy>
 		<echo message="Installing shell scripts into ${nda.import.install.dir}/sh" />

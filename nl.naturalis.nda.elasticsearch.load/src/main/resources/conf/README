@@ -1,4 +1,0 @@
-Copy the conf directory to somewhere outside the jar file
-and make sure destination directory is the first entry on
-the classpath. Next, edit the various config files in it
-as appropriate.

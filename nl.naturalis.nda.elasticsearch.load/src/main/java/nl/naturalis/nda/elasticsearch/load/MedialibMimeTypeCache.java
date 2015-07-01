@@ -51,10 +51,10 @@ public class MedialibMimeTypeCache implements Closeable {
 	private static final byte[] NEWLINE_BYTES = "\n".getBytes(CACHE_FILE_CHARSET);
 	private static final Logger logger = LoggerFactory.getLogger(MedialibMimeTypeCache.class);
 
-	private static final String CACHE_FILE_NAME = ".mimetypes";
-	private static final String CRS_CACHE_FILE_NAME = ".crs-mimetypes";
-	private static final String BRAHMS_CACHE_FILE_NAME = ".brahms-mimetypes";
-	private static final String NSR_CACHE_FILE_NAME = ".nsr-mimetypes";
+	private static final String CACHE_FILE_NAME = "mimetypes.cache";
+	private static final String CRS_CACHE_FILE_NAME = "crs-mimetypes.cache";
+	private static final String BRAHMS_CACHE_FILE_NAME = "brahms-mimetypes.cache";
+	private static final String NSR_CACHE_FILE_NAME = "nsr-mimetypes.cache";
 
 	private static MedialibMimeTypeCache instance;
 	private static MedialibMimeTypeCache crsInstance;
@@ -148,10 +148,8 @@ public class MedialibMimeTypeCache implements Closeable {
 		try {
 			cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
 			if (!cacheFile.isFile()) {
-				String fmt = "Missing cache file (.mimetypes). You should put it in %s. "
-						+ "You can get it from the src/main/resources/conf directory within "
-						+ "nl.naturalis.nda.elasticsearch.load.jar";
-				String msg = String.format(fmt, ndaConfDir);
+				String fmt = "Missing cache file (%s). You should put it in %s. ";
+				String msg = String.format(fmt, CACHE_FILE_NAME, ndaConfDir);
 				throw new RuntimeException(msg);
 			}
 			buildCache();

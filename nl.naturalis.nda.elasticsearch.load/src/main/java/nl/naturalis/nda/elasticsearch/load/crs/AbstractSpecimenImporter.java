@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -363,12 +362,7 @@ public abstract class AbstractSpecimenImporter {
 			}
 		});
 		logger.debug("Sorting file list");
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File f1, File f2)
-			{
-				return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-			}
-		});
+		Arrays.sort(files);
 		return Arrays.asList(files).iterator();
 	}
 

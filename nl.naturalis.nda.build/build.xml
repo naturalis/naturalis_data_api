@@ -132,6 +132,10 @@
 		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
 	</target>
 
+	<target name="install-nba-config" description="Copies the NBA config files to the NBA config directory">
+		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" target="install-config" />
+	</target>
+
 	<target name="clean-import-module" description="Perform cleanup for import module, but do not build or install">
 		<ant antfile="../nl.naturalis.nda.load/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />

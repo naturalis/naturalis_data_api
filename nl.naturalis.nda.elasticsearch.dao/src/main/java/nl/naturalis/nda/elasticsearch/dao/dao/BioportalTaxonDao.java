@@ -4,6 +4,7 @@ import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.search.*;
+
 import org.elasticsearch.client.Client;
 
 import java.util.Arrays;
@@ -45,7 +46,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
             DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
             DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
             SYSTEM_CLASSIFICATION_NAME,
-            EXPERTS_FULLNAME
+            EXPERTS_FULLNAME,
+            SOURCES_SYSTEM_TAXA
     ));
 
     private static final Set<String> allowedFieldNamesForSearch_simpleSearchExceptions = Collections.emptySet();

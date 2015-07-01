@@ -81,6 +81,14 @@
 		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
+	<target name="install-config">
+		<available file="${nl.naturalis.nda.conf.dir}" type="dir" property="nda.conf.dir.exists" />
+		<fail unless:set="nda.conf.dir.exists" message="No such directory: ${nl.naturalis.nda.conf.dir}; check build.properties (nl.naturalis.nda.conf.dir)" />
+		<copy todir="${nl.naturalis.nda.conf.dir}" file="nda.properties" overwrite="true">
+			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		</copy>
+	</target>
+
 	<target name="rebuild" depends="clean,build" />
 
 	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host0} -->
@@ -133,7 +141,7 @@
 			targets, we assume we are on the server and do a local
 			deployment.
 		-->
-		<move if:set="deploy.local" file="${ear.module.location}/build/nba.ear" todir="${ear.install.dir}" />	
+		<move if:set="deploy.local" file="${ear.module.location}/build/nba.ear" todir="${ear.install.dir}" />
 		<echo if:set="deploy.local" message="Copying configuration files to ${nl.naturalis.nda.conf.dir}" />
 		<copy if:set="deploy.local" todir="${nl.naturalis.nda.conf.dir}" file="nda.properties" overwrite="true">
 			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />

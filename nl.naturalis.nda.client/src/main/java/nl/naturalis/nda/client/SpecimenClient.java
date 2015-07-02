@@ -1,6 +1,5 @@
 package nl.naturalis.nda.client;
 
-
 public class SpecimenClient extends AbstractClient {
 
 	SpecimenClient(ClientConfig cfg)
@@ -9,15 +8,14 @@ public class SpecimenClient extends AbstractClient {
 	}
 
 
-	public boolean exists(String unitID)
+	public boolean exists(String unitID) throws NBAResourceException
 	{
 		request.setPath("specimen/exists/" + unitID);
 		if (!request.execute().isOK()) {
-			ClientException e = ClientException.createFromResponse(request.getResponseBody());
-			return false;
+			throw NBAResourceException.createFromResponse(request.getResponseBody());
 		}
 		else {
-			return false;
+			return ClientUtil.getBoolean(request.getResponseBody());
 		}
 	}
 

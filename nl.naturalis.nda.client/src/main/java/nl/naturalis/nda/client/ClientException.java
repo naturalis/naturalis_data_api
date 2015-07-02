@@ -1,44 +1,36 @@
 package nl.naturalis.nda.client;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+public class ClientException extends RuntimeException {
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-public class ClientException extends Exception {
-
-	private static final long serialVersionUID = -8246486578070786218L;
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final long serialVersionUID = -3460791416182567992L;
 
 
-	@SuppressWarnings("unchecked")
-	static ClientException createFromResponse(byte[] response)
+	public ClientException()
 	{
-		try {
-			LinkedHashMap<String, Object> serverInfo = objectMapper.readValue(response, LinkedHashMap.class);
-			LinkedHashMap<String, Object> exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
-			String message = (String) exception.get("message");
-			return new ClientException(message, serverInfo);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
-	private final Map<String, Object> serverInfo;
 
-
-	public ClientException(String message, Map<String, Object> serverInfo)
+	public ClientException(String message)
 	{
 		super(message);
-		this.serverInfo = serverInfo;
 	}
 
 
-	public Map<String, Object> getServerInfo()
+	public ClientException(Throwable cause)
 	{
-		return serverInfo;
+		super(cause);
+	}
+
+
+	public ClientException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
+
+
+	public ClientException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
+	{
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
 }

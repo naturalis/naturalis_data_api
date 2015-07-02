@@ -3,7 +3,7 @@ package nl.naturalis.nda.client;
 import org.domainobject.util.http.SimpleHttpGet;
 
 abstract class AbstractClient {
-
+	
 	protected final ClientConfig config;
 	protected final SimpleHttpGet request;
 

@@ -45,14 +45,26 @@ public class SpecimenResource {
 
 	@EJB
 	Registry registry;
-	
-	@GET
-	@Path("/exists/{id}")
-	@Produces("text/plain;charset=UTF-8")	
-	public boolean exists(@PathParam("id") String unitID) {
-		SpecimenDao dao = registry.getSpecimenDao(null);
-		return dao.exists(unitID);		
-	}
+
+
+	/**
+	 * Check if there is a specimen with the provided UnitID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+//	@GET
+//	@Path("/exists/{id}")
+//	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+//	public boolean exists(@PathParam("id") String unitID)
+//	{
+//		if(!false) {
+//			throw ResourceUtil.handleError(request, status)
+//			throw new WebApplicationException("This is really bad!!!!!!!!!!");
+//		}
+//		SpecimenDao dao = registry.getSpecimenDao(null);
+//		return dao.exists(unitID);
+//	}
 
 
 	@GET
@@ -105,7 +117,8 @@ public class SpecimenResource {
 	@Path("/get-specimen-within-result-set")
 	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
+	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("getSpecimenDetailWithinResultSetPOST");
@@ -167,6 +180,7 @@ public class SpecimenResource {
 		}
 	}
 
+
 	@GET
 	@Path("/search/dwca")
 	@Produces("application/zip")
@@ -175,13 +189,13 @@ public class SpecimenResource {
 		try {
 			logger.debug("search/dwca");
 			String collection = uriInfo.getQueryParameters().getFirst("collection");
-			if(collection == null) {
+			if (collection == null) {
 				throw new WebApplicationException("Missing required parameter: collection");
 			}
 			String outputDir = registry.getNDA().getConfig().required("nda.export.output.dir");
 			String path = outputDir + "/dwca/zip/" + collection + ".zip";
 			File f = new File(path);
-			if(!f.isFile()) {
+			if (!f.isFile()) {
 				logger.error("No such file: " + f.getAbsolutePath());
 				throw new WebApplicationException("The requested collection does not exist, or no DwCA file is generated for it yet", 404);
 			}
@@ -191,6 +205,7 @@ public class SpecimenResource {
 			throw ResourceUtil.handleError(uriInfo, t);
 		}
 	}
+
 
 	@GET
 	@Path("/name-search")
@@ -217,7 +232,8 @@ public class SpecimenResource {
 	@Path("/name-search")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public ResultGroupSet<Specimen, String> nameSearchPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
+	public ResultGroupSet<Specimen, String> nameSearchPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("nameSearchPOST");

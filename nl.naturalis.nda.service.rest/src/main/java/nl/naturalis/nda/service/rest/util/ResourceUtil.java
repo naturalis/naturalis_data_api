@@ -1,82 +1,70 @@
 package nl.naturalis.nda.service.rest.util;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.search.AbstractResultSet;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
+import nl.naturalis.nda.service.rest.exception.RESTException;
 
 public class ResourceUtil {
-	
+
 	public static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
 
-	private static final String ERROR_AS_JSON = "_jsonError";
+	// The name of the request parameter indificating that
+	// errors should not result in an internal server error
+	// but displayed instead as JSON.
+	private static final String PARAM_SHOW_AS_JSON = "_jsonError";
 
 
-	public static RuntimeException handleError(UriInfo request, Throwable throwable, Status status)
+	public static RESTException handleError(UriInfo request, Throwable throwable, Status status)
 	{
-		boolean returnExceptionAsJson = false;
-		String s = request.getQueryParameters().getFirst(ERROR_AS_JSON);
-		if (s != null) {
-			if (s.length() == 0 || s.equals("1")) {
-				returnExceptionAsJson = true;
-			}
-			else if (s.toUpperCase().equals("TRUE")) {
-				returnExceptionAsJson = true;
-			}
+		boolean showAsJson = false;
+		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
+		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
+			showAsJson = true;
 		}
-		if (returnExceptionAsJson) {
+		if (showAsJson) {
 			return new HTTP200Exception(request, throwable, status);
 		}
-		return throwable instanceof RuntimeException ? ((RuntimeException) throwable) : new RuntimeException(throwable);
+		return new RESTException(request, throwable, status);
 	}
 
 
-	public static RuntimeException handleError(UriInfo request, Throwable throwable)
+	public static RESTException handleError(UriInfo request, Throwable throwable)
 	{
 		return handleError(request, null, throwable);
 	}
 
 
-	public static RuntimeException handleError(UriInfo request, MultivaluedMap<String, String> form, Throwable throwable)
+	public static RESTException handleError(UriInfo request, MultivaluedMap<String, String> form, Throwable throwable)
 	{
-		boolean returnExceptionAsJson = false;
-		String s = request.getQueryParameters().getFirst(ERROR_AS_JSON);
-		if (s != null) {
-			if (s.length() == 0 || s.equals("1")) {
-				returnExceptionAsJson = true;
-			}
-			else if (s.toUpperCase().equals("TRUE")) {
-				returnExceptionAsJson = true;
-			}
+		boolean showAsJson = false;
+		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
+		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
+			showAsJson = true;
 		}
-		if (returnExceptionAsJson) {
+		if (showAsJson) {
 			return new HTTP200Exception(request, form, throwable);
 		}
-		return throwable instanceof RuntimeException ? ((RuntimeException) throwable) : new RuntimeException(throwable);
+		return new RESTException(request, form, throwable);
 	}
 
 
-	public static RuntimeException handleError(UriInfo request, Status status)
+	public static RESTException handleError(UriInfo request, Status status)
 	{
-		boolean returnExceptionAsJson = false;
-		String s = request.getQueryParameters().getFirst(ERROR_AS_JSON);
-		if (s != null) {
-			if (s.length() == 0 || s.equals("1")) {
-				returnExceptionAsJson = true;
-			}
-			else if (s.toUpperCase().equals("TRUE")) {
-				returnExceptionAsJson = true;
-			}
+		boolean showAsJson = false;
+		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
+		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
+			showAsJson = true;
 		}
-		if (returnExceptionAsJson) {
+		if (showAsJson) {
 			return new HTTP200Exception(request, status);
 		}
-		return new WebApplicationException(status);
+		return new RESTException(request, status);
 	}
 
 
@@ -139,7 +127,6 @@ public class ResourceUtil {
 			result.addLink("_prevPage", prevLinkUriBuilder.build().toString());
 			result.addLink("_nextPage", nextLinkUriBuilder.build().toString());
 		}
-
 	}
 
 }

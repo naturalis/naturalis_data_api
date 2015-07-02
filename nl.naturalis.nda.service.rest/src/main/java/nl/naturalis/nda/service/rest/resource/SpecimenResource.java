@@ -53,18 +53,17 @@ public class SpecimenResource {
 	 * @param unitID
 	 * @return
 	 */
-//	@GET
-//	@Path("/exists/{id}")
-//	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
-//	public boolean exists(@PathParam("id") String unitID)
-//	{
-//		if(!false) {
-//			throw ResourceUtil.handleError(request, status)
-//			throw new WebApplicationException("This is really bad!!!!!!!!!!");
-//		}
-//		SpecimenDao dao = registry.getSpecimenDao(null);
-//		return dao.exists(unitID);
-//	}
+	@GET
+	@Path("/exists/{id}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public boolean exists(@PathParam("id") String unitID,@Context UriInfo uriInfo)
+	{
+		if(!false) {
+			throw ResourceUtil.handleError(uriInfo, new Exception("SUPER BAD!!!"));
+		}
+		SpecimenDao dao = registry.getSpecimenDao(null);
+		return dao.exists(unitID);
+	}
 
 
 	@GET

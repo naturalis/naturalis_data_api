@@ -64,6 +64,27 @@ public class RESTException extends RuntimeException {
 	}
 
 
+	/**
+	 * 
+	 * <code>
+	 *	info: {
+	 *		requestUri: (string),
+	 *		httpStatus: {
+	 *			code: (int),
+	 *			message: (string)
+	 *		},
+	 *		exception: {
+	 *			message: (string),
+	 *			cause: (string),
+	 *			rootCause: (string),
+	 *			stackTrace: (string[])
+	 *		},
+	 *		params: (map)
+	 *	}
+	 * </code>
+	 * 
+	 * @return
+	 */
 	public Map<String, Object> getInfo()
 	{
 		Map<String, Object> info = new LinkedHashMap<String, Object>();

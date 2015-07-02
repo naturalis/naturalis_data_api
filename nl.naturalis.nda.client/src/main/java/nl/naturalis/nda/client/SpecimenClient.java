@@ -15,11 +15,7 @@ public class SpecimenClient extends AbstractClient {
 	{
 		request.setPath("specimen/exists/" + unitID);
 		if (!request.execute().isOK()) {
-			System.out.println("error: " + request.getError());
-			Header[] headers = request.getHttpResponse().getAllHeaders();
-			for (Header header : headers) {
-				System.out.println("*** " + header.getName() + ": " + header.getValue());
-			}
+			System.out.println(new String(request.getResponseBody()));
 			return false;
 		}
 		else {

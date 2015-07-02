@@ -122,6 +122,7 @@ public class RESTException extends RuntimeException {
 		}
 
 		QueryParams params = new QueryParams();
+		params.addParams(request.getPathParameters());
 		params.addParams(request.getQueryParameters());
 		if (formParams != null) {
 			params.addParams(formParams);

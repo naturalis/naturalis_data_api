@@ -1,7 +1,5 @@
 package nl.naturalis.nda.client;
 
-import org.apache.http.Header;
-import org.domainobject.util.debug.BeanPrinter;
 
 public class SpecimenClient extends AbstractClient {
 
@@ -15,7 +13,7 @@ public class SpecimenClient extends AbstractClient {
 	{
 		request.setPath("specimen/exists/" + unitID);
 		if (!request.execute().isOK()) {
-			System.out.println(new String(request.getResponseBody()));
+			ClientException e = ClientException.createFromResponse(request.getResponseBody());
 			return false;
 		}
 		else {

@@ -56,11 +56,8 @@ public class SpecimenResource {
 	@GET
 	@Path("/exists/{id}")
 	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
-	public boolean exists(@PathParam("id") String unitID,@Context UriInfo uriInfo)
+	public boolean exists(@PathParam("id") String unitID, @Context UriInfo uriInfo)
 	{
-		if(!false) {
-			throw ResourceUtil.handleError(uriInfo, new Exception("SUPER BAD!!!"));
-		}
 		SpecimenDao dao = registry.getSpecimenDao(null);
 		return dao.exists(unitID);
 	}

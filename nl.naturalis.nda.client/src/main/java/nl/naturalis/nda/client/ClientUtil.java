@@ -42,7 +42,7 @@ class ClientUtil {
 	}
 
 
-	public static <T> T getResponse(byte[] response, Class<T> type)
+	public static <T> T getObject(byte[] response, Class<T> type)
 	{
 		try {
 			return objectMapper.readValue(response, type);

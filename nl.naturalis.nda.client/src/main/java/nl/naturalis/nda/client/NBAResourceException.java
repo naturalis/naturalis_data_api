@@ -27,7 +27,7 @@ public class NBAResourceException extends Exception {
 	@SuppressWarnings("unchecked")
 	static NBAResourceException createFromResponse(byte[] response)
 	{
-		LinkedHashMap<String, Object> serverInfo = ClientUtil.getResponse(response, LinkedHashMap.class);
+		LinkedHashMap<String, Object> serverInfo = ClientUtil.getObject(response, LinkedHashMap.class);
 		LinkedHashMap<String, Object> exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
 		String message = (String) exception.get("message");
 		return new NBAResourceException(message, serverInfo);

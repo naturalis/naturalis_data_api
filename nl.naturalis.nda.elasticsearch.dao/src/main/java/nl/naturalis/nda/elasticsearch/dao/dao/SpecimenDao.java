@@ -27,83 +27,97 @@ import org.elasticsearch.search.SearchHit;
 
 public class SpecimenDao extends AbstractDao {
 
-    private final TaxonDao taxonDao;
+	private final TaxonDao taxonDao;
 
-    public SpecimenDao(Client esClient, String ndaIndexName, TaxonDao taxonDao, String baseUrl) {
-        super(esClient, ndaIndexName, baseUrl);
-        this.taxonDao = taxonDao;
-    }
 
-    /**
-     * Retrieves a single Specimen by its unitID.
-     *
-     * @param unitID The unitID of the {@link nl.naturalis.nda.domain.Specimen}
-     * @return {@link nl.naturalis.nda.search.SearchResultSet} containing the
-     * {@link nl.naturalis.nda.domain.Specimen}
-     */
-    public SearchResultSet<Specimen> getSpecimenDetail(String unitID, String sessionId) {
-        SearchResponse response = newSearchRequest()
-                .setPreference(sessionId)
-                .setTypes(SPECIMEN_TYPE)
-                .setQuery(filteredQuery(
-                                matchAllQuery(),
-                                termFilter(
-                                        UNIT_ID + ".raw",
-                                        unitID
-                                )
-                        )
-                )
-                .execute().actionGet();
+	public SpecimenDao(Client esClient, String ndaIndexName, TaxonDao taxonDao, String baseUrl)
+	{
+		super(esClient, ndaIndexName, baseUrl);
+		this.taxonDao = taxonDao;
+	}
 
-        SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
 
-        if (response.getHits().getHits().length != 0) {
-            SearchHit hit = response.getHits().getHits()[0];
-            Specimen specimen = null;
-            if (hit != null) {
-                ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
-                specimen = SpecimenTransfer.transfer(esSpecimen);
-                resultSet.addSearchResult(specimen);
-            }
-            resultSet.setTotalSize(response.getHits().getTotalHits());
-            QueryParams queryParams = new QueryParams();
-            queryParams.put(UNIT_ID, Collections.singletonList(unitID));
-            resultSet.setQueryParameters(queryParams);
+	/**
+	 * Retrieves a single Specimen by its unitID.
+	 *
+	 * @param unitID
+	 *            The unitID of the {@link nl.naturalis.nda.domain.Specimen}
+	 * @return {@link nl.naturalis.nda.search.SearchResultSet} containing the
+	 *         {@link nl.naturalis.nda.domain.Specimen}
+	 */
+	public SearchResultSet<Specimen> getSpecimenDetail(String unitID, String sessionId)
+	{
+		SearchResponse response = newSearchRequest().setPreference(sessionId).setTypes(SPECIMEN_TYPE)
+				.setQuery(filteredQuery(matchAllQuery(), termFilter(UNIT_ID + ".raw", unitID))).execute().actionGet();
 
-            List<Link> links = new ArrayList<>();
-            if (specimen != null && specimen.getIdentifications() != null) {
-                for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
-                    ScientificName scientificName = specimenIdentification.getScientificName();
-                    SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName, sessionId);
-                    if (taxonSearchResultSet != null) {
-                        List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
-                        if(searchResults != null) {
-                            for (SearchResult<Taxon> searchResult : searchResults) {
-                                links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL + createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
-                            }
-                        }
-                    }
-                }
-            }
-            resultSet.setLinks(links);
-            return resultSet;
-        }
-        return null;
-    }
+		SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
 
+		if (response.getHits().getHits().length != 0) {
+			SearchHit hit = response.getHits().getHits()[0];
+			Specimen specimen = null;
+			if (hit != null) {
+				ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
+				specimen = SpecimenTransfer.transfer(esSpecimen);
+				resultSet.addSearchResult(specimen);
+			}
+			resultSet.setTotalSize(response.getHits().getTotalHits());
+			QueryParams queryParams = new QueryParams();
+			queryParams.put(UNIT_ID, Collections.singletonList(unitID));
+			resultSet.setQueryParameters(queryParams);
+
+			List<Link> links = new ArrayList<>();
+			if (specimen != null && specimen.getIdentifications() != null) {
+				for (SpecimenIdentification specimenIdentification : specimen.getIdentifications()) {
+					ScientificName scientificName = specimenIdentification.getScientificName();
+					SearchResultSet<Taxon> taxonSearchResultSet = taxonDao.lookupTaxonForScientificName(scientificName, sessionId);
+					if (taxonSearchResultSet != null) {
+						List<SearchResult<Taxon>> searchResults = taxonSearchResultSet.getSearchResults();
+						if (searchResults != null) {
+							for (SearchResult<Taxon> searchResult : searchResults) {
+								links.add(new Link("_taxon", TAXON_DETAIL_BASE_URL
+										+ createAcceptedNameParams(searchResult.getResult().getAcceptedName())));
+							}
+						}
+					}
+				}
+			}
+			resultSet.setLinks(links);
+			return resultSet;
+		}
+		return null;
+	}
+
+
+	/**
+	 * Check if there is a specimen with the provided UnitID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
 	public boolean exists(String unitID)
 	{
-        SearchResponse response = newSearchRequest()
-                .setTypes(SPECIMEN_TYPE)
-                .setQuery(filteredQuery(
-                                matchAllQuery(),
-                                termFilter(
-                                        UNIT_ID + ".raw",
-                                        unitID
-                                )
-                        )
-                )
-                .execute().actionGet();
+		SearchResponse response = newSearchRequest().setTypes(SPECIMEN_TYPE)
+				.setQuery(filteredQuery(matchAllQuery(), termFilter(UNIT_ID + ".raw", unitID))).execute().actionGet();
 		return response.getHits().getHits().length != 0;
+	}
+
+
+	/**
+	 * Get the plain {@code Specimen} object corresponding to the specified
+	 * UnitID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+	public Specimen find(String unitID)
+	{
+		SearchResponse response = newSearchRequest().setTypes(SPECIMEN_TYPE)
+				.setQuery(filteredQuery(matchAllQuery(), termFilter(UNIT_ID + ".raw", unitID))).execute().actionGet();
+		if (response.getHits().getHits().length == 0) {
+			return null;
+		}
+		SearchHit hit = response.getHits().getHits()[0];
+		ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
+		return SpecimenTransfer.transfer(esSpecimen);
 	}
 }

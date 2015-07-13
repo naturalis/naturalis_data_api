@@ -56,8 +56,8 @@ public class CrsSpecimenTransfer {
 
 		String recordBasis = val(recordElement, "abcd:RecordBasis");
 		if (recordBasis == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Skipping virtual specimen record with UnitID " + unitId);
+			if (logger.isInfoEnabled()) {
+				logger.info("Skipping virtual specimen record with UnitID " + unitId);
 			}
 			return null;
 		}

@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectDao;
+import nl.naturalis.nda.elasticsearch.dao.dao.MultiMediaObjectDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
 import nl.naturalis.nda.service.rest.util.NDA;
@@ -34,6 +36,21 @@ public class MultiMediaObjectResource {
 
 	@EJB
 	Registry registry;
+
+
+	@GET
+	@Path("/get-multimedia-for-specimen/{specimenUnitID}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public MultiMediaObject[] getMultiMediaForSpecimen(@PathParam("specimenUnitID") String id, @Context UriInfo uriInfo)
+	{
+		try {
+			MultiMediaObjectDao dao = registry.getMultiMediaObjectDao(null);
+			return dao.getMultiMediaForSpecimen(id);
+		}
+		catch(Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
 
 
 	@GET
@@ -61,7 +78,8 @@ public class MultiMediaObjectResource {
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public SearchResultSet<MultiMediaObject> searchPOST(@Context UriInfo uriInfo, MultivaluedMap<String, String> form, @Context HttpServletRequest request)
+	public SearchResultSet<MultiMediaObject> searchPOST(@Context UriInfo uriInfo, MultivaluedMap<String, String> form,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("searchPOST");
@@ -83,7 +101,8 @@ public class MultiMediaObjectResource {
 	@GET
 	@Path("/get-multimedia-object-for-taxon-within-result-set")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<MultiMediaObject> getTaxonMultiMediaObjectDetailWithinResultSet(@Context UriInfo uriInfo, @Context HttpServletRequest request)
+	public SearchResultSet<MultiMediaObject> getTaxonMultiMediaObjectDetailWithinResultSet(@Context UriInfo uriInfo,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("getTaxonMultiMediaObjectDetailWithinResultSet");
@@ -104,7 +123,8 @@ public class MultiMediaObjectResource {
 	@GET
 	@Path("/get-multimedia-object-for-specimen-within-result-set")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SearchResultSet<MultiMediaObject> getSpecimenMultiMediaObjectDetailWithinResultSet(@Context UriInfo uriInfo, @Context HttpServletRequest request)
+	public SearchResultSet<MultiMediaObject> getSpecimenMultiMediaObjectDetailWithinResultSet(@Context UriInfo uriInfo,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("getSpecimenMultiMediaObjectDetailWithinResultSet");

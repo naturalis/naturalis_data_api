@@ -9,19 +9,10 @@ import nl.naturalis.nda.domain.Person;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-class AgentDeserializer extends StdDeserializer<Agent> {
-
-	private static final long serialVersionUID = 6204530799443957094L;
-
-
-	protected AgentDeserializer(Class<?> vc)
-	{
-		super(vc);
-	}
-
+class AgentDeserializer extends JsonDeserializer<Agent> {
 
 	@Override
 	public Agent deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException

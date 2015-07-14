@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 class ClientUtil {
 
-	static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectMapper objectMapper = NBAObjectMapperFactory.getObjectMapper();
 
 
 	public static String getString(byte[] response)

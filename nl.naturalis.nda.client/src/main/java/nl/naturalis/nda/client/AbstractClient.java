@@ -8,7 +8,7 @@ abstract class AbstractClient {
 	protected final SimpleHttpGet request;
 
 
-	public AbstractClient(ClientConfig config)
+	AbstractClient(ClientConfig config)
 	{
 		this.config = config;
 		request = new SimpleHttpGet();

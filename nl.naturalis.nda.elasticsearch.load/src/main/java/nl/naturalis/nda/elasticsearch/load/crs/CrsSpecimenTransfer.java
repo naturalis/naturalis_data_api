@@ -56,8 +56,8 @@ public class CrsSpecimenTransfer {
 
 		String recordBasis = val(recordElement, "abcd:RecordBasis");
 		if (recordBasis == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Skipping virtual specimen record with UnitID " + unitId);
+			if (logger.isInfoEnabled()) {
+				logger.info("Skipping virtual specimen record with UnitID " + unitId);
 			}
 			return null;
 		}
@@ -443,7 +443,9 @@ public class CrsSpecimenTransfer {
 			return Double.valueOf(s);
 		}
 		catch (NumberFormatException exc) {
-			logger.warn(String.format("Invalid number in element %s: \"%s\"", tag, s));
+			if (logger.isWarnEnabled()) {
+				logger.warn(String.format("Invalid number in element %s: \"%s\"", tag, s));
+			}
 			return null;
 		}
 	}
@@ -459,7 +461,9 @@ public class CrsSpecimenTransfer {
 			return Integer.parseInt(s);
 		}
 		catch (NumberFormatException exc) {
-			logger.warn(String.format("Invalid integer in element %s: \"%s\"", tag, s));
+			if (logger.isWarnEnabled()) {
+				logger.warn(String.format("Invalid integer in element %s: \"%s\"", tag, s));
+			}
 			return 0;
 		}
 	}

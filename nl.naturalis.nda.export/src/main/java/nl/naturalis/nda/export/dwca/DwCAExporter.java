@@ -333,10 +333,7 @@ public class DwCAExporter {
 		 * exact name "eml.xml"
 		 */
 		ExportDwCAUtilities.renameDwCAEMLFile(destinationPathEml);
-
-		/* Create the zipfile with a given filename */
-		createZipFiles(zipFileName);
-
+		
 		File source = new File(zipFileName + zipExtension);
 		File destination = null;
 		if (sourceSystemCode.equals("CRS")) {
@@ -352,6 +349,9 @@ public class DwCAExporter {
 		ExportDwCAUtilities.CopyAFile(source, destination);
 		/* Renamed the zip file into bak in de Archive map */
 		ExportDwCAUtilities.renameDwCAZipFile(destination);
+
+		/* Create the zipfile with a given filename */
+		createZipFiles(zipFileName);
 	}
 
 	/* Creating the Meta.xml */

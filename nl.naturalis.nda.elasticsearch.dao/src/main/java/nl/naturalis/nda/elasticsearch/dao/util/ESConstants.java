@@ -31,7 +31,7 @@ public class ESConstants {
 		public static final String UNIT_ID = "unitID";
 		public static final String SOURCE_SYSTEM_ID = "sourceSystemId";
 		/* NDA-387 By: Reinier Date: 30 june 2015 */
-		public static final String SOURCE_SYSTEM_NAME = "sourceSystem.code";
+		public static final String SOURCE_SYSTEM_NAME = "sourceSystem.name";
 
 		public static final String IDENTIFICATIONS_VERNACULAR_NAMES_NAME = "identifications.vernacularNames.name";
 		public static final String IDENTIFICATIONS_DEFAULT_CLASSIFICATION_KINGDOM = "identifications.defaultClassification.kingdom";
@@ -61,7 +61,7 @@ public class ESConstants {
 			/* NDA-386 By: Reinier Date: 26 june 2015 */
 			public static final String COLLECTIONTYPES = "collectionType";
 			/* NDA-387 By: Reinier Date: 30 june 2015 */
-			public static final String SOURCES_SYSTEM_NAMES = "sourceSystem.code";
+			public static final String SOURCES_SYSTEM_NAMES = "sourceSystem.name";
 		}
 
 		public static class SpecimenFields {
@@ -116,7 +116,7 @@ public class ESConstants {
 			public static final String SYSTEM_CLASSIFICATION_NAME = "systemClassification.name";
 			public static final String EXPERTS_FULLNAME = "experts.fullName";
 			/* NDA-387 By: Reinier Date: 30 june 2015 */
-			public static final String SOURCES_SYSTEM_TAXA = "sourceSystem.code";
+			public static final String SOURCES_SYSTEM_TAXA = "sourceSystem.name";
 		}
 	}
 }

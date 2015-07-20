@@ -1,5 +1,7 @@
 package nl.naturalis.nda.client;
 
+import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
+import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 import nl.naturalis.nda.domain.Specimen;
 
 public class SpecimenClient extends AbstractClient {
@@ -25,7 +27,11 @@ public class SpecimenClient extends AbstractClient {
 	public Specimen find(String unitID) throws NBAResourceException
 	{
 		request.setPath("specimen/find/" + unitID);
-		if (!request.execute().isOK()) {
+		int status = request.execute().getStatus();
+		if (status == HTTP_NOT_FOUND) {
+			return null;
+		}
+		else if (status != HTTP_OK) {
 			throw NBAResourceException.createFromResponse(request.getResponseBody());
 		}
 		else {

@@ -659,9 +659,9 @@ public class Fieldmapping {
 		*/
 		
 		/* NDA 407 only unitGuid*/
-		if (specimen.getSourceSystemId() != null)
+		if (specimen.getUnitGUID() != null)
 		{
-			dataRow.add(specimen.getSourceSystemId());
+			dataRow.add(specimen.getUnitGUID());
 		}
 		else
 		{

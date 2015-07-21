@@ -640,22 +640,33 @@ public class Fieldmapping {
 		dataRow.add("ICN");
 	}
 
-	/* Get OccurrenceID value for Zoology and Geology */
+	/* Get OccurrenceID value for Brahms, Zoology and Geology */
 	public static void setOccurrenceID(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
-		String institutionCode = null;
+		/*String institutionCode = null;
 		String objectType = "specimen";
 		if (specimen.getSourceInstitutionID().contains("Naturalis")) {
 			institutionCode = specimen.getSourceInstitutionID().substring(0, 9);
 		} else if (!specimen.getSourceInstitutionID().contains("Naturalis")) {
 			institutionCode = specimen.getSourceInstitutionID();
 		}
-		/*
+		
 		 * PersistentID is: Example: occurrence id =
 		 * http://data.biodiversitydata.nl/naturalis/specimen/RMNH.MAM.40012
-		 */
+		 
 		dataRow.add(CsvFileWriter.httpUrl + institutionCode + "/" + objectType
 				+ "/" + specimen.getSourceSystemId());
+		*/
+		
+		/* NDA 407 only unitGuid*/
+		if (specimen.getSourceSystemId() != null)
+		{
+			dataRow.add(specimen.getSourceSystemId());
+		}
+		else
+		{
+			dataRow.add(EMPTY_STRING);
+		}
 	}
 
 	/* Get Order value for Zoology and Geology */

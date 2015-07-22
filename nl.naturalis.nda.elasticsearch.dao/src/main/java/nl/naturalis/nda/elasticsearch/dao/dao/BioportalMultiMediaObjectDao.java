@@ -51,7 +51,8 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             IDENTIFICATIONS_SCIENTIFIC_NAME_INFRASPECIFIC_EPITHET,
             GATHERINGEVENTS_SITECOORDINATES_POINT,
             COLLECTIONTYPES,
-            SOURCES_SYSTEM_NAMES
+            SOURCES_SYSTEM_NAMES,
+            SOURCESYSTEM
     ));
 
     private static final Set<String> multiMediaSearchFields_simpleSearchExceptions

@@ -68,7 +68,8 @@ public class BioportalSpecimenDao extends AbstractDao {
             GATHERINGEVENT_DATE_TIME_BEGIN,
             GATHERINGEVENT_SITECOORDINATES_POINT,
             COLLECTION_TYPE,  /* NDA-386 */
-            SOURCE_SYSTEM_NAME)); /* NDA387  */
+            SOURCE_SYSTEM_NAME,
+            SOURCESYSTEM)); /* NDA387  */
 
     private static final Set<String> specimenSearchFieldNames_simpleSearchExceptions = new HashSet<>(Arrays.asList(GATHERINGEVENT_DATE_TIME_BEGIN,
             GATHERINGEVENT_SITECOORDINATES_POINT));

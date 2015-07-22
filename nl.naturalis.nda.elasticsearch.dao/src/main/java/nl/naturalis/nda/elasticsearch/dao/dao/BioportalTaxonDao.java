@@ -47,7 +47,8 @@ public class BioportalTaxonDao extends AbstractTaxonDao {
             DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
             SYSTEM_CLASSIFICATION_NAME,
             EXPERTS_FULLNAME,
-            SOURCES_SYSTEM_TAXA
+            SOURCES_SYSTEM_TAXA,
+            SOURCESYSTEM
     ));
 
     private static final Set<String> allowedFieldNamesForSearch_simpleSearchExceptions = Collections.emptySet();

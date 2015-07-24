@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
@@ -10,19 +11,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 
 public class SpecimenDao extends AbstractDao {
@@ -120,4 +127,30 @@ public class SpecimenDao extends AbstractDao {
 		ESSpecimen esSpecimen = getObjectMapper().convertValue(hit.getSource(), ESSpecimen.class);
 		return SpecimenTransfer.transfer(esSpecimen);
 	}
+
+
+	/**
+	 * Get all multimedia for the specified specimen ID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+	public MultiMediaObject[] getMultiMedia(String unitID)
+	{
+		TermFilterBuilder filter = termFilter("associatedSpecimenReference.raw", unitID);
+		FilteredQueryBuilder query = filteredQuery(matchAllQuery(), filter);
+		SearchRequestBuilder request = newSearchRequest().setTypes(MULTI_MEDIA_OBJECT_TYPE).setQuery(query);
+		SearchResponse response = request.execute().actionGet();
+		SearchHit[] results = response.getHits().getHits();
+		if (results.length == 0) {
+			return null;
+		}
+		MultiMediaObject[] multimedia = new MultiMediaObject[results.length];
+		for (int i = 0; i < results.length; ++i) {
+			ESMultiMediaObject tmp = getObjectMapper().convertValue(results[i].getSource(), ESMultiMediaObject.class);
+			multimedia[i] = MultiMediaObjectTransfer.transfer(tmp);
+		}
+		return multimedia;
+	}
+
 }

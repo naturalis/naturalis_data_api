@@ -1,12 +1,17 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.SPECIMEN_TYPE;
+import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID;
 import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
+import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -23,22 +28,39 @@ public class MultiMediaObjectDao extends AbstractDao {
 	}
 
 
-	public MultiMediaObject[] getMultiMediaForSpecimen(String specimenUnitID)
+	public boolean exists(String unitID)
 	{
-		TermFilterBuilder filter = termFilter("associatedSpecimenReference.raw", specimenUnitID);
-		FilteredQueryBuilder query = filteredQuery(matchAllQuery(), filter);
-		SearchRequestBuilder request = newSearchRequest().setTypes(MULTI_MEDIA_OBJECT_TYPE).setQuery(query);
+		TermFilterBuilder condition = termFilter(UNIT_ID + ".raw", unitID);
+		FilteredQueryBuilder query = filteredQuery(matchAllQuery(), condition);
+		SearchRequestBuilder request = newSearchRequest();
+		request.setTypes(MULTI_MEDIA_OBJECT_TYPE);
+		request.setQuery(query);
 		SearchResponse response = request.execute().actionGet();
-		SearchHit[] results = response.getHits().getHits();
-		if (results.length == 0) {
-			return null;
-		}
-		MultiMediaObject[] multimedia = new MultiMediaObject[results.length];
-		for (int i = 0; i < results.length; ++i) {
-			ESMultiMediaObject tmp = getObjectMapper().convertValue(results[i].getSource(), ESMultiMediaObject.class);
-			multimedia[i] = MultiMediaObjectTransfer.transfer(tmp);
-		}
-		return multimedia;
+		return response.getHits().getHits().length != 0;
 	}
 
+
+	/**
+	 * Get the plain {@code Specimen} object corresponding to the specified
+	 * UnitID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+	public MultiMediaObject find(String unitID)
+	{
+		TermFilterBuilder condition = termFilter(UNIT_ID + ".raw", unitID);
+		FilteredQueryBuilder query = filteredQuery(matchAllQuery(), condition);
+		SearchRequestBuilder request = newSearchRequest();
+		request.setTypes(MULTI_MEDIA_OBJECT_TYPE);
+		request.setQuery(query);
+		SearchResponse response = request.execute().actionGet();
+
+		if (response.getHits().getHits().length == 0) {
+			return null;
+		}
+		SearchHit hit = response.getHits().getHits()[0];
+		ESMultiMediaObject result = getObjectMapper().convertValue(hit.getSource(), ESMultiMediaObject.class);
+		return MultiMediaObjectTransfer.transfer(result);
+	}
 }

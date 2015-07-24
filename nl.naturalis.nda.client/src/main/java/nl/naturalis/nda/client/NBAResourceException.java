@@ -2,10 +2,14 @@ package nl.naturalis.nda.client;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.domainobject.util.StringUtil;
 import org.domainobject.util.debug.BeanPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An {@code NBAResourceException} is the client-side mirror of a
@@ -22,11 +26,16 @@ import org.domainobject.util.debug.BeanPrinter;
 public class NBAResourceException extends Exception {
 
 	private static final long serialVersionUID = -8246486578070786218L;
+	private static final Logger logger = LoggerFactory.getLogger(NBAResourceException.class);
 
 
 	@SuppressWarnings("unchecked")
 	static NBAResourceException createFromResponse(byte[] response)
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Deserializing NBA exception: " + StringUtil.toString(response));
+		}
+		System.out.println(StringUtil.toString(response));
 		LinkedHashMap<String, Object> serverInfo = ClientUtil.getObject(response, LinkedHashMap.class);
 		LinkedHashMap<String, Object> exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
 		String message = (String) exception.get("message");

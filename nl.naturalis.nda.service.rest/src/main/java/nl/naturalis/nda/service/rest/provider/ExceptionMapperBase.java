@@ -1,6 +1,7 @@
 package nl.naturalis.nda.service.rest.provider;
 
 import javax.enterprise.context.Dependent;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,6 +25,17 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 	@Override
 	public Response toResponse(Throwable e)
 	{
+
+		/*
+		 * This does not come from our code, giving off a nice RESTful signal
+		 * that a query has returned 0 results, but from JAX-RS itself telling
+		 * the client that the URL cannot be resolved to a method in a resource
+		 * class (so a bit more serious and hard-core).
+		 */
+		if (e.getClass() == NotFoundException.class) {
+			return Response.serverError().entity(e.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
+		}
+
 		/*
 		 * In the code below we not only check the type of the Throwable, but
 		 * also the type of the cause of the Throwable, because the REST

@@ -19,6 +19,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
@@ -67,6 +68,7 @@ public class SpecimenResource {
 		}
 	}
 
+
 	/**
 	 * Load a bare-bone representation of the specimen with the specified ID.
 	 * 
@@ -81,6 +83,28 @@ public class SpecimenResource {
 		try {
 			SpecimenDao dao = registry.getSpecimenDao(null);
 			return dao.exists(unitID);
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
+
+
+	/**
+	 * Get all multimedia for the specified specimen.
+	 * 
+	 * @param id
+	 * @param uriInfo
+	 * @return
+	 */
+	@GET
+	@Path("/get-multimedia/{UnitID}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public MultiMediaObject[] getMultiMedia(@PathParam("UnitID") String id, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDao dao = registry.getSpecimenDao(null);
+			return dao.getMultiMedia(id);
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(uriInfo, t);

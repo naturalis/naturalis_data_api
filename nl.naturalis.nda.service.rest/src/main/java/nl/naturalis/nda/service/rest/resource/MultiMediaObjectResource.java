@@ -38,16 +38,43 @@ public class MultiMediaObjectResource {
 	Registry registry;
 
 
+	/**
+	 * Check if there is a specimen with the provided UnitID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
 	@GET
-	@Path("/get-multimedia-for-specimen/{specimenUnitID}")
+	@Path("/exists/{id}")
 	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
-	public MultiMediaObject[] getMultiMediaForSpecimen(@PathParam("specimenUnitID") String id, @Context UriInfo uriInfo)
+	public boolean exists(@PathParam("id") String unitID, @Context UriInfo uriInfo)
 	{
 		try {
 			MultiMediaObjectDao dao = registry.getMultiMediaObjectDao(null);
-			return dao.getMultiMediaForSpecimen(id);
+			return dao.exists(unitID);
 		}
-		catch(Throwable t) {
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
+
+
+	/**
+	 * Load a bare-bone representation of the specimen with the specified ID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+	@GET
+	@Path("/find/{id}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public MultiMediaObject find(@PathParam("id") String unitID, @Context UriInfo uriInfo)
+	{
+		try {
+			MultiMediaObjectDao dao = registry.getMultiMediaObjectDao(null);
+			return dao.find(unitID);
+		}
+		catch (Throwable t) {
 			throw ResourceUtil.handleError(uriInfo, t);
 		}
 	}

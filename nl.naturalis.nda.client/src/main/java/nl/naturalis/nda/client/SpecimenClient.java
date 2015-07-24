@@ -2,9 +2,17 @@ package nl.naturalis.nda.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nl.naturalis.nda.domain.MultiMediaObject;
 import nl.naturalis.nda.domain.Specimen;
 
 public class SpecimenClient extends AbstractClient {
+
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(SpecimenClient.class);
 
 	SpecimenClient(ClientConfig cfg)
 	{
@@ -14,7 +22,7 @@ public class SpecimenClient extends AbstractClient {
 
 	public boolean exists(String unitID) throws NBAResourceException
 	{
-		request.setPath("specimen/exists/" + unitID);
+		setPath("specimen/exists/" + unitID);
 		if (!request.execute().isOK()) {
 			throw NBAResourceException.createFromResponse(request.getResponseBody());
 		}
@@ -26,7 +34,7 @@ public class SpecimenClient extends AbstractClient {
 
 	public Specimen find(String unitID) throws NBAResourceException
 	{
-		request.setPath("specimen/find/" + unitID);
+		setPath("specimen/find/" + unitID);
 		int status = request.execute().getStatus();
 		if (status == HTTP_NOT_FOUND) {
 			return null;
@@ -39,4 +47,16 @@ public class SpecimenClient extends AbstractClient {
 		}
 	}
 
+
+	public MultiMediaObject[] getMultiMedia(String unitID) throws NBAResourceException
+	{
+		setPath("specimen/get-multimedia/" + unitID);
+		int status = request.execute().getStatus();
+		if (status != HTTP_OK) {
+			throw NBAResourceException.createFromResponse(request.getResponseBody());
+		}
+		else {
+			return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);
+		}
+	}
 }

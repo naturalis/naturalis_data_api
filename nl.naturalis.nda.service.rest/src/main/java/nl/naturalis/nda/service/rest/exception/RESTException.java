@@ -67,20 +67,20 @@ public class RESTException extends RuntimeException {
 	/**
 	 * 
 	 * <code>
-	 *	info: {
-	 *		requestUri: (string),
-	 *		httpStatus: {
-	 *			code: (int),
-	 *			message: (string)
-	 *		},
-	 *		exception: {
-	 *			message: (string),
-	 *			cause: (string),
-	 *			rootCause: (string),
-	 *			stackTrace: (string[])
-	 *		},
-	 *		params: (map)
-	 *	}
+	 * 	info: {
+	 * 		requestUri: (string),
+	 * 		httpStatus: {
+	 * 			code: (int),
+	 * 			message: (string)
+	 * 		},
+	 * 		exception: {
+	 * 			message: (string),
+	 * 			cause: (string),
+	 * 			rootCause: (string),
+	 * 			stackTrace: (string[])
+	 * 		},
+	 * 		params: (map)
+	 * 	}
 	 * </code>
 	 * 
 	 * @return
@@ -95,31 +95,24 @@ public class RESTException extends RuntimeException {
 		httpStatusInfo.put("code", status.getStatusCode());
 		httpStatusInfo.put("message", status.toString());
 
-		if (getCause() != null) {
-
-			Throwable rootCause = getCause();
-			while (rootCause.getCause() != null) {
-				rootCause = rootCause.getCause();
-			}
-
-			HashMap<String, Object> exceptionInfo = new LinkedHashMap<>();
-			info.put("exception", exceptionInfo);
-			exceptionInfo.put("message", rootCause.getMessage());
-			if (rootCause != getCause()) {
-				exceptionInfo.put("cause", getCause().getClass().getName());
-			}
-			exceptionInfo.put("rootCause", rootCause.getClass().getName());
-			StackTraceElement[] stackTraceElements = rootCause.getStackTrace();
-			List<String> trace = new ArrayList<String>(stackTraceElements.length);
-			for (StackTraceElement e : stackTraceElements) {
-				StringBuilder sb = new StringBuilder(128);
-				sb.append("at ");
-				sb.append(e.getClassName()).append('.').append(e.getMethodName());
-				sb.append('(').append(e.getFileName()).append(':').append(e.getLineNumber()).append(')');
-				trace.add(sb.toString());
-			}
-			exceptionInfo.put("stackTrace", trace);
+		Throwable throwable = this;
+		while (throwable.getCause() != null) {
+			throwable = throwable.getCause();
 		}
+
+		HashMap<String, Object> exceptionInfo = new LinkedHashMap<>();
+		info.put("exception", exceptionInfo);
+		exceptionInfo.put("message", throwable.toString());
+		StackTraceElement[] stackTraceElements = throwable.getStackTrace();
+		List<String> trace = new ArrayList<String>(stackTraceElements.length);
+		for (StackTraceElement e : stackTraceElements) {
+			StringBuilder sb = new StringBuilder(128);
+			sb.append("at ");
+			sb.append(e.getClassName()).append('.').append(e.getMethodName());
+			sb.append('(').append(e.getFileName()).append(':').append(e.getLineNumber()).append(')');
+			trace.add(sb.toString());
+		}
+		exceptionInfo.put("stackTrace", trace);
 
 		QueryParams params = new QueryParams();
 		params.addParams(request.getPathParameters());

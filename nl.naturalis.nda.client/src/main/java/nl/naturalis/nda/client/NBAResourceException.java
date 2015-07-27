@@ -2,7 +2,6 @@ package nl.naturalis.nda.client;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,12 +29,15 @@ public class NBAResourceException extends Exception {
 
 
 	@SuppressWarnings("unchecked")
-	static NBAResourceException createFromResponse(byte[] response)
+	static NBAResourceException createFromResponse(int status, byte[] response)
 	{
+		if(response == null) {
+			String fmt = "NBA responded with status code %s, but response body was empty";
+			throw new ClientException(String.format(fmt, status));
+		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("Deserializing NBA exception: " + StringUtil.toString(response));
 		}
-		System.out.println(StringUtil.toString(response));
 		LinkedHashMap<String, Object> serverInfo = ClientUtil.getObject(response, LinkedHashMap.class);
 		LinkedHashMap<String, Object> exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
 		String message = (String) exception.get("message");
@@ -45,7 +47,7 @@ public class NBAResourceException extends Exception {
 	private final Map<String, Object> serverInfo;
 
 
-	public NBAResourceException(String message, Map<String, Object> serverInfo)
+	private NBAResourceException(String message, Map<String, Object> serverInfo)
 	{
 		super(message);
 		this.serverInfo = serverInfo;

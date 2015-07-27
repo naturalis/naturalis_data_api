@@ -14,6 +14,7 @@ public class SpecimenClient extends AbstractClient {
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(SpecimenClient.class);
 
+
 	SpecimenClient(ClientConfig cfg)
 	{
 		super(cfg);
@@ -23,8 +24,9 @@ public class SpecimenClient extends AbstractClient {
 	public boolean exists(String unitID) throws NBAResourceException
 	{
 		setPath("specimen/exists/" + unitID);
-		if (!request.execute().isOK()) {
-			throw NBAResourceException.createFromResponse(request.getResponseBody());
+		int status = request.execute().getStatus();
+		if (status == HTTP_NOT_FOUND) {
+			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		else {
 			return ClientUtil.getBoolean(request.getResponseBody());
@@ -40,7 +42,7 @@ public class SpecimenClient extends AbstractClient {
 			return null;
 		}
 		else if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(request.getResponseBody());
+			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		else {
 			return ClientUtil.getObject(request.getResponseBody(), Specimen.class);
@@ -53,7 +55,7 @@ public class SpecimenClient extends AbstractClient {
 		setPath("specimen/get-multimedia/" + unitID);
 		int status = request.execute().getStatus();
 		if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(request.getResponseBody());
+			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		else {
 			return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);

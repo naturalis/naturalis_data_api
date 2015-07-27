@@ -2,7 +2,6 @@ package nl.naturalis.nda.client;
 
 import java.io.IOException;
 
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 class ClientUtil {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ClientUtil.class);
 	private static final ObjectMapper objectMapper = NBAObjectMapperFactory.getObjectMapper();
 
@@ -56,7 +56,6 @@ class ClientUtil {
 			return objectMapper.readValue(response, type);
 		}
 		catch (IOException e) {
-			logger.error(String.format("Failed to convert NBA response to %s: %s", type, StringUtil.toString(response)));
 			throw new ClientException(e);
 		}
 	}

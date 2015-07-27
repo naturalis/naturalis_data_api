@@ -15,8 +15,9 @@ public class MultiMediaClient extends AbstractClient {
 	public boolean exists(String unitID) throws NBAResourceException
 	{
 		setPath("multimedia/exists/" + unitID);
-		if (!request.execute().isOK()) {
-			throw NBAResourceException.createFromResponse(request.getResponseBody());
+		int status = request.execute().getStatus();
+		if (status != HTTP_OK) {
+			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		else {
 			return ClientUtil.getBoolean(request.getResponseBody());
@@ -32,11 +33,11 @@ public class MultiMediaClient extends AbstractClient {
 			return null;
 		}
 		else if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(request.getResponseBody());
+			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		else {
 			return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject.class);
 		}
 	}
-	
+
 }

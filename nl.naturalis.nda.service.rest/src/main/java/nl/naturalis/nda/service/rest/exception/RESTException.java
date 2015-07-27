@@ -31,15 +31,24 @@ public class RESTException extends RuntimeException {
 	private final MultivaluedMap<String, String> formParams;
 
 
-	public RESTException(UriInfo request, Status actualStatus)
+	public RESTException(UriInfo request, Status status)
 	{
-		this(request, null, null, actualStatus);
+		this(request, null, null, status);
 	}
 
 
-	public RESTException(UriInfo request, Throwable cause, Status actualStatus)
+	public RESTException(UriInfo request, Status status, String message)
 	{
-		this(request, null, cause, actualStatus);
+		super(message);
+		this.request = request;
+		this.status = status;
+		this.formParams = null;
+	}
+
+
+	public RESTException(UriInfo request, Throwable cause, Status status)
+	{
+		this(request, null, cause, status);
 	}
 
 

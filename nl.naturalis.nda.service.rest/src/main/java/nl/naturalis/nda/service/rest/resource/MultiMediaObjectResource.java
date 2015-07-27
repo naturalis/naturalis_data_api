@@ -16,10 +16,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.ObjectType;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.MultiMediaObjectDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;
 
@@ -72,7 +74,11 @@ public class MultiMediaObjectResource {
 	{
 		try {
 			MultiMediaObjectDao dao = registry.getMultiMediaObjectDao(null);
-			return dao.find(unitID);
+			MultiMediaObject result = dao.find(unitID);
+			if (result == null) {
+				throw new HTTP404Exception(uriInfo, ObjectType.MULTIMEDIA, unitID);
+			}
+			return result;
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(uriInfo, t);

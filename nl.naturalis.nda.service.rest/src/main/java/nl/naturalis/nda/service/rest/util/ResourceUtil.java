@@ -22,6 +22,9 @@ public class ResourceUtil {
 
 	public static RESTException handleError(UriInfo request, Throwable throwable, Status status)
 	{
+		if (throwable instanceof RESTException) {
+			return (RESTException) throwable;
+		}
 		boolean showAsJson = false;
 		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
 		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
@@ -42,6 +45,9 @@ public class ResourceUtil {
 
 	public static RESTException handleError(UriInfo request, MultivaluedMap<String, String> form, Throwable throwable)
 	{
+		if (throwable instanceof RESTException) {
+			return (RESTException) throwable;
+		}
 		boolean showAsJson = false;
 		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
 		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {

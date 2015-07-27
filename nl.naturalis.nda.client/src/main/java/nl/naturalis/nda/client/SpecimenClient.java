@@ -25,7 +25,7 @@ public class SpecimenClient extends AbstractClient {
 	{
 		setPath("specimen/exists/" + unitID);
 		int status = request.execute().getStatus();
-		if (status == HTTP_NOT_FOUND) {
+		if (status != HTTP_OK) {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		else {

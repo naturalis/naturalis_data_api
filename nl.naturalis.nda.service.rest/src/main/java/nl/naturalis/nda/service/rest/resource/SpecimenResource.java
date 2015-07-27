@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.ObjectType;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
@@ -27,6 +28,7 @@ import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;
 
@@ -82,7 +84,11 @@ public class SpecimenResource {
 	{
 		try {
 			SpecimenDao dao = registry.getSpecimenDao(null);
-			return dao.find(unitID);
+			Specimen result = dao.find(unitID);
+			if (result == null) {
+				throw new HTTP404Exception(uriInfo, ObjectType.SPECIMEN, unitID);
+			}
+			return result;
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(uriInfo, t);

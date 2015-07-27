@@ -9,6 +9,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
+import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.service.rest.exception.RESTException;
 
 import org.slf4j.Logger;
@@ -33,10 +34,10 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 		 */
 
 		/*
-		 * NotFoundException does not come from our code, giving off a nice
-		 * RESTful signal that a query has returned 0 results, but from JAX-RS
-		 * itself telling the client that the URL cannot be resolved (so a bit
-		 * more serious and hard-core).
+		 * javax.ws.rs.NotFoundException does not come from our code, giving off
+		 * a nice RESTful signal that a query has returned 0 results, but from
+		 * JAX-RS itself telling the client that the URL cannot be resolved (so
+		 * a bit more serious and hard-core).
 		 */
 		if (e.getClass() == NotFoundException.class) {
 			return Response.serverError().entity(e.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
@@ -53,13 +54,21 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 			HTTP200Exception exc = (HTTP200Exception) e.getCause();
 			return Response.ok().type(MediaType.APPLICATION_JSON).entity(exc.getInfo()).build();
 		}
-		if (e.getClass() == RESTException.class) {
-			RESTException exc = (RESTException) e;
-			return Response.status(exc.getStatus()).type(MediaType.APPLICATION_JSON).entity(exc.getInfo()).build();
+
+		if (e.getClass() == HTTP404Exception.class) {
+			HTTP404Exception exc = (HTTP404Exception) e;
+			return Response.status(404).type(MediaType.TEXT_PLAIN).entity(exc.getMessage()).build();
 		}
-		if (e.getCause() != null && e.getCause().getClass() == RESTException.class) {
-			RESTException exc = (RESTException) e.getCause();
-			return Response.status(exc.getStatus()).type(MediaType.APPLICATION_JSON).entity(exc.getInfo()).build();
+		if (e.getCause() != null && e.getCause().getClass() == HTTP404Exception.class) {
+			HTTP404Exception exc = (HTTP404Exception) e.getCause();
+			return Response.status(404).type(MediaType.TEXT_PLAIN).entity(exc.getMessage()).build();
+		}
+
+		if (e instanceof RESTException) {
+			return jsonResponse(e);
+		}
+		if (e.getCause() != null && e.getCause() instanceof RESTException) {
+			return jsonResponse(e.getCause());
 		}
 
 		/*
@@ -78,8 +87,15 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 			WebApplicationException exc = (WebApplicationException) e.getCause();
 			return exc.getResponse();
 		}
-		
+
 		return Response.serverError().entity(e.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
+	}
+
+
+	private static Response jsonResponse(Throwable t)
+	{
+		RESTException e = (RESTException) t;
+		return Response.status(e.getStatus()).type(MediaType.APPLICATION_JSON).entity(e.getInfo()).build();
 	}
 
 }

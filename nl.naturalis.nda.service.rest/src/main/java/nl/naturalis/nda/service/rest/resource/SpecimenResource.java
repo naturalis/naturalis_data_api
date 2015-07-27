@@ -78,11 +78,11 @@ public class SpecimenResource {
 	@GET
 	@Path("/find/{id}")
 	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
-	public boolean find(@PathParam("id") String unitID, @Context UriInfo uriInfo)
+	public Specimen find(@PathParam("id") String unitID, @Context UriInfo uriInfo)
 	{
 		try {
 			SpecimenDao dao = registry.getSpecimenDao(null);
-			return dao.exists(unitID);
+			return dao.find(unitID);
 		}
 		catch (Throwable t) {
 			throw ResourceUtil.handleError(uriInfo, t);

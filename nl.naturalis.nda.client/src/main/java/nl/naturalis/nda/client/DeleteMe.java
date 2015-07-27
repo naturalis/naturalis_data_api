@@ -13,7 +13,6 @@ public class DeleteMe {
 		MultiMediaObject[] multimedia = client.getMultiMedia("U.1363600");
 		BeanPrinter.out(multimedia);
 		
-		MultiMediaClient mmc = ClientFactory.getInstance(cfg).createMultiMediaClient();
 	}
 
 }

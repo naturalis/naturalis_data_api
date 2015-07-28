@@ -30,6 +30,7 @@ public class MultiMediaObjectTransfer {
 		// TODO: Change licence to license in ESMultiMediaObject and ES mapping!!
 		mmo.setLicense(esMmo.getLicence());
 		mmo.setUnitID(esMmo.getUnitID());
+		mmo.setCollectionType(esMmo.getCollectionType());
 		mmo.setIdentifications(esMmo.getIdentifications());
 		mmo.setAssociatedTaxonReference(esMmo.getAssociatedTaxonReference());
 		mmo.setAssociatedSpecimenReference(esMmo.getAssociatedSpecimenReference());

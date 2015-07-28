@@ -13,21 +13,24 @@ esBatchSize=1000
 JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nda.elasticsearch.load.brahms.batchsize=${esBatchSize}"
 JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nda.elasticsearch.load.brahms.backup=${backup}"
 
-type="${1}"
+action="${1}"
 
-if [ "$type" = specimens ]
+if [ "$action" = specimens ]
 then
     java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsSpecimensImporter
 	echo "WARNING: When loading only specimens or only multimedia file backup is disabled"
-elif [ "$type" = multimedia ]
+elif [ "$action" = multimedia ]
 then
     java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsMultiMediaImporter
 	echo "WARNING: When not loading only specimens or only multimedia file backup is disabled"
-elif [ "$type" = "" ]
+elif [ "$action" = reset ]
+then
+    java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.Unimport
+elif [ "$action" = "" ]
 then
     java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsImportAll
 else
-    echo "Don't know how to import \"$type\""
+    echo "Don't know how to import \"$action\"."
 fi
 
 

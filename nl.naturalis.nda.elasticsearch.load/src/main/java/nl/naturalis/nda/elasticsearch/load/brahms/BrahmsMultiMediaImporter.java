@@ -68,7 +68,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
-	
+
+
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
@@ -111,7 +112,16 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
-				ESMultiMediaObject mmo = transferOne(record, urls[i], lineNo);
+				String url = urls[i].trim();
+				URI uri;
+				try {
+					uri = new URI(url);
+				}
+				catch (URISyntaxException e) {
+					logger.error("Invalid image URL: " + url);
+					continue;
+				}
+				ESMultiMediaObject mmo = transferOne(record, uri, lineNo);
 				if (mmo != null) {
 					mmos.add(mmo);
 				}
@@ -128,20 +138,11 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		for (int i = 0; i < ids.size(); ++i) {
 			ids.set(i, BrahmsImportAll.ID_PREFIX + ids.get(i));
 		}
-		// String base = ID_PREFIX + val(record, BARCODE.ordinal());
-		// List<String> ids = new ArrayList<String>(4);
-		// String s = val(record, IMAGELIST.ordinal());
-		// if (s != null) {
-		// String[] urls = s.split(",");
-		// for (int i = 0; i < urls.length; ++i) {
-		// ids.add(base + "_" + i);
-		// }
-		// }
 		return ids;
 	}
 
 
-	private ESMultiMediaObject transferOne(CSVRecord record, String imageUrl, int lineNo) throws Exception
+	private ESMultiMediaObject transferOne(CSVRecord record, URI uri, int lineNo) throws Exception
 	{
 		String specimenUnitId = val(record, BARCODE.ordinal());
 		if (specimenUnitId == null) {
@@ -160,7 +161,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			return null;
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
-		mmo.setUnitID(specimenUnitId + ':' + String.valueOf(imageUrl.hashCode()).replace('-', '0'));
+		mmo.setUnitID(specimenUnitId + '_' + String.valueOf(uri.toString().hashCode()).replace('-', '0'));
 		multimediaIds.add(mmo.getUnitID());
 		mmo.setSourceSystemId(mmo.getUnitID());
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
@@ -169,6 +170,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setSourceID("Brahms");
 		mmo.setLicenceType(LICENCE_TYPE);
 		mmo.setLicence(LICENCE);
+		mmo.setCollectionType("Botany");
 		mmo.setAssociatedSpecimenReference(specimenUnitId);
 
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
@@ -179,13 +181,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
-		try {
-			URI uri = new URI(imageUrl.trim());
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));
-		}
-		catch (URISyntaxException e) {
-			throw new Exception(String.format("Invalid URL: \"%s\"", imageUrl));
-		}
+		mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, "image/jpeg", Variant.MEDIUM_QUALITY));
 
 		return mmo;
 	}

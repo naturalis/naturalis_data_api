@@ -224,6 +224,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setSourceID("Brahms");
 		specimen.setLicenceType(LICENCE_TYPE);
 		specimen.setLicence(LICENCE);
+		specimen.setCollectionType("Botany");
 
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);

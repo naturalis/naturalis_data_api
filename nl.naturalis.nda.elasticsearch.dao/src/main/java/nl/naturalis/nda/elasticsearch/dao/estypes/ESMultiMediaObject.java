@@ -18,6 +18,7 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	private String licenceType;
 	private String licence;
 	private String unitID;
+	private String collectionType;
 	private String title;
 	private String caption;
 	private String description;
@@ -118,6 +119,18 @@ public class ESMultiMediaObject extends NdaTraceableObject {
 	public void setUnitID(String unitID)
 	{
 		this.unitID = unitID;
+	}
+
+
+	public String getCollectionType()
+	{
+		return collectionType;
+	}
+
+
+	public void setCollectionType(String collectionType)
+	{
+		this.collectionType = collectionType;
 	}
 
 

@@ -84,10 +84,12 @@ public class CrsMultiMediaTransfer {
 		crsMultiMediaImporter.multimediaProcessed += mediaFileElements.size();
 		ESGatheringEvent gatheringEvent = getGatheringEvent(dcElement);
 
-		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(recordElement, "dwc:lifeStage"));
+		String phaseOrStage = phaseOrStageNormalizer.getNormalizedValue(val(dcElement, "dwc:lifeStage"));
 		List<String> phaseOrStages = phaseOrStage == null ? null : Arrays.asList(phaseOrStage);
-		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(recordElement, "abcd:TypeStatus"));
-		String sex = sexNormalizer.getNormalizedValue(val(recordElement, "abcd:Sex"));
+		String typeStatus = typeStatusNormalizer.getNormalizedValue(val(dcElement, "abcd:TypeStatus"));
+		String sex = sexNormalizer.getNormalizedValue(val(dcElement, "dwc:sex"));
+		
+		String collectionType = val(dcElement,"abcd:CollectionType");
 
 		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 		boolean themeCheckDone = false;
@@ -134,7 +136,7 @@ public class CrsMultiMediaTransfer {
 			}
 			else {
 				if (title == null) {
-					title = associatedSpecimenReference + ':' + String.valueOf(url.hashCode()).replace('-', '0');
+					title = associatedSpecimenReference + '_' + String.valueOf(url.hashCode()).replace('-', '0');
 					if (logger.isDebugEnabled()) {
 						String msg = String.format("Missing title for record with identifier %s. Assigned title: %s", identifier, title);
 						logger.debug(msg);
@@ -155,6 +157,7 @@ public class CrsMultiMediaTransfer {
 			mmo.setLicenceType(LICENCE_TYPE);
 			mmo.setLicence(LICENCE);
 			mmo.setUnitID(unitID);
+			mmo.setCollectionType(collectionType);
 			mmo.setTitle(title);
 			mmo.setCaption(title);
 			mmo.setAssociatedSpecimenReference(associatedSpecimenReference);

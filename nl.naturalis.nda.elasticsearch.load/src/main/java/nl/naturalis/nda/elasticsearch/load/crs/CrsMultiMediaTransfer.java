@@ -50,8 +50,8 @@ public class CrsMultiMediaTransfer {
 		String recordBasis = val(dcElement, "abcd:RecordBasis");
 		if(recordBasis == null) {
 			++crsMultiMediaImporter.recordsSkipped;
-			if(logger.isDebugEnabled()) {
-				logger.debug("Skipping virtual specimen record with id " + identifier);
+			if(logger.isInfoEnabled()) {
+				logger.info("Skipping virtual specimen record with id " + identifier);
 			}
 			return null;
 		}

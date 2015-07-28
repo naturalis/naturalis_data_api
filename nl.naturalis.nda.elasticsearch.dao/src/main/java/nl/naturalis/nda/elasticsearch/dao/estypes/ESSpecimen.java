@@ -34,6 +34,7 @@ public class ESSpecimen extends NdaTraceableObject {
 	private boolean fromCaptivity;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
+	
 
 	private Agent acquiredFrom;
 	private ESGatheringEvent gatheringEvent;

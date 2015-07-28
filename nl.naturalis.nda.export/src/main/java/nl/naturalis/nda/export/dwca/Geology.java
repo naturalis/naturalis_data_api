@@ -193,8 +193,8 @@ public class Geology
 				Fieldmapping.setNomenclaturalCode_Geology(specimen, dataRow);
 			}
 			
-			/* 29_DummyDefault is occurrenceID */
-			if (ExportDwCAUtilities.isEnabled(MAPPING_FILE_NAME, "29_DummyDefault"))
+			/* 29_unitGUID is occurrenceID */
+			if (ExportDwCAUtilities.isEnabled(MAPPING_FILE_NAME, "29_unitGUID"))
 			{
 				Fieldmapping.setOccurrenceID(specimen, dataRow);
 			}

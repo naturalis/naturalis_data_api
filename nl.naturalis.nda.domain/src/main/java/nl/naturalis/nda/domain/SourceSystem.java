@@ -2,10 +2,10 @@ package nl.naturalis.nda.domain;
 
 public class SourceSystem {
 
-	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS", "Brahms");
-	public static final SourceSystem COL = new SourceSystem("COL", "Catalogue Of Life");
-	public static final SourceSystem CRS = new SourceSystem("CRS", "Naturalis Collectie Registratie Systeem");
-	public static final SourceSystem NSR = new SourceSystem("NSR", "Nederlands Soortenregister");
+	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS", "Naturalis - Botany catalogues");
+	public static final SourceSystem COL = new SourceSystem("COL", "Species 2000 - Catalogue Of Life");
+	public static final SourceSystem CRS = new SourceSystem("CRS", "Naturalis - Zoology and Geology catalogues");
+	public static final SourceSystem NSR = new SourceSystem("NSR", "Naturalis - Nederlands Soortenregister");
 
 	private String code;
 	private String name;

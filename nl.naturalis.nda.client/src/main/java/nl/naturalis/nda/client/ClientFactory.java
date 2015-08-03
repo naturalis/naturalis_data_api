@@ -3,6 +3,8 @@ package nl.naturalis.nda.client;
 import java.util.HashMap;
 
 /**
+ * A {@code ClientFactory} is a factory for clients of a particular root
+ * resource within the NBA (version, specimen, taxon, multimedia, ...).
  * 
  * @author Ayco Holleman
  *
@@ -31,9 +33,19 @@ public class ClientFactory {
 		return specimentClient;
 	}
 
+
+	public MultiMediaClient createMultiMediaClient()
+	{
+		if (multiMediaClient == null) {
+			multiMediaClient = new MultiMediaClient(cfg);
+		}
+		return multiMediaClient;
+	}
+
 	private final ClientConfig cfg;
 
 	private SpecimenClient specimentClient;
+	private MultiMediaClient multiMediaClient;
 
 
 	private ClientFactory(ClientConfig cfg)

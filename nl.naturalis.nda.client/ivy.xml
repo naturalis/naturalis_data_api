@@ -9,6 +9,12 @@
 	</info>
 	
 	<dependencies>
+		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.10"/>
+		<dependency org="ch.qos.logback" name="logback-classic" rev="1.1.2"/>
+		<dependency org="joda-time" name="joda-time" rev="2.7"/>
+		<dependency org="commons-io" name="commons-io" rev="2.4"/>
+		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.4"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.5.1"/>
 	</dependencies>
 	
 </ivy-module>

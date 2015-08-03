@@ -1,7 +1,18 @@
 package nl.naturalis.nda.client;
 
-public final class ClientConfig {
+/**
+ * A {@code ClientConfig} instance encapsulates the information necessary to
+ * connect to a particular NBA instance (e.g. NBA production or NBA test).
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class ClientConfig {
 
+	/*
+	 * Currently the only thing that distinguishes one NBA instance from the
+	 * other is its base URL
+	 */
 	public final String baseUrl;
 
 
@@ -15,6 +26,7 @@ public final class ClientConfig {
 	{
 		return baseUrl;
 	}
+
 
 	@Override
 	public boolean equals(Object obj)

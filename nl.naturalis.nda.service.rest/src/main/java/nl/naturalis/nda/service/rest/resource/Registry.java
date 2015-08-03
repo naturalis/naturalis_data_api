@@ -11,6 +11,7 @@ import javax.ejb.Startup;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
+import nl.naturalis.nda.elasticsearch.dao.dao.MultiMediaObjectDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
 import nl.naturalis.nda.service.rest.util.LogUtil;
@@ -54,6 +55,12 @@ public class Registry {
 	public BioportalSpecimenDao getBioportalSpecimenDao(String baseUrl)
 	{
 		return new BioportalSpecimenDao(nda.getESClient(), nda.getIndexName(), getBioportalTaxonDao(baseUrl), getTaxonDao(baseUrl), baseUrl);
+	}
+
+
+	public MultiMediaObjectDao getMultiMediaObjectDao(String baseUrl)
+	{
+		return new MultiMediaObjectDao(nda.getESClient(), nda.getIndexName(), baseUrl);
 	}
 
 

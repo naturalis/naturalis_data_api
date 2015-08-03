@@ -39,6 +39,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
@@ -53,6 +54,15 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+		
+		/*
+		 * Make sure thematic search and mime type cache can be instantiated,
+		 * otherwise we get class initialization errors in
+		 * CrsMultiMediaTransfer.
+		 */
+		ThematicSearchConfig.getInstance();
+		MedialibMimeTypeCache.getInstance();
+
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
@@ -104,7 +114,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 
 	@Override
-	protected List<ESMultiMediaObject> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
+	protected List<ESMultiMediaObject> transfer(CSVRecord record, String csvRecord, int lineNo)
 	{
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
 		multimediaIds = new ArrayList<String>(4);
@@ -142,7 +152,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	}
 
 
-	private ESMultiMediaObject transferOne(CSVRecord record, URI uri, int lineNo) throws Exception
+	private ESMultiMediaObject transferOne(CSVRecord record, URI uri, int lineNo)
 	{
 		String specimenUnitId = val(record, BARCODE.ordinal());
 		if (specimenUnitId == null) {

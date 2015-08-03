@@ -21,6 +21,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
+import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,11 +146,13 @@ public class TransferUtil {
 		}
 		else if (dc.getGenus() == null && sn.getGenusOrMonomial() != null) {
 			dc.setGenus(sn.getGenusOrMonomial());
-			logger.debug(String.format(EQUALIZE, GENUS, NAME, CLASSIFICATION, sn.getGenusOrMonomial()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, GENUS, NAME, CLASSIFICATION, sn.getGenusOrMonomial()));
 		}
 		else if (dc.getGenus() != null && sn.getGenusOrMonomial() == null) {
 			sn.setGenusOrMonomial(dc.getGenus());
-			logger.debug(String.format(EQUALIZE, GENUS, CLASSIFICATION, NAME, sn.getGenusOrMonomial()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, GENUS, CLASSIFICATION, NAME, sn.getGenusOrMonomial()));
 		}
 
 		if (dc.getSubgenus() != null && sn.getSubgenus() != null) {
@@ -160,11 +163,13 @@ public class TransferUtil {
 		}
 		else if (dc.getSubgenus() == null && sn.getSubgenus() != null) {
 			dc.setSubgenus(sn.getSubgenus());
-			logger.debug(String.format(EQUALIZE, SUBGENUS, NAME, CLASSIFICATION, sn.getSubgenus()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, SUBGENUS, NAME, CLASSIFICATION, sn.getSubgenus()));
 		}
 		else if (dc.getSubgenus() != null && sn.getSubgenus() == null) {
 			sn.setSubgenus(dc.getSubgenus());
-			logger.debug(String.format(EQUALIZE, SUBGENUS, CLASSIFICATION, NAME, sn.getSubgenus()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, SUBGENUS, CLASSIFICATION, NAME, sn.getSubgenus()));
 		}
 
 		if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() != null) {
@@ -179,7 +184,8 @@ public class TransferUtil {
 		}
 		else if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() == null) {
 			sn.setSpecificEpithet(dc.getSpecificEpithet());
-			logger.debug(String.format(EQUALIZE, SPECIES, CLASSIFICATION, NAME, sn.getSpecificEpithet()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, SPECIES, CLASSIFICATION, NAME, sn.getSpecificEpithet()));
 		}
 
 		if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() != null) {
@@ -190,12 +196,53 @@ public class TransferUtil {
 		}
 		else if (dc.getInfraspecificEpithet() == null && sn.getInfraspecificEpithet() != null) {
 			dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
-			logger.debug(String.format(EQUALIZE, SUBSPECIES, NAME, CLASSIFICATION, sn.getInfraspecificEpithet()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, SUBSPECIES, NAME, CLASSIFICATION, sn.getInfraspecificEpithet()));
 		}
 		else if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() == null) {
 			sn.setInfraspecificEpithet(dc.getInfraspecificEpithet());
-			logger.debug(String.format(EQUALIZE, SUBSPECIES, CLASSIFICATION, NAME, sn.getInfraspecificEpithet()));
+			if (logger.isDebugEnabled())
+				logger.debug(String.format(EQUALIZE, SUBSPECIES, CLASSIFICATION, NAME, sn.getInfraspecificEpithet()));
 		}
+	}
+
+	private static final String jpeg = "image/jpeg";
+
+
+	public static String guessMimeType(String imageUrl)
+	{
+		String ext = StringUtil.substr(imageUrl, -4).toLowerCase();
+		String mimetype;
+		if (ext.equals(".jpg"))
+			mimetype = jpeg;
+		else if (ext.equals(".png"))
+			mimetype = "image/png";
+		else if (ext.equals(".gif"))
+			mimetype = "image/gif";
+		else if (ext.equals(".tif"))
+			mimetype = "image/tiff";
+		else if (ext.equals(".bmp"))
+			mimetype = "image/bmp";
+		else if (ext.equals(".mp3"))
+			mimetype = "audio/mpeg"; // according to http://tools.ietf.org/html/rfc3003	
+		else if (ext.equals(".mp4"))
+			mimetype = "video/mp4"; // according to http://www.rfc-editor.org/rfc/rfc4337.txt
+		else if (ext.equals(".pdf"))
+			mimetype = "application/pdf";
+		else {
+			ext = StringUtil.substr(imageUrl, -5).toLowerCase();
+			if (ext.equals("jpeg")) 
+				mimetype = jpeg;
+			else if (ext.equals(".tiff"))
+				mimetype = "image/tiff";
+			else
+				// Whatever ...
+				mimetype = jpeg;
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Mime type guessed for " + imageUrl + ": " + mimetype);
+		}
+		return mimetype;
 	}
 
 }

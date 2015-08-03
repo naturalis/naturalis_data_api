@@ -51,9 +51,10 @@ public class CrsMultiMediaImporter {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+
 		/*
 		 * Make sure thematic search and mime type cache can be instantiated,
-		 * otherwise we get obsure class initialization errors in
+		 * otherwise we get class initialization errors in
 		 * CrsMultiMediaTransfer.
 		 */
 		ThematicSearchConfig.getInstance();
@@ -80,6 +81,8 @@ public class CrsMultiMediaImporter {
 	private final int bulkRequestSize;
 	private final int maxRecords;
 	private final boolean forceRestart;
+
+	private final CrsMultiMediaTransfer transfer;
 
 	int recordsSkipped;
 	/*
@@ -116,6 +119,8 @@ public class CrsMultiMediaImporter {
 		catch (ParserConfigurationException e) {
 			throw ExceptionUtil.smash(e);
 		}
+
+		transfer = new CrsMultiMediaTransfer(this);
 	}
 
 
@@ -214,7 +219,7 @@ public class CrsMultiMediaImporter {
 		File f;
 		while (localFileIterator.hasNext()) {
 			f = localFileIterator.next();
-			logger.info("Processing file " + f.getCanonicalPath());
+			logger.info("Processing file " + f.getAbsolutePath());
 			index(Files.readAllBytes(f.toPath()));
 		}
 	}
@@ -251,7 +256,7 @@ public class CrsMultiMediaImporter {
 			else {
 				List<ESMultiMediaObject> extractedMedia = null;
 				try {
-					extractedMedia = CrsMultiMediaTransfer.transfer(record, this);
+					extractedMedia = transfer.transfer(record);
 				}
 				catch (Throwable t) {
 					++recordsRejected;

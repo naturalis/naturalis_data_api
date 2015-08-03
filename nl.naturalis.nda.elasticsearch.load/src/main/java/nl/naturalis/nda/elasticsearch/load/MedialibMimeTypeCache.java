@@ -16,25 +16,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import nl.naturalis.nda.elasticsearch.load.crs.CrsMimeTypeRetriever;
-import nl.naturalis.nda.elasticsearch.load.crs.CrsMultiMediaTransfer;
-
 import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Utility class that manages the lookup and chaching of mime types of media
- * from the medialib. It is used on the fly by {@link CrsMultiMediaTransfer} to
- * determine the mime type of a media object, and by
- * {@link CrsMimeTypeRetriever} to pre-build a mime type cache. The cache maps
- * UnitIDs to mime types. In case of a cache miss (see
- * {@link #getMimeType(String)}), the cache sends an HTTP HEAD request to the
- * medialib to retrieve the mime type. Once you're done using the cache, you
- * should call it's {@link #close() close} method to save the cache to the local
- * file system. The next time the cache is instantiated it will initialize the
- * cache from the cache file. The cache file can be moved across servers to
- * expedite the import process on that server.
+ * from the medialib. Once you're done using the cache, you should call it's
+ * {@link #close() close} method to save the cache to the local file system. The
+ * next time the cache is instantiated it will initialize the cache from the
+ * cache file. The cache file can be moved across servers to expedite the import
+ * process on that server.
  * 
  * @author ayco_holleman
  *

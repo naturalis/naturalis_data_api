@@ -71,8 +71,8 @@ public class NsrMultiMediaTransfer {
 		mmo.setAssociatedTaxonReference(taxon.getSourceSystemId());
 		String format = DOMUtil.getValue(imageElement, "mime_type");
 		if (format == null || format.length() == 0) {
-			logger.warn("Missing mime type for image \"%s\" (taxon \"%s\"). Mime type set to image/jpeg");
-			format = "image/jpeg";
+			logger.warn("Missing mime type for image \"%s\" (taxon \"%s\").");
+			format = TransferUtil.guessMimeType(url);
 		}
 		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, format, Variant.MEDIUM_QUALITY));
 		mmo.setCreator(nl(DOMUtil.getValue(imageElement, "photographer_name")));

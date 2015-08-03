@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load.brahms;
 
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
@@ -9,6 +10,8 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDat
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSpecimenIdentification;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,7 +40,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 		/*
-		 *  Check thematic search is configured properly
+		 * Check thematic search is configured properly
 		 */
 		ThematicSearchConfig.getInstance();
 		IndexNative index = null;
@@ -218,6 +221,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSourceSystemId(barcode);
 		specimen.setUnitID(barcode);
+		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(barcode));
 
 		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		specimen.setOwner(SOURCE_INSTITUTION_ID);
@@ -371,6 +375,18 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			if (logger.isDebugEnabled()) {
 				logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
 			}
+			return null;
+		}
+	}
+
+
+	private static String urlEncode(String raw)
+	{
+		try {
+			return URLEncoder.encode(raw, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			// Won't happen with UTF-8
 			return null;
 		}
 	}

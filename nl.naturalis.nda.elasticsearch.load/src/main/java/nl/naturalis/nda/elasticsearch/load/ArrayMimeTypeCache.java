@@ -163,6 +163,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 				//cache[numEntries++] = new String[] { unitID, mimeType };
 				cache[numEntries][0]=unitID;
 				cache[numEntries][1]=mimeType;
+				++numEntries;
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e) {

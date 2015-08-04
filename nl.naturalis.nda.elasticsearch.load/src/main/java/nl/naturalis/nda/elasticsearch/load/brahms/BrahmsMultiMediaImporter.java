@@ -39,8 +39,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
@@ -60,8 +59,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		 * otherwise we get class initialization errors in
 		 * CrsMultiMediaTransfer.
 		 */
-		ThematicSearchConfig.getInstance();
-		MedialibMimeTypeCache.getInstance();
+		ThemeCache.getInstance();
 
 		IndexNative index = null;
 		try {
@@ -97,7 +95,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public void importCsvFiles() throws Exception
 	{
-		ThematicSearchConfig.getInstance().resetMatchCounters();
+		ThemeCache.getInstance().resetMatchCounters();
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
@@ -107,7 +105,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}
-		ThematicSearchConfig.getInstance().logMatchInfo();
+		ThemeCache.getInstance().logMatchInfo();
 	}
 
 	private ArrayList<String> multimediaIds;
@@ -183,7 +181,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setCollectionType("Botany");
 		mmo.setAssociatedSpecimenReference(specimenUnitId);
 
-		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		ThemeCache tsc = ThemeCache.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimenUnitId, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 		mmo.setTheme(themes);
 

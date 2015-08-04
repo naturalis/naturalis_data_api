@@ -23,12 +23,14 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
+import org.domainobject.util.IOUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -57,8 +59,8 @@ public class CrsMultiMediaImporter {
 		 * otherwise we get class initialization errors in
 		 * CrsMultiMediaTransfer.
 		 */
-		ThematicSearchConfig.getInstance();
-		MedialibMimeTypeCache.getInstance();
+		ThemeCache.getInstance();
+		MimeTypeCacheFactory.getInstance();
 
 		IndexNative index = null;
 		try {
@@ -135,10 +137,11 @@ public class CrsMultiMediaImporter {
 
 		multimediaIndexed = 0;
 
+		MimeTypeCache mtc = MimeTypeCacheFactory.getInstance().getCache();
+		
 		try {
 
-			ThematicSearchConfig.getInstance().resetMatchCounters();
-			MedialibMimeTypeCache.getInstance();
+			ThemeCache.getInstance().resetMatchCounters();
 
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
@@ -149,7 +152,12 @@ public class CrsMultiMediaImporter {
 				processRemote();
 			}
 
-			ThematicSearchConfig.getInstance().logMatchInfo();
+			ThemeCache.getInstance().logMatchInfo();
+
+			
+			logger.info(" ");
+			logger.info("Mime type cache hits          : " + String.format("%7d", mtc.getCacheHits()));
+			logger.info("Mime type cache misses        : " + String.format("%7d", mtc.getMedialibRequests()));
 
 			logger.info(" ");
 			logger.info("Multimedia indexed            : " + String.format("%7d", multimediaIndexed));
@@ -169,6 +177,9 @@ public class CrsMultiMediaImporter {
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
+		}
+		finally {
+			IOUtil.close(mtc);
 		}
 	}
 

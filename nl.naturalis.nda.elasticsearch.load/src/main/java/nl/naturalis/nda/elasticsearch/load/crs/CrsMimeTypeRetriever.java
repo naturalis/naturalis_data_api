@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import static nl.naturalis.nda.elasticsearch.load.MimeTypeCache.MEDIALIB_URL_START;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -9,9 +11,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
-
-import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
@@ -43,12 +44,12 @@ public class CrsMimeTypeRetriever {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMimeTypeRetriever.class);
 
-	private final MedialibMimeTypeCache crsCache;
+	private final MimeTypeCache cache;
 
 
 	public CrsMimeTypeRetriever()
 	{
-		crsCache = MedialibMimeTypeCache.getInstance();
+		cache = MimeTypeCacheFactory.getInstance().getCache();
 	}
 
 
@@ -73,9 +74,9 @@ public class CrsMimeTypeRetriever {
 				for (int i = 0; i < numRecords; ++i) {
 					if (++processed % 50000 == 0 && logger.isInfoEnabled()) {
 						logger.info("Records processed: " + processed);
-						logger.info("Medialib request: " + crsCache.getMedialibRequests());
-						logger.info("Request failures: " + crsCache.getRequestFailures());
-						logger.info("Cache size: " + crsCache.getSize());
+						logger.info("Medialib request: " + cache.getMedialibRequests());
+						logger.info("Request failures: " + cache.getRequestFailures());
+						logger.info("Cache size: " + cache.getSize());
 					}
 					Element record = (Element) records.item(i);
 					if (CrsMultiMediaImporter.isDeletedRecord(record)) {
@@ -100,7 +101,7 @@ public class CrsMimeTypeRetriever {
 						if (x != -1) {
 							unitID = unitID.substring(0, x);
 						}
-						crsCache.getMimeType(unitID);
+						cache.getMimeType(unitID);
 					}
 				}
 			}
@@ -111,10 +112,10 @@ public class CrsMimeTypeRetriever {
 		finally {
 			try {
 				logger.info("Records processed: " + processed);
-				logger.info("Medialib request: " + crsCache.getMedialibRequests());
-				logger.info("Request failures: " + crsCache.getRequestFailures());
-				logger.info("Cache size: " + crsCache.getSize());
-				crsCache.close();
+				logger.info("Medialib request: " + cache.getMedialibRequests());
+				logger.info("Request failures: " + cache.getRequestFailures());
+				logger.info("Cache size: " + cache.getSize());
+				cache.close();
 			}
 			catch (IOException e) {
 				logger.error("Error saving mime type cache to file system", e);

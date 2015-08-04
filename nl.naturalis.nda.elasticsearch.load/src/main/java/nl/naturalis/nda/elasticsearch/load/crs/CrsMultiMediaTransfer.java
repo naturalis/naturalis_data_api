@@ -6,7 +6,7 @@ import static nl.naturalis.nda.elasticsearch.load.DocumentType.MULTI_MEDIA_OBJEC
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nda.elasticsearch.load.MimeTypeCache.MEDIALIB_URL_START;
 import static org.domainobject.util.StringUtil.rpad;
 
 import java.net.URI;
@@ -23,8 +23,9 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
-import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -40,12 +41,12 @@ class CrsMultiMediaTransfer {
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
-	private static final MedialibMimeTypeCache mimetypeCache = MedialibMimeTypeCache.getInstance();
-	private static final ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
 
 	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
 
 	private final CrsMultiMediaImporter crsMultiMediaImporter;
+	private final MimeTypeCache mimetypeCache;
+	private final ThemeCache themeCache;
 
 	private String identifier;
 	private String specimenID;
@@ -58,6 +59,8 @@ class CrsMultiMediaTransfer {
 	CrsMultiMediaTransfer(CrsMultiMediaImporter crsMultiMediaImporter)
 	{
 		this.crsMultiMediaImporter = crsMultiMediaImporter;
+		themeCache = ThemeCache.getInstance();
+		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
 	}
 
 
@@ -151,7 +154,7 @@ class CrsMultiMediaTransfer {
 			first.setLicenceType(LICENCE_TYPE);
 			first.setAssociatedSpecimenReference(specimenID);
 			first.setIdentifications(identifications);
-			List<String> themes = tsc.getThemesForDocument(specimenID, MULTI_MEDIA_OBJECT, CRS);
+			List<String> themes = themeCache.getThemesForDocument(specimenID, MULTI_MEDIA_OBJECT, CRS);
 			first.setTheme(themes);
 			return first;
 		}

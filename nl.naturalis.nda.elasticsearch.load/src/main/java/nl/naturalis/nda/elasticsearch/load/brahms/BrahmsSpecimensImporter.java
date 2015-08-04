@@ -26,7 +26,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
@@ -42,7 +42,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		/*
 		 * Check thematic search is configured properly
 		 */
-		ThematicSearchConfig.getInstance();
+		ThemeCache.getInstance();
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
@@ -182,7 +182,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public void importCsvFiles() throws Exception
 	{
-		ThematicSearchConfig.getInstance().resetMatchCounters();
+		ThemeCache.getInstance().resetMatchCounters();
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
@@ -192,7 +192,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}
-		ThematicSearchConfig.getInstance().logMatchInfo();
+		ThemeCache.getInstance().logMatchInfo();
 	}
 
 
@@ -230,7 +230,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setLicence(LICENCE);
 		specimen.setCollectionType("Botany");
 
-		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		ThemeCache tsc = ThemeCache.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
 		specimen.setTheme(themes);
 

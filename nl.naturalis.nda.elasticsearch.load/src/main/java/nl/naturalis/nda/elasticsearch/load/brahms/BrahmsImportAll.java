@@ -8,14 +8,14 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BrahmsImportAll {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
@@ -59,7 +59,7 @@ public class BrahmsImportAll {
 	public void importAllPerType() throws Exception
 	{
 		// Make sure thematic search is configured properly
-		ThematicSearchConfig.getInstance();
+		ThemeCache.getInstance();
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
 		specimenImporter.importCsvFiles();
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
@@ -81,7 +81,7 @@ public class BrahmsImportAll {
 	 */
 	public void importAllPerFile() throws Exception
 	{
-		ThematicSearchConfig.getInstance();
+		ThemeCache.getInstance();
 		File[] files = getCsvFiles();
 		if (files.length == 0) {
 			logger.info("No CSV files to process");
@@ -102,6 +102,6 @@ public class BrahmsImportAll {
 				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
 			}
 		}
-		ThematicSearchConfig.getInstance().logMatchInfo();
+		ThemeCache.getInstance().logMatchInfo();
 	}
 }

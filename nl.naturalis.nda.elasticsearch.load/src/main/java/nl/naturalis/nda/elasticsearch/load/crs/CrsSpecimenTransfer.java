@@ -28,7 +28,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -104,7 +104,7 @@ public class CrsSpecimenTransfer {
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setUnitID(unitId);
 		specimen.setSourceSystemId(specimen.getUnitID());
-		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		ThemeCache tsc = ThemeCache.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
 		specimen.setTheme(themes);
 		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(unitId));

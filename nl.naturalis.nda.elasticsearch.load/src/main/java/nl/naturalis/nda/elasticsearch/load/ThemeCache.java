@@ -14,7 +14,16 @@ import nl.naturalis.nda.domain.SourceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThematicSearchConfig {
+/**
+ * A cache that associates UnitIDs with one or more "themes". Themes are
+ * predefined categories of specimens, for example "Extinct Birds". If a
+ * specimen is an extinct bird, its UnitID is associated with that theme.
+ * 
+ * @author Ayco Holleman
+ * @created Aug 4, 2015
+ *
+ */
+public class ThemeCache {
 
 	private class Theme {
 		String code;
@@ -27,22 +36,22 @@ public class ThematicSearchConfig {
 	}
 
 	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
-	private static final Logger logger = LoggerFactory.getLogger(ThematicSearchConfig.class);
-	private static ThematicSearchConfig instance;
+	private static final Logger logger = LoggerFactory.getLogger(ThemeCache.class);
+	private static ThemeCache instance;
 
 	private final ArrayList<Theme> themes = new ArrayList<>();
 
 
-	public static ThematicSearchConfig getInstance()
+	public static ThemeCache getInstance()
 	{
 		if (instance == null) {
-			instance = new ThematicSearchConfig();
+			instance = new ThemeCache();
 		}
 		return instance;
 	}
 
 
-	private ThematicSearchConfig()
+	private ThemeCache()
 	{
 		loadThemes();
 	}
@@ -51,7 +60,8 @@ public class ThematicSearchConfig {
 	/**
 	 * Establish which theme the specified object is included in.
 	 * 
-	 * @param id The
+	 * @param id
+	 *            The
 	 * @param type
 	 * @return
 	 */

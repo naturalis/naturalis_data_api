@@ -32,7 +32,6 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 	}
 
 
-	@SuppressWarnings("resource")
 	protected int buildCache(File cacheFile)
 	{
 		cache = new TreeMap<String, String>();
@@ -42,7 +41,7 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 			zis = new ZipInputStream(new FileInputStream(cacheFile));
 			zis.getNextEntry();
 			InputStreamReader isr = new InputStreamReader(zis, UTF_8);
-			lnr = new LineNumberReader(isr, 1024 * 8);
+			lnr = new LineNumberReader(isr, READ_BUFFER_SIZE);
 			String unitID;
 			String mimeType;
 			while ((unitID = lnr.readLine()) != null) {
@@ -87,7 +86,6 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 			}
 		}
 		logger.info("Saving mime type cache to: " + cacheFile.getAbsolutePath());
-		@SuppressWarnings("resource")
 		ZipOutputStream zos = null;
 		try {
 			zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(cacheFile)));

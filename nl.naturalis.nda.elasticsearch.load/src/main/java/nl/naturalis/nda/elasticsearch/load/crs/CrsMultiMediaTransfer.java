@@ -124,6 +124,10 @@ class CrsMultiMediaTransfer {
 		else {
 			try {
 				new URI(url);
+				++crsMultiMediaImporter.nonMedialibUrls;
+				if(logger.isDebugEnabled()) {
+					debug("Encountered a non-medialib URL: %s", url);
+				}
 			}
 			catch (URISyntaxException e) {
 				rejectMultiMedia("Invalid image URL: " + url);

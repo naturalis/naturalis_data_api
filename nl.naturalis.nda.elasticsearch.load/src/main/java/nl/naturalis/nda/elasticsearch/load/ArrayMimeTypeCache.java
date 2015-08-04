@@ -147,7 +147,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 			zis = new ZipInputStream(new FileInputStream(cacheFile));
 			zis.getNextEntry();
 			InputStreamReader isr = new InputStreamReader(zis, UTF_8);
-			lnr = new LineNumberReader(isr, 1024 * 4);
+			lnr = new LineNumberReader(isr, READ_BUFFER_SIZE);
 			String unitID;
 			String mimeType;
 			while ((unitID = lnr.readLine()) != null) {

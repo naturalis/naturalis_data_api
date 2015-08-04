@@ -21,6 +21,14 @@ public interface MimeTypeCache extends Closeable {
 
 
 	/**
+	 * Reset statistics counters (cache hits, medialib requests, request
+	 * failures). Call this method if you are importing multiple data sources
+	 * and you want a separate account for each of them separately.
+	 */
+	void resetCounters();
+
+
+	/**
 	 * Get the mime type for the media object with the specified UnitID. This
 	 * method first checks an in-memory cache, instantiated from a file on the
 	 * local file system. If the UnitID is not found in the cache, an HTTP HEAD
@@ -35,11 +43,30 @@ public interface MimeTypeCache extends Closeable {
 
 
 	/**
-	 * Get the <i>actual</i> number of entries in the cache.
+	 * Get the number of entries in the cache.
 	 * 
 	 * @return
 	 */
 	int getSize();
+
+
+	/**
+	 * Get the cache hit count, i.e. the number of successful mime type lookups
+	 * (without having to call the medialib).
+	 * 
+	 * @return
+	 */
+	int getCacheHits();
+
+
+	/**
+	 * Get the number of times the mime type had to be retrieved by calling the
+	 * medialib. In other words this methods doubles as a counter for the number
+	 * of cache misses.
+	 * 
+	 * @return
+	 */
+	int getMedialibRequests();
 
 
 	/**
@@ -49,24 +76,6 @@ public interface MimeTypeCache extends Closeable {
 	 * @return
 	 */
 	int getRequestFailures();
-
-
-	/**
-	 * Get the number of successful mime type lookups (without having to call
-	 * the medialib).
-	 * 
-	 * @return
-	 */
-	int getCacheHits();
-
-
-	/**
-	 * Get the number of times the mime type had to be retrieved by calling the
-	 * medialib.
-	 * 
-	 * @return
-	 */
-	int getMedialibRequests();
 
 
 	/**

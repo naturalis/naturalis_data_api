@@ -54,14 +54,6 @@ public class CrsMultiMediaImporter {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 
-		/*
-		 * Make sure thematic search and mime type cache can be instantiated,
-		 * otherwise we get class initialization errors in
-		 * CrsMultiMediaTransfer.
-		 */
-		ThemeCache.getInstance();
-		MimeTypeCacheFactory.getInstance();
-
 		IndexNative index = null;
 		try {
 			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
@@ -87,18 +79,20 @@ public class CrsMultiMediaImporter {
 	private final CrsMultiMediaTransfer transfer;
 
 	int recordsSkipped;
+	int recordsProcessed;
 	/*
 	 * Records that are not skipped. recordsSkipped + recordsInvestigated =
 	 * recordsProcessed
 	 */
 	int recordsInvestigated;
-	int recordsProcessed;
 	int recordsRejected;
 
 	int multimediaSkipped;
 	int multimediaProcessed;
 	int multimediaRejected;
 	int multimediaIndexed;
+	
+	int nonMedialibUrls;
 
 
 	public CrsMultiMediaImporter(Index index) throws Exception
@@ -129,19 +123,25 @@ public class CrsMultiMediaImporter {
 	public void importMultiMedia()
 	{
 		recordsProcessed = 0;
-		recordsInvestigated = 0;
-		multimediaProcessed = 0;
-		recordsRejected = 0;
-		multimediaRejected = 0;
 		recordsSkipped = 0;
+		recordsInvestigated = 0;
+		recordsRejected = 0;
 
+		multimediaProcessed = 0;
+		multimediaSkipped = 0;
+		multimediaRejected = 0;
 		multimediaIndexed = 0;
-
-		MimeTypeCache mtc = MimeTypeCacheFactory.getInstance().getCache();
 		
+		nonMedialibUrls = 0;
+
+		MimeTypeCache mtc = null;
+
 		try {
 
 			ThemeCache.getInstance().resetMatchCounters();
+
+			mtc = MimeTypeCacheFactory.getInstance().getCache();
+			mtc.resetCounters();
 
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
@@ -154,10 +154,10 @@ public class CrsMultiMediaImporter {
 
 			ThemeCache.getInstance().logMatchInfo();
 
-			
 			logger.info(" ");
 			logger.info("Mime type cache hits          : " + String.format("%7d", mtc.getCacheHits()));
 			logger.info("Mime type cache misses        : " + String.format("%7d", mtc.getMedialibRequests()));
+			logger.info("Non-medialib URLs             : " + String.format("%7d", nonMedialibUrls));
 
 			logger.info(" ");
 			logger.info("Multimedia indexed            : " + String.format("%7d", multimediaIndexed));

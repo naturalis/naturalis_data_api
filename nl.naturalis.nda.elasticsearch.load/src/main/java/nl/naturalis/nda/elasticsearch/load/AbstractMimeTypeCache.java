@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	protected static final byte[] NEWLINE_BYTES = "\n".getBytes(UTF_8);
+	protected static final int READ_BUFFER_SIZE = 1024 * 8;
 
 	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
 
@@ -23,6 +24,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	private final int numEntries;
 
 	private boolean changed = false;
+
 	private int cacheHits = 0;
 	private int medialibRequests = 0;
 	private int requestFailures = 0;
@@ -48,6 +50,15 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		logger.info("Initializing mime type cache");
 		numEntries = buildCache(cacheFile);
 		logger.info(String.format("Initialization complete. Number of entries in cache: %s", numEntries));
+	}
+
+
+	@Override
+	public void resetCounters()
+	{
+		cacheHits = 0;
+		medialibRequests = 0;
+		requestFailures = 0;
 	}
 
 
@@ -144,6 +155,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	{
 		if (changed) {
 			saveCache(cacheFile);
+			changed = false;
 		}
 		closeCache();
 	}

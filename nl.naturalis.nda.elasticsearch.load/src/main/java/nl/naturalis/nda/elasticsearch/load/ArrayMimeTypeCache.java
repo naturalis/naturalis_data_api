@@ -160,7 +160,9 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 				if (mimeType == null) {
 					throw new RuntimeException("Unexpected end of cache file");
 				}
-				cache[numEntries++] = new String[] { unitID, mimeType };
+				//cache[numEntries++] = new String[] { unitID, mimeType };
+				cache[numEntries][0]=unitID;
+				cache[numEntries][1]=mimeType;
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
@@ -186,7 +188,8 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 			String fmt = "To change this, extend JAVA_OPTS in include.sh: -D%s=<integer>";
 			logger.info(String.format(fmt, propName));
 		}
-		return new String[maxEntries][];
+		return new String[maxEntries][2];
+		//return new String[maxEntries][];
 	}
 
 }

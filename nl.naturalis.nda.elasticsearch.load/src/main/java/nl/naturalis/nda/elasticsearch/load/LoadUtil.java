@@ -1,9 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.domainobject.util.StringUtil.zpad;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.StringUtil;
@@ -14,14 +15,8 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.joda.time.Duration;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.domainobject.util.StringUtil.*;
 
 public class LoadUtil {
 
@@ -119,41 +114,13 @@ public class LoadUtil {
 
 	public static String getDuration(long start, long end)
 	{
-
 		int millis = (int) (end - start);
 		int hours = millis / (60 * 60 * 1000);
 		millis = millis % (60 * 60 * 1000);
 		int minutes = millis / (60 * 1000);
 		millis = millis % (60 * 1000);
 		int seconds = millis / 1000;
-		
 		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
-		//		
-		//		Duration duration = new Duration(start, end);
-		//
-		//		int hours = (int) duration.getStandardHours();
-		//		int minutes = (int) duration.getStandardMinutes();
-		//		int secs = (int) duration.getStandardSeconds();
-		//
-		//		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(secs, 2);
-
-		//		Period period = duration.toPeriod();
-		//		PeriodFormatterBuilder builder = new PeriodFormatterBuilder();
-		//		builder.printZeroAlways();
-		//		builder.appendHours();
-		//		builder.appendSeparator(":");
-		//		builder.appendMinutes();
-		//		builder.appendSeparator(":");
-		//		builder.appendSeconds();
-		//		PeriodFormatter formatter = builder.toFormatter();
-		//		StringWriter sw = new StringWriter();
-		//		try {
-		//			formatter.printTo(sw, period);
-		//		}
-		//		catch (IOException e) {
-		//			throw new RuntimeException(e);
-		//		}
-		//		return sw.toString();
 	}
 
 

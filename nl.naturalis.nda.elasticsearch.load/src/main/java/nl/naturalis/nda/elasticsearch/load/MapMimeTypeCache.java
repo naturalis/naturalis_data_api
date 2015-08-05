@@ -19,6 +19,14 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Implementation of {@link MimeTypeCache} that uses a {@link TreeMap} as
+ * backbone for the cache.
+ * 
+ * @author Ayco Holleman
+ * @created Aug 5, 2015
+ *
+ */
 public class MapMimeTypeCache extends AbstractMimeTypeCache {
 
 	private static final Logger logger = LoggerFactory.getLogger(MapMimeTypeCache.class);
@@ -49,6 +57,7 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 				if (mimeType == null) {
 					throw new RuntimeException("Unexpected end of cache file");
 				}
+				mimeType = mimeType.equals(JPEG) ? JPEG : mimeType.intern();
 				cache.put(unitID, mimeType);
 			}
 		}

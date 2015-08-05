@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load;
 
 public interface LoadConstants {
 
+	String SYSPROP_CONFIG_DIR = "ndaConfDir";
 	String SOURCE_INSTITUTION_ID = "Naturalis Biodiversity Center";
 	String LICENCE_TYPE = "Copyright";
 	String LICENCE = "CC0";

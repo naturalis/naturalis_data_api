@@ -18,6 +18,14 @@ import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.text.DecimalFormat;
 
+/**
+ * Implementation of {@link MimeTypeCache} that uses a sorted array as backbone
+ * for the cache.
+ * 
+ * @author Ayco Holleman
+ * @created Aug 5, 2015
+ *
+ */
 public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 
 	private static final Logger logger = LoggerFactory.getLogger(ArrayMimeTypeCache.class);
@@ -32,7 +40,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		}
 	};
 
-	private static final Comparator<String[]> NULL_SAFE_ENTRY_COMPARATOR_ = new Comparator<String[]>() {
+	private static final Comparator<String[]> NULL_SAFE_ENTRY_COMPARATOR = new Comparator<String[]>() {
 		@Override
 		public int compare(String[] o1, String[] o2)
 		{
@@ -125,7 +133,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 			Arrays.<String[]> sort(cache, ENTRY_COMPARATOR);
 		}
 		else {
-			Arrays.<String[]> sort(cache, NULL_SAFE_ENTRY_COMPARATOR_);
+			Arrays.<String[]> sort(cache, NULL_SAFE_ENTRY_COMPARATOR);
 		}
 		logger.info("Sort completed");
 	}
@@ -144,15 +152,10 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		ZipInputStream zis = null;
 		int numEntries = 0;
 		try {
-			logger.info("AAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 			zis = new ZipInputStream(new FileInputStream(cacheFile));
-			logger.info("BBBBBBBBBBBBBBBBBBBBBBBBBBBB");
 			zis.getNextEntry();
-			logger.info("AAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 			InputStreamReader isr = new InputStreamReader(zis, UTF_8);
-			logger.info("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
 			lnr = new LineNumberReader(isr, READ_BUFFER_SIZE);
-			logger.info("DDDDDDDDDDDDDDDDDDDDDDDDDDDD");
 			String unitID;
 			String mimeType;
 			while ((unitID = lnr.readLine()) != null) {
@@ -160,10 +163,8 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 				if (mimeType == null) {
 					throw new RuntimeException("Unexpected end of cache file");
 				}
-				//cache[numEntries++] = new String[] { unitID, mimeType };
-				cache[numEntries][0]=unitID;
-				cache[numEntries][1]=mimeType;
-				++numEntries;
+				mimeType = mimeType.equals(JPEG) ? JPEG : mimeType.intern();
+				cache[numEntries++] = new String[] { unitID, mimeType };
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
@@ -189,8 +190,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 			String fmt = "To change this, extend JAVA_OPTS in include.sh: -D%s=<integer>";
 			logger.info(String.format(fmt, propName));
 		}
-		return new String[maxEntries][2];
-		//return new String[maxEntries][];
+		return new String[maxEntries][];
 	}
 
 }

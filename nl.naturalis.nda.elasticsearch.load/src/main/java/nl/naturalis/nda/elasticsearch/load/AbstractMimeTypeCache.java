@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SYSPROP_CONFIG_DIR;
 import static org.apache.commons.io.Charsets.UTF_8;
 
 import java.io.File;
@@ -11,10 +12,24 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
+	/**
+	 * The separator between keys (UnitIDs) and values (mime types) in the cache
+	 * file. Keys and values are each placed on a separate line in the cache
+	 * file. Keys are on odd lines; values on even lines.
+	 */
 	protected static final byte[] NEWLINE_BYTES = "\n".getBytes(UTF_8);
-	protected static final int READ_BUFFER_SIZE = 1024 * 8;
-
-	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
+	/**
+	 * The size of the buffer used when loading the cache file into memory. The
+	 * cache file is loaded in chunks of 64K at a time.
+	 */
+	protected static final int READ_BUFFER_SIZE = 1024 * 64;
+	/**
+	 * The mime type for JPEG images (image/jpeg), which are by far the most
+	 * common media type in the medialib. To conserve memory, if a mime type in
+	 * the cache file {@code equals} {@code JPEG}, {@code JPEG} should be added
+	 * to the cache, rather than the original {@code String}.
+	 */
+	protected static final String JPEG = "image/jpeg";
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMimeTypeCache.class);
 

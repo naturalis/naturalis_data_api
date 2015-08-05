@@ -91,7 +91,7 @@ public class CrsMultiMediaImporter {
 	int multimediaProcessed;
 	int multimediaRejected;
 	int multimediaIndexed;
-	
+
 	int nonMedialibUrls;
 
 
@@ -122,6 +122,9 @@ public class CrsMultiMediaImporter {
 
 	public void importMultiMedia()
 	{
+
+		long start = System.currentTimeMillis();
+
 		recordsProcessed = 0;
 		recordsSkipped = 0;
 		recordsInvestigated = 0;
@@ -131,7 +134,7 @@ public class CrsMultiMediaImporter {
 		multimediaSkipped = 0;
 		multimediaRejected = 0;
 		multimediaIndexed = 0;
-		
+
 		nonMedialibUrls = 0;
 
 		MimeTypeCache mtc = null;
@@ -173,6 +176,8 @@ public class CrsMultiMediaImporter {
 			logger.info("--------------------------------------- +");
 			logger.info("Records processed             : " + String.format("%7d", recordsProcessed));
 			logger.info(" ");
+
+			logger.info("Total duration: " + LoadUtil.getDuration(start));
 
 		}
 		catch (Throwable t) {

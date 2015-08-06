@@ -121,6 +121,11 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
 				String url = urls[i].trim();
+				if(url.charAt(1) == ':') {
+					// This is a local file system location (e.g. Q:\foo.jpg)
+					logger.error("File system image location not allowed: " + url);
+					continue;					
+				}
 				URI uri;
 				try {
 					uri = new URI(url);

@@ -32,6 +32,7 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
+import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -47,6 +48,7 @@ class CrsMultiMediaTransfer {
 	private final CrsMultiMediaImporter crsMultiMediaImporter;
 	private final MimeTypeCache mimetypeCache;
 	private final ThemeCache themeCache;
+	private final boolean suppressErrors;
 
 	private String identifier;
 	private String specimenID;
@@ -61,6 +63,7 @@ class CrsMultiMediaTransfer {
 		this.crsMultiMediaImporter = crsMultiMediaImporter;
 		themeCache = ThemeCache.getInstance();
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
+		suppressErrors = StringUtil.isTrue(System.getProperty("crs.suppress-errors", "0"));
 	}
 
 
@@ -125,7 +128,7 @@ class CrsMultiMediaTransfer {
 			try {
 				new URI(url);
 				++crsMultiMediaImporter.nonMedialibUrls;
-				if(logger.isDebugEnabled()) {
+				if (logger.isDebugEnabled()) {
 					debug("Encountered a non-medialib URL: %s", url);
 				}
 			}
@@ -259,13 +262,17 @@ class CrsMultiMediaTransfer {
 
 	private void error(String pattern, Object... args)
 	{
-		logger.error(String.format(prefixPattern(pattern), prefixArgs(args)));
+		if (!suppressErrors) {
+			logger.error(String.format(prefixPattern(pattern), prefixArgs(args)));
+		}
 	}
 
 
 	private void warn(String pattern, Object... args)
 	{
-		logger.warn(String.format(prefixPattern(pattern), prefixArgs(args)));
+		if (!suppressErrors) {
+			logger.warn(String.format(prefixPattern(pattern), prefixArgs(args)));
+		}
 	}
 
 

@@ -51,6 +51,7 @@ public class CrsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 

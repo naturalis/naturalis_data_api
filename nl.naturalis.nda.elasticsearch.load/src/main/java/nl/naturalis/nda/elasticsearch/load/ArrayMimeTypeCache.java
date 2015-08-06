@@ -7,16 +7,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.zip.ZipInputStream;
 
 import org.domainobject.util.IOUtil;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ibm.icu.text.DecimalFormat;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a sorted array as backbone
@@ -32,26 +30,35 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 	private static final int DEFAULT_MAX_ENTRIES = 10000000;
 	private static final String SYSPROP_PACK = "mimetypecache.pack";
 
-	private static final Comparator<String[]> ENTRY_COMPARATOR = new Comparator<String[]>() {
-		@Override
-		public int compare(String[] o1, String[] o2)
-		{
-			return o1[0].compareTo(o2[0]);
-		}
-	};
+	private static class Entry {
+		int key;
+		String unitID;
+		final String mimeType;
 
-	private static final Comparator<String[]> NULL_SAFE_ENTRY_COMPARATOR = new Comparator<String[]>() {
-		@Override
-		public int compare(String[] o1, String[] o2)
+
+		Entry(int key, String unitID, String mimeType)
 		{
-			if (o1 == null) {
-				return o2 == null ? 0 : 1;
+			this.key = key;
+			this.unitID = unitID;
+			this.mimeType = mimeType;
+		}
+	}
+
+	private static final Comparator<Entry> ENTRY_COMPARATOR = new Comparator<Entry>() {
+		@Override
+		public int compare(Entry o1, Entry o2)
+		{
+			if (o1.key < o2.key) {
+				return -1;
 			}
-			return o2 == null ? -1 : o1[0].compareTo(o2[0]);
+			if (o1.key > o2.key) {
+				return 1;
+			}
+			return o1.unitID.compareTo(o2.unitID);
 		}
 	};
 
-	private String[][] cache;
+	private Entry[] cache;
 
 
 	ArrayMimeTypeCache(String cacheFileName)
@@ -63,7 +70,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 	@Override
 	protected int buildCache(File cacheFile)
 	{
-		String[][] tempCache = createTempCache();
+		Entry[] tempCache = createTempCache();
 		int numEntries;
 		try {
 			numEntries = loadCacheFile(cacheFile, tempCache);
@@ -76,15 +83,19 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		return numEntries;
 	}
 
-	private static final String[] scratchpad = new String[2];
+	private static final Entry scratchpad = new Entry(0, null, null);
 
 
 	@Override
 	protected String getEntry(String unitID)
 	{
-		scratchpad[0] = unitID;
-		int index = Arrays.<String[]> binarySearch(cache, scratchpad, ENTRY_COMPARATOR);
-		return cache[index][1];
+		scratchpad.key = unitID.hashCode();
+		scratchpad.unitID = unitID;
+		int index = Arrays.<Entry> binarySearch(cache, scratchpad, ENTRY_COMPARATOR);
+		if (index == -1) {
+			return null;
+		}
+		return cache[index].mimeType;
 	}
 
 
@@ -109,43 +120,40 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 	}
 
 
-	private static String[][] pack(String[][] tempCache, int shrinkToSize)
+	private static Entry[] pack(Entry[] tempCache, int shrinkToSize)
 	{
-		if (packCache()) {
-			logger.info("Packing cache (increases performance, but eats more memory)");
-			String fmt = "To disable packing, extend JAVA_OPTS in include.sh: -D%s=false";
-			logger.info(String.format(fmt, SYSPROP_PACK));
-			String[][] cache = new String[shrinkToSize][];
-			System.arraycopy(tempCache, 0, cache, 0, shrinkToSize);
-			double d = ((double) (cache.length * 100)) / ((double) tempCache.length);
-			String pct = new DecimalFormat("0.00").format(d);
-			logger.info(String.format("Cache shrunk by %s%%", pct));
-			return cache;
-		}
-		return tempCache;
+		logger.info("Packing cache (increases performance, but eats more memory)");
+		String fmt = "To disable packing, extend JAVA_OPTS in include.sh: -D%s=false";
+		logger.info(String.format(fmt, SYSPROP_PACK));
+		Entry[] cache = new Entry[shrinkToSize];
+		System.arraycopy(tempCache, 0, cache, 0, shrinkToSize);
+		double d = ((double) (cache.length * 100)) / ((double) tempCache.length);
+		String pct = new DecimalFormat("0.00").format(d);
+		logger.info(String.format("Cache shrunk by %s%%", pct));
+		return cache;
 	}
 
 
-	private static void sort(String[][] cache)
+	private static void sort(Entry[] cache)
 	{
 		logger.info("Sorting cache");
-		if (packCache()) {
-			Arrays.<String[]> sort(cache, ENTRY_COMPARATOR);
-		}
-		else {
-			Arrays.<String[]> sort(cache, NULL_SAFE_ENTRY_COMPARATOR);
+		Arrays.<Entry> sort(cache, ENTRY_COMPARATOR);
+		if (logger.isDebugEnabled()) {
+			int collissions = 0;
+			for (int i = 1; i < cache.length; ++i) {
+				if (cache[i].key == cache[i - 1].key && (!cache[i].unitID.equals(cache[i - 1].unitID))) {
+					++collissions;
+					String fmt = "Hash collition for UnitIDs \"%s\" and \"%s\"";
+					logger.debug(String.format(fmt, cache[i].unitID, cache[i - 1].unitID));
+				}
+			}
+			logger.debug("Number of hash collitions: " + collissions);
 		}
 		logger.info("Sort completed");
 	}
 
 
-	private static boolean packCache()
-	{
-		return StringUtil.isTrue(System.getProperty(SYSPROP_PACK, "1"));
-	}
-
-
-	private static int loadCacheFile(File cacheFile, String[][] cache) throws IOException
+	private static int loadCacheFile(File cacheFile, Entry[] cache) throws IOException
 	{
 		logger.info("Loading cache file");
 		LineNumberReader lnr = null;
@@ -164,7 +172,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 					throw new RuntimeException("Unexpected end of cache file");
 				}
 				mimeType = mimeType.equals(JPEG) ? JPEG : mimeType.intern();
-				cache[numEntries++] = new String[] { unitID, mimeType };
+				cache[numEntries++] = new Entry(unitID.hashCode(), unitID, mimeType);
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
@@ -179,7 +187,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 	}
 
 
-	private static String[][] createTempCache()
+	private static Entry[] createTempCache()
 	{
 		logger.info("Reserving memory");
 		String propName = "mimetypecache.maxentries";
@@ -190,7 +198,7 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 			String fmt = "To change this, extend JAVA_OPTS in include.sh: -D%s=<integer>";
 			logger.info(String.format(fmt, propName));
 		}
-		return new String[maxEntries][];
+		return new Entry[maxEntries];
 	}
 
 }

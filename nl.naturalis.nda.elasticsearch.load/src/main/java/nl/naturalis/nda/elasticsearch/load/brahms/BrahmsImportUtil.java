@@ -6,7 +6,6 @@ import static nl.naturalis.nda.domain.TaxonomicRank.KINGDOM;
 import static nl.naturalis.nda.domain.TaxonomicRank.ORDER;
 import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
-import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,6 +21,7 @@ import nl.naturalis.nda.domain.Monomial;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
@@ -95,17 +95,17 @@ class BrahmsImportUtil {
 	static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
 	{
 		final SpecimenIdentification identification = new SpecimenIdentification();
-		String s = val(record, CsvField.DETBY.ordinal());
+		String s = CSVImportUtil.val(record, CsvField.DETBY.ordinal());
 		if (s != null) {
 			identification.addIdentifier(new Agent(s));
 		}
-		s = val(record, CsvField.VERNACULAR.ordinal());
+		s = CSVImportUtil.val(record, CsvField.VERNACULAR.ordinal());
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
-		String y = val(record, CsvField.YEARIDENT.ordinal());
-		String m = val(record, CsvField.MONTHIDENT.ordinal());
-		String d = val(record, CsvField.DAYIDENT.ordinal());
+		String y = CSVImportUtil.val(record, CsvField.YEARIDENT.ordinal());
+		String m = CSVImportUtil.val(record, CsvField.MONTHIDENT.ordinal());
+		String d = CSVImportUtil.val(record, CsvField.DAYIDENT.ordinal());
 		identification.setDateIdentified(getDate(y, m, d));
 		ScientificName sn = getScientificName(record);
 		DefaultClassification dc = getDefaultClassification(record, sn);
@@ -120,10 +120,10 @@ class BrahmsImportUtil {
 	static ScientificName getScientificName(CSVRecord record)
 	{
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, CsvField.SPECIES.ordinal()));
+		sn.setFullScientificName(CSVImportUtil.val(record, CsvField.SPECIES.ordinal()));
 		sn.setAuthorshipVerbatim(getAuthor(record));
-		sn.setGenusOrMonomial(val(record, CsvField.GENUS.ordinal()));
-		sn.setSpecificEpithet(val(record, CsvField.SP1.ordinal()));
+		sn.setGenusOrMonomial(CSVImportUtil.val(record, CsvField.GENUS.ordinal()));
+		sn.setSpecificEpithet(CSVImportUtil.val(record, CsvField.SP1.ordinal()));
 		sn.setInfraspecificMarker(getInfraspecificMarker(record));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
 		if (sn.getFullScientificName() == null) {
@@ -165,9 +165,9 @@ class BrahmsImportUtil {
 		DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
 		// Phylum deliberately not set
-		dc.setClassName(val(record, CsvField.FAMCLASS.ordinal()));
-		dc.setOrder(val(record, CsvField.ORDER.ordinal()));
-		dc.setFamily(val(record, CsvField.FAMILY.ordinal()));
+		dc.setClassName(CSVImportUtil.val(record, CsvField.FAMCLASS.ordinal()));
+		dc.setOrder(CSVImportUtil.val(record, CsvField.ORDER.ordinal()));
+		dc.setFamily(CSVImportUtil.val(record, CsvField.FAMILY.ordinal()));
 		return dc;
 	}
 
@@ -199,42 +199,42 @@ class BrahmsImportUtil {
 
 	private static String getAuthor(CSVRecord record)
 	{
-		if (val(record, CsvField.SP3.ordinal()) == null) {
-			if (val(record, CsvField.SP2.ordinal()) == null) {
-				return val(record, CsvField.AUTHOR1.ordinal());
+		if (CSVImportUtil.val(record, CsvField.SP3.ordinal()) == null) {
+			if (CSVImportUtil.val(record, CsvField.SP2.ordinal()) == null) {
+				return CSVImportUtil.val(record, CsvField.AUTHOR1.ordinal());
 			}
-			return val(record, CsvField.AUTHOR2.ordinal());
+			return CSVImportUtil.val(record, CsvField.AUTHOR2.ordinal());
 		}
-		return val(record, CsvField.AUTHOR3.ordinal());
+		return CSVImportUtil.val(record, CsvField.AUTHOR3.ordinal());
 	}
 
 
 	private static String getInfraspecificMarker(CSVRecord record)
 	{
-		String s = val(record, CsvField.RANK2.ordinal());
-		return s == null ? val(record, CsvField.RANK1.ordinal()) : s;
+		String s = CSVImportUtil.val(record, CsvField.RANK2.ordinal());
+		return s == null ? CSVImportUtil.val(record, CsvField.RANK1.ordinal()) : s;
 	}
 
 
 	private static String getInfraspecificEpithet(CSVRecord record)
 	{
-		String s = val(record, CsvField.SP3.ordinal());
-		return s == null ? val(record, CsvField.SP2.ordinal()) : s;
+		String s = CSVImportUtil.val(record, CsvField.SP3.ordinal());
+		return s == null ? CSVImportUtil.val(record, CsvField.SP2.ordinal()) : s;
 	}
 
 
 	private static String getTaxonRank(CSVRecord record)
 	{
-		if (val(record, CsvField.SP3.ordinal()) == null) {
-			if (val(record, CsvField.SP2.ordinal()) == null) {
-				if (val(record, CsvField.SP1.ordinal()) == null) {
+		if (CSVImportUtil.val(record, CsvField.SP3.ordinal()) == null) {
+			if (CSVImportUtil.val(record, CsvField.SP2.ordinal()) == null) {
+				if (CSVImportUtil.val(record, CsvField.SP1.ordinal()) == null) {
 					// TODO: replace literal with DefaultClassification.Rank
 					return "genus";
 				}
 				return "species";
 			}
-			return val(record, CsvField.RANK1.ordinal());
+			return CSVImportUtil.val(record, CsvField.RANK1.ordinal());
 		}
-		return val(record, CsvField.RANK2.ordinal());
+		return CSVImportUtil.val(record, CsvField.RANK2.ordinal());
 	}
 }

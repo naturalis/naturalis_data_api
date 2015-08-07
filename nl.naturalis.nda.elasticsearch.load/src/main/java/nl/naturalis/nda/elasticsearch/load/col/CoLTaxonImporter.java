@@ -26,6 +26,7 @@ import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
@@ -41,7 +42,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
@@ -120,7 +121,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	protected List<ESTaxon> transfer(CSVRecord record, String csvRecord, int lineNo)
 	{
 
-		String taxonRank = val(record, CsvField.taxonRank.ordinal());
+		String taxonRank = CSVImportUtil.val(record, CsvField.taxonRank.ordinal());
 		if (!ALLOWED_TAXON_RANKS.contains(taxonRank)) {
 			logger.debug(String.format("Ignoring taxon with rank \"%s\"", taxonRank));
 			return null;
@@ -129,9 +130,9 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		ESTaxon taxon = new ESTaxon();
 
 		taxon.setSourceSystem(SourceSystem.COL);
-		taxon.setSourceSystemId(val(record, CsvField.taxonID.ordinal()));
+		taxon.setSourceSystemId(CSVImportUtil.val(record, CsvField.taxonID.ordinal()));
 
-		String references = val(record, CsvField.references.ordinal());
+		String references = CSVImportUtil.val(record, CsvField.references.ordinal());
 		if (references == null) {
 			logger.warn("Missing URL for taxon " + taxon.getSourceSystemId());
 		}
@@ -151,34 +152,34 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 				}
 			}
 		}
-		taxon.setTaxonRank(val(record, CsvField.taxonRank.ordinal()));
+		taxon.setTaxonRank(CSVImportUtil.val(record, CsvField.taxonRank.ordinal()));
 
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
-		sn.setGenusOrMonomial(val(record, CsvField.genericName.ordinal()));
-		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
-		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
-		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
+		sn.setFullScientificName(CSVImportUtil.val(record, CsvField.scientificName.ordinal()));
+		sn.setGenusOrMonomial(CSVImportUtil.val(record, CsvField.genericName.ordinal()));
+		sn.setSpecificEpithet(CSVImportUtil.val(record, CsvField.specificEpithet.ordinal()));
+		sn.setInfraspecificEpithet(CSVImportUtil.val(record, CsvField.infraspecificEpithet.ordinal()));
+		sn.setAuthorshipVerbatim(CSVImportUtil.val(record, CsvField.scientificNameAuthorship.ordinal()));
 		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
 		taxon.setAcceptedName(sn);
 
 		DefaultClassification dc = new DefaultClassification();
 		taxon.setDefaultClassification(dc);
 
-		dc.setKingdom(val(record, CsvField.kingdom.ordinal()));
-		dc.setPhylum(val(record, CsvField.phylum.ordinal()));
-		dc.setClassName(val(record, CsvField.classRank.ordinal()));
-		dc.setOrder(val(record, CsvField.order.ordinal()));
-		dc.setSuperFamily(val(record, CsvField.superfamily.ordinal()));
-		dc.setFamily(val(record, CsvField.family.ordinal()));
-		dc.setGenus(val(record, CsvField.genericName.ordinal()));
-		dc.setSubgenus(val(record, CsvField.subgenus.ordinal()));
-		dc.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
-		dc.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
+		dc.setKingdom(CSVImportUtil.val(record, CsvField.kingdom.ordinal()));
+		dc.setPhylum(CSVImportUtil.val(record, CsvField.phylum.ordinal()));
+		dc.setClassName(CSVImportUtil.val(record, CsvField.classRank.ordinal()));
+		dc.setOrder(CSVImportUtil.val(record, CsvField.order.ordinal()));
+		dc.setSuperFamily(CSVImportUtil.val(record, CsvField.superfamily.ordinal()));
+		dc.setFamily(CSVImportUtil.val(record, CsvField.family.ordinal()));
+		dc.setGenus(CSVImportUtil.val(record, CsvField.genericName.ordinal()));
+		dc.setSubgenus(CSVImportUtil.val(record, CsvField.subgenus.ordinal()));
+		dc.setSpecificEpithet(CSVImportUtil.val(record, CsvField.specificEpithet.ordinal()));
+		dc.setInfraspecificEpithet(CSVImportUtil.val(record, CsvField.infraspecificEpithet.ordinal()));
 
 		addMonomials(taxon);
 
-		String description = val(record, CsvField.description.ordinal());
+		String description = CSVImportUtil.val(record, CsvField.description.ordinal());
 		if (description != null) {
 			TaxonDescription td = new TaxonDescription();
 			td.setDescription(description);
@@ -191,7 +192,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 	protected boolean skipRecord(CSVRecord record)
 	{
-		if (ival(record, CsvField.acceptedNameUsageID.ordinal()) == 0) {
+		if (CSVImportUtil.ival(record, CsvField.acceptedNameUsageID.ordinal()) == 0) {
 			return false;
 		}
 		return true;
@@ -201,7 +202,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	@Override
 	protected List<String> getIds(CSVRecord record)
 	{
-		String id = CoLImportAll.ID_PREFIX + val(record, CsvField.taxonID.ordinal());
+		String id = CoLImportAll.ID_PREFIX + CSVImportUtil.val(record, CsvField.taxonID.ordinal());
 		return Arrays.asList(id);
 	}
 

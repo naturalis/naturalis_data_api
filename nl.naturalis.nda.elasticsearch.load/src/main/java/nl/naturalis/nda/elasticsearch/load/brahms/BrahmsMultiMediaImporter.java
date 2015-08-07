@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -53,7 +54,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		
+
 		/*
 		 * Make sure thematic search and mime type cache can be instantiated,
 		 * otherwise we get class initialization errors in
@@ -63,7 +64,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsvFiles();
 		}
@@ -121,10 +122,13 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
 				String url = urls[i].trim();
-				if(url.charAt(1) == ':') {
-					// This is a local file system location (e.g. Q:\foo.jpg)
+				if (url.charAt(1) == ':') {
+					/*
+					 * This is a local file system path like Q:\foo.jpg. Anyhow,
+					 * it can't be a valid URI. Skip expensive URI parsing.
+					 */
 					logger.error("File system image location not allowed: " + url);
-					continue;					
+					continue;
 				}
 				URI uri;
 				try {

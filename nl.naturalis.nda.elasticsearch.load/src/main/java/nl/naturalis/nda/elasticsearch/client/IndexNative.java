@@ -258,36 +258,36 @@ public class IndexNative implements Index {
 	}
 
 
-	/*
-	 * Create by Reinier Description: for the DwCA export Date: 29-01-2015
-	 */
-	public <T> T getAll(String type, String id, Class<T> targetClass)
-	{
-		GetRequestBuilder reqbld = esClient.prepareGet();
-
-		/* Sets the index of the document to fetch. */
-		reqbld.setIndex(indexName);
-
-		/* Set the type of the document to fetch */
-		reqbld.setType(type);
-
-		reqbld.setId(id);
-
-		/* Execute the Get Request builder */
-		GetResponse resp = reqbld.execute().actionGet();
-
-		/* if result exists from the response */
-		if (resp.isExists()) {
-			try {
-				/* read from the file and convert it to the targetClass */
-				return objectMapper.readValue(resp.getSourceAsString(), targetClass);
-			}
-			catch (Exception e) {
-				throw new IndexException(e);
-			}
-		}
-		return null;
-	}
+//	/*
+//	 * Create by Reinier Description: for the DwCA export Date: 29-01-2015
+//	 */
+//	public <T> T getAll(String type, String id, Class<T> targetClass)
+//	{
+//		GetRequestBuilder reqbld = esClient.prepareGet();
+//
+//		/* Sets the index of the document to fetch. */
+//		reqbld.setIndex(indexName);
+//
+//		/* Set the type of the document to fetch */
+//		reqbld.setType(type);
+//
+//		reqbld.setId(id);
+//
+//		/* Execute the Get Request builder */
+//		GetResponse resp = reqbld.execute().actionGet();
+//
+//		/* if result exists from the response */
+//		if (resp.isExists()) {
+//			try {
+//				/* read from the file and convert it to the targetClass */
+//				return objectMapper.readValue(resp.getSourceAsString(), targetClass);
+//			}
+//			catch (Exception e) {
+//				throw new IndexException(e);
+//			}
+//		}
+//		return null;
+//	}
 
 
 	@Override

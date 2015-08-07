@@ -57,7 +57,7 @@ public class CrsMultiMediaImporter {
 
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			CrsMultiMediaImporter importer = new CrsMultiMediaImporter(index);
 			importer.importMultiMedia();
 		}

@@ -748,6 +748,10 @@ public class DwCAExporter {
 				if (failure > 0) {
 					logger.info("There is a communication problem with Elasticsearch. " + e.getMessage());
 				}
+				else
+				{
+					logger.info("Error: " + e.getMessage());
+				}
 			}
 		}
 	}

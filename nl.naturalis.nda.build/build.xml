@@ -151,6 +151,7 @@
 	</target>
 
 	<target name="install-import-libs" depends="verify" description="Install Java libraries but not shell scripts and config files. Use when source code has changed, but build.properties has not">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-libs" />
 	</target>
 

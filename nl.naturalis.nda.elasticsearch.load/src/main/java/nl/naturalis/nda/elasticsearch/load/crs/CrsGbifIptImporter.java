@@ -8,7 +8,11 @@ import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
-public class CrsGbifIptImporter extends AbstractSpecimenImporter {
+/*
+ * Project never got off the ground. Not used for or within the NBA. Remove.
+ */
+@Deprecated
+class CrsGbifIptImporter extends AbstractSpecimenImporter {
 
 	private static final String SQL_INSERT = "INSERT INTO `%s`.`%s` (`crs_identifier`, "
 			+ "`catalognumber`, `collectioncode`, `institutioncode`, `scientificname`, `scientificnameauthorship`, "

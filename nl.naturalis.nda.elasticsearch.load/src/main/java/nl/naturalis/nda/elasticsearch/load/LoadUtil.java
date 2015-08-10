@@ -1,11 +1,16 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.domainobject.util.StringUtil.zpad;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import nl.naturalis.nda.elasticsearch.client.IndexNative;
 
 import org.domainobject.util.ConfigObject;
-import org.domainobject.util.StringUtil;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.client.Client;
@@ -16,7 +21,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoadUtil {
+public final class LoadUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoadUtil.class);
 	private static final String PROPERTY_FILE_NAME = "nda-import.properties";
@@ -24,19 +29,16 @@ public class LoadUtil {
 	private static ConfigObject config;
 	private static Client esClient;
 
-
-	public static String getLuceneType(Class<?> cls)
+	private LoadUtil()
 	{
-		return cls.getSimpleName();
 	}
 
-
-	public static String getMapping(Class<?> cls)
-	{
-		return StringUtil.getResourceAsString("/es-mappings/" + getLuceneType(cls) + ".json");
-	}
-
-
+	/**
+	 * Get a {@code ConfigObject} for the central NBA import configuration file
+	 * (nda-import.properties).
+	 * 
+	 * @return
+	 */
 	public static ConfigObject getConfig()
 	{
 		if (config == null) {
@@ -75,7 +77,11 @@ public class LoadUtil {
 		return config;
 	}
 
-
+	/**
+	 * Get a native Java ElasticSearch {@code Client}.
+	 * 
+	 * @return
+	 */
 	public static final Client getESClient()
 	{
 		// Make sure configuration is loaded
@@ -103,6 +109,64 @@ public class LoadUtil {
 		return esClient;
 	}
 
+	/**
+	 * Get an index manager for the NBA index.
+	 * 
+	 * @return
+	 */
+	public static IndexNative getNbaIndexManager()
+	{
+		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));
+	}
+
+	/**
+	 * Get the duration between {@code start} and now, formatted as HH:mm:ss.
+	 * 
+	 * @param start
+	 * @return
+	 */
+	public static String getDuration(long start)
+	{
+		return getDuration(start, System.currentTimeMillis());
+	}
+
+
+	/**
+	 * Get the duration between {@code start} and {@code end}, formatted as
+	 * HH:mm:ss.
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static String getDuration(long start, long end)
+	{
+		int millis = (int) (end - start);
+		int hours = millis / (60 * 60 * 1000);
+		millis = millis % (60 * 60 * 1000);
+		int minutes = millis / (60 * 1000);
+		millis = millis % (60 * 1000);
+		int seconds = millis / 1000;
+		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
+	}
+
+
+	/**
+	 * 
+	 * @param raw
+	 * @return
+	 */
+	public static String urlEncode(String raw)
+	{
+		try {
+			return URLEncoder.encode(raw, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			// Won't happen with UTF-8
+			return null;
+		}
+	}
+
 	private static String[] getPorts(int numHosts)
 	{
 		String port = config.get("elasticsearch.transportaddress.port", true);
@@ -119,4 +183,6 @@ public class LoadUtil {
 		}
 		return ports;
 	}
+
+
 }

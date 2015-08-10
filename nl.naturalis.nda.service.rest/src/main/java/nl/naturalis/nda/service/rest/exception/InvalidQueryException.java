@@ -2,6 +2,8 @@ package nl.naturalis.nda.service.rest.exception;
 
 public class InvalidQueryException extends RuntimeException {
 
+	private static final long serialVersionUID = -6813021595740639317L;
+
 	public InvalidQueryException()
 	{
 		super();

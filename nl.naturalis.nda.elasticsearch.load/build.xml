@@ -14,7 +14,6 @@
 		<!-- libraries not inside this project's lib dir -->
 		<filelist dir="${build.module.location}/lib">
 			<file name="org.domainobject.util.jar" />
-			<file name="org.domainobject.util.debug.jar" />
 			<file name="org.domainobject.util.http.jar" />
 		</filelist>
 	</path>

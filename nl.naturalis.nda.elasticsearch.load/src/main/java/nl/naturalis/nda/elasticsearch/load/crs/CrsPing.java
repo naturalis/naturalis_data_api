@@ -18,7 +18,7 @@ public class CrsPing {
 
 	public static void main(String[] args)
 	{
-		
+
 		logger.info("Preparing tests ...");
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
@@ -30,18 +30,19 @@ public class CrsPing {
 			logger.error("Preparation failed: " + e.getMessage());
 			return;
 		}
-		
-		int numTests = args.length == 0? 10 : Integer.parseInt(args[0]);
-		
-		logger.info("Testing specimens ...");		
+
+		int numTests = args.length == 0 ? 10 : Integer.parseInt(args[0]);
+
+		logger.info("Testing specimens ...");
 		boolean specimensOk = ping(builder, numTests, SPECIMEN_URL);
-		logger.info("Testing multimedia ...");		
-		boolean multimediaOk = ping(builder,numTests, MEDIA_URL);
-	
-		if(specimensOk && multimediaOk) {
+		logger.info("Testing multimedia ...");
+		boolean multimediaOk = ping(builder, numTests, MEDIA_URL);
+
+		if (specimensOk && multimediaOk) {
 			logger.info("All tests successful!");
 		}
 	}
+
 
 	private static boolean ping(DocumentBuilder builder, int numTests, String url)
 	{
@@ -57,8 +58,8 @@ public class CrsPing {
 					}
 					xml = xml.substring(xml.indexOf("<?xml"));
 				}
-				Document doc = builder.parse(StringUtil.asInputStream(xml));
-				if(!doc.getDocumentElement().getTagName().equals("OAI-PMH")) {
+				Document doc = builder.parse(StringUtil.toInputStream(xml));
+				if (!doc.getDocumentElement().getTagName().equals("OAI-PMH")) {
 					logger.error(xml);
 					throw new Exception("XML response not according to OAI-PMH schema");
 				}
@@ -81,6 +82,5 @@ public class CrsPing {
 	private static final Logger logger = LoggerFactory.getLogger(CrsPing.class);
 	public static final String SPECIMEN_URL = "http://crspl.naturalis.nl/Atlantispubliek/oai.axd?verb=ListRecords&metadataprefix=oai_crs_object";
 	public static final String MEDIA_URL = "http://crspl.naturalis.nl/atlantispubliek/oai.axd?verb=ListRecords&metadataprefix=oai_crs";
-	
 
 }

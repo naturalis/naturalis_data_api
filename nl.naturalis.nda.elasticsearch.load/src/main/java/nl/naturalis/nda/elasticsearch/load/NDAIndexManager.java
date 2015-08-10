@@ -13,7 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for creating/managing/updating the NBA document store.
+ * Utility class for creating/managing/updating the NBA document store. Provides
+ * a method for doing a full import.
  * 
  * @author ayco_holleman
  * 
@@ -22,14 +23,26 @@ public class NDAIndexManager {
 
 	public static void main(String[] args)
 	{
-		String indexName = LoadUtil.getConfig().required("elasticsearch.index.name");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), indexName);
-		NDAIndexManager indexManager = new NDAIndexManager(index);
-		if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
-			indexManager.bootstrap();
+		long start = System.currentTimeMillis();
+		IndexNative index = null;
+		try {
+			index = LoadUtil.getNbaIndexManager();
+			NDAIndexManager indexManager = new NDAIndexManager(index);
+			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
+				indexManager.bootstrap();
+			}
+			if (args.length == 0 || Arrays.asList(args).contains("import")) {
+				indexManager.importAll();
+			}
 		}
-		if (args.length == 0 || Arrays.asList(args).contains("import")) {
-			indexManager.importAll();
+		catch (Throwable t) {
+			logger.error(t.getMessage(), t);
+		}
+		finally {
+			if (index != null) {
+				index.getClient().close();
+			}
+			logger.info("Total duration for full import: " + LoadUtil.getDuration(start));
 		}
 	}
 
@@ -90,8 +103,6 @@ public class NDAIndexManager {
 			logger.error("CoL import Failed!");
 			logger.error(t.getMessage(), t);
 		}
-
-		logger.info("Ready");
 
 	}
 

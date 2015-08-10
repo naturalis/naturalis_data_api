@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.apache.commons.io.Charsets.UTF_8;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,64 +20,15 @@ import org.slf4j.LoggerFactory;
 
 public abstract class CSVImporter<T> {
 
-	@SuppressWarnings("serial")
 	public static class NoSuchFieldException extends RuntimeException {
+		static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record(%s)";
 		public NoSuchFieldException(CSVRecord record, int fieldNo)
 		{
-			super(String.format("Specified field number (%s) exceeds number of fields in CSV record(%s)", fieldNo, record.size()));
+			super(String.format(MSG, fieldNo, record.size()));
 		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
-
-
-	/**
-	 * Get the value of field {@code fieldNo} in the specified CSV record.
-	 * 
-	 * @param record
-	 * @param fieldNo
-	 * @return
-	 */
-	public static String val(CSVRecord record, int fieldNo)
-	{
-		if (fieldNo < record.size()) {
-			String s = record.get(fieldNo).trim();
-			return s.length() == 0 ? null : s;
-		}
-		throw new NoSuchFieldException(record, fieldNo);
-	}
-
-
-	public static int ival(CSVRecord record, int fieldNo)
-	{
-		String s = val(record, fieldNo);
-		if (s == null) {
-			return 0;
-		}
-		try {
-			return Integer.parseInt(val(record, fieldNo));
-		}
-		catch (NumberFormatException e) {
-			logger.warn(String.format("Invalid integer in field %s: \"%s\" (value set to 0)", fieldNo, s));
-			return 0;
-		}
-	}
-
-
-	public static double dval(CSVRecord record, int fieldNo)
-	{
-		String s = val(record, fieldNo);
-		if (s == null) {
-			return 0;
-		}
-		try {
-			return Double.parseDouble(val(record, fieldNo));
-		}
-		catch (NumberFormatException e) {
-			logger.warn(String.format("Invalid number in field %s: \"%s\" (value set to 0)", fieldNo, s));
-			return 0;
-		}
-	}
 
 	protected final Index index;
 	protected final String type;
@@ -92,9 +45,9 @@ public abstract class CSVImporter<T> {
 	protected CSVFormat csvFormat;
 	protected char delimiter = '\t';
 	/*
-	 * Character set used in the CSV file
+	 * Character set used in the CSV file. By default assumed to be UTF-8
 	 */
-	protected Charset charset = Charset.forName("UTF-8");
+	protected Charset charset = UTF_8;
 
 	/*
 	 * Will log errors as debug messages. Specifically useful when expecting
@@ -113,31 +66,29 @@ public abstract class CSVImporter<T> {
 
 	public void importCsv(String path) throws IOException
 	{
-		logger.info(String.format("[%s] Processing CSV file \"%s\"", getClass().getSimpleName(), path));
+		logger().info(String.format("Processing CSV file \"%s\"", path));
 		if (csvFormat == null) {
 			csvFormat = CSVFormat.DEFAULT.withDelimiter(delimiter);
 		}
-		//format = format.withRecordSeparator("\r\n");
 
 		/*
 		 * Make sure default encoding is UTF-8. The main reason we want this to
 		 * be the case is that CSVParser.parse(String, CSVFormat) parses the
-		 * String using the default encoding; you cannot specify an arbitrary
-		 * encoding (sad but true). Just before we pass a line to
+		 * String using the default encoding. You cannot specify an arbitrary
+		 * encoding. Sad but true. Just before we pass a line to
 		 * CSVParser.parse, we make sure it is UTF8-encoded, thus the default
-		 * encoding HAS to be UTF-8. However, it might anyhow be a good idea to
-		 * do this check for all import programs. Finally, note that for the
-		 * CSVParser it actually probably doesn't really matter whether it gets
-		 * UTF-8, ISO-8995-1 or Cp1252, because all delimiters (end-of-field,
-		 * end-of-record) are probably encoded identically in all of these
-		 * character sets. Nevertheless, we JUST WANT THINGS TO BE UTF-8.
+		 * encoding HAS to be UTF-8. Note that for the CSVParser itself, it
+		 * doesn't really matter whether it gets UTF-8, ISO-8995-1 or Cp1252,
+		 * because all delimiters (end-of-field, end-of-record) are encoded
+		 * identically in all of these character sets. Thus, tokenizing will not
+		 * be a problem. Nevertheless, we JUST WANT THINGS TO BE UTF-8 ACROSS
+		 * THE BOARD.
 		 */
-		Charset utf8 = Charset.forName("UTF-8");
-		if (!Charset.defaultCharset().equals(utf8)) {
-			logger.error("Invalid default character encoding: " + Charset.defaultCharset().name());
-			logger.error(getClass().getSimpleName() + " can only run with UTF-8 as default character encoding");
-			logger.error("Please add the following command line argument when running " + getClass().getSimpleName() + ": -Dfile.encoding=UTF-8");
-			logger.error("Program aborted");
+		if (!Charset.defaultCharset().equals(UTF_8)) {
+			logger().error("Invalid default character encoding: " + Charset.defaultCharset().name());
+			logger().error(getClass().getSimpleName() + " can only run with a default character encoding of UTF-8");
+			logger().error("Please add the following command line argument when running " + getClass().getSimpleName() + ": -Dfile.encoding=UTF-8");
+			logger().error("Program aborted");
 			return;
 		}
 
@@ -167,15 +118,15 @@ public abstract class CSVImporter<T> {
 			while ((line = lnr.readLine()) != null) {
 				++lineNo;
 				if (line.trim().length() == 0) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Ignoring empty line: " + lineNo);
+					if (logger().isDebugEnabled()) {
+						logger().debug("Ignoring empty line: " + lineNo);
 					}
 					continue;
 				}
 				++processed;
 				try {
-					if (!charset.equals(utf8)) {
-						line = new String(line.getBytes(utf8));
+					if (!charset.equals(UTF_8)) {
+						line = new String(line.getBytes(UTF_8));
 					}
 					record = CSVParser.parse(line, csvFormat).iterator().next();
 					if (skipRecord(record)) {
@@ -212,25 +163,17 @@ public abstract class CSVImporter<T> {
 				}
 				catch (Throwable t) {
 					++bad;
-					if (suppressErrors) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Error at line " + lineNo + ": " + t.getMessage());
-						}
-					}
-					else {
-						logger.error("Error at line " + lineNo + ": " + t.getMessage());
-					}
-					if (logger.isDebugEnabled()) {
-						logger.debug(line);
-						//logger.debug("Stack trace: ", t);
+					if (!suppressErrors) {
+						logger().error("Error at line " + lineNo + ": " + t.getMessage());
+						logger().error(line);
 					}
 				}
 				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
 				}
 				if (processed % 50000 == 0) {
-					logger.info(String.format("[%s] Records processed: %s", getClass().getSimpleName(), processed));
-					logger.info(String.format("[%s] Documents indexed: %s", getClass().getSimpleName(), indexed));
+					logger().info(String.format("Records processed: %s", processed));
+					logger().info(String.format("Documents indexed: %s", indexed));
 				}
 			}
 			if (!objects.isEmpty()) {
@@ -241,15 +184,26 @@ public abstract class CSVImporter<T> {
 		finally {
 			lnr.close();
 		}
-		logger.info("Records processed: " + processed);
-		logger.info("Records skipped: " + skipped);
-		logger.info("Bad records: " + bad);
-		logger.info("Documents indexed: " + indexed);
-		logger.info(String.format("[%s] Finished processing file: %s", getClass().getSimpleName(), path));
+		logger().info("Records processed: " + processed);
+		logger().info("Records skipped: " + skipped);
+		logger().info("Bad records: " + bad);
+		logger().info("Documents indexed: " + indexed);
+		logger().info(String.format("Finished processing file: %s", path));
+	}
+
+	/**
+	 * Subclasses may provided their own logger, so it's more clear what type of
+	 * datasource is being processed.
+	 * 
+	 * @return
+	 */
+	protected Logger logger()
+	{
+		return logger;
 	}
 
 
-	@SuppressWarnings({ "static-method" })
+	@SuppressWarnings({ "unused" })
 	protected boolean skipRecord(CSVRecord record)
 	{
 		return false;
@@ -259,14 +213,14 @@ public abstract class CSVImporter<T> {
 	protected abstract List<T> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception;
 
 
-	@SuppressWarnings({ "static-method" })
+	@SuppressWarnings({ "unused" })
 	protected List<String> getIds(CSVRecord record)
 	{
 		return null;
 	}
 
 
-	@SuppressWarnings({ "static-method" })
+	@SuppressWarnings({ "unused" })
 	protected List<String> getParentIds(CSVRecord record)
 	{
 		return null;

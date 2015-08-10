@@ -23,12 +23,14 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.MedialibMimeTypeCache;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
+import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
+import org.domainobject.util.IOUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -49,19 +51,13 @@ public class CrsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
-		/*
-		 * Make sure thematic search and mime type cache can be instantiated,
-		 * otherwise we get obsure class initialization errors in
-		 * CrsMultiMediaTransfer.
-		 */
-		ThematicSearchConfig.getInstance();
-		MedialibMimeTypeCache.getInstance();
 
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			CrsMultiMediaImporter importer = new CrsMultiMediaImporter(index);
 			importer.importMultiMedia();
 		}
@@ -81,19 +77,23 @@ public class CrsMultiMediaImporter {
 	private final int maxRecords;
 	private final boolean forceRestart;
 
+	private final CrsMultiMediaTransfer transfer;
+
 	int recordsSkipped;
+	int recordsProcessed;
 	/*
 	 * Records that are not skipped. recordsSkipped + recordsInvestigated =
 	 * recordsProcessed
 	 */
 	int recordsInvestigated;
-	int recordsProcessed;
 	int recordsRejected;
 
 	int multimediaSkipped;
 	int multimediaProcessed;
 	int multimediaRejected;
 	int multimediaIndexed;
+
+	int nonMedialibUrls;
 
 
 	public CrsMultiMediaImporter(Index index) throws Exception
@@ -116,24 +116,36 @@ public class CrsMultiMediaImporter {
 		catch (ParserConfigurationException e) {
 			throw ExceptionUtil.smash(e);
 		}
+
+		transfer = new CrsMultiMediaTransfer(this);
 	}
 
 
 	public void importMultiMedia()
 	{
-		recordsProcessed = 0;
-		recordsInvestigated = 0;
-		multimediaProcessed = 0;
-		recordsRejected = 0;
-		multimediaRejected = 0;
-		recordsSkipped = 0;
 
+		long start = System.currentTimeMillis();
+
+		recordsProcessed = 0;
+		recordsSkipped = 0;
+		recordsInvestigated = 0;
+		recordsRejected = 0;
+
+		multimediaProcessed = 0;
+		multimediaSkipped = 0;
+		multimediaRejected = 0;
 		multimediaIndexed = 0;
+
+		nonMedialibUrls = 0;
+
+		MimeTypeCache mtc = null;
 
 		try {
 
-			ThematicSearchConfig.getInstance().resetMatchCounters();
-			MedialibMimeTypeCache.getInstance();
+			ThemeCache.getInstance().resetMatchCounters();
+
+			mtc = MimeTypeCacheFactory.getInstance().getCache();
+			mtc.resetCounters();
 
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
@@ -144,7 +156,12 @@ public class CrsMultiMediaImporter {
 				processRemote();
 			}
 
-			ThematicSearchConfig.getInstance().logMatchInfo();
+			ThemeCache.getInstance().logMatchInfo();
+
+			logger.info(" ");
+			logger.info("Mime type cache hits          : " + String.format("%7d", mtc.getCacheHits()));
+			logger.info("Mime type cache misses        : " + String.format("%7d", mtc.getMedialibRequests()));
+			logger.info("Non-medialib URLs             : " + String.format("%7d", nonMedialibUrls));
 
 			logger.info(" ");
 			logger.info("Multimedia indexed            : " + String.format("%7d", multimediaIndexed));
@@ -161,9 +178,14 @@ public class CrsMultiMediaImporter {
 			logger.info("Records processed             : " + String.format("%7d", recordsProcessed));
 			logger.info(" ");
 
+			logger.info("Total duration: " + LoadUtil.getDuration(start));
+
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " did not complete successfully", t);
+		}
+		finally {
+			IOUtil.close(mtc);
 		}
 	}
 
@@ -214,7 +236,7 @@ public class CrsMultiMediaImporter {
 		File f;
 		while (localFileIterator.hasNext()) {
 			f = localFileIterator.next();
-			logger.info("Processing file " + f.getCanonicalPath());
+			logger.info("Processing file " + f.getAbsolutePath());
 			index(Files.readAllBytes(f.toPath()));
 		}
 	}
@@ -251,7 +273,7 @@ public class CrsMultiMediaImporter {
 			else {
 				List<ESMultiMediaObject> extractedMedia = null;
 				try {
-					extractedMedia = CrsMultiMediaTransfer.transfer(record, this);
+					extractedMedia = transfer.transfer(record);
 				}
 				catch (Throwable t) {
 					++recordsRejected;

@@ -62,16 +62,23 @@ public class NsrMultiMediaTransfer {
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystem(SourceSystem.NSR);
-		mmo.setSourceSystemId(taxon.getSourceSystemId() + ':' + String.valueOf(url.hashCode()).replace('-', '0'));
+		mmo.setSourceSystemId(taxon.getSourceSystemId() + '_' + String.valueOf(url.hashCode()).replace('-', '0'));
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
 		mmo.setSourceID("LNG NSR");
 		mmo.setUnitID(mmo.getSourceSystemId());
+		mmo.setCollectionType("Nederlandse soorten en exoten");
 		mmo.setAssociatedTaxonReference(taxon.getSourceSystemId());
-		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, null, Variant.MEDIUM_QUALITY));
+		String format = DOMUtil.getValue(imageElement, "mime_type");
+		if (format == null || format.length() == 0) {
+			String fmt = "Missing mime type for image \"%s\" (taxon \"%s\").";
+			logger.warn(String.format(fmt, url, taxon.getAcceptedName().getFullScientificName()));
+			format = TransferUtil.guessMimeType(url);
+		}
+		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, format, Variant.MEDIUM_QUALITY));
 		mmo.setCreator(nl(DOMUtil.getValue(imageElement, "photographer_name")));
 		mmo.setCopyrightText(nl(DOMUtil.getValue(imageElement, "copyright")));
-		if(mmo.getCopyrightText() == null) {
+		if (mmo.getCopyrightText() == null) {
 			mmo.setLicenceType(LICENCE_TYPE);
 			mmo.setLicence(LICENCE);
 		}

@@ -74,7 +74,7 @@ public class NsrTaxonImporter {
 
 	public void importXmlFiles() throws Exception
 	{
-		File[] xmlFiles = NsrImportUtil.getXMLFiles();
+		File[] xmlFiles = NsrImportUtil.getXmlFiles();
 		if (xmlFiles.length == 0) {
 			logger.info("No XML files to process");
 			return;
@@ -87,12 +87,9 @@ public class NsrTaxonImporter {
 			logger.info("Processing file " + xmlFile.getCanonicalPath());
 			Document document = builder.parse(xmlFile);
 			importXmlFile(document);
-			if (backup) {
-				xmlFile.renameTo(new File(xmlFile.getCanonicalPath() + ".bak"));
-			}
 		}
 		if(backup) {
-			NsrImportUtil.backupXMLFiles();
+			NsrImportUtil.backupXmlFiles();
 		}
 		logger.info("Skipped records            (total) : " + String.format("%5d", totalSkipped));
 		logger.info("Malformed/rejected records (total) : " + String.format("%5d", totalRejected));

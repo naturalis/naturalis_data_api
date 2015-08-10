@@ -20,7 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 
 import org.domainobject.util.DOMUtil;
@@ -87,7 +87,7 @@ public abstract class AbstractSpecimenImporter {
 		indexed = 0;
 		try {
 
-			ThematicSearchConfig.getInstance().resetMatchCounters();
+			ThemeCache.getInstance().resetMatchCounters();
 			beforeFirst();
 			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
 				importLocal();
@@ -96,7 +96,7 @@ public abstract class AbstractSpecimenImporter {
 				importRemote();
 			}
 			afterLast();
-			ThematicSearchConfig.getInstance().logMatchInfo();
+			ThemeCache.getInstance().logMatchInfo();
 
 			logger.info("Records processed: " + processed);
 			logger.info("Bad records: " + bad);
@@ -239,7 +239,7 @@ public abstract class AbstractSpecimenImporter {
 
 	private boolean checkFile(String xml, String unitID) throws SAXException, IOException
 	{
-		Document doc = builder.parse(StringUtil.asInputStream(xml));
+		Document doc = builder.parse(StringUtil.toInputStream(xml));
 		doc.normalize();
 		NodeList records = doc.getElementsByTagName("record");
 		int numRecords = records.getLength();
@@ -343,6 +343,7 @@ public abstract class AbstractSpecimenImporter {
 			return null;
 		}
 	}
+
 
 	static Iterator<File> getLocalFileIterator()
 	{

@@ -9,7 +9,7 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 		logger.info("-----------------------------------------------------------------");
 
 		// Set up thematic search and make sure it's configured OK.
-		ThematicSearchConfig.getInstance();
+		ThemeCache.getInstance();
 
 		// Debug functionality: just see what a particular specimen in
 		// source data looks like

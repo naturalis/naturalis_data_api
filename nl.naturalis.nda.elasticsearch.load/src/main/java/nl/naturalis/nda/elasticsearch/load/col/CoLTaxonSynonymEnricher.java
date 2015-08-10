@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.CSVImporter.ival;
-import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.io.FileReader;
@@ -14,6 +12,7 @@ import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
@@ -32,7 +31,7 @@ public class CoLTaxonSynonymEnricher {
 		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/taxa.txt");
@@ -54,7 +53,7 @@ public class CoLTaxonSynonymEnricher {
 
 	public CoLTaxonSynonymEnricher(Index index)
 	{
-		this.index = index;		
+		this.index = index;
 		String prop = System.getProperty(CoLImportAll.SYSPROP_BATCHSIZE, "1000");
 		bulkRequestSize = Integer.parseInt(prop);
 		prop = System.getProperty(CoLImportAll.SYSPROP_MAXRECORDS, "0");
@@ -96,15 +95,15 @@ public class CoLTaxonSynonymEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					if (ival(record, CoLTaxonImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
+					if (CSVImportUtil.ival(record, CoLTaxonImporter.CsvField.acceptedNameUsageID.ordinal()) == 0) {
 						// This record contains an accepted name, not a synonym
 						++skipped;
 					}
 					else {
-						String taxonId = val(record, CsvField.acceptedNameUsageID.ordinal());
+						String taxonId = CSVImportUtil.val(record, CsvField.acceptedNameUsageID.ordinal());
 						String esId = CoLImportAll.ID_PREFIX + taxonId;
 
-						String synonym = val(record, CsvField.scientificName.ordinal());
+						String synonym = CSVImportUtil.val(record, CsvField.scientificName.ordinal());
 
 						taxon = findTaxonInBatch(taxonId, objects);
 						if (taxon == null) {
@@ -136,8 +135,10 @@ public class CoLTaxonSynonymEnricher {
 				catch (Throwable t) {
 					++bad;
 					logger.error("Error at line " + lineNo + ": " + t.getMessage());
-					logger.error("Line: [[" + line + "]]");
-					logger.debug("Stack trace: ", t);
+					logger.error(line);
+					if (logger.isDebugEnabled()) {
+						logger.debug("Stack trace: ", t);
+					}
 				}
 				if (maxRecords > 0 && processed >= maxRecords) {
 					break;
@@ -164,12 +165,12 @@ public class CoLTaxonSynonymEnricher {
 	private static ScientificName transfer(CSVRecord record)
 	{
 		final ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, CsvField.scientificName.ordinal()));
-		sn.setGenusOrMonomial(val(record, CsvField.genericName.ordinal()));
-		sn.setSpecificEpithet(val(record, CsvField.specificEpithet.ordinal()));
-		sn.setInfraspecificEpithet(val(record, CsvField.infraspecificEpithet.ordinal()));
-		sn.setAuthorshipVerbatim(val(record, CsvField.scientificNameAuthorship.ordinal()));
-		TaxonomicStatus status = statusNormalizer.getEnumConstant(val(record, CsvField.taxonomicStatus.ordinal()));
+		sn.setFullScientificName(CSVImportUtil.val(record, CsvField.scientificName.ordinal()));
+		sn.setGenusOrMonomial(CSVImportUtil.val(record, CsvField.genericName.ordinal()));
+		sn.setSpecificEpithet(CSVImportUtil.val(record, CsvField.specificEpithet.ordinal()));
+		sn.setInfraspecificEpithet(CSVImportUtil.val(record, CsvField.infraspecificEpithet.ordinal()));
+		sn.setAuthorshipVerbatim(CSVImportUtil.val(record, CsvField.scientificNameAuthorship.ordinal()));
+		TaxonomicStatus status = statusNormalizer.getEnumConstant(CSVImportUtil.val(record, CsvField.taxonomicStatus.ordinal()));
 		sn.setTaxonomicStatus(status);
 		return sn;
 	}

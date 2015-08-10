@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -39,7 +40,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
@@ -53,9 +54,17 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	{
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
+
+		/*
+		 * Make sure thematic search and mime type cache can be instantiated,
+		 * otherwise we get class initialization errors in
+		 * CrsMultiMediaTransfer.
+		 */
+		ThemeCache.getInstance();
+
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter(index);
 			importer.importCsvFiles();
 		}
@@ -68,7 +77,8 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
-	
+
+
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		super(index, LUCENE_TYPE_MULTIMEDIA_OBJECT);
@@ -86,7 +96,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public void importCsvFiles() throws Exception
 	{
-		ThematicSearchConfig.getInstance().resetMatchCounters();
+		ThemeCache.getInstance().resetMatchCounters();
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
@@ -96,14 +106,14 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}
-		ThematicSearchConfig.getInstance().logMatchInfo();
+		ThemeCache.getInstance().logMatchInfo();
 	}
 
 	private ArrayList<String> multimediaIds;
 
 
 	@Override
-	protected List<ESMultiMediaObject> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
+	protected List<ESMultiMediaObject> transfer(CSVRecord record, String csvRecord, int lineNo)
 	{
 		List<ESMultiMediaObject> mmos = new ArrayList<ESMultiMediaObject>(4);
 		multimediaIds = new ArrayList<String>(4);
@@ -111,7 +121,24 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
-				ESMultiMediaObject mmo = transferOne(record, urls[i], lineNo);
+				String url = urls[i].trim();
+				if (url.charAt(1) == ':') {
+					/*
+					 * This is a local file system path like Q:\foo.jpg. Anyhow,
+					 * it can't be a valid URI. Skip expensive URI parsing.
+					 */
+					logger.error("File system image location not allowed: " + url);
+					continue;
+				}
+				URI uri;
+				try {
+					uri = new URI(url);
+				}
+				catch (URISyntaxException e) {
+					logger.error("Invalid image URL: " + url);
+					continue;
+				}
+				ESMultiMediaObject mmo = transferOne(record, uri, lineNo);
 				if (mmo != null) {
 					mmos.add(mmo);
 				}
@@ -128,20 +155,11 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		for (int i = 0; i < ids.size(); ++i) {
 			ids.set(i, BrahmsImportAll.ID_PREFIX + ids.get(i));
 		}
-		// String base = ID_PREFIX + val(record, BARCODE.ordinal());
-		// List<String> ids = new ArrayList<String>(4);
-		// String s = val(record, IMAGELIST.ordinal());
-		// if (s != null) {
-		// String[] urls = s.split(",");
-		// for (int i = 0; i < urls.length; ++i) {
-		// ids.add(base + "_" + i);
-		// }
-		// }
 		return ids;
 	}
 
 
-	private ESMultiMediaObject transferOne(CSVRecord record, String imageUrl, int lineNo) throws Exception
+	private ESMultiMediaObject transferOne(CSVRecord record, URI uri, int lineNo)
 	{
 		String specimenUnitId = val(record, BARCODE.ordinal());
 		if (specimenUnitId == null) {
@@ -160,7 +178,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 			return null;
 		}
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
-		mmo.setUnitID(specimenUnitId + ':' + String.valueOf(imageUrl.hashCode()).replace('-', '0'));
+		mmo.setUnitID(specimenUnitId + '_' + String.valueOf(uri.toString().hashCode()).replace('-', '0'));
 		multimediaIds.add(mmo.getUnitID());
 		mmo.setSourceSystemId(mmo.getUnitID());
 		mmo.setSourceSystem(SourceSystem.BRAHMS);
@@ -169,9 +187,10 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setSourceID("Brahms");
 		mmo.setLicenceType(LICENCE_TYPE);
 		mmo.setLicence(LICENCE);
+		mmo.setCollectionType("Botany");
 		mmo.setAssociatedSpecimenReference(specimenUnitId);
 
-		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		ThemeCache tsc = ThemeCache.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimenUnitId, DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 		mmo.setTheme(themes);
 
@@ -179,13 +198,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 		mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
 		mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 		mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
-		try {
-			URI uri = new URI(imageUrl.trim());
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, null, Variant.MEDIUM_QUALITY));
-		}
-		catch (URISyntaxException e) {
-			throw new Exception(String.format("Invalid URL: \"%s\"", imageUrl));
-		}
+		mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, "image/jpeg", Variant.MEDIUM_QUALITY));
 
 		return mmo;
 	}

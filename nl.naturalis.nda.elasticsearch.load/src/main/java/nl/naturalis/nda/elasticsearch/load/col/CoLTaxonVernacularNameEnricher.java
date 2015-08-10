@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.CSVImporter.val;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
 
 import java.io.FileReader;
@@ -12,6 +11,7 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
@@ -89,12 +89,12 @@ public class CoLTaxonVernacularNameEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String taxonId = val(record, CsvField.taxonID.ordinal());
+					String taxonId = CSVImportUtil.val(record, CsvField.taxonID.ordinal());
 					String esId = CoLImportAll.ID_PREFIX + taxonId;
 
 					vn = new VernacularName();
-					vn.setName(val(record, CsvField.vernacularName.ordinal()));
-					vn.setLanguage(val(record, CsvField.language.ordinal()));
+					vn.setName(CSVImportUtil.val(record, CsvField.vernacularName.ordinal()));
+					vn.setLanguage(CSVImportUtil.val(record, CsvField.language.ordinal()));
 
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {

@@ -19,6 +19,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.ObjectType;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
@@ -26,6 +28,7 @@ import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.ResultGroupSet;
 import nl.naturalis.nda.search.SearchResultSet;
+import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;
 
@@ -45,13 +48,73 @@ public class SpecimenResource {
 
 	@EJB
 	Registry registry;
-	
+
+
+	/**
+	 * Check if there is a specimen with the provided UnitID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
 	@GET
 	@Path("/exists/{id}")
-	@Produces("text/plain;charset=UTF-8")	
-	public boolean exists(@PathParam("id") String unitID) {
-		SpecimenDao dao = registry.getSpecimenDao(null);
-		return dao.exists(unitID);		
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public boolean exists(@PathParam("id") String unitID, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDao dao = registry.getSpecimenDao(null);
+			return dao.exists(unitID);
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
+
+
+	/**
+	 * Load a bare-bone representation of the specimen with the specified ID.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+	@GET
+	@Path("/find/{id}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public Specimen find(@PathParam("id") String unitID, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDao dao = registry.getSpecimenDao(null);
+			Specimen result = dao.find(unitID);
+			if (result == null) {
+				throw new HTTP404Exception(uriInfo, ObjectType.SPECIMEN, unitID);
+			}
+			return result;
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
+
+
+	/**
+	 * Get all multimedia for the specified specimen.
+	 * 
+	 * @param id
+	 * @param uriInfo
+	 * @return
+	 */
+	@GET
+	@Path("/get-multimedia/{UnitID}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public MultiMediaObject[] getMultiMedia(@PathParam("UnitID") String id, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDao dao = registry.getSpecimenDao(null);
+			return dao.getMultiMedia(id);
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
 	}
 
 
@@ -105,7 +168,8 @@ public class SpecimenResource {
 	@Path("/get-specimen-within-result-set")
 	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
+	public SearchResultSet<Specimen> getSpecimenDetailWithinResultSetPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("getSpecimenDetailWithinResultSetPOST");
@@ -167,6 +231,7 @@ public class SpecimenResource {
 		}
 	}
 
+
 	@GET
 	@Path("/search/dwca")
 	@Produces("application/zip")
@@ -175,13 +240,13 @@ public class SpecimenResource {
 		try {
 			logger.debug("search/dwca");
 			String collection = uriInfo.getQueryParameters().getFirst("collection");
-			if(collection == null) {
+			if (collection == null) {
 				throw new WebApplicationException("Missing required parameter: collection");
 			}
 			String outputDir = registry.getNDA().getConfig().required("nda.export.output.dir");
 			String path = outputDir + "/dwca/zip/" + collection + ".zip";
 			File f = new File(path);
-			if(!f.isFile()) {
+			if (!f.isFile()) {
 				logger.error("No such file: " + f.getAbsolutePath());
 				throw new WebApplicationException("The requested collection does not exist, or no DwCA file is generated for it yet", 404);
 			}
@@ -191,6 +256,7 @@ public class SpecimenResource {
 			throw ResourceUtil.handleError(uriInfo, t);
 		}
 	}
+
 
 	@GET
 	@Path("/name-search")
@@ -217,7 +283,8 @@ public class SpecimenResource {
 	@Path("/name-search")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public ResultGroupSet<Specimen, String> nameSearchPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo, @Context HttpServletRequest request)
+	public ResultGroupSet<Specimen, String> nameSearchPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo,
+			@Context HttpServletRequest request)
 	{
 		try {
 			logger.debug("nameSearchPOST");

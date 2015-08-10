@@ -1,7 +1,11 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getFloat;
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
@@ -23,7 +27,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
@@ -37,12 +41,12 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		logger.info("-----------------------------------------------------------------");
 		logger.info("-----------------------------------------------------------------");
 		/*
-		 *  Check thematic search is configured properly
+		 * Check thematic search is configured properly
 		 */
-		ThematicSearchConfig.getInstance();
+		ThemeCache.getInstance();
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
 			importer.importCsvFiles();
 		}
@@ -159,7 +163,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	//@formatter:on
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
+	public static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
 
 
 	public BrahmsSpecimensImporter(IndexNative index)
@@ -179,7 +183,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public void importCsvFiles() throws Exception
 	{
-		ThematicSearchConfig.getInstance().resetMatchCounters();
+		long start = System.currentTimeMillis();
+		ThemeCache.getInstance().resetMatchCounters();
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
@@ -189,7 +194,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		for (File f : csvFiles) {
 			importCsv(f.getCanonicalPath());
 		}
-		ThematicSearchConfig.getInstance().logMatchInfo();
+		ThemeCache.getInstance().logMatchInfo();
+		logger.info("Total duration: " + LoadUtil.getDuration(start));
 	}
 
 
@@ -204,28 +210,20 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 			return null;
 		}
 
-		//		According to Marian vd Meij and Jeroen Creuwels, this check should not be done
-		//		(even though it's in the QAW templates for GBIF/IPT.
-		//		try {
-		//			checkSpData(record);
-		//		}
-		//		catch (Exception e) {
-		//			logger.debug(String.format("Error at line %s: %s", lineNo, e.getMessage()));
-		//			return null;
-		//		}
-
 		final ESSpecimen specimen = new ESSpecimen();
 		specimen.setSourceSystem(SourceSystem.BRAHMS);
 		specimen.setSourceSystemId(barcode);
 		specimen.setUnitID(barcode);
+		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + LoadUtil.urlEncode(barcode));
 
 		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		specimen.setOwner(SOURCE_INSTITUTION_ID);
 		specimen.setSourceID("Brahms");
 		specimen.setLicenceType(LICENCE_TYPE);
 		specimen.setLicence(LICENCE);
+		specimen.setCollectionType("Botany");
 
-		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		ThemeCache tsc = ThemeCache.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
 		specimen.setTheme(themes);
 
@@ -250,6 +248,12 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		specimen.setGatheringEvent(getGatheringEvent(record));
 		specimen.addIndentification(getSpecimenIdentification(record));
 		return Arrays.asList(specimen);
+	}
+
+	@Override
+	protected Logger logger()
+	{
+		return logger;
 	}
 
 
@@ -299,8 +303,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		Date date = getDate(y, m, d);
 		ge.setDateTimeBegin(date);
 		ge.setDateTimeEnd(date);
-		Double lat = dget(record, CsvField.LATITUDE.ordinal());
-		Double lon = dget(record, CsvField.LONGITUDE.ordinal());
+		Double lat = getDouble(record, CsvField.LATITUDE.ordinal());
+		Double lon = getDouble(record, CsvField.LONGITUDE.ordinal());
 		if (lat == 0D && lon == 0D) {
 			lat = null;
 			lon = null;
@@ -323,7 +327,9 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		return ge;
 	}
 
-
+	/*
+	 * Unnecessary/wrong check according to Marian v.d. Meij en Jeroen Creuwels
+	 */
 	static void checkSpData(CSVRecord record) throws Exception
 	{
 		String r = val(record, CsvField.RANK1.ordinal());
@@ -341,37 +347,8 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	private static Integer getFloatFieldAsInteger(CSVRecord record, int field)
 	{
-		String s = val(record, field);
-		if (s == null) {
-			return null;
-		}
-		try {
-			return (int) Float.parseFloat(s);
-		}
-		catch (NumberFormatException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
-			}
-			return null;
-		}
-	}
-
-
-	private static Double dget(CSVRecord record, int field)
-	{
-		String s = val(record, field);
-		if (s == null) {
-			return null;
-		}
-		try {
-			return Double.valueOf(s);
-		}
-		catch (NumberFormatException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Invalid number in field %s: \"%s\"", field, s));
-			}
-			return null;
-		}
+		Float f = getFloat(record, field);
+		return f == null ? null : f.intValue();
 	}
 
 }

@@ -3,7 +3,10 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +28,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
-import nl.naturalis.nda.elasticsearch.load.ThematicSearchConfig;
+import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -93,13 +96,7 @@ public class CrsSpecimenTransfer {
 			@Override
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
-				if (o1.isPreferred()) {
-					return -1;
-				}
-				if (o2.isPreferred()) {
-					return 1;
-				}
-				return 0;
+				return o1.isPreferred() ? 1 : o2.isPreferred() ? -1 : 0;
 			}
 
 		});
@@ -107,13 +104,11 @@ public class CrsSpecimenTransfer {
 		specimen.setSourceSystem(SourceSystem.CRS);
 		specimen.setUnitID(unitId);
 		specimen.setSourceSystemId(specimen.getUnitID());
-		ThematicSearchConfig tsc = ThematicSearchConfig.getInstance();
+		ThemeCache tsc = ThemeCache.getInstance();
 		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
 		specimen.setTheme(themes);
-		specimen.setUnitGUID(val(recordElement, "abcd:UnitGUID"));
+		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(unitId));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));
-		// specimen.setSourceInstitutionID(val(recordElement,
-		// "abcd:SourceInstitutionID"));
 		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		specimen.setOwner(SOURCE_INSTITUTION_ID);
 		specimen.setSourceID("CRS");
@@ -490,6 +485,18 @@ public class CrsSpecimenTransfer {
 	{
 		String s = val(e, tag);
 		return (s == null || s.equals("1"));
+	}
+
+
+	private static String urlEncode(String raw)
+	{
+		try {
+			return URLEncoder.encode(raw, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			// Won't happen with UTF-8
+			return null;
+		}
 	}
 
 }

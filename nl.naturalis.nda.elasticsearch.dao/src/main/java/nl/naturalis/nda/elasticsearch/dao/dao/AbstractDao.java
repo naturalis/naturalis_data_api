@@ -600,8 +600,22 @@ public abstract class AbstractDao {
         }
     }
 
-    protected void enhanceSearchResultWithMatchInfoAndScore(SearchResult<?> searchResult, SearchHit hit) {
-        searchResult.setScore(hit.getScore());
+    protected void enhanceSearchResultWithMatchInfoAndScore(SearchResult<?> searchResult, SearchHit hit) 
+    {
+    
+    	/* NDA-294: Missing scores and percentages 
+    	 * Door: 	Reinier
+    	 * Datum: 	22 juli 2015
+    	 * Doel: 	Controle of the value een cijfer(float) is.
+    	 * */
+    	if (hit.getScore() == Float.NaN)
+    	{
+    	    searchResult.setScore(Float.valueOf("No score"));	// Wordt toch 0
+    	}
+    	else
+    	{
+    		searchResult.setScore(hit.getScore());
+    	}
 
         if (hit.getHighlightFields() != null) {
             LinkedHashMap<String, StringMatchInfo> stringMatchInfos = new LinkedHashMap<>();

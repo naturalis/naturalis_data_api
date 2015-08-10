@@ -17,8 +17,5 @@ do
 done
 #echo CLASSPATH: $classpath
 
-# We really need 2G of memory because of the
-# mimetype cache file loaded into memory when
-# importing multimedia
-JAVA_OPTS="-server -Xms256m -Xmx2048m"
+JAVA_OPTS="-server -Xms512m -Xmx1024m"
 JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${ndaConfDir}"

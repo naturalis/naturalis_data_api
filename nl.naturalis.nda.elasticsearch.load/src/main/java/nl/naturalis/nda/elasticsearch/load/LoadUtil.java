@@ -119,7 +119,6 @@ public final class LoadUtil {
 		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));
 	}
 
-
 	/**
 	 * Get the duration between {@code start} and now, formatted as HH:mm:ss.
 	 * 

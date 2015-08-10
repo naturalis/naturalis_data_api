@@ -22,16 +22,20 @@ public class NsrImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
+		IndexNative index = null;
 		try {
-			IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			NsrImportAll importer = new NsrImportAll(index);
 			importer.importAllPerType();
 		}
 		catch (Throwable t) {
 			logger.error("NSR import failed!");
 			logger.error(t.getMessage(), t);
+		}
+		finally {
+			if (index != null) {
+				index.getClient().close();
+			}
 		}
 	}
 
@@ -40,7 +44,7 @@ public class NsrImportAll {
 	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.nsr.batchsize";
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrImportAll.class);
-	
+
 	private final IndexNative index;
 	private final boolean backup;
 
@@ -60,7 +64,7 @@ public class NsrImportAll {
 	 */
 	public void importAllPerType() throws Exception
 	{
-		if (NsrImportUtil.getXMLFiles().length == 0) {
+		if (NsrImportUtil.getXmlFiles().length == 0) {
 			logger.info("No XML files to process");
 			return;
 		}
@@ -69,7 +73,7 @@ public class NsrImportAll {
 		NsrMultiMediaImporter mediaImporter = new NsrMultiMediaImporter(index);
 		mediaImporter.importXmlFiles();
 		if (backup) {
-			NsrImportUtil.backupXMLFiles();
+			NsrImportUtil.backupXmlFiles();
 		}
 		logger.info(getClass().getSimpleName() + " finished");
 	}
@@ -83,7 +87,7 @@ public class NsrImportAll {
 	 */
 	public void importAllPerFile() throws Exception
 	{
-		if (NsrImportUtil.getXMLFiles().length == 0) {
+		if (NsrImportUtil.getXmlFiles().length == 0) {
 			logger.info("No XML files to process");
 			return;
 		}
@@ -91,14 +95,14 @@ public class NsrImportAll {
 		NsrMultiMediaImporter multimediaImporter = new NsrMultiMediaImporter(index);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		for (File xmlFile : NsrImportUtil.getXMLFiles()) {
+		for (File xmlFile : NsrImportUtil.getXmlFiles()) {
 			logger.info("Processing file " + xmlFile.getCanonicalPath());
 			Document document = builder.parse(xmlFile);
 			taxonImporter.importXmlFile(document);
 			multimediaImporter.importXmlFile(document);
 		}
 		if (backup) {
-			NsrImportUtil.backupXMLFiles();
+			NsrImportUtil.backupXmlFiles();
 		}
 		logger.info(getClass().getSimpleName() + " finished");
 	}

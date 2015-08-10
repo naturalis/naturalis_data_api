@@ -73,7 +73,7 @@ public class NsrMultiMediaImporter {
 
 	public void importXmlFiles() throws Exception
 	{
-		File[] xmlFiles = NsrImportUtil.getXMLFiles();
+		File[] xmlFiles = NsrImportUtil.getXmlFiles();
 		if (xmlFiles.length == 0) {
 			logger.info("No XML files to process");
 			return;
@@ -88,7 +88,7 @@ public class NsrMultiMediaImporter {
 			importXmlFile(document);
 		}
 		if (backup) {
-			NsrImportUtil.backupXMLFiles();
+			NsrImportUtil.backupXmlFiles();
 		}
 		logger.info("Total number of taxa processed: " + totalNumTaxa);
 		logger.info("Total number of bad taxa: " + totalNumBadTaxa);

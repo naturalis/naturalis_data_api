@@ -4,13 +4,16 @@
 
 type="${1}"
 
-if [ "$type" = taxa ]
+if [ "${action}" = taxa ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrTaxonImporter
-elif [ "$type" = multimedia ]
+elif [ "${action}" = multimedia ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrMultiMediaImporter
-elif [ "$type" = "" ]
+elif [ "${action}" = reset ]
+then
+    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrBackupExtensionRemover
+elif [ "${action}" = "" ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImportAll
 else

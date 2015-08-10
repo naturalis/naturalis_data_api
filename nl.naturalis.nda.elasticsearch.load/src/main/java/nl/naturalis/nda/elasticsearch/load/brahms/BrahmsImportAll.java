@@ -17,10 +17,9 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args)
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
+		IndexNative index = null;
 		try {
-			IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = LoadUtil.getNbaIndexManager();
 			BrahmsImportAll importer = new BrahmsImportAll(index);
 			importer.importAllPerFile();
 		}
@@ -28,7 +27,11 @@ public class BrahmsImportAll {
 			logger.error("Brahms import failed!");
 			logger.error(t.getMessage(), t);
 		}
-		logger.info("Ready");
+		finally {
+			if (index != null) {
+				index.getClient().close();
+			}
+		}
 	}
 
 	public static final String ID_PREFIX = "BRAHMS-";

@@ -10,9 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 
-public class NsrImportUtil {
+class NsrImportUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(NsrImportUtil.class);
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 
 	private NsrImportUtil()
@@ -20,9 +21,9 @@ public class NsrImportUtil {
 	}
 
 
-	static File[] getXMLFiles() throws Exception
+	static File[] getXmlFiles() throws Exception
 	{
-		File dir = LoadUtil.getConfig().getDirectory("nsr.xml_dir");
+		File dir = getDataDir();
 		logger.info("Searching for new XML files in " + dir.getAbsolutePath());
 		return dir.listFiles(new FilenameFilter() {
 			@Override
@@ -34,21 +35,46 @@ public class NsrImportUtil {
 	}
 
 
-	static void backupXMLFiles()
+	static void backupXmlFiles()
 	{
 		logger.info("Creating backups of XML files");
 		File[] xmlFiles;
 		try {
-			xmlFiles = getXMLFiles();
+			xmlFiles = getXmlFiles();
 		}
 		catch (Exception e) {
 			logger.error("Backup failed");
 			return;
 		}
-		String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
+		String backupExtension = "." + sdf.format(new Date()) + ".imported";
 		for (File xmlFile : xmlFiles) {
 			xmlFile.renameTo(new File(xmlFile.getAbsolutePath() + backupExtension));
 		}
+	}
+
+
+	static void removeBackupExtension()
+	{
+		File dir = getDataDir();
+		File[] files = dir.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name)
+			{
+				return name.toLowerCase().endsWith(".imported");
+			}
+		});
+		for (File file : files) {
+			int pos = file.getName().toLowerCase().indexOf(".xml");
+			String chopped = file.getName().substring(0, pos + 4);
+			System.out.println(file.getName() + " ---> " + chopped);
+			chopped = dir.getAbsolutePath() + "/" + chopped;
+			file.renameTo(new File(chopped));
+		}
+	}
+
+	private static File getDataDir()
+	{
+		return LoadUtil.getConfig().getDirectory("nsr.xml_dir");
 	}
 
 }

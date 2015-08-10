@@ -9,6 +9,7 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 class BrahmsImportUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportUtil.class);
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 
 	private BrahmsImportUtil()
@@ -42,8 +44,7 @@ class BrahmsImportUtil {
 
 	static File[] getCsvFiles()
 	{
-		File dir = LoadUtil.getConfig().getDirectory("brahms.csv_dir");
-		File[] files = dir.listFiles(new FilenameFilter() {
+		File[] files = getDataDir().listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
 			{
@@ -53,6 +54,33 @@ class BrahmsImportUtil {
 		return files;
 	}
 
+	static void backupCsvFiles()
+	{
+		String backupExtension = "." + sdf.format(new Date()) + ".imported";
+		for (File f : getCsvFiles()) {
+			f.renameTo(new File(f.getAbsolutePath() + backupExtension));
+		}
+	}
+
+
+	static void removeBackupExtension()
+	{
+		File dir = getDataDir();
+		File[] files = dir.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name)
+			{
+				return name.toLowerCase().endsWith(".imported");
+			}
+		});
+		for (File file : files) {
+			int pos = file.getName().toLowerCase().indexOf(".csv");
+			String chopped = file.getName().substring(0, pos + 4);
+			System.out.println(file.getName() + " ---> " + chopped);
+			chopped = dir.getAbsolutePath() + "/" + chopped;
+			file.renameTo(new File(chopped));
+		}
+	}
 
 	static Date getDate(String year, String month, String day)
 	{
@@ -237,4 +265,10 @@ class BrahmsImportUtil {
 		}
 		return CSVImportUtil.val(record, CsvField.RANK2.ordinal());
 	}
+
+	private static File getDataDir()
+	{
+		return LoadUtil.getConfig().getDirectory("brahms.csv_dir");
+	}
+
 }

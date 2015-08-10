@@ -25,12 +25,12 @@ then
 	echo "WARNING: When not loading only specimens or only multimedia file backup is disabled"
 elif [ "$action" = reset ]
 then
-    java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.Unimport
+    java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsBackupExtensionRemover
 elif [ "$action" = "" ]
 then
     java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsImportAll
 else
-    echo "Don't know how to import \"$action\"."
+    echo "Don't know how to import/execute \"$action\"."
 fi
 
 

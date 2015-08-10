@@ -146,13 +146,18 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="install-import-cli" depends="verify" description="Install the command line interface (shell scripts, config files). Use when build.properties has changed, but source code has not.">
+	<target name="install-import-cli" depends="verify" description="Installs shell scripts and config files but does not touch Java libraries. Use when build.properties has changed, but source code has not.">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-cli" />
+	</target>
+
+	<target name="install-import-libs" depends="verify" description="Installs Java libraries but does not touch the shell scripts and config files. Use when source code has changed, but build.properties has not">
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-libs" />
 	</target>
 
 	<target name="install-import-module" depends="-build-import-module" description="Install import module (Java libraries, shell scripts, config files)">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import-libs" />
+		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import-cli" />
 	</target>
 
 	<target name="clean-export-module" description="Perform cleanup for export module, but do not build or install">

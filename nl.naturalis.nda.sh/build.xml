@@ -53,9 +53,8 @@
 		<chmod dir="${nda.import.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 	</target>
 
-	<target name="install-import">
+	<target name="install-libs">
 		<mkdir dir="${nda.import.install.dir}" />
-		<antcall target="install-import-cli" />
 		<echo message="Installing libraries into ${nda.import.install.dir}/lib" />
 		<mkdir dir="${nda.import.install.dir}/lib" />
 		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.import.install.dir}/lib" />
@@ -70,12 +69,7 @@
 		<copy todir="${nda.import.install.dir}/lib">
 			<fileset dir="${load.module.location}/build/classpath" />
 		</copy>
-		<!-- Make shell scripts executable -->
-		<chmod dir="${nda.import.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 	</target>
-
-
-
 
 
 

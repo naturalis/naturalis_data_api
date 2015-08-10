@@ -2,7 +2,7 @@
 
 . ./include.sh
 
-type="${1}"
+action="${1}"
 
 if [ "${action}" = taxa ]
 then
@@ -17,7 +17,7 @@ elif [ "${action}" = "" ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImportAll
 else
-    echo "Don't know how to import \"$type\""
+    echo "Don't know how to import/execute \"$action\""
 fi
 
 

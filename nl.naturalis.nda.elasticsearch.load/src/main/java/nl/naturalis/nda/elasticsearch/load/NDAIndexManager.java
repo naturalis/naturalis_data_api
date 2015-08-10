@@ -50,6 +50,8 @@ public class NDAIndexManager {
 
 	public void importAll()
 	{
+		
+		long start  = System.currentTimeMillis();
 
 		logger.info("[>--- Starting NSR import ---<]");
 		try {
@@ -91,7 +93,7 @@ public class NDAIndexManager {
 			logger.error(t.getMessage(), t);
 		}
 
-		logger.info("Ready");
+		logger.info("Total duration: " + LoadUtil.getDuration(start));
 
 	}
 

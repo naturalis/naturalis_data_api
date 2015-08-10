@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for creating/managing/updating the NBA document store. Provides
- * a method for doing a full import of <i>all</i> data sources.
+ * a method for doing a full import.
  * 
  * @author ayco_holleman
  * 

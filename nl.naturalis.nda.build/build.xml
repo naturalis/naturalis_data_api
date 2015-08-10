@@ -146,11 +146,11 @@
 		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
 	</target>
 
-	<target name="install-import-cli" depends="verify" description="Installs shell scripts and config files but does not touch Java libraries. Use when build.properties has changed, but source code has not.">
+	<target name="install-import-cli" depends="verify" description="Install shell scripts and config files but not Java libraries. Use when build.properties has changed, but source code has not">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-cli" />
 	</target>
 
-	<target name="install-import-libs" depends="verify" description="Installs Java libraries but does not touch the shell scripts and config files. Use when source code has changed, but build.properties has not">
+	<target name="install-import-libs" depends="verify" description="Install Java libraries but not shell scripts and config files. Use when source code has changed, but build.properties has not">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-libs" />
 	</target>
 
@@ -170,11 +170,11 @@
 		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" />
 	</target>
 
-	<target name="install-export-cli" depends="verify" description="Install the command line interface (shell scripts, config files). Use when build.properties has changed, but source code has not.">
+	<target name="install-export-cli" depends="verify" description="Install shell scripts and config files but not Java libraries. Use when build.properties has changed, but source code has not">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export-cli" />
 	</target>
 
-	<target name="install-export-module" depends="-build-export-module" description="Install import module (Java libraries, shell scripts, config files)">
+	<target name="install-export-module" depends="-build-export-module" description="Install export module (Java libraries, shell scripts, config files)">
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
 	</target>

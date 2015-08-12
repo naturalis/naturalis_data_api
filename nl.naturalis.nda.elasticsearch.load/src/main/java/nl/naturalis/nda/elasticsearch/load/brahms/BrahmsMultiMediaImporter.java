@@ -52,16 +52,6 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-
-		/*
-		 * Make sure thematic search and mime type cache can be instantiated,
-		 * otherwise we get class initialization errors in
-		 * CrsMultiMediaTransfer.
-		 */
-		ThemeCache.getInstance();
-
 		IndexNative index = null;
 		try {
 			index = LoadUtil.getNbaIndexManager();

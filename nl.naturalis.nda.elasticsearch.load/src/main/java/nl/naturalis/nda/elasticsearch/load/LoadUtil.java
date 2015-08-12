@@ -21,6 +21,14 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utility class providing basic functionality for all import programs. Always
+ * use this class to connect to ElasticSearch using {@link #getESClient()} or
+ * {@link #getNbaIndexManager()}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public final class LoadUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoadUtil.class);
@@ -29,9 +37,11 @@ public final class LoadUtil {
 	private static ConfigObject config;
 	private static Client esClient;
 
+
 	private LoadUtil()
 	{
 	}
+
 
 	/**
 	 * Get a {@code ConfigObject} for the central NBA import configuration file
@@ -77,6 +87,7 @@ public final class LoadUtil {
 		return config;
 	}
 
+
 	/**
 	 * Get a native Java ElasticSearch {@code Client}.
 	 * 
@@ -109,6 +120,7 @@ public final class LoadUtil {
 		return esClient;
 	}
 
+
 	/**
 	 * Get an index manager for the NBA index.
 	 * 
@@ -118,6 +130,7 @@ public final class LoadUtil {
 	{
 		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));
 	}
+
 
 	/**
 	 * Get the duration between {@code start} and now, formatted as HH:mm:ss.
@@ -152,6 +165,8 @@ public final class LoadUtil {
 
 
 	/**
+	 * Equivalent to {@code URLEncoder.encode(raw, "UTF-8")} suppressing the
+	 * {@code UnsupportedEncodingException}.
 	 * 
 	 * @param raw
 	 * @return
@@ -166,6 +181,7 @@ public final class LoadUtil {
 			return null;
 		}
 	}
+
 
 	private static String[] getPorts(int numHosts)
 	{
@@ -183,6 +199,5 @@ public final class LoadUtil {
 		}
 		return ports;
 	}
-
 
 }

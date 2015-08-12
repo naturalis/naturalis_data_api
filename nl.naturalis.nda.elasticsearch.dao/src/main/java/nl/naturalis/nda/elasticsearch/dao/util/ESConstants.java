@@ -57,9 +57,9 @@ public class ESConstants {
 			public static final String PHASES_OR_STAGES = "phasesOrStages";
 			public static final String GATHERINGEVENTS_SITECOORDINATES_POINT = "gatheringEvents.siteCoordinates.point";
 			/* NDA-386 By: Reinier Date: 26 june 2015 */
-			public static final String COLLECTIONTYPES = "collectionType";
+			public static final String COLLECTIONTYPES = "collectionType.raw";
 			/* NDA-387 By: Reinier Date: 30 june 2015 */
-			public static final String SOURCES_SYSTEM_NAMES = "sourceSystem.name";
+			public static final String SOURCES_SYSTEM_NAMES = "sourceSystem.name.raw";
 			public static final String SOURCESYSTEM = "sourceSystem";
 		}
 
@@ -78,8 +78,8 @@ public class ESConstants {
 			public static final String GATHERINGEVENT_GATHERING_PERSONS_FULLNAME = "gatheringEvent.gatheringPersons.fullName";
 			public static final String GATHERINGEVENT_GATHERING_ORGANISATIONS_NAME = "gatheringEvent.gatheringOrganizations.name";
 			/* NDA-386 By: Reinier Date: 26 june 2015 */
-			public static final String COLLECTION_TYPE = "collectionType";
-			public static final String SOURCE_SYSTEM_NAME = "sourceSystem.name";
+			public static final String COLLECTION_TYPE = "collectionType.raw";
+			public static final String SOURCE_SYSTEM_NAME = "sourceSystem.name.raw";
 			public static final String SOURCESYSTEM = "sourceSystem";
 		}
 
@@ -117,7 +117,7 @@ public class ESConstants {
 			public static final String SYSTEM_CLASSIFICATION_NAME = "systemClassification.name";
 			public static final String EXPERTS_FULLNAME = "experts.fullName";
 			/* NDA-387 By: Reinier Date: 30 june 2015 */
-			public static final String SOURCES_SYSTEM_TAXA = "sourceSystem.name";
+			public static final String SOURCES_SYSTEM_TAXA = "sourceSystem.name.raw";
 			public static final String SOURCESYSTEM = "sourceSystem";
 		}
 	}

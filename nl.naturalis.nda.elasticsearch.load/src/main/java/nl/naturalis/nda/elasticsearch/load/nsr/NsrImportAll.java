@@ -64,6 +64,7 @@ public class NsrImportAll {
 	 */
 	public void importAllPerType() throws Exception
 	{
+		long start = System.currentTimeMillis();
 		if (NsrImportUtil.getXmlFiles().length == 0) {
 			logger.info("No XML files to process");
 			return;
@@ -75,7 +76,7 @@ public class NsrImportAll {
 		if (backup) {
 			NsrImportUtil.backupXmlFiles();
 		}
-		logger.info(getClass().getSimpleName() + " finished");
+		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}
 
 

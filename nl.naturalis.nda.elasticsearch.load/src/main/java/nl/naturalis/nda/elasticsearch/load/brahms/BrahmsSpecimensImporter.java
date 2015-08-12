@@ -38,12 +38,6 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-		/*
-		 * Check thematic search is configured properly
-		 */
-		ThemeCache.getInstance();
 		IndexNative index = null;
 		try {
 			index = LoadUtil.getNbaIndexManager();

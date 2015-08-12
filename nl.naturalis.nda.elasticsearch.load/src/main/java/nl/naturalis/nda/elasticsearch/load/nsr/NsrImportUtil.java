@@ -24,7 +24,7 @@ class NsrImportUtil {
 	static File[] getXmlFiles() throws Exception
 	{
 		File dir = getDataDir();
-		logger.info("Searching for new XML files in " + dir.getAbsolutePath());
+		logger.info("Searching for XML files in " + dir.getAbsolutePath());
 		return dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)

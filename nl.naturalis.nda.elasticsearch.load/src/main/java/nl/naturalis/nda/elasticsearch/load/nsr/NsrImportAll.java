@@ -7,9 +7,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
@@ -24,7 +24,7 @@ public class NsrImportAll {
 	{
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			NsrImportAll importer = new NsrImportAll(index);
 			importer.importAllPerType();
 		}
@@ -43,7 +43,7 @@ public class NsrImportAll {
 	public static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.nsr.backup";
 	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.nsr.batchsize";
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrImportAll.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrImportAll.class);
 
 	private final IndexNative index;
 	private final boolean backup;

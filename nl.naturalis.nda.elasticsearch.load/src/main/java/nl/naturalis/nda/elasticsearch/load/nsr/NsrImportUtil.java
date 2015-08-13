@@ -5,14 +5,14 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
+
+import org.slf4j.Logger;
 
 class NsrImportUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrImportUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrImportUtil.class);
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 

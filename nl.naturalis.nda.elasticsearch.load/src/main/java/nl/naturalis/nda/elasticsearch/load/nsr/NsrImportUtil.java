@@ -5,7 +5,6 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
@@ -74,7 +73,7 @@ class NsrImportUtil {
 
 	private static File getDataDir()
 	{
-		return LoadUtil.getConfig().getDirectory("nsr.xml_dir");
+		return Registry.getInstance().getConfig().getDirectory("nsr.xml_dir");
 	}
 
 }

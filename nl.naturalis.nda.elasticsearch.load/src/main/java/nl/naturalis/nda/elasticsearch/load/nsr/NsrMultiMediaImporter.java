@@ -16,6 +16,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 
 import org.domainobject.util.DOMUtil;
@@ -34,11 +35,9 @@ public class NsrMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = Registry.getInstance().getNbaIndexManager();
 			NsrMultiMediaImporter importer = new NsrMultiMediaImporter(index);
 			importer.importXmlFiles();
 		}

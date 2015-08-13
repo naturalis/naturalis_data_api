@@ -4,7 +4,6 @@ import nl.naturalis.nda.elasticsearch.load.CSVImporter.NoSuchFieldException;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Ayco Holleman
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CSVImportUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(CSVImportUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CSVImportUtil.class);
 
 	private static final String MSG_INVALID_INTEGER = "Invalid integer in field %s: \"%s\" (value set to 0)";
 	private static final String MSG_INVALID_NUMBER = "Invalid number in field %s: \"%s\" (value set to 0)";

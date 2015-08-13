@@ -19,7 +19,6 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class providing basic functionality for all import programs. Always
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class LoadUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(LoadUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(LoadUtil.class);
 	private static final String PROPERTY_FILE_NAME = "nda-import.properties";
 
 	private static ConfigObject config;

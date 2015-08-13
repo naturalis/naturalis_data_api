@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
@@ -31,7 +30,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected static final String JPEG = "image/jpeg";
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractMimeTypeCache.class);
+	private static final Logger logger = Registry.getInstance().getLogger(AbstractMimeTypeCache.class);
 
 	private final SimpleHttpHead httpHead = new SimpleHttpHead();
 

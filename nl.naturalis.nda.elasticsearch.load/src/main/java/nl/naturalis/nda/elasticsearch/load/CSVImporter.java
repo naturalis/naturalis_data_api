@@ -28,7 +28,7 @@ public abstract class CSVImporter<T> {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CSVImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CSVImporter.class);
 
 	protected final Index index;
 	protected final String type;

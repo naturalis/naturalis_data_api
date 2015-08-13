@@ -62,14 +62,20 @@ class NsrImportUtil {
 				return name.toLowerCase().endsWith(".imported");
 			}
 		});
-		for (File file : files) {
-			int pos = file.getName().toLowerCase().indexOf(".xml");
-			String chopped = file.getName().substring(0, pos + 4);
-			System.out.println(file.getName() + " ---> " + chopped);
-			chopped = dir.getAbsolutePath() + "/" + chopped;
-			file.renameTo(new File(chopped));
+		if (files.length == 0) {
+			logger.info("No backup files found");
+		}
+		else {
+			for (File file : files) {
+				int pos = file.getName().toLowerCase().indexOf(".xml");
+				String chopped = file.getName().substring(0, pos + 4);
+				System.out.println(file.getName() + " ---> " + chopped);
+				chopped = dir.getAbsolutePath() + "/" + chopped;
+				file.renameTo(new File(chopped));
+			}
 		}
 	}
+
 
 	private static File getDataDir()
 	{

@@ -14,13 +14,12 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -34,11 +33,9 @@ public class NsrTaxonImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = Registry.getInstance().getNbaIndexManager();
 			NsrTaxonImporter importer = new NsrTaxonImporter(index);
 			importer.importXmlFiles();
 		}
@@ -49,7 +46,7 @@ public class NsrTaxonImporter {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrTaxonImporter.class);
 	
 	private final Index index;
 

@@ -14,14 +14,12 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -48,7 +46,7 @@ public class NsrMultiMediaImporter {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrMultiMediaImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrMultiMediaImporter.class);
 
 	private final Index index;
 

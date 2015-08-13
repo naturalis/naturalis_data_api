@@ -19,8 +19,10 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
 
 public class Registry {
@@ -37,6 +39,8 @@ public class Registry {
 	private LoggerContext ctx;
 	@SuppressWarnings("rawtypes")
 	private FileAppender fileAppender;
+	@SuppressWarnings("rawtypes")
+	private ConsoleAppender consoleAppender;
 	private Logger logger; // NEEDS to be non-static!
 
 
@@ -106,7 +110,12 @@ public class Registry {
 	public Logger getLogger(Class<?> cls)
 	{
 		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);
-		logger.addAppender(fileAppender);
+		if (config.isTrue("logger.file")) {
+			logger.addAppender(fileAppender);
+		}
+		if (config.isTrue("logger.console")) {
+			logger.addAppender(consoleAppender);
+		}
 		return logger;
 	}
 
@@ -180,23 +189,38 @@ public class Registry {
 	{
 		ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
 		ctx.reset();
-		fileAppender = new FileAppender();
-		fileAppender.setContext(ctx);
-		fileAppender.setName("main-class");
-		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
-		String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-		String command = System.getProperty("sun.java.command");
-		String[] chunks = command.split("\\.");
-		String mainClass = chunks[chunks.length - 1].split(" ")[0];
-		String logFileName = mainClass + "-" + now + ".log";
-		File logFile = FileUtil.newFile(logDir, logFileName);
-		fileAppender.setFile(logFile.getAbsolutePath());
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setContext(ctx);
-		encoder.setPattern("%d %5p | %-55logger{55} | %m %n");
-		encoder.start();
-		fileAppender.setEncoder(encoder);
-		fileAppender.start();
+
+		PatternLayoutEncoder encoder = null;
+
+		if (config.isTrue("logger.file")) {
+			fileAppender = new FileAppender();
+			fileAppender.setContext(ctx);
+			File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
+			String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+			String command = System.getProperty("sun.java.command");
+			String[] chunks = command.split("\\.");
+			String mainClass = chunks[chunks.length - 1].split(" ")[0];
+			String logFileName = mainClass + "-" + now + ".log";
+			File logFile = FileUtil.newFile(logDir, logFileName);
+			fileAppender.setFile(logFile.getAbsolutePath());
+			encoder = createPatternLayoutEncoder(ctx);
+			fileAppender.setEncoder(encoder);
+			fileAppender.start();
+		}
+
+		if (config.isTrue("logger.console")) {
+			consoleAppender = new ConsoleAppender();
+			consoleAppender.setContext(ctx);
+			if (encoder == null) {
+				encoder = createPatternLayoutEncoder(ctx);
+			}
+			consoleAppender.setEncoder(encoder);
+			consoleAppender.start();
+		}
+
+		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
+		root.setLevel(Level.toLevel(config.required("logger.level")));
+
 		logger = getLogger(getClass());
 	}
 
@@ -227,6 +251,16 @@ public class Registry {
 			throw new InitializationException(msg);
 		}
 		this.config = new ConfigObject(file);
+	}
+
+
+	private static PatternLayoutEncoder createPatternLayoutEncoder(LoggerContext ctx)
+	{
+		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+		encoder.setContext(ctx);
+		encoder.setPattern("%d %5p | %-55logger{55} | %m %n");
+		encoder.start();
+		return encoder;
 	}
 
 }

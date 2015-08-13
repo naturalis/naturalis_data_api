@@ -118,8 +118,6 @@ public class Registry {
 	 */
 	public Client getESClient()
 	{
-		// Make sure configuration is loaded
-		getConfig();
 		if (esClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");

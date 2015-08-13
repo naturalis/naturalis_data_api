@@ -48,7 +48,10 @@ public final class LoadUtil {
 	 * (nda-import.properties).
 	 * 
 	 * @return
+	 * 
+	 * @Deprecated Use {@link Registry}
 	 */
+	@Deprecated()
 	public static ConfigObject getConfig()
 	{
 		if (config == null) {
@@ -91,8 +94,9 @@ public final class LoadUtil {
 	/**
 	 * Get a native Java ElasticSearch {@code Client}.
 	 * 
-	 * @return
+	 * @Deprecated Use {@link Registry}
 	 */
+	@Deprecated()
 	public static final Client getESClient()
 	{
 		// Make sure configuration is loaded
@@ -124,8 +128,9 @@ public final class LoadUtil {
 	/**
 	 * Get an index manager for the NBA index.
 	 * 
-	 * @return
+	 * @Deprecated Use {@link Registry}
 	 */
+	@Deprecated()
 	public static IndexNative getNbaIndexManager()
 	{
 		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));

@@ -377,7 +377,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, float minScore, String sessionId) {
         float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
-        resultSet.setTotalSize(response.getHits().getTotalHits());
+        resultSet.setTotalGroupSize(response.getHits().getTotalHits());
         //resultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         for (SearchHit hit : response.getHits()) {
@@ -388,7 +388,24 @@ public class BioportalSpecimenDao extends AbstractDao {
             SearchResult<Specimen> searchResult = new SearchResult<>(transfer);
             resultSet.addSearchResult(searchResult);
             double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
-            searchResult.setPercentage(percentage);
+            /*
+             * Jira:	NDA_294
+             * By: 		Reinier.Kartowikromo
+             * Date: 	14-08-2015
+             * Problem: This problem occured if hit.getScore, minScore and maxScore has the same value.
+             * 			The result will always be zero(0) and that's a "NaN" as result.
+             * 
+             * Description(Solution): 	Checked if percentage is a valid floatnumber. 
+             * 							If valid then the return value is percentage else value is "0".
+             * */
+            if(Double.isNaN(percentage))
+            {
+            	searchResult.setPercentage(0.0);
+            }
+            else
+            {
+            	searchResult.setPercentage(percentage);
+            }
             searchResult.addLink(new Link("_specimen", SPECIMEN_DETAIL_BASE_URL + transfer.getUnitID()));
 
             getTaxonForSpecimenFullScientificName(transfer, searchResult, sessionId);
@@ -478,7 +495,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             specimenStringResultGroupSet.addGroup(resultGroup);
         }
 
-        specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
+        specimenStringResultGroupSet.setTotalGroupSize(response.getHits().getTotalHits());
         //specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
     }

@@ -67,7 +67,7 @@ public class SpecimenDao extends AbstractDao {
 				specimen = SpecimenTransfer.transfer(esSpecimen);
 				resultSet.addSearchResult(specimen);
 			}
-			resultSet.setTotalSize(response.getHits().getTotalHits());
+			resultSet.setTotalGroupSize(response.getHits().getTotalHits());
 			QueryParams queryParams = new QueryParams();
 			queryParams.put(UNIT_ID, Collections.singletonList(unitID));
 			resultSet.setQueryParameters(queryParams);

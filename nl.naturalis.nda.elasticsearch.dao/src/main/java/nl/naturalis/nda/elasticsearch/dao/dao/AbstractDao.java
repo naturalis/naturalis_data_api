@@ -527,7 +527,7 @@ public abstract class AbstractDao {
         }
         nameResTaxonQueryParams.add("_maxResults", "50");
         SearchResultSet<Taxon> nameResTaxons = taxonDao.searchReturnsResultSet(nameResTaxonQueryParams, null, null, true, sessionId); // no field filtering
-        if (nameResTaxons.getTotalSize() == 0) {
+        if (nameResTaxons.getTotalGroupSize() == 0) {
             return null;
         }
 
@@ -608,7 +608,7 @@ public abstract class AbstractDao {
     	 * Datum: 	22 juli 2015
     	 * Doel: 	Controle of the value een cijfer(float) is.
     	 * */
-    	if (hit.getScore() == Float.NaN)
+    	if (Float.isNaN(hit.getScore()))
     	{
     	    searchResult.setScore(Float.valueOf("No score"));	// Wordt toch 0
     	}

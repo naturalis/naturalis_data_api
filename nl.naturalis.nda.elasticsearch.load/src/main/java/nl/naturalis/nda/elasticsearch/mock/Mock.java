@@ -74,7 +74,7 @@ public class Mock {
 	public void groupTaxaByName() throws JsonProcessingException
 	{
 		ResultGroupSet<Taxon, String> rs = new ResultGroupSet<Taxon, String>();
-		rs.setTotalSize(988);
+		rs.setTotalGroupSize(988);
 		rs.addLink("self", "http://nda.naturalis.nl/taxon/name-search/?term=Malus");
 		//rs.setSearchTerms(Arrays.asList("Malus"));
 

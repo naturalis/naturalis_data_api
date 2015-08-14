@@ -107,7 +107,7 @@ public class ResourceUtil {
 			UriBuilder prevLinkUriBuilder = request.getRequestUriBuilder();
 			UriBuilder nextLinkUriBuilder = request.getRequestUriBuilder();
 
-			if (offsetNext < result.getTotalSize()) {
+			if (offsetNext < result.getTotalGroupSize()) {
 				if (hasOffset) {
 					nextLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetNext));
 				}

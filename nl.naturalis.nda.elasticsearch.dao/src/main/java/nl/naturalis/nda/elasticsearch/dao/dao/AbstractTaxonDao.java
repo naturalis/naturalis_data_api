@@ -94,7 +94,7 @@ public class AbstractTaxonDao extends AbstractDao {
             }
 
         }
-        resultSet.setTotalSize(taxonStringResultGroupSet.getTotalSize());
+        resultSet.setTotalGroupSize(taxonStringResultGroupSet.getTotalGroupSize());
         resultSet.setQueryParameters(taxonStringResultGroupSet.getQueryParameters());
         return resultSet;
     }
@@ -121,7 +121,24 @@ public class AbstractTaxonDao extends AbstractDao {
             searchResult.setResult(taxon);
             enhanceSearchResultWithMatchInfoAndScore(searchResult, hit);
             double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
-            searchResult.setPercentage(percentage);
+            /*
+             * Jira:	NDA_294
+             * By: 		Reinier.Kartowikromo
+             * Date: 	14-08-2015
+             * Problem: This problem occured if hit.getScore, minScore and maxScore has the same value.
+             * 			The result will always be zero(0) and that's a "NaN" as result.
+             * 
+             * Description(Solution): 	Checked if percentage is a valid floatnumber. 
+             * 							If valid then the return value is percentage else value is "0".
+             * */
+            if (Double.isNaN(percentage))
+            {
+            	searchResult.setPercentage(0.0);
+            }
+            else
+            {
+            	searchResult.setPercentage(percentage);
+            }
 
             taxonsForName.addSearchResult(searchResult);
         }
@@ -136,7 +153,7 @@ public class AbstractTaxonDao extends AbstractDao {
         }
 
         //taxonSearchResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
-        taxonSearchResultGroupSet.setTotalSize(searchResponse.getHits().getTotalHits());
+        taxonSearchResultGroupSet.setTotalGroupSize(searchResponse.getHits().getTotalHits());
 
         return taxonSearchResultGroupSet;
     }

@@ -43,7 +43,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("_search", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
         // THEN
-        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(1, specimenStringResultGroupSet.getTotalGroupSize());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
-        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(1, specimenStringResultGroupSet.getTotalGroupSize());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
-        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(1, specimenStringResultGroupSet.getTotalGroupSize());
 
         SearchResult<Specimen> searchResult = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
         List<StringMatchInfo> matchInfos = searchResult.getMatchInfo();
@@ -112,7 +112,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
-        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(1, specimenStringResultGroupSet.getTotalGroupSize());
 
         SearchResult<Specimen> searchResult = specimenStringResultGroupSet.getResultGroups().get(0).getSearchResults().get(0);
         List<StringMatchInfo> matchInfos = searchResult.getMatchInfo();
@@ -130,7 +130,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
 
         ResultGroupSet<Specimen, String> specimenStringResultGroupSet = dao.specimenNameSearch(params);
 
-        assertEquals(1, specimenStringResultGroupSet.getTotalSize());
+        assertEquals(1, specimenStringResultGroupSet.getTotalGroupSize());
     }
 
 
@@ -142,7 +142,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("_search", "geslacht");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("_search", "specifiek");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("_search", "infra");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("vernacularName", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
     }
 
     @Test
@@ -188,7 +188,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("vernacularName", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
     }
 
     @Test
@@ -201,7 +201,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         params.add("vernacularName", "bosaap");
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(0, result.getTotalSize());
+        assertEquals(0, result.getTotalGroupSize());
     }
 
     @Test
@@ -214,7 +214,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         paramsWithoutNameResolution.add("kingdom", "wrong value");
 
         ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
-        assertEquals(0, preResult.getTotalSize());
+        assertEquals(0, preResult.getTotalGroupSize());
 
         // WHEN
         QueryParams paramsWithNameResolution = new QueryParams();
@@ -222,7 +222,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
 
         // THEN
-        assertEquals(1, resultWithName.getTotalSize());
+        assertEquals(1, resultWithName.getTotalGroupSize());
     }
 
     @Test
@@ -235,7 +235,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         paramsWithoutNameResolution.add("phylum", "wrong value");
 
         ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
-        assertEquals(0, preResult.getTotalSize());
+        assertEquals(0, preResult.getTotalGroupSize());
 
         // WHEN
         QueryParams paramsWithNameResolution = new QueryParams();
@@ -243,7 +243,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
 
         // THEN
-        assertEquals(1, resultWithName.getTotalSize());
+        assertEquals(1, resultWithName.getTotalGroupSize());
     }
 
     @Test
@@ -256,7 +256,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         paramsWithoutNameResolution.add("class", "wrong value");
 
         ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
-        assertEquals(0, preResult.getTotalSize());
+        assertEquals(0, preResult.getTotalGroupSize());
 
         // WHEN
         QueryParams paramsWithNameResolution = new QueryParams();
@@ -264,7 +264,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
 
         // THEN
-        assertEquals(1, resultWithName.getTotalSize());
+        assertEquals(1, resultWithName.getTotalGroupSize());
     }
 
     @Test
@@ -277,7 +277,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         paramsWithoutNameResolution.add("order", "wrong value");
 
         ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
-        assertEquals(0, preResult.getTotalSize());
+        assertEquals(0, preResult.getTotalGroupSize());
 
         // WHEN
         QueryParams paramsWithNameResolution = new QueryParams();
@@ -285,7 +285,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
 
         // THEN
-        assertEquals(1, resultWithName.getTotalSize());
+        assertEquals(1, resultWithName.getTotalGroupSize());
     }
 
     @Test
@@ -298,7 +298,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         paramsWithoutNameResolution.add("family", "wrong value");
 
         ResultGroupSet<Specimen, String> preResult = dao.specimenNameSearch(paramsWithoutNameResolution);
-        assertEquals(0, preResult.getTotalSize());
+        assertEquals(0, preResult.getTotalGroupSize());
 
         // WHEN
         QueryParams paramsWithNameResolution = new QueryParams();
@@ -306,7 +306,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> resultWithName = dao.specimenNameSearch(paramsWithNameResolution);
 
         // THEN
-        assertEquals(1, resultWithName.getTotalSize());
+        assertEquals(1, resultWithName.getTotalGroupSize());
     }
 
     @Test
@@ -322,7 +322,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params_good);
 
         // THEN
-        assertEquals(1, result.getTotalSize());
+        assertEquals(1, result.getTotalGroupSize());
 
         // AND WHEN
         QueryParams params_bad = new QueryParams();
@@ -332,7 +332,7 @@ public class BioportalSpecimenDao_NameResolution_Test extends AbstractBioportalS
         result = dao.specimenNameSearch(params_bad);
 
         // THEN
-        assertEquals(0, result.getTotalSize());
+        assertEquals(0, result.getTotalGroupSize());
     }
 
 

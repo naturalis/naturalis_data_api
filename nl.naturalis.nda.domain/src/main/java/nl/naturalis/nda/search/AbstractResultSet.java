@@ -8,8 +8,16 @@ import java.util.List;
  */
 public abstract class AbstractResultSet {
 
-    private long totalSize;
-    private long totalBuckets;
+	/* NDA-293: 
+	 * By: Reinier.Kartowikromo
+	 * Date: 14-08-2015
+	 * Change label names in reponse From: 
+	 * 		totalSize to totalGroupSize
+	 * 		totalBuckets to totalGroups
+	 *      setTotalGroups is not used in none of the classes?. 
+	 * */
+    private long totalGroupSize;
+    private long totalGroups;
     private List<Link> links;
     private QueryParams queryParameters;
 
@@ -39,15 +47,15 @@ public abstract class AbstractResultSet {
 	}
 
 
-	public long getTotalSize()
+	public long getTotalGroupSize()
 	{
-		return totalSize;
+		return totalGroupSize;
 	}
 
 
-	public void setTotalSize(long totalSize)
+	public void setTotalGroupSize(long totalSize)
 	{
-		this.totalSize = totalSize;
+		this.totalGroupSize = totalSize;
 	}
 
 
@@ -74,11 +82,11 @@ public abstract class AbstractResultSet {
 		this.queryParameters = queryParameters;
 	}
 
-    public void setTotalBuckets(long totalBuckets) {
-        this.totalBuckets = totalBuckets;
+    public void setTotalGroups(long totalBuckets) {
+        this.totalGroups = totalBuckets;
     }
 
-    public long getTotalBuckets() {
-        return totalBuckets;
+    public long getTotalGroups() {
+        return totalGroups;
     }
 }

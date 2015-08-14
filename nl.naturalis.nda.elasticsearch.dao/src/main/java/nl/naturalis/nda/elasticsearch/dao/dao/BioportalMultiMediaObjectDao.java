@@ -271,7 +271,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
                 }
             }
         }
-        detailResultSet.setTotalSize(searchResultSet.getTotalSize());
+        detailResultSet.setTotalGroupSize(searchResultSet.getTotalGroupSize());
         //detailResultSet.setQueryParameters(params.copyWithoutGeoShape());
         return detailResultSet;
     }
@@ -343,14 +343,31 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             }
             multiMediaObjectSearchResult.setLinks(links);
             double percentage = ((hit.getScore() - minScore) / (maxScore - minScore)) * 100;
-            multiMediaObjectSearchResult.setPercentage(percentage);
+            /*
+             * Jira:	NDA_294
+             * By: 		Reinier.Kartowikromo
+             * Date: 	14-08-2015
+             * Problem: This problem occured if hit.getScore, minScore and maxScore has the same value.
+             * 			The result will always be zero(0) and that's a "NaN" as result.
+             * 
+             * Description(Solution): 	Checked if percentage is a valid floatnumber. 
+             * 							If valid then the return value is percentage else value is "0".
+             * */
+            if(Double.isNaN(percentage))
+            {
+            	multiMediaObjectSearchResult.setPercentage(0.0);
+            }
+            else
+            {
+            	multiMediaObjectSearchResult.setPercentage(percentage);
+            }
 
             enhanceSearchResultWithMatchInfoAndScore(multiMediaObjectSearchResult, hit);
 
             searchResultSet.addSearchResult(multiMediaObjectSearchResult);
         }
 
-        searchResultSet.setTotalSize(searchResponse.getHits().getTotalHits());
+        searchResultSet.setTotalGroupSize(searchResponse.getHits().getTotalHits());
         //searchResultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         return searchResultSet;

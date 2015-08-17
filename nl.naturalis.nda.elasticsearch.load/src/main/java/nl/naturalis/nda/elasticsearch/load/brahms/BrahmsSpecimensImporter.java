@@ -27,12 +27,12 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 
@@ -157,7 +157,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	//@formatter:on
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
-	public static final Logger logger = LoggerFactory.getLogger(BrahmsSpecimensImporter.class);
+	public static final Logger logger = Registry.getInstance().getLogger(BrahmsSpecimensImporter.class);
 
 
 	public BrahmsSpecimensImporter(IndexNative index)

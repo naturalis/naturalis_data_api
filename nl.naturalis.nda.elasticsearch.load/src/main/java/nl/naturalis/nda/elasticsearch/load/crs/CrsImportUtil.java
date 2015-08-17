@@ -1,12 +1,13 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import nl.naturalis.nda.elasticsearch.load.Registry;
+
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CrsImportUtil {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(CrsImportUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsImportUtil.class);
 
 
 	/**

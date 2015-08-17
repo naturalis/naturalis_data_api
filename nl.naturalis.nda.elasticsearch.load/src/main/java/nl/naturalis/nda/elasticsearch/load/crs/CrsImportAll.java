@@ -2,9 +2,9 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CrsImportAll {
 
@@ -29,7 +29,7 @@ public class CrsImportAll {
 	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.crs.batchsize";
 	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.crs.maxrecords";
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsImportAll.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsImportAll.class);
 
 	private final IndexNative index;
 

@@ -9,10 +9,10 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ETL class using CRS's OAIPMH service to extract the data, w3c DOM to parse
@@ -25,13 +25,9 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-
 		// Set up thematic search and make sure it's configured OK.
 		ThemeCache.getInstance();
-
+		
 		// Debug functionality: just see what a particular specimen in
 		// source data looks like
 		String unitIDToCheck = System.getProperty("check");
@@ -55,7 +51,7 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsSpecimenImporter.class);
 
 	private final Index index;
 

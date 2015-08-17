@@ -40,13 +40,13 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 
@@ -66,7 +66,7 @@ public class BrahmsMultiMediaImporter extends CSVImporter<ESMultiMediaObject> {
 	}
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsMultiMediaImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(BrahmsMultiMediaImporter.class);
 
 
 	public BrahmsMultiMediaImporter(IndexNative index)

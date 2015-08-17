@@ -25,6 +25,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
@@ -34,7 +35,6 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalize
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 class CrsMultiMediaTransfer {
@@ -43,7 +43,7 @@ class CrsMultiMediaTransfer {
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaTransfer.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsMultiMediaTransfer.class);
 
 	private final CrsMultiMediaImporter crsMultiMediaImporter;
 	private final MimeTypeCache mimetypeCache;

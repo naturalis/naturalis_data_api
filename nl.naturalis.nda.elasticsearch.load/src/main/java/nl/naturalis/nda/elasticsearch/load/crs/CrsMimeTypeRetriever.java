@@ -13,10 +13,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -42,7 +42,7 @@ public class CrsMimeTypeRetriever {
 		retriever.retrieveMimeTypes();
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsMimeTypeRetriever.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsMimeTypeRetriever.class);
 
 	private final MimeTypeCache cache;
 

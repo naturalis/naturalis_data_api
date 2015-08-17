@@ -24,16 +24,16 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class BrahmsImportUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 

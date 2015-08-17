@@ -17,7 +17,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a {@link TreeMap} as
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MapMimeTypeCache extends AbstractMimeTypeCache {
 
-	private static final Logger logger = LoggerFactory.getLogger(MapMimeTypeCache.class);
+	private static final Logger logger = Registry.getInstance().getLogger(MapMimeTypeCache.class);
 
 	private TreeMap<String, String> cache;
 

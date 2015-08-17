@@ -12,13 +12,13 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -45,7 +45,7 @@ public class CoLTaxonDistributionEnricher {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonDistributionEnricher.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonDistributionEnricher.class);
 
 	private final Index index;
 	private final int bulkRequestSize;

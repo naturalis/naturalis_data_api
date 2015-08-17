@@ -20,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 
@@ -31,7 +32,6 @@ import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractSpecimenImporter {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractSpecimenImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(AbstractSpecimenImporter.class);
 	private static final int INDEXED_NOTIFIER_INTERVAL = 10000;
 
 	private final DocumentBuilder builder;

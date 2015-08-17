@@ -12,7 +12,6 @@ import java.util.Properties;
 import nl.naturalis.nda.domain.SourceSystem;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A cache that associates UnitIDs with one or more "themes". Themes are
@@ -36,7 +35,7 @@ public class ThemeCache {
 	}
 
 	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
-	private static final Logger logger = LoggerFactory.getLogger(ThemeCache.class);
+	private static final Logger logger = Registry.getInstance().getLogger(ThemeCache.class);
 	private static ThemeCache instance;
 
 	private final ArrayList<Theme> themes = new ArrayList<>();

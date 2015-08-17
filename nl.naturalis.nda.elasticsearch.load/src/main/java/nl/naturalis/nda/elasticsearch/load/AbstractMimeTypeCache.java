@@ -6,6 +6,7 @@ import static org.apache.commons.io.Charsets.UTF_8;
 import java.io.File;
 import java.io.IOException;
 
+import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 
@@ -158,16 +159,14 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 
 	/**
-	 * Closes the cache. Notably, if the cache has changed since it was
-	 * instantiated, it is saved back to the file system. Therefore you should
-	 * always call this method once you're done using the cache. Otherwise, new
-	 * cache entries for new media objects will not get saved to the file
-	 * system, causing repeated, expensive calls to the medialib.
+	 * Closes the cache. If the cache has changed since it was instantiated
+	 * <i>and</i> a system property named "mimetypecache.update" exists and has
+	 * value "true", the cache is saved back to the file system.
 	 */
 	@Override
 	public void close() throws IOException
 	{
-		if (changed) {
+		if (changed && ConfigObject.TRUE("mimetypecache.update")) {
 			saveCache(cacheFile);
 			changed = false;
 		}

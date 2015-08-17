@@ -14,6 +14,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
 
@@ -21,7 +22,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CoLTaxonSynonymEnricher {
 
@@ -44,7 +44,7 @@ public class CoLTaxonSynonymEnricher {
 	}
 
 	private static final TaxonomicStatusNormalizer statusNormalizer = TaxonomicStatusNormalizer.getInstance();
-	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonSynonymEnricher.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonSynonymEnricher.class);
 
 	private final Index index;
 	private final int bulkRequestSize;

@@ -8,10 +8,10 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BrahmsImportAll {
 
@@ -40,7 +40,7 @@ public class BrahmsImportAll {
 	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.brahms.maxrecords";
 
 
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);
+	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
 
 	private final IndexNative index;
 	private final boolean backup;

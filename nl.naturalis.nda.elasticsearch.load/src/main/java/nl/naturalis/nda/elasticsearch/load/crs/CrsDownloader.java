@@ -12,11 +12,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.FileUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -98,7 +98,7 @@ public class CrsDownloader {
 	static final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat(FILENAME_DATE_FORMAT_PATTERN);
 	static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SIMPLE_DATE_FORMAT_PATTERN);
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsDownloader.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsDownloader.class);
 	private static final String USAGE = "USAGE: java CrsDownloader [[[specimens|multimedia] fromdate] untildate]";
 
 	private final DocumentBuilder builder;

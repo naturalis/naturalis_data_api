@@ -106,16 +106,10 @@ public class Registry {
 	}
 
 
-	@SuppressWarnings("unchecked")
 	public Logger getLogger(Class<?> cls)
 	{
 		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);
-		if (config.isTrue("logger.file")) {
-			logger.addAppender(fileAppender);
-		}
-		if (config.isTrue("logger.console")) {
-			logger.addAppender(consoleAppender);
-		}
+		// For now - no more configuration
 		return logger;
 	}
 
@@ -220,6 +214,12 @@ public class Registry {
 
 		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
 		root.setLevel(Level.toLevel(config.required("logger.level")));
+		if (config.isTrue("logger.file")) {
+			root.addAppender(fileAppender);
+		}
+		if (config.isTrue("logger.console")) {
+			root.addAppender(consoleAppender);
+		}
 
 		logger = getLogger(getClass());
 	}

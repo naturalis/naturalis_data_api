@@ -29,17 +29,15 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
 			index = LoadUtil.getNbaIndexManager();
@@ -89,7 +87,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	}
 	//@formatter:on
 
-	private static final Logger logger = LoggerFactory.getLogger(CoLTaxonImporter.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonImporter.class);
 	private static final String ANNUAL_CHECKLIST_URL_COMPONENT = "annual-checklist";
 	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "infraspecies");
 

@@ -5,13 +5,14 @@ import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
 
 import java.util.List;
 
+import nl.naturalis.nda.elasticsearch.load.Registry;
+
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.http.SimpleHttpDelete;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.domainobject.util.http.SimpleHttpPut;
 import org.domainobject.util.http.SimpleHttpRequest;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link Index} that uses ElasticSearch's REST interface to
@@ -31,7 +32,7 @@ public class IndexREST implements Index {
 	 */
 	public static final String LOCAL_CLUSTER = "http://localhost:9200/";
 
-	private static final Logger logger = LoggerFactory.getLogger(IndexREST.class);
+	private static final Logger logger = Registry.getInstance().getLogger(IndexREST.class);
 
 	private final SimpleHttpGet httpGet = new SimpleHttpGet();
 	private final SimpleHttpPut httpPut = new SimpleHttpPut();

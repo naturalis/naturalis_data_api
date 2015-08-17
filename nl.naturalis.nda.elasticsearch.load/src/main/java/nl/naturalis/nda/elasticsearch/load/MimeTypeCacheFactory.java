@@ -1,12 +1,11 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MimeTypeCacheFactory {
 
 	private static final String CACHE_FILE_NAME = "mimetypes.cache";
-	private static final Logger logger = LoggerFactory.getLogger(MimeTypeCacheFactory.class);
+	private static final Logger logger = Registry.getInstance().getLogger(MimeTypeCacheFactory.class);
 
 	private static MimeTypeCacheFactory instance;
 

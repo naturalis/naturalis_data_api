@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CoLImportAll {
 
@@ -32,7 +32,7 @@ public class CoLImportAll {
 	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.col.batchsize";
 	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.col.maxrecords";
 
-	private static final Logger logger = LoggerFactory.getLogger(CoLImportAll.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CoLImportAll.class);
 
 	private final IndexNative index;
 

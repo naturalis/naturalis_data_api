@@ -375,7 +375,7 @@ public class IndexNative implements Index {
 		for (int i = 0; i < objs.size(); ++i) {
 			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
 			try {
-				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
+				irb.setSource(objectMapper.writeValueAsBytes(objs.get(i)));
 				if (ids != null) {
 					irb.setId(ids.get(i));
 				}

@@ -21,6 +21,8 @@ public abstract class CSVImporter<T> {
 
 	public static class NoSuchFieldException extends RuntimeException {
 		static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record(%s)";
+
+
 		public NoSuchFieldException(CSVRecord record, int fieldNo)
 		{
 			super(String.format(MSG, fieldNo, record.size()));
@@ -71,17 +73,14 @@ public abstract class CSVImporter<T> {
 		}
 
 		/*
-		 * Make sure default encoding is UTF-8. The main reason we want this to
-		 * be the case is that CSVParser.parse(String, CSVFormat) parses the
-		 * String using the default encoding. You cannot specify an arbitrary
-		 * encoding. Sad but true. Just before we pass a line to
-		 * CSVParser.parse, we make sure it is UTF8-encoded, thus the default
-		 * encoding HAS to be UTF-8. Note that for the CSVParser itself, it
-		 * doesn't really matter whether it gets UTF-8, ISO-8995-1 or Cp1252,
-		 * because all delimiters (end-of-field, end-of-record) are encoded
-		 * identically in all of these character sets. Thus, tokenizing will not
-		 * be a problem. Nevertheless, we JUST WANT THINGS TO BE UTF-8 ACROSS
-		 * THE BOARD.
+		 * Make sure the JVM's default encoding is UTF-8. The main reason we
+		 * want this to be the case is that CSVParser.parse(String, CSVFormat)
+		 * parses the String using the JVM's default encoding. Note that for the
+		 * CSVParser itself, it doesn't really matter whether the file encoding
+		 * is UTF-8, ISO-8995-1 or Cp1252, because all delimiters (end-of-field,
+		 * end-of-record) are encoded identically in these character sets, so
+		 * tokenizing the CSV file won't be a problem. Nevertheless, we JUST
+		 * WANT THINGS TO BE UTF-8 ACROSS THE BOARD.
 		 */
 		if (!Charset.defaultCharset().equals(UTF_8)) {
 			logger().error("Invalid default character encoding: " + Charset.defaultCharset().name());
@@ -189,6 +188,7 @@ public abstract class CSVImporter<T> {
 		logger().info("Documents indexed: " + indexed);
 		logger().info(String.format("Finished processing file: %s", path));
 	}
+
 
 	/**
 	 * Subclasses may provided their own logger, so it's more clear what type of

@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.col;
 import java.io.IOException;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
@@ -12,11 +11,9 @@ public class CoLImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = Registry.getInstance().getNbaIndexManager();
 			CoLImportAll colImportAll = new CoLImportAll(index);
 			colImportAll.importAll();
 		}
@@ -45,7 +42,7 @@ public class CoLImportAll {
 
 	public void importAll() throws IOException
 	{
-		String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
+		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 		CoLTaxonImporter importer = new CoLTaxonImporter(index);
 		importer.importCsv(dwcaDir + "/taxa.txt");
 		CoLTaxonSynonymEnricher synonymEnricher = new CoLTaxonSynonymEnricher(index);

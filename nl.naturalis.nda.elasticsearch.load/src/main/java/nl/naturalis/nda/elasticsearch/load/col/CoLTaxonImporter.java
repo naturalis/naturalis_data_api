@@ -28,7 +28,6 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.CSVImporter;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVRecord;
@@ -42,7 +41,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
-			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
+			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
@@ -103,7 +102,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 		setBulkRequestSize(Integer.parseInt(prop));
 		prop = System.getProperty(CoLImportAll.SYSPROP_MAXRECORDS, "0");
 		setMaxRecords(Integer.parseInt(prop));		
-		colYear = LoadUtil.getConfig().required("col.year");
+		colYear = Registry.getInstance().getConfig().required("col.year");
 	}
 
 

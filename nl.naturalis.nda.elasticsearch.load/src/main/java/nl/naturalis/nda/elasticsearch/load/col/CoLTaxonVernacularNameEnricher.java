@@ -12,7 +12,6 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
@@ -25,12 +24,10 @@ public class CoLTaxonVernacularNameEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-		IndexNative index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+		IndexNative index = Registry.getInstance().getNbaIndexManager();
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
-			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
+			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {

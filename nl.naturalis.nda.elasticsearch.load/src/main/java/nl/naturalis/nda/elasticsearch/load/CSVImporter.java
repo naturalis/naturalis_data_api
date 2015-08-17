@@ -202,7 +202,6 @@ public abstract class CSVImporter<T> {
 	}
 
 
-	@SuppressWarnings({ "unused" })
 	protected boolean skipRecord(CSVRecord record)
 	{
 		return false;
@@ -212,14 +211,12 @@ public abstract class CSVImporter<T> {
 	protected abstract List<T> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception;
 
 
-	@SuppressWarnings({ "unused" })
 	protected List<String> getIds(CSVRecord record)
 	{
 		return null;
 	}
 
 
-	@SuppressWarnings({ "unused" })
 	protected List<String> getParentIds(CSVRecord record)
 	{
 		return null;

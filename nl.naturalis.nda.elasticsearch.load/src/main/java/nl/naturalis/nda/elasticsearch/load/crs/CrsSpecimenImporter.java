@@ -8,7 +8,6 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
@@ -40,7 +39,7 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 		// For real
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = Registry.getInstance().getNbaIndexManager();
 			CrsSpecimenImporter importer = new CrsSpecimenImporter(index);
 			importer.importSpecimens();
 		}
@@ -51,6 +50,7 @@ public class CrsSpecimenImporter extends AbstractSpecimenImporter {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = Registry.getInstance().getLogger(CrsSpecimenImporter.class);
 
 	private final Index index;

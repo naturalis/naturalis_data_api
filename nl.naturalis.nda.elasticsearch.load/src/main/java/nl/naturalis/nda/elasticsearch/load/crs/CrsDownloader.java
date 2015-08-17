@@ -11,7 +11,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.domainobject.util.DOMUtil;
@@ -189,7 +188,7 @@ public class CrsDownloader {
 
 	private static File getLocalPath(Type type, Date fromDate, int request)
 	{
-		String dir = LoadUtil.getConfig().getDirectory("crs.local_dir").getAbsolutePath();
+		String dir = Registry.getInstance().getConfig().getDirectory("crs.local_dir").getAbsolutePath();
 		String typeString = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		String dateString;
 		if (fromDate == null) {
@@ -225,7 +224,7 @@ public class CrsDownloader {
 
 	private static File getAdminFile(Type type)
 	{
-		File dir = LoadUtil.getConfig().getDirectory("crs.local_dir");
+		File dir = Registry.getInstance().getConfig().getDirectory("crs.local_dir");
 		return new File(dir.getAbsolutePath() + "/." + type.name().toLowerCase() + ".oai-admin");
 	}
 

@@ -13,7 +13,6 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter.CsvField;
 import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
@@ -27,13 +26,11 @@ public class CoLTaxonSynonymEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
-			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
+			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {

@@ -23,7 +23,6 @@ import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField;
@@ -268,7 +267,7 @@ class BrahmsImportUtil {
 
 	private static File getDataDir()
 	{
-		return LoadUtil.getConfig().getDirectory("brahms.csv_dir");
+		return Registry.getInstance().getConfig().getDirectory("brahms.csv_dir");
 	}
 
 }

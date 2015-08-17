@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ public class CrsImportAll {
 		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = new IndexNative(LoadUtil.getESClient(), LoadUtil.getConfig().required("elasticsearch.index.name"));
+			index = Registry.getInstance().getNbaIndexManager();
 			CrsImportAll crsImportAll = new CrsImportAll(index);
 			crsImportAll.importAll();
 		}

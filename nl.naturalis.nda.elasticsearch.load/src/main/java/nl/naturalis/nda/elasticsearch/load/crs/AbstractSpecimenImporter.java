@@ -19,11 +19,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 
+import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
@@ -39,6 +39,7 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractSpecimenImporter {
 
+	private static final ConfigObject config = Registry.getInstance().getConfig();
 	private static final Logger logger = Registry.getInstance().getLogger(AbstractSpecimenImporter.class);
 	private static final int INDEXED_NOTIFIER_INTERVAL = 10000;
 
@@ -89,7 +90,7 @@ public abstract class AbstractSpecimenImporter {
 
 			ThemeCache.getInstance().resetMatchCounters();
 			beforeFirst();
-			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
+			if (config.isTrue("crs.use_local")) {
 				importLocal();
 			}
 			else {
@@ -207,8 +208,8 @@ public abstract class AbstractSpecimenImporter {
 	{
 		String url;
 		if (resumptionToken == null) {
-			url = LoadUtil.getConfig().required("crs.specimens.url.initial");
-			int maxAge = LoadUtil.getConfig().required("crs.max_age", int.class);
+			url = config.required("crs.specimens.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
 			if (maxAge != 0) {
 				DateTime now = new DateTime();
 				DateTime wayback = now.minusHours(maxAge);
@@ -216,7 +217,7 @@ public abstract class AbstractSpecimenImporter {
 			}
 		}
 		else {
-			url = String.format(LoadUtil.getConfig().required("crs.specimens.url.resume"), resumptionToken);
+			url = String.format(config.required("crs.specimens.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
@@ -225,7 +226,7 @@ public abstract class AbstractSpecimenImporter {
 
 	static byte[] callOaiService(Date fromDate, Date untilDate)
 	{
-		String url = LoadUtil.getConfig().required("crs.specimens.url.initial");
+		String url = config.required("crs.specimens.url.initial");
 		if (fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
 		}
@@ -291,7 +292,7 @@ public abstract class AbstractSpecimenImporter {
 					String id = DOMUtil.getDescendantValue(record, "identifier");
 					if (isDeletedRecord(record)) {
 						// With full harvest we ignore records with status DELETED
-						if (LoadUtil.getConfig().getInt("crs.max_age") != 0) {
+						if (config.getInt("crs.max_age") != 0) {
 							//index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
 							deleteSpecimen(id);
 						}
@@ -348,7 +349,7 @@ public abstract class AbstractSpecimenImporter {
 	static Iterator<File> getLocalFileIterator()
 	{
 		logger.debug("Retrieving file list");
-		String path = LoadUtil.getConfig().required("crs.local_dir");
+		String path = config.required("crs.local_dir");
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)

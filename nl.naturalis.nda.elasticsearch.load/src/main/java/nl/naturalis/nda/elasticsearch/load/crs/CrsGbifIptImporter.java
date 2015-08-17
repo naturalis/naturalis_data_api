@@ -28,6 +28,7 @@ class CrsGbifIptImporter extends AbstractSpecimenImporter {
 			+ ":sex, :typestatus, :lifestage, :habitat, :description, :eventdate, :verbatimeventdate, :identifiedby, "
 			+ ":dateidentified, :recordedby, :informationwithheld, :preparations)";
 
+	@SuppressWarnings("unused")
 	private final PreparedStatement insertStatement;
 
 

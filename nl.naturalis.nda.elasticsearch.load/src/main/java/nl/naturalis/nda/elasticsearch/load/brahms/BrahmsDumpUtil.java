@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.domainobject.util.FileUtil;
@@ -112,7 +111,7 @@ public class BrahmsDumpUtil {
 	public static void convertFiles() throws Exception
 	{
 		logger.info("Checking file encoding for Brahms CSV files");
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
+		String csvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
@@ -178,7 +177,7 @@ public class BrahmsDumpUtil {
 
 	public static File[] getImportableFiles()
 	{
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
+		String csvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new RuntimeException(String.format("No such directory: \"%s\"", csvDir));

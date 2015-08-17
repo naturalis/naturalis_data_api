@@ -40,7 +40,7 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	{
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
 			importer.importCsvFiles();
 		}

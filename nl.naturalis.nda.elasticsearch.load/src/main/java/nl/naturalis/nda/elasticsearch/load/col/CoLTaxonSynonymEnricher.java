@@ -31,7 +31,7 @@ public class CoLTaxonSynonymEnricher {
 		logger.info("-----------------------------------------------------------------");
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/taxa.txt");

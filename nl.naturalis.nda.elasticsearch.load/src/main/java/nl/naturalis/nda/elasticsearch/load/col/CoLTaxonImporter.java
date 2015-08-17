@@ -40,7 +40,7 @@ public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
 	{
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			CoLTaxonImporter importer = new CoLTaxonImporter(index);
 			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");

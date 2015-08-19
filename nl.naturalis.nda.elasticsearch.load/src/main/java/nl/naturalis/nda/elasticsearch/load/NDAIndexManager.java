@@ -76,7 +76,7 @@ public class NDAIndexManager {
 		logger.info("[>--- Starting Brahms import ---<]");
 		try {
 			BrahmsImportAll brahmsImportAll = new BrahmsImportAll(index);
-			brahmsImportAll.importAllPerType();
+			brahmsImportAll.importPerType();
 		}
 		catch (Throwable t) {
 			logger.error("Brahms import Failed!");

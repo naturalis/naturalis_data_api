@@ -6,6 +6,8 @@ import static nl.naturalis.nda.domain.TaxonomicRank.KINGDOM;
 import static nl.naturalis.nda.domain.TaxonomicRank.ORDER;
 import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
+import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -19,9 +21,12 @@ import java.util.List;
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.DefaultClassification;
 import nl.naturalis.nda.domain.Monomial;
+import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
@@ -201,7 +206,7 @@ class BrahmsImportUtil {
 
 	static List<Monomial> getSystemClassification(DefaultClassification dc)
 	{
-		final List<Monomial> sc = new ArrayList<Monomial>(8);
+		final List<Monomial> sc = new ArrayList<>(8);
 		if (dc.getKingdom() != null) {
 			sc.add(new Monomial(KINGDOM, dc.getKingdom()));
 		}
@@ -268,6 +273,69 @@ class BrahmsImportUtil {
 	private static File getDataDir()
 	{
 		return Registry.getInstance().getConfig().getDirectory("brahms.csv_dir");
+	}
+
+
+	static ESGatheringEvent getGatheringEvent(CSVRecord record)
+	{
+		final ESGatheringEvent ge = new ESGatheringEvent();
+		ge.setWorldRegion(val(record, BrahmsSpecimensImporter.CsvField.CONTINENT.ordinal()));
+		ge.setContinent(ge.getWorldRegion());
+		ge.setCountry(val(record, BrahmsSpecimensImporter.CsvField.COUNTRY.ordinal()));
+		ge.setProvinceState(val(record, BrahmsSpecimensImporter.CsvField.MAJORAREA.ordinal()));
+		StringBuilder sb = new StringBuilder(50);
+		if (ge.getWorldRegion() != null) {
+			sb.append(ge.getWorldRegion());
+		}
+		if (ge.getCountry() != null) {
+			if (sb.length() != 0) {
+				sb.append("; ");
+			}
+			sb.append(ge.getCountry());
+		}
+		if (ge.getProvinceState() != null) {
+			if (sb.length() != 0) {
+				sb.append("; ");
+			}
+			sb.append(ge.getProvinceState());
+		}
+		String locNotes = val(record, BrahmsSpecimensImporter.CsvField.LOCNOTES.ordinal());
+		if (locNotes != null) {
+			ge.setLocality(locNotes);
+			if (sb.length() != 0) {
+				sb.append("; ");
+			}
+			sb.append(locNotes);
+		}
+		ge.setLocalityText(sb.toString());
+		String y = val(record, BrahmsSpecimensImporter.CsvField.YEAR.ordinal());
+		String m = val(record, BrahmsSpecimensImporter.CsvField.MONTH.ordinal());
+		String d = val(record, BrahmsSpecimensImporter.CsvField.DAY.ordinal());
+		Date date = getDate(y, m, d);
+		ge.setDateTimeBegin(date);
+		ge.setDateTimeEnd(date);
+		Double lat = getDouble(record, BrahmsSpecimensImporter.CsvField.LATITUDE.ordinal());
+		Double lon = getDouble(record, BrahmsSpecimensImporter.CsvField.LONGITUDE.ordinal());
+		if (lat == 0D && lon == 0D) {
+			lat = null;
+			lon = null;
+		}
+		if (lon != null && (lon < -180D || lon > 180D)) {
+			BrahmsSpecimensImporter.logger.error("Invalid longitude: " + lon);
+			lon = null;
+		}
+		if (lat != null && (lat < -90D || lat > 90D)) {
+			BrahmsSpecimensImporter.logger.error("Invalid latitude: " + lat);
+			lat = null;
+		}
+		if (lat != null || lon != null) {
+			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
+		}
+		String collector = val(record, BrahmsSpecimensImporter.CsvField.COLLECTOR.ordinal());
+		if (collector != null) {
+			ge.setGatheringPersons(Arrays.asList(new Person(collector)));
+		}
+		return ge;
 	}
 
 }

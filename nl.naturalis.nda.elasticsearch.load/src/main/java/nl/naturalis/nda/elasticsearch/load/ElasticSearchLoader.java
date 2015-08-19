@@ -79,9 +79,10 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		String getParentId(T obj);
 	}
 
-	static final Logger logger = Registry.getInstance().getLogger(ElasticSearchLoader.class);
+	private final Logger logger = Registry.getInstance().getLogger(getClass());
 
 	protected final IndexNative indexManager;
+	
 	private final String type;
 	private final int treshold;
 	private final ArrayList<T> objs;

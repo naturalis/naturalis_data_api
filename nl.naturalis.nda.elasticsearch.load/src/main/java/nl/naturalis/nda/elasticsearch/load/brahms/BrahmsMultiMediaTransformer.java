@@ -10,7 +10,6 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDat
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getScientificName;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSystemClassification;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.getGatheringEvent;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.DAYIDENT;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.IMAGELIST;
@@ -39,6 +38,7 @@ import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getGatheringEvent;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
@@ -89,6 +89,7 @@ class BrahmsMultiMediaTransformer implements CSVTransformer<ESMultiMediaObject> 
 					error("Invalid image URL: " + url);
 					continue;
 				}
+				url = url.replaceAll(" ", "%20");
 				URI uri;
 				try {
 					uri = new URI(url);

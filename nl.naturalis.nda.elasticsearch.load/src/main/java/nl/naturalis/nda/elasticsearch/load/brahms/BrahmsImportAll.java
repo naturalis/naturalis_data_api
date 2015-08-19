@@ -1,15 +1,26 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
+import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.ExtractionException;
+import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 public class BrahmsImportAll {
@@ -20,7 +31,7 @@ public class BrahmsImportAll {
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			BrahmsImportAll importer = new BrahmsImportAll(index);
-			importer.importAllPerFile();
+			importer.importPerFile();
 		}
 		catch (Throwable t) {
 			logger.error("Brahms import failed!");
@@ -33,35 +44,31 @@ public class BrahmsImportAll {
 		}
 	}
 
+	/**
+	 * The prefix for ElasticSearch IDs for Brahms documents.
+	 */
 	public static final String ID_PREFIX = "BRAHMS-";
-	public static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.brahms.backup";
-	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.brahms.batchsize";
-	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.brahms.maxrecords";
-
 
 	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
 
 	private final IndexNative index;
+	private final boolean suppressErrors;
 	private final boolean backup;
-
 
 	public BrahmsImportAll(IndexNative index)
 	{
 		this.index = index;
-		String prop = System.getProperty(SYSPROP_BACKUP, "1");
-		backup = prop.equals("1") || prop.equalsIgnoreCase("true");
+		suppressErrors = ConfigObject.TRUE("brahms.suppress-errors");
+		backup = ConfigObject.TRUE("brahms.backup", true);
 	}
-
 
 	/**
 	 * This method first imports all specimens, then all multimedia.
 	 * 
 	 * @throws Exception
 	 */
-	public void importAllPerType() throws Exception
+	public void importPerType() throws Exception
 	{
-		// Make sure thematic search is configured properly
-		ThemeCache.getInstance();
 		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
 		specimenImporter.importCsvFiles();
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
@@ -74,36 +81,81 @@ public class BrahmsImportAll {
 		}
 	}
 
-
 	/**
-	 * For each XML file, first import all specimens contained in it, then all
-	 * multimedia.
+	 * This method imports specimen and multimedia at the same time.
 	 * 
 	 * @throws Exception
 	 */
-	public void importAllPerFile() throws Exception
+	public void importPerFile() throws Exception
 	{
-		ThemeCache.getInstance();
-		File[] files = getCsvFiles();
-		if (files.length == 0) {
+
+		long start = System.currentTimeMillis();
+
+		File[] csvFiles = getCsvFiles();
+		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
-		int maxRecords = Integer.parseInt(System.getProperty(SYSPROP_MAXRECORDS, "0"));
-		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
-		specimenImporter.setMaxRecords(maxRecords);
-		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
-		mediaImporter.setMaxRecords(maxRecords);
-		for (File f : files) {
-			specimenImporter.importCsv(f.getAbsolutePath());
-			mediaImporter.importCsv(f.getAbsolutePath());
+
+		ThemeCache.getInstance().resetMatchCounters();
+
+		CSVExtractor extractor = null;
+		BrahmsSpecimenTransformer specimenTransformer = null;
+		BrahmsSpecimenLoader specimenLoader = null;
+		BrahmsMultiMediaTransformer multimediaTransformer = null;
+		BrahmsMultiMediaLoader multimediaLoader = null;
+
+		try {
+
+			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+
+			specimenTransformer = new BrahmsSpecimenTransformer();
+			specimenLoader = new BrahmsSpecimenLoader(index);
+			multimediaTransformer = new BrahmsMultiMediaTransformer();
+			multimediaLoader = new BrahmsMultiMediaLoader(index);
+
+			for (File f : csvFiles) {
+				logger.info("Processing file " + f.getAbsolutePath());
+				extractor = new CSVExtractor(f);
+				extractor.setSkipHeader(true);
+				extractor.setDelimiter(',');
+				extractor.setCharset(Charset.forName("Windows-1252"));
+				Iterator<CSVRecordInfo> iterator = extractor.iterator();
+				while (iterator.hasNext()) {
+					try {
+						CSVRecordInfo record = iterator.next();
+						specimenLoader.load(specimenTransformer.transform(record));
+						multimediaLoader.load(multimediaTransformer.transform(record));
+						if (record.getLineNumber() % 50000 == 0) {
+							logger.info("Records processed: " + record.getLineNumber());
+						}
+					}
+					catch (ExtractionException e) {
+						if (!suppressErrors) {
+							logger.error("Line " + e.getLineNumber() + ": " + e.getMessage());
+							logger.error(e.getLine());
+						}
+					}
+				}
+			}
 		}
+		catch (Throwable t) {
+			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+		}
+		finally {
+			IOUtil.close(specimenLoader);
+			IOUtil.close(multimediaLoader);
+		}
+
 		if (backup) {
 			String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
 			for (File f : getCsvFiles()) {
 				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
 			}
 		}
+
 		ThemeCache.getInstance().logMatchInfo();
+		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}
 }

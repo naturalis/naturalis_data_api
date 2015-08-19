@@ -55,13 +55,13 @@ public class BrahmsMultiMediaImporter {
 
 		long start = System.currentTimeMillis();
 
-		ThemeCache.getInstance().resetMatchCounters();
-
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
 			return;
 		}
+
+		ThemeCache.getInstance().resetMatchCounters();
 
 		CSVExtractor extractor = null;
 		BrahmsMultiMediaTransformer transformer = null;
@@ -98,14 +98,14 @@ public class BrahmsMultiMediaImporter {
 			}
 		}
 		catch (Throwable t) {
-			logger.error(getClass() + " terminated unexpectedly", t);
+			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
 		finally {
 			IOUtil.close(loader);
 		}
+		
 		ThemeCache.getInstance().logMatchInfo();
-
-		logger.info(getClass() + " took " + LoadUtil.getDuration(start));
+		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}
 
 }

@@ -21,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
-import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
@@ -46,7 +45,6 @@ public abstract class AbstractSpecimenImporter {
 	private final DocumentBuilder builder;
 
 	private final int bulkRequestSize;
-	private final int maxRecords;
 
 	/*
 	 * Whether or not to look for a file containing the last resumption token
@@ -65,10 +63,8 @@ public abstract class AbstractSpecimenImporter {
 
 	public AbstractSpecimenImporter() throws Exception
 	{
-		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
+		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
-		maxRecords = Integer.parseInt(prop);
 
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
@@ -283,8 +279,8 @@ public abstract class AbstractSpecimenImporter {
 			NodeList records = doc.getElementsByTagName("record");
 			int numRecords = records.getLength();
 			logger.debug("Number of records in XML output: " + numRecords);
-			List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
-			List<String> ids = new ArrayList<String>(bulkRequestSize);
+			List<ESSpecimen> specimens = new ArrayList<>(bulkRequestSize);
+			List<String> ids = new ArrayList<>(bulkRequestSize);
 			for (int i = 0; i < numRecords; ++i) {
 				++processed;
 				try {
@@ -319,9 +315,6 @@ public abstract class AbstractSpecimenImporter {
 					++bad;
 					logger.error(t.getMessage(), t);
 				}
-				if (maxRecords > 0 && processed >= maxRecords) {
-					break;
-				}
 				if (processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
 				}
@@ -333,9 +326,6 @@ public abstract class AbstractSpecimenImporter {
 			if (!specimens.isEmpty()) {
 				saveSpecimens(specimens, ids);
 				indexed += specimens.size();
-			}
-			if (maxRecords > 0 && processed >= maxRecords) {
-				return null;
 			}
 			return DOMUtil.getDescendantValue(doc, "resumptionToken");
 		}

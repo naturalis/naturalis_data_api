@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import nl.naturalis.nda.elasticsearch.load.CSVImporter.NoSuchFieldException;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor.NoSuchFieldException;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;

@@ -367,7 +367,7 @@ class CrsMultiMediaTransfer {
 		List<String> qualifiers = null;
 		String string = val(e, "abcd:IdentificationQualifier1");
 		if (string != null) {
-			qualifiers = new ArrayList<String>(3);
+			qualifiers = new ArrayList<>(3);
 			qualifiers.add(string);
 			string = val(e, "abcd:IdentificationQualifier2");
 			if (string != null) {

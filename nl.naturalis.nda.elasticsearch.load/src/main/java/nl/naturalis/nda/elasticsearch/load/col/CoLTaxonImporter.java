@@ -27,13 +27,13 @@ import nl.naturalis.nda.elasticsearch.client.Index;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
-import nl.naturalis.nda.elasticsearch.load.CSVImporter;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
-public class CoLTaxonImporter extends CSVImporter<ESTaxon> {
+public class CoLTaxonImporter extends CSVExtractor<ESTaxon> {
 
 	public static void main(String[] args) throws Exception
 	{

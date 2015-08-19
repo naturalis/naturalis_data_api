@@ -7,6 +7,8 @@ import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 
+import org.slf4j.Logger;
+
 /**
  * <p>
  * Abstract base class for objects responsible for the insertion of data into
@@ -26,7 +28,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
  * instance to write any remaining objects in the writer's internal buffer to
  * ElasticSearch. You are practically guranteed to loose data if you don't call
  * {@link #flush()} when done, because the last object you added (see
- * {@link #add(List) add}) is unlikely to have triggered an automatic flush.
+ * {@link #load(List) add}) is unlikely to have triggered an automatic flush.
  * </p>
  * 
  * @author Ayco Holleman
@@ -35,7 +37,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
  *            The type of object to be converted to and stored as a JSON
  *            document
  */
-public abstract class ElasticSearchWriter<T> implements Closeable {
+public abstract class ElasticSearchLoader<T> implements Closeable {
 
 	/**
 	 * An interface that specifies how an ElasticSearch {@code _id} is to be
@@ -77,7 +79,9 @@ public abstract class ElasticSearchWriter<T> implements Closeable {
 		String getParentId(T obj);
 	}
 
-	private final IndexNative indexManager;
+	static final Logger logger = Registry.getInstance().getLogger(ElasticSearchLoader.class);
+
+	protected final IndexNative indexManager;
 	private final String type;
 	private final int treshold;
 	private final ArrayList<T> objs;
@@ -85,49 +89,47 @@ public abstract class ElasticSearchWriter<T> implements Closeable {
 	private final ArrayList<String> parIds;
 
 	private int indexed;
-
+	private int batch;
 
 	/**
 	 * Create a loader that uses the specified index manager for bulk-indexing
 	 * documents of the specified document type. Indexing is triggered every
-	 * time the number of objects added to the loader via the {@link #add(List)}
-	 * operations exceeds the specified treshold.
+	 * time the number of objects added to the loader via the
+	 * {@link #load(List)} operations exceeds the specified treshold.
 	 * 
 	 * @param indexManager
 	 * @param documentType
 	 * @param treshold
 	 */
-	public ElasticSearchWriter(IndexNative indexManager, String documentType, int treshold)
+	public ElasticSearchLoader(IndexNative indexManager, String documentType, int treshold)
 	{
 		this.indexManager = indexManager;
 		this.type = documentType;
 		this.treshold = treshold;
-		objs = new ArrayList<T>(treshold + 16);
-		ids = getIdGenerator() == null ? null : new ArrayList<String>(treshold + 16);
-		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 16);
+		objs = new ArrayList<>(treshold + 8);
+		ids = getIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
+		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
 	}
 
-
-	public final void add(List<T> items)
+	public final void load(List<T> items)
 	{
+		if (items == null || items.size() == 0)
+			return;
 		objs.addAll(items);
 		if (ids != null) {
-			ArrayList<String> itemIds = new ArrayList<String>(items.size());
-			for (T t : items) {
-				itemIds.add(getIdGenerator().getId(t));
+			for (T item : items) {
+				ids.add(getIdGenerator().getId(item));
 			}
 		}
 		if (parIds != null) {
-			ArrayList<String> itemParIds = new ArrayList<String>(items.size());
-			for (T t : items) {
-				itemParIds.add(getParentIdGenerator().getParentId(t));
+			for (T item : items) {
+				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}
 		if (objs.size() >= treshold) {
 			flush();
 		}
 	}
-
 
 	/**
 	 * Get the number of documents indexed so far by this writer.
@@ -139,7 +141,6 @@ public abstract class ElasticSearchWriter<T> implements Closeable {
 		return indexed;
 	}
 
-
 	/**
 	 * Just calls {@link #flush()} so that a try-with-resources instantiation of
 	 * this writer is guaranteed to flush the object buffer for you.
@@ -150,11 +151,10 @@ public abstract class ElasticSearchWriter<T> implements Closeable {
 		flush();
 	}
 
-
 	/**
 	 * Flushes the contents of the internal object buffer to ElasticSearch.
 	 * While in the midst of processing your data you don't have to call this
-	 * method explicitly as it is done implicitly by the {@link #add(List) add}
+	 * method explicitly as it is done implicitly by the {@link #load(List) add}
 	 * methods once the size of the buffers exceeds the treshold specified in
 	 * the constructor. However, you SHOULD
 	 */
@@ -164,19 +164,19 @@ public abstract class ElasticSearchWriter<T> implements Closeable {
 			try {
 				indexManager.saveObjects(type, objs, ids, parIds);
 				indexed += objs.size();
+				if (++batch % 50 == 0) {
+					logger.info("Documents indexed: " + indexed);
+				}
 			}
 			finally {
 				objs.clear();
-				if (ids != null) {
+				if (ids != null)
 					ids.clear();
-				}
-				if (parIds != null) {
+				if (parIds != null)
 					parIds.clear();
-				}
 			}
 		}
 	}
-
 
 	/**
 	 * Produce an object that can generate IDs for ElasticSearch documents.
@@ -186,7 +186,6 @@ public abstract class ElasticSearchWriter<T> implements Closeable {
 	 * @see IdGenerator
 	 */
 	protected abstract IdGenerator<T> getIdGenerator();
-
 
 	/**
 	 * Produce an object that can generate parent IDs for ElasticSearch

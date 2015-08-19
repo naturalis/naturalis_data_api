@@ -24,7 +24,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.load.CSVImporter;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -34,22 +34,22 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalize
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
-public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
+public class BrahmsSpecimensImporter {
 
-	public static void main(String[] args) throws Exception
-	{
-		IndexNative index = null;
-		try {
-			index = Registry.getInstance().getNbaIndexManager();
-			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
-			importer.importCsvFiles();
-		}
-		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
-		}
-	}
+//	public static void main(String[] args) throws Exception
+//	{
+//		IndexNative index = null;
+//		try {
+//			index = Registry.getInstance().getNbaIndexManager();
+//			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
+//			importer.importCsvFiles();
+//		}
+//		finally {
+//			if (index != null) {
+//				index.getClient().close();
+//			}
+//		}
+//	}
 
 	//@formatter:off
 	static enum CsvField {
@@ -156,109 +156,109 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 	}
 	//@formatter:on
 
-	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+//	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 	public static final Logger logger = Registry.getInstance().getLogger(BrahmsSpecimensImporter.class);
-
-
-	public BrahmsSpecimensImporter(IndexNative index)
-	{
-		super(index, LUCENE_TYPE_SPECIMEN);
-		this.delimiter = ',';
-		this.charset = Charset.forName("Windows-1252");
-		//this.suppressErrors = true;
-		setSpecifyId(true);
-		setSpecifyParent(false);
-		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
-		setBulkRequestSize(Integer.parseInt(prop));
-		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
-		setMaxRecords(Integer.parseInt(prop));
-	}
-
-
-	public void importCsvFiles() throws Exception
-	{
-		long start = System.currentTimeMillis();
-		ThemeCache.getInstance().resetMatchCounters();
-		File[] csvFiles = getCsvFiles();
-		if (csvFiles.length == 0) {
-			logger.info("No new CSV files to import");
-			return;
-		}
-		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-		for (File f : csvFiles) {
-			importCsv(f.getCanonicalPath());
-		}
-		ThemeCache.getInstance().logMatchInfo();
-		logger.info("Total duration: " + LoadUtil.getDuration(start));
-	}
-
-
-	@Override
-	protected List<ESSpecimen> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
-	{
-		String barcode = val(record, CsvField.BARCODE.ordinal());
-		if (barcode == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Error at line %s: missing barcode", lineNo));
-			}
-			return null;
-		}
-
-		final ESSpecimen specimen = new ESSpecimen();
-		specimen.setSourceSystem(SourceSystem.BRAHMS);
-		specimen.setSourceSystemId(barcode);
-		specimen.setUnitID(barcode);
-		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + LoadUtil.urlEncode(barcode));
-
-		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
-		specimen.setOwner(SOURCE_INSTITUTION_ID);
-		specimen.setSourceID("Brahms");
-		specimen.setLicenceType(LICENCE_TYPE);
-		specimen.setLicence(LICENCE);
-		specimen.setCollectionType("Botany");
-
-		ThemeCache tsc = ThemeCache.getInstance();
-		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
-		specimen.setTheme(themes);
-
-		String recordBasis = val(record, CsvField.CATEGORY.ordinal());
-		if (recordBasis == null) {
-			specimen.setRecordBasis("Preserved Specimen");
-		}
-		else {
-			specimen.setRecordBasis(recordBasis);
-		}
-
-		specimen.setAssemblageID(BrahmsImportAll.ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
-		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
-		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
-		String notOnline = val(record, CsvField.NOTONLINE.ordinal());
-		if (notOnline == null || notOnline.equals("0")) {
-			specimen.setObjectPublic(true);
-		}
-		else {
-			specimen.setObjectPublic(false);
-		}
-		specimen.setGatheringEvent(getGatheringEvent(record));
-		specimen.addIndentification(getSpecimenIdentification(record));
-		return Arrays.asList(specimen);
-	}
-
-	@Override
-	protected Logger logger()
-	{
-		return logger;
-	}
-
-
-	@Override
-	protected List<String> getIds(CSVRecord record)
-	{
-		String id = BrahmsImportAll.ID_PREFIX + val(record, CsvField.BARCODE.ordinal());
-		return Arrays.asList(id);
-	}
-
-
+//
+//
+//	public BrahmsSpecimensImporter(IndexNative index)
+//	{
+//		super(index, LUCENE_TYPE_SPECIMEN);
+//		this.delimiter = ',';
+//		this.charset = Charset.forName("Windows-1252");
+//		//this.suppressErrors = true;
+//		setSpecifyId(true);
+//		setSpecifyParent(false);
+//		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
+//		setBulkRequestSize(Integer.parseInt(prop));
+//		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
+//		setMaxRecords(Integer.parseInt(prop));
+//	}
+//
+//
+//	public void importCsvFiles() throws Exception
+//	{
+//		long start = System.currentTimeMillis();
+//		ThemeCache.getInstance().resetMatchCounters();
+//		File[] csvFiles = getCsvFiles();
+//		if (csvFiles.length == 0) {
+//			logger.info("No new CSV files to import");
+//			return;
+//		}
+//		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+//		for (File f : csvFiles) {
+//			importCsv(f.getCanonicalPath());
+//		}
+//		ThemeCache.getInstance().logMatchInfo();
+//		logger.info("Total duration: " + LoadUtil.getDuration(start));
+//	}
+//
+//
+//	@Override
+//	protected List<ESSpecimen> transfer(CSVRecord record, String csvRecord, int lineNo) throws Exception
+//	{
+//		String barcode = val(record, CsvField.BARCODE.ordinal());
+//		if (barcode == null) {
+//			if (logger.isDebugEnabled()) {
+//				logger.debug(String.format("Error at line %s: missing barcode", lineNo));
+//			}
+//			return null;
+//		}
+//
+//		final ESSpecimen specimen = new ESSpecimen();
+//		specimen.setSourceSystem(SourceSystem.BRAHMS);
+//		specimen.setSourceSystemId(barcode);
+//		specimen.setUnitID(barcode);
+//		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + LoadUtil.urlEncode(barcode));
+//
+//		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
+//		specimen.setOwner(SOURCE_INSTITUTION_ID);
+//		specimen.setSourceID("Brahms");
+//		specimen.setLicenceType(LICENCE_TYPE);
+//		specimen.setLicence(LICENCE);
+//		specimen.setCollectionType("Botany");
+//
+//		ThemeCache tsc = ThemeCache.getInstance();
+//		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.BRAHMS);
+//		specimen.setTheme(themes);
+//
+//		String recordBasis = val(record, CsvField.CATEGORY.ordinal());
+//		if (recordBasis == null) {
+//			specimen.setRecordBasis("Preserved Specimen");
+//		}
+//		else {
+//			specimen.setRecordBasis(recordBasis);
+//		}
+//
+//		specimen.setAssemblageID(BrahmsImportAll.ID_PREFIX + getFloatFieldAsInteger(record, CsvField.BRAHMS.ordinal()));
+//		specimen.setNotes(val(record, CsvField.PLANTDESC.ordinal()));
+//		specimen.setTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, CsvField.TYPE.ordinal())));
+//		String notOnline = val(record, CsvField.NOTONLINE.ordinal());
+//		if (notOnline == null || notOnline.equals("0")) {
+//			specimen.setObjectPublic(true);
+//		}
+//		else {
+//			specimen.setObjectPublic(false);
+//		}
+//		specimen.setGatheringEvent(getGatheringEvent(record));
+//		specimen.addIndentification(getSpecimenIdentification(record));
+//		return Arrays.asList(specimen);
+//	}
+//
+//	@Override
+//	protected Logger logger()
+//	{
+//		return logger;
+//	}
+//
+//
+//	@Override
+//	protected List<String> getIds(CSVRecord record)
+//	{
+//		String id = BrahmsImportAll.ID_PREFIX + val(record, CsvField.BARCODE.ordinal());
+//		return Arrays.asList(id);
+//	}
+//
+//
 	static ESGatheringEvent getGatheringEvent(CSVRecord record)
 	{
 		final ESGatheringEvent ge = new ESGatheringEvent();
@@ -320,29 +320,29 @@ public class BrahmsSpecimensImporter extends CSVImporter<ESSpecimen> {
 		}
 		return ge;
 	}
-
-	/*
-	 * Unnecessary/wrong check according to Marian v.d. Meij en Jeroen Creuwels
-	 */
-	static void checkSpData(CSVRecord record) throws Exception
-	{
-		String r = val(record, CsvField.RANK1.ordinal());
-		String s = val(record, CsvField.SP2.ordinal());
-		if ((r == null && s != null) || (r != null && s == null)) {
-			throw new Exception("If rank1 is provided, sp2 must also be provided and vice versa");
-		}
-		r = val(record, CsvField.RANK2.ordinal());
-		s = val(record, CsvField.SP3.ordinal());
-		if ((r == null && s != null) || (r != null && s == null)) {
-			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
-		}
-	}
-
-
-	private static Integer getFloatFieldAsInteger(CSVRecord record, int field)
-	{
-		Float f = getFloat(record, field);
-		return f == null ? null : f.intValue();
-	}
+//
+//	/*
+//	 * Unnecessary/wrong check according to Marian v.d. Meij en Jeroen Creuwels
+//	 */
+//	static void checkSpData(CSVRecord record) throws Exception
+//	{
+//		String r = val(record, CsvField.RANK1.ordinal());
+//		String s = val(record, CsvField.SP2.ordinal());
+//		if ((r == null && s != null) || (r != null && s == null)) {
+//			throw new Exception("If rank1 is provided, sp2 must also be provided and vice versa");
+//		}
+//		r = val(record, CsvField.RANK2.ordinal());
+//		s = val(record, CsvField.SP3.ordinal());
+//		if ((r == null && s != null) || (r != null && s == null)) {
+//			throw new Exception("If rank2 is provided, sp3 must also be provided and vice versa");
+//		}
+//	}
+//
+//
+//	private static Integer getFloatFieldAsInteger(CSVRecord record, int field)
+//	{
+//		Float f = getFloat(record, field);
+//		return f == null ? null : f.intValue();
+//	}
 
 }

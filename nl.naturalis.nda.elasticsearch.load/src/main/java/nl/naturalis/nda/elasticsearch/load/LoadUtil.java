@@ -5,10 +5,13 @@ import static org.domainobject.util.StringUtil.zpad;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.elasticsearch.client.IndexNative;
+
 import org.slf4j.Logger;
 
 /**
- * Utility class providing common functionality for all import programs. 
+ * Utility class providing common functionality for all import programs.
  * 
  * @author Ayco Holleman
  *
@@ -22,6 +25,11 @@ public final class LoadUtil {
 	{
 	}
 
+	public static void truncate(String luceneType, SourceSystem sourceSystem)
+	{
+		IndexNative indexManager = Registry.getInstance().getNbaIndexManager();
+		indexManager.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
+	}
 
 	/**
 	 * Get the duration between {@code start} and now, formatted as HH:mm:ss.
@@ -33,7 +41,6 @@ public final class LoadUtil {
 	{
 		return getDuration(start, System.currentTimeMillis());
 	}
-
 
 	/**
 	 * Get the duration between {@code start} and {@code end}, formatted as
@@ -54,7 +61,6 @@ public final class LoadUtil {
 		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
 	}
 
-
 	/**
 	 * Equivalent to {@code URLEncoder.encode(raw, "UTF-8")} suppressing the
 	 * {@code UnsupportedEncodingException}.
@@ -72,6 +78,5 @@ public final class LoadUtil {
 			return null;
 		}
 	}
-
 
 }

@@ -43,7 +43,7 @@ public class CoLImportAll {
 	public void importAll() throws IOException
 	{
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
-		CoLTaxonImporter importer = new CoLTaxonImporter(index);
+		CoLTaxonImporter importer = new CoLTaxonImporter();
 		importer.importCsv(dwcaDir + "/taxa.txt");
 		CoLTaxonSynonymEnricher synonymEnricher = new CoLTaxonSynonymEnricher(index);
 		synonymEnricher.importCsv(dwcaDir + "/taxa.txt");

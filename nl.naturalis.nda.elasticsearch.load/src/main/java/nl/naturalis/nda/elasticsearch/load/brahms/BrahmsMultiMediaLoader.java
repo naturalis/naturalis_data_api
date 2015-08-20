@@ -1,15 +1,23 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.ES_ID_PREFIX_BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 class BrahmsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
 
-	public BrahmsMultiMediaLoader(IndexNative indexManager)
+	private static IndexNative indexManager()
 	{
-		super(indexManager, LUCENE_TYPE_MULTIMEDIA_OBJECT, 1000);
+		return Registry.getInstance().getNbaIndexManager();
+	}
+
+	public BrahmsMultiMediaLoader(ETLStatistics stats)
+	{
+		super(indexManager(), LUCENE_TYPE_MULTIMEDIA_OBJECT, 1000, stats);
 	}
 
 	@Override
@@ -19,7 +27,7 @@ class BrahmsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
 			@Override
 			public String getId(ESMultiMediaObject obj)
 			{
-				return BrahmsImportAll.ID_PREFIX + obj.getUnitID();
+				return ES_ID_PREFIX_BRAHMS + obj.getUnitID();
 			}
 		};
 	}

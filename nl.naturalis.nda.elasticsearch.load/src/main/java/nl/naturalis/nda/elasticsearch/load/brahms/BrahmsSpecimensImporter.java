@@ -13,6 +13,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ExtractionException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -155,12 +156,11 @@ public class BrahmsSpecimensImporter {
 		suppressErrors = ConfigObject.TRUE("brahms.suppress-errors");
 	}
 
-
 	public void importCsvFiles() throws Exception
 	{
 
 		long start = System.currentTimeMillis();
-		
+
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No new CSV files to import");
@@ -170,14 +170,14 @@ public class BrahmsSpecimensImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 
 		CSVExtractor extractor = null;
+		ETLStatistics stats = new ETLStatistics();
 		BrahmsSpecimenTransformer transformer = null;
 		BrahmsSpecimenLoader loader = null;
 
-		index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-
 		try {
+			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			transformer = new BrahmsSpecimenTransformer();
-			loader = new BrahmsSpecimenLoader(index);
+			loader = new BrahmsSpecimenLoader(stats);
 			for (File f : csvFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
 				extractor = new CSVExtractor(f);
@@ -209,7 +209,7 @@ public class BrahmsSpecimensImporter {
 		finally {
 			IOUtil.close(loader);
 		}
-		
+
 		ThemeCache.getInstance().logMatchInfo();
 		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}

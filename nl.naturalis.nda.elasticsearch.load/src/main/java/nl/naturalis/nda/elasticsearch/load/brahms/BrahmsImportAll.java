@@ -14,6 +14,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ExtractionException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -110,10 +111,12 @@ public class BrahmsImportAll {
 			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
 
+			ETLStatistics specimenStats = new ETLStatistics();
+			ETLStatistics multimediaStats = new ETLStatistics();
 			specimenTransformer = new BrahmsSpecimenTransformer();
-			specimenLoader = new BrahmsSpecimenLoader(index);
+			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
 			multimediaTransformer = new BrahmsMultiMediaTransformer();
-			multimediaLoader = new BrahmsMultiMediaLoader(index);
+			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
 
 			for (File f : csvFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());

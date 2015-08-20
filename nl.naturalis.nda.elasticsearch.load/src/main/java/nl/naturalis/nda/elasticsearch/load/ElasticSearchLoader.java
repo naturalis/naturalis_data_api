@@ -81,15 +81,15 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 
 	private final Logger logger = Registry.getInstance().getLogger(getClass());
 
-	protected final IndexNative indexManager;
-	
+	private final IndexNative indexManager;
 	private final String type;
 	private final int treshold;
+	private final ETLStatistics stats;
+
 	private final ArrayList<T> objs;
 	private final ArrayList<String> ids;
 	private final ArrayList<String> parIds;
 
-	private int indexed;
 	private int batch;
 
 	/**
@@ -102,11 +102,12 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 * @param documentType
 	 * @param treshold
 	 */
-	public ElasticSearchLoader(IndexNative indexManager, String documentType, int treshold)
+	public ElasticSearchLoader(IndexNative indexManager, String documentType, int treshold, ETLStatistics stats)
 	{
 		this.indexManager = indexManager;
 		this.type = documentType;
 		this.treshold = treshold;
+		this.stats = stats;
 		objs = new ArrayList<>(treshold + 8);
 		ids = getIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
 		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
@@ -133,16 +134,6 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	}
 
 	/**
-	 * Get the number of documents indexed so far by this writer.
-	 * 
-	 * @return The number of documents indexed
-	 */
-	public int indexed()
-	{
-		return indexed;
-	}
-
-	/**
 	 * Just calls {@link #flush()} so that a try-with-resources instantiation of
 	 * this writer is guaranteed to flush the object buffer for you.
 	 */
@@ -164,9 +155,9 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		if (!objs.isEmpty()) {
 			try {
 				indexManager.saveObjects(type, objs, ids, parIds);
-				indexed += objs.size();
+				stats.objectsIndexed += objs.size();
 				if (++batch % 50 == 0) {
-					logger.info("Documents indexed: " + indexed);
+					logger.info("Documents indexed: " + stats.objectsIndexed);
 				}
 			}
 			finally {

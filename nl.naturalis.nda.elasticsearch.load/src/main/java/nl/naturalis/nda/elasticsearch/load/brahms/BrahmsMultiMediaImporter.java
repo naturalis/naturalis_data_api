@@ -13,6 +13,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ExtractionException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -67,11 +68,11 @@ public class BrahmsMultiMediaImporter {
 		BrahmsMultiMediaTransformer transformer = null;
 		BrahmsMultiMediaLoader loader = null;
 
-		index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-
 		try {
+			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+			ETLStatistics stats = new ETLStatistics();
 			transformer = new BrahmsMultiMediaTransformer();
-			loader = new BrahmsMultiMediaLoader(index);
+			loader = new BrahmsMultiMediaLoader(stats);
 			for (File f : csvFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
 				extractor = new CSVExtractor(f);
@@ -103,7 +104,7 @@ public class BrahmsMultiMediaImporter {
 		finally {
 			IOUtil.close(loader);
 		}
-		
+
 		ThemeCache.getInstance().logMatchInfo();
 		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}

@@ -160,7 +160,7 @@ class BrahmsMultiMediaTransformer implements CSVTransformer<ESMultiMediaObject> 
 	{
 		if (!suppressErrors) {
 			String msg = messagePrefix() + String.format(pattern, args);
-			logger.debug(msg);
+			logger.error(msg);
 		}
 	}
 
@@ -169,7 +169,7 @@ class BrahmsMultiMediaTransformer implements CSVTransformer<ESMultiMediaObject> 
 	{
 		if (!suppressErrors) {
 			String msg = messagePrefix() + String.format(pattern, args);
-			logger.debug(msg);
+			logger.warn(msg);
 		}
 	}
 
@@ -177,7 +177,7 @@ class BrahmsMultiMediaTransformer implements CSVTransformer<ESMultiMediaObject> 
 	private void info(String pattern, Object... args)
 	{
 		String msg = messagePrefix() + String.format(pattern, args);
-		logger.debug(msg);
+		logger.info(msg);
 	}
 
 	@SuppressWarnings("unused")

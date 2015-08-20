@@ -7,5 +7,9 @@ public interface LoadConstants {
 	String LICENCE_TYPE = "Copyright";
 	String LICENCE = "CC0";
 	String PURL_SERVER_BASE_URL = "http://data.biodiversitydata.nl";
+	String ES_ID_PREFIX_BRAHMS = "BRAHMS-";
+	String ES_ID_PREFIX_COL = "COL-";
+	String ES_ID_PREFIX_NSR = "NSR-";
+	String ES_ID_PREFIX_CRS = "CRS-";
 
 }

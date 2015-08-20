@@ -38,6 +38,11 @@ public class CSVImportUtil {
 		throw new NoSuchFieldException(record, fieldNo);
 	}
 
+	public static String val(CSVRecord record, Enum<?> e)
+	{
+		return val(record, e.ordinal());
+	}
+
 	/**
 	 * Returns the value of the specified field as an integer. This method does
 	 * not throw an exception if the field does not contain a valid integer, but
@@ -63,6 +68,11 @@ public class CSVImportUtil {
 		}
 	}
 
+
+	public static int ival(CSVRecord record, Enum<?> e)
+	{
+		return ival(record, e.ordinal());
+	}
 	/**
 	 * Returns the value of the specified field as a {@code float}. This method
 	 * does not throw an exception if the field does not contain a valid
@@ -114,10 +124,10 @@ public class CSVImportUtil {
 	}
 
 	/**
-	 * Returns the value of the specified field as a {@code Integer}. This method
-	 * does not throw an exception if the field does not contain a valid
-	 * integer, but instead issues a warning and returns {@code null}. If the field
-	 * is empty, it also returns {@code null}.
+	 * Returns the value of the specified field as a {@code Integer}. This
+	 * method does not throw an exception if the field does not contain a valid
+	 * integer, but instead issues a warning and returns {@code null}. If the
+	 * field is empty, it also returns {@code null}.
 	 * 
 	 * @param record
 	 * @param fieldNo
@@ -141,8 +151,8 @@ public class CSVImportUtil {
 	/**
 	 * Returns the value of the specified field as a {@code Double}. This method
 	 * does not throw an exception if the field does not contain a valid
-	 * integer, but instead issues a warning and returns {@code null}. If the field
-	 * is empty, it also returns {@code null}.
+	 * integer, but instead issues a warning and returns {@code null}. If the
+	 * field is empty, it also returns {@code null}.
 	 * 
 	 * @param record
 	 * @param fieldNo
@@ -166,8 +176,8 @@ public class CSVImportUtil {
 	/**
 	 * Returns the value of the specified field as a {@code Double}. This method
 	 * does not throw an exception if the field does not contain a valid
-	 * integer, but instead issues a warning and returns {@code null}. If the field
-	 * is empty, it also returns {@code null}.
+	 * integer, but instead issues a warning and returns {@code null}. If the
+	 * field is empty, it also returns {@code null}.
 	 * 
 	 * @param record
 	 * @param fieldNo
@@ -187,6 +197,5 @@ public class CSVImportUtil {
 			return null;
 		}
 	}
-
 
 }

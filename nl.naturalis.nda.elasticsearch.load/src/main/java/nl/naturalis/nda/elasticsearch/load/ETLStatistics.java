@@ -1,15 +1,23 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import org.slf4j.Logger;
+
+/**
+ * A Java bean maintaining a set of running totals for an ETL program.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ETLStatistics {
 
 	/**
 	 * The number of times that the source data could not be parsed into a
-	 * record. This is useful when processing CSV files, where a raw line may
-	 * not be parsable into a {@code CSVRecord}. It is not very useful when
-	 * processing XML files, because these are parsed as a whole into a DOM
-	 * tree.
+	 * record (usually during extraction phase). This is useful when processing
+	 * CSV files, where a raw line may not be parsable into a {@code CSVRecord}.
+	 * It is not very useful when processing XML files, because these are parsed
+	 * as a whole into a DOM tree.
 	 */
-	public int badSourceData;
+	public int badInput;
 
 	/**
 	 * The number of records processed by the import program.
@@ -31,9 +39,9 @@ public class ETLStatistics {
 	/**
 	 * The number of records that made it to the transformation phase. Simply
 	 * the number of records that were neither skipped nor rejected.<br>
-	 * {@code recordsSkipped + recordsRejected + recordsInvestigated = recordsProcessed}
+	 * {@code recordsSkipped + recordsRejected + recordsAccepted = recordsProcessed}
 	 */
-	public int recordsInvestigated;
+	public int recordsAccepted;
 	/**
 	 * The number of objects processed by the import program. Note that one
 	 * record may contain multiple objects. For example, one line in a Brahms
@@ -60,7 +68,7 @@ public class ETLStatistics {
 	 */
 	public void reset()
 	{
-		badSourceData = 0;
+		badInput = 0;
 		recordsProcessed = 0;
 		recordsSkipped = 0;
 		recordsRejected = 0;
@@ -78,15 +86,34 @@ public class ETLStatistics {
 	 */
 	public void add(ETLStatistics other)
 	{
-		badSourceData += other.badSourceData;
+		badInput += other.badInput;
 		recordsProcessed += other.recordsProcessed;
 		recordsSkipped += other.recordsSkipped;
 		recordsRejected += other.recordsRejected;
-		recordsInvestigated += other.recordsInvestigated;
+		recordsAccepted += other.recordsAccepted;
 		objectsProcessed += other.objectsProcessed;
 		objectsSkipped += other.objectsSkipped;
 		objectsRejected += other.objectsRejected;
 		objectsIndexed += other.objectsIndexed;
+	}
+
+	public void logStatistics(Logger logger)
+	{
+		logger.info(" ");
+		logger.info("Extraction/parse failures     : " + String.format("%7d", badInput));
+		logger.info(" ");
+		logger.info("Records skipped               : " + String.format("%7d", recordsSkipped));
+		logger.info("Records investigated          : " + String.format("%7d", recordsAccepted));
+		logger.info("Records rejected              : " + String.format("%7d", recordsRejected));
+		logger.info("--------------------------------------- +");
+		logger.info("Records processed             : " + String.format("%7d", recordsProcessed));
+		logger.info(" ");
+		logger.info("Objects indexed               : " + String.format("%7d", objectsIndexed));
+		logger.info("Objects skipped               : " + String.format("%7d", objectsSkipped));
+		logger.info("Objects rejected              : " + String.format("%7d", objectsRejected));
+		logger.info("--------------------------------------- +");
+		logger.info("Objects processed             : " + String.format("%7d", objectsProcessed));
+		logger.info(" ");
 	}
 
 }

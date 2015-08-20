@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
@@ -27,132 +26,16 @@ public class BrahmsSpecimensImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
-		try {
-			index = Registry.getInstance().getNbaIndexManager();
-			BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter(index);
-			importer.importCsvFiles();
-		}
-		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
-		}
+		BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter();
+		importer.importCsvFiles();
 	}
 
-	//@formatter:off
-	static enum CsvField {
-		TAG,
-		DEL,
-		HERBARIUM,
-		CATEGORY,
-		SPECID,
-		BRAHMS,
-		ACCESSION,
-		BARCODE,
-		OLDBARCODE,
-		PHENOLOGY,
-		COLLECTOR,
-		PREFIX,
-		NUMBER,
-		SUFFIX,
-		ADDCOLL,
-		ADDCOLLALL,
-		TYPE,
-		TYPE_OF,
-		TYPEURL,
-		DAY,
-		MONTH,
-		YEAR,
-		DATERES,
-		FAMCLASS,
-		ORDER,
-		FAMILY,
-		CF,
-		TAXSTAT,
-		SPECIES,
-		DETSTATUS,
-		DETBY,
-		DAYIDENT,
-		MONTHIDENT,
-		YEARIDENT,
-		DETDATE,
-		DETHISTORY,
-		DETNOTES,
-		CURATENOTE,
-		ORIGINSTAT,
-		ORIGINID,
-		CONTINENT,
-		REGION,
-		COUNTRY,
-		MAJORAREA,
-		MINORAREA,
-		LOCPREFIX,
-		GAZETTEER,
-		LOCNOTES,
-		HABITATTXT,
-		NOTE,
-		CULTNOTES,
-		LATITUDE,
-		NS,
-		LONGITUDE,
-		EW,
-		LLUNIT,
-		LLRES,
-		LLORIG,
-		LATLONG,
-		LATDEC,
-		LONGDEC,
-		DEGSQ,
-		MINELEV,
-		MAXELEV,
-		ALTRES,
-		ALTTEXT,
-		ALTRANGE,
-		GEODATA,
-		PLANTDESC,
-		NOTES,
-		VERNACULAR,
-		LANGUAGE,
-		GENUS,
-		SP1,
-		AUTHOR1,
-		RANK1,
-		SP2,
-		AUTHOR2,
-		RANK2,
-		SP3,
-		AUTHOR3,
-		UNIQUE,
-		HSACCODE,
-		GAZCODE,
-		HBCODE,
-		HSTYPE,
-		SPTYPE,
-		SPNUMBER,
-		SPCODETYPE,
-		CSCODE,
-		ALTCS,
-		ADDCSCODE,
-		DETBYCODE,
-		CONUMBER,
-		CCID,
-		ENTRYDATE,
-		WHO,
-		NOTONLINE,
-		DATELASTM,
-		IMAGELIST
-	}
-	//@formatter:on
+	static Logger logger = Registry.getInstance().getLogger(BrahmsSpecimensImporter.class);
 
-	public static final Logger logger = Registry.getInstance().getLogger(BrahmsSpecimensImporter.class);
-
-	private final IndexNative index;
 	private final boolean suppressErrors;
 
-	public BrahmsSpecimensImporter(IndexNative index)
+	public BrahmsSpecimensImporter()
 	{
-		this.index = index;
 		suppressErrors = ConfigObject.TRUE("brahms.suppress-errors");
 	}
 
@@ -175,8 +58,8 @@ public class BrahmsSpecimensImporter {
 		BrahmsSpecimenLoader loader = null;
 
 		try {
-			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-			transformer = new BrahmsSpecimenTransformer();
+			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
+			transformer = new BrahmsSpecimenTransformer(stats);
 			loader = new BrahmsSpecimenLoader(stats);
 			for (File f : csvFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
@@ -211,6 +94,7 @@ public class BrahmsSpecimensImporter {
 		}
 
 		ThemeCache.getInstance().logMatchInfo();
+		stats.logStatistics(logger);
 		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}
 

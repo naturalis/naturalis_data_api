@@ -58,7 +58,7 @@ public class CoLTaxonImporter {
 			extractor = new CSVExtractor(f);
 			extractor.setSkipHeader(true);
 			extractor.setDelimiter('\t');
-			transformer = new CoLTaxonTransformer();
+			transformer = new CoLTaxonTransformer(stats);
 			transformer.setColYear(colYear);
 			transformer.setSuppressErrors(suppressErrors);
 			loader = new CoLTaxonLoader(stats);
@@ -73,6 +73,8 @@ public class CoLTaxonImporter {
 		finally {
 			IOUtil.close(loader);
 		}
+		stats.logStatistics(logger);
+		logger.info("(NB skipped records are synonyms)");
 		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}
 
@@ -87,7 +89,7 @@ public class CoLTaxonImporter {
 			}
 		}
 		catch (ExtractionException e) {
-			stats.badSourceData++;
+			stats.badInput++;
 			if (!suppressErrors) {
 				logger.error("Line " + e.getLineNumber() + ": " + e.getMessage());
 				logger.error(e.getLine());

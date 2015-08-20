@@ -10,16 +10,11 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDat
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getScientificName;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSystemClassification;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.BARCODE;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.DAYIDENT;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.IMAGELIST;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.MONTHIDENT;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.PLANTDESC;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.TYPE;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.VERNACULAR;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsSpecimensImporter.CsvField.YEARIDENT;
 import static org.domainobject.util.StringUtil.lpad;
 import static org.domainobject.util.StringUtil.rpad;
+
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.*;
+
 
 import java.net.URI;
 import java.net.URISyntaxException;

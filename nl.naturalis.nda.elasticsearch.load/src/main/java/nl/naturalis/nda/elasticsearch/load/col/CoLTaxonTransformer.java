@@ -20,6 +20,7 @@ import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVRecord;
@@ -30,13 +31,16 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 	static Logger logger = Registry.getInstance().getLogger(CoLTaxonTransformer.class);
 	static List<String> allowedTaxonRanks = Arrays.asList("species", "infraspecies");
 
+	private final ETLStatistics stats;
+
 	private String objectID;
 	private int lineNo;
 	private boolean suppressErrors;
 	private String colYear;
 
-	public CoLTaxonTransformer()
+	public CoLTaxonTransformer(ETLStatistics stats)
 	{
+		this.stats = stats;
 	}
 
 	public void setColYear(String colYear)
@@ -53,14 +57,21 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 	public List<ESTaxon> transform(CSVRecordInfo info)
 	{
 
+		stats.recordsProcessed++;
 		CSVRecord record = info.getRecord();
 		lineNo = info.getLineNumber();
 		objectID = val(record, taxonID);
 
 		if (ival(record, acceptedNameUsageID) == 0) {
-			// TODO: increase skipped records counter!
+			stats.recordsSkipped++;
 			return null;
 		}
+
+		// TODO: Stricty speaking, we should start a big try-catch block here to
+		// allow for the possibility that we have to reject the record, but with
+		// the CoL this is never the case.
+		stats.recordsAccepted++;
+		stats.objectsProcessed++;
 
 		String rank = val(record, taxonRank);
 		if (!allowedTaxonRanks.contains(rank)) {
@@ -83,7 +94,7 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 			String[] chunks = refs.split("annual-checklist");
 			if (chunks.length != 2) {
 				if (!suppressErrors)
-					warn("RecordURI not set. Cannot parse URL: \"%s\"", refs);
+					warn("RecordURI not set. Could not parse URL: \"%s\"", refs);
 			}
 			else {
 				StringBuilder url = new StringBuilder(96);

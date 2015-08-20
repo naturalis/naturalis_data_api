@@ -93,7 +93,6 @@ public class CrsMultiMediaImporter {
 
 	int nonMedialibUrls;
 
-
 	public CrsMultiMediaImporter(Index index) throws Exception
 	{
 		this.index = index;
@@ -117,7 +116,6 @@ public class CrsMultiMediaImporter {
 
 		transfer = new CrsMultiMediaTransfer(this);
 	}
-
 
 	public void importMultiMedia()
 	{
@@ -187,7 +185,6 @@ public class CrsMultiMediaImporter {
 		}
 	}
 
-
 	private void processRemote() throws IOException
 	{
 		int batch = 0;
@@ -227,7 +224,6 @@ public class CrsMultiMediaImporter {
 		}
 	}
 
-
 	private void processLocal() throws IOException
 	{
 		Iterator<File> localFileIterator = getLocalFileIterator();
@@ -238,7 +234,6 @@ public class CrsMultiMediaImporter {
 			index(Files.readAllBytes(f.toPath()));
 		}
 	}
-
 
 	private String index(byte[] xml)
 	{
@@ -255,8 +250,8 @@ public class CrsMultiMediaImporter {
 		int numRecords = records.getLength();
 		logger.debug("Number of records in XML output: " + numRecords);
 
-		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(bulkRequestSize);
-		List<String> ids = new ArrayList<String>(bulkRequestSize);
+		List<ESMultiMediaObject> mediaObjects = new ArrayList<>(bulkRequestSize);
+		List<String> ids = new ArrayList<>(bulkRequestSize);
 
 		for (int i = 0; i < numRecords; ++i) {
 			++recordsProcessed;
@@ -280,7 +275,7 @@ public class CrsMultiMediaImporter {
 					continue;
 				}
 				if (extractedMedia != null) {
-					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
+					List<String> extractedIds = new ArrayList<>(extractedMedia.size());
 					for (ESMultiMediaObject mo : extractedMedia) {
 						extractedIds.add(CrsImportAll.ID_PREFIX + mo.getSourceSystemId());
 					}
@@ -318,7 +313,6 @@ public class CrsMultiMediaImporter {
 
 	private static final SimpleDateFormat oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 
-
 	static byte[] callOaiService(String resumptionToken)
 	{
 		String url;
@@ -338,7 +332,6 @@ public class CrsMultiMediaImporter {
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
-
 	static byte[] callOaiService(Date fromDate, Date untilDate)
 	{
 		String url = config.required("crs.multimedia.url.initial");
@@ -351,7 +344,6 @@ public class CrsMultiMediaImporter {
 		logger.info("Calling service: " + url);
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
-
 
 	static Iterator<File> getLocalFileIterator()
 	{
@@ -375,7 +367,6 @@ public class CrsMultiMediaImporter {
 		return Arrays.asList(files).iterator();
 	}
 
-
 	static boolean isDeletedRecord(Element record)
 	{
 		if (!DOMUtil.getChild(record, "header").hasAttribute("status")) {
@@ -383,7 +374,6 @@ public class CrsMultiMediaImporter {
 		}
 		return DOMUtil.getChild(record, "header").getAttribute("status").equals("deleted");
 	}
-
 
 	private static File getResumptionTokenFile()
 	{

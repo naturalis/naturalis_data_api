@@ -68,7 +68,6 @@ public class CSVImportUtil {
 		}
 	}
 
-
 	public static int ival(CSVRecord record, Enum<?> e)
 	{
 		return ival(record, e.ordinal());
@@ -169,6 +168,20 @@ public class CSVImportUtil {
 		}
 		catch (NumberFormatException e) {
 			logger.warn(String.format(MSG_INVALID_NUMBER, fieldNo, s));
+			return null;
+		}
+	}
+
+	public static Float getFloat(CSVRecord record, Enum<?> e)
+	{
+		String s = val(record, e.ordinal());
+		if (s == null)
+			return null;
+		try {
+			return Float.valueOf(s);
+		}
+		catch (NumberFormatException exc) {
+			logger.warn(String.format(MSG_INVALID_NUMBER, e, s));
 			return null;
 		}
 	}

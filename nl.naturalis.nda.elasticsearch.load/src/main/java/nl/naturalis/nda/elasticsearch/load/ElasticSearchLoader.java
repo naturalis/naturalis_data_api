@@ -146,9 +146,12 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	/**
 	 * Flushes the contents of the internal object buffer to ElasticSearch.
 	 * While in the midst of processing your data you don't have to call this
-	 * method explicitly as it is done implicitly by the {@link #load(List) add}
-	 * methods once the size of the buffers exceeds the treshold specified in
-	 * the constructor. However, you SHOULD
+	 * method explicitly as it is done implicitly by the {@link #load(List)
+	 * load} method once the size of the buffers exceeds the treshold specified
+	 * in the constructor. However, you must call this method yourself once all
+	 * records have been processed to make sure any remaining objects in the
+	 * buffer are written to ElasticSearch. (Alternatively, you can set up a
+	 * try-with-resource block to achieve the same.)
 	 */
 	public void flush()
 	{

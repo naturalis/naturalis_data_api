@@ -25,6 +25,13 @@ public final class LoadUtil {
 	{
 	}
 
+	public static Throwable getRootCause(Throwable t)
+	{
+		while (t.getCause() != null)
+			t = t.getCause();
+		return t;
+	}
+
 	public static void truncate(String luceneType, SourceSystem sourceSystem)
 	{
 		IndexNative indexManager = Registry.getInstance().getNbaIndexManager();

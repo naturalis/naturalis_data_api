@@ -70,7 +70,7 @@ public class BrahmsImportAll {
 	 */
 	public void importPerType() throws Exception
 	{
-		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
+		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter();
 		specimenImporter.importCsvFiles();
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
 		multiMediaImporter.importCsvFiles();
@@ -113,7 +113,7 @@ public class BrahmsImportAll {
 
 			ETLStatistics specimenStats = new ETLStatistics();
 			ETLStatistics multimediaStats = new ETLStatistics();
-			specimenTransformer = new BrahmsSpecimenTransformer();
+			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
 			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
 			multimediaTransformer = new BrahmsMultiMediaTransformer();
 			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);

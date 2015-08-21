@@ -1,5 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.domainobject.util.StringUtil.pad;
+import static org.domainobject.util.StringUtil.rpad;
+
 import org.slf4j.Logger;
 
 /**
@@ -97,23 +100,54 @@ public class ETLStatistics {
 		objectsIndexed += other.objectsIndexed;
 	}
 
+	/**
+	 * Log statistic about the ETL cycle.
+	 * 
+	 * @param logger
+	 */
 	public void logStatistics(Logger logger)
 	{
+		logStatistics(logger, "Objects");
+	}
+
+	/**
+	 * Log statistic about the ETL cycle, using a user-friendly name for the
+	 * type of objects being indexed.
+	 * 
+	 * @param logger
+	 * @param niceName
+	 */
+	public void logStatistics(Logger logger, String niceName)
+	{
 		logger.info(" ");
-		logger.info("Extraction/parse failures     : " + String.format("%7d", badInput));
+		String title = niceName.toUpperCase() + " IMPORT";
+		logger.info(pad(title, 38));
+		logger.info("=====================================");
+		logger.info(statistic("Extraction/parse failures", badInput));
 		logger.info(" ");
-		logger.info("Records skipped               : " + String.format("%7d", recordsSkipped));
-		logger.info("Records investigated          : " + String.format("%7d", recordsAccepted));
-		logger.info("Records rejected              : " + String.format("%7d", recordsRejected));
-		logger.info("--------------------------------------- +");
-		logger.info("Records processed             : " + String.format("%7d", recordsProcessed));
+		logger.info(statistic("Records skipped", recordsSkipped));
+		logger.info(statistic("Records investigated", recordsAccepted));
+		logger.info(statistic("Records rejected", recordsRejected));
+		logger.info("------------------------------------- +");
+		logger.info(statistic("Records processed", recordsProcessed));
 		logger.info(" ");
-		logger.info("Objects indexed               : " + String.format("%7d", objectsIndexed));
-		logger.info("Objects skipped               : " + String.format("%7d", objectsSkipped));
-		logger.info("Objects rejected              : " + String.format("%7d", objectsRejected));
-		logger.info("--------------------------------------- +");
-		logger.info("Objects processed             : " + String.format("%7d", objectsProcessed));
+		logger.info(statistic(niceName, "indexed", objectsIndexed));
+		logger.info(statistic(niceName, "skipped", objectsSkipped));
+		logger.info(statistic(niceName, "rejected", objectsRejected));
+		logger.info("------------------------------------- +");
+		logger.info(statistic(niceName, "processed", objectsProcessed));
+		logger.info("=====================================");
 		logger.info(" ");
+	}
+
+	private static String statistic(String niceName, String statName, int stat)
+	{
+		return rpad(niceName + " " + statName, 28, ": ") + String.format("%7d", stat);
+	}
+
+	private static String statistic(String statName, int stat)
+	{
+		return rpad(statName, 28, ": ") + String.format("%7d", stat);
 	}
 
 }

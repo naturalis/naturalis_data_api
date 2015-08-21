@@ -166,7 +166,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	@Override
 	public void close() throws IOException
 	{
-		if (changed && ConfigObject.TRUE("mimetypecache.update")) {
+		if (changed && ConfigObject.isEnabled("mimetypecache.update")) {
 			saveCache(cacheFile);
 			changed = false;
 		}

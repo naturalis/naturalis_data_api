@@ -161,7 +161,7 @@ class CrsMultiMediaTransfer {
 			first.setLicenceType(LICENCE_TYPE);
 			first.setAssociatedSpecimenReference(specimenID);
 			first.setIdentifications(identifications);
-			List<String> themes = themeCache.getThemesForDocument(specimenID, MULTI_MEDIA_OBJECT, CRS);
+			List<String> themes = themeCache.lookup(specimenID, MULTI_MEDIA_OBJECT, CRS);
 			first.setTheme(themes);
 			return first;
 		}

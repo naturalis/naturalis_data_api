@@ -8,14 +8,12 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.ExtractionException;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
@@ -45,26 +43,23 @@ public class BrahmsImportAll {
 		}
 	}
 
-	/**
-	 * The prefix for ElasticSearch IDs for Brahms documents.
-	 */
-	public static final String ID_PREFIX = "BRAHMS-";
-
 	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
+	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
 	private final IndexNative index;
-	private final boolean suppressErrors;
 	private final boolean backup;
+	private final boolean suppressErrors;
 
 	public BrahmsImportAll(IndexNative index)
 	{
 		this.index = index;
-		suppressErrors = ConfigObject.TRUE("brahms.suppress-errors");
-		backup = ConfigObject.TRUE("brahms.backup", true);
+		backup = ConfigObject.isEnabled("brahms.backup", true);
+		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
 	/**
-	 * This method first imports all specimens, then all multimedia.
+	 * This method first imports all specimens, then all multimedia. Thus each
+	 * CSV file is read twice.
 	 * 
 	 * @throws Exception
 	 */
@@ -75,15 +70,16 @@ public class BrahmsImportAll {
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
 		multiMediaImporter.importCsvFiles();
 		if (backup) {
-			String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
+			String ext = "." + fileNameDateFormatter.format(new Date()) + ".imported";
 			for (File f : getCsvFiles()) {
-				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
+				f.renameTo(new File(f.getAbsolutePath() + ext));
 			}
 		}
 	}
 
 	/**
-	 * This method imports specimen and multimedia at the same time.
+	 * This method iterates over the CSV files once, importing both specimens
+	 * and multimedia at the same time.
 	 * 
 	 * @throws Exception
 	 */
@@ -91,74 +87,84 @@ public class BrahmsImportAll {
 	{
 
 		long start = System.currentTimeMillis();
-
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
-
 		ThemeCache.getInstance().resetMatchCounters();
-
-		CSVExtractor extractor = null;
-		BrahmsSpecimenTransformer specimenTransformer = null;
-		BrahmsSpecimenLoader specimenLoader = null;
-		BrahmsMultiMediaTransformer multimediaTransformer = null;
-		BrahmsMultiMediaLoader multimediaLoader = null;
-
+		// Statistics for specimen import
+		ETLStatistics sStats = new ETLStatistics();
+		// Statistics for multimedia import
+		ETLStatistics mStats = new ETLStatistics();
 		try {
-
-			index.deleteWhere(LUCENE_TYPE_SPECIMEN, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-
-			ETLStatistics specimenStats = new ETLStatistics();
-			ETLStatistics multimediaStats = new ETLStatistics();
-			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
-			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
-			multimediaTransformer = new BrahmsMultiMediaTransformer();
-			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
-
+			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
+			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
-				logger.info("Processing file " + f.getAbsolutePath());
-				extractor = new CSVExtractor(f);
-				extractor.setSkipHeader(true);
-				extractor.setDelimiter(',');
-				extractor.setCharset(Charset.forName("Windows-1252"));
-				Iterator<CSVRecordInfo> iterator = extractor.iterator();
-				while (iterator.hasNext()) {
-					try {
-						CSVRecordInfo record = iterator.next();
-						specimenLoader.load(specimenTransformer.transform(record));
-						multimediaLoader.load(multimediaTransformer.transform(record));
-						if (record.getLineNumber() % 50000 == 0) {
-							logger.info("Records processed: " + record.getLineNumber());
-						}
-					}
-					catch (ExtractionException e) {
-						if (!suppressErrors) {
-							logger.error("Line " + e.getLineNumber() + ": " + e.getMessage());
-							logger.error(e.getLine());
-						}
-					}
+				processFile(f, sStats, mStats);
+			}
+			if (backup) {
+				String ext = "." + fileNameDateFormatter.format(new Date()) + ".imported";
+				for (File f : getCsvFiles()) {
+					f.renameTo(new File(f.getAbsolutePath() + ext));
 				}
 			}
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
-		finally {
-			IOUtil.close(specimenLoader);
-			IOUtil.close(multimediaLoader);
-		}
-
-		if (backup) {
-			String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
-			for (File f : getCsvFiles()) {
-				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
-			}
-		}
-
 		ThemeCache.getInstance().logMatchInfo();
-		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
+		sStats.logStatistics(logger, "Specimens");
+		mStats.logStatistics(logger, "Multimedia");
+		LoadUtil.logDuration(logger, getClass(), start);
+	}
+
+	private void processFile(File f, ETLStatistics sStats, ETLStatistics mStats)
+	{
+		long start = System.currentTimeMillis();
+		logger.info("Processing file " + f.getAbsolutePath());
+		BrahmsSpecimenLoader specimenLoader = null;
+		BrahmsMultiMediaLoader multimediaLoader = null;
+		try {
+			ETLStatistics specimenStats = new ETLStatistics();
+			ETLStatistics multimediaStats = new ETLStatistics();
+			ETLStatistics extractionStats = new ETLStatistics();
+			BrahmsSpecimenTransformer specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
+			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
+			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
+			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
+			CSVExtractor extractor = createExtractor(f, extractionStats);
+			for (CSVRecordInfo rec : extractor) {
+				if (rec == null)
+					continue;
+				specimenLoader.load(specimenTransformer.transform(rec));
+				multimediaLoader.load(multimediaTransformer.transform(rec));
+				if (rec.getLineNumber() % 50000 == 0) {
+					logger.info("Records processed: " + rec.getLineNumber());
+				}
+			}
+			specimenStats.add(extractionStats);
+			multimediaStats.add(extractionStats);
+			specimenStats.logStatistics(logger, "Specimens");
+			multimediaStats.logStatistics(logger, "Multimedia");
+			sStats.add(specimenStats);
+			mStats.add(multimediaStats);
+			logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
+			logger.info(" ");
+			logger.info(" ");
+		}
+		finally {
+			IOUtil.close(specimenLoader, multimediaLoader);
+		}
+	}
+
+	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)
+	{
+		CSVExtractor extractor = new CSVExtractor(f, extractionStats);
+		extractor.setSkipHeader(true);
+		extractor.setDelimiter(',');
+		extractor.setCharset(Charset.forName("Windows-1252"));
+		extractor.setSuppressErrors(suppressErrors);
+		return extractor;
 	}
 }

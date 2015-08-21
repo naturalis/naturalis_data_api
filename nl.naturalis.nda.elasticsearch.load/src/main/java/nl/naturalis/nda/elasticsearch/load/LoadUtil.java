@@ -38,6 +38,11 @@ public final class LoadUtil {
 		indexManager.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
 	}
 
+	public static void logDuration(Logger logger, Class<?> cls, long start)
+	{
+		logger.info(cls.getSimpleName() + " took " + getDuration(start));
+	}
+
 	/**
 	 * Get the duration between {@code start} and now, formatted as HH:mm:ss.
 	 * 

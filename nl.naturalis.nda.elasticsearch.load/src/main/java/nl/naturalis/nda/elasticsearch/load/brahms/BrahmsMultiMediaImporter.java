@@ -48,65 +48,65 @@ public class BrahmsMultiMediaImporter {
 	public BrahmsMultiMediaImporter(IndexNative index)
 	{
 		this.index = index;
-		suppressErrors = ConfigObject.TRUE("brahms.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
 	public void importCsvFiles()
 	{
 
-		long start = System.currentTimeMillis();
-
-		File[] csvFiles = getCsvFiles();
-		if (csvFiles.length == 0) {
-			logger.info("No new CSV files to import");
-			return;
-		}
-
-		ThemeCache.getInstance().resetMatchCounters();
-
-		CSVExtractor extractor = null;
-		BrahmsMultiMediaTransformer transformer = null;
-		BrahmsMultiMediaLoader loader = null;
-
-		try {
-			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
-			ETLStatistics stats = new ETLStatistics();
-			transformer = new BrahmsMultiMediaTransformer();
-			loader = new BrahmsMultiMediaLoader(stats);
-			for (File f : csvFiles) {
-				logger.info("Processing file " + f.getAbsolutePath());
-				extractor = new CSVExtractor(f);
-				extractor.setSkipHeader(true);
-				extractor.setDelimiter(',');
-				extractor.setCharset(Charset.forName("Windows-1252"));
-				Iterator<CSVRecordInfo> iterator = extractor.iterator();
-				while (iterator.hasNext()) {
-					try {
-						CSVRecordInfo record = iterator.next();
-						List<ESMultiMediaObject> multimedia = transformer.transform(record);
-						loader.load(multimedia);
-						if (record.getLineNumber() % 50000 == 0) {
-							logger.info("Records processed: " + record.getLineNumber());
-						}
-					}
-					catch (ExtractionException e) {
-						if (!suppressErrors) {
-							logger.error("Line " + e.getLineNumber() + ": " + e.getMessage());
-							logger.error(e.getLine());
-						}
-					}
-				}
-			}
-		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
-		}
-		finally {
-			IOUtil.close(loader);
-		}
-
-		ThemeCache.getInstance().logMatchInfo();
-		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
+//		long start = System.currentTimeMillis();
+//
+//		File[] csvFiles = getCsvFiles();
+//		if (csvFiles.length == 0) {
+//			logger.info("No new CSV files to import");
+//			return;
+//		}
+//
+//		ThemeCache.getInstance().resetMatchCounters();
+//
+//		CSVExtractor extractor = null;
+//		BrahmsMultiMediaTransformer transformer = null;
+//		BrahmsMultiMediaLoader loader = null;
+//
+//		try {
+//			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.BRAHMS.getCode());
+//			ETLStatistics stats = new ETLStatistics();
+//			transformer = new BrahmsMultiMediaTransformer();
+//			loader = new BrahmsMultiMediaLoader(stats);
+//			for (File f : csvFiles) {
+//				logger.info("Processing file " + f.getAbsolutePath());
+//				extractor = new CSVExtractor(f);
+//				extractor.setSkipHeader(true);
+//				extractor.setDelimiter(',');
+//				extractor.setCharset(Charset.forName("Windows-1252"));
+//				Iterator<CSVRecordInfo> iterator = extractor.iterator();
+//				while (iterator.hasNext()) {
+//					try {
+//						CSVRecordInfo record = iterator.next();
+//						List<ESMultiMediaObject> multimedia = transformer.transform(record);
+//						loader.load(multimedia);
+//						if (record.getLineNumber() % 50000 == 0) {
+//							logger.info("Records processed: " + record.getLineNumber());
+//						}
+//					}
+//					catch (ExtractionException e) {
+//						if (!suppressErrors) {
+//							logger.error("Line " + e.getLineNumber() + ": " + e.getMessage());
+//							logger.error(e.getLine());
+//						}
+//					}
+//				}
+//			}
+//		}
+//		catch (Throwable t) {
+//			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+//		}
+//		finally {
+//			IOUtil.close(loader);
+//		}
+//
+//		ThemeCache.getInstance().logMatchInfo();
+//		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
 	}
 
 }

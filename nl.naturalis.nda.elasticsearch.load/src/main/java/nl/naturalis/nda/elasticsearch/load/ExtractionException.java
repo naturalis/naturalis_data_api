@@ -5,7 +5,7 @@ package nl.naturalis.nda.elasticsearch.load;
  *
  */
 public class ExtractionException extends RuntimeException {
-
+	
 	private final String line;
 	private final int lineNo;
 

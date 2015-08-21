@@ -31,27 +31,24 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	private static final Logger logger = Registry.getInstance().getLogger(CSVExtractor.class);
 
 	private final File csvFile;
+	private final ETLStatistics stats;
 
 	private boolean skipHeader;
 	private CSVFormat csvFormat;
 	private char delimiter;
 	private Charset charset;
+	private boolean suppressErrors;
 
 	private LineNumberReader lnr;
 	private String line;
 
-	public CSVExtractor(File csvFile)
-	{
-		this(csvFile, UTF_8);
-	}
-
-	public CSVExtractor(File csvFile, Charset charset)
+	public CSVExtractor(File csvFile, ETLStatistics stats)
 	{
 		checkEncoding();
 		this.csvFile = csvFile;
-		this.skipHeader = true;
+		this.stats = stats;
 		this.delimiter = '\t';
-		this.charset = charset;
+		this.charset = UTF_8;
 	}
 
 	public boolean isSkipHeader()
@@ -92,6 +89,16 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	public void setCharset(Charset charset)
 	{
 		this.charset = charset.equals(UTF_8) ? UTF_8 : charset;
+	}
+
+	public boolean isSuppressErrors()
+	{
+		return suppressErrors;
+	}
+
+	public void setSuppressErrors(boolean suppressErrors)
+	{
+		this.suppressErrors = suppressErrors;
 	}
 
 	@Override
@@ -136,14 +143,20 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 			return new CSVRecordInfo(record, line, lnr.getLineNumber());
 		}
 		catch (Throwable t) {
-			// Lame, but so thinks common-csv (have a look inside their code)
-			while (t.getCause() != null)
-				t = t.getCause();
-			if (t instanceof IOException) {
-				String msg = StringUtil.lchop(t.getMessage(), "(line 1) ");
-				throw new ExtractionException(msg, line, lnr.getLineNumber());
+			stats.badInput++;
+			if (!suppressErrors) {
+				// Seriously lame, but so thinks common-csv itself (see comments
+				// inside their source code)
+				while (t.getCause() != null)
+					t = t.getCause();
+				String msg;
+				if (t instanceof IOException)
+					msg = "Line " + lnr.getLineNumber() + ": " + StringUtil.lchop(t.getMessage(), "(line 1) ");
+				else
+					msg = "Line " + lnr.getLineNumber() + ": " + t.getMessage();
+				logger.error(msg);
 			}
-			throw new ExtractionException(line, lnr.getLineNumber(), t);
+			return null;
 		}
 		finally {
 			line = nextLine(lnr);
@@ -198,7 +211,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 			logger.error("CSV imports require a default character encoding of UTF-8");
 			logger.error("Please, add the following command line argument: -Dfile.encoding=UTF-8");
 			String message = "Invalid default character encoding: " + Charset.defaultCharset().name();
-			throw new RuntimeException(message);
+			throw new ETLRuntimeException(message);
 		}
 	}
 

@@ -40,7 +40,6 @@ public class ThemeCache {
 
 	private final ArrayList<Theme> themes = new ArrayList<>();
 
-
 	public static ThemeCache getInstance()
 	{
 		if (instance == null) {
@@ -49,22 +48,19 @@ public class ThemeCache {
 		return instance;
 	}
 
-
 	private ThemeCache()
 	{
 		loadThemes();
 	}
 
-
 	/**
-	 * Establish which theme the specified object is included in.
+	 * Establish which themes the object with the specified id belongs to.
 	 * 
 	 * @param id
-	 *            The
 	 * @param type
 	 * @return
 	 */
-	public List<String> getThemesForDocument(String id, DocumentType type, SourceSystem system)
+	public List<String> lookup(String id, DocumentType type, SourceSystem system)
 	{
 		if (id == null) {
 			return null;
@@ -81,14 +77,13 @@ public class ThemeCache {
 				logger.debug(String.format("Found match for ID %s in theme %s (%s)", id, theme.code, theme.file));
 				++theme.matches;
 				if (identifiers == null) {
-					identifiers = new ArrayList<String>(2);
+					identifiers = new ArrayList<>(2);
 				}
 				identifiers.add(theme.identifier);
 			}
 		}
 		return identifiers;
 	}
-
 
 	public void resetMatchCounters()
 	{
@@ -97,14 +92,12 @@ public class ThemeCache {
 		}
 	}
 
-
 	public void logMatchInfo()
 	{
 		for (Theme theme : themes) {
 			logger.info(String.format("Number of indexed documents for theme \"%s\": %s", theme.code, theme.matches));
 		}
 	}
-
 
 	private void loadThemes()
 	{
@@ -142,7 +135,7 @@ public class ThemeCache {
 				String systemProperty = props.getProperty(code + ".systems");
 				if (systemProperty != null && systemProperty.trim().length() != 0) {
 					String[] systemCodes = systemProperty.split(",");
-					theme.systems = new ArrayList<SourceSystem>(systemCodes.length);
+					theme.systems = new ArrayList<>(systemCodes.length);
 					for (String systemCode : systemCodes) {
 						switch (systemCode.trim().toUpperCase()) {
 							case "CRS":
@@ -169,7 +162,6 @@ public class ThemeCache {
 		}
 	}
 
-
 	private boolean isThemeLoaded(String themeCode)
 	{
 		for (Theme theme : themes) {
@@ -180,7 +172,6 @@ public class ThemeCache {
 		return false;
 	}
 
-
 	private static void loadIdsForTheme(Theme theme)
 	{
 		logger.info(String.format("Caching IDs for theme \"%s\"", theme.code));
@@ -188,7 +179,7 @@ public class ThemeCache {
 		if (!file.isFile()) {
 			throw new RuntimeException(String.format("Missing file \"%s\"", file.getAbsolutePath(), theme.code));
 		}
-		List<String> ids = new ArrayList<String>(255);
+		List<String> ids = new ArrayList<>(1000);
 		try {
 			FileReader fr = new FileReader(file);
 			LineNumberReader lnr = new LineNumberReader(fr);
@@ -212,7 +203,6 @@ public class ThemeCache {
 		logger.info("Number of IDs cached: " + ids.size());
 		theme.ids = ids;
 	}
-
 
 	private static Properties loadConfig(File thematicSearchDir)
 	{
@@ -240,7 +230,6 @@ public class ThemeCache {
 			throw new RuntimeException(e);
 		}
 	}
-
 
 	private static File getThematicSearchDir()
 	{

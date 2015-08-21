@@ -11,6 +11,7 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nda.elasticsearch.load.LoadUtil.urlEncode;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.NOTONLINE;
@@ -18,18 +19,15 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.PLANTDES
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.TYPE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getGatheringEvent;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSpecimenIdentification;
-import static org.domainobject.util.StringUtil.lpad;
-import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
-import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
@@ -42,24 +40,23 @@ import org.slf4j.Logger;
  * @author Ayco Holleman
  *
  */
-class BrahmsSpecimenTransformer implements CSVTransformer<ESSpecimen> {
+class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
-	private static final Logger logger = Registry.getInstance().getLogger(BrahmsSpecimenTransformer.class);
+	@SuppressWarnings("unused")
+	private static final Logger logger;
+	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
+	private static final ThemeCache themeCache;
 
-	private final ETLStatistics stats;
-	private final SpecimenTypeStatusNormalizer typeStatusNormalizer;
-	private final ThemeCache themeCache;
-	private final boolean suppressErrors;
-
-	private CSVRecordInfo recInf;
-	private String specimenID;
+	static {
+		logger = Registry.getInstance().getLogger(BrahmsSpecimenTransformer.class);
+		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+		themeCache = ThemeCache.getInstance();
+	}
 
 	public BrahmsSpecimenTransformer(ETLStatistics stats)
 	{
-		this.stats = stats;
-		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
-		themeCache = ThemeCache.getInstance();
-		suppressErrors = ConfigObject.TRUE("brahms.suppress-errors");
+		super(stats);
+		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
 	@Override
@@ -68,21 +65,24 @@ class BrahmsSpecimenTransformer implements CSVTransformer<ESSpecimen> {
 		stats.recordsProcessed++;
 		recInf = info;
 		CSVRecord record = info.getRecord();
-		specimenID = val(record, BARCODE);
-		if (specimenID == null) {
+		objectID = val(record, BARCODE);
+		if (objectID == null) {
 			stats.recordsRejected++;
-			error("Missing barcode");
+			if (!suppressErrors) {
+				objectID = "?";
+				error("Missing barcode");
+			}
 			return null;
 		}
 
-		ESSpecimen specimen = new ESSpecimen();
-
+		stats.objectsProcessed++;
 		try {
-			specimen.setSourceSystemId(specimenID);
-			specimen.setUnitID(specimenID);
-			specimen.setUnitGUID(getPurl(specimenID));
+			ESSpecimen specimen = new ESSpecimen();
+			specimen.setSourceSystemId(objectID);
+			specimen.setUnitID(objectID);
+			specimen.setUnitGUID(getPurl());
 			setConstants(specimen);
-			List<String> themes = themeCache.getThemesForDocument(specimenID, SPECIMEN, BRAHMS);
+			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);
 			specimen.setTheme(themes);
 			String s = val(record, CATEGORY);
 			if (s == null)
@@ -99,17 +99,21 @@ class BrahmsSpecimenTransformer implements CSVTransformer<ESSpecimen> {
 				specimen.setObjectPublic(false);
 			specimen.setGatheringEvent(getGatheringEvent(record));
 			specimen.addIndentification(getSpecimenIdentification(record));
+			return Arrays.asList(specimen);
 		}
 		catch (Throwable t) {
-			stats.recordsRejected++;
+			stats.objectsRejected++;
 			if (!suppressErrors) {
 				error(t.getMessage());
 				error(recInf.getLine());
 			}
+			return null;
 		}
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-		return Arrays.asList(specimen);
+	}
+
+	private String getPurl()
+	{
+		return PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(objectID);
 	}
 
 	private static void setConstants(ESSpecimen specimen)
@@ -123,11 +127,6 @@ class BrahmsSpecimenTransformer implements CSVTransformer<ESSpecimen> {
 		specimen.setCollectionType(BRAHMS_ABCD_COLLECTION_TYPE);
 	}
 
-	private static String getPurl(String specimenID)
-	{
-		return PURL_SERVER_BASE_URL + "/naturalis/specimen/" + LoadUtil.urlEncode(specimenID);
-	}
-
 	private static String getAssemblageID(CSVRecord record)
 	{
 		Float f = getFloat(record, BrahmsCsvField.BRAHMS);
@@ -136,41 +135,9 @@ class BrahmsSpecimenTransformer implements CSVTransformer<ESSpecimen> {
 		return ES_ID_PREFIX_BRAHMS + f.intValue();
 	}
 
-	private String getTypeStatus(CSVRecord record)
+	private static String getTypeStatus(CSVRecord record)
 	{
 		return typeStatusNormalizer.getNormalizedValue(val(record, TYPE));
-	}
-
-	private void error(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.error(msg);
-	}
-
-	@SuppressWarnings("unused")
-	private void warn(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.warn(msg);
-	}
-
-	@SuppressWarnings("unused")
-	private void info(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.info(msg);
-	}
-
-	@SuppressWarnings("unused")
-	private void debug(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.debug(msg);
-	}
-
-	private String messagePrefix()
-	{
-		return "Line " + lpad(recInf.getLineNumber(), 6, '0', " | ") + rpad(specimenID, 16, " | ");
 	}
 
 }

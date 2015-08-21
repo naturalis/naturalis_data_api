@@ -105,7 +105,7 @@ public class CrsSpecimenTransfer {
 		specimen.setUnitID(unitId);
 		specimen.setSourceSystemId(specimen.getUnitID());
 		ThemeCache tsc = ThemeCache.getInstance();
-		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
+		List<String> themes = tsc.lookup(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
 		specimen.setTheme(themes);
 		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(unitId));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));

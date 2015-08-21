@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -161,6 +163,12 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 		finally {
 			line = nextLine(lnr);
 		}
+	}
+
+	@Override
+	public void remove()
+	{
+		throw new ETLRuntimeException("Not supported");
 	}
 
 	private static String nextLine(LineNumberReader lnr)

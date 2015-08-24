@@ -14,7 +14,6 @@ import java.util.zip.ZipInputStream;
 
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a sorted array as backbone
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 
-	private static final Logger logger = LoggerFactory.getLogger(ArrayMimeTypeCache.class);
+	private static final Logger logger = Registry.getInstance().getLogger(ArrayMimeTypeCache.class);
 	private static final int DEFAULT_MAX_ENTRIES = 10000000;
 	private static final String SYSPROP_PACK = "mimetypecache.pack";
 

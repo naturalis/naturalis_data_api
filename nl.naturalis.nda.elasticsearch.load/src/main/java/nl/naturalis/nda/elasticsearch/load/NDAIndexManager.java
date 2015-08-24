@@ -10,7 +10,6 @@ import nl.naturalis.nda.elasticsearch.load.nsr.NsrImportAll;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for creating/managing/updating the NBA document store. Provides
@@ -26,7 +25,7 @@ public class NDAIndexManager {
 		long start = System.currentTimeMillis();
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			NDAIndexManager indexManager = new NDAIndexManager(index);
 			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
 				indexManager.bootstrap();
@@ -50,7 +49,7 @@ public class NDAIndexManager {
 	public static final String LUCENE_TYPE_SPECIMEN = "Specimen";
 	public static final String LUCENE_TYPE_MULTIMEDIA_OBJECT = "MultiMediaObject";
 
-	private static final Logger logger = LoggerFactory.getLogger(NDAIndexManager.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NDAIndexManager.class);
 
 	private final IndexNative index;
 
@@ -77,7 +76,7 @@ public class NDAIndexManager {
 		logger.info("[>--- Starting Brahms import ---<]");
 		try {
 			BrahmsImportAll brahmsImportAll = new BrahmsImportAll(index);
-			brahmsImportAll.importAllPerType();
+			brahmsImportAll.importPerType();
 		}
 		catch (Throwable t) {
 			logger.error("Brahms import Failed!");

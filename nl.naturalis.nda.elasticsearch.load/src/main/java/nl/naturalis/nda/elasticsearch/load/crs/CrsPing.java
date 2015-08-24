@@ -6,11 +6,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.naturalis.nda.elasticsearch.load.Registry;
+
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.StringUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -79,7 +80,7 @@ public class CrsPing {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsPing.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsPing.class);
 	public static final String SPECIMEN_URL = "http://crspl.naturalis.nl/Atlantispubliek/oai.axd?verb=ListRecords&metadataprefix=oai_crs_object";
 	public static final String MEDIA_URL = "http://crspl.naturalis.nl/atlantispubliek/oai.axd?verb=ListRecords&metadataprefix=oai_crs";
 

@@ -19,7 +19,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.domainobject.util.DOMUtil;
 import org.joda.time.Duration;
@@ -100,7 +100,7 @@ public class CrsFindInSource {
 	public void findOaiRecords() throws SAXException, IOException, TransformerException
 	{
 		long start = System.currentTimeMillis();
-		System.out.print("Searching " + LoadUtil.getConfig().required("crs.local_dir") + " ");
+		System.out.print("Searching " + Registry.getInstance().getConfig().required("crs.data_dir") + " ");
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
 		String valueUpperCase = value.toUpperCase();
@@ -217,7 +217,7 @@ public class CrsFindInSource {
 
 	private static Iterator<File> getFileIterator(final String type)
 	{
-		String path = LoadUtil.getConfig().required("crs.local_dir");
+		String path = Registry.getInstance().getConfig().required("crs.data_dir");
 		if (type == null) {
 			return Arrays.asList(new File(path).listFiles()).iterator();
 		}

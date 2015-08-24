@@ -2,8 +2,8 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -28,6 +28,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
@@ -36,7 +37,6 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalize
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class CrsSpecimenTransfer {
@@ -45,7 +45,7 @@ public class CrsSpecimenTransfer {
 	private static final SexNormalizer sexNormalizer = SexNormalizer.getInstance();
 	private static final PhaseOrStageNormalizer phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsSpecimenTransfer.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CrsSpecimenTransfer.class);
 
 
 	public static ESSpecimen transfer(Element recordElement)
@@ -105,7 +105,7 @@ public class CrsSpecimenTransfer {
 		specimen.setUnitID(unitId);
 		specimen.setSourceSystemId(specimen.getUnitID());
 		ThemeCache tsc = ThemeCache.getInstance();
-		List<String> themes = tsc.getThemesForDocument(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
+		List<String> themes = tsc.lookup(specimen.getUnitID(), DocumentType.SPECIMEN, SourceSystem.CRS);
 		specimen.setTheme(themes);
 		specimen.setUnitGUID(PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(unitId));
 		specimen.setCollectorsFieldNumber(val(recordElement, "abcd:CollectorsFieldNumber"));

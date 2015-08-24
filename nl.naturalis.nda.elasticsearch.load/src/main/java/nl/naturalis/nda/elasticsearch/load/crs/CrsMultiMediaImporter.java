@@ -25,8 +25,10 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
+import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
@@ -34,7 +36,6 @@ import org.domainobject.util.IOUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -51,13 +52,9 @@ public class CrsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			CrsMultiMediaImporter importer = new CrsMultiMediaImporter(index);
 			importer.importMultiMedia();
 		}
@@ -68,7 +65,8 @@ public class CrsMultiMediaImporter {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CrsMultiMediaImporter.class);
+	private static final ConfigObject config = Registry.getInstance().getConfig();
+	private static final Logger logger = Registry.getInstance().getLogger(CrsMultiMediaImporter.class);
 
 	private final DocumentBuilder builder;
 
@@ -95,7 +93,6 @@ public class CrsMultiMediaImporter {
 
 	int nonMedialibUrls;
 
-
 	public CrsMultiMediaImporter(Index index) throws Exception
 	{
 		this.index = index;
@@ -119,7 +116,6 @@ public class CrsMultiMediaImporter {
 
 		transfer = new CrsMultiMediaTransfer(this);
 	}
-
 
 	public void importMultiMedia()
 	{
@@ -149,7 +145,7 @@ public class CrsMultiMediaImporter {
 
 			index.deleteWhere(LUCENE_TYPE_MULTIMEDIA_OBJECT, "sourceSystem.code", SourceSystem.CRS.getCode());
 
-			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
+			if (config.isTrue("crs.use_local")) {
 				processLocal();
 			}
 			else {
@@ -188,7 +184,6 @@ public class CrsMultiMediaImporter {
 			IOUtil.close(mtc);
 		}
 	}
-
 
 	private void processRemote() throws IOException
 	{
@@ -229,7 +224,6 @@ public class CrsMultiMediaImporter {
 		}
 	}
 
-
 	private void processLocal() throws IOException
 	{
 		Iterator<File> localFileIterator = getLocalFileIterator();
@@ -240,7 +234,6 @@ public class CrsMultiMediaImporter {
 			index(Files.readAllBytes(f.toPath()));
 		}
 	}
-
 
 	private String index(byte[] xml)
 	{
@@ -257,8 +250,8 @@ public class CrsMultiMediaImporter {
 		int numRecords = records.getLength();
 		logger.debug("Number of records in XML output: " + numRecords);
 
-		List<ESMultiMediaObject> mediaObjects = new ArrayList<ESMultiMediaObject>(bulkRequestSize);
-		List<String> ids = new ArrayList<String>(bulkRequestSize);
+		List<ESMultiMediaObject> mediaObjects = new ArrayList<>(bulkRequestSize);
+		List<String> ids = new ArrayList<>(bulkRequestSize);
 
 		for (int i = 0; i < numRecords; ++i) {
 			++recordsProcessed;
@@ -282,7 +275,7 @@ public class CrsMultiMediaImporter {
 					continue;
 				}
 				if (extractedMedia != null) {
-					List<String> extractedIds = new ArrayList<String>(extractedMedia.size());
+					List<String> extractedIds = new ArrayList<>(extractedMedia.size());
 					for (ESMultiMediaObject mo : extractedMedia) {
 						extractedIds.add(CrsImportAll.ID_PREFIX + mo.getSourceSystemId());
 					}
@@ -320,13 +313,12 @@ public class CrsMultiMediaImporter {
 
 	private static final SimpleDateFormat oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 
-
 	static byte[] callOaiService(String resumptionToken)
 	{
 		String url;
 		if (resumptionToken == null) {
-			url = LoadUtil.getConfig().required("crs.multimedia.url.initial");
-			int maxAge = LoadUtil.getConfig().required("crs.max_age", int.class);
+			url = config.required("crs.multimedia.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
 			if (maxAge != 0) {
 				DateTime now = new DateTime();
 				DateTime wayback = now.minusHours(maxAge);
@@ -334,16 +326,15 @@ public class CrsMultiMediaImporter {
 			}
 		}
 		else {
-			url = String.format(LoadUtil.getConfig().required("crs.multimedia.url.resume"), resumptionToken);
+			url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
-
 	static byte[] callOaiService(Date fromDate, Date untilDate)
 	{
-		String url = LoadUtil.getConfig().required("crs.multimedia.url.initial");
+		String url = config.required("crs.multimedia.url.initial");
 		if (fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
 		}
@@ -354,11 +345,10 @@ public class CrsMultiMediaImporter {
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
-
 	static Iterator<File> getLocalFileIterator()
 	{
 		logger.debug("Retrieving file list");
-		File path = LoadUtil.getConfig().getDirectory("crs.local_dir");
+		File path = config.getDirectory("crs.data_dir");
 		File[] files = path.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)
@@ -377,7 +367,6 @@ public class CrsMultiMediaImporter {
 		return Arrays.asList(files).iterator();
 	}
 
-
 	static boolean isDeletedRecord(Element record)
 	{
 		if (!DOMUtil.getChild(record, "header").hasAttribute("status")) {
@@ -385,7 +374,6 @@ public class CrsMultiMediaImporter {
 		}
 		return DOMUtil.getChild(record, "header").getAttribute("status").equals("deleted");
 	}
-
 
 	private static File getResumptionTokenFile()
 	{

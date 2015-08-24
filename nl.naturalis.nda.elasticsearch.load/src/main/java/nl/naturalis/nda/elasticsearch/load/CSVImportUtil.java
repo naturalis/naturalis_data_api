@@ -1,10 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import nl.naturalis.nda.elasticsearch.load.CSVImporter.NoSuchFieldException;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor.NoSuchFieldException;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Ayco Holleman
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CSVImportUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(CSVImportUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CSVImportUtil.class);
 
 	private static final String MSG_INVALID_INTEGER = "Invalid integer in field %s: \"%s\" (value set to 0)";
 	private static final String MSG_INVALID_NUMBER = "Invalid number in field %s: \"%s\" (value set to 0)";
@@ -37,6 +36,11 @@ public class CSVImportUtil {
 			return s.length() == 0 ? null : s;
 		}
 		throw new NoSuchFieldException(record, fieldNo);
+	}
+
+	public static String val(CSVRecord record, Enum<?> e)
+	{
+		return val(record, e.ordinal());
 	}
 
 	/**
@@ -64,6 +68,10 @@ public class CSVImportUtil {
 		}
 	}
 
+	public static int ival(CSVRecord record, Enum<?> e)
+	{
+		return ival(record, e.ordinal());
+	}
 	/**
 	 * Returns the value of the specified field as a {@code float}. This method
 	 * does not throw an exception if the field does not contain a valid
@@ -115,10 +123,10 @@ public class CSVImportUtil {
 	}
 
 	/**
-	 * Returns the value of the specified field as a {@code Integer}. This method
-	 * does not throw an exception if the field does not contain a valid
-	 * integer, but instead issues a warning and returns {@code null}. If the field
-	 * is empty, it also returns {@code null}.
+	 * Returns the value of the specified field as a {@code Integer}. This
+	 * method does not throw an exception if the field does not contain a valid
+	 * integer, but instead issues a warning and returns {@code null}. If the
+	 * field is empty, it also returns {@code null}.
 	 * 
 	 * @param record
 	 * @param fieldNo
@@ -142,8 +150,8 @@ public class CSVImportUtil {
 	/**
 	 * Returns the value of the specified field as a {@code Double}. This method
 	 * does not throw an exception if the field does not contain a valid
-	 * integer, but instead issues a warning and returns {@code null}. If the field
-	 * is empty, it also returns {@code null}.
+	 * integer, but instead issues a warning and returns {@code null}. If the
+	 * field is empty, it also returns {@code null}.
 	 * 
 	 * @param record
 	 * @param fieldNo
@@ -164,11 +172,25 @@ public class CSVImportUtil {
 		}
 	}
 
+	public static Float getFloat(CSVRecord record, Enum<?> e)
+	{
+		String s = val(record, e.ordinal());
+		if (s == null)
+			return null;
+		try {
+			return Float.valueOf(s);
+		}
+		catch (NumberFormatException exc) {
+			logger.warn(String.format(MSG_INVALID_NUMBER, e, s));
+			return null;
+		}
+	}
+
 	/**
 	 * Returns the value of the specified field as a {@code Double}. This method
 	 * does not throw an exception if the field does not contain a valid
-	 * integer, but instead issues a warning and returns {@code null}. If the field
-	 * is empty, it also returns {@code null}.
+	 * integer, but instead issues a warning and returns {@code null}. If the
+	 * field is empty, it also returns {@code null}.
 	 * 
 	 * @param record
 	 * @param fieldNo
@@ -188,6 +210,5 @@ public class CSVImportUtil {
 			return null;
 		}
 	}
-
 
 }

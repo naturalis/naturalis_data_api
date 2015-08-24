@@ -19,10 +19,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
-import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 
+import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
@@ -31,7 +31,6 @@ import org.domainobject.util.debug.BeanPrinter;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -39,13 +38,13 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractSpecimenImporter {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractSpecimenImporter.class);
+	private static final ConfigObject config = Registry.getInstance().getConfig();
+	private static final Logger logger = Registry.getInstance().getLogger(AbstractSpecimenImporter.class);
 	private static final int INDEXED_NOTIFIER_INTERVAL = 10000;
 
 	private final DocumentBuilder builder;
 
 	private final int bulkRequestSize;
-	private final int maxRecords;
 
 	/*
 	 * Whether or not to look for a file containing the last resumption token
@@ -64,10 +63,8 @@ public abstract class AbstractSpecimenImporter {
 
 	public AbstractSpecimenImporter() throws Exception
 	{
-		String prop = System.getProperty(BrahmsImportAll.SYSPROP_BATCHSIZE, "1000");
+		String prop = System.getProperty("bulkRequestSize", "1000");
 		bulkRequestSize = Integer.parseInt(prop);
-		prop = System.getProperty(BrahmsImportAll.SYSPROP_MAXRECORDS, "0");
-		maxRecords = Integer.parseInt(prop);
 
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(false);
@@ -89,7 +86,7 @@ public abstract class AbstractSpecimenImporter {
 
 			ThemeCache.getInstance().resetMatchCounters();
 			beforeFirst();
-			if (LoadUtil.getConfig().isTrue("crs.use_local")) {
+			if (config.isTrue("crs.use_local")) {
 				importLocal();
 			}
 			else {
@@ -207,8 +204,8 @@ public abstract class AbstractSpecimenImporter {
 	{
 		String url;
 		if (resumptionToken == null) {
-			url = LoadUtil.getConfig().required("crs.specimens.url.initial");
-			int maxAge = LoadUtil.getConfig().required("crs.max_age", int.class);
+			url = config.required("crs.specimens.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
 			if (maxAge != 0) {
 				DateTime now = new DateTime();
 				DateTime wayback = now.minusHours(maxAge);
@@ -216,7 +213,7 @@ public abstract class AbstractSpecimenImporter {
 			}
 		}
 		else {
-			url = String.format(LoadUtil.getConfig().required("crs.specimens.url.resume"), resumptionToken);
+			url = String.format(config.required("crs.specimens.url.resume"), resumptionToken);
 		}
 		logger.info("Calling service: " + url);
 		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
@@ -225,7 +222,7 @@ public abstract class AbstractSpecimenImporter {
 
 	static byte[] callOaiService(Date fromDate, Date untilDate)
 	{
-		String url = LoadUtil.getConfig().required("crs.specimens.url.initial");
+		String url = config.required("crs.specimens.url.initial");
 		if (fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
 		}
@@ -282,8 +279,8 @@ public abstract class AbstractSpecimenImporter {
 			NodeList records = doc.getElementsByTagName("record");
 			int numRecords = records.getLength();
 			logger.debug("Number of records in XML output: " + numRecords);
-			List<ESSpecimen> specimens = new ArrayList<ESSpecimen>(bulkRequestSize);
-			List<String> ids = new ArrayList<String>(bulkRequestSize);
+			List<ESSpecimen> specimens = new ArrayList<>(bulkRequestSize);
+			List<String> ids = new ArrayList<>(bulkRequestSize);
 			for (int i = 0; i < numRecords; ++i) {
 				++processed;
 				try {
@@ -291,7 +288,7 @@ public abstract class AbstractSpecimenImporter {
 					String id = DOMUtil.getDescendantValue(record, "identifier");
 					if (isDeletedRecord(record)) {
 						// With full harvest we ignore records with status DELETED
-						if (LoadUtil.getConfig().getInt("crs.max_age") != 0) {
+						if (config.getInt("crs.max_age") != 0) {
 							//index.deleteDocument(LUCENE_TYPE_SPECIMEN, id);
 							deleteSpecimen(id);
 						}
@@ -318,9 +315,6 @@ public abstract class AbstractSpecimenImporter {
 					++bad;
 					logger.error(t.getMessage(), t);
 				}
-				if (maxRecords > 0 && processed >= maxRecords) {
-					break;
-				}
 				if (processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
 				}
@@ -332,9 +326,6 @@ public abstract class AbstractSpecimenImporter {
 			if (!specimens.isEmpty()) {
 				saveSpecimens(specimens, ids);
 				indexed += specimens.size();
-			}
-			if (maxRecords > 0 && processed >= maxRecords) {
-				return null;
 			}
 			return DOMUtil.getDescendantValue(doc, "resumptionToken");
 		}
@@ -348,7 +339,7 @@ public abstract class AbstractSpecimenImporter {
 	static Iterator<File> getLocalFileIterator()
 	{
 		logger.debug("Retrieving file list");
-		String path = LoadUtil.getConfig().required("crs.local_dir");
+		String path = config.required("crs.data_dir");
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)

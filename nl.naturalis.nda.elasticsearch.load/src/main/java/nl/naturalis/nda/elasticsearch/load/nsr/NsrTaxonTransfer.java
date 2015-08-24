@@ -20,17 +20,17 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 class NsrTaxonTransfer {
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrTaxonTransfer.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrTaxonTransfer.class);
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<String, TaxonomicStatus>();
 
 	/*

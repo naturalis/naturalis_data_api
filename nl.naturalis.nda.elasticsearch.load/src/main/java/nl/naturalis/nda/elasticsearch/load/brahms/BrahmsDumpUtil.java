@@ -10,12 +10,11 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.domainobject.util.FileUtil;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
@@ -53,7 +52,7 @@ public class BrahmsDumpUtil {
 	// appended to FILE_EXT_IMPORTABLE:
 	static final String FILE_EXT_IMPORTED = ".imported";
 
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsDumpUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(BrahmsDumpUtil.class);
 
 
 	/**
@@ -112,7 +111,7 @@ public class BrahmsDumpUtil {
 	public static void convertFiles() throws Exception
 	{
 		logger.info("Checking file encoding for Brahms CSV files");
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
+		String csvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
@@ -178,7 +177,7 @@ public class BrahmsDumpUtil {
 
 	public static File[] getImportableFiles()
 	{
-		String csvDir = LoadUtil.getConfig().required("brahms.csv_dir");
+		String csvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new RuntimeException(String.format("No such directory: \"%s\"", csvDir));

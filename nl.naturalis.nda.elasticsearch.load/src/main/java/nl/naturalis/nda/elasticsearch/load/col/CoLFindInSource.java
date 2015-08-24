@@ -6,14 +6,15 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 public class CoLFindInSource {
 	public static void main(String[] args) throws IOException
 	{
 		try {
 			CoLFindInSource colfindinsource = new CoLFindInSource();
-			String dwcaDir = LoadUtil.getConfig().required("col.csv_dir");
+			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 			colfindinsource.ReadValueFromCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {

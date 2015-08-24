@@ -5,14 +5,13 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import org.slf4j.Logger;
 
 class NsrImportUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrImportUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrImportUtil.class);
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 
@@ -63,18 +62,24 @@ class NsrImportUtil {
 				return name.toLowerCase().endsWith(".imported");
 			}
 		});
-		for (File file : files) {
-			int pos = file.getName().toLowerCase().indexOf(".xml");
-			String chopped = file.getName().substring(0, pos + 4);
-			System.out.println(file.getName() + " ---> " + chopped);
-			chopped = dir.getAbsolutePath() + "/" + chopped;
-			file.renameTo(new File(chopped));
+		if (files.length == 0) {
+			logger.info("No backup files found");
+		}
+		else {
+			for (File file : files) {
+				int pos = file.getName().toLowerCase().indexOf(".xml");
+				String chopped = file.getName().substring(0, pos + 4);
+				System.out.println(file.getName() + " ---> " + chopped);
+				chopped = dir.getAbsolutePath() + "/" + chopped;
+				file.renameTo(new File(chopped));
+			}
 		}
 	}
 
+
 	private static File getDataDir()
 	{
-		return LoadUtil.getConfig().getDirectory("nsr.xml_dir");
+		return Registry.getInstance().getConfig().getDirectory("nsr.xml_dir");
 	}
 
 }

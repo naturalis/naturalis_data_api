@@ -23,11 +23,10 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TransferUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(TransferUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(TransferUtil.class);
 
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyy/MM/dd");

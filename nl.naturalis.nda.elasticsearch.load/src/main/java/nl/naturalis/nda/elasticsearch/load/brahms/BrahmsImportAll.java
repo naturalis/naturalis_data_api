@@ -1,17 +1,26 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
+import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BrahmsImportAll {
 
@@ -19,9 +28,9 @@ public class BrahmsImportAll {
 	{
 		IndexNative index = null;
 		try {
-			index = LoadUtil.getNbaIndexManager();
+			index = Registry.getInstance().getNbaIndexManager();
 			BrahmsImportAll importer = new BrahmsImportAll(index);
-			importer.importAllPerFile();
+			importer.importPerFile();
 		}
 		catch (Throwable t) {
 			logger.error("Brahms import failed!");
@@ -34,77 +43,128 @@ public class BrahmsImportAll {
 		}
 	}
 
-	public static final String ID_PREFIX = "BRAHMS-";
-	public static final String SYSPROP_BACKUP = "nl.naturalis.nda.elasticsearch.load.brahms.backup";
-	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.brahms.batchsize";
-	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.brahms.maxrecords";
-
-
-	private static final Logger logger = LoggerFactory.getLogger(BrahmsImportAll.class);
+	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
+	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
 	private final IndexNative index;
 	private final boolean backup;
-
+	private final boolean suppressErrors;
 
 	public BrahmsImportAll(IndexNative index)
 	{
 		this.index = index;
-		String prop = System.getProperty(SYSPROP_BACKUP, "1");
-		backup = prop.equals("1") || prop.equalsIgnoreCase("true");
+		backup = ConfigObject.isEnabled("brahms.backup", true);
+		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
-
 	/**
-	 * This method first imports all specimens, then all multimedia.
+	 * This method first imports all specimens, then all multimedia. Thus each
+	 * CSV file is read twice.
 	 * 
 	 * @throws Exception
 	 */
-	public void importAllPerType() throws Exception
+	public void importPerType() throws Exception
 	{
-		// Make sure thematic search is configured properly
-		ThemeCache.getInstance();
-		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
+		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter();
 		specimenImporter.importCsvFiles();
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter(index);
 		multiMediaImporter.importCsvFiles();
 		if (backup) {
-			String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
+			String ext = "." + fileNameDateFormatter.format(new Date()) + ".imported";
 			for (File f : getCsvFiles()) {
-				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
+				f.renameTo(new File(f.getAbsolutePath() + ext));
 			}
 		}
 	}
 
-
 	/**
-	 * For each XML file, first import all specimens contained in it, then all
-	 * multimedia.
+	 * This method iterates over the CSV files once, importing both specimens
+	 * and multimedia at the same time.
 	 * 
 	 * @throws Exception
 	 */
-	public void importAllPerFile() throws Exception
+	public void importPerFile() throws Exception
 	{
-		ThemeCache.getInstance();
-		File[] files = getCsvFiles();
-		if (files.length == 0) {
+
+		long start = System.currentTimeMillis();
+		File[] csvFiles = getCsvFiles();
+		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
-		int maxRecords = Integer.parseInt(System.getProperty(SYSPROP_MAXRECORDS, "0"));
-		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter(index);
-		specimenImporter.setMaxRecords(maxRecords);
-		BrahmsMultiMediaImporter mediaImporter = new BrahmsMultiMediaImporter(index);
-		mediaImporter.setMaxRecords(maxRecords);
-		for (File f : files) {
-			specimenImporter.importCsv(f.getAbsolutePath());
-			mediaImporter.importCsv(f.getAbsolutePath());
-		}
-		if (backup) {
-			String backupExtension = "." + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".imported";
-			for (File f : getCsvFiles()) {
-				f.renameTo(new File(f.getAbsolutePath() + backupExtension));
+		ThemeCache.getInstance().resetMatchCounters();
+		// Statistics for specimen import
+		ETLStatistics sStats = new ETLStatistics();
+		// Statistics for multimedia import
+		ETLStatistics mStats = new ETLStatistics();
+		try {
+			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
+			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.BRAHMS);
+			for (File f : csvFiles) {
+				processFile(f, sStats, mStats);
+			}
+			if (backup) {
+				String ext = "." + fileNameDateFormatter.format(new Date()) + ".imported";
+				for (File f : getCsvFiles()) {
+					f.renameTo(new File(f.getAbsolutePath() + ext));
+				}
 			}
 		}
+		catch (Throwable t) {
+			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+		}
 		ThemeCache.getInstance().logMatchInfo();
+		sStats.logStatistics(logger, "Specimens");
+		mStats.logStatistics(logger, "Multimedia");
+		LoadUtil.logDuration(logger, getClass(), start);
+	}
+
+	private void processFile(File f, ETLStatistics sStats, ETLStatistics mStats)
+	{
+		long start = System.currentTimeMillis();
+		logger.info("Processing file " + f.getAbsolutePath());
+		BrahmsSpecimenLoader specimenLoader = null;
+		BrahmsMultiMediaLoader multimediaLoader = null;
+		try {
+			ETLStatistics specimenStats = new ETLStatistics();
+			ETLStatistics multimediaStats = new ETLStatistics();
+			ETLStatistics extractionStats = new ETLStatistics();
+			BrahmsSpecimenTransformer specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
+			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
+			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
+			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
+			CSVExtractor extractor = createExtractor(f, extractionStats);
+			for (CSVRecordInfo rec : extractor) {
+				if (rec == null)
+					continue;
+				specimenLoader.load(specimenTransformer.transform(rec));
+				multimediaLoader.load(multimediaTransformer.transform(rec));
+				if (rec.getLineNumber() % 50000 == 0) {
+					logger.info("Records processed: " + rec.getLineNumber());
+				}
+			}
+			specimenStats.add(extractionStats);
+			multimediaStats.add(extractionStats);
+			specimenStats.logStatistics(logger, "Specimens");
+			multimediaStats.logStatistics(logger, "Multimedia");
+			sStats.add(specimenStats);
+			mStats.add(multimediaStats);
+			logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
+			logger.info(" ");
+			logger.info(" ");
+		}
+		finally {
+			IOUtil.close(specimenLoader, multimediaLoader);
+		}
+	}
+
+	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)
+	{
+		CSVExtractor extractor = new CSVExtractor(f, extractionStats);
+		extractor.setSkipHeader(true);
+		extractor.setDelimiter(',');
+		extractor.setCharset(Charset.forName("Windows-1252"));
+		extractor.setSuppressErrors(suppressErrors);
+		return extractor;
 	}
 }

@@ -3,6 +3,8 @@ package nl.naturalis.nda.elasticsearch.client;
 import java.util.HashMap;
 import java.util.List;
 
+import nl.naturalis.nda.elasticsearch.load.Registry;
+
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -36,7 +38,6 @@ import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class IndexNative implements Index {
 
-	private static final Logger logger = LoggerFactory.getLogger(IndexNative.class);
+	private static final Logger logger = Registry.getInstance().getLogger(IndexNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	final Client esClient;
@@ -374,7 +375,7 @@ public class IndexNative implements Index {
 		for (int i = 0; i < objs.size(); ++i) {
 			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
 			try {
-				irb.setSource(objectMapper.writeValueAsString(objs.get(i)));
+				irb.setSource(objectMapper.writeValueAsBytes(objs.get(i)));
 				if (ids != null) {
 					irb.setId(ids.get(i));
 				}

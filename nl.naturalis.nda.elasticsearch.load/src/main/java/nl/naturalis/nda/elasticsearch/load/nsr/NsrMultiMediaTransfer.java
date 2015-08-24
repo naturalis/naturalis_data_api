@@ -15,16 +15,16 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class NsrMultiMediaTransfer {
 
-	private static final Logger logger = LoggerFactory.getLogger(NsrMultiMediaTransfer.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NsrMultiMediaTransfer.class);
 
 
 	private NsrMultiMediaTransfer()

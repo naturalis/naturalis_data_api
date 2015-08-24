@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 
 public class BrahmsFindInSource {
 
@@ -21,7 +21,7 @@ public class BrahmsFindInSource {
 	public static void main(String[] args) throws Exception
 	{
 		BrahmsFindInSource brahms = new BrahmsFindInSource();
-		String brahmsCsvDir = LoadUtil.getConfig().required("brahms.csv_dir");
+		String brahmsCsvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
 
 		File file = new File(brahmsCsvDir);
 		if (!file.isDirectory()) {

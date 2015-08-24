@@ -8,6 +8,7 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -36,8 +37,8 @@ import org.slf4j.Logger;
 
 class BrahmsImportUtil {
 
-	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
+	static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
 
 	private BrahmsImportUtil()
@@ -57,11 +58,11 @@ class BrahmsImportUtil {
 		return files;
 	}
 
-	static void backupCsvFiles()
+	static void backup()
 	{
-		String backupExtension = "." + sdf.format(new Date()) + ".imported";
+		String ext = "." + fileNameDateFormatter.format(new Date()) + ".imported";
 		for (File f : getCsvFiles()) {
-			f.renameTo(new File(f.getAbsolutePath() + backupExtension));
+			f.renameTo(new File(f.getAbsolutePath() + ext));
 		}
 	}
 

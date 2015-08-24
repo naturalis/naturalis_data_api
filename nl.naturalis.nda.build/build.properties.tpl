@@ -103,9 +103,6 @@ nda.export.output.dir=/data/nda-export/output
 # in ${nda.export.user.conf.dir}/dwca.
 nda.export.user.conf.dir=/data/nda-export/conf
 
-# Directory into which to write log files for the import
-# module. If you want to finetune logging, you will have to
-# manually edit ${nda.export.install.dir}/conf/logback.xml
 nda.export.log.dir=/data/nda-export/log
 
 

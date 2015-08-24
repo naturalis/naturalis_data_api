@@ -41,7 +41,12 @@ public class Registry {
 	private FileAppender fileAppender;
 	@SuppressWarnings("rawtypes")
 	private ConsoleAppender consoleAppender;
-	private Logger logger; // NEEDS to be non-static!
+	/*
+	 * This is the registry's own logger. No need (and confusing) to make it
+	 * static because logging only become available once the registry is
+	 * instantiated.
+	 */
+	private Logger logger;
 
 	/**
 	 * Instantiates and initializes a {@code Registry} instance. This method
@@ -100,24 +105,11 @@ public class Registry {
 		return confDir;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Logger getLogger(Class<?> cls)
 	{
 		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);
-		if (config.isTrue("logger.to_file")) {
-			if (!fileAppender.isStarted()) {
-				fileAppender.start();
-			}
-			logger.addAppender(fileAppender);
-		}
-		if (config.isTrue("logger.to_console")) {
-			if (!consoleAppender.isStarted()) {
-				consoleAppender.start();
-			}
-			logger.addAppender(consoleAppender);
-		}
-		Level level = Level.toLevel(config.required("logger.level"));
-		logger.setLevel(level);
+		// TODO: in the future we may allow nda-import.properties or some other
+		// config file to include separate log levels for different classes
 		return logger;
 	}
 
@@ -187,34 +179,26 @@ public class Registry {
 	{
 		ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
 		ctx.reset();
-
+		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
+		Level logLevel = Level.toLevel(config.required("logger.level"));
+		root.setLevel(logLevel);
 		if (config.isTrue("logger.to_file")) {
-			File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
-			String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-			String command = System.getProperty("sun.java.command");
-			String[] chunks = command.split("\\.");
-			String mainClass = chunks[chunks.length - 1].split(" ")[0];
-			String logFileName = mainClass + "-" + now + ".log";
-			File logFile = FileUtil.newFile(logDir, logFileName);
-			fileAppender = new FileAppender();
+			FileAppender fileAppender = new FileAppender();
 			fileAppender.setName("FILE");
 			fileAppender.setContext(ctx);
-			fileAppender.setFile(logFile.getAbsolutePath());
+			fileAppender.setFile(getLogFile());
 			fileAppender.setEncoder(createPatternLayoutEncoder(ctx));
+			fileAppender.start();
+			root.addAppender(fileAppender);
 		}
-
 		if (config.isTrue("logger.to_console")) {
-			consoleAppender = new ConsoleAppender();
+			ConsoleAppender consoleAppender = new ConsoleAppender();
 			consoleAppender.setName("CONSOLE");
 			consoleAppender.setContext(ctx);
 			consoleAppender.setEncoder(createPatternLayoutEncoder(ctx));
+			consoleAppender.start();
+			root.addAppender(consoleAppender);
 		}
-		
-
-		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
-		//root.setLevel(Level.toLevel(config.required("logger.level")));
-		root.setLevel(Level.OFF);
-
 		logger = getLogger(getClass());
 	}
 
@@ -243,6 +227,18 @@ public class Registry {
 			throw new InitializationException(msg);
 		}
 		this.config = new ConfigObject(file);
+	}
+
+	private String getLogFile()
+	{
+		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
+		String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		String command = System.getProperty("sun.java.command");
+		String[] chunks = command.split("\\.");
+		String mainClass = chunks[chunks.length - 1].split(" ")[0];
+		String logFileName = mainClass + "-" + now + ".log";
+		File logFile = FileUtil.newFile(logDir, logFileName);
+		return logFile.getAbsolutePath();
 	}
 
 	private static PatternLayoutEncoder createPatternLayoutEncoder(LoggerContext ctx)

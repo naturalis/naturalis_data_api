@@ -339,7 +339,7 @@ public abstract class AbstractSpecimenImporter {
 	static Iterator<File> getLocalFileIterator()
 	{
 		logger.debug("Retrieving file list");
-		String path = config.required("crs.local_dir");
+		String path = config.required("crs.data_dir");
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name)

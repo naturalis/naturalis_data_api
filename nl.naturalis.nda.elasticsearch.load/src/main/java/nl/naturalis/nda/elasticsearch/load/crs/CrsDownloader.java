@@ -188,7 +188,7 @@ public class CrsDownloader {
 
 	private static File getLocalPath(Type type, Date fromDate, int request)
 	{
-		String dir = Registry.getInstance().getConfig().getDirectory("crs.local_dir").getAbsolutePath();
+		String dir = Registry.getInstance().getConfig().getDirectory("crs.data_dir").getAbsolutePath();
 		String typeString = type == Type.SPECIMEN ? "specimens" : "multimedia";
 		String dateString;
 		if (fromDate == null) {
@@ -224,7 +224,7 @@ public class CrsDownloader {
 
 	private static File getAdminFile(Type type)
 	{
-		File dir = Registry.getInstance().getConfig().getDirectory("crs.local_dir");
+		File dir = Registry.getInstance().getConfig().getDirectory("crs.data_dir");
 		return new File(dir.getAbsolutePath() + "/." + type.name().toLowerCase() + ".oai-admin");
 	}
 

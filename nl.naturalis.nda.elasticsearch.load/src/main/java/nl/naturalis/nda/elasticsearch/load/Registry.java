@@ -43,7 +43,6 @@ public class Registry {
 	private ConsoleAppender consoleAppender;
 	private Logger logger; // NEEDS to be non-static!
 
-
 	/**
 	 * Instantiates and initializes a {@code Registry} instance. This method
 	 * must be called before handling any PURL request. If anything goes wrong
@@ -59,7 +58,6 @@ public class Registry {
 		}
 	}
 
-
 	/**
 	 * Return a {@code Registry} instance. Will call {@link #initialize()}
 	 * first.
@@ -72,14 +70,12 @@ public class Registry {
 		return instance;
 	}
 
-
 	private Registry()
 	{
 		setConfDir();
 		loadConfig();
 		configureLogging();
 	}
-
 
 	/**
 	 * Get a {@code ConfigObject} for the main configuration file
@@ -91,7 +87,6 @@ public class Registry {
 	{
 		return config;
 	}
-
 
 	/**
 	 * Get the directory designated to contain the application's configuration
@@ -105,14 +100,26 @@ public class Registry {
 		return confDir;
 	}
 
-
+	@SuppressWarnings("unchecked")
 	public Logger getLogger(Class<?> cls)
 	{
 		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);
-		// For now - no more configuration
+		if (config.isTrue("logger.to_file")) {
+			if (!fileAppender.isStarted()) {
+				fileAppender.start();
+			}
+			logger.addAppender(fileAppender);
+		}
+		if (config.isTrue("logger.to_console")) {
+			if (!consoleAppender.isStarted()) {
+				consoleAppender.start();
+			}
+			logger.addAppender(consoleAppender);
+		}
+		Level level = Level.toLevel(config.required("logger.level"));
+		logger.setLevel(level);
 		return logger;
 	}
-
 
 	/**
 	 * Get a native Java ElasticSearch {@code Client}.
@@ -144,7 +151,6 @@ public class Registry {
 		return esClient;
 	}
 
-
 	/**
 	 * Get an index manager for the NBA index.
 	 * 
@@ -154,7 +160,6 @@ public class Registry {
 	{
 		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));
 	}
-
 
 	private void setConfDir()
 	{
@@ -177,18 +182,13 @@ public class Registry {
 		}
 	}
 
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void configureLogging()
 	{
 		ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
 		ctx.reset();
 
-		PatternLayoutEncoder encoder = null;
-
-		if (config.isTrue("logger.file")) {
-			fileAppender = new FileAppender();
-			fileAppender.setContext(ctx);
+		if (config.isTrue("logger.to_file")) {
 			File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
 			String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			String command = System.getProperty("sun.java.command");
@@ -196,34 +196,27 @@ public class Registry {
 			String mainClass = chunks[chunks.length - 1].split(" ")[0];
 			String logFileName = mainClass + "-" + now + ".log";
 			File logFile = FileUtil.newFile(logDir, logFileName);
+			fileAppender = new FileAppender();
+			fileAppender.setName("FILE");
+			fileAppender.setContext(ctx);
 			fileAppender.setFile(logFile.getAbsolutePath());
-			encoder = createPatternLayoutEncoder(ctx);
-			fileAppender.setEncoder(encoder);
-			fileAppender.start();
+			fileAppender.setEncoder(createPatternLayoutEncoder(ctx));
 		}
 
-		if (config.isTrue("logger.console")) {
+		if (config.isTrue("logger.to_console")) {
 			consoleAppender = new ConsoleAppender();
+			consoleAppender.setName("CONSOLE");
 			consoleAppender.setContext(ctx);
-			if (encoder == null) {
-				encoder = createPatternLayoutEncoder(ctx);
-			}
-			consoleAppender.setEncoder(encoder);
-			consoleAppender.start();
+			consoleAppender.setEncoder(createPatternLayoutEncoder(ctx));
 		}
+		
 
 		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
-		root.setLevel(Level.toLevel(config.required("logger.level")));
-		if (config.isTrue("logger.file")) {
-			root.addAppender(fileAppender);
-		}
-		if (config.isTrue("logger.console")) {
-			root.addAppender(consoleAppender);
-		}
+		//root.setLevel(Level.toLevel(config.required("logger.level")));
+		root.setLevel(Level.OFF);
 
 		logger = getLogger(getClass());
 	}
-
 
 	private String[] getPorts(int numHosts)
 	{
@@ -242,7 +235,6 @@ public class Registry {
 		return ports;
 	}
 
-
 	private void loadConfig()
 	{
 		File file = FileUtil.newFile(confDir, CONFIG_FILE_NAME);
@@ -252,7 +244,6 @@ public class Registry {
 		}
 		this.config = new ConfigObject(file);
 	}
-
 
 	private static PatternLayoutEncoder createPatternLayoutEncoder(LoggerContext ctx)
 	{

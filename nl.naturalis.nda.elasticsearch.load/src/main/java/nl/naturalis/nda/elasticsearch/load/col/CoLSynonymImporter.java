@@ -16,33 +16,23 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
-public class CoLTaxonSynonymEnricher {
+public class CoLSynonymImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
-		try {
-			index = Registry.getInstance().getNbaIndexManager();
-			CoLTaxonSynonymEnricher enricher = new CoLTaxonSynonymEnricher();
-			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
-			enricher.importCsv(dwcaDir + "/taxa.txt");
-		}
-		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
-		}
+		CoLSynonymImporter enricher = new CoLSynonymImporter();
+		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
+		enricher.importCsv(dwcaDir + "/taxa.txt");
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonSynonymEnricher.class);
+	private static final Logger logger = Registry.getInstance().getLogger(CoLSynonymImporter.class);
 
 	private final boolean suppressErrors;
-	
-	public CoLTaxonSynonymEnricher()
+
+	public CoLSynonymImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 	}
-
 
 	public void importCsv(String path)
 	{
@@ -90,7 +80,5 @@ public class CoLTaxonSynonymEnricher {
 		LoadUtil.logDuration(logger, getClass(), start);
 
 	}
-
-
 
 }

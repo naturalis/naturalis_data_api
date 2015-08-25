@@ -45,7 +45,7 @@ public class CoLImportAll {
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 		CoLTaxonImporter importer = new CoLTaxonImporter();
 		importer.importCsv(dwcaDir + "/taxa.txt");
-		CoLTaxonSynonymEnricher synonymEnricher = new CoLTaxonSynonymEnricher();
+		CoLSynonymImporter synonymEnricher = new CoLSynonymImporter();
 		synonymEnricher.importCsv(dwcaDir + "/taxa.txt");
 		CoLTaxonVernacularNameEnricher vernacularNameEnricher = new CoLTaxonVernacularNameEnricher(index);
 		vernacularNameEnricher.importCsv(dwcaDir + "/vernacular.txt");

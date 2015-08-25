@@ -3,7 +3,6 @@ package nl.naturalis.nda.elasticsearch.load.col;
 import java.io.File;
 import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
@@ -46,6 +45,7 @@ public class CoLSynonymImporter {
 				throw new ETLRuntimeException("No such file: " + path);
 
 			stats = new ETLStatistics();
+			stats.setObjectsAcceptedNotObjectsIndexed(true);
 
 			CSVExtractor extractor = new CSVExtractor(f, stats);
 			extractor.setSkipHeader(true);

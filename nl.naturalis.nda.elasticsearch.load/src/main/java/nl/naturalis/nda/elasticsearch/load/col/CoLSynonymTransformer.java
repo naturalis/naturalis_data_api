@@ -2,10 +2,9 @@ package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.getScientificName;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.scientificName;
-import static org.domainobject.util.StringUtil.lpad;
-import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +17,6 @@ import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -37,7 +35,6 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 	private final IndexNative index;
 
 	private CoLTaxonLoader loader;
-	private int numSynonyms;
 
 	CoLSynonymTransformer(ETLStatistics stats)
 	{
@@ -71,8 +68,8 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 		try {
 
 			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
-			String synonym = val(record, scientificName);			
-			
+			String synonym = val(record, scientificName);
+
 			ESTaxon taxon = loader.findInQueue(elasticID);
 			if (taxon != null) {
 				/*
@@ -82,13 +79,14 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 				 * synonyms.
 				 */
 				if (!taxon.getSynonyms().contains(synonym)) {
-					numSynonyms++;
+					stats.objectsAccepted++;
 					taxon.addSynonym(getScientificName(record));
 				}
 				else {
 					stats.objectsRejected++;
-					if (!suppressErrors)
+					if (!suppressErrors) {
 						warn("Synonym already exists: " + synonym);
+					}
 				}
 				return null;
 			}
@@ -96,19 +94,20 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 			taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
 			if (taxon != null) {
 				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
-					numSynonyms++;
+					stats.objectsAccepted++;
 					taxon.addSynonym(getScientificName(record));
 					return Arrays.asList(taxon);
 				}
-				stats.objectsRejected++;
-				if (!suppressErrors)
+				if (!suppressErrors) {
 					warn("Synonym already exists: " + synonym);
+				}
 			}
-			
-			
+			else {
+				if (!suppressErrors) {
+					error("Orphan synonym: " + synonym);
+				}				
+			}
 			stats.objectsRejected++;
-			if (!suppressErrors)
-				error("Orphan synonym: " + synonym);
 			return null;
 		}
 		catch (Throwable t) {
@@ -119,5 +118,4 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 			return null;
 		}
 	}
-
 }

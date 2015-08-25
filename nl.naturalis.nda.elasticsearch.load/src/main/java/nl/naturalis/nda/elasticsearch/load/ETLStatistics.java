@@ -107,7 +107,7 @@ public class ETLStatistics {
 	 */
 	public void logStatistics(Logger logger)
 	{
-		logStatistics(logger, "Objects");
+		logStatistics(logger, null);
 	}
 
 	/**
@@ -120,8 +120,13 @@ public class ETLStatistics {
 	public void logStatistics(Logger logger, String niceName)
 	{
 		logger.info(" ");
-		String title = niceName.toUpperCase() + " IMPORT";
-		logger.info(pad(title, 38));
+		if (niceName != null) {
+			String title = niceName.toUpperCase() + " IMPORT";
+			logger.info(pad(title, 38));
+		}
+		else {
+			niceName = "Objects";
+		}
 		logger.info("=====================================");
 		logger.info(statistic("Extraction/parse failures", badInput));
 		logger.info(" ");

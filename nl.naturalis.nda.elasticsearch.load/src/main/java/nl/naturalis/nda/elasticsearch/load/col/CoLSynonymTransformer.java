@@ -1,56 +1,60 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.domain.TaxonomicRank.*;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.ival;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
-import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.*;
+import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.acceptedNameUsageID;
+import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.scientificName;
 import static org.domainobject.util.StringUtil.lpad;
 import static org.domainobject.util.StringUtil.rpad;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.TaxonDescription;
-import nl.naturalis.nda.domain.TaxonomicStatus;
+import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
+import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
+import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
+/**
+ * A subclass of {@link CSVTransformer} that transforms CSV records into
+ * {@link ESTaxon} objects.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class CoLSynonymTransformer implements CSVTransformer<ESTaxon> {
 
 	static Logger logger = Registry.getInstance().getLogger(CoLSynonymTransformer.class);
-	static List<String> allowedTaxonRanks = Arrays.asList("species", "infraspecies");
 
+	private final IndexNative index;
 	private final ETLStatistics stats;
 
 	private String objectID;
 	private int lineNo;
 	private boolean suppressErrors;
-	private String colYear;
+	private CoLTaxonLoader loader;
 
-	public CoLSynonymTransformer(ETLStatistics stats)
+	CoLSynonymTransformer(ETLStatistics stats)
 	{
+		this.index = Registry.getInstance().getNbaIndexManager();
 		this.stats = stats;
 	}
 
-	public void setColYear(String colYear)
-	{
-		this.colYear = colYear;
-	}
-
-	public void setSuppressErrors(boolean suppressErrors)
+	void setSuppressErrors(boolean suppressErrors)
 	{
 		this.suppressErrors = suppressErrors;
+	}
+
+	void setLoader(CoLTaxonLoader loader)
+	{
+		this.loader = loader;
 	}
 
 	@Override
@@ -60,143 +64,58 @@ class CoLSynonymTransformer implements CSVTransformer<ESTaxon> {
 		stats.recordsProcessed++;
 		CSVRecord record = info.getRecord();
 		lineNo = info.getLineNumber();
-		objectID = val(record, taxonID);
 
-		if (ival(record, acceptedNameUsageID) == 0) {
+		String objectID = val(record, acceptedNameUsageID);
+
+		if (objectID == null) {
+			// This is an accepted name
 			stats.recordsSkipped++;
 			return null;
 		}
 
-		// TODO: Stricty speaking, we should start a big try-catch block here to
-		// allow for the possibility that we have to reject the record, but with
-		// the CoL this is never the case.
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 
-		String rank = val(record, taxonRank);
-		if (!allowedTaxonRanks.contains(rank)) {
-			if (logger.isDebugEnabled())
-				debug("Ignoring taxon with rank \"%s\"", rank);
+		try {
+
+			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			String synonym = val(record, scientificName);
+
+			ESTaxon taxon = loader.findInQueue(elasticID);
+			if (taxon != null) {
+				/*
+				 * Taxon apparently already queued for indexing because it was
+				 * enriched before (from a previous CSV record). Return null,
+				 * because we don't want to queue it again; just add the current
+				 * synonym to the list of synonyms.
+				 */
+				if (!taxon.getSynonyms().contains(synonym))
+					taxon.addSynonym(getScientificName(record));
+				return null;
+			}
+			taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+			if (taxon != null) {
+				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
+					taxon.addSynonym(getScientificName(record));
+					return Arrays.asList(taxon);
+				}
+				if (!suppressErrors)
+					warn("Synonym already exists: " + synonym);
+			}
+			else if (!suppressErrors)
+				warn("Orphan synonym: " + synonym);
+			stats.objectsRejected++;
 			return null;
 		}
-
-		ESTaxon taxon = new ESTaxon();
-
-		taxon.setSourceSystem(SourceSystem.COL);
-		taxon.setSourceSystemId(val(record, taxonID));
-
-		String refs = val(record, references);
-		if (refs == null) {
-			if (!suppressErrors)
-				warn("RecordURI not set. Missing Catalogue Of Life URL");
-		}
-		else {
-			String[] chunks = refs.split("annual-checklist");
-			if (chunks.length != 2) {
-				if (!suppressErrors)
-					warn("RecordURI not set. Could not parse URL: \"%s\"", refs);
+		catch (Throwable t) {
+			stats.objectsRejected++;
+			if (!suppressErrors) {
+				error(t.getMessage());
 			}
-			else {
-				StringBuilder url = new StringBuilder(96);
-				url.append(chunks[0]);
-				url.append("annual-checklist");
-				url.append('/');
-				url.append(colYear);
-				url.append(chunks[1]);
-				try {
-					taxon.setRecordURI(URI.create(url.toString()));
-				}
-				catch (IllegalArgumentException e) {
-					if (!suppressErrors)
-						warn("RecordURI not set. Invalid URL: \"%s\"", refs);
-				}
-			}
-		}
-		taxon.setTaxonRank(val(record, taxonRank));
-
-		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, scientificName));
-		sn.setGenusOrMonomial(val(record, genericName));
-		sn.setSpecificEpithet(val(record, specificEpithet));
-		sn.setInfraspecificEpithet(val(record, infraspecificEpithet));
-		sn.setAuthorshipVerbatim(val(record, scientificNameAuthorship));
-		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
-		taxon.setAcceptedName(sn);
-
-		DefaultClassification dc = new DefaultClassification();
-		taxon.setDefaultClassification(dc);
-
-		dc.setKingdom(val(record, kingdom));
-		dc.setPhylum(val(record, phylum));
-		dc.setClassName(val(record, classRank));
-		dc.setOrder(val(record, order));
-		dc.setSuperFamily(val(record, superfamily));
-		dc.setFamily(val(record, family));
-		dc.setGenus(val(record, genericName));
-		dc.setSubgenus(val(record, subgenus));
-		dc.setSpecificEpithet(val(record, specificEpithet));
-		dc.setInfraspecificEpithet(val(record, infraspecificEpithet));
-
-		addMonomials(taxon);
-
-		String descr = val(record, description);
-		if (descr != null) {
-			TaxonDescription td = new TaxonDescription();
-			td.setDescription(descr);
-			taxon.addDescription(td);
-		}
-
-		return Arrays.asList(taxon);
-	}
-
-	private static void addMonomials(ESTaxon taxon)
-	{
-		DefaultClassification dc = taxon.getDefaultClassification();
-		Monomial m;
-		if (dc.getKingdom() != null) {
-			m = new Monomial(KINGDOM, dc.getKingdom());
-			taxon.addMonomial(m);
-		}
-		if (dc.getPhylum() != null) {
-			m = new Monomial(PHYLUM, dc.getPhylum());
-			taxon.addMonomial(m);
-		}
-		if (dc.getClassName() != null) {
-			m = new Monomial(CLASS, dc.getClassName());
-			taxon.addMonomial(m);
-		}
-		if (dc.getOrder() != null) {
-			m = new Monomial(ORDER, dc.getOrder());
-			taxon.addMonomial(m);
-		}
-		if (dc.getSuperFamily() != null) {
-			m = new Monomial(SUPER_FAMILY, dc.getSuperFamily());
-			taxon.addMonomial(m);
-		}
-		if (dc.getFamily() != null) {
-			m = new Monomial(FAMILY, dc.getFamily());
-			taxon.addMonomial(m);
-		}
-		// Tribe not used in Catalogue of Life.
-		if (dc.getGenus() != null) {
-			m = new Monomial(GENUS, dc.getGenus());
-			taxon.addMonomial(m);
-		}
-		if (dc.getSubgenus() != null) {
-			m = new Monomial(SUBGENUS, dc.getSubgenus());
-			taxon.addMonomial(m);
-		}
-		if (dc.getSpecificEpithet() != null) {
-			m = new Monomial(SPECIES, dc.getSpecificEpithet());
-			taxon.addMonomial(m);
-		}
-		if (dc.getInfraspecificEpithet() != null) {
-			m = new Monomial(SUBSPECIES, dc.getInfraspecificEpithet());
-			taxon.addMonomial(m);
+			return null;
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void error(String pattern, Object... args)
 	{
 		String msg = messagePrefix() + String.format(pattern, args);
@@ -216,6 +135,7 @@ class CoLSynonymTransformer implements CSVTransformer<ESTaxon> {
 		logger.info(msg);
 	}
 
+	@SuppressWarnings("unused")
 	private void debug(String pattern, Object... args)
 	{
 		String msg = messagePrefix() + String.format(pattern, args);

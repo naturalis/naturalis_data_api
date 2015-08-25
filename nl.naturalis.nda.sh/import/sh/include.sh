@@ -17,5 +17,5 @@ do
 done
 #echo CLASSPATH: $classpath
 
-JAVA_OPTS="-server -Xms512m -Xmx1024m"
+JAVA_OPTS="-server -Xms1024m -Xmx1536m"
 JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${ndaConfDir}"

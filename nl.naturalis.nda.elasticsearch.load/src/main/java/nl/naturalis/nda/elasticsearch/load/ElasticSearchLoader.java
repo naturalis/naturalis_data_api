@@ -113,6 +113,15 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
 	}
 
+	/**
+	 * Adds the specified objects to a queue of to-be-indexed objects. When the
+	 * size of the queue reaches the treshold, all objects in the queue are
+	 * flushed at once to ElasticSearch. In other words, calling {@code load}
+	 * does not necessarily immediately trigger the specified objects to be
+	 * indexed.
+	 * 
+	 * @param items
+	 */
 	public final void load(List<T> items)
 	{
 		if (items == null || items.size() == 0)
@@ -131,6 +140,18 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		if (objs.size() >= treshold) {
 			flush();
 		}
+	}
+
+	public T findInQueue(String id)
+	{
+		assert (ids != null);
+		int i;
+		for (i = 0; i < ids.size(); ++i) {
+			if (ids.get(i).equals(id)) {
+				return objs.get(i);
+			}
+		}
+		return null;
 	}
 
 	/**

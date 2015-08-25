@@ -87,7 +87,7 @@ public class CoLTaxonImporter {
 
 		stats.logStatistics(logger);
 		logger.info("(NB skipped records are synonyms)");
-		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
+		LoadUtil.logDuration(logger, getClass(), start);
 
 	}
 

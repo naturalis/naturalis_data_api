@@ -8,6 +8,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Base class for Transformers that take a commons-csv CSVRecord as input and
+ * produce an ElasticSearch object (in practice either ESSpecimen,
+ * ESMultiMediaObject or ESTaxon).
+ * 
+ * @author Ayco Holleman
+ *
+ * @param <T>
+ *            The type of ES object produced by this transformer
+ */
 public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 
 	protected final ETLStatistics stats;
@@ -35,11 +45,24 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 		return stats;
 	}
 
+	/**
+	 * Whether or not error suppression is on.
+	 * 
+	 * @return
+	 */
 	public boolean isSuppressErrors()
 	{
 		return suppressErrors;
 	}
 
+	/**
+	 * Whether or not to suppress errors. With error suppression, INFO messages
+	 * are let through while ERROR and WARN messages are suppressed. This may
+	 * make the log file more readable if you expect huge amounts of well-known,
+	 * anticipated errors.
+	 * 
+	 * @param suppressErrors
+	 */
 	public void setSuppressErrors(boolean suppressErrors)
 	{
 		this.suppressErrors = suppressErrors;

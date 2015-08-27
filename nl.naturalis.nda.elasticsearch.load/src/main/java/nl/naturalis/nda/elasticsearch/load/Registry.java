@@ -37,6 +37,7 @@ public class Registry {
 	private Client esClient;
 
 	private LoggerContext ctx;
+
 	/*
 	 * This is the registry's own logger. No need (and confusing) to make it
 	 * static because logging only become available once the registry is
@@ -234,6 +235,7 @@ public class Registry {
 		String mainClass = chunks[chunks.length - 1].split(" ")[0];
 		String logFileName = mainClass + "-" + now + ".log";
 		File logFile = FileUtil.newFile(logDir, logFileName);
+		System.out.println("Created log file: " + logFile.getAbsolutePath());
 		return logFile.getAbsolutePath();
 	}
 

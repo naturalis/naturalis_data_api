@@ -19,9 +19,7 @@ public class MultiMediaClient extends AbstractClient {
 		if (status != HTTP_OK) {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
-		else {
-			return ClientUtil.getBoolean(request.getResponseBody());
-		}
+		return ClientUtil.getBoolean(request.getResponseBody());
 	}
 
 

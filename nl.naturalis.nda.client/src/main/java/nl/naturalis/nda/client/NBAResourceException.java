@@ -10,6 +10,8 @@ import org.domainobject.util.debug.BeanPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NO_CONTENT;
+
 /**
  * An {@code NBAResourceException} is the client-side mirror of a
  * {@code RESTException} in the service layer. All resource methods must throw a
@@ -27,11 +29,23 @@ public class NBAResourceException extends Exception {
 	private static final long serialVersionUID = -8246486578070786218L;
 	private static final Logger logger = LoggerFactory.getLogger(NBAResourceException.class);
 
-
 	@SuppressWarnings("unchecked")
 	static NBAResourceException createFromResponse(int status, byte[] response)
 	{
-		if(response == null) {
+		if (status == HTTP_NO_CONTENT) {
+			String msg;
+			if (response == null || response.length == 0) {
+				msg = "The NBA responded with HTTP 204 (No Content), probably because"
+						+ "the method to which the request was dispatched returned null."
+						+ "But neither is allowed to happen. A.k.a. you found a bug";
+			}
+			else {
+				msg = "The NBA responded with HTTP 204 (No Content), but actually did"
+						+ "return content. A big bad bug.";
+			}
+			throw new ClientException(msg);
+		}
+		if (response == null) {
 			String fmt = "NBA responded with status code %s, but response body was empty";
 			throw new ClientException(String.format(fmt, status));
 		}
@@ -46,19 +60,16 @@ public class NBAResourceException extends Exception {
 
 	private final Map<String, Object> serverInfo;
 
-
 	private NBAResourceException(String message, Map<String, Object> serverInfo)
 	{
 		super(message);
 		this.serverInfo = serverInfo;
 	}
 
-
 	public Map<String, Object> getServerInfo()
 	{
 		return serverInfo;
 	}
-
 
 	public String getServerInfoAsString()
 	{
@@ -67,7 +78,6 @@ public class NBAResourceException extends Exception {
 		bp.dump(serverInfo);
 		return sw.toString();
 	}
-
 
 	@Override
 	public String toString()

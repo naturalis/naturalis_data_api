@@ -130,7 +130,7 @@ public class SpecimenDao extends AbstractDao {
 
 
 	/**
-	 * Get all multimedia for the specified specimen ID.
+	 * Get all multimedia for the specified specimen UnitID.
 	 * 
 	 * @param unitID
 	 * @return
@@ -142,9 +142,6 @@ public class SpecimenDao extends AbstractDao {
 		SearchRequestBuilder request = newSearchRequest().setTypes(MULTI_MEDIA_OBJECT_TYPE).setQuery(query);
 		SearchResponse response = request.execute().actionGet();
 		SearchHit[] results = response.getHits().getHits();
-		if (results.length == 0) {
-			return null;
-		}
 		MultiMediaObject[] multimedia = new MultiMediaObject[results.length];
 		for (int i = 0; i < results.length; ++i) {
 			ESMultiMediaObject tmp = getObjectMapper().convertValue(results[i].getSource(), ESMultiMediaObject.class);

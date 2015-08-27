@@ -2,12 +2,11 @@ package nl.naturalis.nda.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
+import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nda.domain.Specimen;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.Specimen;
 
 public class SpecimenClient extends AbstractClient {
 
@@ -28,9 +27,7 @@ public class SpecimenClient extends AbstractClient {
 		if (status != HTTP_OK) {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
-		else {
-			return ClientUtil.getBoolean(request.getResponseBody());
-		}
+		return ClientUtil.getBoolean(request.getResponseBody());
 	}
 
 
@@ -57,8 +54,6 @@ public class SpecimenClient extends AbstractClient {
 		if (status != HTTP_OK) {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
-		else {
-			return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);
-		}
+		return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);
 	}
 }

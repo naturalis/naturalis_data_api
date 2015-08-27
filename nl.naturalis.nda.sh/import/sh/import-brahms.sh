@@ -2,16 +2,9 @@
 
 . ./include.sh
 
-# Rename dump files after they have been processed?
-# (Only applicable when importing both specimens and
-# multimedia. Otherwise dump files are never renamed)
-backup=true
+suppress_errors=true
 
-# Number of ES index requests bundled together
-esBatchSize=1000
-
-JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nda.elasticsearch.load.brahms.batchsize=${esBatchSize}"
-JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nda.elasticsearch.load.brahms.backup=${backup}"
+JAVA_OPTS="$JAVA_OPTS -Dbrahms.suppres-errors=${suppress_errors}"
 
 action="${1}"
 

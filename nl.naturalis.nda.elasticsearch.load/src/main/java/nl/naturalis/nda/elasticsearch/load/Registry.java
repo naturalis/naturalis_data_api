@@ -37,12 +37,13 @@ public class Registry {
 	private Client esClient;
 
 	private LoggerContext ctx;
-	@SuppressWarnings("rawtypes")
-	private FileAppender fileAppender;
-	@SuppressWarnings("rawtypes")
-	private ConsoleAppender consoleAppender;
-	private Logger logger; // NEEDS to be non-static!
-
+	
+	/*
+	 * This is the registry's own logger. No need (and confusing) to make it
+	 * static because logging only become available once the registry is
+	 * instantiated.
+	 */
+	private Logger logger;
 
 	/**
 	 * Instantiates and initializes a {@code Registry} instance. This method
@@ -59,7 +60,6 @@ public class Registry {
 		}
 	}
 
-
 	/**
 	 * Return a {@code Registry} instance. Will call {@link #initialize()}
 	 * first.
@@ -72,14 +72,12 @@ public class Registry {
 		return instance;
 	}
 
-
 	private Registry()
 	{
 		setConfDir();
 		loadConfig();
 		configureLogging();
 	}
-
 
 	/**
 	 * Get a {@code ConfigObject} for the main configuration file
@@ -91,7 +89,6 @@ public class Registry {
 	{
 		return config;
 	}
-
 
 	/**
 	 * Get the directory designated to contain the application's configuration
@@ -105,14 +102,13 @@ public class Registry {
 		return confDir;
 	}
 
-
 	public Logger getLogger(Class<?> cls)
 	{
 		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);
-		// For now - no more configuration
+		// TODO: in the future we may allow nda-import.properties or some other
+		// config file to include separate log levels for different classes
 		return logger;
 	}
-
 
 	/**
 	 * Get a native Java ElasticSearch {@code Client}.
@@ -144,7 +140,6 @@ public class Registry {
 		return esClient;
 	}
 
-
 	/**
 	 * Get an index manager for the NBA index.
 	 * 
@@ -154,7 +149,6 @@ public class Registry {
 	{
 		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));
 	}
-
 
 	private void setConfDir()
 	{
@@ -177,53 +171,33 @@ public class Registry {
 		}
 	}
 
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void configureLogging()
 	{
 		ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
 		ctx.reset();
-
-		PatternLayoutEncoder encoder = null;
-
-		if (config.isTrue("logger.file")) {
-			fileAppender = new FileAppender();
-			fileAppender.setContext(ctx);
-			File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
-			String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-			String command = System.getProperty("sun.java.command");
-			String[] chunks = command.split("\\.");
-			String mainClass = chunks[chunks.length - 1].split(" ")[0];
-			String logFileName = mainClass + "-" + now + ".log";
-			File logFile = FileUtil.newFile(logDir, logFileName);
-			fileAppender.setFile(logFile.getAbsolutePath());
-			encoder = createPatternLayoutEncoder(ctx);
-			fileAppender.setEncoder(encoder);
-			fileAppender.start();
-		}
-
-		if (config.isTrue("logger.console")) {
-			consoleAppender = new ConsoleAppender();
-			consoleAppender.setContext(ctx);
-			if (encoder == null) {
-				encoder = createPatternLayoutEncoder(ctx);
-			}
-			consoleAppender.setEncoder(encoder);
-			consoleAppender.start();
-		}
-
 		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
-		root.setLevel(Level.toLevel(config.required("logger.level")));
-		if (config.isTrue("logger.file")) {
+		Level logLevel = Level.toLevel(config.required("logger.level"));
+		root.setLevel(logLevel);
+		if (config.isTrue("logger.to_file")) {
+			FileAppender fileAppender = new FileAppender();
+			fileAppender.setName("FILE");
+			fileAppender.setContext(ctx);
+			fileAppender.setFile(getLogFile());
+			fileAppender.setEncoder(createPatternLayoutEncoder(ctx));
+			fileAppender.start();
 			root.addAppender(fileAppender);
 		}
-		if (config.isTrue("logger.console")) {
+		if (config.isTrue("logger.to_console")) {
+			ConsoleAppender consoleAppender = new ConsoleAppender();
+			consoleAppender.setName("CONSOLE");
+			consoleAppender.setContext(ctx);
+			consoleAppender.setEncoder(createPatternLayoutEncoder(ctx));
+			consoleAppender.start();
 			root.addAppender(consoleAppender);
 		}
-
 		logger = getLogger(getClass());
 	}
-
 
 	private String[] getPorts(int numHosts)
 	{
@@ -242,7 +216,6 @@ public class Registry {
 		return ports;
 	}
 
-
 	private void loadConfig()
 	{
 		File file = FileUtil.newFile(confDir, CONFIG_FILE_NAME);
@@ -253,6 +226,18 @@ public class Registry {
 		this.config = new ConfigObject(file);
 	}
 
+	private String getLogFile()
+	{
+		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
+		String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		String command = System.getProperty("sun.java.command");
+		String[] chunks = command.split("\\.");
+		String mainClass = chunks[chunks.length - 1].split(" ")[0];
+		String logFileName = mainClass + "-" + now + ".log";
+		File logFile = FileUtil.newFile(logDir, logFileName);
+		System.out.println("Created log file: " + logFile.getAbsolutePath());
+		return logFile.getAbsolutePath();
+	}
 
 	private static PatternLayoutEncoder createPatternLayoutEncoder(LoggerContext ctx)
 	{

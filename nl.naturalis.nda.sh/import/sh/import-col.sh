@@ -2,10 +2,9 @@
 
 . ./include.sh
 
-# Number of ES index requests bundled together
-esBatchSize=1000
+suppress_errors=false
 
-JAVA_OPTS="$JAVA_OPTS -Dnl.naturalis.nda.elasticsearch.load.col.batchsize=${esBatchSize}"
+JAVA_OPTS="$JAVA_OPTS -Dcol.suppress-errors=${suppress_errors}"
 
 java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.col.CoLImportAll
 

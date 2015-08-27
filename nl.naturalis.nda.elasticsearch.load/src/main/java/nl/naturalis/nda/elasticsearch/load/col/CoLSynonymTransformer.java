@@ -26,9 +26,9 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
-class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
+class CoLSynonymTransformer implements CSVTransformer<ESTaxon> {
 
-	static Logger logger = Registry.getInstance().getLogger(CoLTaxonTransformer.class);
+	static Logger logger = Registry.getInstance().getLogger(CoLSynonymTransformer.class);
 	static List<String> allowedTaxonRanks = Arrays.asList("species", "infraspecies");
 
 	private final ETLStatistics stats;
@@ -38,7 +38,7 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 	private boolean suppressErrors;
 	private String colYear;
 
-	public CoLTaxonTransformer(ETLStatistics stats)
+	public CoLSynonymTransformer(ETLStatistics stats)
 	{
 		this.stats = stats;
 	}
@@ -62,8 +62,7 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 		lineNo = info.getLineNumber();
 		objectID = val(record, taxonID);
 
-		if (ival(record, acceptedNameUsageID) != 0) {
-			// This is a synonym
+		if (ival(record, acceptedNameUsageID) == 0) {
 			stats.recordsSkipped++;
 			return null;
 		}

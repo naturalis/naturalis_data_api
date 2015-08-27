@@ -18,19 +18,19 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
-public class BrahmsSpecimensImporter {
+public class BrahmsSpecimenImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		BrahmsSpecimensImporter importer = new BrahmsSpecimensImporter();
+		BrahmsSpecimenImporter importer = new BrahmsSpecimenImporter();
 		importer.importCsvFiles();
 	}
 
-	static Logger logger = Registry.getInstance().getLogger(BrahmsSpecimensImporter.class);
+	static Logger logger = Registry.getInstance().getLogger(BrahmsSpecimenImporter.class);
 
 	private final boolean suppressErrors;
 
-	public BrahmsSpecimensImporter()
+	public BrahmsSpecimenImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}

@@ -41,7 +41,7 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 
 	protected int buildCache(File cacheFile)
 	{
-		cache = new TreeMap<String, String>();
+		cache = new TreeMap<>();
 		LineNumberReader lnr = null;
 		ZipInputStream zis = null;
 		try {
@@ -64,8 +64,7 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 			throw new RuntimeException(e);
 		}
 		finally {
-			IOUtil.close(lnr);
-			IOUtil.close(zis);
+			IOUtil.close(lnr,zis);
 		}
 		return cache.size();
 	}

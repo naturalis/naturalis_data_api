@@ -2,6 +2,15 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * A java bean encapsulating a commons-csv {@link CSVRecord} instance, the line
+ * within the CSV file from which it was created, and the line number of the
+ * line. {@link CSVTransformer}s receive {@code CSVRecordInfo} instances
+ * rather than just {@code CSVRecord} instances for improved error reporting.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CSVRecordInfo {
 
 	private CSVRecord record;

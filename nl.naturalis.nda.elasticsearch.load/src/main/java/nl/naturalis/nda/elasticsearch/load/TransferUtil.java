@@ -85,7 +85,7 @@ public class TransferUtil {
 
 	public static List<Monomial> getMonomialsInName(ScientificName sn)
 	{
-		List<Monomial> monomials = new ArrayList<Monomial>(3);
+		List<Monomial> monomials = new ArrayList<>(3);
 		if (sn.getGenusOrMonomial() != null) {
 			monomials.add(new Monomial(GENUS, sn.getGenusOrMonomial()));
 		}

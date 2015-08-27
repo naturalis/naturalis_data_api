@@ -37,10 +37,6 @@ public class Registry {
 	private Client esClient;
 
 	private LoggerContext ctx;
-	@SuppressWarnings("rawtypes")
-	private FileAppender fileAppender;
-	@SuppressWarnings("rawtypes")
-	private ConsoleAppender consoleAppender;
 	/*
 	 * This is the registry's own logger. No need (and confusing) to make it
 	 * static because logging only become available once the registry is

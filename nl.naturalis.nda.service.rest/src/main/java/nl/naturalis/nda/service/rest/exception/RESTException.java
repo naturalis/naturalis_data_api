@@ -96,7 +96,7 @@ public class RESTException extends RuntimeException {
 	 */
 	public Map<String, Object> getInfo()
 	{
-		Map<String, Object> info = new LinkedHashMap<String, Object>();
+		Map<String, Object> info = new LinkedHashMap<>();
 		info.put("requestUri", request.getRequestUri().toString());
 
 		HashMap<String, Object> httpStatusInfo = new LinkedHashMap<>();
@@ -113,7 +113,7 @@ public class RESTException extends RuntimeException {
 		info.put("exception", exceptionInfo);
 		exceptionInfo.put("message", throwable.toString());
 		StackTraceElement[] stackTraceElements = throwable.getStackTrace();
-		List<String> trace = new ArrayList<String>(stackTraceElements.length);
+		List<String> trace = new ArrayList<>(stackTraceElements.length);
 		for (StackTraceElement e : stackTraceElements) {
 			StringBuilder sb = new StringBuilder(128);
 			sb.append("at ");

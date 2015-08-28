@@ -9,6 +9,7 @@ import nl.naturalis.nda.search.Link;
 import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
@@ -44,7 +45,7 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SUBGENUS,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_SPECIFIC_EPITHET,
             IDENTIFICATIONS_DEFAULT_CLASSIFICATION_INFRASPECIFIC_EPITHET,
-            IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME,
+            IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME + ".raw", /* NDA448  */
             IDENTIFICATIONS_SCIENTIFIC_NAME_GENUS_OR_MONOMIAL,
             IDENTIFICATIONS_SCIENTIFIC_NAME_SUBGENUS,
             IDENTIFICATIONS_SCIENTIFIC_NAME_SPECIFIC_EPITHET,

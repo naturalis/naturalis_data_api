@@ -1,6 +1,7 @@
 package nl.naturalis.nda.client;
 
 import nl.naturalis.nda.domain.Agent;
+import nl.naturalis.nda.domain.GatheringSiteCoordinates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -36,6 +37,7 @@ class NBAObjectMapperFactory {
 	{
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(Agent.class, new AgentDeserializer());
+		module.addDeserializer(GatheringSiteCoordinates.class, new GatheringSiteCoordinatesDeserializer());
 		objectMapper = new ObjectMapper();
 		objectMapper.registerModule(module);
 	}

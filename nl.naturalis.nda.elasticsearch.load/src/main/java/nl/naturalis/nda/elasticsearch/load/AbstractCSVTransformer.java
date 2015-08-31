@@ -1,8 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import static org.domainobject.util.StringUtil.lpad;
-import static org.domainobject.util.StringUtil.rpad;
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -94,7 +91,7 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 
 	private String messagePrefix()
 	{
-		return "Line " + lpad(recInf.getLineNumber(), 6, '0', " | ") + rpad(objectID, 16, " | ");
+		return CSVImportUtil.getDefaultMessagePrefix(recInf.getLineNumber(), objectID);
 	}
 
 }

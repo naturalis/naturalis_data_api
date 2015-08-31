@@ -60,17 +60,16 @@ public class BrahmsSpecimenImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 	
-	private void processFile(File f, ETLStatistics sStats)
+	private void processFile(File f, ETLStatistics globalStats)
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
+		ETLStatistics myStats = new ETLStatistics();
 		BrahmsSpecimenLoader specimenLoader = null;
 		try {
-			ETLStatistics specimenStats = new ETLStatistics();
-			ETLStatistics extractionStats = new ETLStatistics();
-			BrahmsSpecimenTransformer specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
-			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
-			CSVExtractor extractor = createExtractor(f, extractionStats);
+			BrahmsSpecimenTransformer specimenTransformer = new BrahmsSpecimenTransformer(myStats);
+			specimenLoader = new BrahmsSpecimenLoader(myStats);
+			CSVExtractor extractor = createExtractor(f, myStats);
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
@@ -79,16 +78,16 @@ public class BrahmsSpecimenImporter {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}
 			}
-			specimenStats.add(extractionStats);
-			specimenStats.logStatistics(logger, "Specimens");
-			sStats.add(specimenStats);
-			logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
-			logger.info(" ");
-			logger.info(" ");
 		}
 		finally {
+			// Important! Flushes the remaining objects in the ES bulk request batch.
 			IOUtil.close(specimenLoader);
 		}
+		myStats.logStatistics(logger, "Specimens");
+		globalStats.add(myStats);
+		LoadUtil.logDuration(logger, getClass(), start);
+		logger.info(" ");
+		logger.info(" ");
 	}
 	
 

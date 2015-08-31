@@ -68,13 +68,15 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 		objectID = val(info.getRecord(), BARCODE);
 		if (objectID == null) {
 			stats.recordsRejected++;
-			objectID = "?";
-			if (!suppressErrors)
+			if (!suppressErrors) {
+				objectID = "?";
 				error("Missing barcode");
+			}
 			return null;
 		}
 
 		stats.recordsAccepted++;
+
 		ArrayList<ESMultiMediaObject> result = new ArrayList<>(3);
 		String s = val(info.getRecord(), IMAGELIST);
 		if (s != null) {

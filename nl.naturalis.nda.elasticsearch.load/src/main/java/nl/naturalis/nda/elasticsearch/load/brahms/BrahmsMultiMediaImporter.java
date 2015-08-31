@@ -59,17 +59,16 @@ public class BrahmsMultiMediaImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
-	private void processFile(File f, ETLStatistics mStats)
+	private void processFile(File f, ETLStatistics globalStats)
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
+		ETLStatistics myStats = new ETLStatistics();
 		BrahmsMultiMediaLoader multimediaLoader = null;
 		try {
-			ETLStatistics multimediaStats = new ETLStatistics();
-			ETLStatistics extractionStats = new ETLStatistics();
-			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
-			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
-			CSVExtractor extractor = createExtractor(f, extractionStats);
+			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(myStats);
+			multimediaLoader = new BrahmsMultiMediaLoader(myStats);
+			CSVExtractor extractor = createExtractor(f, myStats);
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
@@ -78,21 +77,21 @@ public class BrahmsMultiMediaImporter {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}
 			}
-			multimediaStats.add(extractionStats);
-			multimediaStats.logStatistics(logger, "Multimedia");
-			mStats.add(multimediaStats);
-			logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
-			logger.info(" ");
-			logger.info(" ");
 		}
 		finally {
+			// Important! Flushes the remaining objects in the ES bulk request batch.
 			IOUtil.close(multimediaLoader);
 		}
+		globalStats.add(myStats);
+		myStats.logStatistics(logger, "Multimedia");
+		LoadUtil.logDuration(logger, getClass(), start);
+		logger.info(" ");
+		logger.info(" ");
 	}
 
-	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)
+	private CSVExtractor createExtractor(File f, ETLStatistics stats)
 	{
-		CSVExtractor extractor = new CSVExtractor(f, extractionStats);
+		CSVExtractor extractor = new CSVExtractor(f, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter(',');
 		extractor.setCharset(Charset.forName("Windows-1252"));

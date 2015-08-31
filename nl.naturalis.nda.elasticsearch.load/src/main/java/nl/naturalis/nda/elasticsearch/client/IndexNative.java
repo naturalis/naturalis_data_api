@@ -136,7 +136,7 @@ public class IndexNative implements Index {
 	{
 		logger.info("Creating index " + indexName);
 		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
-		HashMap<String, Object> settings = new HashMap<String, Object>();
+		HashMap<String, Object> settings = new HashMap<>();
 		settings.put("number_of_shards", numShards);
 		settings.put("number_of_replicas", numReplicas);
 		request.setSettings(settings);

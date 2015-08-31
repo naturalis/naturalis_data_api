@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.domainobject.util.StringUtil.lpad;
+import static org.domainobject.util.StringUtil.rpad;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor.NoSuchFieldException;
 
 import org.apache.commons.csv.CSVRecord;
@@ -220,6 +222,11 @@ public class CSVImportUtil {
 			logger.warn(String.format(MSG_INVALID_NUMBER, fieldNo, s));
 			return null;
 		}
+	}
+
+	public static String getDefaultMessagePrefix(int lineNo, String objectID)
+	{
+		return "Line " + lpad(lineNo, 6, '0', " | ") + rpad(objectID, 16, " | ");
 	}
 
 }

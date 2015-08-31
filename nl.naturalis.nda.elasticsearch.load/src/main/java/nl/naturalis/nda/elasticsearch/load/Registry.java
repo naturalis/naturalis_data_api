@@ -243,7 +243,7 @@ public class Registry {
 	{
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setContext(ctx);
-		encoder.setPattern("%d %5p | %-55logger{55} | %m %n");
+		encoder.setPattern("%date{yyyy-MM-dd HH:mm:ss} %5p | %-50logger{50} | %m %n");
 		encoder.start();
 		return encoder;
 	}

@@ -74,8 +74,10 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 			}
 			return null;
 		}
-
+		
+		stats.recordsAccepted++;
 		stats.objectsProcessed++;
+		
 		try {
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);

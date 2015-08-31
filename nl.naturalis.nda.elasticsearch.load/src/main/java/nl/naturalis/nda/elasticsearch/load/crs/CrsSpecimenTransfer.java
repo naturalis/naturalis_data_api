@@ -183,7 +183,7 @@ public class CrsSpecimenTransfer {
 		if (chronoStratigraphyElements == null) {
 			return null;
 		}
-		List<ChronoStratigraphy> result = new ArrayList<ChronoStratigraphy>(chronoStratigraphyElements.size());
+		List<ChronoStratigraphy> result = new ArrayList<>(chronoStratigraphyElements.size());
 		for (Element e : chronoStratigraphyElements) {
 			ChronoStratigraphy one = getChronoStratigraphyObject(e);
 			result.add(one);
@@ -232,7 +232,7 @@ public class CrsSpecimenTransfer {
 		if (bioStratigraphyElements == null) {
 			return null;
 		}
-		List<BioStratigraphy> result = new ArrayList<BioStratigraphy>(bioStratigraphyElements.size());
+		List<BioStratigraphy> result = new ArrayList<>(bioStratigraphyElements.size());
 		for (Element e : bioStratigraphyElements) {
 			BioStratigraphy one = getBioStratigraphyObject(e);
 			result.add(one);
@@ -270,7 +270,7 @@ public class CrsSpecimenTransfer {
 		if (lithoStratigraphyElements == null) {
 			return null;
 		}
-		List<LithoStratigraphy> result = new ArrayList<LithoStratigraphy>(lithoStratigraphyElements.size());
+		List<LithoStratigraphy> result = new ArrayList<>(lithoStratigraphyElements.size());
 		for (Element e : lithoStratigraphyElements) {
 			LithoStratigraphy one = getLithoStratigraphyObject(e);
 			result.add(one);
@@ -411,7 +411,7 @@ public class CrsSpecimenTransfer {
 		if (elems == null) {
 			return lowerClassification;
 		}
-		List<Monomial> systemClassification = new ArrayList<Monomial>(elems.size() + lowerClassification.size());
+		List<Monomial> systemClassification = new ArrayList<>(elems.size() + lowerClassification.size());
 		for (Element e : elems) {
 			String rank = DOMUtil.getValue(e, "abcd:HigherTaxonRank");
 			String name = DOMUtil.getValue(e, "abcd:taxonCoverage");

@@ -17,11 +17,10 @@ class GatheringSiteCoordinatesDeserializer extends JsonDeserializer<GatheringSit
 	{
 		JsonNode node = jp.getCodec().readTree(jp);
 		JsonNode n = node.get("latitudeDecimal");
-		Double lat = n.isNull()? null : Double.valueOf(n.textValue());
+		Double lat = (n == null || n.isNull() || n.textValue() == null) ? null : Double.valueOf(n.textValue());
 		n = node.get("longitudeDecimal");
-		Double lon = n.isNull()? null : Double.valueOf(n.textValue());
+		Double lon = (n == null || n.isNull() || n.textValue() == null) ? null : Double.valueOf(n.textValue());
 		return new GatheringSiteCoordinates(lat, lon);
 	}
-
 
 }

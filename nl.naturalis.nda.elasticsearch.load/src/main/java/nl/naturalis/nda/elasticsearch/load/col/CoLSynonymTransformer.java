@@ -54,7 +54,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 		stats.recordsProcessed++;
 		recInf = info;
 		CSVRecord record = info.getRecord();
-		String objectID = val(record, acceptedNameUsageID);
+		objectID = val(record, acceptedNameUsageID);
 
 		if (objectID == null) {
 			// This is an accepted name
@@ -99,7 +99,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 					return Arrays.asList(taxon);
 				}
 				if (!suppressErrors) {
-					warn("Synonym already exists: " + synonym);
+					error("Synonym already exists: " + synonym);
 				}
 			}
 			else {

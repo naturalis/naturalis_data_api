@@ -16,7 +16,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
-import nl.naturalis.nda.elasticsearch.load.col.CoLReferenceImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -92,15 +91,15 @@ public class CoLTaxonReferenceEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String taxonId = CSVImportUtil.val(record, CsvField.taxonID.ordinal());
+					String taxonId = CSVImportUtil.val(record, CoLReferenceCsvField.taxonID.ordinal());
 					String esId = CoLImportAll.ID_PREFIX + taxonId;
 
 					reference = new Reference();
-					reference.setTitleCitation(CSVImportUtil.val(record, CsvField.title.ordinal()));
-					reference.setCitationDetail(CSVImportUtil.val(record, CsvField.description.ordinal()));
-					Date pubDate = TransferUtil.parseDate(CSVImportUtil.val(record, CsvField.date.ordinal()));
+					reference.setTitleCitation(CSVImportUtil.val(record, CoLReferenceCsvField.title.ordinal()));
+					reference.setCitationDetail(CSVImportUtil.val(record, CoLReferenceCsvField.description.ordinal()));
+					Date pubDate = TransferUtil.parseDate(CSVImportUtil.val(record, CoLReferenceCsvField.date.ordinal()));
 					reference.setPublicationDate(pubDate);
-					reference.setAuthor(new Person(CSVImportUtil.val(record, CsvField.creator.ordinal())));
+					reference.setAuthor(new Person(CSVImportUtil.val(record, CoLReferenceCsvField.creator.ordinal())));
 
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {

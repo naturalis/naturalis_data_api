@@ -19,9 +19,9 @@ public class CoLSynonymImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		CoLSynonymImporter enricher = new CoLSynonymImporter();
+		CoLSynonymImporter importer = new CoLSynonymImporter();
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
-		enricher.importCsv(dwcaDir + "/taxa.txt");
+		importer.importCsv(dwcaDir + "/taxa.txt");
 	}
 
 	private static final Logger logger = Registry.getInstance().getLogger(CoLSynonymImporter.class);

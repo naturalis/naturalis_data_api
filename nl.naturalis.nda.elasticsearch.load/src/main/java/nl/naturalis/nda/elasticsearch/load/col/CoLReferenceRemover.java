@@ -16,36 +16,41 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches Taxon documents with literature references sourced from the
- * reference.txt file in the DwC archive.
+ * Utility class that set the "references" field in taxon documents to null. Can
+ * be called before starting the {@link CoLReferenceImporter} to make sure you
+ * start with a clean slate. Note though that kicking off the
+ * {@link CoLTaxonImporter} provides the ultimate clean slate, because it starts
+ * by removing all taxon documents.
  * 
  * @author Ayco Holleman
  *
  */
-public class CoLReferenceImporter {
+public class CoLReferenceRemover {
 
 	public static void main(String[] args) throws Exception
 	{
-		CoLReferenceImporter importer = new CoLReferenceImporter();
+		CoLReferenceRemover remover = new CoLReferenceRemover();
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
-		importer.importCsv(dwcaDir + "/reference.txt");
+		remover.removeReferences(dwcaDir + "/reference.txt");
 	}
 
-	static final Logger logger = Registry.getInstance().getLogger(CoLSynonymImporter.class);
+	static final Logger logger = Registry.getInstance().getLogger(CoLReferenceRemover.class);
 
 	private final boolean suppressErrors;
 
-	public CoLReferenceImporter()
+	public CoLReferenceRemover()
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 	}
 
 	/**
-	 * Processes the reference.txt file
+	 * Processes the reference.txt file and for each CSV record, extracts the ID
+	 * of the referenced taxon, and uses the ID to remove all literature
+	 * references from the corresponding Lucene document.
 	 * 
 	 * @param path
 	 */
-	public void importCsv(String path)
+	public void removeReferences(String path)
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
@@ -73,7 +78,7 @@ public class CoLReferenceImporter {
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
-				List<ESTaxon> taxa = transformer.transform(rec);
+				List<ESTaxon> taxa = transformer.removeReferences(rec);
 				loader.load(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
@@ -90,5 +95,5 @@ public class CoLReferenceImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 
 	}
-	
+
 }

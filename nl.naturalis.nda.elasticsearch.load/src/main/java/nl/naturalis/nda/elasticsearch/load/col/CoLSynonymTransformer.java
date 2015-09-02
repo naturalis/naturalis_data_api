@@ -22,8 +22,8 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
 /**
- * A subclass of {@link CSVTransformer} that transforms CSV records into
- * {@link ESTaxon} objects.
+ * A subclass of {@link CSVTransformer} that enriches {@link ESTaxon} objects
+ * with synonyms from the taxa.txt file
  * 
  * @author Ayco Holleman
  *
@@ -105,7 +105,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 			else {
 				if (!suppressErrors) {
 					error("Orphan synonym: " + synonym);
-				}				
+				}
 			}
 			stats.objectsRejected++;
 			return null;
@@ -114,6 +114,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 			stats.objectsRejected++;
 			if (!suppressErrors) {
 				error(t.getMessage());
+				t.printStackTrace();
 			}
 			return null;
 		}

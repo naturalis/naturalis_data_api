@@ -23,6 +23,7 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.Transformer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -39,16 +40,12 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 	static Logger logger = Registry.getInstance().getLogger(CoLReferenceTransformer.class);
 
 	private final IndexNative index;
-	private CoLTaxonLoader loader;
+	private final CoLTaxonLoader loader;
 
-	CoLReferenceTransformer(ETLStatistics stats)
+	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
 		this.index = Registry.getInstance().getNbaIndexManager();
-	}
-
-	void setLoader(CoLTaxonLoader loader)
-	{
 		this.loader = loader;
 	}
 
@@ -95,6 +92,50 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 						error("Reference already exists: " + ref);
 					}
 				}
+			}
+		}
+		catch (Throwable t) {
+			stats.objectsRejected++;
+			if (!suppressErrors)
+				error(t.toString());
+		}
+		return result;
+	}
+
+	/**
+	 * Removes all literature references from the taxon specified in the CSV
+	 * record. Not part of the {@link Transformer} API, but used by the
+	 * {@link CoLReferenceRemover} to clean up taxa before starting the
+	 * {@link CoLReferenceImporter}.
+	 * 
+	 * @param recInf
+	 * @return
+	 */
+	public List<ESTaxon> removeReferences(CSVRecordInfo recInf)
+	{
+		this.recInf = recInf;
+		objectID = val(recInf.getRecord(), taxonID);
+		// Not much can go wrong here, so:
+		stats.recordsProcessed++;
+		stats.recordsAccepted++;
+		stats.objectsProcessed++;
+		List<ESTaxon> result = null;
+		try {
+			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			ESTaxon taxon = loader.findInQueue(elasticID);
+			if (taxon == null) {
+				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				if (taxon != null && taxon.getReferences() != null) {
+					stats.objectsAccepted++;
+					taxon.setReferences(null);
+					result = Arrays.asList(taxon);
+				}
+				else {
+					stats.objectsSkipped++;
+				}
+			}
+			else {
+				stats.objectsSkipped++;
 			}
 		}
 		catch (Throwable t) {

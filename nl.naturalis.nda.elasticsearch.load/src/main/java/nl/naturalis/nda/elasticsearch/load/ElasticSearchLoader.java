@@ -118,22 +118,26 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 * size of the queue reaches the treshold, all objects in the queue are
 	 * flushed at once to ElasticSearch. In other words, calling {@code load}
 	 * does not necessarily immediately trigger the specified objects to be
-	 * indexed.
+	 * indexed. The specified list of object is most likely retrieved from a
+	 * call to {@link Transformer#transform(Object)}, which is allowed to return
+	 * an empty list or {@code null} if no output can or should be produced from
+	 * the input object. Therefore, this method explicitly accepts empty lists
+	 * and {@code null} arguments (resulting in a no-op).
 	 * 
-	 * @param items
+	 * @param objects
 	 */
-	public final void load(List<T> items)
+	public final void load(List<T> objects)
 	{
-		if (items == null || items.size() == 0)
+		if (objects == null || objects.size() == 0)
 			return;
-		objs.addAll(items);
+		objs.addAll(objects);
 		if (ids != null) {
-			for (T item : items) {
+			for (T item : objects) {
 				ids.add(getIdGenerator().getId(item));
 			}
 		}
 		if (parIds != null) {
-			for (T item : items) {
+			for (T item : objects) {
 				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}

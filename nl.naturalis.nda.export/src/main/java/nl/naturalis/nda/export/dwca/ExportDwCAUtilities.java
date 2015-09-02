@@ -176,12 +176,15 @@ public class ExportDwCAUtilities {
 		InputStream inputstream = null;
 		OutputStream outputstream = null;
 		try {
-			inputstream = new FileInputStream(sourceFile);
-			outputstream = new FileOutputStream(DestinationFile);
-			byte[] buffer = new byte[2048];
-			int length;
-			while ((length = inputstream.read(buffer)) > 0) {
-				outputstream.write(buffer, 0, length);
+			if (sourceFile.exists())
+			{	
+				inputstream = new FileInputStream(sourceFile);
+				outputstream = new FileOutputStream(DestinationFile);
+				byte[] buffer = new byte[2048];
+				int length;
+				while ((length = inputstream.read(buffer)) > 0) {
+					outputstream.write(buffer, 0, length);
+				}
 			}
 		}
 		finally {

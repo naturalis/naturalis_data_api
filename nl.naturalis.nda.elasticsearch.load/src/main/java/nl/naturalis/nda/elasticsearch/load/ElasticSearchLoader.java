@@ -108,9 +108,19 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		this.type = documentType;
 		this.treshold = treshold;
 		this.stats = stats;
-		objs = new ArrayList<>(treshold + 8);
-		ids = getIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
-		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
+		/*
+		 * Make objs list a bit bigger than treshold, because the
+		 * treshold-tipping call to load() may actually go past it.
+		 */
+		objs = new ArrayList<>(treshold + 16);
+		if (getIdGenerator() != null)
+			ids = new ArrayList<>(treshold + 16);
+		else
+			ids = null;
+		if (getParentIdGenerator() == null)
+			parIds = null;
+		else
+			parIds = new ArrayList<>(treshold + 16);
 	}
 
 	/**

@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -250,7 +251,7 @@ public class IndexNative implements Index {
 		return null;
 	}
 
-	public <T> List<T> get(String type, List<String> ids, Class<T> targetClass)
+	public <T> List<T> get(String type, Collection<String> ids, Class<T> targetClass)
 	{
 		MultiGetRequestBuilder mgrb = esClient.prepareMultiGet();
 		mgrb.add(indexName, type, ids);

@@ -21,7 +21,7 @@ public class CoLTaxonLoader extends ElasticSearchLoader<ESTaxon> {
 
 	public CoLTaxonLoader(ETLStatistics stats)
 	{
-		super(indexManager(), LUCENE_TYPE_TAXON, 1000, stats);
+		super(indexManager(), LUCENE_TYPE_TAXON, 1024, stats);
 
 	}
 

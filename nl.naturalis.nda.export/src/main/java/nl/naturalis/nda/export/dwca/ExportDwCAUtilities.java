@@ -177,7 +177,7 @@ public class ExportDwCAUtilities {
 		OutputStream outputstream = null;
 		try {
 			if (sourceFile.exists())
-			{	
+			{
 				inputstream = new FileInputStream(sourceFile);
 				outputstream = new FileOutputStream(DestinationFile);
 				byte[] buffer = new byte[2048];

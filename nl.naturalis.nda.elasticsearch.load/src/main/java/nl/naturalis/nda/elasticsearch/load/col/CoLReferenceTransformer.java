@@ -8,6 +8,7 @@ import static nl.naturalis.nda.elasticsearch.load.col.CoLReferenceCsvField.descr
 import static nl.naturalis.nda.elasticsearch.load.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLReferenceCsvField.title;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -89,7 +90,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 				else {
 					stats.objectsRejected++;
 					if (!suppressErrors) {
-						error("Reference already exists: " + ref);
+						error("Duplicate reference: %s", ref);
 					}
 				}
 			}
@@ -102,6 +103,24 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 		return result;
 	}
 
+	private ArrayList<String> idBuffer = new ArrayList<>(1000);
+
+	public void removeReferences(CSVRecordInfo recInf)
+	{
+		this.recInf = recInf;
+		objectID = val(recInf.getRecord(), taxonID);
+		String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+		idBuffer.add(elasticID);
+		if (idBuffer.size() == 1000) {
+			List<ESTaxon> taxa = index.get(LUCENE_TYPE_TAXON, idBuffer, ESTaxon.class);
+			for (ESTaxon taxon : taxa) {
+				taxon.setReferences(null);
+			}
+			idBuffer.clear();
+			loader.load(taxa);
+		}
+	}
+
 	/**
 	 * Removes all literature references from the taxon specified in the CSV
 	 * record. Not part of the {@link Transformer} API, but used by the
@@ -111,7 +130,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> removeReferences(CSVRecordInfo recInf)
+	public List<ESTaxon> removeOne(CSVRecordInfo recInf)
 	{
 		this.recInf = recInf;
 		objectID = val(recInf.getRecord(), taxonID);

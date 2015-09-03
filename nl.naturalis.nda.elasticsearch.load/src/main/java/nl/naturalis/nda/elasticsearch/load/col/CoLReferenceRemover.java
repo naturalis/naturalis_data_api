@@ -1,9 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import java.io.File;
-import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
@@ -78,8 +76,7 @@ public class CoLReferenceRemover {
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
-				List<ESTaxon> taxa = transformer.removeReferences(rec);
-				loader.load(taxa);
+				transformer.removeReferences(rec);
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}

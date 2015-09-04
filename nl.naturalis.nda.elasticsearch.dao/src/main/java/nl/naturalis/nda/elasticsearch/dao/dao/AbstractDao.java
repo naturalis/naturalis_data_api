@@ -367,33 +367,73 @@ public abstract class AbstractDao {
         extendQueryWithQuery(boolQueryBuilder, operator, nestedQueryBuilder);
     }
 
-    private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
-                                      Map<String, HighlightBuilder.Field> highlightFields, boolean highlight) {
-        if (field.getValue() != null) {
-            MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());
-            Float boostValue = field.getBoostValue();
-            if (boostValue != null) {
-                fieldMatchQuery.boost(boostValue);
-            }
+	private void extendQueryWithField(BoolQueryBuilder boolQueryBuilder, Operator operator, FieldMapping field,
+			Map<String, HighlightBuilder.Field> highlightFields, boolean highlight)
+	{
+		if (field.getValue() != null) {
 
-            if (field.hasNGram() != null && field.hasNGram()) {
-                extendQueryWithQuery(boolQueryBuilder, OR, fieldMatchQuery);
-                MatchQueryBuilder ngramFieldMatchQuery = matchQuery(field.getFieldName() + ".ngram", field.getValue());
-                if (boostValue != null) {
-                    ngramFieldMatchQuery.boost(boostValue);
-                }
-                extendQueryWithQuery(boolQueryBuilder, OR, ngramFieldMatchQuery);
-                if (highlight) {
-                    highlightFields.put(field.getFieldName() + ".ngram", createHighlightField(field.getFieldName() + ".ngram", matchQuery(field.getFieldName() + ".ngram", field.getValue())));
-                }
-            } else {
-                extendQueryWithQuery(boolQueryBuilder, operator, fieldMatchQuery);
-            }
-            if (!highlightFields.containsKey(field.getFieldName())) {
-                highlightFields.put(field.getFieldName(), createHighlightField(field.getFieldName(), matchQuery(field.getFieldName(), field.getValue())));
-            }
-        }
-    }
+			if (field.getValue().equals("NOT_NULL")) {
+				ExistsFilterBuilder filter = FilterBuilders.existsFilter(field.getFieldName());
+				FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
+				Float boostValue = field.getBoostValue();
+				if (boostValue != null) {
+					query.boost(boostValue);
+				}
+				if (operator == AND) {
+					boolQueryBuilder.must(query);
+				}
+				else {
+					boolQueryBuilder.should(query);
+				}
+			}
+
+			else if (field.getValue().equals("NULL")) {
+				MissingFilterBuilder fltr = FilterBuilders.missingFilter(field.getFieldName());
+				FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), fltr);
+				Float boostValue = field.getBoostValue();
+				if (boostValue != null) {
+					query.boost(boostValue);
+				}
+				if (operator == AND) {
+					boolQueryBuilder.must(query);
+				}
+				else {
+					boolQueryBuilder.should(query);
+				}
+			}
+
+			else {
+
+				MatchQueryBuilder fieldMatchQuery = matchQuery(field.getFieldName(), field.getValue());
+				Float boostValue = field.getBoostValue();
+				if (boostValue != null) {
+					fieldMatchQuery.boost(boostValue);
+				}
+
+				if (field.hasNGram() != null && field.hasNGram()) {
+					extendQueryWithQuery(boolQueryBuilder, OR, fieldMatchQuery);
+					MatchQueryBuilder ngramFieldMatchQuery = matchQuery(field.getFieldName() + ".ngram", field.getValue());
+					if (boostValue != null) {
+						ngramFieldMatchQuery.boost(boostValue);
+					}
+					extendQueryWithQuery(boolQueryBuilder, OR, ngramFieldMatchQuery);
+					if (highlight) {
+						highlightFields.put(field.getFieldName() + ".ngram",
+								createHighlightField(field.getFieldName() + ".ngram", matchQuery(field.getFieldName() + ".ngram", field.getValue())));
+					}
+				}
+				else {
+					extendQueryWithQuery(boolQueryBuilder, operator, fieldMatchQuery);
+				}
+				if (!highlightFields.containsKey(field.getFieldName())) {
+					highlightFields.put(field.getFieldName(),
+							createHighlightField(field.getFieldName(), matchQuery(field.getFieldName(), field.getValue())));
+				}
+
+			}
+
+		}
+	}
 
     private void extendQueryWithQuery(BoolQueryBuilder boolQueryBuilder, Operator operator,
                                       QueryBuilder nameResolutionQuery) {

@@ -1,6 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.createExtractor;
 
 import java.io.File;
 import java.util.List;
@@ -19,6 +20,15 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Imports taxa from the taxa.txt file. This is the only import program for the
+ * CoL that actually creates documents. The other programs only enrich existing
+ * documents (e.g. with synonym data, vernacular names and literature
+ * references).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CoLTaxonImporter {
 
 	public static void main(String[] args) throws Exception
@@ -43,6 +53,11 @@ public class CoLTaxonImporter {
 		colYear = Registry.getInstance().getConfig().required("col.year");
 	}
 
+	/**
+	 * Imports CoL taxa into ElasticSearch.
+	 * 
+	 * @param path
+	 */
 	public void importCsv(String path)
 	{
 		long start = System.currentTimeMillis();
@@ -56,10 +71,7 @@ public class CoLTaxonImporter {
 				throw new ETLRuntimeException("No such file: " + path);
 			LoadUtil.truncate(LUCENE_TYPE_TAXON, SourceSystem.COL);
 			stats = new ETLStatistics();
-			extractor = new CSVExtractor(f, stats);
-			extractor.setSkipHeader(true);
-			extractor.setDelimiter('\t');
-			extractor.setSuppressErrors(suppressErrors);
+			extractor = createExtractor(stats, f, suppressErrors);
 			transformer = new CoLTaxonTransformer(stats);
 			transformer.setColYear(colYear);
 			transformer.setSuppressErrors(suppressErrors);
@@ -83,9 +95,8 @@ public class CoLTaxonImporter {
 			IOUtil.close(loader);
 		}
 		stats.logStatistics(logger);
-		logger.info("(NB skipped records are synonyms)");
+		logger.info("(NB skipped records are synonyms or higher taxa)");
 		LoadUtil.logDuration(logger, getClass(), start);
-
 	}
 
 }

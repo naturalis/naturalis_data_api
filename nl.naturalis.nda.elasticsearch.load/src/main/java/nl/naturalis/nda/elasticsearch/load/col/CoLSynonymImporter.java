@@ -1,5 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
+import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.createExtractor;
+
 import java.io.File;
 import java.util.List;
 
@@ -42,27 +44,20 @@ public class CoLSynonymImporter {
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
+		CSVExtractor extractor = null;
+		CoLSynonymTransformer transformer = null;
 		CoLTaxonLoader loader = null;
 		try {
-
 			File f = new File(path);
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
-
 			stats = new ETLStatistics();
 			stats.setUseObjectsAccepted(true);
-
-			CSVExtractor extractor = new CSVExtractor(f, stats);
-			extractor.setSkipHeader(true);
-			extractor.setDelimiter('\t');
-			extractor.setSuppressErrors(suppressErrors);
-
+			extractor = createExtractor(stats, f, suppressErrors);
 			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
-
-			CoLSynonymTransformer transformer = new CoLSynonymTransformer(stats);
+			transformer = new CoLSynonymTransformer(stats);
 			transformer.setSuppressErrors(suppressErrors);
 			transformer.setLoader(loader);
-
 			logger.info("Processing file " + f.getAbsolutePath());
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)

@@ -98,6 +98,14 @@ public class ETLStatistics {
 		this.useObjectsAccepted = b;
 	}
 
+	/**
+	 * Whether or not to use the objectsAccepted counter in stead of the
+	 * objectsIndexed counter.
+	 * 
+	 * @return
+	 * 
+	 * @see #setUseObjectsAccepted(boolean)
+	 */
 	public boolean isUseObjectsAccepted()
 	{
 		return useObjectsAccepted;

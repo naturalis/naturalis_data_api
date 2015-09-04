@@ -13,7 +13,6 @@ import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -86,12 +85,12 @@ public class CoLTaxonVernacularNameEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String taxonId = CSVImportUtil.val(record, CsvField.taxonID.ordinal());
+					String taxonId = CSVImportUtil.val(record, CoLVernacularNameCsvField.taxonID.ordinal());
 					String esId = CoLImportAll.ID_PREFIX + taxonId;
 
 					vn = new VernacularName();
-					vn.setName(CSVImportUtil.val(record, CsvField.vernacularName.ordinal()));
-					vn.setLanguage(CSVImportUtil.val(record, CsvField.language.ordinal()));
+					vn.setName(CSVImportUtil.val(record, CoLVernacularNameCsvField.vernacularName.ordinal()));
+					vn.setLanguage(CSVImportUtil.val(record, CoLVernacularNameCsvField.language.ordinal()));
 
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {

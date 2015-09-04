@@ -19,27 +19,30 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches Taxon documents with vernacular names sourced from the
- * vernacular.txt file in the DwC archive.
+ * Utility class that erases all vernacular names from taxon documents
+ * referenced by CSV records in vernacular.txt. Can be called before starting
+ * the {@link CoLVernacularNameImporter} to make sure you start with a clean
+ * slate. Note though that kicking off the {@link CoLTaxonImporter} provides the
+ * ultimate clean slate, because it starts by removing all taxon documents.
  * 
  * @author Ayco Holleman
  *
  */
-public class CoLVernacularNameImporter {
+public class CoLVernacularNameCleaner {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
-		CoLVernacularNameImporter importer = new CoLVernacularNameImporter();
+		CoLVernacularNameCleaner remover = new CoLVernacularNameCleaner();
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
-		importer.importCsv(dwcaDir + "/vernacular.txt");
+		remover.cleanup(dwcaDir + "/vernacular.txt");
 	}
 
-	static final Logger logger = Registry.getInstance().getLogger(CoLVernacularNameImporter.class);
+	static final Logger logger = Registry.getInstance().getLogger(CoLVernacularNameCleaner.class);
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
 
-	public CoLVernacularNameImporter()
+	public CoLVernacularNameCleaner()
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
@@ -48,17 +51,19 @@ public class CoLVernacularNameImporter {
 	}
 
 	/**
-	 * Processes the reference.txt file
+	 * Processes the reference.txt file and for each CSV record, extracts the ID
+	 * of the referenced taxon, using it to remove all literature references
+	 * from the corresponding Lucene document.
 	 * 
 	 * @param path
 	 */
-	public void importCsv(String path)
+	public void cleanup(String path)
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
 		CSVExtractor extractor = null;
-		CoLVernacularNameTransformer transformer = null;
 		CoLTaxonLoader loader = null;
+		CoLVernacularNameTransformer transformer = null;
 		try {
 			File f = new File(path);
 			if (!f.exists())
@@ -73,10 +78,11 @@ public class CoLVernacularNameImporter {
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
-				List<ESTaxon> taxa = transformer.transform(rec);
+				List<ESTaxon> taxa = transformer.clean(rec);
 				loader.load(taxa);
-				if (rec.getLineNumber() % 50000 == 0)
+				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
+				}
 			}
 		}
 		catch (Throwable t) {

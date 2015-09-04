@@ -1,5 +1,13 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+/**
+ * 
+ * @author Ayco Holleman
+ * 
+ * @deprecated Should be handled and logged by {@link Transformer}s without
+ *             throwing an exception.
+ *
+ */
 @SuppressWarnings("serial")
 public class MalformedDataException extends Exception {
 

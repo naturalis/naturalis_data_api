@@ -7,15 +7,20 @@ import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.scientifi
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.scientificNameAuthorship;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.specificEpithet;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.taxonomicStatus;
+
+import java.io.File;
+
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.TaxonomicStatus;
+import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
+import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 
 class CoLImportUtil {
 
-	private static final TaxonomicStatusNormalizer statusNormalizer;
+	static final TaxonomicStatusNormalizer statusNormalizer;
 	
 	static {
 		statusNormalizer = TaxonomicStatusNormalizer.getInstance();
@@ -48,6 +53,16 @@ class CoLImportUtil {
 		sn.setAuthorshipVerbatim(val(record, scientificNameAuthorship));
 		sn.setTaxonomicStatus(status);
 		return sn;
+	}
+
+	static CSVExtractor createExtractor(ETLStatistics stats, File f, boolean suppressErrors)
+	{
+		CSVExtractor extractor;
+		extractor = new CSVExtractor(f, stats);
+		extractor.setSkipHeader(true);
+		extractor.setDelimiter('\t');
+		extractor.setSuppressErrors(suppressErrors);
+		return extractor;
 	}
 
 }

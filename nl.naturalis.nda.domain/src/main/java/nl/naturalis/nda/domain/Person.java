@@ -58,14 +58,14 @@ public class Person extends Agent {
 	{
 		StringBuilder sb = new StringBuilder(50);
 		sb.append("{fullName: ").append(quote(fullName));
-		sb.append(", organization: ").append(organization == null ? "null" : organization.toString());
+		sb.append(", organization: ").append(organization);
 		sb.append("}");
 		return sb.toString();
 	}
 
-	private static String quote(String s)
+	private static String quote(Object obj)
 	{
-		return s == null ? "null" : '"' + s + '"';
+		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
 	}
 
 	private static boolean eq(Object obj0, Object obj2)

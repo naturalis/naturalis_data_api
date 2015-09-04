@@ -33,6 +33,4 @@ public class InitializationException extends RuntimeException {
 		super(message, cause);
 	}
 
-
-
 }

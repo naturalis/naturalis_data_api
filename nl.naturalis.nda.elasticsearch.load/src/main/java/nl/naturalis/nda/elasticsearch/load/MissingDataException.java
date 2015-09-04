@@ -2,7 +2,9 @@ package nl.naturalis.nda.elasticsearch.load;
 
 /**
  * @author Ayco Holleman
- * @created Jul 29, 2015
+ * 
+ * @deprecated Should be handled and logged by {@link Transformer}s without
+ *             throwing an exception.
  *
  */
 @SuppressWarnings("serial")
@@ -12,18 +14,15 @@ public class MissingDataException extends InvalidDataException {
 	{
 	}
 
-
 	public MissingDataException(String message, Throwable cause)
 	{
 		super(message, cause);
 	}
 
-
 	public MissingDataException(String message)
 	{
 		super(message);
 	}
-
 
 	public MissingDataException(Throwable cause)
 	{

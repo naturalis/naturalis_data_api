@@ -70,36 +70,37 @@ public class ETLStatistics {
 	 */
 	public int objectsAccepted;
 
-	private boolean objectsAcceptedNotObjectsIndexed;
+	private boolean useObjectsAccepted;
 
 	/**
+	 * Determines which counter to use for successfully transformed data.
 	 * Ordinarily the following rule applies:
 	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}
 	 * . In this case the transformer provides the first two statistics while
 	 * the loader provides the last statistic. ETL programs for which this rule
-	 * applies don't need to keep track of the {@code objectsAccepted} counter.
-	 * However, if a data source is only used to add children (nested objects)
-	 * to an existing parent document, this rule no longer applies. The rule
-	 * that applies then is:
+	 * applies don't need to (and don't) keep track of the
+	 * {@code objectsAccepted} counter. However, if a data source is only used
+	 * to add children (nested objects) to an existing parent document, this
+	 * rule no longer applies. The rule that applies then is:
 	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}
 	 * . In this case the transformer provides all three statistics and the
 	 * number of objects indexed is more or less meaningless. If a document has
-	 * no children, it is not updated. If it has 10 children, it may be updated
-	 * only once or up to 10 times, depending on how far apart the CSV
-	 * records containing the children were. In case of adjacent records they
-	 * are added all at once to the parent document, resulting in just one index
-	 * request for 10 CSV records.
+	 * 10 nested child documents, the document may be re-indexed anywhere
+	 * between 1 and 10 times, depending on how far apart the CSV/XML records
+	 * containing the children were (in case of adjacent records they are added
+	 * all at once to the parent document, resulting in just one index request
+	 * for 10 records).
 	 * 
 	 * @param b
 	 */
-	public void setObjectsAcceptedNotObjectsIndexed(boolean b)
+	public void setUseObjectsAccepted(boolean b)
 	{
-		this.objectsAcceptedNotObjectsIndexed = b;
+		this.useObjectsAccepted = b;
 	}
 
-	public boolean isObjectsAcceptedNotObjectsIndexed()
+	public boolean isUseObjectsAccepted()
 	{
-		return objectsAcceptedNotObjectsIndexed;
+		return useObjectsAccepted;
 	}
 
 	/**
@@ -176,7 +177,7 @@ public class ETLStatistics {
 
 		logger.info(" ");
 		logger.info(statistic(niceName, "skipped", objectsSkipped));
-		if (objectsAcceptedNotObjectsIndexed)
+		if (useObjectsAccepted)
 			logger.info(statistic(niceName, "accepted", objectsAccepted));
 		else
 			logger.info(statistic(niceName, "indexed", objectsIndexed));
@@ -184,7 +185,7 @@ public class ETLStatistics {
 		logger.info("------------------------------------- +");
 		logger.info(statistic(niceName, "processed", objectsProcessed));
 
-		if (objectsAcceptedNotObjectsIndexed) {
+		if (useObjectsAccepted) {
 			logger.info(" ");
 			logger.info(statistic("ElasticSearch index requests", objectsIndexed));
 		}

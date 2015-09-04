@@ -109,7 +109,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		this.treshold = treshold;
 		this.stats = stats;
 		/*
-		 * Make objs list a bit bigger than treshold, because the
+		 * Make all lists a bit bigger than the treshold, because the
 		 * treshold-tipping call to load() may actually go past it.
 		 */
 		objs = new ArrayList<>(treshold + 16);

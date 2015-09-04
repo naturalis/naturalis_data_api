@@ -25,6 +25,17 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
 
+/**
+ * Class providing centralized access to core services such as logging and
+ * elasticsearch. If anything goes wrong while configuring those services an
+ * {@link InitializationException} is thrown and it probably doesn't make much
+ * sense to let the program continue. Therefore one of the first things an
+ * import program should do is retrieve an instance of the {@code Registry}
+ * class.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class Registry {
 
 	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
@@ -102,6 +113,12 @@ public class Registry {
 		return confDir;
 	}
 
+	/**
+	 * Get a logger for the specified class.
+	 * 
+	 * @param cls
+	 * @return
+	 */
 	public Logger getLogger(Class<?> cls)
 	{
 		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);

@@ -65,6 +65,15 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 		this.suppressErrors = suppressErrors;
 	}
 
+	protected void handleError(Throwable t)
+	{
+		stats.objectsRejected++;
+		if (!suppressErrors)
+			error(t.toString());
+		if (logger.isDebugEnabled())
+			logger.debug(t.toString(), t);
+	}
+
 	protected void error(String pattern, Object... args)
 	{
 		String msg = messagePrefix() + String.format(pattern, args);

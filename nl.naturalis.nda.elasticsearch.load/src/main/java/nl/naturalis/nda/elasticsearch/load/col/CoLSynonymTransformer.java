@@ -17,13 +17,14 @@ import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
+import nl.naturalis.nda.elasticsearch.load.Transformer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
 /**
  * A subclass of {@link CSVTransformer} that enriches {@link ESTaxon} objects
- * with synonyms from the taxa.txt file
+ * with synonyms from the taxa.txt file.
  * 
  * @author Ayco Holleman
  *
@@ -99,7 +100,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 					return Arrays.asList(taxon);
 				}
 				if (!suppressErrors) {
-					error("Synonym already exists: " + synonym);
+					error("Duplicate synonym: " + synonym);
 				}
 			}
 			else {
@@ -111,12 +112,56 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 			return null;
 		}
 		catch (Throwable t) {
-			stats.objectsRejected++;
-			if (!suppressErrors) {
-				error(t.getMessage());
-				t.printStackTrace();
-			}
+			handleError(t);
 			return null;
 		}
 	}
+
+	/**
+	 * Removes all synonyms from the taxon specified in the CSV record. Not part
+	 * of the {@link Transformer} API, but used by the
+	 * {@link CoLReferenceCleaner} to clean up taxa before starting the
+	 * {@link CoLReferenceImporter}.
+	 * 
+	 * @param recInf
+	 * @return
+	 */
+	public List<ESTaxon> clean(CSVRecordInfo recInf)
+	{
+		stats.recordsProcessed++;
+		this.recInf = recInf;
+		CSVRecord record = recInf.getRecord();
+		objectID = val(record, acceptedNameUsageID);
+		if (objectID == null) {
+			// This is an accepted name
+			stats.recordsSkipped++;
+			return null;
+		}
+		stats.recordsAccepted++;
+		stats.objectsProcessed++;
+		List<ESTaxon> result = null;
+		try {
+			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			ESTaxon taxon = loader.findInQueue(elasticID);
+			if (taxon == null) {
+				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				if (taxon != null && taxon.getSynonyms() != null) {
+					stats.objectsAccepted++;
+					taxon.setSynonyms(null);
+					result = Arrays.asList(taxon);
+				}
+				else {
+					stats.objectsSkipped++;
+				}
+			}
+			else {
+				stats.objectsSkipped++;
+			}
+		}
+		catch (Throwable t) {
+			handleError(t);
+		}
+		return result;
+	}
+
 }

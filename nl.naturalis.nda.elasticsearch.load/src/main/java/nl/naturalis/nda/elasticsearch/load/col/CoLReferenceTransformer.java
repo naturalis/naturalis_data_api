@@ -82,22 +82,24 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 						result = Arrays.asList(taxon);
 					}
 					/*
-					 * else the reference is added to a taxon that's already
-					 * queued, so we're fine
+					 * else we have added the reference to a taxon that's
+					 * already queued for indexing, so we're fine
 					 */
 				}
 				else {
 					stats.objectsRejected++;
 					if (!suppressErrors) {
-						error("Reference already exists: " + ref);
+						error("Duplicate reference for taxon: " + ref);
 					}
 				}
 			}
 		}
 		catch (Throwable t) {
-			stats.objectsRejected++;
-			if (!suppressErrors)
-				error(t.toString());
+			handleError(t);
+			if(t.getClass() == NullPointerException.class) {
+				// Really, really don't wanna have those
+				throw t;
+			}
 		}
 		return result;
 	}
@@ -105,13 +107,13 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 	/**
 	 * Removes all literature references from the taxon specified in the CSV
 	 * record. Not part of the {@link Transformer} API, but used by the
-	 * {@link CoLReferenceRemover} to clean up taxa before starting the
+	 * {@link CoLReferenceCleaner} to clean up taxa before starting the
 	 * {@link CoLReferenceImporter}.
 	 * 
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> removeReferences(CSVRecordInfo recInf)
+	public List<ESTaxon> clean(CSVRecordInfo recInf)
 	{
 		this.recInf = recInf;
 		objectID = val(recInf.getRecord(), taxonID);
@@ -139,9 +141,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 			}
 		}
 		catch (Throwable t) {
-			stats.objectsRejected++;
-			if (!suppressErrors)
-				error(t.toString());
+			handleError(t);
 		}
 		return result;
 	}

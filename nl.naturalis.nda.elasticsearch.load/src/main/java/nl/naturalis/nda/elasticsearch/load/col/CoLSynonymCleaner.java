@@ -19,27 +19,31 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches Taxon documents with literature references sourced from the
- * reference.txt file in the DwC archive.
+ * Utility class that set the "references" field in taxon documents to null. Can
+ * be called before starting the {@link CoLReferenceImporter} to make sure you
+ * start with a clean slate. Note though that kicking off the
+ * {@link CoLTaxonImporter} provides the ultimate clean slate, because it starts
+ * by removing all taxon documents.
  * 
  * @author Ayco Holleman
  *
  */
-public class CoLReferenceImporter {
+public class CoLSynonymCleaner {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
-		CoLReferenceImporter importer = new CoLReferenceImporter();
-		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
-		importer.importCsv(dwcaDir + "/reference.txt");
+		CoLSynonymCleaner cleaner = new CoLSynonymCleaner();
+		ConfigObject config = Registry.getInstance().getConfig();
+		String dwcaDir = config.required("col.csv_dir");
+		cleaner.cleanup(dwcaDir + "/taxa.txt");
 	}
 
-	static final Logger logger = Registry.getInstance().getLogger(CoLReferenceImporter.class);
+	static final Logger logger = Registry.getInstance().getLogger(CoLSynonymCleaner.class);
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
 
-	public CoLReferenceImporter()
+	public CoLSynonymCleaner()
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
@@ -48,17 +52,19 @@ public class CoLReferenceImporter {
 	}
 
 	/**
-	 * Processes the reference.txt file
+	 * Processes the reference.txt file and for each CSV record, extracts the ID
+	 * of the referenced taxon, using it to remove all synonyms from the
+	 * corresponding Lucene document.
 	 * 
 	 * @param path
 	 */
-	public void importCsv(String path)
+	public void cleanup(String path)
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
 		CSVExtractor extractor = null;
-		CoLReferenceTransformer transformer = null;
 		CoLTaxonLoader loader = null;
+		CoLSynonymTransformer transformer = null;
 		try {
 			File f = new File(path);
 			if (!f.exists())
@@ -66,17 +72,19 @@ public class CoLReferenceImporter {
 			stats = new ETLStatistics();
 			stats.setUseObjectsAccepted(true);
 			extractor = createExtractor(stats, f, suppressErrors);
-			loader = new CoLTaxonLoader(stats,esBulkRequestSize);
-			transformer = new CoLReferenceTransformer(stats, loader);
+			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
+			transformer = new CoLSynonymTransformer(stats);
 			transformer.setSuppressErrors(suppressErrors);
+			transformer.setLoader(loader);
 			logger.info("Processing file " + f.getAbsolutePath());
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
-				List<ESTaxon> taxa = transformer.transform(rec);
+				List<ESTaxon> taxa = transformer.clean(rec);
 				loader.load(taxa);
-				if (rec.getLineNumber() % 50000 == 0)
+				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
+				}
 			}
 		}
 		catch (Throwable t) {
@@ -88,5 +96,5 @@ public class CoLReferenceImporter {
 		stats.logStatistics(logger);
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
-	
+
 }

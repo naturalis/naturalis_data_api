@@ -95,16 +95,17 @@ public class Reference {
 	{
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("{titleCitation: ").append(quote(titleCitation));
-		sb.append(", author: ").append(author == null ? "null" : author.toString());
+		sb.append(", author: ").append(author);
 		sb.append(", citationDetail: ").append(quote(citationDetail));
-		sb.append(", publicationDate: ").append(quote(publicationDate.toString()));
+		sb.append(", publicationDate: ");
+		sb.append(publicationDate == null ? "null" : quote(publicationDate));
 		sb.append("}");
 		return sb.toString();
 	}
 
-	private static String quote(String s)
+	private static String quote(Object obj)
 	{
-		return s == null ? "null" : '"' + s + '"';
+		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
 	}
 
 	private static boolean eq(Object obj0, Object obj2)

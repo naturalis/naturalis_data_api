@@ -17,10 +17,9 @@ import org.slf4j.Logger;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a sorted array as backbone
- * for the cache.
+ * for the mime type cache.
  * 
  * @author Ayco Holleman
- * @created Aug 5, 2015
  *
  */
 public class ArrayMimeTypeCache extends AbstractMimeTypeCache {

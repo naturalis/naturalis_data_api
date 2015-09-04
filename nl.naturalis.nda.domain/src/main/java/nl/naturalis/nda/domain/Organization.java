@@ -47,9 +47,9 @@ public class Organization extends Agent {
 		return "{name: " + quote(name) + "}";
 	}
 
-	private static String quote(String s)
+	private static String quote(Object obj)
 	{
-		return s == null ? "null" : '"' + s + '"';
+		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
 	}
 
 	private static boolean eq(Object obj0, Object obj2)

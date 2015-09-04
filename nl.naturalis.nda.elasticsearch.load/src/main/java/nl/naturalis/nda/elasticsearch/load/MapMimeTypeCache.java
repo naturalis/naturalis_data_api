@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a {@link TreeMap} as
- * backbone for the cache.
+ * backbone for the mime type cache.
  * 
  * @author Ayco Holleman
  * @created Aug 5, 2015

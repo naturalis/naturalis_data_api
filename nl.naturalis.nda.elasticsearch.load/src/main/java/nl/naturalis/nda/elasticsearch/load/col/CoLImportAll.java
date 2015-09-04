@@ -49,8 +49,8 @@ public class CoLImportAll {
 		synonymEnricher.importCsv(dwcaDir + "/taxa.txt");
 		CoLTaxonVernacularNameEnricher vernacularNameEnricher = new CoLTaxonVernacularNameEnricher(index);
 		vernacularNameEnricher.importCsv(dwcaDir + "/vernacular.txt");
-		CoLTaxonReferenceEnricher referenceEnricher = new CoLTaxonReferenceEnricher(index);
-		referenceEnricher.importCsv(dwcaDir + "/reference.txt");
+		CoLReferenceImporter referenceImporter = new CoLReferenceImporter();
+		referenceImporter.importCsv(dwcaDir + "/reference.txt");
 		CoLTaxonDistributionEnricher distributionEnricher = new CoLTaxonDistributionEnricher(index);
 		distributionEnricher.importCsv(dwcaDir + "/distribution.txt");
 	}

@@ -8,6 +8,7 @@ import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
+import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
@@ -27,10 +28,14 @@ public class CoLSynonymImporter {
 	private static final Logger logger = Registry.getInstance().getLogger(CoLSynonymImporter.class);
 
 	private final boolean suppressErrors;
+	private final int esBulkRequestSize;
 
 	public CoLSynonymImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
+		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String val = System.getProperty(key, "1000");
+		esBulkRequestSize = Integer.parseInt(val);
 	}
 
 	public void importCsv(String path)
@@ -45,14 +50,14 @@ public class CoLSynonymImporter {
 				throw new ETLRuntimeException("No such file: " + path);
 
 			stats = new ETLStatistics();
-			stats.setObjectsAcceptedNotObjectsIndexed(true);
+			stats.setUseObjectsAccepted(true);
 
 			CSVExtractor extractor = new CSVExtractor(f, stats);
 			extractor.setSkipHeader(true);
 			extractor.setDelimiter('\t');
 			extractor.setSuppressErrors(suppressErrors);
 
-			loader = new CoLTaxonLoader(stats);
+			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
 
 			CoLSynonymTransformer transformer = new CoLSynonymTransformer(stats);
 			transformer.setSuppressErrors(suppressErrors);

@@ -108,29 +108,64 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		this.type = documentType;
 		this.treshold = treshold;
 		this.stats = stats;
-		objs = new ArrayList<>(treshold + 8);
-		ids = getIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
-		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
+		/*
+		 * Make all lists a bit bigger than the treshold, because the
+		 * treshold-tipping call to load() may actually go past it.
+		 */
+		objs = new ArrayList<>(treshold + 16);
+		if (getIdGenerator() != null)
+			ids = new ArrayList<>(treshold + 16);
+		else
+			ids = null;
+		if (getParentIdGenerator() == null)
+			parIds = null;
+		else
+			parIds = new ArrayList<>(treshold + 16);
 	}
 
-	public final void load(List<T> items)
+	/**
+	 * Adds the specified objects to a queue of to-be-indexed objects. When the
+	 * size of the queue reaches the treshold, all objects in the queue are
+	 * flushed at once to ElasticSearch. In other words, calling {@code load}
+	 * does not necessarily immediately trigger the specified objects to be
+	 * indexed. The specified list of object is most likely retrieved from a
+	 * call to {@link Transformer#transform(Object)}, which is allowed to return
+	 * an empty list or {@code null} if no output can or should be produced from
+	 * the input object. Therefore, this method explicitly accepts empty lists
+	 * and {@code null} arguments (resulting in a no-op).
+	 * 
+	 * @param objects
+	 */
+	public final void load(List<T> objects)
 	{
-		if (items == null || items.size() == 0)
+		if (objects == null || objects.size() == 0)
 			return;
-		objs.addAll(items);
+		objs.addAll(objects);
 		if (ids != null) {
-			for (T item : items) {
+			for (T item : objects) {
 				ids.add(getIdGenerator().getId(item));
 			}
 		}
 		if (parIds != null) {
-			for (T item : items) {
+			for (T item : objects) {
 				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}
 		if (objs.size() >= treshold) {
 			flush();
 		}
+	}
+
+	public T findInQueue(String id)
+	{
+		assert (ids != null);
+		int i;
+		for (i = 0; i < ids.size(); ++i) {
+			if (ids.get(i).equals(id)) {
+				return objs.get(i);
+			}
+		}
+		return null;
 	}
 
 	/**

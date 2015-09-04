@@ -25,6 +25,13 @@ public final class LoadUtil {
 	{
 	}
 
+	/**
+	 * Get root cause of the specified {@code Throwable}. Returns the
+	 * {@code Throwable} itself if it doesn't have a cause.
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public static Throwable getRootCause(Throwable t)
 	{
 		while (t.getCause() != null)
@@ -32,12 +39,29 @@ public final class LoadUtil {
 		return t;
 	}
 
+	/**
+	 * Delete all documents of the specified type and the specified source
+	 * system.
+	 * 
+	 * @param luceneType
+	 * @param sourceSystem
+	 */
 	public static void truncate(String luceneType, SourceSystem sourceSystem)
 	{
 		IndexNative indexManager = Registry.getInstance().getNbaIndexManager();
 		indexManager.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
 	}
 
+	/**
+	 * Logs a nice message about how long an import program took.
+	 * 
+	 * @param logger
+	 *            The logger to log to
+	 * @param cls
+	 *            The main class of the import program
+	 * @param start
+	 *            The start of the program
+	 */
 	public static void logDuration(Logger logger, Class<?> cls, long start)
 	{
 		logger.info(cls.getSimpleName() + " took " + getDuration(start));

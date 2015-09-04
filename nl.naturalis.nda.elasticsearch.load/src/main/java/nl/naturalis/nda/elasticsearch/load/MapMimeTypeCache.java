@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a {@link TreeMap} as
- * backbone for the cache.
+ * backbone for the mime type cache.
  * 
  * @author Ayco Holleman
  * @created Aug 5, 2015
@@ -41,7 +41,7 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 
 	protected int buildCache(File cacheFile)
 	{
-		cache = new TreeMap<String, String>();
+		cache = new TreeMap<>();
 		LineNumberReader lnr = null;
 		ZipInputStream zis = null;
 		try {
@@ -64,8 +64,7 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 			throw new RuntimeException(e);
 		}
 		finally {
-			IOUtil.close(lnr);
-			IOUtil.close(zis);
+			IOUtil.close(lnr,zis);
 		}
 		return cache.size();
 	}

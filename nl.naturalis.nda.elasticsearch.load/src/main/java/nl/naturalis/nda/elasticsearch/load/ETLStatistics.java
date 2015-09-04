@@ -65,6 +65,43 @@ public class ETLStatistics {
 	 * The number of objects that made it to ElasticSearch.
 	 */
 	public int objectsIndexed;
+	/**
+	 * The number of objects that passed validation
+	 */
+	public int objectsAccepted;
+
+	private boolean useObjectsAccepted;
+
+	/**
+	 * Determines which counter to use for successfully transformed data.
+	 * Ordinarily the following rule applies:
+	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}
+	 * . In this case the transformer provides the first two statistics while
+	 * the loader provides the last statistic. ETL programs for which this rule
+	 * applies don't need to (and don't) keep track of the
+	 * {@code objectsAccepted} counter. However, if a data source is only used
+	 * to add children (nested objects) to an existing parent document, this
+	 * rule no longer applies. The rule that applies then is:
+	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}
+	 * . In this case the transformer provides all three statistics and the
+	 * number of objects indexed is more or less meaningless. If a document has
+	 * 10 nested child documents, the document may be re-indexed anywhere
+	 * between 1 and 10 times, depending on how far apart the CSV/XML records
+	 * containing the children were (in case of adjacent records they are added
+	 * all at once to the parent document, resulting in just one index request
+	 * for 10 records).
+	 * 
+	 * @param b
+	 */
+	public void setUseObjectsAccepted(boolean b)
+	{
+		this.useObjectsAccepted = b;
+	}
+
+	public boolean isUseObjectsAccepted()
+	{
+		return useObjectsAccepted;
+	}
 
 	/**
 	 * Reset all counters
@@ -79,6 +116,7 @@ public class ETLStatistics {
 		objectsSkipped = 0;
 		objectsRejected = 0;
 		objectsIndexed = 0;
+		objectsAccepted = 0;
 	}
 
 	/**
@@ -98,6 +136,7 @@ public class ETLStatistics {
 		objectsSkipped += other.objectsSkipped;
 		objectsRejected += other.objectsRejected;
 		objectsIndexed += other.objectsIndexed;
+		objectsAccepted += other.objectsAccepted;
 	}
 
 	/**
@@ -107,7 +146,7 @@ public class ETLStatistics {
 	 */
 	public void logStatistics(Logger logger)
 	{
-		logStatistics(logger, "Objects");
+		logStatistics(logger, null);
 	}
 
 	/**
@@ -120,22 +159,37 @@ public class ETLStatistics {
 	public void logStatistics(Logger logger, String niceName)
 	{
 		logger.info(" ");
-		String title = niceName.toUpperCase() + " IMPORT";
-		logger.info(pad(title, 38));
+		if (niceName != null) {
+			String title = niceName.toUpperCase() + " IMPORT";
+			logger.info(pad(title, 38));
+		}
+		else {
+			niceName = "Objects";
+		}
 		logger.info("=====================================");
 		logger.info(statistic("Extraction/parse failures", badInput));
 		logger.info(" ");
 		logger.info(statistic("Records skipped", recordsSkipped));
-		logger.info(statistic("Records investigated", recordsAccepted));
+		logger.info(statistic("Records accepted", recordsAccepted));
 		logger.info(statistic("Records rejected", recordsRejected));
 		logger.info("------------------------------------- +");
 		logger.info(statistic("Records processed", recordsProcessed));
+
 		logger.info(" ");
-		logger.info(statistic(niceName, "indexed", objectsIndexed));
 		logger.info(statistic(niceName, "skipped", objectsSkipped));
+		if (useObjectsAccepted)
+			logger.info(statistic(niceName, "accepted", objectsAccepted));
+		else
+			logger.info(statistic(niceName, "indexed", objectsIndexed));
 		logger.info(statistic(niceName, "rejected", objectsRejected));
 		logger.info("------------------------------------- +");
 		logger.info(statistic(niceName, "processed", objectsProcessed));
+
+		if (useObjectsAccepted) {
+			logger.info(" ");
+			logger.info(statistic("ElasticSearch index requests", objectsIndexed));
+		}
+
 		logger.info("=====================================");
 		logger.info(" ");
 	}

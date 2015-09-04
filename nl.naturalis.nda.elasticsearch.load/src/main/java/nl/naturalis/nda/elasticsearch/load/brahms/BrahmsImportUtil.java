@@ -8,7 +8,7 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -28,7 +28,6 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
-import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransferUtil;
 
@@ -40,11 +39,9 @@ class BrahmsImportUtil {
 	static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
 	static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
-
 	private BrahmsImportUtil()
 	{
 	}
-
 
 	static File[] getCsvFiles()
 	{
@@ -65,7 +62,6 @@ class BrahmsImportUtil {
 			f.renameTo(new File(f.getAbsolutePath() + ext));
 		}
 	}
-
 
 	static void removeBackupExtension()
 	{
@@ -117,27 +113,27 @@ class BrahmsImportUtil {
 		}
 		catch (Exception e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s", year, month, day, e.getMessage()));
+				String fmt = "Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s";
+				logger.debug(String.format(fmt, year, month, day, e.getMessage()));
 			}
 			return null;
 		}
 	}
 
-
 	static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
 	{
 		final SpecimenIdentification identification = new SpecimenIdentification();
-		String s = CSVImportUtil.val(record, BrahmsCsvField.DETBY.ordinal());
+		String s = val(record, DETBY);
 		if (s != null) {
 			identification.addIdentifier(new Agent(s));
 		}
-		s = CSVImportUtil.val(record, BrahmsCsvField.VERNACULAR.ordinal());
+		s = val(record, VERNACULAR);
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
-		String y = CSVImportUtil.val(record, BrahmsCsvField.YEARIDENT.ordinal());
-		String m = CSVImportUtil.val(record, BrahmsCsvField.MONTHIDENT.ordinal());
-		String d = CSVImportUtil.val(record, BrahmsCsvField.DAYIDENT.ordinal());
+		String y = val(record, YEARIDENT);
+		String m = val(record, MONTHIDENT);
+		String d = val(record, DAYIDENT);
 		identification.setDateIdentified(getDate(y, m, d));
 		ScientificName sn = getScientificName(record);
 		DefaultClassification dc = getDefaultClassification(record, sn);
@@ -148,14 +144,13 @@ class BrahmsImportUtil {
 		return identification;
 	}
 
-
 	static ScientificName getScientificName(CSVRecord record)
 	{
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(CSVImportUtil.val(record, BrahmsCsvField.SPECIES.ordinal()));
+		sn.setFullScientificName(val(record, SPECIES));
 		sn.setAuthorshipVerbatim(getAuthor(record));
-		sn.setGenusOrMonomial(CSVImportUtil.val(record, BrahmsCsvField.GENUS.ordinal()));
-		sn.setSpecificEpithet(CSVImportUtil.val(record, BrahmsCsvField.SP1.ordinal()));
+		sn.setGenusOrMonomial(val(record, GENUS));
+		sn.setSpecificEpithet(val(record, SP1));
 		sn.setInfraspecificMarker(getInfraspecificMarker(record));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
 		if (sn.getFullScientificName() == null) {
@@ -191,18 +186,16 @@ class BrahmsImportUtil {
 		return sn;
 	}
 
-
 	static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
 	{
 		DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
 		// Phylum deliberately not set
-		dc.setClassName(CSVImportUtil.val(record, BrahmsCsvField.FAMCLASS.ordinal()));
-		dc.setOrder(CSVImportUtil.val(record, BrahmsCsvField.ORDER.ordinal()));
-		dc.setFamily(CSVImportUtil.val(record, BrahmsCsvField.FAMILY.ordinal()));
+		dc.setClassName(val(record, FAMCLASS));
+		dc.setOrder(val(record, ORDER));
+		dc.setFamily(val(record, FAMILY));
 		return dc;
 	}
-
 
 	static List<Monomial> getSystemClassification(DefaultClassification dc)
 	{
@@ -228,46 +221,42 @@ class BrahmsImportUtil {
 		return sc;
 	}
 
-
 	private static String getAuthor(CSVRecord record)
 	{
-		if (CSVImportUtil.val(record, BrahmsCsvField.SP3.ordinal()) == null) {
-			if (CSVImportUtil.val(record, BrahmsCsvField.SP2.ordinal()) == null) {
-				return CSVImportUtil.val(record, BrahmsCsvField.AUTHOR1.ordinal());
+		if (val(record, SP3) == null) {
+			if (val(record, SP2) == null) {
+				return val(record, AUTHOR1);
 			}
-			return CSVImportUtil.val(record, BrahmsCsvField.AUTHOR2.ordinal());
+			return val(record, AUTHOR2);
 		}
-		return CSVImportUtil.val(record, BrahmsCsvField.AUTHOR3.ordinal());
+		return val(record, AUTHOR3);
 	}
-
 
 	private static String getInfraspecificMarker(CSVRecord record)
 	{
-		String s = CSVImportUtil.val(record, BrahmsCsvField.RANK2.ordinal());
-		return s == null ? CSVImportUtil.val(record, BrahmsCsvField.RANK1.ordinal()) : s;
+		String s = val(record, RANK2);
+		return s == null ? val(record, RANK1) : s;
 	}
-
 
 	private static String getInfraspecificEpithet(CSVRecord record)
 	{
-		String s = CSVImportUtil.val(record, BrahmsCsvField.SP3.ordinal());
-		return s == null ? CSVImportUtil.val(record, BrahmsCsvField.SP2.ordinal()) : s;
+		String s = val(record, SP3);
+		return s == null ? val(record, SP2) : s;
 	}
-
 
 	private static String getTaxonRank(CSVRecord record)
 	{
-		if (CSVImportUtil.val(record, BrahmsCsvField.SP3.ordinal()) == null) {
-			if (CSVImportUtil.val(record, BrahmsCsvField.SP2.ordinal()) == null) {
-				if (CSVImportUtil.val(record, BrahmsCsvField.SP1.ordinal()) == null) {
+		if (val(record, SP3) == null) {
+			if (val(record, SP2) == null) {
+				if (val(record, SP1) == null) {
 					// TODO: replace literal with DefaultClassification.Rank
 					return "genus";
 				}
 				return "species";
 			}
-			return CSVImportUtil.val(record, BrahmsCsvField.RANK1.ordinal());
+			return val(record, RANK1);
 		}
-		return CSVImportUtil.val(record, BrahmsCsvField.RANK2.ordinal());
+		return val(record, RANK2);
 	}
 
 	private static File getDataDir()
@@ -275,14 +264,13 @@ class BrahmsImportUtil {
 		return Registry.getInstance().getConfig().getDirectory("brahms.csv_dir");
 	}
 
-
 	static ESGatheringEvent getGatheringEvent(CSVRecord record)
 	{
 		final ESGatheringEvent ge = new ESGatheringEvent();
-		ge.setWorldRegion(val(record, BrahmsCsvField.CONTINENT.ordinal()));
+		ge.setWorldRegion(val(record, CONTINENT));
 		ge.setContinent(ge.getWorldRegion());
-		ge.setCountry(val(record, BrahmsCsvField.COUNTRY.ordinal()));
-		ge.setProvinceState(val(record, BrahmsCsvField.MAJORAREA.ordinal()));
+		ge.setCountry(val(record, COUNTRY));
+		ge.setProvinceState(val(record, MAJORAREA));
 		StringBuilder sb = new StringBuilder(50);
 		if (ge.getWorldRegion() != null) {
 			sb.append(ge.getWorldRegion());
@@ -299,7 +287,7 @@ class BrahmsImportUtil {
 			}
 			sb.append(ge.getProvinceState());
 		}
-		String locNotes = val(record, BrahmsCsvField.LOCNOTES.ordinal());
+		String locNotes = val(record, LOCNOTES);
 		if (locNotes != null) {
 			ge.setLocality(locNotes);
 			if (sb.length() != 0) {
@@ -308,30 +296,30 @@ class BrahmsImportUtil {
 			sb.append(locNotes);
 		}
 		ge.setLocalityText(sb.toString());
-		String y = val(record, BrahmsCsvField.YEAR.ordinal());
-		String m = val(record, BrahmsCsvField.MONTH.ordinal());
-		String d = val(record, BrahmsCsvField.DAY.ordinal());
+		String y = val(record, YEAR);
+		String m = val(record, MONTH);
+		String d = val(record, DAY);
 		Date date = getDate(y, m, d);
 		ge.setDateTimeBegin(date);
 		ge.setDateTimeEnd(date);
-		Double lat = getDouble(record, BrahmsCsvField.LATITUDE.ordinal());
-		Double lon = getDouble(record, BrahmsCsvField.LONGITUDE.ordinal());
+		Double lat = getDouble(record, LATITUDE);
+		Double lon = getDouble(record, LONGITUDE);
 		if (lat == 0D && lon == 0D) {
 			lat = null;
 			lon = null;
 		}
 		if (lon != null && (lon < -180D || lon > 180D)) {
-			BrahmsSpecimensImporter.logger.error("Invalid longitude: " + lon);
+			BrahmsSpecimenImporter.logger.error("Invalid longitude: " + lon);
 			lon = null;
 		}
 		if (lat != null && (lat < -90D || lat > 90D)) {
-			BrahmsSpecimensImporter.logger.error("Invalid latitude: " + lat);
+			BrahmsSpecimenImporter.logger.error("Invalid latitude: " + lat);
 			lat = null;
 		}
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
-		String collector = val(record, BrahmsCsvField.COLLECTOR.ordinal());
+		String collector = val(record, COLLECTOR);
 		if (collector != null) {
 			ge.setGatheringPersons(Arrays.asList(new Person(collector)));
 		}

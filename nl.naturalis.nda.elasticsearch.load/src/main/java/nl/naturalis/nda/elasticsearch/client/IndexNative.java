@@ -1,5 +1,8 @@
 package nl.naturalis.nda.elasticsearch.client;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +30,9 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.get.MultiGetItemResponse;
+import org.elasticsearch.action.get.MultiGetRequestBuilder;
+import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
@@ -43,9 +49,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Wrapper around ElasticSearch's Native (Java) client. Since the API seems to
- * have some quirks, we may have to resort to the {@link IndexREST}, which
- * "simply" uses the REST API of ElasticSearch.
+ * Wrapper around ElasticSearch's Native (Java) client. This is the de facto
+ * implementation used throughout this library.
  * 
  * @author ayco_holleman
  * 
@@ -58,7 +63,6 @@ public class IndexNative implements Index {
 	final Client esClient;
 	final IndicesAdminClient admin;
 	final String indexName;
-
 
 	/**
 	 * Create an instance manipulating the specified index using the specified
@@ -77,7 +81,6 @@ public class IndexNative implements Index {
 		admin = esClient.admin().indices();
 	}
 
-
 	@Override
 	public boolean exists()
 	{
@@ -87,7 +90,6 @@ public class IndexNative implements Index {
 		IndicesExistsResponse response = irb.execute().actionGet();
 		return response.isExists();
 	}
-
 
 	@Override
 	public boolean typeExists(String type)
@@ -99,7 +101,6 @@ public class IndexNative implements Index {
 		TypesExistsResponse response = terb.execute().actionGet();
 		return response.isExists();
 	}
-
 
 	@Override
 	public String describe()
@@ -115,7 +116,6 @@ public class IndexNative implements Index {
 		}
 	}
 
-
 	@Override
 	public String describeAllIndices()
 	{
@@ -123,20 +123,18 @@ public class IndexNative implements Index {
 		return null;
 	}
 
-
 	@Override
 	public void create()
 	{
 		create(1, 0);
 	}
 
-
 	@Override
 	public void create(int numShards, int numReplicas)
 	{
 		logger.info("Creating index " + indexName);
 		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
-		HashMap<String, Object> settings = new HashMap<String, Object>();
+		HashMap<String, Object> settings = new HashMap<>();
 		settings.put("number_of_shards", numShards);
 		settings.put("number_of_replicas", numReplicas);
 		request.setSettings(settings);
@@ -146,7 +144,6 @@ public class IndexNative implements Index {
 		}
 		logger.info("Index created");
 	}
-
 
 	@Override
 	public void create(String settings)
@@ -160,7 +157,6 @@ public class IndexNative implements Index {
 		}
 		logger.info("Index created");
 	}
-
 
 	/**
 	 * Deletes the index for which this client was set up.
@@ -186,7 +182,6 @@ public class IndexNative implements Index {
 		}
 	}
 
-
 	@Override
 	public void deleteAllIndices()
 	{
@@ -204,7 +199,6 @@ public class IndexNative implements Index {
 		}
 	}
 
-
 	public void addType(String name, String mapping)
 	{
 		logger.info(String.format("Creating type \"%s\"", name));
@@ -216,7 +210,6 @@ public class IndexNative implements Index {
 			throw new IndexException(String.format("Failed to create type \"%s\"", name));
 		}
 	}
-
 
 	@Override
 	public boolean deleteType(String name)
@@ -239,7 +232,6 @@ public class IndexNative implements Index {
 		}
 	}
 
-
 	public <T> T get(String type, String id, Class<T> targetClass)
 	{
 		GetRequestBuilder grb = esClient.prepareGet();
@@ -249,7 +241,7 @@ public class IndexNative implements Index {
 		GetResponse response = grb.execute().actionGet();
 		if (response.isExists()) {
 			try {
-				return objectMapper.readValue(response.getSourceAsString(), targetClass);
+				return objectMapper.readValue(response.getSourceAsBytes(), targetClass);
 			}
 			catch (Exception e) {
 				throw new IndexException(e);
@@ -258,38 +250,30 @@ public class IndexNative implements Index {
 		return null;
 	}
 
-
-//	/*
-//	 * Create by Reinier Description: for the DwCA export Date: 29-01-2015
-//	 */
-//	public <T> T getAll(String type, String id, Class<T> targetClass)
-//	{
-//		GetRequestBuilder reqbld = esClient.prepareGet();
-//
-//		/* Sets the index of the document to fetch. */
-//		reqbld.setIndex(indexName);
-//
-//		/* Set the type of the document to fetch */
-//		reqbld.setType(type);
-//
-//		reqbld.setId(id);
-//
-//		/* Execute the Get Request builder */
-//		GetResponse resp = reqbld.execute().actionGet();
-//
-//		/* if result exists from the response */
-//		if (resp.isExists()) {
-//			try {
-//				/* read from the file and convert it to the targetClass */
-//				return objectMapper.readValue(resp.getSourceAsString(), targetClass);
-//			}
-//			catch (Exception e) {
-//				throw new IndexException(e);
-//			}
-//		}
-//		return null;
-//	}
-
+	public <T> List<T> get(String type, Collection<String> ids, Class<T> targetClass)
+	{
+		MultiGetRequestBuilder mgrb = esClient.prepareMultiGet();
+		mgrb.add(indexName, type, ids);
+		MultiGetResponse response = mgrb.execute().actionGet();
+		ArrayList<T> result = new ArrayList<>(ids.size());
+		try {
+			for (MultiGetItemResponse item : response) {
+				if (!item.isFailed()) {
+					byte[] bytes = item.getResponse().getSourceAsBytes();
+					if (bytes != null) {
+						result.add(objectMapper.readValue(bytes, targetClass));
+					}
+				}
+				else {
+					logger.error(item.getFailure().getMessage());
+				}
+			}
+		}
+		catch (IOException e) {
+			throw new IndexException(e);
+		}
+		return result;
+	}
 
 	@Override
 	public boolean deleteDocument(String type, String id)
@@ -301,7 +285,6 @@ public class IndexNative implements Index {
 		DeleteResponse response = drb.execute().actionGet();
 		return response.isFound();
 	}
-
 
 	@Override
 	public void deleteWhere(String type, String field, String value)
@@ -315,7 +298,6 @@ public class IndexNative implements Index {
 		request.execute().actionGet();
 	}
 
-
 	@Override
 	public void saveDocument(String type, String json, String id)
 	{
@@ -324,13 +306,11 @@ public class IndexNative implements Index {
 		irb.execute().actionGet();
 	}
 
-
 	@Override
 	public void saveObject(String type, Object obj, String id)
 	{
 		saveObject(type, obj, id, null);
 	}
-
 
 	@Override
 	public void saveObject(String type, Object obj, String id, String parentId)
@@ -353,20 +333,17 @@ public class IndexNative implements Index {
 		irb.execute().actionGet();
 	}
 
-
 	@Override
 	public void saveObjects(String type, List<?> objs)
 	{
 		saveObjects(type, objs, null, null);
 	}
 
-
 	@Override
 	public void saveObjects(String type, List<?> objs, List<String> ids)
 	{
 		saveObjects(type, objs, ids, null);
 	}
-
 
 	@Override
 	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
@@ -394,7 +371,6 @@ public class IndexNative implements Index {
 			throw new RuntimeException(message);
 		}
 	}
-
 
 	public Client getClient()
 	{

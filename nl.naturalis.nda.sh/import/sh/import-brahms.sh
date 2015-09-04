@@ -10,7 +10,7 @@ action="${1}"
 
 if [ "$action" = specimens ]
 then
-    java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsSpecimensImporter
+    java -cp ${classpath} ${JAVA_OPTS} ${loadPackage}.brahms.BrahmsSpecimenImporter
 	echo "WARNING: When loading only specimens or only multimedia file backup is disabled"
 elif [ "$action" = multimedia ]
 then

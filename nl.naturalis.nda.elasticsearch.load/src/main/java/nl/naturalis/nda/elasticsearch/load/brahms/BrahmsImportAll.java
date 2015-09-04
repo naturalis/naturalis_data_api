@@ -47,7 +47,7 @@ public class BrahmsImportAll {
 	 */
 	public void importPerType() throws Exception
 	{
-		BrahmsSpecimensImporter specimenImporter = new BrahmsSpecimensImporter();
+		BrahmsSpecimenImporter specimenImporter = new BrahmsSpecimenImporter();
 		specimenImporter.importCsvFiles();
 		BrahmsMultiMediaImporter multiMediaImporter = new BrahmsMultiMediaImporter();
 		multiMediaImporter.importCsvFiles();

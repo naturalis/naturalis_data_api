@@ -1,11 +1,17 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static org.domainobject.util.StringUtil.lpad;
+import static org.domainobject.util.StringUtil.rpad;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor.NoSuchFieldException;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
 /**
+ * 
+ * Utility class for working with commons-csv. Used by all CSV import programs
+ * (Brahms, CoL).
+ * 
  * @author Ayco Holleman
  *
  */
@@ -18,6 +24,21 @@ public class CSVImportUtil {
 
 	private CSVImportUtil()
 	{
+	}
+
+	/**
+	 * Get the whitespace-trimmed value of the field whose position within the
+	 * CSV record is determined by the ordinal value of the specified
+	 * {@code Enum} value. Returns {@code null} if the value (after being
+	 * whitespace-trimmed) is an empty {@code String}.
+	 * 
+	 * @param record
+	 * @param e
+	 * @return
+	 */
+	public static String val(CSVRecord record, Enum<?> e)
+	{
+		return val(record, e.ordinal());
 	}
 
 	/**
@@ -38,9 +59,9 @@ public class CSVImportUtil {
 		throw new NoSuchFieldException(record, fieldNo);
 	}
 
-	public static String val(CSVRecord record, Enum<?> e)
+	public static int ival(CSVRecord record, Enum<?> e)
 	{
-		return val(record, e.ordinal());
+		return ival(record, e.ordinal());
 	}
 
 	/**
@@ -68,10 +89,6 @@ public class CSVImportUtil {
 		}
 	}
 
-	public static int ival(CSVRecord record, Enum<?> e)
-	{
-		return ival(record, e.ordinal());
-	}
 	/**
 	 * Returns the value of the specified field as a {@code float}. This method
 	 * does not throw an exception if the field does not contain a valid
@@ -147,6 +164,11 @@ public class CSVImportUtil {
 		}
 	}
 
+	public static Float getFloat(CSVRecord record, Enum<?> e)
+	{
+		return getFloat(record, e.ordinal());
+	}
+
 	/**
 	 * Returns the value of the specified field as a {@code Double}. This method
 	 * does not throw an exception if the field does not contain a valid
@@ -172,18 +194,9 @@ public class CSVImportUtil {
 		}
 	}
 
-	public static Float getFloat(CSVRecord record, Enum<?> e)
+	public static Double getDouble(CSVRecord record, Enum<?> e)
 	{
-		String s = val(record, e.ordinal());
-		if (s == null)
-			return null;
-		try {
-			return Float.valueOf(s);
-		}
-		catch (NumberFormatException exc) {
-			logger.warn(String.format(MSG_INVALID_NUMBER, e, s));
-			return null;
-		}
+		return getDouble(record, e.ordinal());
 	}
 
 	/**
@@ -209,6 +222,11 @@ public class CSVImportUtil {
 			logger.warn(String.format(MSG_INVALID_NUMBER, fieldNo, s));
 			return null;
 		}
+	}
+
+	public static String getDefaultMessagePrefix(int lineNo, String objectID)
+	{
+		return "Line " + lpad(lineNo, 6, '0', " | ") + rpad(objectID, 16, " | ");
 	}
 
 }

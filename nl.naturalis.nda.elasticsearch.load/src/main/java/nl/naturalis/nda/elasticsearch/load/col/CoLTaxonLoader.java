@@ -19,10 +19,9 @@ public class CoLTaxonLoader extends ElasticSearchLoader<ESTaxon> {
 		return Registry.getInstance().getNbaIndexManager();
 	}
 
-	public CoLTaxonLoader(ETLStatistics stats)
+	public CoLTaxonLoader(ETLStatistics stats, int treshold)
 	{
-		super(indexManager(), LUCENE_TYPE_TAXON, 1000, stats);
-
+		super(indexManager(), LUCENE_TYPE_TAXON, treshold, stats);
 	}
 
 	@Override

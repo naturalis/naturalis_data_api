@@ -2,6 +2,15 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import org.slf4j.Logger;
 
+/**
+ * Produces an implementation of a {@link MimeTypeCache} based on the value of a
+ * system property named "mimetypecache.type". If absent, or if it has value
+ * "map", a {@link MapMimeTypeCache} is returned to the client, otherwise an
+ * {@link ArrayMimeTypeCache}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class MimeTypeCacheFactory {
 
 	private static final String CACHE_FILE_NAME = "mimetypes.cache";
@@ -9,7 +18,11 @@ public class MimeTypeCacheFactory {
 
 	private static MimeTypeCacheFactory instance;
 
-
+	/**
+	 * Get an instance of the factory class.
+	 * 
+	 * @return
+	 */
 	public static MimeTypeCacheFactory getInstance()
 	{
 		if (instance == null) {
@@ -19,7 +32,6 @@ public class MimeTypeCacheFactory {
 	}
 
 	private final MimeTypeCache cache;
-
 
 	private MimeTypeCacheFactory()
 	{
@@ -39,12 +51,15 @@ public class MimeTypeCacheFactory {
 		}
 	}
 
-
+	/**
+	 * Get a mime type cache instance.
+	 * 
+	 * @return
+	 */
 	public MimeTypeCache getCache()
 	{
 		return cache;
 	}
-
 
 	private static void logType(String propName, String propVal)
 	{

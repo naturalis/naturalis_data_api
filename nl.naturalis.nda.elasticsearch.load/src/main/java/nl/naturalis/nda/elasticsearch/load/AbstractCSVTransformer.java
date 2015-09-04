@@ -1,13 +1,20 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import static org.domainobject.util.StringUtil.lpad;
-import static org.domainobject.util.StringUtil.rpad;
-
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Base class for Transformers that take a commons-csv CSVRecord as input and
+ * produce an ElasticSearch object (in practice either ESSpecimen,
+ * ESMultiMediaObject or ESTaxon).
+ * 
+ * @author Ayco Holleman
+ *
+ * @param <T>
+ *            The type of ES object produced by this transformer
+ */
 public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 
 	protected final ETLStatistics stats;
@@ -35,14 +42,36 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 		return stats;
 	}
 
+	/**
+	 * Whether or not error suppression is on.
+	 * 
+	 * @return
+	 */
 	public boolean isSuppressErrors()
 	{
 		return suppressErrors;
 	}
 
+	/**
+	 * Whether or not to suppress errors. With error suppression, INFO messages
+	 * are let through while ERROR and WARN messages are suppressed. This may
+	 * make the log file more readable if you expect huge amounts of well-known,
+	 * anticipated errors.
+	 * 
+	 * @param suppressErrors
+	 */
 	public void setSuppressErrors(boolean suppressErrors)
 	{
 		this.suppressErrors = suppressErrors;
+	}
+
+	protected void handleError(Throwable t)
+	{
+		stats.objectsRejected++;
+		if (!suppressErrors)
+			error(t.toString());
+		if (logger.isDebugEnabled())
+			logger.debug(t.toString(), t);
 	}
 
 	protected void error(String pattern, Object... args)
@@ -71,7 +100,7 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 
 	private String messagePrefix()
 	{
-		return "Line " + lpad(recInf.getLineNumber(), 6, '0', " | ") + rpad(objectID, 16, " | ");
+		return CSVImportUtil.getDefaultMessagePrefix(recInf.getLineNumber(), objectID);
 	}
 
 }

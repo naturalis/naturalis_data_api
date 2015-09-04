@@ -68,14 +68,14 @@ public class Person extends Agent {
 		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
 	}
 
-	private static boolean eq(Object obj0, Object obj2)
+	private static boolean eq(Object obj0, Object obj1)
 	{
 		if (obj0 == null) {
-			if (obj2 == null) {
+			if (obj1 == null) {
 				return true;
 			}
 			return false;
 		}
-		return obj2 == null ? false : obj0.equals(obj2);
+		return obj1 == null ? false : obj0.equals(obj1);
 	}
 }

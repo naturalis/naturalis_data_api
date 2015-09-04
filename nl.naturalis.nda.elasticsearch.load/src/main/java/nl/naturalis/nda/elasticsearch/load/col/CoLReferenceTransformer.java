@@ -96,10 +96,6 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 		}
 		catch (Throwable t) {
 			handleError(t);
-			if(t.getClass() == NullPointerException.class) {
-				// Really, really don't wanna have those
-				throw t;
-			}
 		}
 		return result;
 	}

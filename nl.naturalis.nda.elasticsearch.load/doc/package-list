@@ -1,0 +1,8 @@
+nl.naturalis.nda.elasticsearch.client
+nl.naturalis.nda.elasticsearch.load
+nl.naturalis.nda.elasticsearch.load.brahms
+nl.naturalis.nda.elasticsearch.load.col
+nl.naturalis.nda.elasticsearch.load.crs
+nl.naturalis.nda.elasticsearch.load.normalize
+nl.naturalis.nda.elasticsearch.load.nsr
+nl.naturalis.nda.elasticsearch.mock

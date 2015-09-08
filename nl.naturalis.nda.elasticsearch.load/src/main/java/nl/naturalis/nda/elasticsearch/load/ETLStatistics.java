@@ -76,20 +76,23 @@ public class ETLStatistics {
 	 * Determines which counter to use for successfully transformed data.
 	 * Ordinarily the following rule applies:
 	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}
-	 * . In this case the transformer provides the first two statistics while
-	 * the loader provides the last statistic. ETL programs for which this rule
-	 * applies don't need to (and don't) keep track of the
-	 * {@code objectsAccepted} counter. However, if a data source is only used
-	 * to add children (nested objects) to an existing parent document, this
-	 * rule no longer applies. The rule that applies then is:
+	 * . In this case {@code objectsIndexed} is the number of successfully
+	 * transformed data. The transformer keeps track of {@code objectsSkipped}
+	 * and {@code objectsRejected} while the loader keeps track of
+	 * {@code objectsIndexed}. ETL programs for which this rule applies don't
+	 * need to keep track of the {@code objectsAccepted} counter. However, if a
+	 * data source is only used to add children (nested objects) to an already
+	 * existing parent document, this rule no longer applies. The rule that
+	 * applies then is:
 	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}
 	 * . In this case the transformer provides all three statistics and the
-	 * number of objects indexed is more or less meaningless. If a document has
-	 * 10 nested child documents, the document may be re-indexed anywhere
-	 * between 1 and 10 times, depending on how far apart the CSV/XML records
-	 * containing the children were (in case of adjacent records they are added
-	 * all at once to the parent document, resulting in just one index request
-	 * for 10 records).
+	 * number of indexations is more or less meaningless. If a data source
+	 * provides 10 children for a particular parent document, the parent
+	 * document will be re-indexed anywhere between 1 and 10 times during the
+	 * course of the program, depending on how far apart the CSV/XML records
+	 * containing the children were (if they all came one after another in the
+	 * data source, they are added all at once to the parent document, resulting
+	 * in just one index request for 10 child records).
 	 * 
 	 * @param b
 	 */

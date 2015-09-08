@@ -123,6 +123,10 @@ public class BioportalSpecimenDao extends AbstractDao {
     public SearchResultSet<Specimen> specimenSearch(QueryParams params) {
         //Force OR, cause AND will never be used in simple search
         if (params.containsKey("_search")) {
+        	/*
+        	 * If that's what we want, we should first remove any other _andOr params
+        	 */
+        	params.remove("_andOr"); /* Ayco */
             params.add("_andOr", "OR");
         }
 
@@ -190,6 +194,7 @@ public class BioportalSpecimenDao extends AbstractDao {
 
     private ResultGroupSet<Specimen, String> doSpecimenNameSearch(QueryParams params, boolean highlighting) {
         if (params.containsKey("_search")) {
+        	params.remove("_andOr"); /* Ayco */
             params.add("_andOr", "OR");
         }
         String sessionId = params.getParam("_session_id");

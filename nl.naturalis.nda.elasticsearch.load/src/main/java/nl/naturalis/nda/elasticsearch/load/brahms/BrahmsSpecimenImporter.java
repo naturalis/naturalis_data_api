@@ -18,6 +18,12 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Manages the import of Brahms specimens.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class BrahmsSpecimenImporter {
 
 	public static void main(String[] args) throws Exception
@@ -59,29 +65,30 @@ public class BrahmsSpecimenImporter {
 		sStats.logStatistics(logger, "Specimens");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
-	
+
 	private void processFile(File f, ETLStatistics globalStats)
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
 		ETLStatistics myStats = new ETLStatistics();
-		BrahmsSpecimenLoader specimenLoader = null;
+		CSVExtractor extractor = null;
+		BrahmsSpecimenTransformer transformer = null;
+		BrahmsSpecimenLoader loader = null;
 		try {
-			BrahmsSpecimenTransformer specimenTransformer = new BrahmsSpecimenTransformer(myStats);
-			specimenLoader = new BrahmsSpecimenLoader(myStats);
-			CSVExtractor extractor = createExtractor(f, myStats);
+			extractor = createExtractor(f, myStats);
+			transformer = new BrahmsSpecimenTransformer(myStats);
+			loader = new BrahmsSpecimenLoader(myStats);
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
-				specimenLoader.load(specimenTransformer.transform(rec));
+				loader.load(transformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}
 			}
 		}
 		finally {
-			// Important! Flushes the remaining objects in the ES bulk request batch.
-			IOUtil.close(specimenLoader);
+			IOUtil.close(loader);
 		}
 		myStats.logStatistics(logger, "Specimens");
 		globalStats.add(myStats);
@@ -89,7 +96,6 @@ public class BrahmsSpecimenImporter {
 		logger.info(" ");
 		logger.info(" ");
 	}
-	
 
 	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)
 	{

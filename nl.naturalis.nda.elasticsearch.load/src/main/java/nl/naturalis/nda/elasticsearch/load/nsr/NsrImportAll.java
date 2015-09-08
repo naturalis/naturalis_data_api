@@ -76,7 +76,7 @@ public class NsrImportAll {
 		if (backup) {
 			NsrImportUtil.backupXmlFiles();
 		}
-		logger.info(getClass().getSimpleName() + " took " + LoadUtil.getDuration(start));
+		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
 

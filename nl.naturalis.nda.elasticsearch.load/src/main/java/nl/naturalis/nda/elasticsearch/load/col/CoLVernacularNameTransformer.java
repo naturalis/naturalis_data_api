@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameCsvField.taxonID;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameCsvField.vernacularName;

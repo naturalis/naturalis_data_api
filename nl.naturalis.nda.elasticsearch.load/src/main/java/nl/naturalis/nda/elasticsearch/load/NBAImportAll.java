@@ -13,20 +13,20 @@ import org.slf4j.Logger;
 
 /**
  * Utility class for creating/managing/updating the NBA document store. Provides
- * a method for doing a full import.
+ * a method for bootstrapping the NBA index (i.e. re-create it from scratch) and
+ * for doing a full import.
  * 
  * @author ayco_holleman
  * 
  */
-public class NDAIndexManager {
+public class NBAImportAll {
 
 	public static void main(String[] args)
 	{
-		long start = System.currentTimeMillis();
 		IndexNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
-			NDAIndexManager indexManager = new NDAIndexManager(index);
+			NBAImportAll indexManager = new NBAImportAll(index);
 			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
 				indexManager.bootstrap();
 			}
@@ -41,7 +41,6 @@ public class NDAIndexManager {
 			if (index != null) {
 				index.getClient().close();
 			}
-			logger.info("Total duration for full import: " + LoadUtil.getDuration(start));
 		}
 	}
 
@@ -49,62 +48,73 @@ public class NDAIndexManager {
 	public static final String LUCENE_TYPE_SPECIMEN = "Specimen";
 	public static final String LUCENE_TYPE_MULTIMEDIA_OBJECT = "MultiMediaObject";
 
-	private static final Logger logger = Registry.getInstance().getLogger(NDAIndexManager.class);
+	private static final Logger logger = Registry.getInstance().getLogger(NBAImportAll.class);
 
 	private final IndexNative index;
 
-
-	public NDAIndexManager(IndexNative index)
+	public NBAImportAll(IndexNative index)
 	{
 		this.index = index;
 	}
 
-
+	/**
+	 * Kicks of all individual import programs in the following order: NSR,
+	 * Brahms, CRS, CoL.
+	 */
 	public void importAll()
 	{
 
-		logger.info("[>--- Starting NSR import ---<]");
-		try {
-			NsrImportAll nsrImportAll = new NsrImportAll(index);
-			nsrImportAll.importAllPerType();
-		}
-		catch (Throwable t) {
-			logger.error("NSR import Failed!");
-			logger.error(t.getMessage(), t);
-		}
+		long start = System.currentTimeMillis();
 
-		logger.info("[>--- Starting Brahms import ---<]");
 		try {
-			BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
-			brahmsImportAll.importPerFile();
-		}
-		catch (Throwable t) {
-			logger.error("Brahms import Failed!");
-			logger.error(t.getMessage(), t);
-		}
 
-		logger.info("[>--- Starting CRS import ---<]");
-		try {
-			CrsImportAll crsImportAll = new CrsImportAll(index);
-			crsImportAll.importAll();
-		}
-		catch (Throwable t) {
-			logger.error("CRS specimen import Failed!");
-			logger.error(t.getMessage(), t);
-		}
+			logger.info("[>--- Starting NSR import ---<]");
+			try {
+				NsrImportAll nsrImportAll = new NsrImportAll(index);
+				nsrImportAll.importAllPerType();
+			}
+			catch (Throwable t) {
+				logger.error(t.getMessage(), t);
+				logger.error("NSR import Failed!");
+			}
 
-		logger.info("[>--- Starting CoL import ---<]");
-		try {
-			CoLImportAll colImportAll = new CoLImportAll(index);
-			colImportAll.importAll();
+			logger.info("[>--- Starting Brahms import ---<]");
+			try {
+				BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
+				brahmsImportAll.importPerFile();
+			}
+			catch (Throwable t) {
+				logger.error(t.getMessage(), t);
+				logger.error("Brahms import Failed!");
+			}
+
+			logger.info("[>--- Starting CRS import ---<]");
+			try {
+				CrsImportAll crsImportAll = new CrsImportAll(index);
+				crsImportAll.importAll();
+			}
+			catch (Throwable t) {
+				logger.error(t.getMessage(), t);
+				logger.error("CRS specimen import Failed!");
+			}
+
+			logger.info("[>--- Starting CoL import ---<]");
+			try {
+				CoLImportAll colImportAll = new CoLImportAll(index);
+				colImportAll.importAll();
+			}
+			catch (Throwable t) {
+				logger.error(t.getMessage(), t);
+				logger.error("CoL import Failed!");
+			}
+
 		}
-		catch (Throwable t) {
-			logger.error("CoL import Failed!");
-			logger.error(t.getMessage(), t);
+		
+		finally {
+			LoadUtil.logDuration(logger, getClass(), start);
 		}
 
 	}
-
 
 	/**
 	 * Creates the NDA schema from scratch. Will delete the entire index
@@ -122,6 +132,5 @@ public class NDAIndexManager {
 		index.addType(LUCENE_TYPE_SPECIMEN, mapping);
 		mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
 		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
-		//logger.info(index.describe());
 	}
 }

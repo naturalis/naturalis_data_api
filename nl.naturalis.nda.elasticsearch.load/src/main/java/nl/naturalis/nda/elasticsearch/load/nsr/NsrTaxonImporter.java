@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 
 import java.io.File;
 import java.util.ArrayList;

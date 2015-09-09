@@ -82,7 +82,7 @@ public class CrsSpecimenLocalImporter {
 	private void importFile(File f)
 	{
 		logger.info("Processing file " + f.getName());
-		CrsSpecimenExtractor extractor = new CrsSpecimenExtractor(f, stats);
+		CrsExtractor extractor = new CrsExtractor(f, stats);
 		for (XMLRecordInfo extracted : extractor) {
 			List<ESSpecimen> transformed = transformer.transform(extracted);
 			loader.load(transformed);

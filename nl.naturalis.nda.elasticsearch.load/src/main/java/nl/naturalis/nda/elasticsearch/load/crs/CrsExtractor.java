@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class CrsSpecimenExtractor implements Iterable<XMLRecordInfo> {
+public class CrsExtractor implements Iterable<XMLRecordInfo> {
 
 	private static DocumentBuilder docBuilder;
 
@@ -38,7 +38,7 @@ public class CrsSpecimenExtractor implements Iterable<XMLRecordInfo> {
 	 * @param f
 	 * @param stats
 	 */
-	public CrsSpecimenExtractor(File f, ETLStatistics stats)
+	public CrsExtractor(File f, ETLStatistics stats)
 	{
 		this.stats = stats;
 		try {
@@ -49,7 +49,7 @@ public class CrsSpecimenExtractor implements Iterable<XMLRecordInfo> {
 		}
 	}
 
-	public CrsSpecimenExtractor(byte[] bytes, ETLStatistics stats)
+	public CrsExtractor(byte[] bytes, ETLStatistics stats)
 	{
 		this.stats = stats;
 		try {

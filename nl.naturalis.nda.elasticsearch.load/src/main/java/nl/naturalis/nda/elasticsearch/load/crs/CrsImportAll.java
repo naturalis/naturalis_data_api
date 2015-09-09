@@ -41,7 +41,7 @@ public class CrsImportAll {
 
 	public void importAll() throws Exception
 	{
-		CrsSpecimenImporter specimenImporter = new CrsSpecimenImporter(index);
+		CrsSpecimenLocalImporter specimenImporter = new CrsSpecimenLocalImporter();
 		specimenImporter.importSpecimens();
 		CrsMultiMediaImporter multimediaImporter = new CrsMultiMediaImporter(index);
 		multimediaImporter.importMultiMedia();

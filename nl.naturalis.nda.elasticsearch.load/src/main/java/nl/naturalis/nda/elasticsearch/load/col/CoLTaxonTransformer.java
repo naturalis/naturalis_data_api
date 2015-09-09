@@ -25,8 +25,13 @@ import org.slf4j.Logger;
 
 class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 
-	static final Logger logger = Registry.getInstance().getLogger(CoLTaxonTransformer.class);
-	static final List<String> allowedTaxonRanks = Arrays.asList("species", "infraspecies");
+	private static final Logger logger;
+	private static final List<String> allowedTaxonRanks;
+
+	static {
+		logger = Registry.getInstance().getLogger(CoLTaxonTransformer.class);
+		allowedTaxonRanks = Arrays.asList("species", "infraspecies");
+	}
 
 	private String colYear;
 

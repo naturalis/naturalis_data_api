@@ -158,6 +158,17 @@ public class Registry {
 	}
 
 	/**
+	 * Releases the connection to ElasticSearch. Must always be called once
+	 * you're done interacting with ElasticSearch. If the connection was not
+	 * open, this method does nothing.
+	 */
+	public void closeESClient()
+	{
+		if (esClient != null)
+			esClient.close();
+	}
+
+	/**
 	 * Get an index manager for the NBA index.
 	 * 
 	 * @return

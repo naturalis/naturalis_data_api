@@ -7,10 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,8 +26,6 @@ import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.domainobject.util.debug.BeanPrinter;
-import org.domainobject.util.http.SimpleHttpGet;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,8 +34,8 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractSpecimenImporter {
 
-	private static final ConfigObject config = Registry.getInstance().getConfig();
-	private static final Logger logger = Registry.getInstance().getLogger(AbstractSpecimenImporter.class);
+	static final ConfigObject config = Registry.getInstance().getConfig();
+	static final Logger logger = Registry.getInstance().getLogger(AbstractSpecimenImporter.class);
 	private static final int INDEXED_NOTIFIER_INTERVAL = 10000;
 
 	private final DocumentBuilder builder;
@@ -174,7 +170,7 @@ public abstract class AbstractSpecimenImporter {
 
 		do {
 			logger.info("Processing batch " + batch);
-			byte[] response = callOaiService(resumptionToken);
+			byte[] response = CrsImportUtil.callSpecimenService(resumptionToken);
 			++batch;
 			resumptionToken = index(response);
 		} while (resumptionToken != null);
@@ -196,43 +192,6 @@ public abstract class AbstractSpecimenImporter {
 			index(Files.readAllBytes(f.toPath()));
 		}
 	}
-
-	private static final SimpleDateFormat oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
-
-
-	static byte[] callOaiService(String resumptionToken)
-	{
-		String url;
-		if (resumptionToken == null) {
-			url = config.required("crs.specimens.url.initial");
-			int maxAge = config.required("crs.max_age", int.class);
-			if (maxAge != 0) {
-				DateTime now = new DateTime();
-				DateTime wayback = now.minusHours(maxAge);
-				url += "&from=" + oaiDateFormatter.format(wayback.toDate());
-			}
-		}
-		else {
-			url = String.format(config.required("crs.specimens.url.resume"), resumptionToken);
-		}
-		logger.info("Calling service: " + url);
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
-	}
-
-
-	static byte[] callOaiService(Date fromDate, Date untilDate)
-	{
-		String url = config.required("crs.specimens.url.initial");
-		if (fromDate != null) {
-			url += "&from=" + oaiDateFormatter.format(fromDate);
-		}
-		if (untilDate != null) {
-			url += "&until=" + oaiDateFormatter.format(untilDate);
-		}
-		logger.info("Calling service: " + url);
-		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
-	}
-
 
 	private boolean checkFile(String xml, String unitID) throws SAXException, IOException
 	{

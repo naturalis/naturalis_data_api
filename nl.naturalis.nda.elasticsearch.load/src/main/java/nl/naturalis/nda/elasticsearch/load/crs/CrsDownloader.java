@@ -129,11 +129,11 @@ public class CrsDownloader {
 		 */
 		Date successDate = untilDate == null ? new Date() : untilDate;
 		int request = 0;
-		byte[] xml = AbstractSpecimenImporter.callOaiService(fromDate, untilDate);
+		byte[] xml = CrsImportUtil.callSpecimenService(fromDate, untilDate);
 		FileUtil.setContents(getLocalPath(Type.SPECIMEN, fromDate, request++), xml);
 		String resumptionToken = getResumptionToken(xml);
 		while (resumptionToken != null) {
-			xml = AbstractSpecimenImporter.callOaiService(resumptionToken);
+			xml = CrsImportUtil.callSpecimenService(resumptionToken);
 			FileUtil.setContents(getLocalPath(Type.SPECIMEN, fromDate, request++), xml);
 			resumptionToken = getResumptionToken(xml);
 		}

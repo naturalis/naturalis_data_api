@@ -1,38 +1,65 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.http.SimpleHttpGet;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
 public class CrsImportUtil {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = Registry.getInstance().getLogger(CrsImportUtil.class);
+	static final ConfigObject config;
+	static final SimpleDateFormat oaiDateFormatter;
 
+	private static final Logger logger;
 
-	/**
-	 * Make sure the XML we are about the process does not start with whitespace
-	 * in order to avoid error "Content is not allowed in prolog" when parsing
-	 * the XML.
-	 * 
-	 * @param xml
-	 * @return
-	 */
-	public static String cleanupXml(String xml)
-	{
-		xml = xml.trim();
-		if (!xml.startsWith("<?xml")) {
-			if (xml.indexOf("<?xml") == -1) {
-				throw new RuntimeException("Unexpected response from OAI service: " + xml);
-			}
-			xml = xml.substring(xml.indexOf("<?xml"));
-		}
-		return xml;
+	static {
+		logger = Registry.getInstance().getLogger(CrsImportUtil.class);
+		config = Registry.getInstance().getConfig();
+		oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 	}
-
 
 	private CrsImportUtil()
 	{
+	}
+
+	public static byte[] callSpecimenService(String resumptionToken)
+	{
+		String url;
+		if (resumptionToken == null) {
+			url = config.required("crs.specimens.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
+			if (maxAge != 0) {
+				DateTime now = new DateTime();
+				DateTime wayback = now.minusHours(maxAge);
+				url += "&from=" + oaiDateFormatter.format(wayback.toDate());
+			}
+		}
+		else {
+			String urlPattern = config.required("crs.specimens.url.resume");
+			url = String.format(urlPattern, resumptionToken);
+		}
+		return callService(url);
+	}
+
+	public static byte[] callSpecimenService(Date fromDate, Date untilDate)
+	{
+		String url = config.required("crs.specimens.url.initial");
+		if (fromDate != null)
+			url += "&from=" + oaiDateFormatter.format(fromDate);
+		if (untilDate != null)
+			url += "&until=" + oaiDateFormatter.format(untilDate);
+		return callService(url);
+	}
+
+	private static byte[] callService(String url)
+	{
+		logger.info("Calling service: " + url);
+		return new SimpleHttpGet().setBaseUrl(url).execute().getResponseBody();
 	}
 
 }

@@ -1,7 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +14,7 @@ import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
+import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -38,18 +41,20 @@ public class CrsSpecimenExtractor implements Iterable<XMLRecordInfo> {
 	public CrsSpecimenExtractor(File f, ETLStatistics stats)
 	{
 		this.stats = stats;
-		if (docBuilder == null) {
-			DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
-			bf.setNamespaceAware(true);
-			try {
-				docBuilder = bf.newDocumentBuilder();
-			}
-			catch (ParserConfigurationException e) {
-				throw new ETLRuntimeException(e);
-			}
-		}
 		try {
-			doc = docBuilder.parse(f);
+			doc = getDocumentBuilder().parse(f);
+		}
+		catch (SAXException | IOException e) {
+			throw new ETLRuntimeException(e);
+		}
+	}
+
+	public CrsSpecimenExtractor(byte[] bytes, ETLStatistics stats)
+	{
+		this.stats = stats;
+		try {
+			InputStream is = new ByteArrayInputStream(bytes);
+			doc = getDocumentBuilder().parse(is);
 		}
 		catch (SAXException | IOException e) {
 			throw new ETLRuntimeException(e);
@@ -73,9 +78,29 @@ public class CrsSpecimenExtractor implements Iterable<XMLRecordInfo> {
 		};
 	}
 
+	public String getResumptionToken()
+	{
+		return DOMUtil.getDescendantValue(doc, "resumptionToken");
+	}
+
 	public ETLStatistics getStatistics()
 	{
 		return stats;
+	}
+
+	private static DocumentBuilder getDocumentBuilder()
+	{
+		if (docBuilder == null) {
+			DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
+			bf.setNamespaceAware(true);
+			try {
+				docBuilder = bf.newDocumentBuilder();
+			}
+			catch (ParserConfigurationException e) {
+				throw new ETLRuntimeException(e);
+			}
+		}
+		return docBuilder;
 	}
 
 }

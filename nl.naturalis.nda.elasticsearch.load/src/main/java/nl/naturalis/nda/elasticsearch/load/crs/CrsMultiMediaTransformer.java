@@ -69,6 +69,7 @@ public class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 		sexNormalizer = SexNormalizer.getInstance();
 	}
 
+	@Override
 	public List<ESMultiMediaObject> transform(XMLRecordInfo recInf)
 	{
 		stats.recordsProcessed++;
@@ -184,17 +185,21 @@ public class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 			}
 			return false;
 		}
-		if (val(dc, "abcd:RecordBasis") == null)
+		if (val(dc, "abcd:RecordBasis") == null) {
 			return skipRecord("Skipping virtual specimen");
+		}
 		mediaFileElems = getDescendants(dc, "frmDigitalebestanden");
-		if (mediaFileElems == null)
+		if (mediaFileElems == null) {
 			return rejectRecord("Missing or empty element <frmDigitalebestanden>");
+		}
 		List<Element> determinationElements = getDescendants(dc, "ncrsDetermination");
-		if (determinationElements == null)
+		if (determinationElements == null) {
 			return rejectRecord("Missing or empty element <ncrsDetermination>");
+		}
 		identifications = getIdentifications(determinationElements);
-		if (identifications == null)
+		if (identifications == null) {
 			return rejectRecord("Invalid/insufficient specimen identification information");
+		}
 		return true;
 	}
 
@@ -204,7 +209,7 @@ public class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 		for (Element e : elems) {
 			ScientificName sn = getScientificName(e);
 			if (sn.getFullScientificName() == null) {
-				concatenateEpithets(sn, val(e, "ac:taxonCoverage"));
+				concatEpithets(sn, val(e, "ac:taxonCoverage"));
 			}
 			if (sn.getFullScientificName() == null) {
 				if (!suppressErrors)
@@ -346,7 +351,7 @@ public class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 		return new String[] { url, mime };
 	}
 
-	private static void concatenateEpithets(ScientificName sn, String taxonCoverage)
+	private static void concatEpithets(ScientificName sn, String taxonCoverage)
 	{
 		StringBuilder sb = new StringBuilder(64);
 		if (sn.getGenusOrMonomial() != null)

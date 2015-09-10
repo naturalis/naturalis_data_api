@@ -20,6 +20,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * The extraction component for CRS source data.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CrsExtractor implements Iterable<XMLRecordInfo> {
 
 	private static DocumentBuilder docBuilder;
@@ -28,12 +34,14 @@ public class CrsExtractor implements Iterable<XMLRecordInfo> {
 	private final Document doc;
 
 	/**
-	 * Create a new CRS specimen extractor for the specified XML file. The
-	 * {@link ETLStatistics} argument is not currently used. That is, its
+	 * Create a new CRS specimen extractor for the specified XML file. Use this
+	 * constructor when importing pre-harvested files from the local file
+	 * system. The {@link ETLStatistics} parameter is only present for
+	 * uniformity's sake. It is not currently used, that is, its
 	 * {@link ETLStatistics#badInput} counter is not updated, because extraction
-	 * failures are already detected when the file is parsed into a DOM tree.
-	 * Once we're past that stage nothing can go wrong when handing out
-	 * individual records.
+	 * failures are already detected when the file as a whole is parsed into a
+	 * DOM tree. Once we're past that stage nothing can go wrong when handing
+	 * out individual records.
 	 * 
 	 * @param f
 	 * @param stats
@@ -49,12 +57,31 @@ public class CrsExtractor implements Iterable<XMLRecordInfo> {
 		}
 	}
 
+	/**
+	 * Create a new CRS specimen extractor for the specified byte array. Use
+	 * this constructing when processing a "live" call to the CRS OAI service.
+	 * 
+	 * @param bytes
+	 * @param stats
+	 */
 	public CrsExtractor(byte[] bytes, ETLStatistics stats)
 	{
 		this.stats = stats;
 		try {
 			InputStream is = new ByteArrayInputStream(bytes);
 			doc = getDocumentBuilder().parse(is);
+			String root = doc.getDocumentElement().getTagName();
+			if (!root.equals("OAI-PMH")) {
+				// With timeouts we are sometimes redirected to the Naturalis
+				// home page
+				throw new ETLRuntimeException("Invalid OAI-PMH: <" + root + ">");
+			}
+			Element e = DOMUtil.getDescendant(doc.getDocumentElement(), "error");
+			if (e != null) {
+				String fmt = "OAI Error (code=\"%s\"): \"%s\"";
+				String msg = String.format(fmt, e.getAttribute("code"), e.getTextContent());
+				throw new ETLRuntimeException(msg);
+			}
 		}
 		catch (SAXException | IOException e) {
 			throw new ETLRuntimeException(e);
@@ -78,11 +105,22 @@ public class CrsExtractor implements Iterable<XMLRecordInfo> {
 		};
 	}
 
+	/**
+	 * Get the resumption token from the currently processed file or OAI
+	 * response.
+	 * 
+	 * @return
+	 */
 	public String getResumptionToken()
 	{
 		return DOMUtil.getDescendantValue(doc, "resumptionToken");
 	}
 
+	/**
+	 * Get the statistics object used by this extractor.
+	 * 
+	 * @return
+	 */
 	public ETLStatistics getStatistics()
 	{
 		return stats;

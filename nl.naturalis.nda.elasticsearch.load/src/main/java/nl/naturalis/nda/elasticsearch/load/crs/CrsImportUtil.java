@@ -10,7 +10,7 @@ import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
-public class CrsImportUtil {
+class CrsImportUtil {
 
 	static final ConfigObject config;
 	static final SimpleDateFormat oaiDateFormatter;
@@ -27,7 +27,7 @@ public class CrsImportUtil {
 	{
 	}
 
-	public static byte[] callSpecimenService(String resumptionToken)
+	static byte[] callSpecimenService(String resumptionToken)
 	{
 		String url;
 		if (resumptionToken == null) {
@@ -46,13 +46,43 @@ public class CrsImportUtil {
 		return callService(url);
 	}
 
-	public static byte[] callSpecimenService(Date fromDate, Date untilDate)
+	static byte[] callSpecimenService(Date fromDate, Date untilDate)
 	{
 		String url = config.required("crs.specimens.url.initial");
 		if (fromDate != null)
 			url += "&from=" + oaiDateFormatter.format(fromDate);
 		if (untilDate != null)
 			url += "&until=" + oaiDateFormatter.format(untilDate);
+		return callService(url);
+	}
+
+	static byte[] callMultimediaService(String resumptionToken)
+	{
+		String url;
+		if (resumptionToken == null) {
+			url = config.required("crs.multimedia.url.initial");
+			int maxAge = config.required("crs.max_age", int.class);
+			if (maxAge != 0) {
+				DateTime now = new DateTime();
+				DateTime wayback = now.minusHours(maxAge);
+				url += "&from=" + oaiDateFormatter.format(wayback.toDate());
+			}
+		}
+		else {
+			url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
+		}
+		return callService(url);
+	}
+
+	static byte[] callMultimediaService(Date fromDate, Date untilDate)
+	{
+		String url = config.required("crs.multimedia.url.initial");
+		if (fromDate != null) {
+			url += "&from=" + oaiDateFormatter.format(fromDate);
+		}
+		if (untilDate != null) {
+			url += "&until=" + oaiDateFormatter.format(untilDate);
+		}
 		return callService(url);
 	}
 

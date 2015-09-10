@@ -14,7 +14,7 @@ import java.util.List;
 
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.Reference;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
@@ -22,7 +22,7 @@ import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 import nl.naturalis.nda.elasticsearch.load.Transformer;
 
 import org.apache.commons.csv.CSVRecord;
@@ -39,7 +39,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	static Logger logger = Registry.getInstance().getLogger(CoLReferenceTransformer.class);
 
-	private final IndexNative index;
+	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
 
 	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
@@ -150,7 +150,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 		ref.setCitationDetail(val(record, description));
 		String s;
 		if ((s = val(record, date)) != null) {
-			Date pubDate = TransferUtil.parseDate(s);
+			Date pubDate = TransformUtil.parseDate(s);
 			ref.setPublicationDate(pubDate);
 		}
 		if ((s = val(record, creator)) != null) {

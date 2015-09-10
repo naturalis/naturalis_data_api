@@ -22,7 +22,7 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -262,7 +262,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private static List<Monomial> getSystemClassification(Element elem, ScientificName sn)
 	{
-		List<Monomial> lowerClassification = TransferUtil.getMonomialsInName(sn);
+		List<Monomial> lowerClassification = TransformUtil.getMonomialsInName(sn);
 		List<Element> elems = DOMUtil.getChildren(elem, "ncrsHighername");
 		if (elems == null)
 			return lowerClassification;
@@ -460,7 +460,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private Date date(Element e, String tag)
 	{
-		return TransferUtil.parseDate(val(e, tag));
+		return TransformUtil.parseDate(val(e, tag));
 	}
 
 	private Double dval(Element e, String tag)

@@ -22,7 +22,7 @@ import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.SkippableDataException;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
@@ -110,7 +110,7 @@ class NsrTaxonTransfer {
 		}
 		taxon.setVernacularNames(getVernacularNames(taxonElement));
 		taxon.setDescriptions(getTaxonDescriptions(taxonElement));
-		TransferUtil.equalizeNameComponents(taxon);
+		TransformUtil.equalizeNameComponents(taxon);
 		return taxon;
 	}
 
@@ -276,7 +276,7 @@ class NsrTaxonTransfer {
 			Reference reference = new Reference();
 			reference.setTitleCitation(referenceTitle);
 			reference.setAuthor(new Person(referenceAuthor));
-			reference.setPublicationDate(TransferUtil.parseDate(nl(DOMUtil.getValue(nameElement, "reference_date"))));
+			reference.setPublicationDate(TransformUtil.parseDate(nl(DOMUtil.getValue(nameElement, "reference_date"))));
 			name.setReferences(Arrays.asList(reference));
 		}
 		return name;
@@ -312,7 +312,7 @@ class NsrTaxonTransfer {
 			Reference reference = new Reference();
 			reference.setTitleCitation(referenceTitle);
 			reference.setAuthor(new Person(referenceAuthor));
-			reference.setPublicationDate(TransferUtil.parseDate(nl(DOMUtil.getValue(nameElement, "reference_date"))));
+			reference.setPublicationDate(TransformUtil.parseDate(nl(DOMUtil.getValue(nameElement, "reference_date"))));
 			sn.setReferences(Arrays.asList(reference));
 		}
 		return sn;

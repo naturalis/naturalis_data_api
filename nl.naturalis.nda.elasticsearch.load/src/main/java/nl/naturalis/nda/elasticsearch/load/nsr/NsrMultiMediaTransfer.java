@@ -16,7 +16,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
 import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
@@ -73,7 +73,7 @@ public class NsrMultiMediaTransfer {
 		if (format == null || format.length() == 0) {
 			String fmt = "Missing mime type for image \"%s\" (taxon \"%s\").";
 			logger.warn(String.format(fmt, url, taxon.getAcceptedName().getFullScientificName()));
-			format = TransferUtil.guessMimeType(url);
+			format = TransformUtil.guessMimeType(url);
 		}
 		mmo.addServiceAccessPoint(new ServiceAccessPoint(url, format, Variant.MEDIUM_QUALITY));
 		mmo.setCreator(nl(DOMUtil.getValue(imageElement, "photographer_name")));
@@ -90,7 +90,7 @@ public class NsrMultiMediaTransfer {
 			ESGatheringEvent ge = new ESGatheringEvent();
 			mmo.setGatheringEvents(Arrays.asList(ge));
 			ge.setLocalityText(locality);
-			ge.setDateTimeBegin(TransferUtil.parseDate(date));
+			ge.setDateTimeBegin(TransformUtil.parseDate(date));
 			ge.setDateTimeEnd(ge.getDateTimeBegin());
 		}
 		MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
@@ -100,7 +100,7 @@ public class NsrMultiMediaTransfer {
 		identification.setSystemClassification(taxon.getSystemClassification());
 		identification.setVernacularNames(taxon.getVernacularNames());
 		mmo.setIdentifications(Arrays.asList(identification));
-		TransferUtil.equalizeNameComponents(mmo);
+		TransformUtil.equalizeNameComponents(mmo);
 		return mmo;
 	}
 

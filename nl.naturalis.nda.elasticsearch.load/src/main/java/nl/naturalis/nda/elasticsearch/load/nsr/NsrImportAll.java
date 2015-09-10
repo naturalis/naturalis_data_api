@@ -5,7 +5,7 @@ import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
@@ -22,7 +22,7 @@ public class NsrImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			NsrImportAll importer = new NsrImportAll(index);
@@ -45,11 +45,11 @@ public class NsrImportAll {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrImportAll.class);
 
-	private final IndexNative index;
+	private final IndexManagerNative index;
 	private final boolean backup;
 
 
-	public NsrImportAll(IndexNative index)
+	public NsrImportAll(IndexManagerNative index)
 	{
 		this.index = index;
 		String prop = System.getProperty(SYSPROP_BACKUP, "1");

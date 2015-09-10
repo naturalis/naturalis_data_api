@@ -32,7 +32,7 @@ import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
@@ -224,7 +224,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setScientificName(sn);
-			mmci.setDefaultClassification(TransferUtil.extractClassificiationFromName(sn));
+			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
 			mmci.setIdentificationQualifiers(getQualifiers(e));
 			mmci.setVernacularNames(getVernacularNames(e));
 			if (identifications == null) {
@@ -352,7 +352,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 					error("Invalid image URL: " + url);
 				return null;
 			}
-			mime = TransferUtil.guessMimeType(url);
+			mime = TransformUtil.guessMimeType(url);
 		}
 		return new String[] { url, mime };
 	}

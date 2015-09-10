@@ -19,8 +19,7 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches Taxon documents with vernacular names sourced from the
- * vernacular.txt file in the DwC archive.
+ * Enriches Taxon documenta CoL DwC archive.
  * 
  * @author Ayco Holleman
  *

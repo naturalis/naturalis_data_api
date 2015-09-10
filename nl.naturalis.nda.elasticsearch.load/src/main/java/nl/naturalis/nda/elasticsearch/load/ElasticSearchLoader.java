@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.col.CoLReferenceImporter;
 import nl.naturalis.nda.elasticsearch.load.col.CoLSynonymImporter;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter;
@@ -85,7 +85,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 
 	private final Logger logger = Registry.getInstance().getLogger(getClass());
 
-	private final IndexNative indexManager;
+	private final IndexManagerNative idxMgr;
 	private final String type;
 	private final int treshold;
 	private final ETLStatistics stats;
@@ -106,9 +106,9 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 * @param documentType
 	 * @param treshold
 	 */
-	public ElasticSearchLoader(IndexNative indexManager, String documentType, int treshold, ETLStatistics stats)
+	public ElasticSearchLoader(IndexManagerNative indexManager, String documentType, int treshold, ETLStatistics stats)
 	{
-		this.indexManager = indexManager;
+		this.idxMgr = indexManager;
 		this.type = documentType;
 		this.treshold = treshold;
 		this.stats = stats;
@@ -210,7 +210,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	{
 		if (!objs.isEmpty()) {
 			try {
-				indexManager.saveObjects(type, objs, ids, parIds);
+				idxMgr.saveObjects(type, objs, ids, parIds);
 				stats.objectsIndexed += objs.size();
 				if (++batch % 50 == 0) {
 					logger.info("Documents indexed: " + stats.objectsIndexed);

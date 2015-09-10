@@ -14,9 +14,10 @@ import nl.naturalis.nda.domain.SourceSystem;
 import org.slf4j.Logger;
 
 /**
- * A cache that maps UnitIDs with one or more "themes". Themes are predefined
- * categories of specimens, for example "Extinct Birds". If a specimen is an
- * extinct bird, its UnitID is associated with that theme.
+ * A cache that maps UnitIDs to "themes". Themes are predefined categories of
+ * specimens, for example "Extinct Birds". If a specimen is an extinct bird, its
+ * UnitID is associated with that theme. A specimen can belong to more than one
+ * theme.
  * 
  * @author Ayco Holleman
  *

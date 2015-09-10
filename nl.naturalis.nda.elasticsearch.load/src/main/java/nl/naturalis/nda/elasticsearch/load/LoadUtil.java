@@ -6,12 +6,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
 import org.slf4j.Logger;
 
 /**
- * Utility class providing common functionality for all import programs.
+ * Utility class providing common functionality used throughout this library.
  * 
  * @author Ayco Holleman
  *
@@ -40,7 +40,7 @@ public final class LoadUtil {
 	}
 
 	/**
-	 * Delete all documents of the specified type and the specified source
+	 * Deletes all documents of the specified type and the specified source
 	 * system.
 	 * 
 	 * @param luceneType
@@ -48,8 +48,8 @@ public final class LoadUtil {
 	 */
 	public static void truncate(String luceneType, SourceSystem sourceSystem)
 	{
-		IndexNative indexManager = Registry.getInstance().getNbaIndexManager();
-		indexManager.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
+		IndexManagerNative idxMgr = Registry.getInstance().getNbaIndexManager();
+		idxMgr.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
 	}
 
 	/**

@@ -2,7 +2,7 @@ package nl.naturalis.nda.elasticsearch.load.brahms;
 
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.ES_ID_PREFIX_BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_SPECIMEN;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
@@ -10,7 +10,7 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 
 class BrahmsSpecimenLoader extends ElasticSearchLoader<ESSpecimen> {
 
-	private static IndexNative indexManager()
+	private static IndexManagerNative indexManager()
 	{
 		return Registry.getInstance().getNbaIndexManager();
 	}

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
@@ -173,9 +173,9 @@ public class Registry {
 	 * 
 	 * @return
 	 */
-	public IndexNative getNbaIndexManager()
+	public IndexManagerNative getNbaIndexManager()
 	{
-		return new IndexNative(getESClient(), getConfig().required("elasticsearch.index.name"));
+		return new IndexManagerNative(getESClient(), getConfig().required("elasticsearch.index.name"));
 	}
 
 	private void setConfDir()

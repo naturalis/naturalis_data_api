@@ -10,8 +10,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.elasticsearch.client.Index;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManager;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
@@ -33,7 +33,7 @@ public class NsrMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			NsrMultiMediaImporter importer = new NsrMultiMediaImporter(index);
@@ -48,7 +48,7 @@ public class NsrMultiMediaImporter {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrMultiMediaImporter.class);
 
-	private final Index index;
+	private final IndexManager index;
 
 	private final int bulkRequestSize;
 	private final boolean backup;
@@ -58,7 +58,7 @@ public class NsrMultiMediaImporter {
 	private int totalNumBadTaxa = 0;
 
 
-	public NsrMultiMediaImporter(Index index)
+	public NsrMultiMediaImporter(IndexManager index)
 	{
 		this.index = index;
 		String prop = System.getProperty(NsrImportAll.SYSPROP_BATCHSIZE, "1000");

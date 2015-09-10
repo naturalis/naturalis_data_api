@@ -18,10 +18,16 @@ import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * Provides common functionality related to the CoL import.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class CoLImportUtil {
 
 	static final TaxonomicStatusNormalizer statusNormalizer;
-	
+
 	static {
 		statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
@@ -43,7 +49,7 @@ class CoLImportUtil {
 		return sn;
 	}
 
-	static ScientificName getScientificName(CSVRecord record,TaxonomicStatus status)
+	static ScientificName getScientificName(CSVRecord record, TaxonomicStatus status)
 	{
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(record, scientificName));

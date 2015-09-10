@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nda.domain.VernacularName;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
@@ -34,7 +34,7 @@ class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	static Logger logger = Registry.getInstance().getLogger(CoLVernacularNameTransformer.class);
 
-	private final IndexNative index;
+	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
 
 	CoLVernacularNameTransformer(ETLStatistics stats, CoLTaxonLoader loader)

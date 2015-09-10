@@ -20,6 +20,13 @@ import org.slf4j.Logger;
 
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.*;
 
+/**
+ * A generic CSV extraction component taking raw CSV lines as input and
+ * outputting commons-csv {@code CSVRecordInfo} instances.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecordInfo> {
 
 	public static class NoSuchFieldException extends RuntimeException {
@@ -53,51 +60,103 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 		this.charset = UTF_8;
 	}
 
+	/**
+	 * Whether to skip the first line in the CSV file.
+	 * 
+	 * @return
+	 */
 	public boolean isSkipHeader()
 	{
 		return skipHeader;
 	}
 
+	/**
+	 * Whether to skip the first line in the CSV file.
+	 * 
+	 * @param skipHeader
+	 */
 	public void setSkipHeader(boolean skipHeader)
 	{
 		this.skipHeader = skipHeader;
 	}
 
+	/**
+	 * Returns the format of the CSV file.
+	 * 
+	 * @return
+	 */
 	public CSVFormat getCsvFormat()
 	{
 		return csvFormat;
 	}
 
+	/**
+	 * Sets the format of the CSV file.
+	 * 
+	 * @param csvFormat
+	 */
 	public void setCsvFormat(CSVFormat csvFormat)
 	{
 		this.csvFormat = csvFormat;
 	}
 
+	/**
+	 * Returns the field separator. Default TAB ('\t').
+	 * 
+	 * @return
+	 */
 	public char getDelimiter()
 	{
 		return delimiter;
 	}
 
+	/**
+	 * Sets the field separator
+	 * 
+	 * @param delimiter
+	 */
 	public void setDelimiter(char delimiter)
 	{
 		this.delimiter = delimiter;
 	}
 
+	/**
+	 * Returns the character set of the CSV file.
+	 * 
+	 * @return
+	 */
 	public Charset getCharset()
 	{
 		return charset;
 	}
 
+	/**
+	 * Sets the character set of the CSV file.
+	 * 
+	 * @param charset
+	 */
 	public void setCharset(Charset charset)
 	{
 		this.charset = charset.equals(UTF_8) ? UTF_8 : charset;
 	}
 
+	/**
+	 * Whether to suppress WARN and ERROR messages, but let through INFO
+	 * messages. This might make log files easier to read if you expect a lot of
+	 * well-known, but not soon-to-be-solved errors.
+	 * 
+	 * @return
+	 */
 	public boolean isSuppressErrors()
 	{
 		return suppressErrors;
 	}
 
+	/**
+	 * Suppress/enable error suppression.
+	 * 
+	 * @param suppressErrors
+	 */
 	public void setSuppressErrors(boolean suppressErrors)
 	{
 		this.suppressErrors = suppressErrors;

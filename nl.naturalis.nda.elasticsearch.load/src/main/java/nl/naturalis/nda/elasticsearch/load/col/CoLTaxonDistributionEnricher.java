@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
-import nl.naturalis.nda.elasticsearch.client.Index;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManager;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -27,7 +27,7 @@ public class CoLTaxonDistributionEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
@@ -43,7 +43,7 @@ public class CoLTaxonDistributionEnricher {
 
 	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonDistributionEnricher.class);
 
-	private final Index index;
+	private final IndexManager index;
 	private final int bulkRequestSize;
 	private final int maxRecords;
 
@@ -52,7 +52,7 @@ public class CoLTaxonDistributionEnricher {
 	 * 
 	 * @param index
 	 */
-	public CoLTaxonDistributionEnricher(Index index)
+	public CoLTaxonDistributionEnricher(IndexManager index)
 	{
 		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");

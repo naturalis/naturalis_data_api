@@ -4,11 +4,11 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * An interface specifying the capacities of a mime type cache for the medialib.
- * Implementations manage the lookup and chaching of mime types of media from
- * the medialib to speed up imports of multimedia documents.
+ * Interface specifying the capacities of a mimetype cache for the medialib. A
+ * mimetype cache maps UnitIDs to mimetypes. Implementations manage the chaching
+ * and lookup of mime types to speed up multimedia imports.
  * 
- * @author ayco_holleman
+ * @author Ayco Holleman
  *
  */
 public interface MimeTypeCache extends Closeable {
@@ -17,8 +17,7 @@ public interface MimeTypeCache extends Closeable {
 	 * Defines the endpoint for medialib resource up to the ID part of the URL:
 	 * {@code "http://medialib.naturalis.nl/file/id/"}.
 	 */
-	public static final String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
-
+	String MEDIALIB_URL_START = "http://medialib.naturalis.nl/file/id/";
 
 	/**
 	 * Reset statistics counters (cache hits, medialib requests, request
@@ -26,7 +25,6 @@ public interface MimeTypeCache extends Closeable {
 	 * and you want a separate account for each of them separately.
 	 */
 	void resetCounters();
-
 
 	/**
 	 * Get the mime type for the media object with the specified UnitID. This
@@ -41,7 +39,6 @@ public interface MimeTypeCache extends Closeable {
 	 */
 	String getMimeType(String unitID);
 
-
 	/**
 	 * Get the number of entries in the cache.
 	 * 
@@ -49,25 +46,22 @@ public interface MimeTypeCache extends Closeable {
 	 */
 	int getSize();
 
-
 	/**
-	 * Get the cache hit count, i.e. the number of successful mime type lookups
-	 * (without having to call the medialib).
+	 * Get the cache hit count, that is, the number of successful mimetype
+	 * lookups (without having to call the medialib).
 	 * 
 	 * @return
 	 */
 	int getCacheHits();
 
-
 	/**
-	 * Get the number of times the mime type had to be retrieved by calling the
+	 * Get the number of times the mimetype had to be retrieved by calling the
 	 * medialib. In other words this methods doubles as a counter for the number
 	 * of cache misses.
 	 * 
 	 * @return
 	 */
 	int getMedialibRequests();
-
 
 	/**
 	 * Get the number of times the request to the medialib for some reason
@@ -77,14 +71,13 @@ public interface MimeTypeCache extends Closeable {
 	 */
 	int getRequestFailures();
 
-
 	/**
 	 * Saves and closes the cache. If the cache has changed since it was
 	 * instantiated, it is saved back to the file system. When done, all
 	 * resources held on to by the implementor class should be released. Clients
 	 * you should always call this method when done using the cache. Otherwise,
 	 * new cache entries for new media objects will not get saved to the file
-	 * system, causing repetitivem expensive calls to the medialib.
+	 * system, causing repetitive, expensive calls to the medialib.
 	 */
 	@Override
 	void close() throws IOException;

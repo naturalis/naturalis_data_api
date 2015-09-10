@@ -19,8 +19,8 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Utility class that set the "references" field in taxon documents to null. Can
- * be called before starting the {@link CoLReferenceImporter} to make sure you
+ * Utility class that set the {@code synonyms} field in taxon documents to null. Can
+ * be called before starting the {@link CoLSynonymImporter} to make sure you
  * start with a clean slate. Note though that kicking off the
  * {@link CoLTaxonImporter} provides the ultimate clean slate, because it starts
  * by removing all taxon documents.

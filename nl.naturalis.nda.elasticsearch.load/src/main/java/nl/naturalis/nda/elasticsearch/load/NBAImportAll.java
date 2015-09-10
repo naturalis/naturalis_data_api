@@ -2,7 +2,7 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import java.util.Arrays;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
@@ -12,18 +12,18 @@ import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 
 /**
- * Utility class for creating/managing/updating the NBA document store. Provides
- * a method for bootstrapping the NBA index (i.e. re-create it from scratch) and
- * for doing a full import.
+ * The "main" class of the import library. Start here. Allows you to bootstrap
+ * the NBA index (i.e. create an empty NBA index) and to import all datasources
+ * one by one. In other words this class lets you do a full import.
  * 
- * @author ayco_holleman
+ * @author Ayco Holleman
  * 
  */
 public class NBAImportAll {
 
 	public static void main(String[] args)
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			NBAImportAll indexManager = new NBAImportAll(index);
@@ -50,9 +50,9 @@ public class NBAImportAll {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NBAImportAll.class);
 
-	private final IndexNative index;
+	private final IndexManagerNative index;
 
-	public NBAImportAll(IndexNative index)
+	public NBAImportAll(IndexManagerNative index)
 	{
 		this.index = index;
 	}
@@ -109,7 +109,7 @@ public class NBAImportAll {
 			}
 
 		}
-		
+
 		finally {
 			LoadUtil.logDuration(logger, getClass(), start);
 			Registry.getInstance().closeESClient();

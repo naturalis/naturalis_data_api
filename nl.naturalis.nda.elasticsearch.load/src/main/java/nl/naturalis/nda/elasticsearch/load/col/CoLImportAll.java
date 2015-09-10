@@ -2,16 +2,23 @@ package nl.naturalis.nda.elasticsearch.load.col;
 
 import java.io.IOException;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
 
+/**
+ * Manages the import of CoL taxa, synonyms, vernacular names and literature
+ * references.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CoLImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			CoLImportAll colImportAll = new CoLImportAll(index);
@@ -31,15 +38,18 @@ public class CoLImportAll {
 
 	private static final Logger logger = Registry.getInstance().getLogger(CoLImportAll.class);
 
-	private final IndexNative index;
+	private final IndexManagerNative index;
 
-
-	public CoLImportAll(IndexNative index)
+	public CoLImportAll(IndexManagerNative index)
 	{
 		this.index = index;
 	}
 
-
+	/**
+	 * Imports CoL taxa, synonyms, vernacular names and literature references.
+	 * 
+	 * @throws IOException
+	 */
 	public void importAll() throws IOException
 	{
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");

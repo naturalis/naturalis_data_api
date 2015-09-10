@@ -3,6 +3,7 @@ package nl.naturalis.nda.elasticsearch.client;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
 
+import java.util.Collection;
 import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -15,13 +16,14 @@ import org.domainobject.util.http.SimpleHttpRequest;
 import org.slf4j.Logger;
 
 /**
- * Implementation of {@link Index} that uses ElasticSearch's REST interface to
- * manipulate an index.
+ * Implementation of {@link IndexManager} that uses ElasticSearch's REST
+ * interface to interact with an index. This implementation is no longer used
+ * and is no longer up-to-date.
  * 
  * @author ayco_holleman
  * 
  */
-public class IndexREST implements Index {
+public class IndexManagerREST implements IndexManager {
 
 	/**
 	 * The default URL through which to access ElasticSearch
@@ -29,7 +31,7 @@ public class IndexREST implements Index {
 	 */
 	public static final String LOCAL_CLUSTER = "http://localhost:9200/";
 
-	private static final Logger logger = Registry.getInstance().getLogger(IndexREST.class);
+	private static final Logger logger = Registry.getInstance().getLogger(IndexManagerREST.class);
 
 	private final SimpleHttpGet httpGet = new SimpleHttpGet();
 	private final SimpleHttpPut httpPut = new SimpleHttpPut();
@@ -38,36 +40,36 @@ public class IndexREST implements Index {
 
 	private SimpleHttpRequest lastRequest;
 
-
 	/**
 	 * Creates an instance manipulating the specified index on the local cluster
 	 * at {@link #LOCAL_CLUSTER}.
 	 * 
-	 * @param indexName The index for which to create this instance. All
-	 *            methods, except a few, will operate against this index.
+	 * @param indexName
+	 *            The index for which to create this instance. All methods,
+	 *            except a few, will operate against this index.
 	 */
-	public IndexREST(String indexName)
+	public IndexManagerREST(String indexName)
 	{
 		this(indexName, LOCAL_CLUSTER);
 	}
-
 
 	/**
 	 * Create an instance representing specified index, accessed through the
 	 * specified cluster URL.
 	 * 
-	 * @param indexName The index for which to create this instance. All
-	 *            methods, except a few, will operate against this index.
-	 * @param clusterUrl The cluster URL
+	 * @param indexName
+	 *            The index for which to create this instance. All methods,
+	 *            except a few, will operate against this index.
+	 * @param clusterUrl
+	 *            The cluster URL
 	 */
-	public IndexREST(String indexName, String clusterUrl)
+	public IndexManagerREST(String indexName, String clusterUrl)
 	{
 		this.indexName = indexName;
 		httpGet.setBaseUrl(clusterUrl);
 		httpPut.setBaseUrl(clusterUrl);
 		httpDelete.setBaseUrl(clusterUrl);
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -79,7 +81,6 @@ public class IndexREST implements Index {
 	{
 		return false;
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -101,7 +102,6 @@ public class IndexREST implements Index {
 		throw createIndexException();
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -119,7 +119,6 @@ public class IndexREST implements Index {
 		throw createIndexException();
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -135,7 +134,6 @@ public class IndexREST implements Index {
 			throw createIndexException();
 		}
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -156,13 +154,11 @@ public class IndexREST implements Index {
 		}
 	}
 
-
 	@Override
 	public boolean deleteType(String name)
 	{
 		return false;
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -186,7 +182,6 @@ public class IndexREST implements Index {
 		throw createIndexException();
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -203,7 +198,6 @@ public class IndexREST implements Index {
 		}
 	}
 
-
 	@Override
 	public void saveDocument(String type, String json, String id)
 	{
@@ -216,7 +210,6 @@ public class IndexREST implements Index {
 			throw createIndexException();
 		}
 	}
-
 
 	@Override
 	public void saveObject(String type, Object obj, String id)
@@ -232,14 +225,12 @@ public class IndexREST implements Index {
 		}
 	}
 
-
 	@Override
 	public void saveObjects(String type, List<?> objs, List<String> ids)
 	{
 		// TODO Auto-generated method stub
 
 	}
-
 
 	/**
 	 * Get the response for the most recently executed request. Useful if you
@@ -254,7 +245,6 @@ public class IndexREST implements Index {
 		return null;
 	}
 
-
 	/**
 	 * Get the HTTP status code for the most recently executed request
 	 * 
@@ -264,7 +254,6 @@ public class IndexREST implements Index {
 	{
 		return lastRequest.getStatus();
 	}
-
 
 	/**
 	 * Convenience method indicating whether or not the most recently executed
@@ -277,7 +266,6 @@ public class IndexREST implements Index {
 		return lastRequest.getStatus() >= 200 && lastRequest.getStatus() < 300;
 	}
 
-
 	private void execute()
 	{
 		logger.debug(lastRequest.getMethod() + " " + lastRequest.getURL());
@@ -289,38 +277,33 @@ public class IndexREST implements Index {
 		}
 	}
 
-
-	private IndexException createIndexException()
+	private IndexManagerException createIndexException()
 	{
 		String fmt = "Error while executing request: code=\"%s\";message=\"%s\"";
 		String msg = String.format(fmt, lastRequest.getStatus(), lastRequest.getError());
-		return new IndexException(msg);
+		return new IndexManagerException(msg);
 	}
-
 
 	@Override
 	public void saveObjects(String type, List<?> objs)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void saveObject(String type, Object obj, String id, String parentId)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public <T> T get(String type, String id, Class<T> targetClass)
@@ -329,14 +312,12 @@ public class IndexREST implements Index {
 		return null;
 	}
 
-
 	@Override
 	public boolean deleteDocument(String type, String id)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 
 	@Override
 	public boolean typeExists(String type)
@@ -345,44 +326,31 @@ public class IndexREST implements Index {
 		return false;
 	}
 
-
 	@Override
 	public void deleteWhere(String type, String field, String value)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void create(int numShards, int numReplicas)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void create(String settings)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	@Override
+	public <T> List<T> get(String type, Collection<String> ids, Class<T> targetClass)
+	{
+		return null;
+	}
 
-//	@Override
-//	public HashMap<String, Object> getResultsMap(String type, int size)
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-
-
-//	@Override
-//	public <T> T getAll(String type, String id, Class<T> targetClass)
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 }

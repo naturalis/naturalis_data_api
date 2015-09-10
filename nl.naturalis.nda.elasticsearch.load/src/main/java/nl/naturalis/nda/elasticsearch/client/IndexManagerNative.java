@@ -49,20 +49,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Wrapper around ElasticSearch's Native (Java) client. This is the de facto
- * implementation used throughout this library.
+ * Wrapper around ElasticSearch's Native Java client. This is the de facto
+ * implementation of {@link IndexManager} used throughout this library.
  * 
  * @author ayco_holleman
  * 
  */
-public class IndexNative implements Index {
+public class IndexManagerNative implements IndexManager {
 
-	private static final Logger logger = Registry.getInstance().getLogger(IndexNative.class);
+	private static final Logger logger = Registry.getInstance().getLogger(IndexManagerNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-	final Client esClient;
-	final IndicesAdminClient admin;
-	final String indexName;
+	private final Client esClient;
+	private final IndicesAdminClient admin;
+	private final String indexName;
 
 	/**
 	 * Create an instance manipulating the specified index using the specified
@@ -74,7 +74,7 @@ public class IndexNative implements Index {
 	 *            The index for which to create this instance. All methods,
 	 *            except a few, will operate against this index.
 	 */
-	public IndexNative(Client client, String indexName)
+	public IndexManagerNative(Client client, String indexName)
 	{
 		this.indexName = indexName;
 		this.esClient = client;
@@ -140,7 +140,7 @@ public class IndexNative implements Index {
 		request.setSettings(settings);
 		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
-			throw new IndexException("Failed to create index " + indexName);
+			throw new IndexManagerException("Failed to create index " + indexName);
 		}
 		logger.info("Index created");
 	}
@@ -153,17 +153,12 @@ public class IndexNative implements Index {
 		request.setSettings(ImmutableSettings.settingsBuilder().loadFromSource(settings).build());
 		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
-			throw new IndexException("Failed to create index " + indexName);
+			throw new IndexManagerException("Failed to create index " + indexName);
 		}
 		logger.info("Index created");
 	}
 
-	/**
-	 * Deletes the index for which this client was set up.
-	 * 
-	 * @return {@code true} if the index existed and was successfully deleted;
-	 *         {@code false} if the index did not exist.
-	 */
+	@Override
 	public boolean delete()
 	{
 		logger.info("Deleting index " + indexName);
@@ -171,7 +166,7 @@ public class IndexNative implements Index {
 		try {
 			DeleteIndexResponse response = admin.delete(request).actionGet();
 			if (!response.isAcknowledged()) {
-				throw new IndexException("Failed to delete index " + indexName);
+				throw new IndexManagerException("Failed to delete index " + indexName);
 			}
 			logger.info("Index deleted");
 			return true;
@@ -190,7 +185,7 @@ public class IndexNative implements Index {
 		try {
 			DeleteIndexResponse response = admin.delete(request).actionGet();
 			if (!response.isAcknowledged()) {
-				throw new IndexException("Failed to delete index " + indexName);
+				throw new IndexManagerException("Failed to delete index " + indexName);
 			}
 			logger.info("Indices deleted");
 		}
@@ -199,6 +194,7 @@ public class IndexNative implements Index {
 		}
 	}
 
+	@Override
 	public void addType(String name, String mapping)
 	{
 		logger.info(String.format("Creating type \"%s\"", name));
@@ -207,7 +203,7 @@ public class IndexNative implements Index {
 		request.type(name);
 		PutMappingResponse response = admin.putMapping(request).actionGet();
 		if (!response.isAcknowledged()) {
-			throw new IndexException(String.format("Failed to create type \"%s\"", name));
+			throw new IndexManagerException(String.format("Failed to create type \"%s\"", name));
 		}
 	}
 
@@ -221,7 +217,7 @@ public class IndexNative implements Index {
 		try {
 			DeleteMappingResponse response = request.execute().actionGet();
 			if (!response.isAcknowledged()) {
-				throw new IndexException(String.format("Failed to delete type \"%s\"", name));
+				throw new IndexManagerException(String.format("Failed to delete type \"%s\"", name));
 			}
 			logger.info("Type deleted");
 			return true;
@@ -232,6 +228,7 @@ public class IndexNative implements Index {
 		}
 	}
 
+	@Override
 	public <T> T get(String type, String id, Class<T> targetClass)
 	{
 		GetRequestBuilder grb = esClient.prepareGet();
@@ -244,12 +241,13 @@ public class IndexNative implements Index {
 				return objectMapper.readValue(response.getSourceAsBytes(), targetClass);
 			}
 			catch (Exception e) {
-				throw new IndexException(e);
+				throw new IndexManagerException(e);
 			}
 		}
 		return null;
 	}
 
+	@Override
 	public <T> List<T> get(String type, Collection<String> ids, Class<T> targetClass)
 	{
 		MultiGetRequestBuilder mgrb = esClient.prepareMultiGet();
@@ -270,7 +268,7 @@ public class IndexNative implements Index {
 			}
 		}
 		catch (IOException e) {
-			throw new IndexException(e);
+			throw new IndexManagerException(e);
 		}
 		return result;
 	}
@@ -320,7 +318,7 @@ public class IndexNative implements Index {
 			json = objectMapper.writeValueAsString(obj);
 		}
 		catch (JsonProcessingException e) {
-			throw new IndexException(e);
+			throw new IndexManagerException(e);
 		}
 		IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
 		if (id != null) {
@@ -361,7 +359,7 @@ public class IndexNative implements Index {
 				}
 			}
 			catch (JsonProcessingException e) {
-				throw new IndexException(e);
+				throw new IndexManagerException(e);
 			}
 			brb.add(irb);
 		}

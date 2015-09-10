@@ -74,8 +74,8 @@ public class ETLStatistics {
 
 	/**
 	 * Determines which counter to use for successfully transformed data.
-	 * Ordinarily the following rule applies:
-	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}
+	 * Ordinarily the following rule applies:<br><br>
+	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}<br><br>
 	 * . In this case {@code objectsIndexed} is the number of successfully
 	 * transformed data. The transformer keeps track of {@code objectsSkipped}
 	 * and {@code objectsRejected} while the loader keeps track of
@@ -83,8 +83,8 @@ public class ETLStatistics {
 	 * need to keep track of the {@code objectsAccepted} counter. However, if a
 	 * data source is only used to add children (nested objects) to an already
 	 * existing parent document, this rule no longer applies. The rule that
-	 * applies then is:
-	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}
+	 * applies then is:<br><br>
+	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}<br><br>
 	 * . In this case the transformer provides all three statistics and the
 	 * number of indexations is more or less meaningless. If a data source
 	 * provides 10 children for a particular parent document, the parent

@@ -10,8 +10,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.elasticsearch.client.Index;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManager;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.InvalidDataException;
 import nl.naturalis.nda.elasticsearch.load.MalformedDataException;
@@ -33,7 +33,7 @@ public class NsrTaxonImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			NsrTaxonImporter importer = new NsrTaxonImporter(index);
@@ -48,7 +48,7 @@ public class NsrTaxonImporter {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrTaxonImporter.class);
 	
-	private final Index index;
+	private final IndexManager index;
 
 	private final int bulkRequestSize;
 	private final boolean backup;
@@ -59,7 +59,7 @@ public class NsrTaxonImporter {
 	private int totalRejected = 0;
 
 
-	public NsrTaxonImporter(Index index)
+	public NsrTaxonImporter(IndexManager index)
 	{
 		this.index = index;
 		String prop = System.getProperty(NsrImportAll.SYSPROP_BATCHSIZE, "1000");

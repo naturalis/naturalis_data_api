@@ -3,9 +3,9 @@ package nl.naturalis.nda.elasticsearch.load;
 import org.slf4j.Logger;
 
 /**
- * Produces an implementation of a {@link MimeTypeCache} based on the value of a
- * system property named "mimetypecache.type". If absent, or if it has value
- * "map", a {@link MapMimeTypeCache} is returned to the client, otherwise an
+ * Produces a {@link MimeTypeCache} instances based on the value of a system
+ * property named "mimetypecache.type". If absent, or if it has value "map", a
+ * {@link MapMimeTypeCache} is returned to the client, otherwise an
  * {@link ArrayMimeTypeCache}.
  * 
  * @author Ayco Holleman

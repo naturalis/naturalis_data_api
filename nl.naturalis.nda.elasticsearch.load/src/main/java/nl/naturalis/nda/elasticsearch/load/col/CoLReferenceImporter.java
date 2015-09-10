@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 
 /**
  * Enriches Taxon documents with literature references sourced from the
- * reference.txt file in the DwC archive.
+ * reference.txt file in a CoL DwC archive.
  * 
  * @author Ayco Holleman
  *

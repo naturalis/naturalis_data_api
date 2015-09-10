@@ -24,9 +24,16 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 
-public class TransferUtil {
+/**
+ * Provides common functionality for the various {@link Transformer}
+ * implementations in this library.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class TransformUtil {
 
-	private static final Logger logger = Registry.getInstance().getLogger(TransferUtil.class);
+	private static final Logger logger = Registry.getInstance().getLogger(TransformUtil.class);
 
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyy/MM/dd");
@@ -71,7 +78,6 @@ public class TransferUtil {
 	private static final String NAME = "scientific name";
 	private static final String CLASSIFICATION = "classification ";
 
-
 	public static DefaultClassification extractClassificiationFromName(ScientificName sn)
 	{
 		DefaultClassification dc = new DefaultClassification();
@@ -81,7 +87,6 @@ public class TransferUtil {
 		dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
 		return dc;
 	}
-
 
 	public static List<Monomial> getMonomialsInName(ScientificName sn)
 	{
@@ -101,7 +106,6 @@ public class TransferUtil {
 		return monomials;
 	}
 
-
 	public static ScientificName extractNameFromClassification(DefaultClassification dc)
 	{
 		ScientificName sn = new ScientificName();
@@ -112,12 +116,10 @@ public class TransferUtil {
 		return sn;
 	}
 
-
 	public static void equalizeNameComponents(ESTaxon taxon)
 	{
 		equalizeNameComponents(taxon.getDefaultClassification(), taxon.getAcceptedName());
 	}
-
 
 	public static void equalizeNameComponents(ESSpecimen specimen)
 	{
@@ -126,14 +128,12 @@ public class TransferUtil {
 		}
 	}
 
-
 	public static void equalizeNameComponents(ESMultiMediaObject mmo)
 	{
 		for (MultiMediaContentIdentification i : mmo.getIdentifications()) {
 			equalizeNameComponents(i.getDefaultClassification(), i.getScientificName());
 		}
 	}
-
 
 	private static void equalizeNameComponents(DefaultClassification dc, ScientificName sn)
 	{
@@ -207,7 +207,6 @@ public class TransferUtil {
 
 	private static final String jpeg = "image/jpeg";
 
-
 	public static String guessMimeType(String imageUrl)
 	{
 		String ext = StringUtil.substr(imageUrl, -4).toLowerCase();
@@ -223,14 +222,16 @@ public class TransferUtil {
 		else if (ext.equals(".bmp"))
 			mimetype = "image/bmp";
 		else if (ext.equals(".mp3"))
-			mimetype = "audio/mpeg"; // according to http://tools.ietf.org/html/rfc3003	
+			mimetype = "audio/mpeg"; // according to
+										// http://tools.ietf.org/html/rfc3003
 		else if (ext.equals(".mp4"))
-			mimetype = "video/mp4"; // according to http://www.rfc-editor.org/rfc/rfc4337.txt
+			mimetype = "video/mp4"; // according to
+									// http://www.rfc-editor.org/rfc/rfc4337.txt
 		else if (ext.equals(".pdf"))
 			mimetype = "application/pdf";
 		else {
 			ext = StringUtil.substr(imageUrl, -5).toLowerCase();
-			if (ext.equals("jpeg")) 
+			if (ext.equals("jpeg"))
 				mimetype = jpeg;
 			else if (ext.equals(".tiff"))
 				mimetype = "image/tiff";

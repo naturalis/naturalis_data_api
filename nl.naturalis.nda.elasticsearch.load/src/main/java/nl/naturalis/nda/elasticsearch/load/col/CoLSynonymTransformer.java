@@ -9,7 +9,7 @@ import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.scientifi
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
@@ -33,7 +33,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	static Logger logger = Registry.getInstance().getLogger(CoLSynonymTransformer.class);
 
-	private final IndexNative index;
+	private final IndexManagerNative index;
 
 	private CoLTaxonLoader loader;
 

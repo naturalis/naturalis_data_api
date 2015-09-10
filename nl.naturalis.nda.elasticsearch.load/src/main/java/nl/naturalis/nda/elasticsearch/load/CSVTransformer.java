@@ -3,8 +3,8 @@ package nl.naturalis.nda.elasticsearch.load;
 import java.util.List;
 
 /**
- * Describes what a CSV transformer does. Currently does not add new
- * functionality to {@link Transformer}.
+ * Defines the capacities transformers that take commons-csv objects as their
+ * input an have an arbitrary type of objects as their output.
  * 
  * @author Ayco Holleman
  *

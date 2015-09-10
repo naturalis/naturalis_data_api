@@ -1,5 +1,12 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+/**
+ * Generic runtime exception thrown through this library in case of
+ * unrecoverable errors.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ETLRuntimeException extends RuntimeException {
 
 	public ETLRuntimeException()

@@ -29,7 +29,7 @@ import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.TransferUtil;
+import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -188,7 +188,7 @@ class BrahmsImportUtil {
 
 	static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
 	{
-		DefaultClassification dc = TransferUtil.extractClassificiationFromName(sn);
+		DefaultClassification dc = TransformUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
 		// Phylum deliberately not set
 		dc.setClassName(val(record, FAMCLASS));

@@ -8,8 +8,8 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 
 import nl.naturalis.nda.domain.VernacularName;
-import nl.naturalis.nda.elasticsearch.client.Index;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManager;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -23,7 +23,7 @@ public class CoLTaxonVernacularNameEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = Registry.getInstance().getNbaIndexManager();
+		IndexManagerNative index = Registry.getInstance().getNbaIndexManager();
 		try {
 			CoLTaxonVernacularNameEnricher enricher = new CoLTaxonVernacularNameEnricher(index);
 			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
@@ -36,12 +36,12 @@ public class CoLTaxonVernacularNameEnricher {
 
 	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonVernacularNameEnricher.class);
 
-	private final Index index;
+	private final IndexManager index;
 	private final int bulkRequestSize;
 	private final int maxRecords;
 
 
-	public CoLTaxonVernacularNameEnricher(Index index)
+	public CoLTaxonVernacularNameEnricher(IndexManager index)
 	{
 		this.index = index;
 		String prop = System.getProperty(CoLImportAll.SYSPROP_BATCHSIZE, "1000");

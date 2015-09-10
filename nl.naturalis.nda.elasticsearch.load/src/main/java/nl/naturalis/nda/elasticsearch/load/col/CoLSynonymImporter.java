@@ -18,6 +18,13 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Enriches CoL taxon documents with synonyms sourced from the taxa.txt file in
+ * a CoL DwC archive.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CoLSynonymImporter {
 
 	public static void main(String[] args) throws Exception

@@ -139,7 +139,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
 	private static String getTypeStatus(CSVRecord record)
 	{
-		return typeStatusNormalizer.getNormalizedValue(val(record, TYPE));
+		return typeStatusNormalizer.normalize(val(record, TYPE));
 	}
 
 }

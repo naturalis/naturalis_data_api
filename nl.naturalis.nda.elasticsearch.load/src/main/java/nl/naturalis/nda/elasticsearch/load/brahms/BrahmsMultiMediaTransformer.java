@@ -139,7 +139,7 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 			mmo.setDescription(val(record, PLANTDESC));
 			mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(record)));
 			mmo.setIdentifications(Arrays.asList(getIdentification(record)));
-			mmo.setSpecimenTypeStatus(typeStatusNormalizer.getNormalizedValue(val(record, TYPE)));
+			mmo.setSpecimenTypeStatus(typeStatusNormalizer.normalize(val(record, TYPE)));
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
 			return mmo;
 		}

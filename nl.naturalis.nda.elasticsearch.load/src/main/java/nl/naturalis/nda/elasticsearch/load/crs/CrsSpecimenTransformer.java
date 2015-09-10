@@ -445,17 +445,17 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private String getPhaseOrStage(Element record)
 	{
-		return posNormalizer.getNormalizedValue(val(record, "abcd:PhaseOrStage"));
+		return posNormalizer.normalize(val(record, "abcd:PhaseOrStage"));
 	}
 
 	private String getTypeStatus(Element record)
 	{
-		return tsNormalizer.getNormalizedValue(val(record, "abcd:TypeStatus"));
+		return tsNormalizer.normalize(val(record, "abcd:TypeStatus"));
 	}
 
 	private String getSex(Element record)
 	{
-		return sexNormalizer.getNormalizedValue(val(record, "abcd:Sex"));
+		return sexNormalizer.normalize(val(record, "abcd:Sex"));
 	}
 
 	private Date date(Element e, String tag)

@@ -10,11 +10,14 @@ import java.util.HashMap;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 
 /**
- * A Normalizer maps values to their canonical equivalents.
+ * A Normalizer maps "found-in-the-wild" values to their canonical equivalents.
  * 
  * @author Ayco Holleman
  *
  * @param <T>
+ *            An {@code enum} class that maintains the canonical values. That
+ *            is, calling {@code toString()} on any of the enum constants yields
+ *            a canonical value.
  */
 public class Normalizer<T extends Enum<T>> {
 
@@ -70,25 +73,36 @@ public class Normalizer<T extends Enum<T>> {
 		}
 	}
 
-	public String getNormalizedValue(String input)
+	/**
+	 * Returns the canonical value for the specified "found-in-the-wild" value.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public String normalize(String input)
 	{
 		// You can have null mapped to a particular enum
 		// constant if you like by mapping "[NULL]" to the
 		// constant's toString() value
-		if (input == null) {
+		if (input == null)
 			return mappings.get("[NULL]");
-		}
 		return mappings.get(input.toLowerCase());
 	}
 
+	/**
+	 * Maps the specified "found-in-the-wild" value directly to an enum constant
+	 * of type T.
+	 * 
+	 * @param input
+	 * @return
+	 */
 	public T getEnumConstant(String input)
 	{
-		String normalizedValue = getNormalizedValue(input);
-		if (normalizedValue != null) {
+		String val = normalize(input);
+		if (val != null) {
 			for (T constant : enumConstants) {
-				if (constant.toString().equals(normalizedValue)) {
+				if (constant.toString().equals(val))
 					return constant;
-				}
 			}
 		}
 		return null;

@@ -10,14 +10,14 @@ import java.util.HashMap;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 
 /**
- * A Normalizer maps "found-in-the-wild" values to their canonical equivalents.
+ * A Normalizer maps found-in-the-wild values to their canonical equivalents.
  * 
  * @author Ayco Holleman
  *
  * @param <T>
  *            An {@code enum} class that maintains the canonical values. That
- *            is, calling {@code toString()} on any of the enum constants yields
- *            a canonical value.
+ *            is, calling {@code toString()} on any of the enum's constants
+ *            yields a canonical value.
  */
 public class Normalizer<T extends Enum<T>> {
 
@@ -74,7 +74,7 @@ public class Normalizer<T extends Enum<T>> {
 	}
 
 	/**
-	 * Returns the canonical value for the specified "found-in-the-wild" value.
+	 * Returns the canonical value for the specified found-in-the-wild value.
 	 * 
 	 * @param input
 	 * @return
@@ -90,7 +90,7 @@ public class Normalizer<T extends Enum<T>> {
 	}
 
 	/**
-	 * Maps the specified "found-in-the-wild" value directly to an enum constant
+	 * Maps the specified found-in-the-wild value directly to an enum constant
 	 * of type T.
 	 * 
 	 * @param input
@@ -108,21 +108,43 @@ public class Normalizer<T extends Enum<T>> {
 		return null;
 	}
 
+	/**
+	 * Whether to skip the first line in the mappings file.
+	 * 
+	 * @return
+	 */
 	public boolean isSkipHeader()
 	{
 		return skipHeader;
 	}
 
+	/**
+	 * Skips the first line in the mappings file.
+	 * 
+	 * @param skipHeader
+	 */
 	public void setSkipHeader(boolean skipHeader)
 	{
 		this.skipHeader = skipHeader;
 	}
 
+	/**
+	 * Returns the string that separates the found-in-the-wild value from the
+	 * canonical value.
+	 * 
+	 * @return
+	 */
 	public String getDelimiter()
 	{
 		return delimiter;
 	}
 
+	/**
+	 * Sets the string that separates the found-in-the-wild value from the
+	 * canonical value.
+	 * 
+	 * @param delimiter
+	 */
 	public void setDelimiter(String delimiter)
 	{
 		this.delimiter = delimiter;

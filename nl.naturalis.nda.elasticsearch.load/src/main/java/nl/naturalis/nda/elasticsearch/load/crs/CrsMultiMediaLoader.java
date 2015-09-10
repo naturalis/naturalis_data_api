@@ -8,14 +8,20 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
-public class CrsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
+/**
+ * The loader component for the CRS multimedia import.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class CrsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
 
 	private static IndexNative indexManager()
 	{
 		return Registry.getInstance().getNbaIndexManager();
 	}
 
-	public CrsMultiMediaLoader(ETLStatistics stats, int treshold)
+	CrsMultiMediaLoader(ETLStatistics stats, int treshold)
 	{
 		super(indexManager(), LUCENE_TYPE_MULTIMEDIA_OBJECT, treshold, stats);
 	}

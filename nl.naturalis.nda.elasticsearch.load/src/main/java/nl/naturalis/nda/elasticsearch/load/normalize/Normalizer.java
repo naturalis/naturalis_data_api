@@ -7,20 +7,27 @@ import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.util.HashMap;
 
+import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
+
+/**
+ * A Normalizer maps values to their canonical equivalents.
+ * 
+ * @author Ayco Holleman
+ *
+ * @param <T>
+ */
 public class Normalizer<T extends Enum<T>> {
 
 	private boolean skipHeader = false;
 	private String delimiter = ";";
 
-	private final HashMap<String, String> mappings = new HashMap<String, String>();
+	private final HashMap<String, String> mappings = new HashMap<>();
 	private final T[] enumConstants;
-
 
 	public Normalizer(Class<T> enumClass)
 	{
 		enumConstants = enumClass.getEnumConstants();
 	}
-
 
 	public void loadMappings(File translationFile)
 	{
@@ -53,16 +60,15 @@ public class Normalizer<T extends Enum<T>> {
 			while ((line = lnr.readLine()) != null) {
 				String[] parts = line.split(delimiter);
 				if (parts.length != 2) {
-					throw new RuntimeException(String.format("Invalid mapping: \"%s\"", line));
+					throw new ETLRuntimeException(String.format("Invalid mapping: \"%s\"", line));
 				}
 				mappings.put(parts[0].toLowerCase(), parts[1]);
 			}
 		}
 		catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ETLRuntimeException(e);
 		}
 	}
-
 
 	public String getNormalizedValue(String input)
 	{
@@ -73,9 +79,7 @@ public class Normalizer<T extends Enum<T>> {
 			return mappings.get("[NULL]");
 		}
 		return mappings.get(input.toLowerCase());
-
 	}
-
 
 	public T getEnumConstant(String input)
 	{
@@ -90,24 +94,20 @@ public class Normalizer<T extends Enum<T>> {
 		return null;
 	}
 
-
 	public boolean isSkipHeader()
 	{
 		return skipHeader;
 	}
-
 
 	public void setSkipHeader(boolean skipHeader)
 	{
 		this.skipHeader = skipHeader;
 	}
 
-
 	public String getDelimiter()
 	{
 		return delimiter;
 	}
-
 
 	public void setDelimiter(String delimiter)
 	{

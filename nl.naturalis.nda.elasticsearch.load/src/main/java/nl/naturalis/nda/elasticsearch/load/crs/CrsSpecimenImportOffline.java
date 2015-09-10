@@ -19,12 +19,19 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
-public class CrsSpecimenLocalImporter {
+/**
+ * Class that manages the import of CRS specimens. Data is sourced from files on
+ * the local file system, presumable put there by the {@link CrsHarvester}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class CrsSpecimenImportOffline {
 
 	public static void main(String[] args)
 	{
 		try {
-			CrsSpecimenLocalImporter importer = new CrsSpecimenLocalImporter();
+			CrsSpecimenImportOffline importer = new CrsSpecimenImportOffline();
 			importer.importSpecimens();
 		}
 		finally {
@@ -35,7 +42,7 @@ public class CrsSpecimenLocalImporter {
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsSpecimenLocalImporter.class);
+		logger = Registry.getInstance().getLogger(CrsSpecimenImportOffline.class);
 	}
 
 	private final boolean suppressErrors;
@@ -45,7 +52,7 @@ public class CrsSpecimenLocalImporter {
 	private CrsSpecimenTransformer transformer;
 	private CrsSpecimenLoader loader;
 
-	public CrsSpecimenLocalImporter()
+	public CrsSpecimenImportOffline()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
@@ -53,6 +60,10 @@ public class CrsSpecimenLocalImporter {
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
+	/**
+	 * Import specimens from the data directory configured in
+	 * nda-import.properties.
+	 */
 	public void importSpecimens()
 	{
 		long start = System.currentTimeMillis();

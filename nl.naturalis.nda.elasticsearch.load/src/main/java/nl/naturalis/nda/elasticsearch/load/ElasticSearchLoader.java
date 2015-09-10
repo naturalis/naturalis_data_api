@@ -6,29 +6,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.load.col.CoLReferenceImporter;
+import nl.naturalis.nda.elasticsearch.load.col.CoLSynonymImporter;
+import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter;
+import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter;
 
 import org.slf4j.Logger;
 
 /**
  * <p>
  * Abstract base class for objects responsible for the insertion of data into
- * ElasticSearch (a.k.a. indexing). Subclasses need only implement one method:
+ * ElasticSearch (a.k.a. indexing). Subclasses must implement only one method:
  * {@link #getIdGenerator()}, which must extract the ElasticSearch {@code _id}
  * from the object to be stored. The assumption is that you will never want to
- * rely on ElasticSearch to generate and ID for you. If you <i>do</i> want this,
+ * rely on ElasticSearch to generate an ID for you. If you <i>do</i> want this,
  * your implementation can and should simply return {@code null}. Subclasses may
  * also override {@link #getParentIdGenerator()} in case they need to establish
- * parent-child relationsships, but this is not required (the {@code Loader}
- * class itself already provides an implementation that just returns
+ * parent-child relationships, but this is not required (the {@code Loader}
+ * class itself already provides a default implementation that just returns
  * {@code null}).
  * </p>
  * <p>
  * Once you have processed all data from all datasources that you want to index
- * using a particular writer, you SHOULD always call {@link #flush()} on that
- * instance to write any remaining objects in the writer's internal buffer to
- * ElasticSearch. You are practically guranteed to loose data if you don't call
- * {@link #flush()} when done, because the last object you added (see
- * {@link #load(List) add}) is unlikely to have triggered an automatic flush.
+ * using a particular writer, you <b>should</b> always call {@link #flush()} on
+ * that instance to write any remaining objects in the writer's internal buffer
+ * to ElasticSearch. You are practically guranteed to loose data if you don't
+ * call {@link #flush()} when done, because the last object you added (see
+ * {@link #load(List) add}) is unlikely to trigger an automatic flush.
  * </p>
  * 
  * @author Ayco Holleman
@@ -156,6 +160,20 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		}
 	}
 
+	/**
+	 * Checks if the specified id belongs to an object that is about to be
+	 * indexed and, if so, returns the object. This functionality is needed for
+	 * import programs that enrich existing documents rather than creating new
+	 * ones. This applies to all CoL import programs except the
+	 * {@link CoLTaxonImporter taxon importer}. The {@link CoLSynonymImporter
+	 * synonym importer}, {@link CoLReferenceImporter literature reference
+	 * importer} and {@link CoLVernacularNameImporter vernacular name importer}
+	 * all enrich taxon documents rather than creating their own type of
+	 * documents.
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public T findInQueue(String id)
 	{
 		assert (ids != null);

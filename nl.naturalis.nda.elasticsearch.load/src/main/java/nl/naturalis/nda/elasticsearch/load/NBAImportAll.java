@@ -90,7 +90,7 @@ public class NBAImportAll {
 
 			logger.info("[>--- Starting CRS import ---<]");
 			try {
-				CrsImportAll crsImportAll = new CrsImportAll(index);
+				CrsImportAll crsImportAll = new CrsImportAll();
 				crsImportAll.importAll();
 			}
 			catch (Throwable t) {
@@ -112,6 +112,7 @@ public class NBAImportAll {
 		
 		finally {
 			LoadUtil.logDuration(logger, getClass(), start);
+			Registry.getInstance().closeESClient();
 		}
 
 	}

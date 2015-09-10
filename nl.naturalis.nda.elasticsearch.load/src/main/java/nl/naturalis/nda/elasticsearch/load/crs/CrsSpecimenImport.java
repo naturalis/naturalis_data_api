@@ -18,12 +18,21 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
-public class CrsSpecimenRemoteImporter {
+/**
+ * Class that manages the import of CRS specimens. Data is sourced using "live"
+ * calls to the CRS OAI service.
+ * 
+ * @author Ayco Holleman
+ * 
+ * @see CrsSpecimenImportOffline
+ *
+ */
+public class CrsSpecimenImport {
 
 	public static void main(String[] args)
 	{
 		try {
-			CrsSpecimenRemoteImporter importer = new CrsSpecimenRemoteImporter();
+			CrsSpecimenImport importer = new CrsSpecimenImport();
 			importer.importSpecimens();
 		}
 		finally {
@@ -34,7 +43,7 @@ public class CrsSpecimenRemoteImporter {
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsSpecimenRemoteImporter.class);
+		logger = Registry.getInstance().getLogger(CrsSpecimenImport.class);
 	}
 
 	private final boolean suppressErrors;
@@ -44,7 +53,7 @@ public class CrsSpecimenRemoteImporter {
 	private CrsSpecimenTransformer transformer;
 	private CrsSpecimenLoader loader;
 
-	public CrsSpecimenRemoteImporter()
+	public CrsSpecimenImport()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
@@ -52,6 +61,9 @@ public class CrsSpecimenRemoteImporter {
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
+	/**
+	 * Import specimens through repetitive calls to the CRS OAI service.
+	 */
 	public void importSpecimens()
 	{
 		long start = System.currentTimeMillis();

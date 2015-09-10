@@ -21,12 +21,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * The extraction component for CRS source data.
+ * The extraction component for the CRS import. Used both for specimen imports
+ * and multimedia imports, and both for "offline" imports from the local file
+ * system and for "live" imports calling the OAI service.
  * 
  * @author Ayco Holleman
  *
  */
-public class CrsExtractor implements Iterable<XMLRecordInfo> {
+class CrsExtractor implements Iterable<XMLRecordInfo> {
 
 	private static DocumentBuilder docBuilder;
 
@@ -37,7 +39,8 @@ public class CrsExtractor implements Iterable<XMLRecordInfo> {
 	 * Create a new CRS specimen extractor for the specified XML file. Use this
 	 * constructor when importing pre-harvested files from the local file
 	 * system. The {@link ETLStatistics} parameter is only present for
-	 * uniformity's sake. It is not currently used, that is, its
+	 * uniformity's sake (other extractors in this library are also instantiated
+	 * with a statistics object). It is not currently used. That is, its
 	 * {@link ETLStatistics#badInput} counter is not updated, because extraction
 	 * failures are already detected when the file as a whole is parsed into a
 	 * DOM tree. Once we're past that stage nothing can go wrong when handing
@@ -46,7 +49,7 @@ public class CrsExtractor implements Iterable<XMLRecordInfo> {
 	 * @param f
 	 * @param stats
 	 */
-	public CrsExtractor(File f, ETLStatistics stats)
+	CrsExtractor(File f, ETLStatistics stats)
 	{
 		this.stats = stats;
 		try {
@@ -64,7 +67,7 @@ public class CrsExtractor implements Iterable<XMLRecordInfo> {
 	 * @param bytes
 	 * @param stats
 	 */
-	public CrsExtractor(byte[] bytes, ETLStatistics stats)
+	CrsExtractor(byte[] bytes, ETLStatistics stats)
 	{
 		this.stats = stats;
 		try {

@@ -10,6 +10,14 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 
+/**
+ * Abstract base class for mimetype caches. Provides the public interface of a
+ * mimetype cache, while delegating the heavy lifting to subclasses through a
+ * set of abstract template methods.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	/**
@@ -44,7 +52,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	private int medialibRequests = 0;
 	private int requestFailures = 0;
 
-
 	AbstractMimeTypeCache(String cacheFileName)
 	{
 		String ndaConfDir = System.getProperty(SYSPROP_CONFIG_DIR);
@@ -67,7 +74,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		logger.info(String.format("Initialization complete. Number of entries in cache: %s", numEntries));
 	}
 
-
 	@Override
 	public void resetCounters()
 	{
@@ -75,7 +81,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		medialibRequests = 0;
 		requestFailures = 0;
 	}
-
 
 	public String getMimeType(String unitID)
 	{
@@ -111,13 +116,11 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		return mimetype;
 	}
 
-
 	@Override
 	public int getSize()
 	{
 		return numEntries;
 	}
-
 
 	/**
 	 * Get the number of times the request to the medialib for some reason
@@ -131,7 +134,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		return requestFailures;
 	}
 
-
 	/**
 	 * Get the number of successful mime type lookups (without having to call
 	 * the medialib).
@@ -144,7 +146,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		return cacheHits;
 	}
 
-
 	/**
 	 * Get the number of times the mime type had to be retrieved by calling the
 	 * medialib.
@@ -156,7 +157,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	{
 		return medialibRequests;
 	}
-
 
 	/**
 	 * Closes the cache. If the cache has changed since it was instantiated
@@ -173,7 +173,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		closeCache();
 	}
 
-
 	/**
 	 * Load the cache file into memory and return the number of entries found in
 	 * the cache file. Called in the constructor.
@@ -183,7 +182,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected abstract int buildCache(File cacheFile);
 
-
 	/**
 	 * Add a new entry to the cache. Called in case of a cache miss.
 	 * 
@@ -191,7 +189,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 * @param mimeType
 	 */
 	protected abstract void addEntry(String unitID, String mimeType);
-
 
 	/**
 	 * Look up the specified UnitID in the mimetype cache and, if found, return
@@ -202,7 +199,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected abstract String getEntry(String unitID);
 
-
 	/**
 	 * Save the cache back to the cache file. Called if at least one new entry
 	 * has been added to the cache.
@@ -210,7 +206,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 * @throws IOException
 	 */
 	protected abstract void saveCache(File cacheFile) throws IOException;
-
 
 	/**
 	 * Release all memory and resources associated with the cache.

@@ -8,14 +8,20 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
-public class CrsSpecimenLoader extends ElasticSearchLoader<ESSpecimen> {
+/**
+ * The transformer component for the CRS specimen import.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class CrsSpecimenLoader extends ElasticSearchLoader<ESSpecimen> {
 
 	private static IndexNative indexManager()
 	{
 		return Registry.getInstance().getNbaIndexManager();
 	}
 
-	public CrsSpecimenLoader(ETLStatistics stats, int treshold)
+	CrsSpecimenLoader(ETLStatistics stats, int treshold)
 	{
 		super(indexManager(), LUCENE_TYPE_SPECIMEN, treshold, stats);
 	}

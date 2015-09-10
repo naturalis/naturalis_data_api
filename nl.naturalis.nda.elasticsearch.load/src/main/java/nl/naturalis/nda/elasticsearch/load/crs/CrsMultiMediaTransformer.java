@@ -41,9 +41,15 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalize
 import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
-public class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
+/**
+ * The transformer component for the CRS multimedia import.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
 
-	public static final Logger logger;
+	private static final Logger logger;
 
 	static {
 		logger = Registry.getInstance().getLogger(CrsMultiMediaTransformer.class);

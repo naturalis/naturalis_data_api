@@ -9,16 +9,15 @@ package nl.naturalis.nda.elasticsearch.load;
 public interface LoadConstants {
 
 	/**
-	 * Required system property telling us the location of the config dir (with
-	 * nda-import.properties).
+	 * Required system property telling us the location of the config dir (e.g.
+	 * containing nda-import.properties).
 	 */
 	String SYSPROP_CONFIG_DIR = "ndaConfDir";
 	/**
-	 * Optional system property telling us how many documents to index per index
-	 * request.
+	 * Optional system property specifying the number of documents to be indexed
+	 * at once.
 	 */
-	String SYSPROP_ES_BULK_REQUEST_SIZE = "es.bulkrequest.size";
-
+	String SYSPROP_ES_BULK_REQUEST_SIZE = "es.bulk.request.size";
 	/**
 	 * ElastichSearch {@code _id} prefix for Brahms documents.
 	 */

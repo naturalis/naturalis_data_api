@@ -1,8 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
+import static nl.naturalis.nda.elasticsearch.load.crs.CrsImportUtil.*;
+
 import java.util.List;
 
 import nl.naturalis.nda.domain.SourceSystem;
@@ -19,13 +18,22 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
-public class CrsMultiMediaLocalImporter {
+/**
+ * Class that manages the import of CRS multimedia. Data is sourced using "live"
+ * calls to the CRS OAI service.
+ * 
+ * @author Ayco Holleman
+ * 
+ * @see CrsMultiMediaImportOffline
+ *
+ */
+public class CrsMultiMediaImport {
 
 	public static void main(String[] args)
 	{
 		try {
-			CrsMultiMediaLocalImporter importer = new CrsMultiMediaLocalImporter();
-			importer.importSpecimens();
+			CrsMultiMediaImport importer = new CrsMultiMediaImport();
+			importer.importMultimedia();
 		}
 		finally {
 			Registry.getInstance().closeESClient();
@@ -35,7 +43,7 @@ public class CrsMultiMediaLocalImporter {
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsMultiMediaLocalImporter.class);
+		logger = Registry.getInstance().getLogger(CrsMultiMediaImport.class);
 	}
 
 	private final boolean suppressErrors;
@@ -45,7 +53,7 @@ public class CrsMultiMediaLocalImporter {
 	private CrsMultiMediaTransformer transformer;
 	private CrsMultiMediaLoader loader;
 
-	public CrsMultiMediaLocalImporter()
+	public CrsMultiMediaImport()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
@@ -53,14 +61,12 @@ public class CrsMultiMediaLocalImporter {
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
-	public void importSpecimens()
+	/**
+	 * Import multimedia through repetitive calls to the CRS OAI service.
+	 */
+	public void importMultimedia()
 	{
 		long start = System.currentTimeMillis();
-		File[] xmlFiles = getXmlFiles();
-		if (xmlFiles.length == 0) {
-			logger.error("No multimedia oai.xml files found. Check nda-import.propties");
-			return;
-		}
 		LoadUtil.truncate(NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.CRS);
 		stats = new ETLStatistics();
 		transformer = new CrsMultiMediaTransformer(stats);
@@ -68,8 +74,11 @@ public class CrsMultiMediaLocalImporter {
 		loader = new CrsMultiMediaLoader(stats, esBulkRequestSize);
 		ThemeCache.getInstance().resetMatchCounters();
 		try {
-			for (File f : xmlFiles)
-				importFile(f);
+			String resumptionToken = null;
+			do {
+				byte[] response = callMultimediaService(resumptionToken);
+				resumptionToken = processResponse(response);
+			} while (resumptionToken != null);
 		}
 		finally {
 			IOUtil.close(loader);
@@ -79,10 +88,9 @@ public class CrsMultiMediaLocalImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
-	private void importFile(File f)
+	private String processResponse(byte[] bytes)
 	{
-		logger.info("Processing file " + f.getName());
-		CrsExtractor extractor = new CrsExtractor(f, stats);
+		CrsExtractor extractor = new CrsExtractor(bytes, stats);
 		for (XMLRecordInfo extracted : extractor) {
 			List<ESMultiMediaObject> transformed = transformer.transform(extracted);
 			loader.load(transformed);
@@ -90,27 +98,7 @@ public class CrsMultiMediaLocalImporter {
 				logger.info("Records processed: " + stats.recordsProcessed);
 			}
 		}
+		return extractor.getResumptionToken();
 	}
 
-	private static File[] getXmlFiles()
-	{
-		ConfigObject config = Registry.getInstance().getConfig();
-		String path = config.required("crs.data_dir");
-		logger.info("Data directory for CRS multimedia import: " + path);
-		File[] files = new File(path).listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name)
-			{
-				if (!name.startsWith("multimedia.")) {
-					return false;
-				}
-				if (!name.endsWith(".oai.xml")) {
-					return false;
-				}
-				return true;
-			}
-		});
-		logger.debug("Sorting file list");
-		Arrays.sort(files);
-		return files;
-	}
 }

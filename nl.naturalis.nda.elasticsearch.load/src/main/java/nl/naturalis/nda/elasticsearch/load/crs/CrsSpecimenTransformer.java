@@ -33,10 +33,12 @@ import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
 /**
+ * The transformation component for the CRS specimen import.
+ * 
  * @author Ayco Holleman
  *
  */
-public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
+class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private static final Logger logger;
 	private static final SpecimenTypeStatusNormalizer tsNormalizer;
@@ -52,7 +54,7 @@ public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		posNormalizer = PhaseOrStageNormalizer.getInstance();
 	}
 
-	public CrsSpecimenTransformer(ETLStatistics stats)
+	CrsSpecimenTransformer(ETLStatistics stats)
 	{
 		super(stats);
 	}
@@ -76,7 +78,7 @@ public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		}
 
 		objectID = val(record, "abcd:UnitID");
-		
+
 		if (objectID == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
@@ -176,7 +178,7 @@ public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return Arrays.asList(specimen);
 	}
 
-	public SpecimenIdentification getIdentification(Element elem)
+	private SpecimenIdentification getIdentification(Element elem)
 	{
 
 		ScientificName sn = getScientificName(elem);
@@ -274,7 +276,7 @@ public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return classification;
 	}
 
-	public ESGatheringEvent getGatheringEvent()
+	private ESGatheringEvent getGatheringEvent()
 	{
 		Element record = recInf.getElement();
 		ESGatheringEvent ge = new ESGatheringEvent();
@@ -312,7 +314,7 @@ public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return ge;
 	}
 
-	public List<ChronoStratigraphy> getChronoStratigraphyList()
+	private List<ChronoStratigraphy> getChronoStratigraphyList()
 	{
 		Element record = recInf.getElement();
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsChronoStratigraphy");
@@ -359,7 +361,7 @@ public class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return one;
 	}
 
-	public List<BioStratigraphy> getBioStratigraphyList()
+	private List<BioStratigraphy> getBioStratigraphyList()
 	{
 		Element record = recInf.getElement();
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsBioStratigraphy");

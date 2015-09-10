@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 
 /**
  * Implementation of {@link Index} that uses ElasticSearch's REST interface to
- * manipulate an index. Not ideal, but currently more trustworthy than the
- * native API. Most methods will throw an {@link IndexException} if something
- * went wrong. This is a {@link RuntimeException}, but you can, of course, still
- * catch it.
+ * manipulate an index.
  * 
  * @author ayco_holleman
  * 

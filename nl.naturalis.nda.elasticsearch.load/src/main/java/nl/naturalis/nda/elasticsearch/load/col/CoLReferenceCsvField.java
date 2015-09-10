@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 /**
- * Enumeration of CSV fields in the reference.txt file of the DwC archive.
+ * Enumerates the CSV fields in the reference.txt file of a CoL DwC archive.
  * 
  * @author Ayco Holleman
  *

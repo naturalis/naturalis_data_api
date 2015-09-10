@@ -10,6 +10,12 @@ import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
+/**
+ * Provides common functionality related to the CRS import.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class CrsImportUtil {
 
 	static final ConfigObject config;
@@ -27,6 +33,31 @@ class CrsImportUtil {
 	{
 	}
 
+	/**
+	 * Generates and executes an initial request to the CRS OAI service for
+	 * specimens and returns the response as a byte array.
+	 * 
+	 * @param fromDate
+	 * @param untilDate
+	 * @return
+	 */
+	static byte[] callSpecimenService(Date fromDate, Date untilDate)
+	{
+		String url = config.required("crs.specimens.url.initial");
+		if (fromDate != null)
+			url += "&from=" + oaiDateFormatter.format(fromDate);
+		if (untilDate != null)
+			url += "&until=" + oaiDateFormatter.format(untilDate);
+		return callService(url);
+	}
+
+	/**
+	 * Calls the CRS OAI service for specimens using the specified resumption
+	 * token and returns the response as a byte array.
+	 * 
+	 * @param resumptionToken
+	 * @return
+	 */
 	static byte[] callSpecimenService(String resumptionToken)
 	{
 		String url;
@@ -46,16 +77,33 @@ class CrsImportUtil {
 		return callService(url);
 	}
 
-	static byte[] callSpecimenService(Date fromDate, Date untilDate)
+	/**
+	 * Generates and executes an initial request to the CRS OAI service for
+	 * specimens and returns the response as a byte array.
+	 * 
+	 * @param fromDate
+	 * @param untilDate
+	 * @return
+	 */
+	static byte[] callMultimediaService(Date fromDate, Date untilDate)
 	{
-		String url = config.required("crs.specimens.url.initial");
-		if (fromDate != null)
+		String url = config.required("crs.multimedia.url.initial");
+		if (fromDate != null) {
 			url += "&from=" + oaiDateFormatter.format(fromDate);
-		if (untilDate != null)
+		}
+		if (untilDate != null) {
 			url += "&until=" + oaiDateFormatter.format(untilDate);
+		}
 		return callService(url);
 	}
 
+	/**
+	 * Calls the CRS OAI service for multimedia using the specified resumption
+	 * token and returns the response as a byte array.
+	 * 
+	 * @param resumptionToken
+	 * @return
+	 */
 	static byte[] callMultimediaService(String resumptionToken)
 	{
 		String url;
@@ -70,18 +118,6 @@ class CrsImportUtil {
 		}
 		else {
 			url = String.format(config.required("crs.multimedia.url.resume"), resumptionToken);
-		}
-		return callService(url);
-	}
-
-	static byte[] callMultimediaService(Date fromDate, Date untilDate)
-	{
-		String url = config.required("crs.multimedia.url.initial");
-		if (fromDate != null) {
-			url += "&from=" + oaiDateFormatter.format(fromDate);
-		}
-		if (untilDate != null) {
-			url += "&until=" + oaiDateFormatter.format(untilDate);
 		}
 		return callService(url);
 	}

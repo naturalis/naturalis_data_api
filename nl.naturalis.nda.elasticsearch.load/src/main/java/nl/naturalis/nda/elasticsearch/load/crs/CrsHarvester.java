@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import static nl.naturalis.nda.elasticsearch.load.crs.CrsImportUtil.callMultimediaService;
 import static nl.naturalis.nda.elasticsearch.load.crs.CrsImportUtil.callSpecimenService;
+import static org.domainobject.util.FileUtil.setContents;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -16,22 +17,20 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 import org.slf4j.Logger;
 
-import static org.domainobject.util.FileUtil.*;
-
 /**
  * Harvests the CRS OAI service and saves its output to files on the local file
- * system (from where they can be processed by the specimen and multimedia
- * import programs).
+ * system. These files can then be processed further by
+ * {@link CrsSpecimenImportOffline} and {@link CrsMultiMediaImportOffline}.
  * 
  * @author Ayco Holleman
  * 
  */
-public class CrsDownloader {
+public class CrsHarvester {
 
 	public static void main(String[] args)
 	{
 		try {
-			CrsDownloader downloader = new CrsDownloader();
+			CrsHarvester downloader = new CrsHarvester();
 			if (args.length == 0) {
 				downloader.downloadSpecimens(null, null);
 				downloader.downloadMultiMedia(null, null);
@@ -79,17 +78,23 @@ public class CrsDownloader {
 	private static final String usage;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsDownloader.class);
+		logger = Registry.getInstance().getLogger(CrsHarvester.class);
 		oaiDateFormat = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 		fileNameDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
 		usage = "USAGE: java CrsDownloader [[[specimens|multimedia] fromdate] untildate]";
 	}
 
-	public CrsDownloader()
+	public CrsHarvester()
 	{
 	}
 
+	/**
+	 * Harvests the CRS OAI service for specimens.
+	 * 
+	 * @param fromDate
+	 * @param untilDate
+	 */
 	public void downloadSpecimens(Date fromDate, Date untilDate)
 	{
 		logger.info("Downloading specimens");
@@ -116,6 +121,12 @@ public class CrsDownloader {
 		logger.info("Successfully downloaded specimens");
 	}
 
+	/**
+	 * Harvests the CRS OAI service for multimedia.
+	 * 
+	 * @param fromDate
+	 * @param untilDate
+	 */
 	public void downloadMultiMedia(Date fromDate, Date untilDate)
 	{
 		logger.info("Downloading multimedia");
@@ -187,7 +198,7 @@ public class CrsDownloader {
 	private static File getAdminFile(String type)
 	{
 		File dir = Registry.getInstance().getConfDir();
-		return FileUtil.newFile(dir, ".crs-"  + type + ".oai");
+		return FileUtil.newFile(dir, ".crs-" + type + ".oai");
 	}
 
 	private static Date parseDate(String date)

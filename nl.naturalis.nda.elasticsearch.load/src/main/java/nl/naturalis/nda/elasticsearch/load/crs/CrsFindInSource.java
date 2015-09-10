@@ -28,6 +28,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+/**
+ * Utility class for searching the locally stored XML files for a value.
+ * @author Ayco Holleman
+ *
+ */
 public class CrsFindInSource {
 
 	public static void main(String[] args) throws Exception

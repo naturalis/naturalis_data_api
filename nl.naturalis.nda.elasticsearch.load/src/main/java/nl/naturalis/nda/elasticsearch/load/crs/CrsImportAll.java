@@ -1,49 +1,43 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
 
+/**
+ * Class that manages the import of CRS specimens and multimedia. Basically just
+ * runs {@link CrsSpecimenImportOffline#importSpecimens()} first and then
+ * {@link CrsMultiMediaImportOffline#importMultimedia()}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CrsImportAll {
 
 	public static void main(String[] args) throws Exception
 	{
-		logger.info("-----------------------------------------------------------------");
-		logger.info("-----------------------------------------------------------------");
-		IndexNative index = null;
 		try {
-			index = Registry.getInstance().getNbaIndexManager();
-			CrsImportAll crsImportAll = new CrsImportAll(index);
+			CrsImportAll crsImportAll = new CrsImportAll();
 			crsImportAll.importAll();
 		}
 		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
+			Registry.getInstance().closeESClient();
 		}
 	}
 
-	public static final String ID_PREFIX = "CRS-";
-	public static final String SYSPROP_BATCHSIZE = "nl.naturalis.nda.elasticsearch.load.crs.batchsize";
-	public static final String SYSPROP_MAXRECORDS = "nl.naturalis.nda.elasticsearch.load.crs.maxrecords";
-
+	@SuppressWarnings("unused")
 	private static final Logger logger = Registry.getInstance().getLogger(CrsImportAll.class);
 
-	private final IndexNative index;
-
-
-	public CrsImportAll(IndexNative index)
-	{
-		this.index = index;
-	}
-
-
+	/**
+	 * Import CRS specimens and multimedia.
+	 * 
+	 * @throws Exception
+	 */
 	public void importAll() throws Exception
 	{
-		CrsSpecimenLocalImporter specimenImporter = new CrsSpecimenLocalImporter();
+		CrsSpecimenImportOffline specimenImporter = new CrsSpecimenImportOffline();
 		specimenImporter.importSpecimens();
-		CrsMultiMediaImporter multimediaImporter = new CrsMultiMediaImporter(index);
-		multimediaImporter.importMultiMedia();
+		CrsMultiMediaImportOffline multimediaImporter = new CrsMultiMediaImportOffline();
+		multimediaImporter.importMultimedia();
 	}
 }

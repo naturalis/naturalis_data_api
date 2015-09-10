@@ -14,12 +14,11 @@ import nl.naturalis.nda.domain.SourceSystem;
 import org.slf4j.Logger;
 
 /**
- * A cache that associates UnitIDs with one or more "themes". Themes are
- * predefined categories of specimens, for example "Extinct Birds". If a
- * specimen is an extinct bird, its UnitID is associated with that theme.
+ * A cache that maps UnitIDs with one or more "themes". Themes are predefined
+ * categories of specimens, for example "Extinct Birds". If a specimen is an
+ * extinct bird, its UnitID is associated with that theme.
  * 
  * @author Ayco Holleman
- * @created Aug 4, 2015
  *
  */
 public class ThemeCache {
@@ -40,6 +39,11 @@ public class ThemeCache {
 
 	private final ArrayList<Theme> themes = new ArrayList<>();
 
+	/**
+	 * Returns a {@code ThemeCache} object.
+	 * 
+	 * @return
+	 */
 	public static ThemeCache getInstance()
 	{
 		if (instance == null) {
@@ -54,7 +58,8 @@ public class ThemeCache {
 	}
 
 	/**
-	 * Establish which themes the object with the specified id belongs to.
+	 * Returns the themes that the object (specimen, multimedia object, etc.)
+	 * with the specified id belongs to.
 	 * 
 	 * @param id
 	 * @param type

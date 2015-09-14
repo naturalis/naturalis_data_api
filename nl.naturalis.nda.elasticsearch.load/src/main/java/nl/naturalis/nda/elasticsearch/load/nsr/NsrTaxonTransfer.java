@@ -28,6 +28,12 @@ import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
+/**
+ * Transforms and validates NSR source data.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class NsrTaxonTransfer {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrTaxonTransfer.class);
@@ -57,8 +63,8 @@ class NsrTaxonTransfer {
 		translations.put("isInvalidNameOf", TaxonomicStatus.SYNONYM);
 	}
 
-	private static final List<String> ALLOWED_TAXON_RANKS = Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis", "forma");
-
+	private static final List<String> ALLOWED_TAXON_RANKS = Arrays
+			.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis", "forma");
 
 	static ESTaxon transfer(Element taxonElement) throws InvalidDataException, SkippableDataException, MalformedDataException
 	{
@@ -91,7 +97,8 @@ class NsrTaxonTransfer {
 		if (monomials != null) {
 			taxon.setSystemClassification(monomials);
 			DefaultClassification dc = getDefaultClassification(monomials);
-			//DefaultClassification dc = DefaultClassification.fromSystemClassification(monomials);
+			// DefaultClassification dc =
+			// DefaultClassification.fromSystemClassification(monomials);
 			taxon.setDefaultClassification(dc);
 		}
 		for (ScientificName sn : getScientificNames(taxonElement)) {
@@ -114,7 +121,6 @@ class NsrTaxonTransfer {
 		return taxon;
 	}
 
-
 	private static List<ScientificName> getScientificNames(Element taxonElement) throws MalformedDataException, InvalidDataException
 	{
 		Element namesElement = DOMUtil.getChild(taxonElement, "names");
@@ -133,7 +139,6 @@ class NsrTaxonTransfer {
 		}
 		return names;
 	}
-
 
 	private static List<VernacularName> getVernacularNames(Element taxonElement) throws MalformedDataException
 	{
@@ -154,7 +159,6 @@ class NsrTaxonTransfer {
 		return names;
 	}
 
-
 	private static boolean isScientificNameElement(Element nameElement) throws MalformedDataException
 	{
 		String nameType = nl(DOMUtil.getValue(nameElement, "nametype"));
@@ -164,8 +168,8 @@ class NsrTaxonTransfer {
 		return (!nameType.equals("isPreferredNameOf")) && (!nameType.equals("isAlternativeNameOf"));
 	}
 
-
-	// Does not retrieve lower ranks, therefore does not cause discrepancies between
+	// Does not retrieve lower ranks, therefore does not cause discrepancies
+	// between
 	// DefaultClassification and ScientificName.
 	private static DefaultClassification getDefaultClassification(List<Monomial> monomials)
 	{
@@ -193,7 +197,6 @@ class NsrTaxonTransfer {
 		return dc;
 	}
 
-
 	private static List<TaxonDescription> getTaxonDescriptions(Element taxonElement)
 	{
 		Element descriptionElement = DOMUtil.getChild(taxonElement, "description");
@@ -213,7 +216,6 @@ class NsrTaxonTransfer {
 		}
 		return descriptions;
 	}
-
 
 	private static List<Monomial> getMonomials(Element taxonElement)
 	{
@@ -248,7 +250,6 @@ class NsrTaxonTransfer {
 		return monomials;
 	}
 
-
 	private static VernacularName getVernacularName(Element nameElement)
 	{
 		VernacularName name = new VernacularName();
@@ -281,7 +282,6 @@ class NsrTaxonTransfer {
 		}
 		return name;
 	}
-
 
 	private static ScientificName getScientificName(Element nameElement) throws InvalidDataException
 	{
@@ -318,7 +318,6 @@ class NsrTaxonTransfer {
 		return sn;
 	}
 
-
 	private static TaxonomicStatus getTaxonomicStatus(Element nameElement) throws InvalidDataException
 	{
 		String raw = nl(DOMUtil.getValue(nameElement, "nametype"));
@@ -331,7 +330,6 @@ class NsrTaxonTransfer {
 		}
 		return status;
 	}
-
 
 	static String nl(String in)
 	{

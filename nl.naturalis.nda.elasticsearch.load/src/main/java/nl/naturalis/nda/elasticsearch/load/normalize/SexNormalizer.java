@@ -3,7 +3,8 @@ package nl.naturalis.nda.elasticsearch.load.normalize;
 import nl.naturalis.nda.domain.Sex;
 
 /**
- * Normalizes different names for the various sexes.
+ * Normalizes different names for the various sexes. For example "F", "fem", and
+ * "female" all map to "female".
  * 
  * @author Ayco Holleman
  *

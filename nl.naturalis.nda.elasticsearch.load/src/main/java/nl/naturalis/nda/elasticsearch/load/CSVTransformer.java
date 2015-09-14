@@ -3,13 +3,14 @@ package nl.naturalis.nda.elasticsearch.load;
 import java.util.List;
 
 /**
- * Defines the capacities transformers that take commons-csv objects as their
- * input an have an arbitrary type of objects as their output.
+ * An extension of the {@link Transformer} interface that narrows the input of
+ * the transformer to CSV records. No new methods are added to this interface;
+ * it just serves to make things more specific.
  * 
  * @author Ayco Holleman
  *
  * @param <T>
- *            The type of object that is output from the transformer.
+ *            The type of object that is output by the transformer.
  */
 public interface CSVTransformer<T> extends Transformer<CSVRecordInfo, T> {
 

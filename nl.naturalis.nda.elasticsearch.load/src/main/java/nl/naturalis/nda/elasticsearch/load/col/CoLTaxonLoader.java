@@ -9,6 +9,13 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.*;
 
 /**
+ * The loader component for the CoL import. Loads Taxon documents into
+ * ElasticSearch. This class is for all CoL by all CoL importers (
+ * {@link CoLTaxonImporter}, {@link CoLSynonymImporter},
+ * {@link CoLVernacularNameImporter} and {@link CoLReferenceImporter}). Only the
+ * taxon importer (run first) actually creates new documents; the other
+ * importers overwrite them with enriched versions.
+ * 
  * @author Ayco Holleman
  *
  */

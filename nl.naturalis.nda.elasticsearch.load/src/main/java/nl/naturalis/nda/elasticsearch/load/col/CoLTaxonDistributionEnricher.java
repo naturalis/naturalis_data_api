@@ -96,7 +96,7 @@ public class CoLTaxonDistributionEnricher {
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
 					String taxonId = CSVImportUtil.val(record, CoLVernacularNameCsvField.taxonID.ordinal());
-					String esId = CoLImportAll.ID_PREFIX + taxonId;
+					String esId = /*CoLImportAll.ID_PREFIX +*/ taxonId;
 					String loc = CSVImportUtil.val(record, CoLVernacularNameCsvField.locality.ordinal());
 
 					taxon = findTaxonInBatch(taxonId, objects);

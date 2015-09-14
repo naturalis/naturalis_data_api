@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Interface defining some common, basic methods for interacting with a single
- * ElasticSearch index.
+ * Interface defining a simple API for common operations on an ElasticSearch
+ * index. The API includes CRUD-type operations as well as DDL-type operations.
+ * With a few exceptions the methods of this interface implicitly operate on a
+ * <i>single</i> index, most likely set and fixed in the constructor of
+ * implementing classes (hence the name IndexManager).
  * 
  * @author ayco_holleman
  * 
@@ -20,7 +23,7 @@ public interface IndexManager {
 	boolean exists();
 
 	/**
-	 * Whether the index contains a definition ("mapping") of the specified
+	 * Whether the index contains a definition (mapping) of the specified
 	 * document type.
 	 * 
 	 * @param type
@@ -39,8 +42,9 @@ public interface IndexManager {
 
 	/**
 	 * Describes all indices (i.e. their mappings) in the cluster. This method
-	 * does <i>not</i> specifically operate against the encapsulated index. For
-	 * ease of use, though, it's still a non-static method.
+	 * does <i>not</i> specifically operate on the encapsulated index. For ease
+	 * of use, though, it is still included as part of the index manager
+	 * interface.
 	 * 
 	 * @return The mappings
 	 */
@@ -52,7 +56,7 @@ public interface IndexManager {
 	void create();
 
 	/**
-	 * Creates the index with the specified number of shards and replicas
+	 * Creates the index with the specified number of shards and replicas.
 	 * 
 	 * @param numShards
 	 *            The number of shards
@@ -70,7 +74,7 @@ public interface IndexManager {
 	void create(String settings);
 
 	/**
-	 * Deletes the index and everything in it (!)
+	 * Deletes the index and everything in it. Use with care!
 	 * 
 	 * @return {@code true} if the index existed and was successfully deleted;
 	 *         {@code false} if the index did not exist.
@@ -78,8 +82,16 @@ public interface IndexManager {
 	boolean delete();
 
 	/**
-	 * Adds a new document type (a.k.a. mapping) to the index or overwrites an
-	 * existing one.
+	 * Deletes <b>all</b> indices and their data from the cluster. Use with
+	 * care! This method does <i>not</i> specifically operate on the
+	 * encapsulated index. For ease of use, though, it is still included as part
+	 * of the index manager interface.
+	 */
+	void deleteAllIndices();
+
+	/**
+	 * Adds a new document type (mapping) to the index or overwrites an existing
+	 * one.
 	 * 
 	 * @param name
 	 *            The name of the type
@@ -90,21 +102,13 @@ public interface IndexManager {
 	void addType(String name, String mapping);
 
 	/**
-	 * Deletes the specified type (along with all documents of that type) from
-	 * the index.
+	 * Deletes the specified document type (mapping) from index, along with all
+	 * documents of that type.
 	 * 
 	 * @param name
 	 * @return
 	 */
 	boolean deleteType(String name);
-
-	/**
-	 * Delete all indices and their data from the cluster. <b>Use with care!</b>
-	 * This method does <i>not</i> specifically operate against the encapsulated
-	 * index. For ease of use, though, it is still a non-static method.
-	 * 
-	 */
-	void deleteAllIndices();
 
 	/**
 	 * Retrieves the object corresponding to the specified id.
@@ -133,7 +137,7 @@ public interface IndexManager {
 	<T> List<T> get(String type, Collection<String> ids, Class<T> targetClass);
 
 	/**
-	 * Deletes the document with the specified id
+	 * Deletes the document with the specified id.
 	 * 
 	 * @param type
 	 *            The type of the document
@@ -144,8 +148,8 @@ public interface IndexManager {
 	boolean deleteDocument(String type, String id);
 
 	/**
-	 * Deletes all documents from the specified document type where the
-	 * specified field has the specified value.
+	 * Deletes all documents of the specified type where the specified field has
+	 * the specified value.
 	 * 
 	 * @param type
 	 * @param field
@@ -214,9 +218,9 @@ public interface IndexManager {
 	 *            The objects to add
 	 * @param ids
 	 *            The ids of the objects to add. For each object you must
-	 *            specify an ID. In other words the sizes of the {@objs}
-	 *            list and the {@ids} list must be equal. If you want Lucene to
-	 *            generate the IDs for you, specify null.
+	 *            specify an ID. In other words the sizes of the {@code objs}
+	 *            list and the {@code ids} list must be equal. If you want
+	 *            Lucene to generate the IDs for you, specify null.
 	 */
 	void saveObjects(String type, List<?> objs, List<String> ids);
 
@@ -230,9 +234,9 @@ public interface IndexManager {
 	 *            The objects to add
 	 * @param ids
 	 *            The ids of the objects to add. For each object you must
-	 *            specify an ID. In other words the sizes of the {@objs}
-	 *            list and the {@ids} list must be equal. If you want Lucene to
-	 *            generate the IDs for you, specify null.
+	 *            specify an ID. In other words the sizes of the {@code objs}
+	 *            list and the {@code ids} list must be equal. If you want
+	 *            Lucene to generate the IDs for you, specify null.
 	 * @param parentIds
 	 *            The IDs of the parents of the objects. Specify null if the
 	 *            objects do not have a relational parent.

@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
 /**
- * Provides common functionality related to the CRS import.
+ * Class providing common functionality for CRS imports.
  * 
  * @author Ayco Holleman
  *

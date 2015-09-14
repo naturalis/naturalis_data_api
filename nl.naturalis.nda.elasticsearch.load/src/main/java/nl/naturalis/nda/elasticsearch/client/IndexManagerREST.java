@@ -16,13 +16,14 @@ import org.domainobject.util.http.SimpleHttpRequest;
 import org.slf4j.Logger;
 
 /**
- * Implementation of {@link IndexManager} that uses ElasticSearch's REST
- * interface to interact with an index. This implementation is no longer used
- * and is no longer up-to-date.
+ * Implementation of {@link IndexManager} that uses ElasticSearch's REST API to
+ * interact with an index. This implementation is no longer used and is no
+ * longer up-to-date.
  * 
- * @author ayco_holleman
+ * @author Ayco Holleman
  * 
  */
+@Deprecated
 public class IndexManagerREST implements IndexManager {
 
 	/**
@@ -257,7 +258,7 @@ public class IndexManagerREST implements IndexManager {
 
 	/**
 	 * Convenience method indicating whether or not the most recently executed
-	 * resulted in a HTTP success status (>= 200 and < 300).
+	 * resulted in a HTTP success status (&gt;= 200 and &lt; 300).
 	 * 
 	 * @return Whether the most recently executed request complete successfully
 	 */

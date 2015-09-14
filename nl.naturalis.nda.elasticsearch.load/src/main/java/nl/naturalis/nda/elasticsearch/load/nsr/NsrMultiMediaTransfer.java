@@ -22,15 +22,19 @@ import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
+/**
+ * Transforms and validates NSR source data.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class NsrMultiMediaTransfer {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrMultiMediaTransfer.class);
 
-
 	private NsrMultiMediaTransfer()
 	{
 	}
-
 
 	static List<ESMultiMediaObject> getImages(Element taxonElement) throws Exception
 	{
@@ -51,7 +55,6 @@ public class NsrMultiMediaTransfer {
 		}
 		return mmos.size() == 0 ? null : mmos;
 	}
-
 
 	static ESMultiMediaObject transfer(ESTaxon taxon, Element imageElement)
 	{
@@ -103,7 +106,6 @@ public class NsrMultiMediaTransfer {
 		TransformUtil.equalizeNameComponents(mmo);
 		return mmo;
 	}
-
 
 	private static String nl(String in)
 	{

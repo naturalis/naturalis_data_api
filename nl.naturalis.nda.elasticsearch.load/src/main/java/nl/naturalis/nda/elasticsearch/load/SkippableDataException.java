@@ -1,5 +1,13 @@
 package nl.naturalis.nda.elasticsearch.load;
-
+/**
+ * 
+ * @deprecated Should be handled and logged by {@link Transformer}s without
+ *             throwing an exception. Only here because NSR has not been
+ *             converted to the ETL framework yet.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 @SuppressWarnings("serial")
 public class SkippableDataException extends Exception {
 

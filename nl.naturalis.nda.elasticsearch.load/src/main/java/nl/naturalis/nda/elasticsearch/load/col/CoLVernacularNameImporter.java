@@ -19,7 +19,7 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches Taxon documenta CoL DwC archive.
+ * Enriches CoL taxa with vernacular name information.
  * 
  * @author Ayco Holleman
  *
@@ -47,7 +47,7 @@ public class CoLVernacularNameImporter {
 	}
 
 	/**
-	 * Processes the reference.txt file
+	 * Processes the reference.txt file to enrich CoL taxa with vernacular names.
 	 * 
 	 * @param path
 	 */

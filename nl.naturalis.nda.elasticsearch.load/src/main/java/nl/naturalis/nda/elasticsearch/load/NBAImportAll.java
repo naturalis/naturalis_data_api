@@ -58,7 +58,7 @@ public class NBAImportAll {
 	}
 
 	/**
-	 * Kicks of all individual import programs in the following order: NSR,
+	 * Runs all individual import programs in the following order: NSR,
 	 * Brahms, CRS, CoL.
 	 */
 	public void importAll()
@@ -100,7 +100,7 @@ public class NBAImportAll {
 
 			logger.info("[>--- Starting CoL import ---<]");
 			try {
-				CoLImportAll colImportAll = new CoLImportAll(index);
+				CoLImportAll colImportAll = new CoLImportAll();
 				colImportAll.importAll();
 			}
 			catch (Throwable t) {

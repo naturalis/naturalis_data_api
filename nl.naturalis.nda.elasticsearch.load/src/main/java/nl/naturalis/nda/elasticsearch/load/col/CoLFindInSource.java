@@ -17,6 +17,7 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
  *
  */
 public class CoLFindInSource {
+	
 	public static void main(String[] args) throws IOException
 	{
 		try {

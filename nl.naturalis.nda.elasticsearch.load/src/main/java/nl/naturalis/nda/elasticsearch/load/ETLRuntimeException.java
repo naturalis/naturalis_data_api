@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 /**
- * Generic runtime exception thrown through this library in case of
+ * Generic runtime exception thrown throughout this library in case of
  * unrecoverable errors.
  * 
  * @author Ayco Holleman

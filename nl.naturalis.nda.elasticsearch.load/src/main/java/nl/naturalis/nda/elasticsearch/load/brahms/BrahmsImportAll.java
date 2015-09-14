@@ -60,7 +60,6 @@ public class BrahmsImportAll {
 	 * This method iterates over the CSV files once, importing both specimens
 	 * and multimedia at the same time.
 	 * 
-	 * @throws Exception
 	 */
 	public void importPerFile()
 	{

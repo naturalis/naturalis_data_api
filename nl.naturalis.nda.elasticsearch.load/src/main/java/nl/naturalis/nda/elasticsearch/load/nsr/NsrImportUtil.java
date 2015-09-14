@@ -9,16 +9,20 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.slf4j.Logger;
 
+/**
+ * Class providing common functionality for NSR imports.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class NsrImportUtil {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrImportUtil.class);
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-
 	private NsrImportUtil()
 	{
 	}
-
 
 	static File[] getXmlFiles() throws Exception
 	{
@@ -32,7 +36,6 @@ class NsrImportUtil {
 			}
 		});
 	}
-
 
 	static void backupXmlFiles()
 	{
@@ -50,7 +53,6 @@ class NsrImportUtil {
 			xmlFile.renameTo(new File(xmlFile.getAbsolutePath() + backupExtension));
 		}
 	}
-
 
 	static void removeBackupExtension()
 	{
@@ -75,7 +77,6 @@ class NsrImportUtil {
 			}
 		}
 	}
-
 
 	private static File getDataDir()
 	{

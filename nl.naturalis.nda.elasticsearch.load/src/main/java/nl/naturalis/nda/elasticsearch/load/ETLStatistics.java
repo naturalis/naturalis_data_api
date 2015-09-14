@@ -85,7 +85,7 @@ public class ETLStatistics {
 	 * existing parent document, this rule no longer applies. The rule that
 	 * applies then is:<br><br>
 	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}<br><br>
-	 * . In this case the transformer provides all three statistics and the
+	 * In this case the transformer provides all three statistics and the
 	 * number of indexations is more or less meaningless. If a data source
 	 * provides 10 children for a particular parent document, the parent
 	 * document will be re-indexed anywhere between 1 and 10 times during the

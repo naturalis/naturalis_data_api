@@ -2,9 +2,9 @@
 
 . ./include.sh
 
-suppress_errors=true
+suppress_errors="${NBA_IMPORT_SUPPRESS_ERRORS}"
 
-JAVA_OPTS="$JAVA_OPTS -Dbrahms.suppres-errors=${suppress_errors}"
+JAVA_OPTS="$JAVA_OPTS -Dbrahms.suppress-errors=${suppress_errors}"
 
 action="${1}"
 

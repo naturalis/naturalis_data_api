@@ -8,6 +8,12 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+/**
+ * The loader component in the ETL cycle for Brahms specimens.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class BrahmsSpecimenLoader extends ElasticSearchLoader<ESSpecimen> {
 
 	private static IndexManagerNative indexManager()

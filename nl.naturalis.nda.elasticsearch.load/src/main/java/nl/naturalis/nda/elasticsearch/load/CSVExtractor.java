@@ -29,6 +29,14 @@ import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.*;
  */
 public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecordInfo> {
 
+	/**
+	 * Thrown by a {@code CSVExtractor} if a client specified an invalid field
+	 * number (less than zero or greater than the number of fields in the CSV
+	 * record).
+	 * 
+	 * @author Ayco Holleman
+	 *
+	 */
 	public static class NoSuchFieldException extends RuntimeException {
 		static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record (%s)";
 		public NoSuchFieldException(CSVRecord record, int fieldNo)

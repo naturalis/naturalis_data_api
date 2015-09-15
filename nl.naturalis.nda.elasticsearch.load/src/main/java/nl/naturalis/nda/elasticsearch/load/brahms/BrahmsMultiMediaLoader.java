@@ -8,6 +8,12 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+/**
+ * The loader component in the ETL cycle for Brahms multimedia.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class BrahmsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
 
 	private static IndexManagerNative indexManager()

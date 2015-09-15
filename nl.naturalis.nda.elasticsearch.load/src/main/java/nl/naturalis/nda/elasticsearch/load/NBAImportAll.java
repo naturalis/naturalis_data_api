@@ -58,8 +58,8 @@ public class NBAImportAll {
 	}
 
 	/**
-	 * Runs all individual import programs in the following order: NSR,
-	 * Brahms, CRS, CoL.
+	 * Runs all individual import programs in the following order: NSR, Brahms,
+	 * CRS, CoL.
 	 */
 	public void importAll()
 	{
@@ -81,7 +81,7 @@ public class NBAImportAll {
 			logger.info("[>--- Starting Brahms import ---<]");
 			try {
 				BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
-				brahmsImportAll.importPerFile();
+				brahmsImportAll.importAll();
 			}
 			catch (Throwable t) {
 				logger.error(t.getMessage(), t);

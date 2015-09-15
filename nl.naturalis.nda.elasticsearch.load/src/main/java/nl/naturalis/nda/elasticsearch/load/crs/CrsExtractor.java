@@ -21,9 +21,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * The extraction component for the CRS import. Used both for specimen imports
- * and multimedia imports, and both for "offline" imports from the local file
- * system and for "live" imports calling the OAI service.
+ * The extraction component for the CRS import. This class is used both for
+ * specimen imports and for multimedia imports, and it is used both for
+ * "offline" imports from the local file system and for "live" imports that call
+ * the OAI service.
  * 
  * @author Ayco Holleman
  *

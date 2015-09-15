@@ -49,10 +49,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Wrapper around ElasticSearch's Native Java client. This is the de facto
- * implementation of {@link IndexManager} used throughout this library.
+ * Wrapper around ElasticSearch's Native Java client. This is the implementation
+ * of the {@link IndexManager} interface used throughout the NBA Import library.
  * 
- * @author ayco_holleman
+ * @author Ayco Holleman
  * 
  */
 public class IndexManagerNative implements IndexManager {

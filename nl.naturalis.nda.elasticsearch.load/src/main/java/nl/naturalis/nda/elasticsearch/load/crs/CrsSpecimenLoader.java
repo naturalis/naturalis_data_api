@@ -9,7 +9,7 @@ import nl.naturalis.nda.elasticsearch.load.ElasticSearchLoader;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 /**
- * The transformer component for the CRS specimen import.
+ * The loader component for the CRS specimen import.
  * 
  * @author Ayco Holleman
  *

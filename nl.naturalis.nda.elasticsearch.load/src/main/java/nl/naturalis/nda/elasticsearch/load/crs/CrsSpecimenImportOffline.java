@@ -20,8 +20,9 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Class that manages the import of CRS specimens. Data is sourced from files on
- * the local file system, presumable put there by the {@link CrsHarvester}.
+ * Class that manages the import of CRS specimens, sourced from files on the
+ * local file system. These files have most likely been put there by means of
+ * the {@link CrsHarvester}.
  * 
  * @author Ayco Holleman
  *

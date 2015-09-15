@@ -10,7 +10,7 @@ import java.util.List;
  * <i>single</i> index, most likely set and fixed in the constructor of
  * implementing classes (hence the name IndexManager).
  * 
- * @author ayco_holleman
+ * @author Ayco Holleman
  * 
  */
 public interface IndexManager {

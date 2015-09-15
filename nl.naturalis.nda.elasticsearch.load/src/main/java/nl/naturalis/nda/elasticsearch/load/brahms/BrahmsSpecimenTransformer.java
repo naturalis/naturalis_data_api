@@ -37,6 +37,8 @@ import org.domainobject.util.ConfigObject;
 import org.slf4j.Logger;
 
 /**
+ * The transformer component in the Brahms ETL cycle for specimens.
+ * 
  * @author Ayco Holleman
  *
  */
@@ -74,10 +76,10 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 			}
 			return null;
 		}
-		
+
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		
+
 		try {
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);

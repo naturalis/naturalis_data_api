@@ -1,6 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 /**
+ * Thrown during the instantion of the central {@link Registry} object if anything goes
+ * wrong while configuring the services it provides.
+ * 
  * @author Ayco Holleman
  *
  */
@@ -14,7 +17,6 @@ public class InitializationException extends RuntimeException {
 		super(message);
 	}
 
-
 	/**
 	 * @param cause
 	 */
@@ -22,7 +24,6 @@ public class InitializationException extends RuntimeException {
 	{
 		super(cause);
 	}
-
 
 	/**
 	 * @param message

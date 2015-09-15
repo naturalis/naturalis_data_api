@@ -3,8 +3,9 @@ package nl.naturalis.nda.elasticsearch.load.normalize;
 import org.domainobject.util.StringUtil;
 
 /**
- * A subclass of {@link Normalizer} that uses a mapping file in the classpath
- * for mapping found-in-the-wild values to their canonical equivalents.
+ * A subclass of {@link Normalizer} that maps values using a mapping file
+ * presumed to be located somewhere on the classpath.
+ * 
  * 
  * @author Ayco Holleman
  *

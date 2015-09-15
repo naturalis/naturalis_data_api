@@ -19,7 +19,7 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Class that manages the import of CRS multimedia. Data is sourced using "live"
+ * Class that manages the import of CRS multimedia, sourced through "live"
  * calls to the CRS OAI service.
  * 
  * @author Ayco Holleman

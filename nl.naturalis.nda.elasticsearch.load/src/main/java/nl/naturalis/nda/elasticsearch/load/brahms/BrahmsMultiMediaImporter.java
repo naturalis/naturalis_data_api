@@ -18,6 +18,12 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Manages the import of Brahms multimedia.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class BrahmsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
@@ -79,7 +85,8 @@ public class BrahmsMultiMediaImporter {
 			}
 		}
 		finally {
-			// Important! Flushes the remaining objects in the ES bulk request batch.
+			// Important! Flushes the remaining objects in the ES bulk request
+			// batch.
 			IOUtil.close(multimediaLoader);
 		}
 		globalStats.add(myStats);

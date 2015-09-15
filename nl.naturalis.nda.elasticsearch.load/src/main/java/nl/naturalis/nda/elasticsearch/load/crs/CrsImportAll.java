@@ -5,8 +5,11 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import org.slf4j.Logger;
 
 /**
- * Class that manages the import of CRS specimens and multimedia. Basically just
- * runs {@link CrsSpecimenImportOffline#importSpecimens()} first and then
+ * Class that manages the import of CRS specimens and multimedia. Currently,
+ * this class can only handle "offline" imports where data is source from the
+ * local file system rather than through "live" calls to the CRS OAI interface.
+ * This class basically just runs
+ * {@link CrsSpecimenImportOffline#importSpecimens()} first and then
  * {@link CrsMultiMediaImportOffline#importMultimedia()}.
  * 
  * @author Ayco Holleman

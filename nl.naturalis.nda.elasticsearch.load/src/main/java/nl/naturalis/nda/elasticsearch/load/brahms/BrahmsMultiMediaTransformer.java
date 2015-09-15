@@ -38,6 +38,8 @@ import org.domainobject.util.ConfigObject;
 import org.slf4j.Logger;
 
 /**
+ * The transformer component in the ETL cycle for Brahms multimedia.
+ * 
  * @author Ayco Holleman
  *
  */

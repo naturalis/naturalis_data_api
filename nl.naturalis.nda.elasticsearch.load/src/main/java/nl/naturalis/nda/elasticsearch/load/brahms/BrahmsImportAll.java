@@ -20,6 +20,19 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Manages the import of Brahms specimens and multimedia. Since specimens and
+ * multimedia are extracted from the same CSV record, this class allows you to
+ * import either per file or per type (first all specimens, then all
+ * multimedia). With the first option each CSV file is processed only once. With
+ * the second option each CSV file is processed twice: once for the specimen
+ * import and once for the multimedia import. Thus the first option should be
+ * faster and is the default. To force a per-type import add
+ * {@code -Dbrahms.parallel=false} to the java command line.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class BrahmsImportAll {
 
 	public static void main(String[] args)
@@ -31,12 +44,26 @@ public class BrahmsImportAll {
 	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
 
 	private final boolean backup;
+	private final boolean parallel;
 	private final boolean suppressErrors;
 
 	public BrahmsImportAll()
 	{
 		backup = ConfigObject.isEnabled("brahms.backup", true);
+		parallel = ConfigObject.isEnabled("brahms.parallel", true);
 		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+	}
+
+	/**
+	 * Import specimens and multimedia either in parallel fashion or in serial
+	 * fashion, depending on the {@code brahms.parallel} system property.
+	 */
+	public void importAll()
+	{
+		if (parallel)
+			importPerFile();
+		else
+			importPerType();
 	}
 
 	/**
@@ -45,7 +72,7 @@ public class BrahmsImportAll {
 	 * 
 	 * @throws Exception
 	 */
-	public void importPerType() throws Exception
+	public void importPerType()
 	{
 		BrahmsSpecimenImporter specimenImporter = new BrahmsSpecimenImporter();
 		specimenImporter.importCsvFiles();
@@ -57,8 +84,8 @@ public class BrahmsImportAll {
 	}
 
 	/**
-	 * This method iterates over the CSV files once, importing both specimens
-	 * and multimedia at the same time.
+	 * This method processes each CSV files only once, extracting and loading
+	 * both specimens and multimedia at the same time.
 	 * 
 	 */
 	public void importPerFile()

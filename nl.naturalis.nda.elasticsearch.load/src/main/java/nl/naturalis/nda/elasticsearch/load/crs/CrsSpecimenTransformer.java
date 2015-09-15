@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
 /**
- * The transformation component for the CRS specimen import.
+ * The transformer component for the CRS specimen import.
  * 
  * @author Ayco Holleman
  *

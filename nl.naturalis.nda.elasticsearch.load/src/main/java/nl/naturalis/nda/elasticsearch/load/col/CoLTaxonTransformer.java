@@ -23,6 +23,12 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
+/**
+ * The transformer component in the CoL ETL cycle.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	private static final Logger logger;

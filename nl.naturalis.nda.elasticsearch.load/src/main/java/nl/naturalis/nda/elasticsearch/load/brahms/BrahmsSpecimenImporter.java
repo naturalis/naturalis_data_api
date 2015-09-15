@@ -41,7 +41,7 @@ public class BrahmsSpecimenImporter {
 		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
-	public void importCsvFiles() throws Exception
+	public void importCsvFiles()
 	{
 		long start = System.currentTimeMillis();
 		File[] csvFiles = getCsvFiles();

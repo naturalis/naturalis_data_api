@@ -19,7 +19,7 @@ import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
 import org.apache.commons.csv.CSVRecord;
 
 /**
- * Provides common functionality related to the CoL import.
+ * Provides common functionality related to the CoL ETL cycle.
  * 
  * @author Ayco Holleman
  *

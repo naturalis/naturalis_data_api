@@ -146,10 +146,7 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 			return mmo;
 		}
 		catch (Throwable t) {
-			stats.objectsRejected++;
-			if (!suppressErrors) {
-				error(t.getMessage());
-			}
+			handleError(t);
 			return null;
 		}
 	}

@@ -49,8 +49,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Wrapper around ElasticSearch's Native Java client. This is the implementation
- * of the {@link IndexManager} interface used throughout the NBA Import library.
+ * An implementation of {@link IndexManager} that uses ElasticSearch's Native
+ * Java client. This is the implementation of the {@link IndexManager} interface
+ * used throughout the NBA Import library.
  * 
  * @author Ayco Holleman
  * 
@@ -351,12 +352,10 @@ public class IndexManagerNative implements IndexManager {
 			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
 			try {
 				irb.setSource(objectMapper.writeValueAsBytes(objs.get(i)));
-				if (ids != null) {
+				if (ids != null)
 					irb.setId(ids.get(i));
-				}
-				if (parentIds != null) {
+				if (parentIds != null)
 					irb.setParent(parentIds.get(i));
-				}
 			}
 			catch (JsonProcessingException e) {
 				throw new IndexManagerException(e);

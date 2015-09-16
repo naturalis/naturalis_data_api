@@ -70,7 +70,6 @@ public class BrahmsImportAll {
 	 * This method first imports all specimens, then all multimedia. Thus each
 	 * CSV file is read twice.
 	 * 
-	 * @throws Exception
 	 */
 	public void importPerType()
 	{
@@ -97,9 +96,9 @@ public class BrahmsImportAll {
 			return;
 		}
 		ThemeCache.getInstance().resetMatchCounters();
-		// Statistics for specimen import
+		// Global statistics for specimen import
 		ETLStatistics sStats = new ETLStatistics();
-		// Statistics for multimedia import
+		// Global statistics for multimedia import
 		ETLStatistics mStats = new ETLStatistics();
 		try {
 			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
@@ -124,39 +123,41 @@ public class BrahmsImportAll {
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
+		ETLStatistics specimenStats = new ETLStatistics();
+		ETLStatistics multimediaStats = new ETLStatistics();
+		ETLStatistics extractionStats = new ETLStatistics();
+		CSVExtractor extractor = null;
+		BrahmsSpecimenTransformer specimenTransformer = null;
+		BrahmsMultiMediaTransformer multimediaTransformer = null;
 		BrahmsSpecimenLoader specimenLoader = null;
 		BrahmsMultiMediaLoader multimediaLoader = null;
 		try {
-			ETLStatistics specimenStats = new ETLStatistics();
-			ETLStatistics multimediaStats = new ETLStatistics();
-			ETLStatistics extractionStats = new ETLStatistics();
-			BrahmsSpecimenTransformer specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
+			extractor = createExtractor(f, extractionStats);
+			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
 			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
-			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
+			multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
 			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
-			CSVExtractor extractor = createExtractor(f, extractionStats);
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
 				specimenLoader.load(specimenTransformer.transform(rec));
 				multimediaLoader.load(multimediaTransformer.transform(rec));
-				if (rec.getLineNumber() % 50000 == 0) {
+				if (rec.getLineNumber() % 50000 == 0)
 					logger.info("Records processed: " + rec.getLineNumber());
-				}
 			}
-			specimenStats.add(extractionStats);
-			multimediaStats.add(extractionStats);
-			specimenStats.logStatistics(logger, "Specimens");
-			multimediaStats.logStatistics(logger, "Multimedia");
-			sStats.add(specimenStats);
-			mStats.add(multimediaStats);
-			logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
-			logger.info(" ");
-			logger.info(" ");
 		}
 		finally {
 			IOUtil.close(specimenLoader, multimediaLoader);
 		}
+		specimenStats.add(extractionStats);
+		multimediaStats.add(extractionStats);
+		specimenStats.logStatistics(logger, "Specimens");
+		multimediaStats.logStatistics(logger, "Multimedia");
+		sStats.add(specimenStats);
+		mStats.add(multimediaStats);
+		logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
+		logger.info(" ");
+		logger.info(" ");
 	}
 
 	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)

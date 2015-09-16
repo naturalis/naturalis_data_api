@@ -22,14 +22,14 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 	protected boolean suppressErrors;
 	protected CSVRecordInfo recInf;
 	/**
-	 * Contains the value of the field that is regarded as the ID of the object
-	 * (e.g. the UnitID for specimens and multimedia). It is up to subclasses to
-	 * determine which field is the ID field, and to assign its value to
+	 * Holds the value of the ID field of the object to be indexed (e.g. the
+	 * UnitID for specimens and multimedia). It is up to subclasses to determine
+	 * which field is to be regarded as the ID field, and to assign its value to
 	 * {@code objectID}, but they SHOULD do it as one of the first things in
 	 * their implementation of the {@link #transform(CSVRecordInfo) transform
 	 * method}. Otherwise the error reporting methods, which prefix any message
-	 * with the ID of the object to which the message applied, won't work as
-	 * intended.
+	 * with the ID of the object for which the message was generated, won't work
+	 * as intended.
 	 */
 	protected String objectID;
 

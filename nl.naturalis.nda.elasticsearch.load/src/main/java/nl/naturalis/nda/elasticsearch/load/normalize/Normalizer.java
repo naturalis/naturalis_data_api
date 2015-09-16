@@ -10,17 +10,18 @@ import java.util.HashMap;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 
 /**
- * A Normalizer maps found-in-the-wild values to canonical equivalents.
- * Normalizers enable stronger typing in the domain model classes by using
- * {@link Enum enumerations} rather than free-text fields. Each normalizer
- * serves to map a found-in-the-wild value to a constant in an {@code enum}
- * class.
+ * A Normalizer maps found-in-the-wild values to canonical equivalents. It
+ * standardizes the set of allowed values for a particular field in a domain
+ * model class (e.g. the sex field in the Specimen class). Normalizers enable
+ * stronger typing in the domain model classes by using {@link Enum enum} fields
+ * rather than free-text fields. Each normalizer serves to map a
+ * found-in-the-wild value to a constant in an {@code enum} class.
  * 
  * @author Ayco Holleman
  *
  * @param <T>
- *            The {@link Enum enum class} for which this normalizer was created.
- *            This enum class is also the maintainer of the canonical values.
+ *            The {@link Enum enum} class for which this normalizer was created.
+ *            This {@code enum} class is also the maintainer of the canonical values.
  *            That is, calling {@code toString()} on any of the enum's constants
  *            yields a canonical value.
  */
@@ -44,10 +45,10 @@ public class Normalizer<T extends Enum<T>> {
 
 	/**
 	 * Load/parse/cache the file that maps found-in-the-wild values to canonical
-	 * values. Mapping files may include a special mapping:<br>
-	 * {@code [NULL] : <canonical value>}<br>
-	 * For example:<br>
-	 * {@code [NULL] : female}<br>
+	 * values. Mapping files may include a special mapping:<br><br>
+	 * {@code [NULL] : <canonical-value>}<br><br>
+	 * For example:<br><br>
+	 * {@code [NULL] : female}<br><br>
 	 * This will cause empty fields in the data source to map to {@code female}.
 	 * 
 	 * @param translationFile

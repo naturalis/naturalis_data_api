@@ -46,6 +46,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 	private static final Logger logger;
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
+	private static final String UNIT_ID_REGEX = "([a-zA-Z0-9_1.-]){3,}";
 
 	static {
 		logger = Registry.getInstance().getLogger(BrahmsSpecimenTransformer.class);
@@ -113,7 +114,10 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
 	private String getPurl()
 	{
-		return PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(objectID);
+		if (objectID.matches(UNIT_ID_REGEX))
+			return PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(objectID);
+		warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
+		return null;
 	}
 
 	private static void setConstants(ESSpecimen specimen)

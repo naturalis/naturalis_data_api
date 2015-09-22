@@ -42,26 +42,15 @@ public class TransformUtil {
 	private static final SimpleDateFormat DATE_FORMAT4 = new SimpleDateFormat("yyyy");
 	private static final SimpleDateFormat DATE_FORMAT5 = new SimpleDateFormat("yy");
 
-	//@formatter:off
-	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(
-		DATE_FORMAT0,
-		DATE_FORMAT1,
-		DATE_FORMAT2,
-		DATE_FORMAT3,
-		DATE_FORMAT4,
-		DATE_FORMAT5
-	);
-	//@formatter:on
+	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(DATE_FORMAT0, DATE_FORMAT1,
+			DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5);
 
 	public static Date parseDate(String s)
 	{
-		if (s == null) {
+		if (s == null)
 			return null;
-		}
-		s = s.trim();
-		if (s.length() == 0) {
+		if ((s = s.trim()).length() == 0)
 			return null;
-		}
 		for (SimpleDateFormat df : DATE_FORMATS) {
 			try {
 				return df.parse(s);
@@ -140,7 +129,7 @@ public class TransformUtil {
 		if (dc.getGenus() != null && sn.getGenusOrMonomial() != null) {
 			if (!dc.getGenus().equals(sn.getGenusOrMonomial())) {
 				String msg = String.format(MISMATCH, GENUS, dc.getGenus(), sn.getGenusOrMonomial());
-				throw new RuntimeException(msg);
+				throw new ETLRuntimeException(msg);
 			}
 		}
 		else if (dc.getGenus() == null && sn.getGenusOrMonomial() != null) {
@@ -157,7 +146,7 @@ public class TransformUtil {
 		if (dc.getSubgenus() != null && sn.getSubgenus() != null) {
 			if (!dc.getSubgenus().equals(sn.getSubgenus())) {
 				String msg = String.format(MISMATCH, SUBGENUS, dc.getSubgenus(), sn.getSubgenus());
-				throw new RuntimeException(msg);
+				throw new ETLRuntimeException(msg);
 			}
 		}
 		else if (dc.getSubgenus() == null && sn.getSubgenus() != null) {
@@ -173,8 +162,9 @@ public class TransformUtil {
 
 		if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() != null) {
 			if (!dc.getSpecificEpithet().equals(sn.getSpecificEpithet())) {
-				String msg = String.format(MISMATCH, SPECIES, dc.getSpecificEpithet(), sn.getSpecificEpithet());
-				throw new RuntimeException(msg);
+				String msg = String.format(MISMATCH, SPECIES, dc.getSpecificEpithet(),
+						sn.getSpecificEpithet());
+				throw new ETLRuntimeException(msg);
 			}
 		}
 		else if (dc.getSpecificEpithet() == null && sn.getSpecificEpithet() != null) {
@@ -189,19 +179,22 @@ public class TransformUtil {
 
 		if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() != null) {
 			if (!dc.getInfraspecificEpithet().equals(sn.getInfraspecificEpithet())) {
-				String msg = String.format(MISMATCH, SUBSPECIES, dc.getInfraspecificEpithet(), sn.getInfraspecificEpithet());
-				throw new RuntimeException(msg);
+				String msg = String.format(MISMATCH, SUBSPECIES, dc.getInfraspecificEpithet(),
+						sn.getInfraspecificEpithet());
+				throw new ETLRuntimeException(msg);
 			}
 		}
 		else if (dc.getInfraspecificEpithet() == null && sn.getInfraspecificEpithet() != null) {
 			dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SUBSPECIES, NAME, CLASSIFICATION, sn.getInfraspecificEpithet()));
+				logger.debug(String.format(EQUALIZE, SUBSPECIES, NAME, CLASSIFICATION,
+						sn.getInfraspecificEpithet()));
 		}
 		else if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() == null) {
 			sn.setInfraspecificEpithet(dc.getInfraspecificEpithet());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SUBSPECIES, CLASSIFICATION, NAME, sn.getInfraspecificEpithet()));
+				logger.debug(String.format(EQUALIZE, SUBSPECIES, CLASSIFICATION, NAME,
+						sn.getInfraspecificEpithet()));
 		}
 	}
 

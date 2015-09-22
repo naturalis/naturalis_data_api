@@ -333,19 +333,19 @@ public class IndexManagerNative implements IndexManager {
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs)
+	public void saveObjects(String type, List<?> objs) throws BulkIndexException
 	{
 		saveObjects(type, objs, null, null);
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids)
+	public void saveObjects(String type, List<?> objs, List<String> ids) throws BulkIndexException
 	{
 		saveObjects(type, objs, ids, null);
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
+	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds) throws BulkIndexException
 	{
 		BulkRequestBuilder brb = esClient.prepareBulk();
 		for (int i = 0; i < objs.size(); ++i) {
@@ -363,10 +363,8 @@ public class IndexManagerNative implements IndexManager {
 			brb.add(irb);
 		}
 		BulkResponse response = brb.execute().actionGet();
-		if (response.hasFailures()) {
-			String message = response.buildFailureMessage();
-			throw new RuntimeException(message);
-		}
+		if (response.hasFailures())
+			throw new BulkIndexException(response, objs);
 	}
 
 	public Client getClient()

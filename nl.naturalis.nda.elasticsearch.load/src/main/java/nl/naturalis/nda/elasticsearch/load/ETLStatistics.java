@@ -43,7 +43,7 @@ public class ETLStatistics {
 	 * by the import program. For example the taxa.txt file in CoL DwCA files
 	 * containes both taxa and synonyms. The taxon importer only needs to
 	 * process the taxa in that file.<br>
-	 * {@code recordsSkipped + recordsRejected + recordsRejected = recordsProcessed}
+	 * {@code recordsSkipped + recordsRejected + badRecords + recordsIndexed = recordsProcessed}
 	 */
 	public int recordsSkipped;
 	/**
@@ -51,12 +51,9 @@ public class ETLStatistics {
 	 * the record as a whole, rather than for the object(s) extracted from it.
 	 */
 	public int recordsRejected;
-	/**
-	 * The number of records that made it to the transformation phase. Simply
-	 * the number of records that were neither skipped nor rejected.<br>
-	 * {@code recordsSkipped + recordsRejected + recordsAccepted = recordsProcessed}
-	 */
+
 	public int recordsAccepted;
+
 	/**
 	 * The number of objects processed by the import program. Note that one
 	 * record may contain multiple objects. For example, one line in a Brahms
@@ -74,13 +71,21 @@ public class ETLStatistics {
 	 */
 	public int objectsRejected;
 	/**
-	 * The number of objects that made it to ElasticSearch.
-	 */
-	public int objectsIndexed;
-	/**
 	 * The number of objects that passed validation
 	 */
 	public int objectsAccepted;
+
+	/**
+	 * The number of objects that could not be indexed by ElasticSearch. This
+	 * counter is maintained by {@link ElasticSearchLoader loader} objects.
+	 *
+	 */
+	public int badObjects;
+	/**
+	 * The number of objects that made it to ElasticSearch. This counter is
+	 * maintained by {@link ElasticSearchLoader loader} objects.
+	 */
+	public int objectsIndexed;
 
 	private boolean useObjectsAccepted;
 
@@ -144,8 +149,9 @@ public class ETLStatistics {
 		objectsProcessed = 0;
 		objectsSkipped = 0;
 		objectsRejected = 0;
-		objectsIndexed = 0;
 		objectsAccepted = 0;
+		badObjects = 0;
+		objectsIndexed = 0;
 	}
 
 	/**
@@ -160,12 +166,12 @@ public class ETLStatistics {
 		recordsProcessed += other.recordsProcessed;
 		recordsSkipped += other.recordsSkipped;
 		recordsRejected += other.recordsRejected;
-		recordsAccepted += other.recordsAccepted;
 		objectsProcessed += other.objectsProcessed;
 		objectsSkipped += other.objectsSkipped;
 		objectsRejected += other.objectsRejected;
-		objectsIndexed += other.objectsIndexed;
 		objectsAccepted += other.objectsAccepted;
+		badObjects += other.badObjects;
+		objectsIndexed += other.objectsIndexed;
 	}
 
 	/**
@@ -189,7 +195,7 @@ public class ETLStatistics {
 	{
 		logger.info(" ");
 		if (niceName != null) {
-			String title = niceName.toUpperCase() + " IMPORT";
+			String title = niceName.toUpperCase();
 			logger.info(pad(title, 38));
 		}
 		else {
@@ -199,18 +205,19 @@ public class ETLStatistics {
 		logger.info(statistic("Extraction/parse failures", badInput));
 		logger.info(" ");
 		logger.info(statistic("Records skipped", recordsSkipped));
-		logger.info(statistic("Records accepted", recordsAccepted));
 		logger.info(statistic("Records rejected", recordsRejected));
+		logger.info(statistic("Records accepted", recordsAccepted));
 		logger.info("------------------------------------- +");
 		logger.info(statistic("Records processed", recordsProcessed));
 
 		logger.info(" ");
 		logger.info(statistic(niceName, "skipped", objectsSkipped));
+		logger.info(statistic(niceName, "rejected", objectsRejected));
+		logger.info(statistic(niceName, "bounced", badObjects));
 		if (useObjectsAccepted)
 			logger.info(statistic(niceName, "accepted", objectsAccepted));
 		else
 			logger.info(statistic(niceName, "indexed", objectsIndexed));
-		logger.info(statistic(niceName, "rejected", objectsRejected));
 		logger.info("------------------------------------- +");
 		logger.info(statistic(niceName, "processed", objectsProcessed));
 

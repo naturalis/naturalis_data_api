@@ -7,7 +7,9 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.domainobject.util.DOMUtil;
 import org.slf4j.Logger;
+import org.w3c.dom.Element;
 
 /**
  * Class providing common functionality for NSR imports.
@@ -24,7 +26,15 @@ class NsrImportUtil {
 	{
 	}
 
-	static File[] getXmlFiles() throws Exception
+	static String val(Element e, String childTag)
+	{
+		String s = DOMUtil.getValue(e, childTag);
+		if (s == null)
+			return null;
+		return (s = s.trim()).length() == 0 ? null : s;
+	}
+
+	static File[] getXmlFiles()
 	{
 		File dir = getDataDir();
 		logger.info("Searching for XML files in " + dir.getAbsolutePath());
@@ -52,6 +62,12 @@ class NsrImportUtil {
 		for (File xmlFile : xmlFiles) {
 			xmlFile.renameTo(new File(xmlFile.getAbsolutePath() + backupExtension));
 		}
+	}
+
+	static void backupXmlFile(File f)
+	{
+		String backupExtension = "." + sdf.format(new Date()) + ".imported";
+		f.renameTo(new File(f.getAbsolutePath() + backupExtension));
 	}
 
 	static void removeBackupExtension()

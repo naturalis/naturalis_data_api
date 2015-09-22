@@ -97,28 +97,6 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 		return result;
 	}
 
-	private URI getUri(String url)
-	{
-		url = url.trim();
-		if (url.charAt(1) == ':') {
-			// This is a local file system path like Q:\foo.jpg.
-			stats.objectsRejected++;
-			if (!suppressErrors)
-				error("Invalid image URL: " + url);
-			return null;
-		}
-		url = url.replaceAll(" ", "%20");
-		try {
-			return new URI(url);
-		}
-		catch (URISyntaxException e) {
-			stats.objectsRejected++;
-			if (!suppressErrors)
-				error("Invalid image URL: " + url);
-			return null;
-		}
-	}
-
 	private ESMultiMediaObject transferOne(CSVRecordInfo info, URI uri)
 	{
 		stats.objectsProcessed++;
@@ -147,6 +125,28 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 		}
 		catch (Throwable t) {
 			handleError(t);
+			return null;
+		}
+	}
+
+	private URI getUri(String url)
+	{
+		url = url.trim();
+		if (url.charAt(1) == ':') {
+			// This is a local file system path like Q:\foo.jpg.
+			stats.objectsRejected++;
+			if (!suppressErrors)
+				error("Invalid image URL: " + url);
+			return null;
+		}
+		url = url.replaceAll(" ", "%20");
+		try {
+			return new URI(url);
+		}
+		catch (URISyntaxException e) {
+			stats.objectsRejected++;
+			if (!suppressErrors)
+				error("Invalid image URL: " + url);
 			return null;
 		}
 	}

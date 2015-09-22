@@ -20,13 +20,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractXMLTransformer<T> implements XMLTransformer<T> {
 
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	protected final ETLStatistics stats;
 
 	protected boolean suppressErrors;
 	protected XMLRecordInfo recInf;
 	protected String objectID;
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Create a new XML transformer that will update the specified
@@ -74,11 +75,13 @@ public abstract class AbstractXMLTransformer<T> implements XMLTransformer<T> {
 	}
 
 	/**
-	 * Handles an unexpected validation error (one that warrants printing out a
-	 * stacktrace). Increases the {@link ETLStatistics#objectsRejected
-	 * objectsRejected} counter by one, logs a standardized error message if
-	 * error suppression is disabled, and logs the specified throwable's stack
-	 * trace if DEBUG is enabled.
+	 * Handles a validation error. Increases the
+	 * {@link ETLStatistics#objectsRejected objectsRejected} counter by one and
+	 * logs a standardized error message. The error message is logged
+	 * <i>even</i> if error suppression is enabled, because the assumption is
+	 * that this method is called only for unexpected errors, mostly likely
+	 * caught in a catch-all block, that you do not want to miss. If DEBUG is
+	 * enabled the specified throwable's stack trace is logged as well.
 	 * 
 	 * @param t
 	 *            An (unanticipated) exception thrown while transformer the XML
@@ -87,8 +90,7 @@ public abstract class AbstractXMLTransformer<T> implements XMLTransformer<T> {
 	protected void handleError(Throwable t)
 	{
 		stats.objectsRejected++;
-		if (!suppressErrors)
-			error(t.toString());
+		error(t.toString());
 		if (logger.isDebugEnabled())
 			logger.debug(t.toString(), t);
 	}

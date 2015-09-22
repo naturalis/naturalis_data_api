@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
 import nl.naturalis.nda.elasticsearch.client.IndexManager;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
@@ -158,7 +159,12 @@ public class NsrTaxonImporter {
 			}
 		}
 		if (!taxa.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+			try {
+				index.saveObjects(LUCENE_TYPE_TAXON, taxa, ids);
+			}
+			catch (BulkIndexException e) {
+				throw new RuntimeException(e);
+			}
 			indexed += taxa.size();
 			totalIndexed += taxa.size();
 		}

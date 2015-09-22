@@ -143,13 +143,17 @@ public class ETLStatistics {
 	public void reset()
 	{
 		badInput = 0;
+
 		recordsProcessed = 0;
 		recordsSkipped = 0;
 		recordsRejected = 0;
+		recordsAccepted = 0;
+
 		objectsProcessed = 0;
 		objectsSkipped = 0;
 		objectsRejected = 0;
 		objectsAccepted = 0;
+
 		badObjects = 0;
 		objectsIndexed = 0;
 	}
@@ -163,13 +167,17 @@ public class ETLStatistics {
 	public void add(ETLStatistics other)
 	{
 		badInput += other.badInput;
+
 		recordsProcessed += other.recordsProcessed;
 		recordsSkipped += other.recordsSkipped;
 		recordsRejected += other.recordsRejected;
+		recordsAccepted += other.recordsAccepted;
+
 		objectsProcessed += other.objectsProcessed;
 		objectsSkipped += other.objectsSkipped;
 		objectsRejected += other.objectsRejected;
 		objectsAccepted += other.objectsAccepted;
+
 		badObjects += other.badObjects;
 		objectsIndexed += other.objectsIndexed;
 	}
@@ -213,18 +221,20 @@ public class ETLStatistics {
 		logger.info(" ");
 		logger.info(statistic(niceName, "skipped", objectsSkipped));
 		logger.info(statistic(niceName, "rejected", objectsRejected));
+		logger.info(statistic(niceName, "accepted", objectsAccepted));
+		logger.info("------------------------------------- +");
+		logger.info(statistic(niceName, "processed", objectsProcessed));
+		logger.info(" ");
+
 		logger.info(statistic(niceName, "bounced", badObjects));
-		if (useObjectsAccepted)
-			logger.info(statistic(niceName, "accepted", objectsAccepted));
-		else
-			logger.info(statistic(niceName, "indexed", objectsIndexed));
+		logger.info(statistic(niceName, "indexed", objectsIndexed));
 		logger.info("------------------------------------- +");
 		logger.info(statistic(niceName, "processed", objectsProcessed));
 
-		if (useObjectsAccepted) {
-			logger.info(" ");
-			logger.info(statistic("ElasticSearch index requests", objectsIndexed));
-		}
+//		if (useObjectsAccepted) {
+//			logger.info(" ");
+//			logger.info(statistic("ElasticSearch index requests", objectsIndexed));
+//		}
 
 		logger.info("=====================================");
 		logger.info(" ");

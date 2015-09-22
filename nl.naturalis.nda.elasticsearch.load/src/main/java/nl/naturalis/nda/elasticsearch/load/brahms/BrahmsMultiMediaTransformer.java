@@ -121,6 +121,7 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 			mmo.setIdentifications(Arrays.asList(getIdentification(record)));
 			mmo.setSpecimenTypeStatus(typeStatusNormalizer.normalize(val(record, TYPE)));
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
+			stats.objectsAccepted++;
 			return mmo;
 		}
 		catch (Throwable t) {

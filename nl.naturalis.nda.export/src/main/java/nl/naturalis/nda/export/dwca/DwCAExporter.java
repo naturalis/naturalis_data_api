@@ -31,6 +31,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.export.ExportUtil;
 
 import org.domainobject.util.ConfigObject;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 /**
  * @author Reinier.Kartowikromo
  *
@@ -57,6 +59,8 @@ public class DwCAExporter {
 
 	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
 	public static final String CSVComma = "\t";
+	
+	private static String indexname = null;
 	private static final String csvOutPutFile = "occurrence.txt";
 	private static final String FILE_NAME_META = "meta.xml";
 	private static File FILE_NAME_EML = null;
@@ -64,22 +68,20 @@ public class DwCAExporter {
 	private static final String dwcTargetName = "http://rs.tdwg.org/dwc/text/";
 	private static final String zipExtension = ".zip";
 	private static String MAPPING_FILE_NAME = null;
-	CsvFileWriter.CsvRow headerRow = null;
+	
 	private static String sourceSystemCode = null;
 	private static String propertyName = null;
 	private static String propertyValue = null;
 	private static String result = null;
 	private static String nameCollectiontypeCrs = null;
 	private static String nameCollectiontypeBrahms = null;
-	List<ESSpecimen> list;
+	
 	private static File destinationPathEml = null;
 	private static String nameCollectiontypeAnd = null;
 	private static String collectionName = null;
 
-	// This sort of initializations is risky, because if
-	// anything goes wrong, the Java VM won't start
-	static String indexname = null;
-	private static Client eslasticClient = null;
+	
+	private static Client elasticClient = null;
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private static CsvFileWriter filewriter = null;
 
@@ -87,32 +89,47 @@ public class DwCAExporter {
 	private static File outputDirectory = null;
 	private static File zipOutputDirectory = null;
 	private static File zipArchiveDirectory = null;
+	
+	CsvFileWriter.CsvRow headerRow = null;
+	List<ESSpecimen> list;
+	
 
 	/**
 	 * @param args
 	 * @throws Exception
+	 * 
 	 */
 	public static void main(String[] args) throws Exception {
 
+		
 		logger.info("-----------------------------------------------------------------");
 		logger.info("Start");
-
+		
 		String totalsize = System.getProperty(
 				"nl.naturalis.nda.export.dwca.batchsize", "1000");
 
 		emlDirectory = ExportDwCAUtilities.getCollectionConfigDir();
+		logger.info("EML Directory: " + emlDirectory);
 		/* Output directory for the files EML.xml, Meta.xml and Occurrence.txt */
 		outputDirectory = ExportDwCAUtilities.getWorkingDirectory();
+		logger.info("Output Directory: " + outputDirectory);
 		zipOutputDirectory = ExportDwCAUtilities.getZipOutputDirectory();
+		logger.info("Zip Output Directory: " + zipOutputDirectory);
 		zipArchiveDirectory = ExportDwCAUtilities.getBackupDirectory();
+		logger.info("Zip Archive Directory: " + zipArchiveDirectory);
 
 		indexname = ExportUtil.getConfig().required("elasticsearch.index.name");
+		logger.info("IndexName: " + indexname);
 
 		collectionName = args.length > 0 ? args[0] : null;
+		logger.info("Preparing CollectioName: " + collectionName);
 
-		if (collectionName != null) {
+		if (collectionName != null) 
+		{
 			executeDwCaExport(collectionName, totalsize);
-		} else {
+		} 
+		else 
+		{
 			StringBuilder builder = new StringBuilder();
 			final String extensions = ".properties";
 			FilenameFilter filter = new FilenameFilter() {
@@ -212,7 +229,7 @@ public class DwCAExporter {
 		if (filelist != null) {
 			for (File file : filelist) {
 				filename = file.getName();
-				String eml = null;
+				String eml = "";
 				if (filename.contains("_eml")) {
 					int index = filename.indexOf("_eml");
 					eml = filename.substring(0, index);
@@ -230,7 +247,7 @@ public class DwCAExporter {
 	}
 
 	public DwCAExporter(Client client, String indexname) {
-		DwCAExporter.eslasticClient = client;
+		DwCAExporter.elasticClient = client;
 		DwCAExporter.indexname = indexname;
 	}
 
@@ -260,8 +277,7 @@ public class DwCAExporter {
 		Properties configFile = ExportDwCAUtilities.getCollectionConfiguration(
 				MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
-		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<Object, Object>(
-				configFile);
+		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<>(configFile);
 		Set<?> keySet = sortedSystemProperties.keySet();
 		Iterator<?> iterator = keySet.iterator();
 		String resultvalue = null;
@@ -388,9 +404,9 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Printing tghe records to a CSV file named: "Occurrence.txt" */
+	/* Printing the records to a CSV file named: "Occurrence.txt" */
 	private void printHeaderRowAndDataForCSV(String namecollectiontype,
-			String totalsize) throws IOException {
+			String totalsize) {
 		try {
 			/* Create new CSV File object and output File */
 			/* Zoology Occurrence */
@@ -403,14 +419,23 @@ public class DwCAExporter {
 			if (sourceSystemCode.equalsIgnoreCase("BRAHMS")) {
 				runBrahmsElasticsearch(namecollectiontype, totalsize);
 			}
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
+			logger.info("CSV RowHeader: " + e.getMessage());
 			e.printStackTrace();
+			return;
 		} finally { /* Close the filewriter */
 			if (filewriter != null) {
-				try {
+				try 
+				{
 					filewriter.close();
-				} catch (IOException e) {
+				} 
+				catch (IOException e) 
+				{
+					logger.info("FileWriter: " + e.getMessage());
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
@@ -426,7 +451,7 @@ public class DwCAExporter {
 		Properties configFile = ExportDwCAUtilities.getCollectionConfiguration(
 				MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
-		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<Object, Object>(
+		SortedMap<Object, Object> sortedSystemProperties = new TreeMap<>(
 				configFile);
 		Set<?> keySet = sortedSystemProperties.keySet();
 		Iterator<?> iterator = keySet.iterator();
@@ -444,7 +469,7 @@ public class DwCAExporter {
 		logger.info("Writing headers row to the Occurrence.txt file.");
 		filewriter.WriteRow(headerRow);
 		logger.info("CSV Fieldsheader: " + headerRow.toString());
-		/* Clear the Sotred map and KeySet */
+		/* Clear the Sorted map and KeySet */
 		sortedSystemProperties.clear();
 		keySet.clear();
 	}
@@ -568,8 +593,7 @@ public class DwCAExporter {
 		DwCAExporter.nameCollectiontypeAnd = nameCollectiontypeAnd;
 	}
 
-	/* Uitvoeren Elasticsearch query */
-	@SuppressWarnings("unchecked")
+	/* Execute the Elasticsearch query */
 	public static <T> void getResultsList(String type,
 			String namecollectiontype, String sourcesystemcode, int size,
 			Class<T> targetClass) {
@@ -599,7 +623,7 @@ public class DwCAExporter {
 										.termFilter("collectionType.raw",
 												nameCollectionType2)));
 			} else {
-				if (namecollectiontype != null) {
+				if (namecollectiontype.length() > 0) {
 					builder = QueryBuilders.filteredQuery(
 							QueryBuilders
 									.boolQuery()
@@ -617,14 +641,14 @@ public class DwCAExporter {
 			}
 
 			if (size <= 0) {
-				CountResponse res = eslasticClient.prepareCount()
+				CountResponse res = elasticClient.prepareCount()
 						.setQuery(builder).execute().actionGet();
 				size = (int) res.getCount();
 			}
 
 			if (size > 0) {
 				SortOrder order = SortOrder.ASC;
-				searchRequestBuilder = eslasticClient
+				searchRequestBuilder = elasticClient
 						.prepareSearch()
 						.setVersion(true)
 						.setQuery(builder)
@@ -652,14 +676,14 @@ public class DwCAExporter {
 			}
 
 			if (size <= 0) {
-				CountResponse res = eslasticClient.prepareCount()
+				CountResponse res = elasticClient.prepareCount()
 						.setQuery(brahmsBuilder).execute().actionGet();
 				size = (int) res.getCount();
 			}
 
 			if (size > 0) {
 				SortOrder order = SortOrder.ASC;
-				searchRequestBuilder = eslasticClient
+				searchRequestBuilder = elasticClient
 						.prepareSearch()
 						.setVersion(true)
 						.setQuery(brahmsBuilder)
@@ -673,7 +697,18 @@ public class DwCAExporter {
 			}
 		}
 
-		response = searchRequestBuilder.execute().actionGet();
+		if (searchRequestBuilder != null)
+		{
+			try
+			{
+				response = searchRequestBuilder.execute().actionGet();
+			}
+			catch(ElasticsearchException elx)
+			{
+				logger.info("Elasticsearch is not running.");
+				logger.info("Elasticsearch: " + elx.getMessage());
+				throw elx; //.printStackTrace();
+			}
 
 		logger.info("Status: " + response.status());
 
@@ -681,7 +716,6 @@ public class DwCAExporter {
 
 		long totalHitCount = 0;
 		totalHitCount = response.getHits().getTotalHits();
-		// logger.info("Total hits: " + totalHitCount);
 		logger.info(
 				"[SearchByElasticsearch] [{}] record(s) found in scrolling SearchResponse",
 				totalHitCount);
@@ -701,15 +735,15 @@ public class DwCAExporter {
 
 		while (true) {
 			try {
-				List<T> list = new ArrayList<T>();
+				ArrayList<ESSpecimen> list =  new ArrayList<>();
 
 				for (SearchHit hit : response.getHits()) {
 					T result = objectMapper.convertValue(hit.getSource(),
 							targetClass);
-					list.add(result);
+					list.add((ESSpecimen) result);
 				}
 
-				response = eslasticClient
+				response = elasticClient
 						.prepareSearchScroll(response.getScrollId())
 						.setScrollId(response.getScrollId())
 						.setScroll(TimeValue.timeValueMinutes(60000)).execute()
@@ -724,16 +758,16 @@ public class DwCAExporter {
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS")
 						&& MAPPING_FILE_NAME.equalsIgnoreCase("Zoology")) {
-					writeCRSZoologyCsvFile((List<ESSpecimen>) list, "Zoology");
+					writeCRSZoologyCsvFile((list), "Zoology");
 				}
 
 				if (sourcesystemcode.equalsIgnoreCase("CRS")
 						&& MAPPING_FILE_NAME.equalsIgnoreCase("Geology")) {
-					writeCRSGeologyCsvFile((List<ESSpecimen>) list, "Geology");
+					writeCRSGeologyCsvFile(list, "Geology");
 				}
 
 				if (sourcesystemcode.equalsIgnoreCase("BRAHMS")) {
-					writeBrahmsCsvHeader((List<ESSpecimen>) list, "botany");
+					writeBrahmsCsvHeader(list, "botany");
 				}
 				Requests.flushRequest(indexname);
 				Requests.refreshRequest(indexname);
@@ -755,5 +789,5 @@ public class DwCAExporter {
 			}
 		}
 	}
-
+  }
 }

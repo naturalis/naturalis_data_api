@@ -4,6 +4,7 @@ import static nl.naturalis.nda.domain.SourceSystem.NSR;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.backupXmlFile;
+import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.getXmlFiles;
 
 import java.io.File;
 import java.util.List;
@@ -24,7 +25,14 @@ public class NsrImporter {
 
 	public static void main(String[] args)
 	{
-		new NsrImporter().run();
+		if (args.length == 0)
+			new NsrImporter().importAll();
+		else if (args[0].equalsIgnoreCase("taxa"))
+			new NsrImporter().importTaxa();
+		else if (args[0].equalsIgnoreCase("multimedia"))
+			new NsrImporter().importMultiMedia();
+		else
+			logger.error("Invalid argument: " + args[0]);
 	}
 
 	private static final Logger logger;
@@ -44,39 +52,37 @@ public class NsrImporter {
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
-	public void run()
+	public void importAll()
 	{
 		long start = System.currentTimeMillis();
-		File[] xmlFiles = NsrImportUtil.getXmlFiles();
+		File[] xmlFiles = getXmlFiles();
 		if (xmlFiles.length == 0) {
 			logger.info("No XML files to process");
 			return;
 		}
 		LoadUtil.truncate(LUCENE_TYPE_TAXON, NSR);
 		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
-		ETLStatistics tStats = new ETLStatistics();
-		ETLStatistics mStats = new ETLStatistics();
-		mStats.setUseObjectsAccepted(true);
-		NsrExtractor extractor = null;
-		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(tStats);
+		ETLStatistics taxonStats = new ETLStatistics();
+		ETLStatistics mediaStats = new ETLStatistics();
+		mediaStats.setUseObjectsAccepted(true);
+		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(taxonStats);
 		tTransformer.setSuppressErrors(suppressErrors);
-		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mStats);
+		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mediaStats);
 		mTransformer.setSuppressErrors(suppressErrors);
 		NsrTaxonLoader taxonLoader = null;
-		NsrMultiMediaLoader multimediaLoader = null;
+		NsrMultiMediaLoader mediaLoader = null;
 		try {
-			taxonLoader = new NsrTaxonLoader(esBulkRequestSize, tStats);
-			multimediaLoader = new NsrMultiMediaLoader(esBulkRequestSize, mStats);
+			taxonLoader = new NsrTaxonLoader(esBulkRequestSize, taxonStats);
+			mediaLoader = new NsrMultiMediaLoader(esBulkRequestSize, mediaStats);
 			for (File f : xmlFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
-				extractor = new NsrExtractor(f, tStats);
 				int i = 0;
-				for (XMLRecordInfo extracted : extractor) {
+				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
 					List<ESTaxon> taxa = tTransformer.transform(extracted);
 					taxonLoader.load(taxa);
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<ESMultiMediaObject> multimedia = mTransformer.transform(extracted);
-					multimediaLoader.load(multimedia);
+					mediaLoader.load(multimedia);
 					if (++i % 5000 == 0)
 						logger.info("Records processed: " + i);
 				}
@@ -84,21 +90,84 @@ public class NsrImporter {
 			}
 		}
 		finally {
-			IOUtil.close(taxonLoader, multimediaLoader);
+			IOUtil.close(taxonLoader, mediaLoader);
 		}
-		tStats.logStatistics(logger, "taxa");
-		/*
-		 * NB The multimedia transformer did not keep track of record-level
-		 * statistics. Note though that the multimedia statistics object may
-		 * still have a non-zero value for the recordsRejected counter, because
-		 * that record could also have been updated by the multimedia loader, in
-		 * case ElasticSearch could not index So now we need to copy
-		 * record-level statics to the media statistics object.
-		 */
-		mStats.recordsProcessed = tStats.recordsProcessed;
-		mStats.recordsSkipped = tStats.recordsSkipped;
-		mStats.recordsRejected = tStats.recordsRejected;
-		mStats.logStatistics(logger, "multimedia");
+		taxonStats.logStatistics(logger, "taxa");
+		mediaStats.badInput = taxonStats.badInput;
+		mediaStats.logStatistics(logger, "multimedia");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
+
+	public void importTaxa()
+	{
+		long start = System.currentTimeMillis();
+		File[] xmlFiles = getXmlFiles();
+		if (xmlFiles.length == 0) {
+			logger.info("No XML files to process");
+			return;
+		}
+		LoadUtil.truncate(LUCENE_TYPE_TAXON, NSR);
+		ETLStatistics stats = new ETLStatistics();
+		NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
+		transformer.setSuppressErrors(suppressErrors);
+		NsrTaxonLoader loader = null;
+		try {
+			loader = new NsrTaxonLoader(esBulkRequestSize, stats);
+			for (File f : xmlFiles) {
+				logger.info("Processing file " + f.getAbsolutePath());
+				int i = 0;
+				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
+					List<ESTaxon> transformed = transformer.transform(extracted);
+					loader.load(transformed);
+					if (++i % 5000 == 0)
+						logger.info("Records processed: " + i);
+				}
+			}
+		}
+		finally {
+			IOUtil.close(loader);
+		}
+		stats.logStatistics(logger, "taxa");
+		LoadUtil.logDuration(logger, getClass(), start);
+	}
+
+	public void importMultiMedia()
+	{
+		long start = System.currentTimeMillis();
+		File[] xmlFiles = getXmlFiles();
+		if (xmlFiles.length == 0) {
+			logger.info("No XML files to process");
+			return;
+		}
+		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
+		ETLStatistics stats = new ETLStatistics();
+		stats.setUseObjectsAccepted(true);
+		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(new ETLStatistics());
+		tTransformer.setSuppressErrors(suppressErrors);
+		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(stats);
+		mTransformer.setSuppressErrors(suppressErrors);
+		NsrMultiMediaLoader loader = null;
+		try {
+			loader = new NsrMultiMediaLoader(esBulkRequestSize, stats);
+			for (File f : xmlFiles) {
+				logger.info("Processing file " + f.getAbsolutePath());
+				int i = 0;
+				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
+					List<ESTaxon> taxa = tTransformer.transform(extracted);
+					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
+					List<ESMultiMediaObject> multimedia = mTransformer.transform(extracted);
+					loader.load(multimedia);
+					if (++i % 5000 == 0)
+						logger.info("Records processed: " + i);
+				}
+				backupXmlFile(f);
+			}
+		}
+		finally {
+			IOUtil.close(loader);
+		}
+		stats.logStatistics(logger, "multimedia");
+		LoadUtil.logDuration(logger, getClass(), start);
+	}
+
 }

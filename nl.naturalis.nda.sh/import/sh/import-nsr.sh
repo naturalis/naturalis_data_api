@@ -6,16 +6,16 @@ action="${1}"
 
 if [ "${action}" = taxa ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrTaxonImporter
+    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImporter taxa
 elif [ "${action}" = multimedia ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrMultiMediaImporter
+    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImporter multimedia
 elif [ "${action}" = reset ]
 then
     java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrBackupExtensionRemover
 elif [ "${action}" = "" ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImportAll
+    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImporter
 else
     echo "Don't know how to import/execute \"$action\""
 fi

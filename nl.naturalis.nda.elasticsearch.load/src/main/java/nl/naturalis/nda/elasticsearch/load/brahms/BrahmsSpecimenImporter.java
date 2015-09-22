@@ -1,12 +1,12 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+import static nl.naturalis.nda.domain.SourceSystem.BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
 
-import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
@@ -50,19 +50,18 @@ public class BrahmsSpecimenImporter {
 			return;
 		}
 		ThemeCache.getInstance().resetMatchCounters();
-		// Statistics for specimen import
-		ETLStatistics sStats = new ETLStatistics();
+		ETLStatistics stats = new ETLStatistics();
 		try {
-			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
+			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, BRAHMS);
 			for (File f : csvFiles) {
-				processFile(f, sStats);
+				processFile(f, stats);
 			}
 		}
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
 		ThemeCache.getInstance().logMatchInfo();
-		sStats.logStatistics(logger, "Specimens");
+		stats.logStatistics(logger, "Specimens");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 

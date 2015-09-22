@@ -3,7 +3,6 @@ package nl.naturalis.nda.domain;
 public enum SpecimenTypeStatus
 {
 
-	//@formatter:off
 	ALLOTYPE("allotype"),
 	EPITYPE("epitype"),
 	HAPANTOTYPE("hapantotype"),
@@ -24,7 +23,6 @@ public enum SpecimenTypeStatus
 	 * holotype, paratype, lectotype, etc., but it is known to be one of those.
 	 */
 	TYPE("type");
-	//@formatter:on
 
 	public static SpecimenTypeStatus forName(String name)
 	{
@@ -40,12 +38,10 @@ public enum SpecimenTypeStatus
 
 	private final String name;
 
-
 	private SpecimenTypeStatus(String name)
 	{
 		this.name = name;
 	}
-
 
 	public String toString()
 	{

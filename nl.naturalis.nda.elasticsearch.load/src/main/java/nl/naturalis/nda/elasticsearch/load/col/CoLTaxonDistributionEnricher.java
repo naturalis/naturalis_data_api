@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
+import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
 import nl.naturalis.nda.elasticsearch.client.IndexManager;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
@@ -137,7 +138,12 @@ public class CoLTaxonDistributionEnricher {
 				}
 			}
 			if (!objects.isEmpty()) {
-				index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+				try {
+					index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+				}
+				catch (BulkIndexException e) {
+					throw new RuntimeException(e);
+				}
 				indexed += objects.size();
 			}
 		}

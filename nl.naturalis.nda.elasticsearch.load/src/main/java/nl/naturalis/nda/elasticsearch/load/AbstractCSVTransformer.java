@@ -21,6 +21,16 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 
 	protected boolean suppressErrors;
 	protected CSVRecordInfo recInf;
+	/**
+	 * Holds the value of the ID field of the object to be indexed (e.g. the
+	 * UnitID for specimens and multimedia). It is up to subclasses to determine
+	 * which field is to be regarded as the ID field, and to assign its value to
+	 * {@code objectID}, but they SHOULD do it as one of the first things in
+	 * their implementation of the {@link #transform(CSVRecordInfo) transform
+	 * method}. Otherwise the error reporting methods, which prefix any message
+	 * with the ID of the object for which the message was generated, won't work
+	 * as intended.
+	 */
 	protected String objectID;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -68,8 +78,7 @@ public abstract class AbstractCSVTransformer<T> implements CSVTransformer<T> {
 	protected void handleError(Throwable t)
 	{
 		stats.objectsRejected++;
-		if (!suppressErrors)
-			error(t.toString());
+		error(t.toString());
 		if (logger.isDebugEnabled())
 			logger.debug(t.toString(), t);
 	}

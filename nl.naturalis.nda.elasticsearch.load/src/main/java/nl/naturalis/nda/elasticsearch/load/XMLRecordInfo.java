@@ -3,19 +3,19 @@ package nl.naturalis.nda.elasticsearch.load;
 import org.w3c.dom.Element;
 
 /**
- * A simple bean representing an XML record, i.e. something that comes out of an
- * XML extractor and goes into an {@link XMLTransformer}.
+ * A Java bean representing an XML record (something that comes out of an
+ * XML extractor and goes into an {@link XMLTransformer}).
  * 
  * @author Ayco Holleman
  *
  */
 public class XMLRecordInfo {
 
-	private Element element;
+	private Element record;
 
 	public XMLRecordInfo(Element element)
 	{
-		this.element = element;
+		this.record = element;
 	}
 
 	/**
@@ -23,9 +23,9 @@ public class XMLRecordInfo {
 	 * 
 	 * @return
 	 */
-	public Element getElement()
+	public Element getRecord()
 	{
-		return element;
+		return record;
 	}
 
 }

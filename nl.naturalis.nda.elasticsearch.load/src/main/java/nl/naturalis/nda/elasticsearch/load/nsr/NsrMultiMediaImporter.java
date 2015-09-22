@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
 import nl.naturalis.nda.elasticsearch.client.IndexManager;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
@@ -136,14 +137,24 @@ public class NsrMultiMediaImporter {
 				logger.debug("Stack trace:", t);
 			}
 			if (batch.size() >= bulkRequestSize) {
-				index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, batch);
+				try {
+					index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, batch);
+				}
+				catch (BulkIndexException e) {
+					throw new RuntimeException(e);
+				}
 				numImages += batch.size();
 				totalNumImages += batch.size();
 				batch.clear();
 			}
 		}
 		if (!batch.isEmpty()) {
-			index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, batch);
+			try {
+				index.saveObjects(LUCENE_TYPE_MULTIMEDIA_OBJECT, batch);
+			}
+			catch (BulkIndexException e) {
+				throw new RuntimeException(e);
+			}
 			numImages += batch.size();
 			totalNumImages += batch.size();
 		}

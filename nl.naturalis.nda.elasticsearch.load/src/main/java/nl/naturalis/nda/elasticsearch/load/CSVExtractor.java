@@ -59,6 +59,13 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	private LineNumberReader lnr;
 	private String line;
 
+	/**
+	 * Creates a CSV extractor for the specified CSV file and updating the
+	 * specified statistics object as it extracts records from the file.
+	 * 
+	 * @param csvFile
+	 * @param stats
+	 */
 	public CSVExtractor(File csvFile, ETLStatistics stats)
 	{
 		checkEncoding();
@@ -119,7 +126,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	}
 
 	/**
-	 * Sets the field separator
+	 * Sets the field separator.
 	 * 
 	 * @param delimiter
 	 */
@@ -139,7 +146,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	}
 
 	/**
-	 * Sets the character set of the CSV file.
+	 * Sets the character set of the CSV file. Default UTF-8.
 	 * 
 	 * @param charset
 	 */

@@ -49,8 +49,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Wrapper around ElasticSearch's Native Java client. This is the implementation
- * of the {@link IndexManager} interface used throughout the NBA Import library.
+ * An implementation of {@link IndexManager} that uses ElasticSearch's Native
+ * Java client. This is the implementation of the {@link IndexManager} interface
+ * used throughout the NBA Import library.
  * 
  * @author Ayco Holleman
  * 
@@ -332,31 +333,29 @@ public class IndexManagerNative implements IndexManager {
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs)
+	public void saveObjects(String type, List<?> objs) throws BulkIndexException
 	{
 		saveObjects(type, objs, null, null);
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids)
+	public void saveObjects(String type, List<?> objs, List<String> ids) throws BulkIndexException
 	{
 		saveObjects(type, objs, ids, null);
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
+	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds) throws BulkIndexException
 	{
 		BulkRequestBuilder brb = esClient.prepareBulk();
 		for (int i = 0; i < objs.size(); ++i) {
 			IndexRequestBuilder irb = esClient.prepareIndex(indexName, type);
 			try {
 				irb.setSource(objectMapper.writeValueAsBytes(objs.get(i)));
-				if (ids != null) {
+				if (ids != null)
 					irb.setId(ids.get(i));
-				}
-				if (parentIds != null) {
+				if (parentIds != null)
 					irb.setParent(parentIds.get(i));
-				}
 			}
 			catch (JsonProcessingException e) {
 				throw new IndexManagerException(e);
@@ -364,10 +363,8 @@ public class IndexManagerNative implements IndexManager {
 			brb.add(irb);
 		}
 		BulkResponse response = brb.execute().actionGet();
-		if (response.hasFailures()) {
-			String message = response.buildFailureMessage();
-			throw new RuntimeException(message);
-		}
+		if (response.hasFailures())
+			throw new BulkIndexException(response, objs);
 	}
 
 	public Client getClient()

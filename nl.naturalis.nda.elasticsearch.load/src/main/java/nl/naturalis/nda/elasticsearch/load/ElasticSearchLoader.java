@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.col.CoLReferenceImporter;
 import nl.naturalis.nda.elasticsearch.load.col.CoLSynonymImporter;
@@ -106,7 +107,8 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 * @param documentType
 	 * @param treshold
 	 */
-	public ElasticSearchLoader(IndexManagerNative indexManager, String documentType, int treshold, ETLStatistics stats)
+	public ElasticSearchLoader(IndexManagerNative indexManager, String documentType, int treshold,
+			ETLStatistics stats)
 	{
 		this.idxMgr = indexManager;
 		this.type = documentType;
@@ -114,7 +116,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		this.stats = stats;
 		/*
 		 * Make all lists a bit bigger than the treshold, because the
-		 * treshold-tipping call to load() may actually go past it.
+		 * treshold-tipping call to load() may actually exceed it.
 		 */
 		objs = new ArrayList<>(treshold + 16);
 		if (getIdGenerator() != null)
@@ -155,9 +157,8 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}
-		if (objs.size() >= treshold) {
+		if (objs.size() >= treshold)
 			flush();
-		}
 	}
 
 	/**
@@ -212,9 +213,11 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 			try {
 				idxMgr.saveObjects(type, objs, ids, parIds);
 				stats.objectsIndexed += objs.size();
-				if (++batch % 50 == 0) {
-					logger.info("Documents indexed: " + stats.objectsIndexed);
-				}
+			}
+			catch (BulkIndexException e) {
+				stats.badObjects += e.getFailureCount();
+				stats.objectsIndexed += e.getSuccessCount();
+				logger.warn(e.getMessage());
 			}
 			finally {
 				objs.clear();
@@ -222,6 +225,9 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 					ids.clear();
 				if (parIds != null)
 					parIds.clear();
+			}
+			if (++batch % 50 == 0) {
+				logger.info("Documents indexed: " + stats.objectsIndexed);
 			}
 		}
 	}
@@ -247,5 +253,6 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	{
 		return null;
 	}
+
 
 }

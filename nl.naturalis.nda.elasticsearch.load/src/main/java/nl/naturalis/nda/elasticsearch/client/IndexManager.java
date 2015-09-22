@@ -205,8 +205,10 @@ public interface IndexManager {
 	 *            The type of the document
 	 * @param objs
 	 *            The objects to add
+	 * @throws BulkIndexException
+	 *             Thrown if some of the specified objects could not be indexed.
 	 */
-	void saveObjects(String type, List<?> objs);
+	void saveObjects(String type, List<?> objs) throws BulkIndexException;
 
 	/**
 	 * Adds multiple objects to the index, presumably using ElasticSearch's bulk
@@ -221,8 +223,10 @@ public interface IndexManager {
 	 *            specify an ID. In other words the sizes of the {@code objs}
 	 *            list and the {@code ids} list must be equal. If you want
 	 *            Lucene to generate the IDs for you, specify null.
+	 * @throws BulkIndexException
+	 *             Thrown if some of the specified objects could not be indexed.
 	 */
-	void saveObjects(String type, List<?> objs, List<String> ids);
+	void saveObjects(String type, List<?> objs, List<String> ids) throws BulkIndexException;
 
 	/**
 	 * Adds multiple objects to the index, presumably using ElasticSearch's bulk
@@ -240,7 +244,10 @@ public interface IndexManager {
 	 * @param parentIds
 	 *            The IDs of the parents of the objects. Specify null if the
 	 *            objects do not have a relational parent.
+	 * @throws BulkIndexException
+	 *             Thrown if some of the specified objects could not be indexed.
 	 */
-	void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds);
+	void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
+			throws BulkIndexException;
 
 }

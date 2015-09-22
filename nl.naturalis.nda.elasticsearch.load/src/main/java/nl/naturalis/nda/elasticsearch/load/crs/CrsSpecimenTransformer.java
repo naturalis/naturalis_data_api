@@ -65,7 +65,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		stats.recordsProcessed++;
 
 		this.recInf = recInf;
-		Element record = recInf.getElement();
+		Element record = recInf.getRecord();
 
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
@@ -278,7 +278,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private ESGatheringEvent getGatheringEvent()
 	{
-		Element record = recInf.getElement();
+		Element record = recInf.getRecord();
 		ESGatheringEvent ge = new ESGatheringEvent();
 		ge.setProjectTitle(val(record, "abcd:ProjectTitle"));
 		ge.setWorldRegion(val(record, "abcd:WorldRegion"));
@@ -316,7 +316,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private List<ChronoStratigraphy> getChronoStratigraphyList()
 	{
-		Element record = recInf.getElement();
+		Element record = recInf.getRecord();
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsChronoStratigraphy");
 		if (elems == null) {
 			return null;
@@ -363,7 +363,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private List<BioStratigraphy> getBioStratigraphyList()
 	{
-		Element record = recInf.getElement();
+		Element record = recInf.getRecord();
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsBioStratigraphy");
 		if (elems == null) {
 			return null;
@@ -399,7 +399,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	public List<LithoStratigraphy> getLithoStratigraphyList()
 	{
-		Element record = recInf.getElement();
+		Element record = recInf.getRecord();
 		List<Element> lithoStratigraphyElements = DOMUtil.getDescendants(record, "ncrsLithoStratigraphy");
 		if (lithoStratigraphyElements == null) {
 			return null;
@@ -437,7 +437,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private boolean hasStatusDeleted()
 	{
-		Element hdr = DOMUtil.getChild(recInf.getElement(), "header");
+		Element hdr = DOMUtil.getChild(recInf.getRecord(), "header");
 		if (!hdr.hasAttribute("status"))
 			return false;
 		return hdr.getAttribute("status").equals("deleted");

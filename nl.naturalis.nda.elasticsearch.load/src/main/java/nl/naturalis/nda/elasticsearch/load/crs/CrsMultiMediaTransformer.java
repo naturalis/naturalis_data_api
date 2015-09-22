@@ -121,7 +121,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	private ESMultiMediaObject initialize()
 	{
 		if (first == null) {
-			Element dc = getDescendant(recInf.getElement(), "oai_dc:dc");
+			Element dc = getDescendant(recInf.getRecord(), "oai_dc:dc");
 			first = new ESMultiMediaObject();
 			first.setGatheringEvents(Arrays.asList(getGatheringEvent(dc)));
 			String temp = getPhaseOrStage(dc);
@@ -169,13 +169,13 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
 			if (logger.isInfoEnabled()) {
-				String id = val(recInf.getElement(), "identifier");
+				String id = val(recInf.getRecord(), "identifier");
 				String fmt = "Skipping record with status \"deleted\" (database id: %s)";
 				logger.info(String.format(fmt, id));
 			}
 			return false;
 		}
-		Element dc = getDescendant(recInf.getElement(), "oai_dc:dc");
+		Element dc = getDescendant(recInf.getRecord(), "oai_dc:dc");
 		/*
 		 * This is actually not the object ID in the sense of being the ID of a
 		 * multimedia object. It's the ID of the specimen that the multimedia
@@ -185,7 +185,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (objectID == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				String id = val(recInf.getElement(), "identifier");
+				String id = val(recInf.getRecord(), "identifier");
 				String fmt = "Missing assoicated specimen reference (database id: %s)";
 				logger.error(String.format(fmt, id));
 			}
@@ -376,7 +376,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 
 	private boolean hasStatusDeleted()
 	{
-		Element hdr = getChild(recInf.getElement(), "header");
+		Element hdr = getChild(recInf.getRecord(), "header");
 		if (!hdr.hasAttribute("status"))
 			return false;
 		return hdr.getAttribute("status").equals("deleted");

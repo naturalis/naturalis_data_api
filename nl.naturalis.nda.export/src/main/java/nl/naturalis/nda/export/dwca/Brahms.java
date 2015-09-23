@@ -26,11 +26,11 @@ public class Brahms
 	/**
 	 * This method will add all values to a list.
 	 * Used in the class DwCAExporter method
-	 * private static void writeBrahmsCsvHeader(List<ESSpecimen> listBrahms, String occurrenceFields) throws Exception
-	 * @param list
-	 * @param filewriter
-	 * @param MAPPING_FILE_NAME
-	 * @throws Exception
+	 * private static void writeBrahmsCsvHeader()
+	 * @param list of Specimen for Brahms
+	 * @param filewriter used class CSVFileWriter
+	 * @param MAPPING_FILE_NAME Add mapping filename
+	 * @throws Exception if field not exists
 	 */
 	
 	public static void addBrahmsOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,

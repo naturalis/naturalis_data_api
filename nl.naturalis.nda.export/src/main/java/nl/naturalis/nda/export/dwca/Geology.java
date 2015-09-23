@@ -24,11 +24,11 @@ public class Geology
 	/**
 	 * This method will add all values to a list.
 	 * Used in the class DwCAExporter method
-	 * private static void writeCRSGeologyCsvFile(List<ESSpecimen> listGeology,	String occurrenceFields) throws Exception
-	 * @param list
-	 * @param filewriter
-	 * @param MAPPING_FILE_NAME
-	 * @throws Exception
+	 * private static void writeCRSGeologyCsvFile()
+	 * @param list EsSpecimen class
+	 * @param filewriter CsvFileWriter class
+	 * @param MAPPING_FILE_NAME Geology
+	 * @throws Exception field value exception
 	 */
 	public static void addGeologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME) throws Exception

@@ -24,11 +24,11 @@ public class Zoology
 	/**
 	 * This method will add all values to a list.
 	 * Used in the class DwCAExporter method
-	 * private static void writeCRSZoologyCsvFile(List<ESSpecimen> listZoology, String occurrenceFields) throws Exception {
-	 * @param list
-	 * @param filewriter
-	 * @param MAPPING_FILE_NAME
-	 * @throws Exception
+	 * private static void writeCRSZoologyCsvFile()
+	 * @param list Specimen list
+	 * @param filewriter Class CvsFileWriter
+	 * @param MAPPING_FILE_NAME Zoology 
+	 * @throws Exception Field execption
 	 */
   
 	public static void addZoologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,

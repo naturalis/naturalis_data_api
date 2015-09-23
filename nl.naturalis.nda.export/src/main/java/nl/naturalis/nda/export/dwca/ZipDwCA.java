@@ -34,9 +34,9 @@ public class ZipDwCA
 	
 	/**
 	 * Zip the files to the directory
-	 * @param dirName
-	 * @param nameZipFile
-	 * @throws IOException
+	 * @param dirName Zip the files to the directory
+	 * @param nameZipFile Name of the zipfile
+	 * @throws IOException Stream exception
 	 */
 	public void zipDirectory(String dirName, String nameZipFile) throws IOException
 	{
@@ -49,10 +49,10 @@ public class ZipDwCA
 
 	/**
 	 * addFolderToZip
-	 * @param path
-	 * @param srcFolder
-	 * @param zip
-	 * @throws IOException
+	 * @param path Folder path
+	 * @param srcFolder destination folder
+	 * @param zip output zipfile
+	 * @throws IOException zip exception
 	 */
 	private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws IOException
 	{
@@ -77,11 +77,11 @@ public class ZipDwCA
 
 	/**
 	 * addFileToZip
-	 * @param path
-	 * @param srcFile
-	 * @param zip
-	 * @param flag
-	 * @throws IOException
+	 * @param path Zip path
+	 * @param srcFile  source file to zip
+	 * @param zip output zip
+	 * @param flag true or false
+	 * @throws IOException IO exception
 	 */
 	private void addFileToZip(String path, String srcFile, ZipOutputStream zip, boolean flag)
 			throws IOException

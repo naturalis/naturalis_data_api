@@ -32,7 +32,7 @@ public class Id
 
 	/**
 	 * 
-	 * @return
+	 * @return result index
 	 */
 	public int getIndex()
 	{
@@ -40,7 +40,7 @@ public class Id
 	}
     /**
      * 
-     * @param index
+     * @param index set value index
      */
 	public void setIndex(int index)
 	{

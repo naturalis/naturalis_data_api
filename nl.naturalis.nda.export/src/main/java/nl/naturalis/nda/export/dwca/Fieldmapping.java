@@ -39,9 +39,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get ID value 
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setDummyValue(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -56,9 +56,9 @@ public class Fieldmapping {
 
 	/**
 	 *  Get RecordBasis value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setBasisOfRecord(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -71,9 +71,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get BasisOf record value For BRAHMS
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setBasisOfRecord_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -99,9 +99,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get catalogNumber value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setCatalogNumber(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getSourceSystemId() != null) {
@@ -113,9 +113,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get ClassName value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setClassName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -133,9 +133,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get Classname for BRAHMS
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setClassName_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -146,9 +146,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get CollectionType value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setCollectionType(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -162,9 +162,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get CollectionCode value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setCollectionCode_Brahms(
 			 ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -173,9 +173,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Continent value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setContinent(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -188,9 +188,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Country value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setCountry(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -203,9 +203,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get County value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setCounty( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -218,9 +218,9 @@ public class Fieldmapping {
 
 	/**
 	 *  Get DateIndentified value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setDateIndentified(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -239,9 +239,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get DateIndentified value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setDateIndentified_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -258,9 +258,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get LatitudeDecimal value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setLatitudeDecimal(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -280,9 +280,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get LongituDecimal value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setLongitudeDecimal(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -302,9 +302,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Eventdate value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setEvendate(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -353,9 +353,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Eventdate value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setEvendate_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -404,9 +404,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Family value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setFamily( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -423,9 +423,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Family value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setFamily_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -440,9 +440,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Genus value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setGenus( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -459,9 +459,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Genus value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setGenus_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -481,9 +481,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get Geodeticdatum value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setGeodeticDatum(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -493,9 +493,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get Habitat value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setHabitat(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -505,9 +505,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get HigherClassification value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setHigherClassification(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -516,9 +516,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get HigherClassification value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setHigherClassification_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -552,9 +552,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get IndentifiersFullname value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setIdentifiersFullName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -592,9 +592,9 @@ public class Fieldmapping {
 
 	/**
 	 *  Get IndentifiersFullname value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setIdentifiersFullName_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -630,9 +630,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get NumberOfSpecimen value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setNumberOfSpecimen(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -647,9 +647,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get InformationWithHeld value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setInformationWithHeld(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -658,9 +658,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get InfraspecificEpithet value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setInfraspecificEpithet(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -677,9 +677,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get InfraspecificEpithet value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setInfraspecificEpithet_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -694,9 +694,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Island value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setIsland( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -709,9 +709,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get InstitudeCode value for Zoology and Geology  
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setInstitudeCode(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -726,9 +726,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Kingdom value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setKingdom(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -745,9 +745,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Kingdom value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setKingdom_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -771,9 +771,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get PhaseOrStage value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setPhaseOrStage(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -786,9 +786,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Locality value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setLocality(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -806,9 +806,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get MaximumElevationInMeters value 
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setMaximumElevationInMeters(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -818,9 +818,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get MinimumElevationInMeters value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setMinimumElevationInMeters(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -830,9 +830,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get NomenclaturalCode value for Zoology 
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setNomenclaturalCode_Zoology(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -842,9 +842,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get NomenclaturalCode value Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setNomenclaturalCode_Geology(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -854,9 +854,9 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get NomenclaturalCode value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen classn
 	 */
 	public static void setNomenclaturalCode_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		dataRow.add("ICN");
@@ -864,9 +864,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get OccurrenceID value for Brahms, Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setOccurrenceID(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -884,9 +884,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Order value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setOrder( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -903,9 +903,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Order value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setOrder_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -920,9 +920,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Phylum value for Zoology and Geology 
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setPhylum( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -937,9 +937,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get PreparationType value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setPreparationType(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -952,9 +952,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get GatheringAgents_FullName value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setGatheringAgents_FullName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -985,9 +985,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get FullScientificName value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setFullScientificName(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1004,9 +1004,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get FullScientificName value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setFullScientificName_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1021,9 +1021,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get AuthorshipVerbatim value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setAuthorshipVerbatim(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1040,9 +1040,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get AuthorshipVerbatim value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setAuthorshipVerbatim_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1057,9 +1057,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Sex value for Zoology and Geology 
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setSex( ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1072,9 +1072,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get SpecificEpithet value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setSpecificEpithet(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1091,9 +1091,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get SpecificEpithet value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setSpecificEpithet_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1108,9 +1108,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get ProvinceState value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setProvinceState(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1124,9 +1124,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get SubGenus value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setSubGenus(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1143,9 +1143,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get SubGenus value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setSubGenus_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1160,9 +1160,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Taxonrank value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setTaxonrank(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1178,9 +1178,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get Taxonrank value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setTaxonrank_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1214,9 +1214,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get TaxonRemarks value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setTaxonRemarks(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1248,9 +1248,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get TypeStatus value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setTypeStatus(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1271,9 +1271,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get VerbatimCoordinates value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setVerbatimCoordinates(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1315,9 +1315,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get VerbatimCoordinates value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setVerbatimCoordinates_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1360,9 +1360,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get VerbatimDepth value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setVerbatimDepth(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1375,9 +1375,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get AltitudeUnifOfMeasurement value
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setAltitudeUnifOfMeasurement(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1391,9 +1391,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get VerbatimEventDate value for Zoology and Geology
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setVerbatimEventDate(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1442,9 +1442,9 @@ public class Fieldmapping {
 
 	/**
 	 * Get VerbatimEventDate value for Brahms
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setVerbatimEventDate_Brahms(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
@@ -1493,9 +1493,9 @@ public class Fieldmapping {
 
 	/**
 	 *  Get TaxonRank Is VerbatimTaxonRank value 
-	 * @param specimen
-	 * @param dataRow
-	 * @throws Exception
+	 * @param specimen ESspecimen class
+	 * @param dataRow  CsvRow dataRow 
+	 * @throws Exception problem occurred in specimen class
 	 */
 	public static void setTaxonRank_Is_VerbatimTaxonRank(
 			 ESSpecimen specimen,

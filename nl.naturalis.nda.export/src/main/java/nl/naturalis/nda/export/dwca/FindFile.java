@@ -26,8 +26,8 @@ public class FindFile
 
 	/**
 	 * Find all files in directory and added to Array list
-	 * @param directory
-	 * @return
+	 * @param directory set directory
+	 * @return files
 	 */
 	public static File[] getFileList(String directory)
 	{
@@ -45,8 +45,8 @@ public class FindFile
 	
 	/**
 	 * Find files with certain extension only in a directory
-	 * @param folder
-	 * @param ext
+	 * @param folder set folder
+	 * @param ext set ext
 	 */
 	public void listFile(String folder, String ext) {
 		 
@@ -85,14 +85,14 @@ public class FindFile
  
 		/**
 		 * 
-		 * @param ext
+		 * @param ext set ext
 		 */
 		public GenericExtFilter(String ext) {
 			this.ext = ext;
 		}
  
 		/**
-		 * @return
+		 * @return result ext
 		 */
 		public boolean accept(File dir, String name) {
 			return (name.endsWith(ext));

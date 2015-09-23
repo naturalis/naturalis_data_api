@@ -39,7 +39,7 @@ public class Meta
 
     /**
      * 
-     * @return
+     * @return metadata
      */
 	public String getMetadata()
 	{
@@ -48,7 +48,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @param metadata
+	 * @param metadata set value metadata
 	 */
 	public void setMetadata(String metadata)
 	{
@@ -57,7 +57,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @return
+	 * @return xmlnsxsi
 	 */
 	public String getXmlnsxsi()
 	{
@@ -66,7 +66,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @param xmlnsxsi
+	 * @param xmlnsxsi set value xmlnsxsi
 	 */
 	public void setXmlnsxsi(String xmlnsxsi)
 	{
@@ -75,7 +75,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @return
+	 * @return result xmlnstdwg
 	 */
 	public String getXmlnstdwg()
 	{
@@ -84,7 +84,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @param xmlnstdwg
+	 * @param xmlnstdwg set value xmlnstdwg
 	 */
 	public void setXmlnstdwg(String xmlnstdwg)
 	{
@@ -93,7 +93,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @return
+	 * @return cores
 	 */
 	public List<Core> getCores()
 	{
@@ -102,7 +102,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @param cores
+	 * @param cores set cores
 	 */
 	public void setCores(List<Core> cores)
 	{
@@ -111,7 +111,7 @@ public class Meta
 
 	/**
 	 * 
-	 * @param cores
+	 * @param cores add cores
 	 */
 	public void add(Core cores)
 	{
@@ -124,7 +124,7 @@ public class Meta
 
     /**
      * 
-     * @return
+     * @return xmltargetNamespace
      */
 	public String getXmltargetNamespace() 
 	{
@@ -133,7 +133,7 @@ public class Meta
 
     /**
      * 
-     * @param xmltargetNamespace
+     * @param xmltargetNamespace set xmltargetNamespace
      */
 	public void setXmltargetNamespace(String xmltargetNamespace) 
 	{

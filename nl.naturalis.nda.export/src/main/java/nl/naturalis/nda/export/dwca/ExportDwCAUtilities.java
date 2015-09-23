@@ -48,9 +48,9 @@ public class ExportDwCAUtilities {
 
     /**
      * searching for a character
-     * @param s1
-     * @param s2
-     * @return
+     * @param s1 set value1
+     * @param s2 set value 2
+     * @return boolean value
      */
 	public static int indexOfFirstContainedCharacter(String s1, String s2)
 	{
@@ -70,10 +70,10 @@ public class ExportDwCAUtilities {
 
 	/**
 	 * Zip multiple files 
-	 * @param fileName
-	 * @param zos
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @param fileName set filename
+	 * @param zos Class Zos
+	 * @throws FileNotFoundException File exception
+	 * @throws IOException IO exception
 	 * <p>
 	 * Example: String zipfilename = zipFileName + zipExtension;
 	 * try
@@ -111,9 +111,9 @@ public class ExportDwCAUtilities {
 
 	/**
 	 * Read the value from properties file 
-	 * @param propertyname
-	 * @param value
-	 * @return
+	 * @param propertyname set propertyname
+	 * @param value set Value
+	 * @return property value
 	 */
 	public static String getPropertyValue(String propertyname, String value)
 	{
@@ -123,9 +123,9 @@ public class ExportDwCAUtilities {
 
 	/**
 	 * Read the value from properties file
-	 * @param propertyname
-	 * @param key
-	 * @return
+	 * @param propertyname set propertyname
+	 * @param key set key
+	 * @return property value
 	 */
 	public static String readPropertyvalue(String propertyname, String key)
 	{
@@ -180,9 +180,9 @@ public class ExportDwCAUtilities {
 	/**
 	 * if value is '1' field will be added to CSV file otherwise if value is<br>
 	 * '0'. field will not be added. 
-	 * @param propertyname
-	 * @param value
-	 * @return
+	 * @param propertyname set propertyname
+	 * @param value set value
+	 * @return result boolean value
 	 */
 	public static boolean isFieldChecked(String propertyname, String value)
 	{
@@ -195,9 +195,9 @@ public class ExportDwCAUtilities {
 
 	/**
 	 * Copy a file from a Source directory to a Destination directory
-	 * @param sourceFile
-	 * @param DestinationFile
-	 * @throws IOException
+	 * @param sourceFile set sourceFile
+	 * @param DestinationFile set DestinationFile
+	 * @throws IOException Copy InputOutput Exception
 	 */
 	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
 	{
@@ -219,7 +219,7 @@ public class ExportDwCAUtilities {
 	
 	/**
 	 * Renamed the zipfile extension ".zip" file to ".zip.bak"
-	 * @param fileToRenamed
+	 * @param fileToRenamed Renamed the zipfile extension ".zip" file to ".zip.bak"
 	 */
 	public static void renameDwCAZipFile(File fileToRenamed)
 	{
@@ -246,7 +246,7 @@ public class ExportDwCAUtilities {
 
 	/**
 	 *  Renamed the predifined eml.xml file from source directory to eml.xml
-	 * @param emlFileToRenamed
+	 * @param emlFileToRenamed set emlFilename
 	 */
 	public static void renameDwCAEMLFile(File emlFileToRenamed)
 	{
@@ -272,9 +272,9 @@ public class ExportDwCAUtilities {
 
     /**
      * 
-     * @param inputString
-     * @param items
-     * @return
+     * @param inputString set inputString
+     * @param items set items
+     * @return boolean value
      */
 	public static boolean stringContainsItemFromList(String inputString, String[] items)
 	{
@@ -290,9 +290,9 @@ public class ExportDwCAUtilities {
      * used in: 
      * private static void dwcaObjectToXML(Meta meta) from DwCAexporter
      * private void writeCSVHeader() throws IOException
-     * @param directory
-     * @param fileName
-     * @return
+     * @param directory set directory
+     * @param fileName set fileName
+     * @return get fullpath
      */
 	public static File newFile(File directory, String fileName)
 	{
@@ -303,9 +303,9 @@ public class ExportDwCAUtilities {
     /**
      * used in:
      * public void exportDwca(String zipFileName, String namecollectiontype, String totalsize) throws Exception
-     * @param directory
-     * @param fileName
-     * @return
+     * @param directory set directory
+     * @param fileName set filename
+     * @return get fullpath
      */
 	public static String getFullPath(File directory, String fileName)
 	{
@@ -317,7 +317,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Root directory for output from the DwCA export program
 	 * 
-	 * @return
+	 * @return Root directory for output from the DwCA export program
 	 */
 	public static File getDwcaExportDir()
 	{
@@ -345,7 +345,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Working directory for the DwCA export program: ${dwcaExportDir}/output
 	 * 
-	 * @return
+	 * @return Working directory for the DwCA export program: ${dwcaExportDir}/output
 	 */
 	public static File getWorkingDirectory()
 	{
@@ -361,7 +361,7 @@ public class ExportDwCAUtilities {
 	 * Directory into which the DwC archive files will be written:
 	 * ${dwcaExportDir}/zip
 	 * 
-	 * @return
+	 * @return Directory into which the DwC archive files will be written:
 	 */
 	public static File getZipOutputDirectory()
 	{
@@ -376,7 +376,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Backup directory for the DwC archive files: ${dwcaExportDir}/bak
 	 * 
-	 * @return
+	 * @return result Backup directory
 	 */
 	public static File getBackupDirectory()
 	{
@@ -391,7 +391,7 @@ public class ExportDwCAUtilities {
 
     /**
      * 
-     * @return
+     * @return result config directory
      */
 	private static File getConfigRootDir()
 	{
@@ -405,7 +405,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Directory containing eml files and properties files
 	 * 
-	 * @return
+	 * @return result directory
 	 */
 	public static File getCollectionConfigDir()
 	{
@@ -423,8 +423,8 @@ public class ExportDwCAUtilities {
 	/**
 	 * Get all configuration settings for a collection
 	 * 
-	 * @param collectionName
-	 * @return
+	 * @param collectionName set collectionName
+	 * @return result collectionname
 	 */
 	public static ConfigObject getCollectionConfiguration(String collectionName)
 	{
@@ -444,9 +444,9 @@ public class ExportDwCAUtilities {
 	/**
 	 * Get a configuration setting for a collection
 	 * 
-	 * @param collectionName
-	 * @param propertyName
-	 * @return
+	 * @param collectionName set collectionName
+	 * @param propertyName set propertyName
+	 * @return result collectionname
 	 */
 	public static String getProperty(String collectionName, String propertyName)
 	{
@@ -489,8 +489,8 @@ public class ExportDwCAUtilities {
 
     /**
      * 
-     * @param input
-     * @return
+     * @param input a byte value
+     * @return result
      */
 	public static boolean validUTF8(byte[] input)
 	{
@@ -536,8 +536,8 @@ public class ExportDwCAUtilities {
 
     /**
      * 
-     * @param simpleJSON
-     * @return
+     * @param simpleJSON set simpleJSON
+     * @return result
      */
 	public static String crunchifyPrettyJSONUtility(String simpleJSON)
 	{
@@ -554,8 +554,8 @@ public class ExportDwCAUtilities {
 	/**
 	 * Convert a JSON string to pretty print version
 	 * 
-	 * @param jsonString
-	 * @return
+	 * @param jsonString set jsonString
+	 * @return Json result 
 	 */
 	public static String toPrettyFormat(String jsonString)
 	{

@@ -29,7 +29,7 @@ public class Files
 
 	/**
 	 * 
-	 * @return
+	 * @return value location
 	 */
 	public String getLocation()
 	{
@@ -38,7 +38,7 @@ public class Files
 
 	/**
 	 * 
-	 * @param location
+	 * @param location set location
 	 */
 	public void setLocation(String location)
 	{

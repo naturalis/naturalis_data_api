@@ -39,8 +39,8 @@ public class Field
 	
 	/**
 	 * 
-	 * @param index
-	 * @param Term
+	 * @param index set index
+	 * @param Term set term
 	 */
     public Field(String index, String Term)
 	{
@@ -50,7 +50,7 @@ public class Field
 
    /**
     * 
-    * @return
+    * @return index
     */
 	public String getIndex()
 	{
@@ -59,7 +59,7 @@ public class Field
 
     /**
      * 
-     * @param index
+     * @param index set index
      */
 	public void setIndex(String index)
 	{
@@ -68,7 +68,7 @@ public class Field
 
     /**
      * 
-     * @return
+     * @return term
      */
 	public String getTerm()
 	{
@@ -77,7 +77,7 @@ public class Field
 
     /**
      * 
-     * @param term
+     * @param term set term
      */
 	public void setTerm(String term)
 	{
@@ -86,8 +86,8 @@ public class Field
 
     /**
      * 
-     * @param indexvalue
-     * @param termvalue
+     * @param indexvalue set indexvalue
+     * @param termvalue set termvalue
      */
 	public void setFields(String indexvalue, String termvalue)
 	{
@@ -97,7 +97,7 @@ public class Field
 
     /**
      * 
-     * @return
+     * @return flds
      */
 	public List<Field> getFlds()
 	{
@@ -106,7 +106,7 @@ public class Field
 
     /**
      * 
-     * @param flds
+     * @param flds set flds
      */
 	public void setFlds(List<Field> flds)
 	{
@@ -115,7 +115,7 @@ public class Field
 	
 	/**
 	 * 
-	 * @param field
+	 * @param field set field
 	 */
 	public void addFields(Field field) {
 		  if (flds == null) {

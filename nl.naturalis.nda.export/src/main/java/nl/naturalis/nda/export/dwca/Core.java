@@ -67,7 +67,7 @@ public class Core
 
     /**
      * 
-     * @param files
+     * @param files set files
      */
 	
 	public void setFiles(Files files)
@@ -86,7 +86,7 @@ public class Core
 
     /**
      * 
-     * @param encoding
+     * @param encoding set encoding
      */
 	public void setEncoding(String encoding)
 	{
@@ -95,7 +95,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return fieldsEnclosedBy
      */
 	public String getFieldsEnclosedBy()
 	{
@@ -104,7 +104,7 @@ public class Core
 
     /**
      * 
-     * @param fieldsEnclosedBy
+     * @param fieldsEnclosedBy set fieldsEnclosedBy
      */
 	public void setFieldsEnclosedBy(String fieldsEnclosedBy)
 	{
@@ -113,7 +113,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return fieldsEnclosedBy
      */
 	public String getFieldsTerminatedBy()
 	{
@@ -122,7 +122,7 @@ public class Core
 
     /**
      * 
-     * @param fieldsTerminatedBy
+     * @param fieldsTerminatedBy set fieldsEnclosedBy
      */
 	public void setFieldsTerminatedBy(String fieldsTerminatedBy)
 	{
@@ -131,7 +131,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return linesTerminatedBy
      */
 	public String getLinesTerminatedBy()
 	{
@@ -140,7 +140,7 @@ public class Core
 
     /**
      * 
-     * @param linesTerminatedBy
+     * @param linesTerminatedBy set linesTerminatedBy
      */
 	public void setLinesTerminatedBy(String linesTerminatedBy)
 	{
@@ -149,7 +149,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return ignoreHeaderLines
      */
 	public String getIgnoreHeaderLines()
 	{
@@ -158,7 +158,7 @@ public class Core
 
     /**
      * 
-     * @param ignoreHeaderLines
+     * @param ignoreHeaderLines set ignoreHeaderLines
      */
 	public void setIgnoreHeaderLines(String ignoreHeaderLines)
 	{
@@ -167,7 +167,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return rowType
      */
 	public String getRowtype()
 	{
@@ -176,7 +176,7 @@ public class Core
 
     /**
      * 
-     * @param rowType
+     * @param rowType set rowType
      */
 	public void setRowtype(String rowType)
 	{
@@ -185,7 +185,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return id
      */
 	public Id getId()
 	{
@@ -194,7 +194,7 @@ public class Core
 
     /**
      * 
-     * @param id
+     * @param id set value id
      */
 	public void setId(Id id)
 	{
@@ -203,7 +203,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return result index
      */
 	public String getIndex()
 	{
@@ -212,7 +212,7 @@ public class Core
 
 	/**
 	 * 
-	 * @param index
+	 * @param index set value index
 	 */
 	public void setIndex(String index)
 	{
@@ -221,7 +221,7 @@ public class Core
 
     /**
      * 
-     * @return
+     * @return result fields
      */
 	public List<Field> getField()
 	{
@@ -230,7 +230,7 @@ public class Core
  
 	/**
 	 * 
-	 * @param field
+	 * @param field set value fields
 	 */
 	public void setField(List<Field> field)
 	{
@@ -239,7 +239,7 @@ public class Core
 
 	/**
 	 * 
-	 * @param field
+	 * @param field set value field
 	 */
 	public void addField(Field field)
 	{

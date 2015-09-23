@@ -24,8 +24,8 @@ public class CsvFileWriter extends BufferedWriter
 	public static final String httpUrl = "http://data.biodiversitydata.nl/";
     /**
      * Parameterized constructor
-     * @param fileName
-     * @throws IOException
+     * @param fileName set filename
+     * @throws IOException IO exception
      */
     public CsvFileWriter(String fileName) throws IOException{
         super(new FileWriter(fileName));
@@ -37,8 +37,8 @@ public class CsvFileWriter extends BufferedWriter
     
     /**
      * Writes a single row to a CSV file.
-     * @param row
-     * @throws IOException
+     * @param row CsvRow dataRow
+     * @throws IOException IO exception
      */
     public void WriteRow(CsvRow row) throws IOException
     {

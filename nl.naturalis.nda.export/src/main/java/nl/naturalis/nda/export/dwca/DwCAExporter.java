@@ -96,8 +96,8 @@ public class DwCAExporter {
 	
 
 	/**
-	 * @param args
-	 * @throws Exception
+	 * @param args no arguments
+	 * @throws Exception Elasticsearch is not running
 	 * Get the directories path of the EML, Meta, OutPut, Zip and Backup files
 	 * Execute the Method DwCAExport with the params "ColectionName and TotalSize of Shards"
 	 */
@@ -266,8 +266,8 @@ public class DwCAExporter {
 
 	/**
 	 * Get the ElasticClient and IndexName
-	 * @param client
-	 * @param indexname
+	 * @param client Set client
+	 * @param indexname Set indexname
 	 */
 	public DwCAExporter(Client client, String indexname) {
 		DwCAExporter.elasticClient = client;
@@ -278,10 +278,10 @@ public class DwCAExporter {
 	 * Params ZipFilename, NameColletiontype and Size
 	 * Creating the output files Meta.xml and occurrence.txt and set the location for the files
 	 * Get the EML file in the source map and rename the EML file to Eml.xml 
-	 * @param zipFileName
-	 * @param namecollectiontype
-	 * @param totalsize
-	 * @throws Exception
+	 * @param zipFileName Set the filename
+	 * @param namecollectiontype Set the collectionname
+	 * @param totalsize the total of shards
+	 * @throws Exception Export Failure
 	 */
 	public void exportDwca(String zipFileName, String namecollectiontype,
 			String totalsize) throws Exception {
@@ -433,7 +433,7 @@ public class DwCAExporter {
 
     /**
      * Creating the zip file
-     * @param zipFileName
+     * @param zipFileName Set Zip Filename
      */
 	public static void createZipFiles(String zipFileName) {
 		ZipDwCA zip = new ZipDwCA();
@@ -679,7 +679,7 @@ public class DwCAExporter {
 
 	/**
 	 * 
-	 * @param nameCollectiontypeAnd
+	 * @param nameCollectiontypeAnd Set value nameCollectiontypeAnd
 	 */
 	public static void setNameCollectiontypeAnd(String nameCollectiontypeAnd) {
 		DwCAExporter.nameCollectiontypeAnd = nameCollectiontypeAnd;
@@ -687,11 +687,12 @@ public class DwCAExporter {
 
 	/**
 	 * Execute the Elasticsearch query
-	 * @param type
-	 * @param namecollectiontype
-	 * @param sourcesystemcode
-	 * @param size
-	 * @param targetClass
+	 * @param type The document types to execute the search against. Defaults to be executed against all types.
+	 * @param namecollectiontype CollectionName what should be execute
+	 * @param sourcesystemcode CRS or BRAHMS
+	 * @param size Total of Shards
+	 * @param targetClass Specimen
+	 * @param <T> Specimen
 	 */
 	public static <T> void getResultsList(String type,
 			String namecollectiontype, String sourcesystemcode, int size,

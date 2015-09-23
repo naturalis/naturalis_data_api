@@ -1,9 +1,3 @@
-/*
- *  Description: Create a new DwCA export tool for the NBA
- *  Date: January 28th 2015
- *  Developer: Reinier Kartowikromo
- *  
- */
 package nl.naturalis.nda.export.dwca;
 
 import static nl.naturalis.nda.export.dwca.ExportDwCAUtilities.getFullPath;
@@ -52,8 +46,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
- * @author Reinier.Kartowikromo
- *
+ * <h1>DwCAExporter </h1>
+ *  Description: Create a new DwCA export tool for the NBA
+ *  Query the data from JSON Docs and export data values to CSV.
+ *  <p>
+ *  
+ *  @version	1.0
+ *  @since   	January 28th 2015
+ *  @author 	Reinier Kartowikromo
+ *  
  */
 public class DwCAExporter {
 
@@ -97,7 +98,8 @@ public class DwCAExporter {
 	/**
 	 * @param args
 	 * @throws Exception
-	 * 
+	 * Get the directories path of the EML, Meta, OutPut, Zip and Backup files
+	 * Execute the Method DwCAExport with the params "ColectionName and TotalSize of Shards"
 	 */
 	public static void main(String[] args) throws Exception {
 
@@ -171,7 +173,14 @@ public class DwCAExporter {
 
 		logger.info("Ready");
 	}
-
+	
+	/**
+     * Execute the Export with the collectionName "CRS" or "BRAHMS"
+     * Set the ZipFileName
+	 * @param collectionName
+	 * @param ptotalSize
+	 * @throws Exception
+	 */
 	private static void executeDwCaExport(String collectionName,
 			String ptotalSize) throws Exception {
 		/* Get the SourceSystem: CRS or BRAHMS, COL etc. */
@@ -205,6 +214,7 @@ public class DwCAExporter {
 				|| sourceSystemCode.toUpperCase().equals("BRAHMS")) {
 			zipfilename = newFile(zipOutputDirectory, collectionName)
 					.getAbsolutePath();
+			logger.info("Zip Filename: " + zipfilename);
 		}
 
 		DwCAExporter exp = new DwCAExporter(ExportUtil.getESClient(), indexname);
@@ -216,13 +226,20 @@ public class DwCAExporter {
 		}
 		if (sourceSystemCode.toUpperCase().equals("CRS")) {
 			exp.exportDwca(zipfilename, nameCollectiontypeCrs, ptotalSize);
+			logger.info("Execute "+ nameCollectiontypeCrs +" export for CRS");
 		}
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
 			exp.exportDwca(zipfilename, nameCollectiontypeBrahms, ptotalSize);
+			logger.info("Execute "+ nameCollectiontypeBrahms +" export for BRAHMS");
 		}
 	}
 
-	/* Get the Eml File */
+	/**
+	 * Get the Eml File
+	 * @param emlDir
+	 * @param emlfilename
+	 * @return
+	 */
 	private static String getEmlFileName(String emlDir, String emlfilename) {
 		String filename = null;
 		File[] filelist = FindFile.getFileList(emlDir);
@@ -243,16 +260,32 @@ public class DwCAExporter {
 		} else {
 			logger.info("Eml files not found '" + emlDir + "'");
 		}
+		logger.info("EML file: " + result);
 		return result;
 	}
 
+	/**
+	 * Get the ElasticClient and IndexName
+	 * @param client
+	 * @param indexname
+	 */
 	public DwCAExporter(Client client, String indexname) {
 		DwCAExporter.elasticClient = client;
 		DwCAExporter.indexname = indexname;
 	}
 
+	/**
+	 * Params ZipFilename, NameColletiontype and Size
+	 * Creating the output files Meta.xml and occurrence.txt and set the location for the files
+	 * Get the EML file in the source map and rename the EML file to Eml.xml 
+	 * @param zipFileName
+	 * @param namecollectiontype
+	 * @param totalsize
+	 * @throws Exception
+	 */
 	public void exportDwca(String zipFileName, String namecollectiontype,
 			String totalsize) throws Exception {
+		logger.info("Writing the CSV header and data into occurrence.txt file");
 		printHeaderRowAndDataForCSV(namecollectiontype, totalsize);
 
 		logger.info("Creating the Meta.xml file.");
@@ -274,6 +307,7 @@ public class DwCAExporter {
 		/* Create field index, term Atrribute */
 		Integer cnt = new Integer(0);
 
+		/* Get the fields properties */
 		Properties configFile = ExportDwCAUtilities.getCollectionConfiguration(
 				MAPPING_FILE_NAME).getProperties();
 		/* Sort the value from the properties file when loaded */
@@ -281,6 +315,7 @@ public class DwCAExporter {
 		Set<?> keySet = sortedSystemProperties.keySet();
 		Iterator<?> iterator = keySet.iterator();
 		String resultvalue = null;
+		logger.info("Adding the fields element into the Meta.xml file.");
 		while (iterator.hasNext()) {
 			propertyName = (String) iterator.next();
 			propertyValue = configFile.getProperty(propertyName);
@@ -344,12 +379,13 @@ public class DwCAExporter {
 		}
 		/* Copy the file from the source directory to the Destination directory */
 		ExportDwCAUtilities.CopyAFile(FILE_NAME_EML, destinationPathEml);
+		logger.info("Copy EML.xml file to the destinationpath successful.");
 		/*
 		 * Rename the (example: amphibia_and_reptilia_eml.xml) eml file to the
 		 * exact name "eml.xml"
 		 */
 		ExportDwCAUtilities.renameDwCAEMLFile(destinationPathEml);
-		
+		logger.info("Rename "+ FILE_NAME_EML + " to EML.xml file successful.");
 		File source = new File(zipFileName + zipExtension);
 		File destination = null;
 		if (sourceSystemCode.equals("CRS")) {
@@ -363,14 +399,20 @@ public class DwCAExporter {
 
 		/* Backup the zipfile */
 		ExportDwCAUtilities.CopyAFile(source, destination);
+		
 		/* Renamed the zip file into bak in de Archive map */
 		ExportDwCAUtilities.renameDwCAZipFile(destination);
-
+		
+		logger.info("Backup the zipfiles successful created in directory: " + destination);	
+		
 		/* Create the zipfile with a given filename */
 		createZipFiles(zipFileName);
 	}
 
-	/* Creating the Meta.xml */
+	/**
+	 * Creating the Meta.xml
+	 * @param meta
+	 */
 	private static void dwcaObjectToXML(Meta meta) {
 		try {
 			JAXBContext context = JAXBContext.newInstance(Meta.class);
@@ -389,7 +431,10 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Creating the zip file */
+    /**
+     * Creating the zip file
+     * @param zipFileName
+     */
 	public static void createZipFiles(String zipFileName) {
 		ZipDwCA zip = new ZipDwCA();
 		try {
@@ -404,7 +449,11 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Printing the records to a CSV file named: "Occurrence.txt" */
+	/**
+	 * Printing the records to a CSV file named: "Occurrence.txt" 
+	 * @param namecollectiontype
+	 * @param totalsize
+	 */
 	private void printHeaderRowAndDataForCSV(String namecollectiontype,
 			String totalsize) {
 		try {
@@ -441,7 +490,10 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Writing the Header of the CSV file */
+	/**
+	 * Writing the Header of the CSV file
+	 * @throws IOException
+	 */
 	private void writeCSVHeader() throws IOException {
 		/* Create new CSV File object and output File */
 		filewriter = new CsvFileWriter(newFile(outputDirectory, csvOutPutFile));
@@ -474,6 +526,12 @@ public class DwCAExporter {
 		keySet.clear();
 	}
 
+	/**
+	 * Run the Zoology Elasticsearch query
+	 * @param namecollectiontype
+	 * @param totalsize
+	 * @throws IOException
+	 */
 	private void runCrsZoologyElasticsearch(String namecollectiontype,
 			String totalsize) throws IOException {
 		/* Get the result from ElasticSearch */
@@ -502,6 +560,12 @@ public class DwCAExporter {
 		}
 	}
 
+	/**
+	 * Run the Geology Elasticsearch query
+	 * @param namecollectiontype
+	 * @param totalsize
+	 * @throws IOException
+	 */
 	private void runCrsGeologyElasticsearch(String namecollectiontype,
 			String totalsize) throws IOException {
 		if (MAPPING_FILE_NAME.equalsIgnoreCase("Geology")) {
@@ -528,7 +592,12 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Get the data from Elasticsearch for BRAHMS and write to CSV file */
+	/**
+	 * Run the Brahms Elasticsearch query
+	 * @param namecollectiontype
+	 * @param totalsize
+	 * @throws IOException
+	 */
 	private void runBrahmsElasticsearch(String namecollectiontype,
 			String totalsize) throws IOException {
 		if (sourceSystemCode.toUpperCase().equals("BRAHMS")) {
@@ -558,7 +627,12 @@ public class DwCAExporter {
 
 	}
 
-	/* Create CRS Zoology Csv file. */
+	/**
+	 * Create CRS Zoology Csv file
+	 * @param listZoology
+	 * @param occurrenceFields
+	 * @throws Exception
+	 */
 	private static void writeCRSZoologyCsvFile(List<ESSpecimen> listZoology,
 			String occurrenceFields) throws Exception {
 		if (MAPPING_FILE_NAME.equalsIgnoreCase(occurrenceFields)) {
@@ -567,7 +641,12 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Create CRS Zoology Csv file. */
+	/**
+	 * Create CRS Zoology Csv file.
+	 * @param listGeology
+	 * @param occurrenceFields
+	 * @throws Exception
+	 */
 	private static void writeCRSGeologyCsvFile(List<ESSpecimen> listGeology,
 			String occurrenceFields) throws Exception {
 		if (MAPPING_FILE_NAME.equalsIgnoreCase(occurrenceFields)) {
@@ -576,7 +655,12 @@ public class DwCAExporter {
 		}
 	}
 
-	/* Create Brahms CSV file */
+	/**
+	 * Create Brahms CSV file
+	 * @param listBrahms
+	 * @param occurrenceFields
+	 * @throws Exception
+	 */
 	private static void writeBrahmsCsvHeader(List<ESSpecimen> listBrahms,
 			String occurrenceFields) throws Exception {
 		/* BRAHMS Occurrence */
@@ -585,15 +669,30 @@ public class DwCAExporter {
 		}
 	}
 
+	/**
+	 * 
+	 * @return nameCollectiontypeAnd
+	 */
 	public static String getNameCollectiontypeAnd() {
 		return nameCollectiontypeAnd;
 	}
 
+	/**
+	 * 
+	 * @param nameCollectiontypeAnd
+	 */
 	public static void setNameCollectiontypeAnd(String nameCollectiontypeAnd) {
 		DwCAExporter.nameCollectiontypeAnd = nameCollectiontypeAnd;
 	}
 
-	/* Execute the Elasticsearch query */
+	/**
+	 * Execute the Elasticsearch query
+	 * @param type
+	 * @param namecollectiontype
+	 * @param sourcesystemcode
+	 * @param size
+	 * @param targetClass
+	 */
 	public static <T> void getResultsList(String type,
 			String namecollectiontype, String sourcesystemcode, int size,
 			Class<T> targetClass) {

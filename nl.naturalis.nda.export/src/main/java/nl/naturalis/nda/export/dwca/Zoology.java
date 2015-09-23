@@ -1,59 +1,19 @@
 package nl.naturalis.nda.export.dwca;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import java.util.List;
 
 
+/**
+ * <h1>ZOOLOGY</h1>
+  *  Description: Match the fields what is described in the zoology.properties<br>
+ *               and set the value to the CSV datarow 
+ *  
+ *  @version	1.0
+ *  @author 	Reinier.Kartowikromo 
+ *  @since		01-07-2015
+ *  
+ * */
 public class Zoology
 {
 	
@@ -61,11 +21,21 @@ public class Zoology
 	{
 		// TODO Auto-generated constructor stub
 	}
+	/**
+	 * This method will add all values to a list.
+	 * Used in the class DwCAExporter method
+	 * private static void writeCRSZoologyCsvFile(List<ESSpecimen> listZoology, String occurrenceFields) throws Exception {
+	 * @param list
+	 * @param filewriter
+	 * @param MAPPING_FILE_NAME
+	 * @throws Exception
+	 */
   
 	public static void addZoologyOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME) throws Exception
 	{
-		/* ALL Mapping fields is set default at '1' */
+		/*
+		 *  ALL Mapping fields is set default at '1' */
 		
 		for (ESSpecimen specimen : list)
 		{

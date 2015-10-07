@@ -44,28 +44,31 @@ class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
 		this.loader = loader;
 	}
 
+
 	@Override
-	public List<ESTaxon> transform(CSVRecordInfo recInf)
+	protected String getObjectID()
 	{
-		this.recInf = recInf;
-		objectID = val(recInf.getRecord(), taxonID);
-		// Not much can go wrong here, so:
-		stats.recordsProcessed++;
+		return val(input.getRecord(), taxonID);
+	}
+
+	@Override
+	protected List<ESTaxon> doTransform()
+	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
 		try {
-			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			String docID = LoadConstants.ES_ID_PREFIX_COL + objectID;
 			boolean isNew = false;
-			ESTaxon taxon = loader.findInQueue(elasticID);
+			ESTaxon taxon = loader.findInQueue(docID);
 			if (taxon == null) {
 				isNew = true;
-				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				taxon = index.get(LUCENE_TYPE_TAXON, docID, ESTaxon.class);
 			}
 			if (taxon == null) {
 				stats.objectsRejected++;
 				if (!suppressErrors) {
-					error("Orphan vernacular name: " + val(recInf.getRecord(), vernacularName));
+					error("Orphan vernacular name: " + val(input.getRecord(), vernacularName));
 				}
 			}
 			else {
@@ -106,7 +109,7 @@ class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
 	 */
 	public List<ESTaxon> clean(CSVRecordInfo recInf)
 	{
-		this.recInf = recInf;
+		this.input = recInf;
 		objectID = val(recInf.getRecord(), taxonID);
 		// Not much can go wrong here, so:
 		stats.recordsProcessed++;
@@ -139,7 +142,7 @@ class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	private VernacularName createVernacularName()
 	{
-		CSVRecord record = recInf.getRecord();
+		CSVRecord record = input.getRecord();
 		VernacularName vn = new VernacularName();
 		vn.setName(val(record, vernacularName));
 		vn.setLanguage(val(record, language));

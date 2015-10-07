@@ -9,11 +9,11 @@ import java.util.List;
  * 
  * @author Ayco Holleman
  *
- * @param <T>
+ * @param <OUTPUT>
  *            The type of object that is output by the transformer.
  */
-public interface XMLTransformer<T> extends Transformer<XMLRecordInfo, T> {
+public interface XMLTransformer<OUTPUT> extends Transformer<XMLRecordInfo, OUTPUT> {
 
-	List<T> transform(XMLRecordInfo recInf);
+	List<OUTPUT> transform(XMLRecordInfo input);
 
 }

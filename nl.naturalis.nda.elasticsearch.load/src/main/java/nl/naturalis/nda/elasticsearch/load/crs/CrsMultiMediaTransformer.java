@@ -30,15 +30,12 @@ import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCache;
 import nl.naturalis.nda.elasticsearch.load.MimeTypeCacheFactory;
-import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransformUtil;
-import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
-import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
 /**
@@ -48,12 +45,6 @@ import org.w3c.dom.Element;
  *
  */
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
-
-	private static final Logger logger;
-
-	static {
-		logger = Registry.getInstance().getLogger(CrsMultiMediaTransformer.class);
-	}
 
 	private final PhaseOrStageNormalizer phaseOrStageNormalizer;
 	private final SpecimenTypeStatusNormalizer typeStatusNormalizer;
@@ -76,16 +67,23 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	}
 
 	@Override
-	public List<ESMultiMediaObject> transform(XMLRecordInfo recInf)
+	protected String getObjectID()
 	{
-		stats.recordsProcessed++;
-		this.recInf = recInf;
+		/*
+		 * Dummy implementation; objectID is set in checkRecord()
+		 */
+		return null;
+	}
+
+	@Override
+	protected List<ESMultiMediaObject> doTransform()
+	{
 		if (!checkRecord()) {
 			return null;
 		}
 		stats.recordsAccepted++;
-		List<ESMultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
 		first = null;
+		List<ESMultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
 		for (Element elem : mediaFileElems) {
 			stats.objectsProcessed++;
 			String[] urlInfo = getUrlInfo(elem);
@@ -108,12 +106,11 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 				mmo.setCaption(title);
 				mmo.setMultiMediaPublic(bval(elem, "abcd:MultiMediaPublic"));
 				mmo.setCreator(val(elem, "dc:creator"));
+				mmos.add(mmo);
 			}
 			catch (Throwable t) {
 				handleError(t);
-				continue;
 			}
-			mmos.add(mmo);
 		}
 		return mmos;
 	}
@@ -121,7 +118,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	private ESMultiMediaObject initialize()
 	{
 		if (first == null) {
-			Element dc = getDescendant(recInf.getRecord(), "oai_dc:dc");
+			Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
 			first = new ESMultiMediaObject();
 			first.setGatheringEvents(Arrays.asList(getGatheringEvent(dc)));
 			String temp = getPhaseOrStage(dc);
@@ -169,13 +166,13 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
 			if (logger.isInfoEnabled()) {
-				String id = val(recInf.getRecord(), "identifier");
+				String id = val(input.getRecord(), "identifier");
 				String fmt = "Skipping record with status \"deleted\" (database id: %s)";
 				logger.info(String.format(fmt, id));
 			}
 			return false;
 		}
-		Element dc = getDescendant(recInf.getRecord(), "oai_dc:dc");
+		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
 		/*
 		 * This is actually not the object ID in the sense of being the ID of a
 		 * multimedia object. It's the ID of the specimen that the multimedia
@@ -185,7 +182,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (objectID == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors) {
-				String id = val(recInf.getRecord(), "identifier");
+				String id = val(input.getRecord(), "identifier");
 				String fmt = "Missing assoicated specimen reference (database id: %s)";
 				logger.error(String.format(fmt, id));
 			}
@@ -376,7 +373,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 
 	private boolean hasStatusDeleted()
 	{
-		Element hdr = getChild(recInf.getRecord(), "header");
+		Element hdr = getChild(input.getRecord(), "header");
 		if (!hdr.hasAttribute("status"))
 			return false;
 		return hdr.getAttribute("status").equals("deleted");

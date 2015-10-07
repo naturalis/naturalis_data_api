@@ -22,7 +22,6 @@ import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.TransformUtil;
-import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
 import org.w3c.dom.Element;
 
@@ -49,19 +48,24 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	}
 
 	@Override
-	public List<ESTaxon> transform(XMLRecordInfo recInf)
+	protected String getObjectID()
 	{
-		stats.recordsProcessed++;
+		return val(input.getRecord(), "nsr_id");
+	}
+
+	@Override
+	protected List<ESTaxon> doTransform()
+	{
 		try {
-			this.recInf = recInf;
-			Element taxonElem = recInf.getRecord();
-			objectID = val(taxonElem, "nsr_id");
+			Element taxonElem = input.getRecord();
 			String rank = val(taxonElem, "rank");
 			if (invalidRank(rank))
 				return null;
 			ESTaxon taxon = new ESTaxon();
 			if (!addScientificNames(taxon))
-				return null;
+				return null;						
+			stats.recordsAccepted++;
+			stats.objectsProcessed++;			
 			addSystemClassification(taxon);
 			addDefaultClassification(taxon);
 			try {
@@ -80,8 +84,6 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			setRecordURI(taxon);
 			addVernacularNames(taxon);
 			addDescriptions(taxon);
-			stats.recordsAccepted++;
-			stats.objectsProcessed++;
 			stats.objectsAccepted++;
 			return Arrays.asList(taxon);
 		}
@@ -137,7 +139,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 
 	private List<Element> getNameElements()
 	{
-		Element namesElem = getChild(recInf.getRecord(), "names");
+		Element namesElem = getChild(input.getRecord(), "names");
 		if (namesElem == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors)
@@ -177,7 +179,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	 */
 	private void addVernacularNames(ESTaxon taxon)
 	{
-		Element namesElem = getChild(recInf.getRecord(), "names");
+		Element namesElem = getChild(input.getRecord(), "names");
 		List<Element> nameElems = getChildren(namesElem);
 		if (nameElems != null) {
 			for (Element e : nameElems) {
@@ -195,7 +197,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 
 	private void setRecordURI(ESTaxon taxon)
 	{
-		String uri = val(recInf.getRecord(), "url");
+		String uri = val(input.getRecord(), "url");
 		if (uri == null)
 			warn("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId());
 		else {
@@ -210,7 +212,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 
 	private void addDescriptions(ESTaxon taxon)
 	{
-		Element e = getChild(recInf.getRecord(), "description");
+		Element e = getChild(input.getRecord(), "description");
 		if (e == null)
 			return;
 		List<Element> pageElems = getChildren(e);
@@ -226,12 +228,12 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 
 	private void addSystemClassification(ESTaxon taxon)
 	{
-		Element ce = getChild(recInf.getRecord(), "classification");
+		Element ce = getChild(input.getRecord(), "classification");
 		// Confusingly, the elements under <classification> are again <taxon>
 		// elements.
 		List<Element> taxonElems;
 		if (ce == null || (taxonElems = getChildren(ce)) == null) {
-			String name = val(recInf.getRecord(), "name");
+			String name = val(input.getRecord(), "name");
 			warn("No classification for taxon \"%s\"", name);
 			return;
 		}
@@ -239,13 +241,13 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		for (Element e : taxonElems) {
 			String rank = val(e, "rank");
 			if (rank == null) {
-				String name = val(recInf.getRecord(), "name");
+				String name = val(input.getRecord(), "name");
 				warn("Empty <rank> element for \"%s\" (monomial discarded)", name);
 				continue;
 			}
 			String epithet = val(e, "name");
 			if (epithet == null) {
-				String name = val(recInf.getRecord(), "name");
+				String name = val(input.getRecord(), "name");
 				warn("Empty <name> element for \"%s\" (monomial discarded)", name);
 				continue;
 			}

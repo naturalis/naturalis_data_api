@@ -49,25 +49,18 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 	}
 
 	@Override
-	public List<ESTaxon> transform(CSVRecordInfo info)
+	protected String getObjectID()
 	{
+		return val(input.getRecord(), acceptedNameUsageID);
+	}
 
-		stats.recordsProcessed++;
-		recInf = info;
-		CSVRecord record = info.getRecord();
-		objectID = val(record, acceptedNameUsageID);
-
-		if (objectID == null) {
-			// This is an accepted name
-			stats.recordsSkipped++;
-			return null;
-		}
-
+	@Override
+	protected List<ESTaxon> doTransform()
+	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-
 		try {
-
+			CSVRecord record = input.getRecord();
 			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
 			String synonym = val(record, scientificName);
 
@@ -129,7 +122,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 	public List<ESTaxon> clean(CSVRecordInfo recInf)
 	{
 		stats.recordsProcessed++;
-		this.recInf = recInf;
+		this.input = recInf;
 		CSVRecord record = recInf.getRecord();
 		objectID = val(record, acceptedNameUsageID);
 		if (objectID == null) {

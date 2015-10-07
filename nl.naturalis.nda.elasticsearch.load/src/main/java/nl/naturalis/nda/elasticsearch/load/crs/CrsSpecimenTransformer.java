@@ -4,6 +4,7 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,16 +21,13 @@ import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
 import nl.naturalis.nda.elasticsearch.load.DocumentType;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.TransformUtil;
-import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
-import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
 /**
@@ -40,7 +38,6 @@ import org.w3c.dom.Element;
  */
 class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
-	private static final Logger logger;
 	private static final SpecimenTypeStatusNormalizer tsNormalizer;
 	private static final SexNormalizer sexNormalizer;
 	private static final PhaseOrStageNormalizer posNormalizer;
@@ -48,11 +45,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	private static final String PURL_START = PURL_SERVER_BASE_URL + "/naturalis/specimen/";
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsSpecimenTransformer.class);
 		tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		sexNormalizer = SexNormalizer.getInstance();
 		posNormalizer = PhaseOrStageNormalizer.getInstance();
 	}
+
+	private String databaseID;
 
 	CrsSpecimenTransformer(ETLStatistics stats)
 	{
@@ -60,12 +58,19 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	}
 
 	@Override
-	public List<ESSpecimen> transform(XMLRecordInfo recInf)
+	protected String getObjectID()
 	{
-		stats.recordsProcessed++;
+		// Side effect: set the database identifier of the record, so we can
+		// report back that info as well. We override messagePrefix() to also
+		// print out the database ID.
+		databaseID = val(input.getRecord(), "identifier");
+		return val(input.getRecord(), "abcd:UnitID");
+	}
 
-		this.recInf = recInf;
-		Element record = recInf.getRecord();
+	@Override
+	protected List<ESSpecimen> doTransform()
+	{
+		Element record = input.getRecord();
 
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
@@ -278,7 +283,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private ESGatheringEvent getGatheringEvent()
 	{
-		Element record = recInf.getRecord();
+		Element record = input.getRecord();
 		ESGatheringEvent ge = new ESGatheringEvent();
 		ge.setProjectTitle(val(record, "abcd:ProjectTitle"));
 		ge.setWorldRegion(val(record, "abcd:WorldRegion"));
@@ -316,7 +321,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private List<ChronoStratigraphy> getChronoStratigraphyList()
 	{
-		Element record = recInf.getRecord();
+		Element record = input.getRecord();
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsChronoStratigraphy");
 		if (elems == null) {
 			return null;
@@ -363,7 +368,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private List<BioStratigraphy> getBioStratigraphyList()
 	{
-		Element record = recInf.getRecord();
+		Element record = input.getRecord();
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsBioStratigraphy");
 		if (elems == null) {
 			return null;
@@ -399,7 +404,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	public List<LithoStratigraphy> getLithoStratigraphyList()
 	{
-		Element record = recInf.getRecord();
+		Element record = input.getRecord();
 		List<Element> lithoStratigraphyElements = DOMUtil.getDescendants(record, "ncrsLithoStratigraphy");
 		if (lithoStratigraphyElements == null) {
 			return null;
@@ -410,6 +415,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			result.add(one);
 		}
 		return result;
+	}
+
+	@Override
+	protected String messagePrefix()
+	{
+		return super.messagePrefix() + rpad(databaseID, 12, " | ");
 	}
 
 	private LithoStratigraphy getLithoStratigraphyObject(Element e)
@@ -437,7 +448,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private boolean hasStatusDeleted()
 	{
-		Element hdr = DOMUtil.getChild(recInf.getRecord(), "header");
+		Element hdr = DOMUtil.getChild(input.getRecord(), "header");
 		if (!hdr.hasAttribute("status"))
 			return false;
 		return hdr.getAttribute("status").equals("deleted");

@@ -84,11 +84,7 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 		if (s != null) {
 			String[] urls = s.split(",");
 			for (int i = 0; i < urls.length; ++i) {
-				URI uri = getUri(urls[i]);
-				if (uri == null) {
-					continue;
-				}
-				ESMultiMediaObject mmo = transferOne(info, uri);
+				ESMultiMediaObject mmo = transformOne(info, urls[i]);
 				if (mmo != null) {
 					result.add(mmo);
 				}
@@ -97,10 +93,11 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 		return result;
 	}
 
-	private ESMultiMediaObject transferOne(CSVRecordInfo info, URI uri)
+	private ESMultiMediaObject transformOne(CSVRecordInfo info, String url)
 	{
 		stats.objectsProcessed++;
 		try {
+			URI uri = getUri(url);
 			CSVRecord record = info.getRecord();
 			ESMultiMediaObject mmo = new ESMultiMediaObject();
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
@@ -124,32 +121,22 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObj
 			stats.objectsAccepted++;
 			return mmo;
 		}
-		catch (Throwable t) {
-			handleError(t);
-			return null;
-		}
-	}
-
-	private URI getUri(String url)
-	{
-		url = url.trim();
-		if (url.charAt(1) == ':') {
-			// This is a local file system path like Q:\foo.jpg.
-			stats.objectsRejected++;
-			if (!suppressErrors)
-				error("Invalid image URL: " + url);
-			return null;
-		}
-		url = url.replaceAll(" ", "%20");
-		try {
-			return new URI(url);
-		}
 		catch (URISyntaxException e) {
 			stats.objectsRejected++;
 			if (!suppressErrors)
 				error("Invalid image URL: " + url);
 			return null;
 		}
+		catch (Throwable t) {
+			handleError(t);
+			return null;
+		}
+	}
+
+	private static URI getUri(String url) throws URISyntaxException
+	{
+		url = url.trim().replaceAll(" ", "%20");
+		return new URI(url);
 	}
 
 	private static MultiMediaContentIdentification getIdentification(CSVRecord record)

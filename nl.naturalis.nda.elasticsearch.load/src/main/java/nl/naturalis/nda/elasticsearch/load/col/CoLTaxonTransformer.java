@@ -47,6 +47,17 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 	}
 
 	@Override
+	protected boolean skipRecord()
+	{
+		/*
+		 * acceptedNameUsageID field is a foreign key to accepted name record.
+		 * If it is set, the record is itself not an accepted name record, so we
+		 * must skip it.
+		 */
+		return val(input.getRecord(), acceptedNameUsageID) != null;
+	}
+
+	@Override
 	protected String getObjectID()
 	{
 		return val(input.getRecord(), taxonID);

@@ -38,10 +38,15 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 		this.stats = stats;
 		this.logger = Registry.getInstance().getLogger(getClass());
 	}
-	
-	public final List<OUTPUT> transform(INPUT input) {
+
+	public final List<OUTPUT> transform(INPUT input)
+	{
 		this.input = input;
 		stats.recordsProcessed++;
+		if (skipRecord()) {
+			stats.recordsSkipped++;
+			return null;
+		}
 		objectID = getObjectID();
 		if (objectID == null) {
 			stats.recordsRejected++;
@@ -49,12 +54,17 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 				error("Missing object ID");
 			}
 			return null;
-		}		
+		}
 		return doTransform();
 	}
-	
+
+	protected boolean skipRecord()
+	{
+		return false;
+	}
+
 	protected abstract String getObjectID();
-	
+
 	protected abstract List<OUTPUT> doTransform();
 
 	/**

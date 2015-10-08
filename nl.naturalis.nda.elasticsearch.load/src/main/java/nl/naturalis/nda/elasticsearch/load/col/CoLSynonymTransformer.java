@@ -20,18 +20,15 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.Transformer;
 
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
 
 /**
- * A subclass of {@link CSVTransformer} that enriches {@link ESTaxon} objects
- * with synonyms from the taxa.txt file.
+ * A implementation of {@link CSVTransformer} that enriches {@link ESTaxon}
+ * objects with synonyms from the taxa.txt file.
  * 
  * @author Ayco Holleman
  *
  */
 class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
-
-	static Logger logger = Registry.getInstance().getLogger(CoLSynonymTransformer.class);
 
 	private final IndexManagerNative index;
 
@@ -49,6 +46,17 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 	}
 
 	@Override
+	protected boolean skipRecord()
+	{
+		/*
+		 * acceptedNameUsageID field is a foreign key to accepted name record.
+		 * If it is empty, the record is itself IS an accepted name record, so
+		 * we must skip it.
+		 */
+		return val(input.getRecord(), acceptedNameUsageID) == null;
+	}
+
+	@Override
 	protected String getObjectID()
 	{
 		return val(input.getRecord(), acceptedNameUsageID);
@@ -63,14 +71,18 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 			CSVRecord record = input.getRecord();
 			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
 			String synonym = val(record, scientificName);
-
 			ESTaxon taxon = loader.findInQueue(elasticID);
 			if (taxon != null) {
 				/*
-				 * Taxon apparently already queued because of a previous CSV
-				 * record. Return null, because we don't want to add it to the
-				 * queue again. Just add the current synonym to the list of
-				 * synonyms.
+				 * Taxon has already been queued for indexing because of a
+				 * previous synonym belonging to the same taxon. Return null,
+				 * because we don't want to index the taxon twice. Otherwise the
+				 * taxon object with the previous synonym would be overwritten
+				 * by the taxon object with the current synonym (thus
+				 * obliterating the previous synonym). Instead, we want to
+				 * append the current synonym to the list of synonyms of the
+				 * already-queued taxon object, and then save it once with all
+				 * its synonyms.
 				 */
 				if (!taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
@@ -84,7 +96,9 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 				}
 				return null;
 			}
-
+			/*
+			 * OK, taxon not queued yet. Look it up in the document store.
+			 */
 			taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
 			if (taxon != null) {
 				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {

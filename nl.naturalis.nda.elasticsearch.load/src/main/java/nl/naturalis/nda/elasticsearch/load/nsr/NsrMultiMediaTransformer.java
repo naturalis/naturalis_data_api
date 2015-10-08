@@ -25,7 +25,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.NameMismatchException;
 
 import org.w3c.dom.Element;
 
@@ -141,7 +141,7 @@ public class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 		}
 	}
 
-	private ESMultiMediaObject newMediaObject()
+	private ESMultiMediaObject newMediaObject() throws NameMismatchException
 	{
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystem(NSR);

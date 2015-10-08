@@ -20,12 +20,21 @@ import org.w3c.dom.Element;
 class NsrImportUtil {
 
 	private static final Logger logger = Registry.getInstance().getLogger(NsrImportUtil.class);
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 	private NsrImportUtil()
 	{
 	}
 
+	/**
+	 * Returns the content of a child element of {@code e}. If there is no child
+	 * element with the specified tag name, {@code null} is returned. If the
+	 * content contains only whitespace, {@code null} is returned as well.
+	 * Otherwise the whitespace trimmed content is returned.
+	 * 
+	 * @param e
+	 * @param childTag
+	 * @return
+	 */
 	static String val(Element e, String childTag)
 	{
 		String s = DOMUtil.getValue(e, childTag);
@@ -34,6 +43,11 @@ class NsrImportUtil {
 		return (s = s.trim()).length() == 0 ? null : s;
 	}
 
+	/**
+	 * Returns the XML source files that have not been processed yet.
+	 * 
+	 * @return
+	 */
 	static File[] getXmlFiles()
 	{
 		File dir = getDataDir();
@@ -47,6 +61,11 @@ class NsrImportUtil {
 		});
 	}
 
+	/**
+	 * Appends a backup extension ("&period;imported") to all source files in
+	 * the NSR data directory, indicating that they have been processed and
+	 * should not be processed again.
+	 */
 	static void backupXmlFiles()
 	{
 		logger.info("Creating backups of XML files");
@@ -58,18 +77,28 @@ class NsrImportUtil {
 			logger.error("Backup failed");
 			return;
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String backupExtension = "." + sdf.format(new Date()) + ".imported";
 		for (File xmlFile : xmlFiles) {
 			xmlFile.renameTo(new File(xmlFile.getAbsolutePath() + backupExtension));
 		}
 	}
 
+	/**
+	 * Appends a file extension ("&period;imported") to an NSR source file.
+	 */
 	static void backupXmlFile(File f)
 	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String backupExtension = "." + sdf.format(new Date()) + ".imported";
 		f.renameTo(new File(f.getAbsolutePath() + backupExtension));
 	}
 
+	/**
+	 * Removes the backup extension ("&period;imported") from all source files
+	 * in the NSR data directory. Nice for repetitive testing. Not for
+	 * production purposes.
+	 */
 	static void removeBackupExtension()
 	{
 		File dir = getDataDir();

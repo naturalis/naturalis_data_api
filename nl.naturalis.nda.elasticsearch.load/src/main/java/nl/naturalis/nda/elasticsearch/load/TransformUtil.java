@@ -45,6 +45,23 @@ public class TransformUtil {
 	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(DATE_FORMAT0, DATE_FORMAT1,
 			DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5);
 
+	/**
+	 * Attempts to parse the specified string into a date using the following
+	 * date patterns:
+	 * <ul>
+	 * <li>yyyyMMdd</li>
+	 * <li>yyyy/MM/dd</li>
+	 * <li>yyyy-MM-dd</li>
+	 * <li>dd MMMM yyyy</li>
+	 * <li>yyyy</li>
+	 * <li>yy</li>
+	 * </ul>
+	 * If none of the patterns work, a warning is issued and {@code null} is
+	 * returned.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Date parseDate(String s)
 	{
 		if (s == null)
@@ -62,11 +79,17 @@ public class TransformUtil {
 		return null;
 	}
 
-	private static final String MISMATCH = "Mismatch between %s in classification and scientific name: \"%s\", \"%s\"";
 	private static final String EQUALIZE = "Equalizing value of %s (copy from %s to %s: \"%s\")";
 	private static final String NAME = "scientific name";
 	private static final String CLASSIFICATION = "classification ";
 
+	/**
+	 * Constructs a {@code DefaultClassification} object from the name epithets
+	 * in the specified scientific name.
+	 * 
+	 * @param sn
+	 * @return
+	 */
 	public static DefaultClassification extractClassificiationFromName(ScientificName sn)
 	{
 		DefaultClassification dc = new DefaultClassification();
@@ -77,24 +100,33 @@ public class TransformUtil {
 		return dc;
 	}
 
+	/**
+	 * Extracts a list of monomials from the specified scientific name.
+	 * 
+	 * @param sn
+	 * @return
+	 */
 	public static List<Monomial> getMonomialsInName(ScientificName sn)
 	{
 		List<Monomial> monomials = new ArrayList<>(3);
-		if (sn.getGenusOrMonomial() != null) {
+		if (sn.getGenusOrMonomial() != null)
 			monomials.add(new Monomial(GENUS, sn.getGenusOrMonomial()));
-		}
-		if (sn.getSubgenus() != null) {
+		if (sn.getSubgenus() != null)
 			monomials.add(new Monomial(SUBGENUS, sn.getSubgenus()));
-		}
-		if (sn.getSpecificEpithet() != null) {
+		if (sn.getSpecificEpithet() != null)
 			monomials.add(new Monomial(SPECIES, sn.getSpecificEpithet()));
-		}
-		if (sn.getInfraspecificEpithet() != null) {
+		if (sn.getInfraspecificEpithet() != null)
 			monomials.add(new Monomial(SUBSPECIES, sn.getInfraspecificEpithet()));
-		}
 		return monomials;
 	}
 
+	/**
+	 * Constructs a {@code ScientificName} object from the specified
+	 * classification object (using its lower ranks).
+	 * 
+	 * @param dc
+	 * @return
+	 */
 	public static ScientificName extractNameFromClassification(DefaultClassification dc)
 	{
 		ScientificName sn = new ScientificName();
@@ -105,19 +137,19 @@ public class TransformUtil {
 		return sn;
 	}
 
-	public static void equalizeNameComponents(ESTaxon taxon)
+	public static void equalizeNameComponents(ESTaxon taxon) throws NameMismatchException
 	{
 		equalizeNameComponents(taxon.getDefaultClassification(), taxon.getAcceptedName());
 	}
 
-	public static void equalizeNameComponents(ESSpecimen specimen)
+	public static void equalizeNameComponents(ESSpecimen specimen) throws NameMismatchException
 	{
 		for (SpecimenIdentification i : specimen.getIdentifications()) {
 			equalizeNameComponents(i.getDefaultClassification(), i.getScientificName());
 		}
 	}
 
-	public static void equalizeNameComponents(ESMultiMediaObject mmo)
+	public static void equalizeNameComponents(ESMultiMediaObject mmo) throws NameMismatchException
 	{
 		for (MultiMediaContentIdentification i : mmo.getIdentifications()) {
 			equalizeNameComponents(i.getDefaultClassification(), i.getScientificName());
@@ -125,12 +157,11 @@ public class TransformUtil {
 	}
 
 	private static void equalizeNameComponents(DefaultClassification dc, ScientificName sn)
+			throws NameMismatchException
 	{
 		if (dc.getGenus() != null && sn.getGenusOrMonomial() != null) {
-			if (!dc.getGenus().equals(sn.getGenusOrMonomial())) {
-				String msg = String.format(MISMATCH, GENUS, dc.getGenus(), sn.getGenusOrMonomial());
-				throw new ETLRuntimeException(msg);
-			}
+			if (!dc.getGenus().equals(sn.getGenusOrMonomial()))
+				throw new NameMismatchException(GENUS, dc, sn);
 		}
 		else if (dc.getGenus() == null && sn.getGenusOrMonomial() != null) {
 			dc.setGenus(sn.getGenusOrMonomial());
@@ -144,10 +175,8 @@ public class TransformUtil {
 		}
 
 		if (dc.getSubgenus() != null && sn.getSubgenus() != null) {
-			if (!dc.getSubgenus().equals(sn.getSubgenus())) {
-				String msg = String.format(MISMATCH, SUBGENUS, dc.getSubgenus(), sn.getSubgenus());
-				throw new ETLRuntimeException(msg);
-			}
+			if (!dc.getSubgenus().equals(sn.getSubgenus()))
+				throw new NameMismatchException(SUBGENUS, dc, sn);
 		}
 		else if (dc.getSubgenus() == null && sn.getSubgenus() != null) {
 			dc.setSubgenus(sn.getSubgenus());
@@ -161,11 +190,8 @@ public class TransformUtil {
 		}
 
 		if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() != null) {
-			if (!dc.getSpecificEpithet().equals(sn.getSpecificEpithet())) {
-				String msg = String.format(MISMATCH, SPECIES, dc.getSpecificEpithet(),
-						sn.getSpecificEpithet());
-				throw new ETLRuntimeException(msg);
-			}
+			if (!dc.getSpecificEpithet().equals(sn.getSpecificEpithet()))
+				throw new NameMismatchException(SPECIES, dc, sn);
 		}
 		else if (dc.getSpecificEpithet() == null && sn.getSpecificEpithet() != null) {
 			dc.setSpecificEpithet(sn.getSpecificEpithet());
@@ -178,11 +204,8 @@ public class TransformUtil {
 		}
 
 		if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() != null) {
-			if (!dc.getInfraspecificEpithet().equals(sn.getInfraspecificEpithet())) {
-				String msg = String.format(MISMATCH, SUBSPECIES, dc.getInfraspecificEpithet(),
-						sn.getInfraspecificEpithet());
-				throw new ETLRuntimeException(msg);
-			}
+			if (!dc.getInfraspecificEpithet().equals(sn.getInfraspecificEpithet()))
+				throw new NameMismatchException(SUBSPECIES, dc, sn);
 		}
 		else if (dc.getInfraspecificEpithet() == null && sn.getInfraspecificEpithet() != null) {
 			dc.setInfraspecificEpithet(sn.getInfraspecificEpithet());
@@ -200,6 +223,13 @@ public class TransformUtil {
 
 	private static final String jpeg = "image/jpeg";
 
+	/**
+	 * Guesses the mime type of an URL based on the file extension (assuming the
+	 * last part of the URL <i>is</i> a file name).
+	 * 
+	 * @param imageUrl
+	 * @return
+	 */
 	public static String guessMimeType(String imageUrl)
 	{
 		String ext = StringUtil.substr(imageUrl, -4).toLowerCase();

@@ -5,12 +5,14 @@ import static nl.naturalis.nda.domain.TaxonomicStatus.ACCEPTED_NAME;
 import static nl.naturalis.nda.domain.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nda.domain.TaxonomicStatus.HOMONYM;
 import static nl.naturalis.nda.domain.TaxonomicStatus.SYNONYM;
+import static nl.naturalis.nda.elasticsearch.load.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nda.elasticsearch.load.TransformUtil.parseDate;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.val;
 import static org.domainobject.util.DOMUtil.getChild;
 import static org.domainobject.util.DOMUtil.getChildren;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,9 +21,7 @@ import java.util.List;
 import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
-import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
 import org.w3c.dom.Element;
 
@@ -63,20 +63,10 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 				return null;
 			ESTaxon taxon = new ESTaxon();
 			if (!addScientificNames(taxon))
-				return null;						
-			stats.recordsAccepted++;
-			stats.objectsProcessed++;			
+				return null;
 			addSystemClassification(taxon);
 			addDefaultClassification(taxon);
-			try {
-				TransformUtil.equalizeNameComponents(taxon);
-			}
-			catch (ETLRuntimeException e) {
-				stats.recordsRejected++;
-				if (!suppressErrors)
-					error(e.getMessage());
-				return null;
-			}
+			equalizeNameComponents(taxon);
 			taxon.setSourceSystem(NSR);
 			taxon.setSourceSystemId(objectID);
 			taxon.setTaxonRank(rank);
@@ -84,11 +74,15 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			setRecordURI(taxon);
 			addVernacularNames(taxon);
 			addDescriptions(taxon);
+			stats.recordsAccepted++;
+			stats.objectsProcessed++;
 			stats.objectsAccepted++;
 			return Arrays.asList(taxon);
 		}
 		catch (Throwable t) {
-			handleError(t);
+			stats.recordsRejected++;
+			if (!suppressErrors)
+				error(t.getMessage());
 			return null;
 		}
 	}
@@ -199,15 +193,16 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	{
 		String uri = val(input.getRecord(), "url");
 		if (uri == null)
-			warn("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId());
-		else {
-			try {
-				taxon.setRecordURI(URI.create(uri));
-			}
-			catch (IllegalArgumentException e) {
-				warn("Invalid URL: \"%s\"", uri);
-			}
-		}
+			if (!suppressErrors)
+				warn("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId());
+			else
+				try {
+					taxon.setRecordURI(new URI(uri));
+				}
+				catch (URISyntaxException e) {
+					if (!suppressErrors)
+						warn("Invalid URL: \"%s\"", uri);
+				}
 	}
 
 	private void addDescriptions(ESTaxon taxon)

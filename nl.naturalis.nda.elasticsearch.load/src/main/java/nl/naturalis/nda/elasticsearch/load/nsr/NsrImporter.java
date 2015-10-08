@@ -21,6 +21,12 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Driver class for the import of NSR taxa and multimedia.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class NsrImporter {
 
 	public static void main(String[] args)
@@ -52,6 +58,10 @@ public class NsrImporter {
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
+	/**
+	 * Imports both taxa and multimedia, processing each source file just once,
+	 * and backing it up once done.
+	 */
 	public void importAll()
 	{
 		long start = System.currentTimeMillis();
@@ -98,6 +108,10 @@ public class NsrImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
+	/**
+	 * Extracts and imports just the taxa from the source files. Does not make
+	 * backups.
+	 */
 	public void importTaxa()
 	{
 		long start = System.currentTimeMillis();
@@ -131,6 +145,10 @@ public class NsrImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
+	/**
+	 * Extracts and imports just the multimedia from the source files. Does not
+	 * make backups.
+	 */
 	public void importMultiMedia()
 	{
 		long start = System.currentTimeMillis();
@@ -141,26 +159,32 @@ public class NsrImporter {
 		}
 		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
 		ETLStatistics stats = new ETLStatistics();
-		stats.setUseObjectsAccepted(true);
-		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(new ETLStatistics());
-		tTransformer.setSuppressErrors(suppressErrors);
-		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(stats);
-		mTransformer.setSuppressErrors(suppressErrors);
+		NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);
+		transformer.setSuppressErrors(suppressErrors);
+		/*
+		 * For multimedia we will re-use our taxon transformer class to extract
+		 * taxon-related data from the XML records, so we don't have to
+		 * duplicate that functionality in the multimedia transformer. However,
+		 * we are not interested in the statistics maintained by the taxon
+		 * transformer (only whether it was able to produce an ESTaxon object or
+		 * not). Therefore we instantiate the taxon transformer with a trash
+		 * statistics object.
+		 */
+		NsrTaxonTransformer ntt = new NsrTaxonTransformer(new ETLStatistics());
+		ntt.setSuppressErrors(suppressErrors);
 		NsrMultiMediaLoader loader = null;
 		try {
 			loader = new NsrMultiMediaLoader(esBulkRequestSize, stats);
 			for (File f : xmlFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
-				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
-					List<ESTaxon> taxa = tTransformer.transform(extracted);
-					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
-					List<ESMultiMediaObject> multimedia = mTransformer.transform(extracted);
+					List<ESTaxon> taxa = ntt.transform(extracted);
+					transformer.setTaxon(taxa == null ? null : taxa.get(0));
+					List<ESMultiMediaObject> multimedia = transformer.transform(extracted);
 					loader.load(multimedia);
-					if (++i % 5000 == 0)
-						logger.info("Records processed: " + i);
+					if (stats.recordsProcessed % 5000 == 0)
+						logger.info("Records processed: " + stats.recordsProcessed);
 				}
-				backupXmlFile(f);
 			}
 		}
 		finally {

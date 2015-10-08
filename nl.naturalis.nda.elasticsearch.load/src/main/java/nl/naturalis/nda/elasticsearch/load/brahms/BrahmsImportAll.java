@@ -4,6 +4,7 @@ import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_MULTI
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.removeBackupExtension;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -37,8 +38,14 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args)
 	{
-		BrahmsImportAll importer = new BrahmsImportAll();
-		importer.importPerFile();
+		if (args.length == 0)
+			new BrahmsImportAll().importPerFile();
+		else if (args[0].equalsIgnoreCase("backup"))
+			new BrahmsImportAll().backupSourceFiles();
+		else if (args[0].equalsIgnoreCase("reset"))
+			new BrahmsImportAll().reset();
+		else
+			logger.error("Invalid argument: " + args[0]);
 	}
 
 	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
@@ -117,6 +124,25 @@ public class BrahmsImportAll {
 		sStats.logStatistics(logger, "Specimens");
 		mStats.logStatistics(logger, "Multimedia");
 		LoadUtil.logDuration(logger, getClass(), start);
+	}
+
+	/**
+	 * Backs up the CSV files in the Brahms data directory by appending a
+	 * "&period;imported" extension to the file name.
+	 */
+	public void backupSourceFiles()
+	{
+		backup();
+	}
+
+	/**
+	 * Removes the "&period;imported" file name extension from the files in the
+	 * Brahms data directory. Nice for repitive testing. Not meant for
+	 * production purposes.
+	 */
+	public void reset()
+	{
+		removeBackupExtension();
 	}
 
 	private void processFile(File f, ETLStatistics sStats, ETLStatistics mStats)

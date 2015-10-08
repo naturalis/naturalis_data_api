@@ -19,7 +19,7 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Manages the import of Brahms multimedia.
+ * Driver class for the import of Brahms multimedia.
  * 
  * @author Ayco Holleman
  *
@@ -41,6 +41,9 @@ public class BrahmsMultiMediaImporter {
 		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
+	/**
+	 * Imports the Source files in the Brahms data directory.
+	 */
 	public void importCsvFiles()
 	{
 		long start = System.currentTimeMillis();

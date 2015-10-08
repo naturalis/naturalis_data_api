@@ -4,6 +4,16 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 
+/**
+ * <h1>FindFile</h1>
+ *  Description: Methods what is used in the DwCAExporter class method<br>
+ *               private static String getEmlFileName(String emlDir, String emlfilename)
+ *               
+ *  @version	 1.0
+ *  @author 	 Reinier.Kartowikromo 
+ *  @since		 12-02-2015
+ *  
+ * */
 
 
 public class FindFile
@@ -14,7 +24,11 @@ public class FindFile
 		// TODO Auto-generated constructor stub
 	}
 
-	/* Find all files in directory and added to Array list */
+	/**
+	 * Find all files in directory and added to Array list
+	 * @param directory set directory
+	 * @return files
+	 */
 	public static File[] getFileList(String directory)
 	{
 		File dir = new File(directory);
@@ -29,7 +43,11 @@ public class FindFile
 		return fileList;
 	}
 	
-	/* Find files with certain extension only in a directory */
+	/**
+	 * Find files with certain extension only in a directory
+	 * @param folder set folder
+	 * @param ext set ext
+	 */
 	public void listFile(String folder, String ext) {
 		 
 		GenericExtFilter filter = new GenericExtFilter(ext);
@@ -56,14 +74,26 @@ public class FindFile
 		}
 	}
 	
+	/**
+	 * 
+	 * @author Reinier.Kartowikromo
+	 *
+	 */
 	public class GenericExtFilter implements FilenameFilter {
 		 
 		private String ext;
  
+		/**
+		 * 
+		 * @param ext set ext
+		 */
 		public GenericExtFilter(String ext) {
 			this.ext = ext;
 		}
  
+		/**
+		 * @return result ext
+		 */
 		public boolean accept(File dir, String name) {
 			return (name.endsWith(ext));
 		}

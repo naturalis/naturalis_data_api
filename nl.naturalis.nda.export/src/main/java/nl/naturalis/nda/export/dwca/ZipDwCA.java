@@ -10,6 +10,18 @@ import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <h1>ZIPDwCA</h1>
+ *  Description: Methods what is used in the DwCAExporter class methods<br>
+ *               public static void createZipFiles(String zipFileName) 
+ *              
+ *               
+ *  @version	 1.0
+ *  @author 	 Reinier.Kartowikromo 
+ *  @since		 12-02-2015
+ *  
+ * */
+
 public class ZipDwCA
 {
 
@@ -20,17 +32,28 @@ public class ZipDwCA
 
 	}
 	
+	/**
+	 * Zip the files to the directory
+	 * @param dirName Zip the files to the directory
+	 * @param nameZipFile Name of the zipfile
+	 * @throws IOException Stream exception
+	 */
 	public void zipDirectory(String dirName, String nameZipFile) throws IOException
 	{
-		ZipOutputStream zos = null;
-		FileOutputStream fos = null;
-		fos = new FileOutputStream(nameZipFile);
-		zos = new ZipOutputStream(fos);
-		addFolderToZip("", dirName, zos);
-		zos.close();
-		fos.close();		
+		try( FileOutputStream fos = new FileOutputStream(nameZipFile);
+			 ZipOutputStream zos = new ZipOutputStream(fos))
+			 {
+				addFolderToZip("", dirName, zos);
+			 }
 	}
 
+	/**
+	 * addFolderToZip
+	 * @param path Folder path
+	 * @param srcFolder destination folder
+	 * @param zip output zipfile
+	 * @throws IOException zip exception
+	 */
 	private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws IOException
 	{
 		File folder = new File(srcFolder);
@@ -52,6 +75,14 @@ public class ZipDwCA
 		}
 	}
 
+	/**
+	 * addFileToZip
+	 * @param path Zip path
+	 * @param srcFile  source file to zip
+	 * @param zip output zip
+	 * @param flag true or false
+	 * @throws IOException IO exception
+	 */
 	private void addFileToZip(String path, String srcFile, ZipOutputStream zip, boolean flag)
 			throws IOException
 	{
@@ -68,15 +99,16 @@ public class ZipDwCA
 			{
 				byte[] buf = new byte[BUFFER];
 				int len;
-				FileInputStream fis = new FileInputStream(srcFile);
-				//System.out.println("Writing '" + folder.getName() + "' to zip file");
-				logger.info("Writing '" + folder.getName() + "' to zip file");
-				zip.putNextEntry(new ZipEntry(folder.getName())); 
-				while ((len = fis.read(buf)) > 0)
+				try(
+				FileInputStream fis = new FileInputStream(srcFile)) 
 				{
-					zip.write(buf, 0, len);
+					logger.info("Writing '" + folder.getName() + "' to zip file");
+					zip.putNextEntry(new ZipEntry(folder.getName())); 
+					while ((len = fis.read(buf)) > 0)
+					{
+						zip.write(buf, 0, len);
+					}
 				}
-				fis.close();
 			}
 		}
 	}

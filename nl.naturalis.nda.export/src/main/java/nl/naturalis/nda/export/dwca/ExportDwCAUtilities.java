@@ -1,18 +1,10 @@
 package nl.naturalis.nda.export.dwca;
 
-/*  
- *  Created by : Reinier.Kartowikromo 
- *  Date: 12-02-2015
- *  Description: String Utilites for the StringBuilder Class to Write data to a CSV file
- */
-
 import java.io.BufferedInputStream;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,8 +20,6 @@ import nl.naturalis.nda.export.ExportException;
 import nl.naturalis.nda.export.ExportUtil;
 
 import org.domainobject.util.ConfigObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,18 +28,35 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class ExportDwCAUtilities {
 
+/**
+ * <h1>ExportDwCAUtilities</h1>  
+ * Description: String Utilites for the StringBuilder Class to Write data to a CSV file
+ * <p>
+ * Different method used in the DwCAExporter tool
+ * 
+ *  @version	 1.0
+ *  @author 	 Reinier.Kartowikromo 
+ *  @since		 12-02-2015
+ *  
+ */
+
+public class ExportDwCAUtilities {
 	static final Logger logger = LoggerFactory.getLogger(ExportDwCAUtilities.class);
 	final static int BUFFER = 2048;
 	static String propertiesfilename = null;
 
-
+    /**
+     * searching for a character
+     * @param s1 set value1
+     * @param s2 set value 2
+     * @return boolean value
+     */
 	public static int indexOfFirstContainedCharacter(String s1, String s2)
 	{
 		if (s1 == null || s1.isEmpty())
 			return -1;
-		Set<Character> set = new HashSet<Character>();
+		Set<Character> set = new HashSet<>();
 		for (int i = 0; i < s2.length(); i++) {
 			set.add(s2.charAt(i)); // Build a constant-time lookup table.
 		}
@@ -61,63 +68,74 @@ public class ExportDwCAUtilities {
 		return -1; // No matches.
 	}
 
-
-	/*
-	 * Example: try { String zipfilename = zipFileName + zipExtension;
-	 * FileOutputStream fos = new FileOutputStream(zipfilename); ZipOutputStream
-	 * zos = new ZipOutputStream(fos);
-	 * 
-	 * StringUtilities.addToZipFile(FILE_NAME_META, zos);
-	 * StringUtilities.addToZipFile(FILE_NAME_EML, zos);
-	 * StringUtilities.addToZipFile(csvOutPutFile, zos);
-	 * 
-	 * zos.close(); fos.close(); System.out.println("Zipfile '" + zipfilename +
-	 * "' created successfull.");
-	 * 
-	 * } catch (FileNotFoundException e) { e.printStackTrace(); } catch
-	 * (IOException e) { e.printStackTrace(); }
+	/**
+	 * Zip multiple files 
+	 * @param fileName set filename
+	 * @param zos Class Zos
+	 * @throws FileNotFoundException File exception
+	 * @throws IOException IO exception
+	 * <p>
+	 * Example: String zipfilename = zipFileName + zipExtension;
+	 * try
+	 * ( FileOutputStream fos = new FileOutputStream(zipfilename); 
+	 *   ZipOutputStream zos = new ZipOutputStream(fos))
+	 *  {
+	 * 		StringUtilities.addToZipFile(FILE_NAME_META, zos);
+	 * 		StringUtilities.addToZipFile(FILE_NAME_EML, zos);
+	 * 		StringUtilities.addToZipFile(csvOutPutFile, zos);
+	 * 	}
+     *   System.out.println("Zipfile '" + zipfilename +	 * "' created successful.");
 	 */
-	/* Zip multiple files */
 	public static void addToZipFile(String fileName, ZipOutputStream zos) throws FileNotFoundException, IOException
 	{
 		System.out.println("Writing '" + fileName + "' to zip file");
 		logger.info("Writing '" + fileName + "' to zip file");
-
-		BufferedInputStream origin = null;
 		byte data[] = new byte[BUFFER];
 
 		File file = new File(fileName);
-		FileInputStream fis = new FileInputStream(file);
-		origin = new BufferedInputStream(fis, BUFFER);
-		ZipEntry zipEntry = new ZipEntry(fileName);
-		zos.putNextEntry(zipEntry);
+		try(FileInputStream fis = new FileInputStream(file);
+			BufferedInputStream origin = new BufferedInputStream(fis, BUFFER))
+		{
+			ZipEntry zipEntry = new ZipEntry(fileName);
+			zos.putNextEntry(zipEntry);
 
-		int length;
-		while ((length = origin.read(data, 0, BUFFER)) != -1) {
-			zos.write(data, 0, length);
-			zos.flush();
+			int length;
+			while ((length = origin.read(data, 0, BUFFER)) != -1) {
+				zos.write(data, 0, length);
+				zos.flush();
+			}
 		}
-		origin.close();
 		zos.closeEntry();
-		fis.close();
 	}
 
 
-	/* Read the value from properties file */
+	/**
+	 * Read the value from properties file 
+	 * @param propertyname set propertyname
+	 * @param value set Value
+	 * @return property value
+	 */
 	public static String getPropertyValue(String propertyname, String value)
 	{
 		return getProperty(propertyname, value);
 	}
 
 
-	/* Read the value from properties file */
+	/**
+	 * Read the value from properties file
+	 * @param propertyname set propertyname
+	 * @param key set key
+	 * @return property value
+	 */
 	public static String readPropertyvalue(String propertyname, String key)
 	{
 		return getProperty(propertyname, key);
 	}
 
 
-	/* Create Output Zip directory. */
+	/**
+	 * Create Output Zip directory.
+	 */
 	public static void createZipOutPutDirectory()
 	{
 		File directory = new File(readPropertyvalue("OutPut", "ZipDirectory"));
@@ -137,7 +155,9 @@ public class ExportDwCAUtilities {
 	}
 
 
-	/* Create Archive Zip directory. */
+	/**
+	 * Create Archive Zip directory.
+	 */
 	public static void createArchiveZipDirectory()
 	{
 		File directory = new File(readPropertyvalue("OutPut", "ZipArchiveDirectory"));
@@ -157,9 +177,12 @@ public class ExportDwCAUtilities {
 	}
 
 
-	/*
-	 * if value is '1' field will be added to CSV file otherwise if value is
-	 * '0'. field will not be added.
+	/**
+	 * if value is '1' field will be added to CSV file otherwise if value is<br>
+	 * '0'. field will not be added. 
+	 * @param propertyname set propertyname
+	 * @param value set value
+	 * @return result boolean value
 	 */
 	public static boolean isFieldChecked(String propertyname, String value)
 	{
@@ -170,35 +193,34 @@ public class ExportDwCAUtilities {
 	}
 
 
-	/* Copy a file from a Source directory to a Destination directory */
+	/**
+	 * Copy a file from a Source directory to a Destination directory
+	 * @param sourceFile set sourceFile
+	 * @param DestinationFile set DestinationFile
+	 * @throws IOException Copy InputOutput Exception
+	 */
 	public static void CopyAFile(File sourceFile, File DestinationFile) throws IOException
 	{
-		InputStream inputstream = null;
-		OutputStream outputstream = null;
-		try {
 			if (sourceFile.exists())
 			{
-				inputstream = new FileInputStream(sourceFile);
-				outputstream = new FileOutputStream(DestinationFile);
-				byte[] buffer = new byte[2048];
-				int length;
-				while ((length = inputstream.read(buffer)) > 0) {
-					outputstream.write(buffer, 0, length);
+				try (InputStream inputstream = new FileInputStream(sourceFile);
+					 OutputStream outputstream = new FileOutputStream(DestinationFile))
+				{
+					byte[] buffer = new byte[2048];
+					int length;
+					while ((length = inputstream.read(buffer)) > 0) 
+					{
+						outputstream.write(buffer, 0, length);
+					}
 				}
 			}
-		}
-		finally {
-			if (inputstream != null) {
-				inputstream.close();
-			}
-			if (outputstream != null) {
-				outputstream.close();
-			}
-		}
 	}
-
-
-	/* Renamed the zipfile extension ".zip" file to ".zip.bak" */
+	
+	
+	/**
+	 * Renamed the zipfile extension ".zip" file to ".zip.bak"
+	 * @param fileToRenamed Renamed the zipfile extension ".zip" file to ".zip.bak"
+	 */
 	public static void renameDwCAZipFile(File fileToRenamed)
 	{
 		if (fileToRenamed.exists()) {
@@ -222,7 +244,10 @@ public class ExportDwCAUtilities {
 	}
 
 
-	/* Renamed the predifined eml.xml file from source directory to eml.xml */
+	/**
+	 *  Renamed the predifined eml.xml file from source directory to eml.xml
+	 * @param emlFileToRenamed set emlFilename
+	 */
 	public static void renameDwCAEMLFile(File emlFileToRenamed)
 	{
 		if (emlFileToRenamed.exists()) {
@@ -245,7 +270,12 @@ public class ExportDwCAUtilities {
 		}
 	}
 
-
+    /**
+     * 
+     * @param inputString set inputString
+     * @param items set items
+     * @return boolean value
+     */
 	public static boolean stringContainsItemFromList(String inputString, String[] items)
 	{
 		for (int i = 0; i < items.length; i++) {
@@ -256,14 +286,27 @@ public class ExportDwCAUtilities {
 		return false;
 	}
 
-
+    /**
+     * used in: 
+     * private static void dwcaObjectToXML(Meta meta) from DwCAexporter
+     * private void writeCSVHeader() throws IOException
+     * @param directory set directory
+     * @param fileName set fileName
+     * @return get fullpath
+     */
 	public static File newFile(File directory, String fileName)
 	{
 		String sep = System.getProperty("file.separator");
 		return new File(directory.getAbsolutePath() + sep + fileName);
 	}
 
-
+    /**
+     * used in:
+     * public void exportDwca(String zipFileName, String namecollectiontype, String totalsize) throws Exception
+     * @param directory set directory
+     * @param fileName set filename
+     * @return get fullpath
+     */
 	public static String getFullPath(File directory, String fileName)
 	{
 		String sep = System.getProperty("file.separator");
@@ -274,7 +317,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Root directory for output from the DwCA export program
 	 * 
-	 * @return
+	 * @return Root directory for output from the DwCA export program
 	 */
 	public static File getDwcaExportDir()
 	{
@@ -302,7 +345,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Working directory for the DwCA export program: ${dwcaExportDir}/output
 	 * 
-	 * @return
+	 * @return Working directory for the DwCA export program: ${dwcaExportDir}/output
 	 */
 	public static File getWorkingDirectory()
 	{
@@ -318,7 +361,7 @@ public class ExportDwCAUtilities {
 	 * Directory into which the DwC archive files will be written:
 	 * ${dwcaExportDir}/zip
 	 * 
-	 * @return
+	 * @return Directory into which the DwC archive files will be written:
 	 */
 	public static File getZipOutputDirectory()
 	{
@@ -333,7 +376,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Backup directory for the DwC archive files: ${dwcaExportDir}/bak
 	 * 
-	 * @return
+	 * @return result Backup directory
 	 */
 	public static File getBackupDirectory()
 	{
@@ -346,7 +389,10 @@ public class ExportDwCAUtilities {
 
 	private static File configRootDir = null;
 
-
+    /**
+     * 
+     * @return result config directory
+     */
 	private static File getConfigRootDir()
 	{
 		if (configRootDir == null) {
@@ -359,7 +405,7 @@ public class ExportDwCAUtilities {
 	/**
 	 * Directory containing eml files and properties files
 	 * 
-	 * @return
+	 * @return result directory
 	 */
 	public static File getCollectionConfigDir()
 	{
@@ -371,14 +417,14 @@ public class ExportDwCAUtilities {
 	}
 
 	// Cache for collection configuration settings
-	private static final HashMap<String, ConfigObject> collectionProps = new HashMap<String, ConfigObject>();
+	private static final HashMap<String, ConfigObject> collectionProps = new HashMap<>();
 
 
 	/**
 	 * Get all configuration settings for a collection
 	 * 
-	 * @param collectionName
-	 * @return
+	 * @param collectionName set collectionName
+	 * @return result collectionname
 	 */
 	public static ConfigObject getCollectionConfiguration(String collectionName)
 	{
@@ -398,9 +444,9 @@ public class ExportDwCAUtilities {
 	/**
 	 * Get a configuration setting for a collection
 	 * 
-	 * @param collectionName
-	 * @param propertyName
-	 * @return
+	 * @param collectionName set collectionName
+	 * @param propertyName set propertyName
+	 * @return result collectionname
 	 */
 	public static String getProperty(String collectionName, String propertyName)
 	{
@@ -441,7 +487,11 @@ public class ExportDwCAUtilities {
 	}
 	*/
 
-
+    /**
+     * 
+     * @param input a byte value
+     * @return result
+     */
 	public static boolean validUTF8(byte[] input)
 	{
 		int i = 0;
@@ -484,7 +534,11 @@ public class ExportDwCAUtilities {
 		return true;
 	}
 
-
+    /**
+     * 
+     * @param simpleJSON set simpleJSON
+     * @return result
+     */
 	public static String crunchifyPrettyJSONUtility(String simpleJSON)
 	{
 		JsonParser crunhifyParser = new JsonParser();
@@ -500,8 +554,8 @@ public class ExportDwCAUtilities {
 	/**
 	 * Convert a JSON string to pretty print version
 	 * 
-	 * @param jsonString
-	 * @return
+	 * @param jsonString set jsonString
+	 * @return Json result 
 	 */
 	public static String toPrettyFormat(String jsonString)
 	{
@@ -513,110 +567,5 @@ public class ExportDwCAUtilities {
 
 		return prettyJson;
 	}
-
-
-	@SuppressWarnings("unchecked")
-	public static void writeLogToJSON(String collectionName, String messages) throws IOException
-	{
-
-		/*
-		 * String Filename = "c:\\Temp\\" + collectionName + ".json"; try(Writer
-		 * writer = new OutputStreamWriter(new FileOutputStream(Filename, true)
-		 * , "UTF-8")) { Gson gson = new GsonBuilder().create();
-		 * gson.toJsonTree(collectionName); gson.toJson(collectionName, writer);
-		 * gson.toJson("Author: Reinier.Kartowikromo", writer);
-		 * gson.toJson("INFO: " + messages, writer); }
-		 */
-
-		String Filename = "c:\\Temp\\" + collectionName + ".json";
-
-		JSONObject collection = new JSONObject();
-		collection.put("Collectionname", collectionName);
-		collection.put("Author", "Reinier.Kartowikromo");
-
-		JSONArray listOfMessages = new JSONArray();
-		listOfMessages.add(messages);
-
-		collection.put("INFO", listOfMessages);
-
-		try {
-
-			// Writing to a file  
-			File file = new File(Filename);
-			file.createNewFile();
-			FileWriter fileWriter = new FileWriter(file, true);
-			System.out.println("Writing JSON object to file");
-			System.out.println("-----------------------");
-			System.out.print(collection);
-
-			fileWriter.write(collection.toJSONString());
-			fileWriter.flush();
-			fileWriter.close();
-
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		/*
-		 * JSONObject json = new JSONObject(); json.put("Collectionname",
-		 * collectionName); json.put("Author", "Reinier.Kartowikromo");
-		 * 
-		 * JSONArray jsonArray = new JSONArray(); jsonArray.add(messages);
-		 * jsonArray.spliterator();
-		 * 
-		 * json.put("INFO", jsonArray); try {
-		 * System.out.println("Writting JSON into file ...");
-		 * System.out.println(json);
-		 * 
-		 * FileWriter jsonFileWriter = new FileWriter(Filename, true);
-		 * jsonFileWriter.write(json.toJSONString()); jsonFileWriter.flush();
-		 * jsonFileWriter.close(); System.out.println("Done"); } catch
-		 * (IOException e) { e.printStackTrace(); }
-		 */
-		/*
-		 * String Filename = collectionName + ".json";
-		 * 
-		 * JsonFactory jfactory = new JsonFactory(); JsonGenerator jGenerator =
-		 * jfactory.createGenerator(new File("c:\\Temp\\" + Filename),
-		 * JsonEncoding.UTF8);
-		 * 
-		 * jGenerator.writeStartObject();
-		 * jGenerator.writeStringField("Collectionname", collectionName);
-		 * jGenerator.writeStringField("Author", "Reinier.Kartowikromo");
-		 * 
-		 * jGenerator.writeFieldName("INFO"); jGenerator.writeStartArray(); // [
-		 * 
-		 * jGenerator.writeString(messages); // messages
-		 * 
-		 * jGenerator.writeEndArray(); // ]
-		 * 
-		 * jGenerator.writeEndObject(); // }
-		 * 
-		 * jGenerator.close();
-		 */
-	}
-
-	/*
-	 * public static String searchForCollectionName(File emlDir, String
-	 * searchQuery) throws IOException { searchQuery = searchQuery.trim();
-	 * //List<String> fileresult = new ArrayList<String>(); StringBuilder
-	 * builder = new StringBuilder(); String extensions = ".properties";
-	 * FilenameFilter filter = new FilenameFilter() { public boolean accept(File
-	 * dir, String name) { return name.endsWith(extensions); } };
-	 * 
-	 * 
-	 * if (emlDir.exists()) { try { File[] listOfFiles =
-	 * emlDir.listFiles(filter); for (File file : listOfFiles) { ConfigObject
-	 * config = new ConfigObject(file); if (config.hasProperty(searchQuery)) {
-	 * config.required("collectionName");
-	 * builder.append(config.get(searchQuery)); builder.append("\n");
-	 * //fileresult.add(cfg.get(searchQuery)); } } } catch (Exception e) {
-	 * System.err.println(e.toString()); } }
-	 * 
-	 * return builder.toString(); // fileresult.toString();
-	 * 
-	 * }
-	 */
 
 }

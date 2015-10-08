@@ -39,6 +39,12 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 		this.logger = Registry.getInstance().getLogger(getClass());
 	}
 
+	/**
+	 * This class provides a final implementation of the method defined by the
+	 * {@link Transformer} interface, doing some global house-keeping while
+	 * deleting the actual work to subclasses via abstract template methods.
+	 */
+	@Override
 	public final List<OUTPUT> transform(INPUT input)
 	{
 		this.input = input;
@@ -58,13 +64,34 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 		return doTransform();
 	}
 
+	/**
+	 * Whether or not to skip the current record. By default all records are
+	 * processed, but subclasses can override this method to establish and
+	 * quickly discard records before they are even handed over to the
+	 * {@link #doTransform()} method.
+	 * 
+	 * @return
+	 */
 	protected boolean skipRecord()
 	{
 		return false;
 	}
 
+	/**
+	 * Get the value of the field that is to be regarded as the ID of the
+	 * object. Needed by this abstract base class for reporting purposes.
+	 * Subclasses can use the protected {@link #input} field to retrieve the ID
+	 * from, according to logic suited to their data.
+	 * 
+	 * @return
+	 */
 	protected abstract String getObjectID();
 
+	/**
+	 * Does the heavy-lifting of the transformation phase.
+	 * 
+	 * @return
+	 */
 	protected abstract List<OUTPUT> doTransform();
 
 	/**

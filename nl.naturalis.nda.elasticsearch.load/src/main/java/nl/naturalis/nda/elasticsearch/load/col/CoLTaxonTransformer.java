@@ -16,7 +16,6 @@ import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
-import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 
 import org.apache.commons.csv.CSVRecord;
@@ -47,7 +46,6 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 		this.colYear = colYear;
 	}
 
-
 	@Override
 	protected String getObjectID()
 	{
@@ -57,26 +55,33 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 	@Override
 	protected List<ESTaxon> doTransform()
 	{
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
 		CSVRecord rec = input.getRecord();
 		String rank = val(rec, taxonRank);
 		if (!allowedTaxonRanks.contains(rank)) {
-			stats.objectsSkipped++;
+			stats.recordsSkipped++;
 			if (logger.isDebugEnabled())
 				debug("Ignoring taxon with rank \"%s\"", rank);
 			return null;
 		}
-		ESTaxon taxon = new ESTaxon();
-		taxon.setSourceSystem(SourceSystem.COL);
-		taxon.setSourceSystemId(val(rec, taxonID));
-		taxon.setTaxonRank(val(rec, taxonRank));
-		taxon.setAcceptedName(getScientificName(rec));
-		taxon.setDefaultClassification(getClassification(rec));
-		addMonomials(taxon);
-		setRecordURI(taxon);
-		setTaxonDescription(taxon);
-		return Arrays.asList(taxon);
+		try {
+			stats.recordsAccepted++;
+			stats.objectsProcessed++;
+			ESTaxon taxon = new ESTaxon();
+			taxon.setSourceSystem(SourceSystem.COL);
+			taxon.setSourceSystemId(val(rec, taxonID));
+			taxon.setTaxonRank(val(rec, taxonRank));
+			taxon.setAcceptedName(getScientificName(rec));
+			taxon.setDefaultClassification(getClassification(rec));
+			addMonomials(taxon);
+			setRecordURI(taxon);
+			setTaxonDescription(taxon);
+			stats.objectsAccepted++;
+			return Arrays.asList(taxon);
+		}
+		catch (Throwable t) {
+			handleError(t);
+			return null;
+		}
 	}
 
 	private void setTaxonDescription(ESTaxon taxon)

@@ -70,8 +70,8 @@ public class CoLTaxonDistributionEnricher {
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
-		ArrayList<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
-		ArrayList<String> ids = new ArrayList<String>(bulkRequestSize);
+		ArrayList<ESTaxon> objects = new ArrayList<>(bulkRequestSize);
+		ArrayList<String> ids = new ArrayList<>(bulkRequestSize);
 
 		int lineNo = 0;
 		int processed = 0;

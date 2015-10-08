@@ -4,7 +4,9 @@ import static nl.naturalis.nda.domain.SourceSystem.NSR;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.backupXmlFile;
+import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.backupXmlFiles;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.getXmlFiles;
+import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.removeBackupExtension;
 
 import java.io.File;
 import java.util.List;
@@ -22,7 +24,8 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Driver class for the import of NSR taxa and multimedia.
+ * Driver class for the import of NSR taxa and multimedia. Also allows you to
+ * back up NSR source files indepedently of the import procedure.
  * 
  * @author Ayco Holleman
  *
@@ -37,6 +40,10 @@ public class NsrImporter {
 			new NsrImporter().importTaxa();
 		else if (args[0].equalsIgnoreCase("multimedia"))
 			new NsrImporter().importMultiMedia();
+		else if (args[0].equalsIgnoreCase("backup"))
+			new NsrImporter().backup();
+		else if (args[0].equalsIgnoreCase("reset"))
+			new NsrImporter().reset();
 		else
 			logger.error("Invalid argument: " + args[0]);
 	}
@@ -192,6 +199,25 @@ public class NsrImporter {
 		}
 		stats.logStatistics(logger, "multimedia");
 		LoadUtil.logDuration(logger, getClass(), start);
+	}
+
+	/**
+	 * Backs up the XML files in the NSR data directory by appending a
+	 * "&period;imported" extension to the file name.
+	 */
+	public void backup()
+	{
+		backupXmlFiles();
+	}
+
+	/**
+	 * Removes the "&period;imported" file name extension from the files in the
+	 * NSR data directory. Nice for repitive testing. Not meant for production
+	 * purposes.
+	 */
+	public void reset()
+	{
+		removeBackupExtension();
 	}
 
 }

@@ -19,12 +19,28 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<INPUT, OUTPUT> {
 
+	/**
+	 * The statistics object updated by this transformer.
+	 */
 	protected final ETLStatistics stats;
 	protected final Logger logger;
 
+	/**
+	 * Whether or not to enable error suppression.
+	 * 
+	 * @see #setSuppressErrors(boolean)
+	 */
 	protected boolean suppressErrors;
 
+	/**
+	 * The source record. Currently either an instance of a commons-csv
+	 * CSVRecord instance or a w3c Element instance.
+	 */
 	protected INPUT input;
+	/**
+	 * The ID of the object to be indexed. Must be extracted from the
+	 * {@link #input input record} by subclasses.
+	 */
 	protected String objectID;
 
 	/**
@@ -66,9 +82,8 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 
 	/**
 	 * Whether or not to skip the current record. By default all records are
-	 * processed, but subclasses can override this method to establish and
-	 * quickly discard records before they are even handed over to the
-	 * {@link #doTransform()} method.
+	 * processed, but subclasses can override this method to discard records
+	 * before they are even handed over to the {@link #doTransform()} method.
 	 * 
 	 * @return
 	 */
@@ -79,16 +94,18 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 
 	/**
 	 * Get the value of the field that is to be regarded as the ID of the
-	 * object. Needed by this abstract base class for reporting purposes.
-	 * Subclasses can use the protected {@link #input} field to retrieve the ID
-	 * from, according to logic suited to their data.
+	 * object. Subclasses must implement this, because this abstract base class
+	 * needs it for reporting purposes. Subclasses should probably use the
+	 * protected {@link #input} field to retrieve the ID in an
+	 * implementation-dependent way.
 	 * 
 	 * @return
 	 */
 	protected abstract String getObjectID();
 
 	/**
-	 * Does the heavy-lifting of the transformation phase.
+	 * Does the heavy-lifting of the transformation phase. Left to subclasses to
+	 * implement.
 	 * 
 	 * @return
 	 */

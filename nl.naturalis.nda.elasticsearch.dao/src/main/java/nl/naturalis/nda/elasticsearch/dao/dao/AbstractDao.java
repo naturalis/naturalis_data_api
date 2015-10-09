@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
+
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
@@ -11,6 +12,9 @@ import nl.naturalis.nda.search.QueryParams;
 import nl.naturalis.nda.search.SearchResult;
 import nl.naturalis.nda.search.SearchResultSet;
 import nl.naturalis.nda.search.StringMatchInfo;
+
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.grouping.GroupingSearch;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -194,6 +198,12 @@ public abstract class AbstractDao {
         SearchRequestBuilder searchRequestBuilder = newSearchRequest().setTypes(type)
                 .setQuery(filteredQuery(completeQuery, geoShape))
                 .addSort(createFieldSort(params)).setTrackScores(true);
+        
+       /* GroupingSearch groupingSearch = new GroupingSearch("genus");
+        Sort groupSort = Sort.INDEXORDER;
+		groupingSearch.setGroupSort(groupSort);
+		groupingSearch.setAllGroups(true);*/
+        
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);
@@ -349,8 +359,22 @@ public abstract class AbstractDao {
                 searchRequestBuilder.setSize(50);
             }
         }
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        if (params.containsKey("_groupMaxResults")) {
+        	String groupMaxResultsAsString = params.getFirst("_groupMaxResults");
+        	Integer groupMaxResults = 0;
+            try 
+            {
+                groupMaxResults = Integer.valueOf(groupMaxResultsAsString);
+            	searchRequestBuilder.setSize(groupMaxResults);
+            } catch (NumberFormatException e) {
+                logger.debug("Could not parse _groupMaxResults value '" + groupMaxResultsAsString + "'. Using 10.");
+                groupMaxResults = 10;
+                searchRequestBuilder.setSize(groupMaxResults);
+            }
+        }
     }
-
+    
     private void extendQueryWithNestedFieldsWithSameNestedPath(BoolQueryBuilder boolQueryBuilder, Operator operator,
                                                                String nestedPath, List<FieldMapping> fields,
                                                                Map<String, HighlightBuilder.Field> highlightFields,
@@ -461,10 +485,17 @@ public abstract class AbstractDao {
 
     protected String getSortFieldFromQueryParams(QueryParams params) {
         String sortParam = params.getParam("_sort");
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        String sortGroupParam = params.getParam("_groupSort");
         String sortField = "_score";
         if (sortParam != null && !sortParam.isEmpty() && !sortParam.equalsIgnoreCase("_score")) {
             sortField = sortParam + ".raw";
         }
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        if (sortGroupParam != null && !sortGroupParam.isEmpty() && !sortGroupParam.equalsIgnoreCase("_score")) {
+            sortField = sortGroupParam + ".raw";
+        }
+
         return sortField;
     }
 
@@ -476,10 +507,16 @@ public abstract class AbstractDao {
      */
     private Integer getOffSetFromParams(QueryParams params) {
         String offSetParam = params.getParam("_offset");
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        String groupoffSetParam = params.getParam("_groupOffset");
         if (hasText(offSetParam)) {
             return Integer.parseInt(offSetParam);
         }
-
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        if (hasText(groupoffSetParam)) {
+            return Integer.parseInt(groupoffSetParam);
+        }
+        
         return null;
     }
 
@@ -491,6 +528,8 @@ public abstract class AbstractDao {
      */
     private SortOrder getSortOrderFromQueryParams(QueryParams params) {
         String sortOrderParam = params.getParam("_sortDirection");
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        String sortOrderDirParam = params.getParam("_groupSortDirection");
         SortOrder sortOrder = null;
         if (hasText(sortOrderParam)) {
             if (SortOrder.ASC.name().equals(sortOrderParam)) {
@@ -500,8 +539,19 @@ public abstract class AbstractDao {
                 sortOrder = SortOrder.DESC;
             }
         }
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        if (hasText(sortOrderDirParam)) {
+            if (SortOrder.ASC.name().equals(sortOrderDirParam)) {
+                sortOrder = SortOrder.ASC;
+            }
+            if (SortOrder.DESC.name().equals(sortOrderDirParam)) {
+                sortOrder = SortOrder.DESC;
+            }
+        }
+        
         return sortOrder;
     }
+    
 
     /**
      * @param fields       parameters for the query

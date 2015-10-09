@@ -197,6 +197,10 @@ public class BioportalSpecimenDao extends AbstractDao {
         	params.remove("_andOr"); /* Ayco */
             params.add("_andOr", "OR");
         }
+        /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */
+        if (params.containsKey("_groupMaxResults") || params.containsKey("_groupOffset") || params.containsKey("_groupSort") || params.containsKey("_groupSortDirection")) {
+        	params.remove("_offset");	
+        }
         String sessionId = params.getParam("_session_id");
         params.remove("_session_id");
 

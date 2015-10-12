@@ -16,12 +16,9 @@ import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
-import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
 
 /**
  * The transformer component in the CoL ETL cycle.
@@ -31,11 +28,9 @@ import org.slf4j.Logger;
  */
 class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 
-	private static final Logger logger;
 	private static final List<String> allowedTaxonRanks;
 
 	static {
-		logger = Registry.getInstance().getLogger(CoLTaxonTransformer.class);
 		allowedTaxonRanks = Arrays.asList("species", "infraspecies");
 	}
 
@@ -52,41 +47,57 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 	}
 
 	@Override
-	public List<ESTaxon> transform(CSVRecordInfo info)
+	protected boolean skipRecord()
 	{
-		stats.recordsProcessed++;
-		recInf = info;
-		CSVRecord record = info.getRecord();
-		if (val(record, acceptedNameUsageID) != null) {
-			// This is a synonym
-			stats.recordsSkipped++;
-			return null;
-		}
-		objectID = val(record, taxonID);
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-		String rank = val(record, taxonRank);
+		/*
+		 * acceptedNameUsageID field is a foreign key to accepted name record.
+		 * If it is set, the record is itself not an accepted name record, so we
+		 * must skip it.
+		 */
+		return val(input.getRecord(), acceptedNameUsageID) != null;
+	}
+
+	@Override
+	protected String getObjectID()
+	{
+		return val(input.getRecord(), taxonID);
+	}
+
+	@Override
+	protected List<ESTaxon> doTransform()
+	{
+		CSVRecord rec = input.getRecord();
+		String rank = val(rec, taxonRank);
 		if (!allowedTaxonRanks.contains(rank)) {
-			stats.objectsSkipped++;
+			stats.recordsSkipped++;
 			if (logger.isDebugEnabled())
 				debug("Ignoring taxon with rank \"%s\"", rank);
 			return null;
 		}
-		ESTaxon taxon = new ESTaxon();
-		taxon.setSourceSystem(SourceSystem.COL);
-		taxon.setSourceSystemId(val(record, taxonID));
-		taxon.setTaxonRank(val(record, taxonRank));
-		taxon.setAcceptedName(getScientificName(record));
-		taxon.setDefaultClassification(getClassification(record));
-		addMonomials(taxon);
-		setRecordURI(taxon);
-		setTaxonDescription(taxon);
-		return Arrays.asList(taxon);
+		try {
+			stats.recordsAccepted++;
+			stats.objectsProcessed++;
+			ESTaxon taxon = new ESTaxon();
+			taxon.setSourceSystem(SourceSystem.COL);
+			taxon.setSourceSystemId(val(rec, taxonID));
+			taxon.setTaxonRank(val(rec, taxonRank));
+			taxon.setAcceptedName(getScientificName(rec));
+			taxon.setDefaultClassification(getClassification(rec));
+			addMonomials(taxon);
+			setRecordURI(taxon);
+			setTaxonDescription(taxon);
+			stats.objectsAccepted++;
+			return Arrays.asList(taxon);
+		}
+		catch (Throwable t) {
+			handleError(t);
+			return null;
+		}
 	}
 
 	private void setTaxonDescription(ESTaxon taxon)
 	{
-		String descr = val(recInf.getRecord(), description);
+		String descr = val(input.getRecord(), description);
 		if (descr != null) {
 			TaxonDescription td = new TaxonDescription();
 			td.setDescription(descr);
@@ -96,7 +107,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	private void setRecordURI(ESTaxon taxon)
 	{
-		String refs = val(recInf.getRecord(), references);
+		String refs = val(input.getRecord(), references);
 		if (refs == null) {
 			if (!suppressErrors)
 				warn("RecordURI not set. Missing Catalogue Of Life URL");

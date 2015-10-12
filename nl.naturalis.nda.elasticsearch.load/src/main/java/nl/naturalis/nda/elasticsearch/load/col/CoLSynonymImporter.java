@@ -19,8 +19,8 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches CoL taxon documents with synonyms sourced from the taxa.txt file in
- * a CoL DwC archive.
+ * Enriches CoL taxon documents with synonyms sourced from the taxa&period;txt
+ * file in a CoL DwC archive.
  * 
  * @author Ayco Holleman
  *
@@ -47,6 +47,11 @@ public class CoLSynonymImporter {
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
+	/**
+	 * Extracts and imports synonyms from the taxa&period;txt file.
+	 * 
+	 * @param path
+	 */
 	public void importCsv(String path)
 	{
 		long start = System.currentTimeMillis();

@@ -12,12 +12,12 @@ import java.util.List;
  * 
  * @author Ayco Holleman
  *
- * @param <T>
+ * @param <INPUT>
  *            The type of object serving as input to the transformer
- * @param <U>
+ * @param <OUTPUT>
  *            The type of object that is output from the transformer
  */
-public interface Transformer<T, U> {
+public interface Transformer<INPUT, OUTPUT> {
 
 	/**
 	 * Transform the input object into one or more output objects.
@@ -25,6 +25,6 @@ public interface Transformer<T, U> {
 	 * @param input
 	 * @return
 	 */
-	List<U> transform(T input);
+	List<OUTPUT> transform(INPUT input);
 
 }

@@ -229,7 +229,7 @@ public class ETLStatistics {
 		logger.info(statistic(niceName, "bounced", badObjects));
 		logger.info(statistic(niceName, "indexed", objectsIndexed));
 		logger.info("------------------------------------- +");
-		logger.info(statistic(niceName, "processed", objectsProcessed));
+		logger.info(statistic(niceName, "accepted", objectsAccepted));
 
 //		if (useObjectsAccepted) {
 //			logger.info(" ");

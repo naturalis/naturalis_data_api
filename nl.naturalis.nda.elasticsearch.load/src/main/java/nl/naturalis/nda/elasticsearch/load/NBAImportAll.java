@@ -6,7 +6,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
-import nl.naturalis.nda.elasticsearch.load.nsr.NsrImportAll;
+import nl.naturalis.nda.elasticsearch.load.nsr.NsrImporter;
 
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
@@ -70,8 +70,8 @@ public class NBAImportAll {
 
 			logger.info("[>--- Starting NSR import ---<]");
 			try {
-				NsrImportAll nsrImportAll = new NsrImportAll(index);
-				nsrImportAll.importAllPerType();
+				NsrImporter nsrImporter = new NsrImporter();
+				nsrImporter.importAll();
 			}
 			catch (Throwable t) {
 				logger.error(t.getMessage(), t);

@@ -26,7 +26,6 @@ import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 import nl.naturalis.nda.elasticsearch.load.Transformer;
 
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
 
 /**
  * A subclass of {@link CSVTransformer} that transforms CSV records into
@@ -36,8 +35,6 @@ import org.slf4j.Logger;
  *
  */
 class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
-
-	static Logger logger = Registry.getInstance().getLogger(CoLReferenceTransformer.class);
 
 	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
@@ -49,13 +46,16 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 		this.loader = loader;
 	}
 
+
 	@Override
-	public List<ESTaxon> transform(CSVRecordInfo recInf)
+	protected String getObjectID()
 	{
-		this.recInf = recInf;
-		objectID = val(recInf.getRecord(), taxonID);
-		// Not much can go wrong here, so:
-		stats.recordsProcessed++;
+		return val(input.getRecord(), taxonID);
+	}
+
+	@Override
+	protected List<ESTaxon> doTransform()
+	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
@@ -70,7 +70,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 			if (taxon == null) {
 				stats.objectsRejected++;
 				if (!suppressErrors) {
-					error("Orphan reference: " + val(recInf.getRecord(), title));
+					error("Orphan reference: " + val(input.getRecord(), title));
 				}
 			}
 			else {
@@ -111,7 +111,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 	 */
 	public List<ESTaxon> clean(CSVRecordInfo recInf)
 	{
-		this.recInf = recInf;
+		this.input = recInf;
 		objectID = val(recInf.getRecord(), taxonID);
 		// Not much can go wrong here, so:
 		stats.recordsProcessed++;
@@ -144,7 +144,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 
 	private Reference createReference()
 	{
-		CSVRecord record = recInf.getRecord();
+		CSVRecord record = input.getRecord();
 		Reference ref = new Reference();
 		ref.setTitleCitation(val(record, title));
 		ref.setCitationDetail(val(record, description));

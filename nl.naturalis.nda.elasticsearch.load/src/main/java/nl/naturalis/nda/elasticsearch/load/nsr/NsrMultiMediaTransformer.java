@@ -25,7 +25,7 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.NameMismatchException;
 
 import org.w3c.dom.Element;
 
@@ -44,34 +44,41 @@ public class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 		super(stats);
 	}
 
+	/**
+	 * Set the taxon object associated with this multimedia object. The taxon
+	 * object is extracted from the same XML record by the
+	 * {@link NsrTaxonTransformer}.
+	 * 
+	 * @param taxon
+	 */
 	public void setTaxon(ESTaxon taxon)
 	{
 		this.taxon = taxon;
 	}
 
+	@Override
+	protected String getObjectID()
+	{
+		return val(input.getRecord(), "nsr_id");
+	}
+
 	/**
 	 * Transforms an XML record into one ore more {@code ESMultiMediaObject}s.
-	 * Contrary to the other transformers, the multimedia transformer does not
-	 * keep track of record-level statistics. The assumption is that if the
-	 * taxon transformer was able to extract a taxon from the XML record, then
-	 * the record was OK at the record level. Even when only loading multimedia
-	 * the taxon transformer is still employed, because the multimedia
-	 * transformer also needs taxon information and relies on the taxon
-	 * transformer to get it.
+	 * The multimedia transformer does not keep track of record-level
+	 * statistics. The assumption is that if the taxon transformer was able to
+	 * extract a taxon from the XML record, then the record was OK at the record
+	 * level.
 	 */
 	@Override
-	public List<ESMultiMediaObject> transform(XMLRecordInfo recInf)
+	protected List<ESMultiMediaObject> doTransform()
 	{
-		this.stats.recordsProcessed++;
-		this.recInf = recInf;
-		this.objectID = val(recInf.getRecord(), "nsr_id");
 		if (taxon == null) {
 			stats.recordsSkipped++;
 			if (logger.isDebugEnabled())
 				debug("Ignoring images for skipped or invalid taxon");
 			return null;
 		}
-		List<Element> imageElems = getDescendants(recInf.getRecord(), "image");
+		List<Element> imageElems = getDescendants(input.getRecord(), "image");
 		if (imageElems == null) {
 			if (logger.isDebugEnabled())
 				debug("Skipping taxon without images");
@@ -134,7 +141,7 @@ public class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 		}
 	}
 
-	private ESMultiMediaObject newMediaObject()
+	private ESMultiMediaObject newMediaObject() throws NameMismatchException
 	{
 		ESMultiMediaObject mmo = new ESMultiMediaObject();
 		mmo.setSourceSystem(NSR);
@@ -181,4 +188,5 @@ public class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMedi
 			return null;
 		}
 	}
+
 }

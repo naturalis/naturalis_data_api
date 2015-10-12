@@ -26,15 +26,12 @@ import java.util.List;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
-import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.ConfigObject;
-import org.slf4j.Logger;
 
 /**
  * The transformer component in the Brahms ETL cycle for specimens.
@@ -44,13 +41,10 @@ import org.slf4j.Logger;
  */
 class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger;
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
 
 	static {
-		logger = Registry.getInstance().getLogger(BrahmsSpecimenTransformer.class);
 		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		themeCache = ThemeCache.getInstance();
 	}
@@ -62,25 +56,19 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 	}
 
 	@Override
-	public List<ESSpecimen> transform(CSVRecordInfo info)
+	protected String getObjectID()
 	{
-		stats.recordsProcessed++;
-		recInf = info;
-		CSVRecord record = info.getRecord();
-		objectID = val(record, BARCODE);
-		if (objectID == null) {
-			stats.recordsRejected++;
-			if (!suppressErrors) {
-				objectID = "?";
-				error("Missing barcode");
-			}
-			return null;
-		}
+		return val(input.getRecord(), BARCODE);
+	}
 
+	@Override
+	protected List<ESSpecimen> doTransform()
+	{
+		// No record-level validations, so:
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-
 		try {
+			CSVRecord record = input.getRecord();
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
@@ -103,13 +91,14 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 				specimen.setObjectPublic(false);
 			specimen.setGatheringEvent(getGatheringEvent(record));
 			specimen.addIndentification(getSpecimenIdentification(record));
+			stats.objectsAccepted++;
 			return Arrays.asList(specimen);
 		}
 		catch (Throwable t) {
 			stats.objectsRejected++;
 			if (!suppressErrors) {
 				error(t.getMessage());
-				error(recInf.getLine());
+				error(input.getLine());
 			}
 			return null;
 		}

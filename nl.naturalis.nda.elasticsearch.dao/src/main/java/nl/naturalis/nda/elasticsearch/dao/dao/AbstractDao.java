@@ -199,11 +199,6 @@ public abstract class AbstractDao {
                 .setQuery(filteredQuery(completeQuery, geoShape))
                 .addSort(createFieldSort(params)).setTrackScores(true);
         
-       /* GroupingSearch groupingSearch = new GroupingSearch("genus");
-        Sort groupSort = Sort.INDEXORDER;
-		groupingSearch.setGroupSort(groupSort);
-		groupingSearch.setAllGroups(true);*/
-        
         Integer offSet = getOffSetFromParams(params);
         if (offSet != null) {
             searchRequestBuilder.setFrom(offSet);
@@ -483,6 +478,11 @@ public abstract class AbstractDao {
         return operator;
     }
 
+    /**
+     * 
+     * @param params getSortFieldFromQuery
+     * @return
+     */
     protected String getSortFieldFromQueryParams(QueryParams params) {
         String sortParam = params.getParam("_sort");
         /* NDA-449 Datum: 08-10-2015 Door: R.Kartowikromo */

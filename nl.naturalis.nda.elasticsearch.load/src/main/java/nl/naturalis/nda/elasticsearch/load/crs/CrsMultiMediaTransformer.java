@@ -11,6 +11,7 @@ import static org.domainobject.util.DOMUtil.getChild;
 import static org.domainobject.util.DOMUtil.getDescendant;
 import static org.domainobject.util.DOMUtil.getDescendantValue;
 import static org.domainobject.util.DOMUtil.getDescendants;
+import static org.domainobject.util.StringUtil.rpad;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,6 +53,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	private final MimeTypeCache mimetypeCache;
 	private final ThemeCache themeCache;
 
+	private String databaseID;
 	private List<Element> mediaFileElems;
 	private List<MultiMediaContentIdentification> identifications;
 	private ESMultiMediaObject first;
@@ -69,16 +71,66 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	@Override
 	protected String getObjectID()
 	{
+		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
 		/*
-		 * Dummy implementation; objectID is set in checkRecord()
+		 * This is actually the UnitID of the specimen, but that's all we got.
 		 */
-		return null;
+		return val(dc, "ac:associatedSpecimenReference");
+	}
+
+	@Override
+	protected String messagePrefix()
+	{
+		return super.messagePrefix() + rpad(databaseID, 12, " | ");
+	}
+
+	@Override
+	protected boolean skipRecord()
+	{
+		/*
+		 * Side effect: set the database identifier of the record, so we can
+		 * provide both the UnitID and the database ID of the specimen when
+		 * logging messages. We override messagePrefix() to also print out the
+		 * database ID.
+		 */
+		databaseID = val(input.getRecord(), "identifier");
+		if (hasStatusDeleted()) {
+			if (!suppressErrors)
+				warn("Skipping record with status \"deleted\"");
+			return true;
+		}
+		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
+		if (val(dc, "abcd:RecordBasis") == null) {
+			if (!suppressErrors)
+				warn("Skipping virtual specimen");
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	protected List<ESMultiMediaObject> doTransform()
 	{
-		if (!checkRecord()) {
+		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
+		mediaFileElems = getDescendants(dc, "frmDigitalebestanden");
+		if (mediaFileElems == null) {
+			stats.recordsRejected++;
+			if (!suppressErrors)
+				error("Missing or empty element <frmDigitalebestanden>");
+			return null;
+		}
+		List<Element> determinationElements = getDescendants(dc, "ncrsDetermination");
+		if (determinationElements == null) {
+			stats.recordsRejected++;
+			if (!suppressErrors)
+				error("Missing or empty element <ncrsDetermination>");
+			return null;
+		}
+		identifications = getIdentifications(determinationElements);
+		if (identifications == null) {
+			stats.recordsRejected++;
+			if (!suppressErrors)
+				error("Invalid/insufficient specimen identification information");
 			return null;
 		}
 		stats.recordsAccepted++;
@@ -107,6 +159,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 				mmo.setMultiMediaPublic(bval(elem, "abcd:MultiMediaPublic"));
 				mmo.setCreator(val(elem, "dc:creator"));
 				mmos.add(mmo);
+				stats.objectsAccepted++;
 			}
 			catch (Throwable t) {
 				handleError(t);
@@ -159,51 +212,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		next.setAssociatedSpecimenReference(first.getAssociatedSpecimenReference());
 		next.setTheme(first.getTheme());
 		return next;
-	}
-
-	private boolean checkRecord()
-	{
-		if (hasStatusDeleted()) {
-			stats.recordsSkipped++;
-			if (logger.isInfoEnabled()) {
-				String id = val(input.getRecord(), "identifier");
-				String fmt = "Skipping record with status \"deleted\" (database id: %s)";
-				logger.info(String.format(fmt, id));
-			}
-			return false;
-		}
-		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
-		/*
-		 * This is actually not the object ID in the sense of being the ID of a
-		 * multimedia object. It's the ID of the specimen that the multimedia
-		 * object belongs to. But that's all we got.
-		 */
-		objectID = val(dc, "ac:associatedSpecimenReference");
-		if (objectID == null) {
-			stats.recordsRejected++;
-			if (!suppressErrors) {
-				String id = val(input.getRecord(), "identifier");
-				String fmt = "Missing assoicated specimen reference (database id: %s)";
-				logger.error(String.format(fmt, id));
-			}
-			return false;
-		}
-		if (val(dc, "abcd:RecordBasis") == null) {
-			return skipRecord("Skipping virtual specimen");
-		}
-		mediaFileElems = getDescendants(dc, "frmDigitalebestanden");
-		if (mediaFileElems == null) {
-			return rejectRecord("Missing or empty element <frmDigitalebestanden>");
-		}
-		List<Element> determinationElements = getDescendants(dc, "ncrsDetermination");
-		if (determinationElements == null) {
-			return rejectRecord("Missing or empty element <ncrsDetermination>");
-		}
-		identifications = getIdentifications(determinationElements);
-		if (identifications == null) {
-			return rejectRecord("Invalid/insufficient specimen identification information");
-		}
-		return true;
 	}
 
 	private List<MultiMediaContentIdentification> getIdentifications(List<Element> elems)
@@ -395,22 +403,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	{
 		String raw = val(record, "abcd:Sex");
 		return sexNormalizer.normalize(raw);
-	}
-
-	private boolean skipRecord(String pattern, Object... args)
-	{
-		stats.recordsSkipped++;
-		if (!suppressErrors)
-			warn(pattern, args);
-		return false;
-	}
-
-	private boolean rejectRecord(String pattern, Object... args)
-	{
-		stats.recordsRejected++;
-		if (!suppressErrors)
-			error(pattern, args);
-		return false;
 	}
 
 	private Double dval(Element e, String tag)

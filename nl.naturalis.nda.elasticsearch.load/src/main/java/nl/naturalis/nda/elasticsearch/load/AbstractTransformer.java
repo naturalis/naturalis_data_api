@@ -57,8 +57,14 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 
 	/**
 	 * This class provides a final implementation of the method defined by the
-	 * {@link Transformer} interface, doing some global house-keeping while
-	 * deleting the actual work to subclasses via abstract template methods.
+	 * {@link Transformer} interface while providing a template for subclassess
+	 * to do the heavy-lifting through three template methods:
+	 * <ol>
+	 * <li>{@link #skipRecord()} to determine if the record should be skipped
+	 * <li>{@link #getObjectID()} to extract the object ID from the currently
+	 * processed record (needed for logging purposes)
+	 * <li>{@link #doTransform()} to validate the input and produce the output
+	 * </ol>
 	 */
 	@Override
 	public final List<OUTPUT> transform(INPUT input)
@@ -84,6 +90,8 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	 * Whether or not to skip the current record. By default all records are
 	 * processed, but subclasses can override this method to discard records
 	 * before they are even handed over to the {@link #doTransform()} method.
+	 * They can use the protected {@link #input} field to determine if the
+	 * record should be skipped.
 	 * 
 	 * @return
 	 */
@@ -95,9 +103,9 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	/**
 	 * Get the value of the field that is to be regarded as the ID of the
 	 * object. Subclasses must implement this, because this abstract base class
-	 * needs it for reporting purposes. Subclasses should probably use the
-	 * protected {@link #input} field to retrieve the ID in an
-	 * implementation-dependent way.
+	 * needs it for reporting purposes. Subclasses can use the protected
+	 * {@link #input} field to retrieve the ID in an implementation-dependent
+	 * way.
 	 * 
 	 * @return
 	 */
@@ -172,7 +180,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 		stats.objectsRejected++;
 		error(t.toString());
 		if (logger.isDebugEnabled())
-			logger.debug(t.toString(), t);
+			debug("Stacktrace:", t);
 	}
 
 	/**

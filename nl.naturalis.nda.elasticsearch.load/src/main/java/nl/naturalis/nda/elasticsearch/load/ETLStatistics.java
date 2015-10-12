@@ -9,14 +9,54 @@ import org.slf4j.Logger;
  * A Java bean maintaining a set of running totals for an ETL program. A
  * statistics object is passed around by the various ETL components of an import
  * program so each can update the counter(s) relevant to their job. A
- * distinction is made between record-level statistics and object-level (a.k.a.
- * document-level) statistics. This is because one record from a data source may
- * yield multiple ElasticSearch documents. For example a record in a Brahms CSV
+ * distinction is made between record-level statistics and object-level
+ * statistics. This is because one record from a data source may yield multiple
+ * objects (i.e. ElasticSearch documents). For example a record in a Brahms CSV
  * dump may contain multiple images. Thus the number of records processed is not
  * necessarily equal to the number of documents indexed, even if there were no
- * validation errors. For this type of data sources we try to distinguish
- * between record-level validation errors and object-level validation errors,
- * although the distinction is sometimes somewhat arbitrary.
+ * validation errors. For this type of data sources an attempt is made to
+ * distinguish between record-level validation errors and object-level
+ * validation errors, although the distinction is sometimes a bit arbitrary.
+ * <p>
+ * For data sources with a one-to-one relationship between records and objects,
+ * the distinction between record-level statistics and object-level statistics
+ * is totally arbitrary. Current implementations of {@link Transformer} only use
+ * the {@link #recordsRejected} and {@link #recordsSkipped} counters to report
+ * on invalid c.q. skipped data while leaving the {@link #objectsRejected} and
+ * {@link #objectsSkipped} counters alone. In other words, there won't be any
+ * rejected or skiped objects, and the number of accepted records, processed
+ * objects and accepted objects should all be equal.
+ * <p>
+ * The following rules should always apply:<br>
+ * 
+ * <pre>
+ * recordsSkipped + recordsRejected + recordsAccepted == recordsProcessed
+ * objectsSkipped + objectsRejected + objectsAccepted == objectsProcessed
+ * documentsRejected + documentsIndexed == objectsAccepted
+ * </pre>
+ * 
+ * <h3>Nested Documents</h3>
+ * <p>
+ * Sometimes the records in a data source, or the objects extracted from them,
+ * do not directly result in new ElasticSearch documents (even when valid).
+ * Instead they are only used to enrich existing documents. For example, the
+ * vernacular names in the vernacular.txt file of a DwC archive are not stored
+ * in a separate document type. Instead, they are nested within <i>existing</i>
+ * taxon documents. The same applies for synonyms, literature references and
+ * geological distribution data. In this case the number of indexed documents is
+ * virtually meaningless and has no relation with the number of valid (accepted)
+ * objects. If a data source provides 10 children for a particular parent
+ * document, the parent document can be re-indexed anywhere between 1 and 10
+ * times during the course of the program, depending on how far apart the
+ * CSV/XML records containing the children were. If they all came one after
+ * another in the data source, they are added all at once to the parent
+ * document, resulting in just one index request for 10 child records. Thus, the
+ * following rule does <b>not</b> apply any longer:<br>
+ * 
+ * <pre>
+ * documentsRejected + documentsIndexed == objectsAccepted
+ * </pre>
+ * 
  * 
  * @author Ayco Holleman
  *
@@ -25,53 +65,68 @@ public class ETLStatistics {
 
 	/**
 	 * The number of times that the source data could not be parsed into a
-	 * record. This counter is meant to be maintained by extractor components
-	 * (e.g. {@link CSVExtractor CSV extractors}) and should not be updated by
-	 * other ETL components. The {@code badInput} counter is useful when
-	 * processing CSV files, where a raw line may not be parsable into a
-	 * {@code CSVRecord}. It is not very useful when processing XML files,
-	 * because these are parsed as a whole into a DOM tree.
+	 * record. This counter is maintained by extractor components (e.g.
+	 * {@link CSVExtractor CSV extractors}). The {@code badInput} counter is
+	 * useful when processing CSV files, where a raw line may not be parsable
+	 * into a {@code CSVRecord}. It is not very useful when processing XML
+	 * files, because these are parsed as a whole into a DOM tree, which is an
+	 * all-or-nothing operation. Note that this counter does <i>not</i>
+	 * contribute to the number of processed records. If we have bad input (e.g.
+	 * a CSV record with too few fields), we by definition don't know if it was
+	 * one, two, or whatever number of records (maybe the remaining fields came
+	 * on the next line because of an un-escaped newline character). We only
+	 * start counting records once we're passed the extraction phase.
 	 */
 	public int badInput;
 
 	/**
-	 * The number of records processed by the import program.
+	 * The number of records processed by the import program. This counter is
+	 * maintained by {@link Transformer} objects
 	 */
 	public int recordsProcessed;
+
 	/**
-	 * The number of records that contain data that are not meant to be imported
-	 * by the import program. For example the taxa.txt file in CoL DwCA files
-	 * containes both taxa and synonyms. The taxon importer only needs to
-	 * process the taxa in that file.<br>
-	 * {@code recordsSkipped + recordsRejected + badRecords + recordsIndexed = recordsProcessed}
+	 * The number of records that are not meant to be processed by the import
+	 * program. For example, the taxa.txt file in a CoL DwC archive contains
+	 * both taxa and synonyms. The taxon importer only cares about the taxa in
+	 * that file while the synonym importer only cares about the synonyms in
+	 * that file. This counter is maintained by {@link Transformer} objects.
 	 */
 	public int recordsSkipped;
+
 	/**
-	 * The number of records that failed some validation. Validation is done for
-	 * the record as a whole, rather than for the object(s) extracted from it.
+	 * The number of records that failed some validation. This counter is
+	 * maintained by {@link Transformer} objects.
 	 */
 	public int recordsRejected;
 
+	/**
+	 * The number of successfully validated records. This counter is maintained
+	 * by {@link Transformer} objects.
+	 */
 	public int recordsAccepted;
 
 	/**
-	 * The number of objects processed by the import program. Note that one
-	 * record may contain multiple objects. For example, one line in a Brahms
-	 * CSV export may contain multiple images.<br>
-	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}
+	 * The number of objects processed by the import program. This counter is
+	 * maintained by {@link Transformer} objects.
 	 */
 	public int objectsProcessed;
+
 	/**
 	 * The number of objects that are not meant to be imported by the import
-	 * program.
+	 * program. This counter is maintained by {@link Transformer} objects.
 	 */
 	public int objectsSkipped;
+
 	/**
-	 * The number of objects that failed some validation.
+	 * The number of objects that failed some validation. This counter is
+	 * maintained by {@link Transformer} objects.
 	 */
 	public int objectsRejected;
+
 	/**
-	 * The number of objects that passed validation
+	 * The number of objects that passed validation. This counter is maintained
+	 * by {@link Transformer} objects.
 	 */
 	public int objectsAccepted;
 
@@ -80,61 +135,37 @@ public class ETLStatistics {
 	 * counter is maintained by {@link ElasticSearchLoader loader} objects.
 	 *
 	 */
-	public int badObjects;
+	public int documentsRejected;
 	/**
-	 * The number of objects that made it to ElasticSearch. This counter is
+	 * The number of documents indexed by ElasticSearch. This counter is
 	 * maintained by {@link ElasticSearchLoader loader} objects.
 	 */
-	public int objectsIndexed;
+	public int documentsIndexed;
 
-	private boolean useObjectsAccepted;
+	private boolean nested;
 
 	/**
-	 * Determines which counter to use for successfully transformed data.
-	 * Ordinarily the following rule applies:<br>
-	 * <br>
-	 * {@code objectsSkipped + objectsRejected + objectsIndexed = objectsProcessed}
-	 * <br>
-	 * <br>
-	 * In this case {@code objectsIndexed} is the number of successfully
-	 * transformed data. The transformer keeps track of {@code objectsSkipped}
-	 * and {@code objectsRejected} while the loader keeps track of
-	 * {@code objectsIndexed}. ETL programs for which this rule applies don't
-	 * need to keep track of the {@code objectsAccepted} counter. However, if a
-	 * data source is only used to add children (nested objects) to an already
-	 * existing parent document, this rule no longer applies. The rule that
-	 * applies then is:<br>
-	 * <br>
-	 * {@code objectsSkipped + objectsRejected + objectsAccepted = objectsProcessed}
-	 * <br>
-	 * <br>
-	 * In this case the transformer provides all three statistics and the number
-	 * of indexations is more or less meaningless. If a data source provides 10
-	 * children for a particular parent document, the parent document will be
-	 * re-indexed anywhere between 1 and 10 times during the course of the
-	 * program, depending on how far apart the CSV/XML records containing the
-	 * children were (if they all came one after another in the data source,
-	 * they are added all at once to the parent document, resulting in just one
-	 * index request for 10 child records).
+	 * Determines whether the records being processed are stored as nested
+	 * documents.
 	 * 
-	 * @param b
+	 * @param nested
 	 */
-	public void setUseObjectsAccepted(boolean b)
+	public void setNested(boolean nested)
 	{
-		this.useObjectsAccepted = b;
+		this.nested = nested;
 	}
 
 	/**
-	 * Whether or not to use the objectsAccepted counter in stead of the
-	 * objectsIndexed counter.
+	 * Whether or not the records being processed are stored as nested
+	 * documents.
 	 * 
 	 * @return
 	 * 
-	 * @see #setUseObjectsAccepted(boolean)
+	 * @see #setNested(boolean)
 	 */
 	public boolean isUseObjectsAccepted()
 	{
-		return useObjectsAccepted;
+		return nested;
 	}
 
 	/**
@@ -154,8 +185,8 @@ public class ETLStatistics {
 		objectsRejected = 0;
 		objectsAccepted = 0;
 
-		badObjects = 0;
-		objectsIndexed = 0;
+		documentsRejected = 0;
+		documentsIndexed = 0;
 	}
 
 	/**
@@ -178,8 +209,8 @@ public class ETLStatistics {
 		objectsRejected += other.objectsRejected;
 		objectsAccepted += other.objectsAccepted;
 
-		badObjects += other.badObjects;
-		objectsIndexed += other.objectsIndexed;
+		documentsRejected += other.documentsRejected;
+		documentsIndexed += other.documentsIndexed;
 	}
 
 	/**
@@ -226,15 +257,12 @@ public class ETLStatistics {
 		logger.info(statistic(niceName, "processed", objectsProcessed));
 		logger.info(" ");
 
-		logger.info(statistic(niceName, "bounced", badObjects));
-		logger.info(statistic(niceName, "indexed", objectsIndexed));
-		logger.info("------------------------------------- +");
-		logger.info(statistic(niceName, "accepted", objectsAccepted));
-
-//		if (useObjectsAccepted) {
-//			logger.info(" ");
-//			logger.info(statistic("ElasticSearch index requests", objectsIndexed));
-//		}
+		logger.info(statistic("Documents rejected", documentsRejected));
+		logger.info(statistic("Documents indexed", documentsIndexed));
+		if (!nested) {
+			logger.info("------------------------------------- +");
+			logger.info(statistic(niceName, "accepted", objectsAccepted));
+		}
 
 		logger.info("=====================================");
 		logger.info(" ");

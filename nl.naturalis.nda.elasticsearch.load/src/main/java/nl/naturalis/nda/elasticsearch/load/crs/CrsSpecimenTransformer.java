@@ -60,9 +60,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	@Override
 	protected String getObjectID()
 	{
-		// Side effect: set the database identifier of the record, so we can
-		// report back that info as well. We override messagePrefix() to also
-		// print out the database ID.
+		/*
+		 * Side effect: set the database identifier of the record, so we can
+		 * provide both the UnitID and the database ID of the specimen when
+		 * logging messages. We override messagePrefix() to also print out the
+		 * database ID.
+		 */
 		databaseID = val(input.getRecord(), "identifier");
 		return val(input.getRecord(), "abcd:UnitID");
 	}
@@ -75,21 +78,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
 			if (logger.isInfoEnabled()) {
-				String id = val(record, "identifier");
-				String fmt = "Skipping record with status \"deleted\" (database id: %s)";
-				logger.info(String.format(fmt, id));
-			}
-			return null;
-		}
-
-		objectID = val(record, "abcd:UnitID");
-
-		if (objectID == null) {
-			stats.recordsRejected++;
-			if (!suppressErrors) {
-				String id = val(record, "identifier");
-				String fmt = "Missing UnitID (database id: %s)";
-				logger.error(String.format(fmt, id));
+				info("Skipping record with status \"deleted\"");
 			}
 			return null;
 		}
@@ -110,9 +99,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			return null;
 		}
 
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-
 		ESSpecimen specimen = new ESSpecimen();
 
 		for (Element e : elems) {
@@ -123,11 +109,14 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		}
 
 		if (specimen.getIdentifications() == null) {
-			stats.objectsRejected++;
+			stats.recordsRejected++;
 			if (!suppressErrors)
 				error("Invalid or insufficient specimen identification information");
 			return null;
 		}
+		
+		stats.recordsAccepted++;
+		stats.objectsProcessed++;
 
 		Collections.sort(specimen.getIdentifications(), new Comparator<SpecimenIdentification>() {
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
@@ -137,7 +126,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		});
 
 		try {
-			String temp;
+			String tmp;
 			specimen.setSourceSystem(SourceSystem.CRS);
 			specimen.setUnitID(objectID);
 			specimen.setSourceSystemId(specimen.getUnitID());
@@ -156,31 +145,28 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			specimen.setCollectionType(val(record, "abcd:CollectionType"));
 			specimen.setTitle(val(record, "abcd:Title"));
 			specimen.setNumberOfSpecimen(ival(record, "abcd:AccessionSpecimenNumbers"));
-			temp = val(record, "abcd:ObjectPublic");
-			specimen.setObjectPublic(temp == null || temp.trim().equals("1"));
-			temp = val(record, "abcd:MultiMediaPublic");
-			specimen.setMultiMediaPublic(temp == null || temp.trim().equals("1"));
-			temp = val(record, "abcd:FromCaptivity");
-			specimen.setFromCaptivity(temp != null && temp.trim().equals("1"));
-			temp = val(record, "abcd:PreparationType");
-			if (temp == null) {
-				temp = val(record, "abcd:SpecimenMount");
+			tmp = val(record, "abcd:ObjectPublic");
+			specimen.setObjectPublic(tmp == null || tmp.trim().equals("1"));
+			tmp = val(record, "abcd:MultiMediaPublic");
+			specimen.setMultiMediaPublic(tmp == null || tmp.trim().equals("1"));
+			tmp = val(record, "abcd:FromCaptivity");
+			specimen.setFromCaptivity(tmp != null && tmp.trim().equals("1"));
+			tmp = val(record, "abcd:PreparationType");
+			if (tmp == null) {
+				tmp = val(record, "abcd:SpecimenMount");
 			}
-			specimen.setPreparationType(temp);
+			specimen.setPreparationType(tmp);
 			specimen.setPhaseOrStage(getPhaseOrStage(record));
 			specimen.setTypeStatus(getTypeStatus(record));
 			specimen.setSex(getSex(record));
 			specimen.setGatheringEvent(getGatheringEvent());
+			stats.objectsAccepted++;
+			return Arrays.asList(specimen);
 		}
 		catch (Throwable t) {
-			stats.objectsRejected++;
-			if (!suppressErrors)
-				logger.error(t.toString());
-			if (logger.isDebugEnabled())
-				debug("Stacktrace:", t);
+			handleError(t);
 			return null;
 		}
-		return Arrays.asList(specimen);
 	}
 
 	private SpecimenIdentification getIdentification(Element elem)

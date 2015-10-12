@@ -69,7 +69,7 @@ public class CoLVernacularNameCleaner {
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
 			stats = new ETLStatistics();
-			stats.setUseObjectsAccepted(true);
+			stats.setNested(true);
 			extractor = createExtractor(stats, f, suppressErrors);
 			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
 			transformer = new CoLVernacularNameTransformer(stats, loader);

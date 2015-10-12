@@ -128,7 +128,7 @@ public class BrahmsImportAll {
 
 	/**
 	 * Backs up the CSV files in the Brahms data directory by appending a
-	 * "&period;imported" extension to the file name.
+	 * "&#46;imported" extension to the file name.
 	 */
 	public void backupSourceFiles()
 	{
@@ -136,7 +136,7 @@ public class BrahmsImportAll {
 	}
 
 	/**
-	 * Removes the "&period;imported" file name extension from the files in the
+	 * Removes the "&#46;imported" file name extension from the files in the
 	 * Brahms data directory. Nice for repitive testing. Not meant for
 	 * production purposes.
 	 */

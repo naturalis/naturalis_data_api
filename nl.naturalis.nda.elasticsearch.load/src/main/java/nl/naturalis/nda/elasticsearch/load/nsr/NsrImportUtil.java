@@ -62,7 +62,7 @@ class NsrImportUtil {
 	}
 
 	/**
-	 * Appends a backup extension ("&period;imported") to all source files in
+	 * Appends a backup extension ("&#46;imported") to all source files in
 	 * the NSR data directory, indicating that they have been processed and
 	 * should not be processed again.
 	 */
@@ -85,7 +85,7 @@ class NsrImportUtil {
 	}
 
 	/**
-	 * Appends a file extension ("&period;imported") to an NSR source file.
+	 * Appends a file extension ("&#46;imported") to an NSR source file.
 	 */
 	static void backupXmlFile(File f)
 	{
@@ -95,7 +95,7 @@ class NsrImportUtil {
 	}
 
 	/**
-	 * Removes the backup extension ("&period;imported") from all source files
+	 * Removes the backup extension ("&#46;imported") from all source files
 	 * in the NSR data directory. Nice for repetitive testing. Not for
 	 * production purposes.
 	 */

@@ -212,11 +212,11 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		if (!objs.isEmpty()) {
 			try {
 				idxMgr.saveObjects(type, objs, ids, parIds);
-				stats.objectsIndexed += objs.size();
+				stats.documentsIndexed += objs.size();
 			}
 			catch (BulkIndexException e) {
-				stats.badObjects += e.getFailureCount();
-				stats.objectsIndexed += e.getSuccessCount();
+				stats.documentsRejected += e.getFailureCount();
+				stats.documentsIndexed += e.getSuccessCount();
 				logger.warn(e.getMessage());
 			}
 			finally {
@@ -227,7 +227,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 					parIds.clear();
 			}
 			if (++batch % 50 == 0) {
-				logger.info("Documents indexed: " + stats.objectsIndexed);
+				logger.info("Documents indexed: " + stats.documentsIndexed);
 			}
 		}
 	}

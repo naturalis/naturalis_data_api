@@ -19,7 +19,7 @@ import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
 /**
- * Enriches CoL taxon documents with synonyms sourced from the taxa&period;txt
+ * Enriches CoL taxon documents with synonyms sourced from the taxa&#46;txt
  * file in a CoL DwC archive.
  * 
  * @author Ayco Holleman
@@ -48,7 +48,7 @@ public class CoLSynonymImporter {
 	}
 
 	/**
-	 * Extracts and imports synonyms from the taxa&period;txt file.
+	 * Extracts and imports synonyms from the taxa&#46;txt file.
 	 * 
 	 * @param path
 	 */
@@ -64,7 +64,7 @@ public class CoLSynonymImporter {
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
 			stats = new ETLStatistics();
-			stats.setUseObjectsAccepted(true);
+			stats.setNested(true);
 			extractor = createExtractor(stats, f, suppressErrors);
 			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
 			transformer = new CoLSynonymTransformer(stats);

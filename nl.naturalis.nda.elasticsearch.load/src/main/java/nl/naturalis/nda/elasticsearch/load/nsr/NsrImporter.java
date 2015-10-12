@@ -81,7 +81,7 @@ public class NsrImporter {
 		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
-		mediaStats.setUseObjectsAccepted(true);
+		//mediaStats.setUseObjectsAccepted(true);
 		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(taxonStats);
 		tTransformer.setSuppressErrors(suppressErrors);
 		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mediaStats);
@@ -148,7 +148,7 @@ public class NsrImporter {
 		finally {
 			IOUtil.close(loader);
 		}
-		stats.logStatistics(logger, "taxa");
+		stats.logStatistics(logger, "Taxa");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
@@ -197,13 +197,13 @@ public class NsrImporter {
 		finally {
 			IOUtil.close(loader);
 		}
-		stats.logStatistics(logger, "multimedia");
+		stats.logStatistics(logger, "Multimedia");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
 	/**
 	 * Backs up the XML files in the NSR data directory by appending a
-	 * "&period;imported" extension to the file name.
+	 * "&#46;imported" extension to the file name.
 	 */
 	public void backup()
 	{
@@ -211,7 +211,7 @@ public class NsrImporter {
 	}
 
 	/**
-	 * Removes the "&period;imported" file name extension from the files in the
+	 * Removes the "&#46;imported" file name extension from the files in the
 	 * NSR data directory. Nice for repitive testing. Not meant for production
 	 * purposes.
 	 */

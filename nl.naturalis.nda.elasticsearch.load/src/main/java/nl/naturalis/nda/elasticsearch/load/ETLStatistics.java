@@ -7,56 +7,61 @@ import org.slf4j.Logger;
 
 /**
  * A Java bean maintaining a set of running totals for an ETL program. A
- * statistics object is passed around by the various ETL components of an import
- * program so each can update the counter(s) relevant to their job. A
- * distinction is made between record-level statistics and object-level
- * statistics. This is because one record from a data source may yield multiple
- * objects (i.e. ElasticSearch documents). For example a record in a Brahms CSV
- * dump may contain multiple images. Thus the number of records processed is not
- * necessarily equal to the number of documents indexed, even if there were no
- * validation errors. For this type of data sources an attempt is made to
- * distinguish between record-level validation errors and object-level
- * validation errors, although the distinction is sometimes a bit arbitrary.
+ * statistics object is passed around by the ETL components of an import program
+ * so each can update the counter(s) relevant to its job. A distinction is made
+ * between record-level statistics and object-level statistics. This is because
+ * one record in a data source may yield multiple objects (i.e. ElasticSearch
+ * documents). For example one record in a Brahms CSV dump may contain multiple
+ * images. Thus the number of records processed is not necessarily equal to the
+ * number of documents indexed, even if there were no validation errors. For
+ * this type of data sources an attempt is made to distinguish between
+ * record-level validation errors and object-level validation errors, but the
+ * distinction is sometimes somewhat arbitrary.
  * <p>
- * For data sources with a one-to-one relationship between records and objects,
- * the distinction between record-level statistics and object-level statistics
- * is totally arbitrary. Current implementations of {@link Transformer} only use
- * the {@link #recordsRejected} and {@link #recordsSkipped} counters to report
- * on invalid c.q. skipped data while leaving the {@link #objectsRejected} and
- * {@link #objectsSkipped} counters alone. In other words, there won't be any
- * rejected or skiped objects, and the number of accepted records, processed
- * objects and accepted objects should all be equal.
+ * For data sources with a one-to-one relationship between records and objects
+ * (each record produces one object/document), the distinction between
+ * record-level statistics and object-level statistics is totally arbitrary.
+ * Current implementations of {@link Transformer} only use the
+ * {@link #recordsRejected} and {@link #recordsSkipped} counters to report on
+ * invalid c.q. skipped data while leaving the {@link #objectsRejected} and
+ * {@link #objectsSkipped} counters alone.
  * <p>
- * The following rules should always apply:<br>
+ * The following rules apply:<br>
  * 
  * <pre>
  * recordsSkipped + recordsRejected + recordsAccepted == recordsProcessed
  * objectsSkipped + objectsRejected + objectsAccepted == objectsProcessed
  * documentsRejected + documentsIndexed == objectsAccepted
  * </pre>
+ * <p>
+ * For data sources where each record produces just one document an extra rule
+ * applies:<br>
+ * 
+ * <pre>
+ * {@code objectsSkipped + objectsRejected + objectsAccepted == recordsAccepted}
+ * </pre>
  * 
  * <h3>Nested Documents</h3>
  * <p>
  * Sometimes the records in a data source, or the objects extracted from them,
- * do not directly result in new ElasticSearch documents (even when valid).
- * Instead they are only used to enrich existing documents. For example, the
- * vernacular names in the vernacular.txt file of a DwC archive are not stored
- * in a separate document type. Instead, they are nested within <i>existing</i>
- * taxon documents. The same applies for synonyms, literature references and
- * geological distribution data. In this case the number of indexed documents is
- * virtually meaningless and has no relation with the number of valid (accepted)
- * objects. If a data source provides 10 children for a particular parent
- * document, the parent document can be re-indexed anywhere between 1 and 10
- * times during the course of the program, depending on how far apart the
- * CSV/XML records containing the children were. If they all came one after
- * another in the data source, they are added all at once to the parent
- * document, resulting in just one index request for 10 child records. Thus, the
- * following rule does <b>not</b> apply any longer:<br>
+ * are not processed to create new documents. Instead they are only used to
+ * enrich <i>existing</i> documents. For example, the vernacular names in the
+ * vernacular.txt file of a DwC archive are not stored in a separate document
+ * type. Instead, they are nested within existing taxon documents. The same
+ * applies for synonyms, literature references and geological distribution data.
+ * In this case the number of indexed documents is virtually meaningless and has
+ * no relation with the number of valid (accepted) objects. If a data source
+ * provides 10 children for a particular parent document, the parent document
+ * could be re-indexed anywhere between 1 and 10 times during the course of the
+ * program, depending on how far apart the CSV/XML records containing the
+ * children were. If they all came one after another in the data source, they
+ * are added all at once to the parent document, resulting in just one index
+ * request for 10 child records. Thus, the following rule does <b>not</b> apply
+ * any longer:<br>
  * 
  * <pre>
  * documentsRejected + documentsIndexed == objectsAccepted
  * </pre>
- * 
  * 
  * @author Ayco Holleman
  *
@@ -133,7 +138,6 @@ public class ETLStatistics {
 	/**
 	 * The number of objects that could not be indexed by ElasticSearch. This
 	 * counter is maintained by {@link ElasticSearchLoader loader} objects.
-	 *
 	 */
 	public int documentsRejected;
 	/**
@@ -143,16 +147,45 @@ public class ETLStatistics {
 	public int documentsIndexed;
 
 	private boolean nested;
+	private boolean oneToMany;
 
 	/**
-	 * Determines whether the records being processed are stored as nested
-	 * documents.
+	 * Whether or not the data source being processed may yield multiple
+	 * objects/documents per record.
 	 * 
-	 * @param nested
+	 * @return
 	 */
-	public void setNested(boolean nested)
+	public boolean isOneToMany()
 	{
-		this.nested = nested;
+		return oneToMany;
+	}
+
+	/**
+	 * Determines whether the data source being processed may yield multiple
+	 * objects/documents per record. Specifying {@code true} or {@code false}
+	 * results in slightly different output from
+	 * {@link #logStatistics(Logger, String) logStatistics()}. When
+	 * {@code false}, both of the following rules apply:
+	 * 
+	 * <pre>
+	 * objectsSkipped + objectsRejected + objectsAccepted == recordsAccepted
+	 * objectsSkipped + objectsRejected + objectsAccepted == objectsProcessed
+	 * </pre>
+	 * 
+	 * Since the first rule is more insightful of the extract-transform-load
+	 * process, that's the rule you will see in the output of
+	 * {@link #logStatistics(Logger, String) logStatistics()}. For one-to-many
+	 * data sources ({@code true}), however, only the second rule is guaranteed
+	 * to apply, so that's the rule you will see in the output. When
+	 * {@link #setNested(boolean) nesting} documents the {@code oneToMany} is
+	 * ignored and the assumption will be that only second rule is guaranteed to
+	 * apply.
+	 * 
+	 * @param oneToMany
+	 */
+	public void setOneToMany(boolean oneToMany)
+	{
+		this.oneToMany = oneToMany;
 	}
 
 	/**
@@ -163,13 +196,34 @@ public class ETLStatistics {
 	 * 
 	 * @see #setNested(boolean)
 	 */
-	public boolean isUseObjectsAccepted()
+	public boolean isNested()
 	{
 		return nested;
 	}
 
 	/**
-	 * Reset all counters
+	 * Determines whether the records being processed are stored as nested
+	 * documents. Specifying {@code true} results in slightly different output
+	 * when calling {@link #logStatistics(Logger, String) logStatistics()}. When
+	 * {@code true}, the following rule does <b>not</b> apply any longer:
+	 * 
+	 * <pre>
+	 * documentsRejected + documentsIndexed == objectsAccepted
+	 * </pre>
+	 * 
+	 * Therefore, you will still be informed of the number of rejected and
+	 * indexed documents, but you will not see them summed to yield the
+	 * {@link #objectsAccepted} statistic.
+	 * 
+	 * @param nested
+	 */
+	public void setNested(boolean nested)
+	{
+		this.nested = nested;
+	}
+
+	/**
+	 * Resets all counters to zero.
 	 */
 	public void reset()
 	{
@@ -214,7 +268,7 @@ public class ETLStatistics {
 	}
 
 	/**
-	 * Log statistic about the ETL cycle.
+	 * Logs statistics about the ETL cycle.
 	 * 
 	 * @param logger
 	 */
@@ -224,7 +278,7 @@ public class ETLStatistics {
 	}
 
 	/**
-	 * Log statistic about the ETL cycle, using a user-friendly name for the
+	 * Logs statistics about the ETL cycle, using a user-friendly name for the
 	 * type of objects being indexed.
 	 * 
 	 * @param logger
@@ -254,7 +308,10 @@ public class ETLStatistics {
 		logger.info(statistic(niceName, "rejected", objectsRejected));
 		logger.info(statistic(niceName, "accepted", objectsAccepted));
 		logger.info("------------------------------------- +");
-		logger.info(statistic(niceName, "processed", objectsProcessed));
+		if (nested || oneToMany)
+			logger.info(statistic(niceName, "processed", objectsProcessed));
+		else
+			logger.info(statistic("Records accepted", recordsAccepted));
 		logger.info(" ");
 
 		logger.info(statistic("Documents rejected", documentsRejected));
@@ -267,7 +324,6 @@ public class ETLStatistics {
 		logger.info("=====================================");
 		logger.info(" ");
 	}
-
 	private static String statistic(String niceName, String statName, int stat)
 	{
 		return rpad(niceName + " " + statName, 28, ": ") + String.format("%7d", stat);

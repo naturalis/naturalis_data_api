@@ -107,6 +107,7 @@ public class BrahmsImportAll {
 		ETLStatistics sStats = new ETLStatistics();
 		// Global statistics for multimedia import
 		ETLStatistics mStats = new ETLStatistics();
+		mStats.setOneToMany(true);
 		try {
 			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
 			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.BRAHMS);

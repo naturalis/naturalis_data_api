@@ -69,6 +69,7 @@ public class CrsMultiMediaImport {
 		long start = System.currentTimeMillis();
 		LoadUtil.truncate(NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.CRS);
 		stats = new ETLStatistics();
+		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
 		loader = new CrsMultiMediaLoader(stats, esBulkRequestSize);

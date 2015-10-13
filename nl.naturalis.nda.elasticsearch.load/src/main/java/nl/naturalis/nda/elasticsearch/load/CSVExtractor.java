@@ -1,6 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import static org.apache.commons.io.Charsets.UTF_8;
+import static org.domainobject.util.StringUtil.lchop;
+import static org.domainobject.util.StringUtil.lpad;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,10 +17,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.IOUtil;
-import static org.domainobject.util.StringUtil.*;
 import org.slf4j.Logger;
-
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.*;
 
 /**
  * A generic CSV extraction component taking raw CSV lines as input and
@@ -227,9 +226,9 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 					t = t.getCause();
 				String msg;
 				if (t instanceof IOException)
-					msg = getDefaultMessagePrefix(lnr.getLineNumber(), "?") + lchop(t.getMessage(), "(line 1) ");
+					msg = message(lnr.getLineNumber(), lchop(t.getMessage(), "(line 1) "));
 				else
-					msg = getDefaultMessagePrefix(lnr.getLineNumber(), "?") + t.getMessage();
+					msg = message(lnr.getLineNumber(), t.getMessage());
 				logger.error(msg);
 			}
 			return null;
@@ -260,8 +259,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 			}
 			while (true) {
 				if (logger.isDebugEnabled()) {
-					String msg = getDefaultMessagePrefix(lnr.getLineNumber(), "?") + "ignoring empty line";
-					logger.debug(msg);
+					logger.debug(message(lnr.getLineNumber(), "ignoring empty line"));
 				}
 				if ((line = lnr.readLine()) == null) {
 					lnr.close();
@@ -296,6 +294,11 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 			String message = "Invalid default character encoding: " + Charset.defaultCharset().name();
 			throw new ETLRuntimeException(message);
 		}
+	}
+
+	private static String message(int line, String msg)
+	{
+		return "Line " + lpad(line, 6, '0', " | ") + msg;
 	}
 
 	/*

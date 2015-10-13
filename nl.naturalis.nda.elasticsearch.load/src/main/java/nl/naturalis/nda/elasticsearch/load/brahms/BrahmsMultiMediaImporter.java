@@ -54,6 +54,7 @@ public class BrahmsMultiMediaImporter {
 		}
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
+		stats.setOneToMany(true);
 		try {
 			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
@@ -73,6 +74,7 @@ public class BrahmsMultiMediaImporter {
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
 		ETLStatistics myStats = new ETLStatistics();
+		myStats.setOneToMany(true);
 		BrahmsMultiMediaLoader multimediaLoader = null;
 		try {
 			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(myStats);

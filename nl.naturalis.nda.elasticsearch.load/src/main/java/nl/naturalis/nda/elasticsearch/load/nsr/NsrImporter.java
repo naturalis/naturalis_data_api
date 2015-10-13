@@ -81,6 +81,7 @@ public class NsrImporter {
 		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
+		mediaStats.setOneToMany(true);
 		//mediaStats.setUseObjectsAccepted(true);
 		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(taxonStats);
 		tTransformer.setSuppressErrors(suppressErrors);
@@ -109,9 +110,9 @@ public class NsrImporter {
 		finally {
 			IOUtil.close(taxonLoader, mediaLoader);
 		}
-		taxonStats.logStatistics(logger, "taxa");
+		taxonStats.logStatistics(logger, "Taxa");
 		mediaStats.badInput = taxonStats.badInput;
-		mediaStats.logStatistics(logger, "multimedia");
+		mediaStats.logStatistics(logger, "Multimedia");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
@@ -166,6 +167,7 @@ public class NsrImporter {
 		}
 		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
 		ETLStatistics stats = new ETLStatistics();
+		stats.setOneToMany(true);
 		NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
 		/*

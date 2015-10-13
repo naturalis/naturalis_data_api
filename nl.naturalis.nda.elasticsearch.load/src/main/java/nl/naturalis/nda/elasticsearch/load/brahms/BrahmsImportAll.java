@@ -152,6 +152,7 @@ public class BrahmsImportAll {
 		logger.info("Processing file " + f.getAbsolutePath());
 		ETLStatistics specimenStats = new ETLStatistics();
 		ETLStatistics multimediaStats = new ETLStatistics();
+		multimediaStats.setOneToMany(true);
 		ETLStatistics extractionStats = new ETLStatistics();
 		CSVExtractor extractor = null;
 		BrahmsSpecimenTransformer specimenTransformer = null;

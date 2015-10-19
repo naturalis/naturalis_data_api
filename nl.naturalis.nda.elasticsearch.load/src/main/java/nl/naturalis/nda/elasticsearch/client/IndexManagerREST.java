@@ -269,7 +269,7 @@ public class IndexManagerREST implements IndexManager {
 
 	private void execute()
 	{
-		logger.debug(lastRequest.getMethod() + " " + lastRequest.getURL());
+		//logger.debug(lastRequest.getMethod() + " " + lastRequest.getURL());
 		try {
 			lastRequest.execute();
 		}

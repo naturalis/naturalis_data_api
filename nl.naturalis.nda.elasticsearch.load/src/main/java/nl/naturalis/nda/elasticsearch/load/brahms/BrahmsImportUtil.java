@@ -8,7 +8,30 @@ import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
 import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.*;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.AUTHOR1;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.AUTHOR2;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.AUTHOR3;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.COLLECTOR;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.CONTINENT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.COUNTRY;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.DAY;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.DAYIDENT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.DETBY;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.FAMCLASS;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.LATITUDE;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.LOCNOTES;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.LONGITUDE;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.MAJORAREA;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.MONTH;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.MONTHIDENT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.RANK1;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.RANK2;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.SP1;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.SP2;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.SP3;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.VERNACULAR;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.YEAR;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.YEARIDENT;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -58,6 +81,7 @@ class BrahmsImportUtil {
 	static File[] getCsvFiles()
 	{
 		File[] files = getDataDir().listFiles(new FilenameFilter() {
+
 			@Override
 			public boolean accept(File dir, String name)
 			{
@@ -87,6 +111,7 @@ class BrahmsImportUtil {
 	{
 		File dir = getDataDir();
 		File[] files = dir.listFiles(new FilenameFilter() {
+
 			@Override
 			public boolean accept(File dir, String name)
 			{
@@ -113,31 +138,30 @@ class BrahmsImportUtil {
 	 */
 	static Date getDate(String year, String month, String day)
 	{
-		year = year.trim();
-		if (year.length() == 0) {
-			return null;
-		}
 		try {
-			int yearInt = (int) Float.parseFloat(year);
-			if (yearInt == 0) {
+
+			year = year.trim();
+			if (year.length() == 0)
 				return null;
-			}
+			int yearInt = (int) Float.parseFloat(year);
+
+			// NB Brahms month numbers are one-based
 			month = month.trim();
-			if (month.length() == 0) {
-				month = "0";
-			}
+			if (month.length() == 0)
+				month = "1";
 			int monthInt = (int) Float.parseFloat(month);
-			if (monthInt < 0 || monthInt > 11) {
-				monthInt = 0;
-			}
+			if (monthInt < 1 || monthInt > 12)
+				monthInt = 1;
+			// Make zero-based
+			monthInt--;
+
 			day = day.trim();
-			if (day.length() == 0) {
+			if (day.length() == 0)
 				day = "1";
-			}
 			int dayInt = (int) Float.parseFloat(day);
-			if (dayInt <= 0 || dayInt > 31) {
+			if (dayInt < 1 || dayInt > 31)
 				dayInt = 1;
-			}
+
 			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
 		}
 		catch (Exception e) {

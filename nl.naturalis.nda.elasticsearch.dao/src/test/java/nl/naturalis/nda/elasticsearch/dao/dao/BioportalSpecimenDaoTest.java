@@ -56,7 +56,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         assertThat(matchInfo.get(0).getValueHighlighted(),
                 is("Van der <span class=\"search_hit\">Meijer</span> Tussennaam <span class=\"search_hit\">W</span>."));
 
-        assertEquals(2, resultSet.getTotalGroupSize());
+        assertEquals(2, resultSet.getTotalSize());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         SearchResultSet<Specimen> resultSet = dao.specimenSearch(params);
 
-        assertEquals(0, resultSet.getTotalGroupSize());
+        assertEquals(0, resultSet.getTotalSize());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         SearchResultSet<Specimen> resultSet = dao.specimenSearch(params);
 
-        assertEquals(1, resultSet.getTotalGroupSize());
+        assertEquals(1, resultSet.getTotalSize());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getTotalGroupSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(2, result.getTotalGroupSize());
+        assertEquals(2, result.getTotalSize());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(2, result.getTotalGroupSize());
+        assertEquals(2, result.getTotalSize());
         assertEquals(1, result.getResultGroups().get(0).getSearchResults().get(0).getLinks().size());
         assertEquals(1, result.getResultGroups().get(0).getSearchResults().get(1).getLinks().size());
     }
@@ -227,7 +227,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getTotalGroupSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test
@@ -281,7 +281,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
 
-        assertEquals(1, result.getTotalGroupSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test
@@ -309,7 +309,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
         //assertThat(client().prepareCount(INDEX_NAME).execute().actionGet().getCount(), is(1wl));
 
         ResultGroupSet<Specimen, String> result = dao.specimenNameSearch(params);
-        assertEquals(1, result.getTotalGroupSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test
@@ -463,7 +463,7 @@ public class BioportalSpecimenDaoTest extends AbstractBioportalSpecimenDaoTest {
 
         SearchResultSet<Specimen> resultSet = dao.specimenSearch(params);
 
-        assertEquals(2, resultSet.getTotalGroupSize());
+        assertEquals(2, resultSet.getTotalSize());
     }
 
     private ResultGroupSet<Specimen, String> createSpecimenResultGroupSet() {

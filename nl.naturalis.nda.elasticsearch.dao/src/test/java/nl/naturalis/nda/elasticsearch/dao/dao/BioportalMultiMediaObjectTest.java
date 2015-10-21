@@ -57,7 +57,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         SearchResultSet<MultiMediaObject> searchResultSet = dao.multiMediaObjectSearch(params);
 
         // THEN
-        assertEquals(1, searchResultSet.getTotalGroupSize());
+        assertEquals(1, searchResultSet.getTotalSize());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class BioportalMultiMediaObjectTest extends DaoIntegrationTest {
         SearchResultSet<MultiMediaObject> searchResultSet = dao.multiMediaObjectSearch(params);
 
         // THEN
-        assertEquals(1, searchResultSet.getTotalGroupSize());
+        assertEquals(1, searchResultSet.getTotalSize());
     }
 
 

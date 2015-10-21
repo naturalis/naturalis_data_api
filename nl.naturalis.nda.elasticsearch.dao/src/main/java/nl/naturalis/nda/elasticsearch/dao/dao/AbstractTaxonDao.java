@@ -94,7 +94,7 @@ public class AbstractTaxonDao extends AbstractDao {
             }
 
         }
-        resultSet.setTotalGroupSize(taxonStringResultGroupSet.getTotalGroupSize());
+        resultSet.setTotalSize(taxonStringResultGroupSet.getTotalSize());
         resultSet.setQueryParameters(taxonStringResultGroupSet.getQueryParameters());
         return resultSet;
     }
@@ -153,7 +153,7 @@ public class AbstractTaxonDao extends AbstractDao {
         }
 
         //taxonSearchResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
-        taxonSearchResultGroupSet.setTotalGroupSize(searchResponse.getHits().getTotalHits());
+        taxonSearchResultGroupSet.setTotalSize(searchResponse.getHits().getTotalHits());
         
         return taxonSearchResultGroupSet;
     }

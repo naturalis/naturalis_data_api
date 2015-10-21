@@ -617,7 +617,7 @@ public abstract class AbstractDao {
         }
         nameResTaxonQueryParams.add("_maxResults", "50");
         SearchResultSet<Taxon> nameResTaxons = taxonDao.searchReturnsResultSet(nameResTaxonQueryParams, null, null, true, sessionId); // no field filtering
-        if (nameResTaxons.getTotalGroupSize() == 0) {
+        if (nameResTaxons.getTotalSize() == 0) {
             return null;
         }
 

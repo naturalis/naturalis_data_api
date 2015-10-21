@@ -387,7 +387,7 @@ public class BioportalSpecimenDao extends AbstractDao {
     private SearchResultSet<Specimen> responseToSpecimenSearchResultSet(SearchResponse response, float minScore, String sessionId) {
         float maxScore = response.getHits().getMaxScore();
         SearchResultSet<Specimen> resultSet = new SearchResultSet<>();
-        resultSet.setTotalGroupSize(response.getHits().getTotalHits());
+        resultSet.setTotalSize(response.getHits().getTotalHits());
         //resultSet.setQueryParameters(params.copyWithoutGeoShape());
 
         for (SearchHit hit : response.getHits()) {
@@ -505,7 +505,7 @@ public class BioportalSpecimenDao extends AbstractDao {
             specimenStringResultGroupSet.addGroup(resultGroup);
         }
 
-        specimenStringResultGroupSet.setTotalGroupSize(response.getHits().getTotalHits());
+        specimenStringResultGroupSet.setTotalSize(response.getHits().getTotalHits());
         //specimenStringResultGroupSet.setQueryParameters(params.copyWithoutGeoShape());
         return specimenStringResultGroupSet;
     }

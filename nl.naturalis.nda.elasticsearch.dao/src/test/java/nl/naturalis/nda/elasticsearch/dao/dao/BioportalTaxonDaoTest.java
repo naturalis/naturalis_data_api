@@ -96,7 +96,7 @@ public class BioportalTaxonDaoTest extends DaoIntegrationTest {
         SearchResultSet<Taxon> result = taxonDao.getTaxonDetailWithinResultSet(params);
 
         assertEquals(1, result.getSearchResults().size());
-        assertEquals(1, result.getTotalGroupSize());
+        assertEquals(1, result.getTotalSize());
     }
 
     @Test

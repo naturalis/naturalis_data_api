@@ -4,6 +4,7 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.ROGUE_VALUE;
 import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.ArrayList;
@@ -13,7 +14,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.*;
+import nl.naturalis.nda.domain.BioStratigraphy;
+import nl.naturalis.nda.domain.ChronoStratigraphy;
+import nl.naturalis.nda.domain.DefaultClassification;
+import nl.naturalis.nda.domain.LithoStratigraphy;
+import nl.naturalis.nda.domain.Monomial;
+import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nda.domain.VernacularName;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -28,6 +38,8 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
+import org.domainobject.util.debug.Debug;
+import org.elasticsearch.common.netty.util.DebugUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -61,7 +73,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	protected String getObjectID()
 	{
 		/*
-		 * Side effect: set the database identifier of the record, so we can
+		 * Side effect: set the database ID of the record as well, so we can
 		 * provide both the UnitID and the database ID of the specimen when
 		 * logging messages. We override messagePrefix() to also print out the
 		 * database ID.
@@ -114,11 +126,12 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 				error("Invalid or insufficient specimen identification information");
 			return null;
 		}
-		
+
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 
 		Collections.sort(specimen.getIdentifications(), new Comparator<SpecimenIdentification>() {
+
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
 				return o1.isPreferred() ? 1 : o2.isPreferred() ? -1 : 0;
@@ -156,9 +169,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 				tmp = val(record, "abcd:SpecimenMount");
 			}
 			specimen.setPreparationType(tmp);
-			specimen.setPhaseOrStage(getPhaseOrStage(record));
-			specimen.setTypeStatus(getTypeStatus(record));
-			specimen.setSex(getSex(record));
+			specimen.setPhaseOrStage(getPhaseOrStage());
+			specimen.setTypeStatus(getTypeStatus());
+			specimen.setSex(getSex());
 			specimen.setGatheringEvent(getGatheringEvent());
 			stats.objectsAccepted++;
 			return Arrays.asList(specimen);
@@ -391,7 +404,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	public List<LithoStratigraphy> getLithoStratigraphyList()
 	{
 		Element record = input.getRecord();
-		List<Element> lithoStratigraphyElements = DOMUtil.getDescendants(record, "ncrsLithoStratigraphy");
+		List<Element> lithoStratigraphyElements = DOMUtil.getDescendants(record,
+				"ncrsLithoStratigraphy");
 		if (lithoStratigraphyElements == null) {
 			return null;
 		}
@@ -440,19 +454,46 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return hdr.getAttribute("status").equals("deleted");
 	}
 
-	private String getPhaseOrStage(Element record)
+	private String getPhaseOrStage()
 	{
-		return posNormalizer.normalize(val(record, "abcd:PhaseOrStage"));
+		String raw = val(input.getRecord(), "abcd:PhaseOrStage");
+		if (raw == null)
+			return null;
+		String result = posNormalizer.normalize(raw);
+		if (result == ROGUE_VALUE) {
+			warn("Ignoring rogue value for PhaseOrStage: " + raw);
+			return null;
+		}
+		return result;
 	}
 
-	private String getTypeStatus(Element record)
+	private String getTypeStatus()
 	{
-		return tsNormalizer.normalize(val(record, "abcd:TypeStatus"));
+		String raw = val(input.getRecord(), "abcd:TypeStatus");
+		if(raw != null) {
+			Debug.println("/home/ayco/test.txt", raw);
+		}
+		if (raw == null)
+			return null;
+		String result = tsNormalizer.normalize(raw);
+		if (result == ROGUE_VALUE) {
+			warn("Ignoring rogue value for TypeStatus: " + raw);
+			return null;
+		}
+		return result;
 	}
 
-	private String getSex(Element record)
+	private String getSex()
 	{
-		return sexNormalizer.normalize(val(record, "abcd:Sex"));
+		String raw = val(input.getRecord(), "abcd:Sex");
+		if (raw == null)
+			return null;
+		String result = sexNormalizer.normalize(raw);
+		if (result == ROGUE_VALUE) {
+			warn("Ignoring rogue value for Sex: " + raw);
+			return null;
+		}
+		return result;
 	}
 
 	private Date date(Element e, String tag)

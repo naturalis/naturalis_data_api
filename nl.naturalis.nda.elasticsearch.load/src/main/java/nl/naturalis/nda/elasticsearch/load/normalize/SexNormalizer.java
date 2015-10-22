@@ -10,7 +10,7 @@ import nl.naturalis.nda.domain.Sex;
  *
  */
 public class SexNormalizer extends ClasspathMappingFileNormalizer<Sex> {
-
+	
 	private static final String RESOURCE = "/normalize/sex.csv";
 
 	private static SexNormalizer instance;

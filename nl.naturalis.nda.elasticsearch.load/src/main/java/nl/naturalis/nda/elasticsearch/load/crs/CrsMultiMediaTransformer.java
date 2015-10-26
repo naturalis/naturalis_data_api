@@ -48,14 +48,6 @@ import org.w3c.dom.Element;
  */
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
 
-	public static void main(String[] args)
-	{
-		String url = MEDIALIB_URL_START + MEDIALIB_URL_START + "ZMA.12345"
-				+ "/format/large/format/small";
-		url = url.substring(MEDIALIB_URL_START.length());
-		System.out.println(url);
-	}
-
 	private final PhaseOrStageNormalizer posNormalizer;
 	private final SpecimenTypeStatusNormalizer tsNormalizer;
 	private final SexNormalizer sexNormalizer;
@@ -351,10 +343,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			 * HACK: attempt to repair bad medialib URLs where
 			 * MEDIALIB_URL_START occurs twice
 			 */
-			int next = url.indexOf(MEDIALIB_URL_START, 1);
-			if (next != -1) {
+			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START))
 				url = url.substring(MEDIALIB_URL_START.length());
-			}
 			// Extract medialib ID
 			String medialibId = url.substring(MEDIALIB_URL_START.length());
 			int x = medialibId.indexOf('/');

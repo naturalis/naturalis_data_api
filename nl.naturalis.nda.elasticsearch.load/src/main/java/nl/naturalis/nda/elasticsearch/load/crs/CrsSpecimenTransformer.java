@@ -2,7 +2,6 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.ROGUE_VALUE;
 import static org.domainobject.util.StringUtil.rpad;
@@ -51,8 +50,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	private static final SpecimenTypeStatusNormalizer tsNormalizer;
 	private static final SexNormalizer sexNormalizer;
 	private static final PhaseOrStageNormalizer posNormalizer;
-
-	private static final String PURL_START = PURL_SERVER_BASE_URL + "/naturalis/specimen/";
 
 	static {
 		tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
@@ -144,7 +141,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			ThemeCache tsc = ThemeCache.getInstance();
 			List<String> themes = tsc.lookup(objectID, DocumentType.SPECIMEN, SourceSystem.CRS);
 			specimen.setTheme(themes);
-			specimen.setUnitGUID(PURL_START + LoadUtil.urlEncode(objectID));
+			specimen.setUnitGUID(LoadUtil.getSpecimenPurl(objectID));
 			specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
 			specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 			specimen.setOwner(SOURCE_INSTITUTION_ID);

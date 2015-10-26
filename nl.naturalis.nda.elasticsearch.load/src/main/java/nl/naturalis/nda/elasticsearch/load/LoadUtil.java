@@ -1,13 +1,14 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static org.domainobject.util.StringUtil.zpad;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URISyntaxException;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 
 /**
@@ -20,6 +21,19 @@ public final class LoadUtil {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Registry.getInstance().getLogger(LoadUtil.class);
+	
+	private static final URIBuilder purlBuilder;
+	
+	static {
+		try {
+			purlBuilder = new URIBuilder(PURL_SERVER_BASE_URL);
+		}
+		catch (URISyntaxException e) {
+			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
+			String msg = String.format(fmt, PURL_SERVER_BASE_URL, e.getMessage());
+			throw new ETLRuntimeException(msg);
+		}
+	}
 
 	private LoadUtil()
 	{
@@ -97,22 +111,16 @@ public final class LoadUtil {
 		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
 	}
 
-	/**
-	 * Equivalent to {@code URLEncoder.encode(raw, "UTF-8")} suppressing the
-	 * {@code UnsupportedEncodingException}.
-	 * 
-	 * @param raw
-	 * @return
-	 */
-	public static String urlEncode(String raw)
+	public static String getSpecimenPurl(String unitID)
 	{
 		try {
-			return URLEncoder.encode(raw, "UTF-8");
+			purlBuilder.setPath("naturalis/specimen/" + unitID);
+			return purlBuilder.build().toString();
 		}
-		catch (UnsupportedEncodingException e) {
-			// Won't happen with UTF-8
-			return null;
+		catch (URISyntaxException e) {
+			throw new ETLRuntimeException(e);
 		}
 	}
+
 
 }

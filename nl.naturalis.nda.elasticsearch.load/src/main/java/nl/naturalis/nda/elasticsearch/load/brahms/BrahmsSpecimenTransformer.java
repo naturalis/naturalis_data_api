@@ -9,9 +9,8 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.BRAHMS_ABCD_SOUR
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.ES_ID_PREFIX_BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nda.elasticsearch.load.LoadUtil.urlEncode;
+import static nl.naturalis.nda.elasticsearch.load.LoadUtil.getSpecimenPurl;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.NOTONLINE;
@@ -72,7 +71,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
-			specimen.setUnitGUID(getPurl());
+			specimen.setUnitGUID(getSpecimenPurl(objectID));
 			setConstants(specimen);
 			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);
 			specimen.setTheme(themes);
@@ -102,11 +101,6 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 			}
 			return null;
 		}
-	}
-
-	private String getPurl()
-	{
-		return PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(objectID);
 	}
 
 	private static void setConstants(ESSpecimen specimen)

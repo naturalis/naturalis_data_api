@@ -114,6 +114,19 @@ public class Registry {
 	}
 
 	/**
+	 * Returns a file within the application's configuration directory or one of
+	 * its subdirectories.
+	 * 
+	 * @param relativePath
+	 *            The path of the file relative to the configuration directory.
+	 * @return
+	 */
+	public File getFile(String relativePath)
+	{
+		return FileUtil.newFile(confDir, relativePath);
+	}
+
+	/**
 	 * Get a logger for the specified class.
 	 * 
 	 * @param cls
@@ -137,20 +150,24 @@ public class Registry {
 		if (esClient == null) {
 			logger.info("Initializing ElasticSearch session");
 			String cluster = config.required("elasticsearch.cluster.name");
-			String[] hosts = config.required("elasticsearch.transportaddress.host").trim().split(",");
+			String[] hosts = config.required("elasticsearch.transportaddress.host").trim()
+					.split(",");
 			String[] ports = getPorts(hosts.length);
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster).build();
+			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster)
+					.build();
 			esClient = new TransportClient(settings);
 			for (int i = 0; i < hosts.length; ++i) {
 				String host = hosts[i].trim();
 				int port = Integer.parseInt(ports[i].trim());
 				logger.info(String.format("Adding transport address \"%s:%s\"", host, port));
-				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, port);
+				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host,
+						port);
 				((TransportClient) esClient).addTransportAddress(transportAddress);
 			}
 			if (logger.isDebugEnabled()) {
 				ClusterStatsRequest request = new ClusterStatsRequest();
-				ClusterStatsResponse response = esClient.admin().cluster().clusterStats(request).actionGet();
+				ClusterStatsResponse response = esClient.admin().cluster().clusterStats(request)
+						.actionGet();
 				logger.debug("Cluster stats: " + response.toString());
 			}
 		}
@@ -175,7 +192,8 @@ public class Registry {
 	 */
 	public IndexManagerNative getNbaIndexManager()
 	{
-		return new IndexManagerNative(getESClient(), getConfig().required("elasticsearch.index.name"));
+		return new IndexManagerNative(getESClient(), getConfig().required(
+				"elasticsearch.index.name"));
 	}
 
 	private void setConfDir()
@@ -187,7 +205,9 @@ public class Registry {
 		}
 		File dir = new File(path);
 		if (!dir.isDirectory()) {
-			String msg = String.format("Invalid value for system property \"%s\": \"%s\" (no such directory)", SYSPROP_CONFIG_DIR, path);
+			String msg = String.format(
+					"Invalid value for system property \"%s\": \"%s\" (no such directory)",
+					SYSPROP_CONFIG_DIR, path);
 			throw new InitializationException(msg);
 		}
 		try {
@@ -232,7 +252,8 @@ public class Registry {
 		String port = config.get("elasticsearch.transportaddress.port", true);
 		String[] ports = port == null ? new String[] { "9300" } : port.trim().split(",");
 		if (ports.length > 1 && ports.length != numHosts) {
-			throw new RuntimeException("Error creating ES client: number of ports does not match number of hosts");
+			throw new RuntimeException(
+					"Error creating ES client: number of ports does not match number of hosts");
 		}
 		else if (ports.length == 1 && numHosts > 1) {
 			port = ports[0];

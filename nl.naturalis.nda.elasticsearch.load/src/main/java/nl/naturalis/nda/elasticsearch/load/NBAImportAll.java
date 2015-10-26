@@ -8,6 +8,7 @@ import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
 import nl.naturalis.nda.elasticsearch.load.nsr.NsrImporter;
 
+import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 
@@ -124,7 +125,8 @@ public class NBAImportAll {
 	public void bootstrap()
 	{
 		index.delete();
-		String settings = StringUtil.getResourceAsString("/es-settings.json");
+		Registry reg = Registry.getInstance();
+		String settings = FileUtil.getContents(reg.getFile("es-settings.json"));
 		logger.info("Creating index using settings: " + settings);
 		index.create(settings);
 		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");

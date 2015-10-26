@@ -16,6 +16,7 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
@@ -102,6 +103,7 @@ public class BrahmsImportAll {
 			logger.info("No CSV files to process");
 			return;
 		}
+		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
 		// Global statistics for specimen import
 		ETLStatistics sStats = new ETLStatistics();
@@ -121,6 +123,7 @@ public class BrahmsImportAll {
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
+		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		sStats.logStatistics(logger, "Specimens");
 		mStats.logStatistics(logger, "Multimedia");

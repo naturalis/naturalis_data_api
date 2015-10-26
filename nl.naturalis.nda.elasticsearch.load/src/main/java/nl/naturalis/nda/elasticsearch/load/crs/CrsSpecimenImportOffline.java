@@ -14,6 +14,9 @@ import nl.naturalis.nda.elasticsearch.load.NBAImportAll;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
+import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
@@ -78,6 +81,9 @@ public class CrsSpecimenImportOffline {
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
 		loader = new CrsSpecimenLoader(stats, esBulkRequestSize);
+		SexNormalizer.getInstance().resetStatistics();
+		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
+		PhaseOrStageNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
 		try {
 			for (File f : xmlFiles)
@@ -86,6 +92,9 @@ public class CrsSpecimenImportOffline {
 		finally {
 			IOUtil.close(loader);
 		}
+		SexNormalizer.getInstance().logStatistics();
+		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
+		PhaseOrStageNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger);
 		LoadUtil.logDuration(logger, getClass(), start);

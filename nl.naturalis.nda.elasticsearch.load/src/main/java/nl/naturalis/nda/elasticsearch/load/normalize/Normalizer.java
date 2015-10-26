@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Map;
 
 import nl.naturalis.nda.domain.PhaseOrStage;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.crs.CrsSpecimenImportOffline;
 
 import org.slf4j.Logger;
 
@@ -79,18 +79,26 @@ public class Normalizer<T extends Enum<T>> {
 	public static final String ROGUE_VALUE = new String();
 
 	private static final String NULL_STRING = "[NULL]";
-	private static final Logger logger;
 
-	static {
-		logger = Registry.getInstance().getLogger(CrsSpecimenImportOffline.class);
-	}
-
-	private final HashMap<String, String> mappings = new HashMap<>();
+	private final Logger logger;
+	private final HashMap<String, String> mappings;
 	private final T[] enumConstants;
 
 	private boolean skipHeader = false;
-	private String delimiter = ";";
 	private boolean autoMapNull = true;
+	private String delimiter = ";";
+
+	private static class IntHolder {
+
+		int i = 1;
+
+		public String toString()
+		{
+			return String.valueOf(i);
+		}
+	}
+
+	private HashMap<String, IntHolder> rogueValues;
 
 	/**
 	 * Creates a normalizer for the specified {@link Enum enumeration}.
@@ -99,8 +107,11 @@ public class Normalizer<T extends Enum<T>> {
 	 */
 	public Normalizer(Class<T> enumClass)
 	{
+		logger = Registry.getInstance().getLogger(getClass());
 		logger.info("Creating normalizer for " + enumClass.getSimpleName());
 		enumConstants = enumClass.getEnumConstants();
+		mappings = new HashMap<>();
+		rogueValues = new HashMap<>();
 	}
 
 	/**
@@ -167,8 +178,14 @@ public class Normalizer<T extends Enum<T>> {
 	{
 		if (input != null)
 			input = input.toLowerCase();
-		if (!mappings.containsKey(input))
+		if (!mappings.containsKey(input)) {
+			IntHolder ih = rogueValues.get(input);
+			if (ih == null)
+				rogueValues.put(input, new IntHolder());
+			else
+				ih.i++;
 			return ROGUE_VALUE;
+		}
 		return mappings.get(input);
 	}
 
@@ -189,6 +206,26 @@ public class Normalizer<T extends Enum<T>> {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Resets the rogue value counters.
+	 */
+	public void resetStatistics()
+	{
+		rogueValues = new HashMap<>();
+	}
+
+	/**
+	 * For each rogue value print out how often it was encountered.
+	 */
+	public void logStatistics()
+	{
+		for (Map.Entry<String, IntHolder> entry : rogueValues.entrySet()) {
+			String fmt = "Invalid value \"%s\" occurs in at least %s records";
+			String msg = String.format(fmt, entry.getKey(), entry.getValue());
+			logger.info(msg);
+		}
 	}
 
 	/**

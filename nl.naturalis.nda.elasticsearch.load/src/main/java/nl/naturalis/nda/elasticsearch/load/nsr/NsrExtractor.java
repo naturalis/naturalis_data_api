@@ -34,6 +34,10 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 			{
 				return false;
 			}
+
+			public void remove()
+			{
+			}
 		};
 	}
 

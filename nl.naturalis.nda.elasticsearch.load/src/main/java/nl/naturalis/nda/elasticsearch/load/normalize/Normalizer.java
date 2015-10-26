@@ -6,6 +6,8 @@ import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.util.HashMap;
 
+import nl.naturalis.nda.domain.PhaseOrStage;
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsSpecimenImportOffline;
@@ -14,12 +16,11 @@ import org.slf4j.Logger;
 
 /**
  * <p>
- * A Normalizer maps found-in-the-wild values to canonical equivalents. It
+ * A Normalizer maps found-in-the-wild values to canonical values. It
  * standardizes the set of allowed values for a particular field in a domain
- * model class (e.g. the sex field in the Specimen class). Normalizers enable
- * stronger typing in the domain model classes by using {@link Enum enum} fields
- * rather than free-text fields. Each normalizer serves to map a
- * found-in-the-wild value to a constant in an {@code enum} class.
+ * model class (e.g. the {@link PhaseOrStage phaseOrStage} field in the
+ * {@link Specimen} class). Normalizers enable stronger typing in the domain
+ * model classes by using {@link Enum enum} fields rather than free-text fields.
  * </p>
  * <h3>Null and whitespace handling</h3>
  * <p>

@@ -38,8 +38,6 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.debug.Debug;
-import org.elasticsearch.common.netty.util.DebugUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -401,7 +399,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return one;
 	}
 
-	public List<LithoStratigraphy> getLithoStratigraphyList()
+	private List<LithoStratigraphy> getLithoStratigraphyList()
 	{
 		Element record = input.getRecord();
 		List<Element> lithoStratigraphyElements = DOMUtil.getDescendants(record,
@@ -469,10 +467,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private String getTypeStatus()
 	{
-		String raw = val(input.getRecord(), "abcd:TypeStatus");
-		if(raw != null) {
-			Debug.println("/home/ayco/test.txt", raw);
-		}
+		String raw = val(input.getRecord(), "abcd:NomenclaturalTypeText");
 		if (raw == null)
 			return null;
 		String result = tsNormalizer.normalize(raw);

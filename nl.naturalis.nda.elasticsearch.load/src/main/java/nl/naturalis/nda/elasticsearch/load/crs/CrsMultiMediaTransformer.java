@@ -7,6 +7,7 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.MimeTypeCache.MEDIALIB_URL_START;
+import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.ROGUE_VALUE;
 import static org.domainobject.util.DOMUtil.getChild;
 import static org.domainobject.util.DOMUtil.getDescendant;
 import static org.domainobject.util.DOMUtil.getDescendantValue;
@@ -47,8 +48,8 @@ import org.w3c.dom.Element;
  */
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
 
-	private final PhaseOrStageNormalizer phaseOrStageNormalizer;
-	private final SpecimenTypeStatusNormalizer typeStatusNormalizer;
+	private final PhaseOrStageNormalizer posNormalizer;
+	private final SpecimenTypeStatusNormalizer tsNormalizer;
 	private final SexNormalizer sexNormalizer;
 	private final MimeTypeCache mimetypeCache;
 	private final ThemeCache themeCache;
@@ -63,8 +64,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		super(stats);
 		themeCache = ThemeCache.getInstance();
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
-		phaseOrStageNormalizer = PhaseOrStageNormalizer.getInstance();
-		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
+		posNormalizer = PhaseOrStageNormalizer.getInstance();
+		tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		sexNormalizer = SexNormalizer.getInstance();
 	}
 
@@ -390,19 +391,40 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	private String getPhaseOrStage(Element record)
 	{
 		String raw = val(record, "abcd:PhaseOrStage");
-		return phaseOrStageNormalizer.normalize(raw);
+		if (raw == null)
+			return null;
+		String result = posNormalizer.normalize(raw);
+		if (result == ROGUE_VALUE) {
+			warn("Ignoring rogue value for PhaseOrStage: " + raw);
+			return null;
+		}
+		return result;
 	}
 
 	private String getTypeStatus(Element record)
 	{
 		String raw = val(record, "abcd:TypeStatus");
-		return typeStatusNormalizer.normalize(raw);
+		if (raw == null)
+			return null;
+		String result = tsNormalizer.normalize(raw);
+		if (result == ROGUE_VALUE) {
+			warn("Ignoring rogue value for TypeStatus: " + raw);
+			return null;
+		}
+		return result;
 	}
 
 	private String getSex(Element record)
 	{
 		String raw = val(record, "abcd:Sex");
-		return sexNormalizer.normalize(raw);
+		if (raw == null)
+			return null;
+		String result = sexNormalizer.normalize(raw);
+		if (result == ROGUE_VALUE) {
+			warn("Ignoring rogue value for Sex: " + raw);
+			return null;
+		}
+		return result;
 	}
 
 	private Double dval(Element e, String tag)

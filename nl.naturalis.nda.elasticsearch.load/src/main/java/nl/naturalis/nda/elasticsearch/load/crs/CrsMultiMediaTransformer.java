@@ -48,6 +48,14 @@ import org.w3c.dom.Element;
  */
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
 
+	public static void main(String[] args)
+	{
+		String url = MEDIALIB_URL_START + MEDIALIB_URL_START + "ZMA.12345"
+				+ "/format/large/format/small";
+		url = url.substring(MEDIALIB_URL_START.length());
+		System.out.println(url);
+	}
+
 	private final PhaseOrStageNormalizer posNormalizer;
 	private final SpecimenTypeStatusNormalizer tsNormalizer;
 	private final SexNormalizer sexNormalizer;
@@ -339,26 +347,37 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		}
 		String mime;
 		if (url.startsWith(MEDIALIB_URL_START)) {
-			url = url.replace("/small", "/large");
+			/*
+			 * HACK: attempt to repair bad medialib URLs where
+			 * MEDIALIB_URL_START occurs twice
+			 */
+			int next = url.indexOf(MEDIALIB_URL_START, 1);
+			if (next != -1) {
+				url = url.substring(MEDIALIB_URL_START.length());
+			}
+			// Extract medialib ID
 			String medialibId = url.substring(MEDIALIB_URL_START.length());
 			int x = medialibId.indexOf('/');
 			if (x != -1) {
 				medialibId = medialibId.substring(0, x);
 			}
+			// Discard original URL and reconstruct from scratch
+			url = MEDIALIB_URL_START + medialibId + "/format/large";
 			mime = mimetypeCache.getMimeType(medialibId);
 		}
 		else {
-			try {
-				new URI(url);
-				warn("Encountered a non-medialib URL: %s", url);
-			}
-			catch (URISyntaxException exc) {
-				stats.objectsRejected++;
-				if (!suppressErrors)
-					error("Invalid image URL: " + url);
-				return null;
-			}
+			if (!suppressErrors)
+				warn("Encountered non-medialib URL: %s", url);
 			mime = TransformUtil.guessMimeType(url);
+		}
+		try {
+			new URI(url);
+		}
+		catch (URISyntaxException exc) {
+			stats.objectsRejected++;
+			if (!suppressErrors)
+				error("Invalid image URL: " + url);
+			return null;
 		}
 		return new String[] { url, mime };
 	}

@@ -24,10 +24,12 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 
 	static {
 		zeroRecordsIterator = new Iterator<XMLRecordInfo>() {
+
 			public XMLRecordInfo next()
 			{
 				return null;
 			}
+
 			public boolean hasNext()
 			{
 				return false;
@@ -56,17 +58,25 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 	@Override
 	public Iterator<XMLRecordInfo> iterator()
 	{
-		if (elems == null) 
+		if (elems == null)
 			return zeroRecordsIterator;
 		return new Iterator<XMLRecordInfo>() {
+
 			private int i;
+
 			public boolean hasNext()
 			{
 				return i < elems.size();
 			}
+
 			public XMLRecordInfo next()
 			{
 				return new XMLRecordInfo(elems.get(i++));
+			}
+
+			public void remove()
+			{
+
 			}
 		};
 	}

@@ -96,15 +96,23 @@ class CrsExtractor implements Iterable<XMLRecordInfo> {
 	public Iterator<XMLRecordInfo> iterator()
 	{
 		return new Iterator<XMLRecordInfo>() {
+
 			NodeList recs = doc.getElementsByTagName("record");
 			int i = 0;
+
 			public boolean hasNext()
 			{
 				return i < recs.getLength();
 			}
+
 			public XMLRecordInfo next()
 			{
 				return new XMLRecordInfo((Element) recs.item(i++));
+			}
+
+			public void remove()
+			{
+
 			}
 		};
 	}

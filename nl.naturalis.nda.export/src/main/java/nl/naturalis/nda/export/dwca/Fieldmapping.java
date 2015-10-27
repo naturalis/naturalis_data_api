@@ -225,12 +225,9 @@ public class Fieldmapping {
 	public static void setDateIndentified(
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getDateIdentified() != null
-				&& specimen.getIdentifications().iterator().next()
-						.isPreferred() == true) {
+				&& specimen.getIdentifications().iterator().next().isPreferred() == true) {
 			SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
-			String dateiden = dateidentified
-					.format(specimen.getIdentifications().iterator().next()
-							.getDateIdentified());
+			String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next().getDateIdentified());
 			dataRow.add(dateiden);
 		} else {
 			dataRow.add(EMPTY_STRING);
@@ -247,9 +244,7 @@ public class Fieldmapping {
 			ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception {
 		if (specimen.getIdentifications().iterator().next().getDateIdentified() != null) {
 			SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
-			String dateiden = dateidentified
-					.format(specimen.getIdentifications().iterator().next()
-							.getDateIdentified());
+			String dateiden = dateidentified.format(specimen.getIdentifications().iterator().next().getDateIdentified());
 			dataRow.add(dateiden);
 		} else {
 			dataRow.add(EMPTY_STRING);
@@ -314,40 +309,39 @@ public class Fieldmapping {
 		 */
 		if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeEnd() != null
-				&& !specimen.getGatheringEvent().getDateTimeBegin()
-						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
-			String dateEnd = datetimenend.format(specimen.getGatheringEvent()
-					.getDateTimeEnd());
+				&& !specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd())) 
+		{
+			String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+			String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 			dataRow.add(dateBegin + " | " + dateEnd);
 		}
 		/* 
 		 * if BeginDate is equal to EndDate then only the value of BeginDate */
-		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
-				&& specimen.getGatheringEvent().getDateTimeBegin() == specimen
-						.getGatheringEvent().getDateTimeEnd()) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+		if (specimen.getGatheringEvent().getDateTimeBegin() == null)
+		{
+			dataRow.add(EMPTY_STRING);
+		}
+		else if (specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()) &&
+				specimen.getGatheringEvent().getDateTimeBegin() != null) 
+		{
+			String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/* 
 		 * if only begindate has a value then get the value of begindate */
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeEnd() == null) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
 		 * if EndDate has a value and Begindate has no value set the value of
 		 * null for Enddate
 		 */
-		else if (specimen.getGatheringEvent().getDateTimeEnd() != null
-				&& specimen.getGatheringEvent().getDateTimeBegin() == null) {
-			dataRow.add(EMPTY_STRING);
-		} else {
-			dataRow.add(EMPTY_STRING);
+		else if (specimen.getGatheringEvent().getDateTimeEnd() != null && specimen.getGatheringEvent().getDateTimeBegin() == null) 
+		{
+			String dateEnd = EMPTY_STRING;
+			dataRow.add(dateEnd);
 		}
 	}
 
@@ -365,29 +359,41 @@ public class Fieldmapping {
 		 */
 		if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeEnd() != null
-				&& !specimen.getGatheringEvent().getDateTimeBegin()
-						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
-			String dateEnd = datetimenend.format(specimen.getGatheringEvent()
-					.getDateTimeEnd());
+				&& !specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd())) 
+		{
+			logger.debug("Begindate and EndDate has value and not equal ");
+			logger.debug("Begindate: " + specimen.getGatheringEvent().getDateTimeBegin());
+			logger.debug("Enddate: " + specimen.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
+			String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 			dataRow.add(dateBegin + " | " + dateEnd);
 		}
+		
 		/* 
 		 * if BeginDate is equal to EndDate then only the value of BeginDate */
-		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
-				&& specimen.getGatheringEvent().getDateTimeBegin() == specimen
-						.getGatheringEvent().getDateTimeEnd()) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+		if (specimen.getGatheringEvent().getDateTimeBegin() == null)
+		{
+			dataRow.add(EMPTY_STRING);
+		}
+		else if (specimen.getGatheringEvent().getDateTimeBegin().equals(specimen.getGatheringEvent().getDateTimeEnd()) 
+				 && specimen.getGatheringEvent().getDateTimeBegin() != null) 
+		{
+			logger.debug("BeginDate is equal to EndDate then only the value of BeginDate ");
+			logger.debug("Begindate: " + specimen.getGatheringEvent().getDateTimeBegin());
+			logger.debug("Enddate: " + specimen.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
+		
 		/* 
 		 * if only begindate has a value then get the value of begindate */
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
-				&& specimen.getGatheringEvent().getDateTimeEnd() == null) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+				&& specimen.getGatheringEvent().getDateTimeEnd() == null) 
+		{
+			logger.debug("only begindate has a value then get the value of begindate");
+			logger.debug("Begindate: " + specimen.getGatheringEvent().getDateTimeBegin());
+			logger.debug("Enddate: " + specimen.getGatheringEvent().getDateTimeBegin());			
+			String dateBegin = datetimebegin.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -395,10 +401,13 @@ public class Fieldmapping {
 		 * null for Enddate
 		 */
 		else if (specimen.getGatheringEvent().getDateTimeEnd() != null
-				&& specimen.getGatheringEvent().getDateTimeBegin() == null) {
-			dataRow.add(EMPTY_STRING);
-		} else {
-			dataRow.add(EMPTY_STRING);
+				&& specimen.getGatheringEvent().getDateTimeBegin() == null) 
+		{    
+			logger.debug("EndDate has a value and Begindate has no value set the value of null for Enddate");
+			logger.debug("Begindate: " + specimen.getGatheringEvent().getDateTimeBegin());
+			logger.debug("Enddate: " + specimen.getGatheringEvent().getDateTimeBegin());				
+			String dateEnd = EMPTY_STRING;
+			dataRow.add(dateEnd);
 		}
 	}
 

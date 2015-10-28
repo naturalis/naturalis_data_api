@@ -30,7 +30,7 @@ public class CoLImportAll {
 		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
 		new CoLTaxonImporter().importCsv(dwcaDir + "/taxa.txt");
 		new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
-		new CoLVernacularNameImporter().importCsv("/vernacular.txt");
+		new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");
 		new CoLReferenceImporter().importCsv(dwcaDir + "/reference.txt");
 //		CoLTaxonDistributionEnricher distributionEnricher = new CoLTaxonDistributionEnricher(index);
 //		distributionEnricher.importCsv(dwcaDir + "/distribution.txt");

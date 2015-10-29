@@ -19,9 +19,6 @@ import org.slf4j.Logger;
  */
 public final class LoadUtil {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = Registry.getInstance().getLogger(LoadUtil.class);
-	
 	private static final URIBuilder purlBuilder;
 	
 	static {
@@ -114,7 +111,7 @@ public final class LoadUtil {
 	public static String getSpecimenPurl(String unitID)
 	{
 		try {
-			purlBuilder.setPath("naturalis/specimen/" + unitID);
+			purlBuilder.setPath("/naturalis/specimen/" + unitID);
 			return purlBuilder.build().toString();
 		}
 		catch (URISyntaxException e) {

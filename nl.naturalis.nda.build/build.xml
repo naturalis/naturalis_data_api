@@ -137,7 +137,7 @@
 	</target>
 
 	<target name="clean-import-module" description="Perform cleanup for import module, but do not build or install">
-		<ant antfile="../nl.naturalis.nda.load/build.xml" useNativeBasedir="true" target="clean" />
+		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" target="clean" />
 		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />
 	</target>
 

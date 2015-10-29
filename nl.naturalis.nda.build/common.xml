@@ -62,7 +62,7 @@
 	</target>
 
 	<target name="resources">
-		<echo message="Copying resources to build directories" />
+		<echo message="Copying non-Java resources to build directories" />
 		<copy includeemptydirs="false" todir="build/main">
 			<fileset dir="src/main/java">
 				<exclude name="**/*.java" />
@@ -128,7 +128,8 @@
 		<!-- But for purity's sake add junit jar file ourselves -->
 		<copy todir="build/classpath">
 			<fileset dir="${build.module.location}/lib">
-				<include name="**/junit-4*.jar" />
+				<include name="**/junit*.jar" />
+				<include name="**/hamcrest-core*.jar" />
 			</fileset>
 		</copy>
 		<echo message="Compiling unit tests for ${ant.project.name}" />
@@ -153,6 +154,9 @@
 	<target name="test" depends="compile-test-sources">
 		<echo message="Testing ${ant.project.name}" />
 		<junit printsummary="yes" haltonfailure="yes">
+			<assertions>
+				<enable />
+			</assertions>
 			<classpath>
 				<fileset dir="build/classpath">
 					<include name="**/*.jar" />

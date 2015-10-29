@@ -23,8 +23,7 @@
 	<property name="javac.debug" value="source,lines,vars" />
 
 	<property name="home" location="${basedir}/../" />
-
-
+	
 	<!-- ===============[ TASKS ]=============== -->
 
 	<target name="git-info" description="Retrieve current git branch, tag and commit">
@@ -46,8 +45,6 @@
 		<echo message="branch=${git.branch};tag=${git.tag};commit=${git.commit}" />
 		<property name="got-git-info" value="true" />
 	</target>
-
-
 
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
@@ -165,7 +162,7 @@
 				<dirset dir="build/test" />
 			</classpath>
 			<formatter type="plain" />
-			<batchtest todir="/home/ayco/test-reports">
+			<batchtest todir="${home}/nl.naturalis.nda.build/test-reports">
 				<fileset dir="src/test/java">
 					<include name="**/*Test.java" />
 				</fileset>

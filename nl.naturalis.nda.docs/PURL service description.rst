@@ -17,7 +17,7 @@ Document management
    * - Document publication date
      - 26-10-2015
    * - Content
-     - Description of purl specimen retrieval services in PURL v0.1.
+     - Description of purl specimen retrieval services in PURL v.1.0.
 
 
 -------------------------
@@ -43,7 +43,7 @@ PURL description 1
    Source: `wiki`_
 
 PURL description 2
-  PURL identifiers are based on URIs and use the HTTP redirect mechanism to avoid broken links.
+   PURL identifiers are based on URIs and use the HTTP redirect mechanism to avoid broken links.
    a. e.g., http://purl.oclc.org/example/specimen/12921 and http://purl.org/dc/terms/contributor
    b. web-based identifier using standard HTTP and HTTP redirect. Can be resolved through use of a common PURL resolver.
    c. promoted by the OCLC (Online Computer Library Center) [OCLC]
@@ -54,21 +54,18 @@ PURL description 2
   Source: `A Beginner's Guide to Persistent Identifiers`_
   
 With the publication of the specimen PURL service Naturalis takes a first step in it's planned contribution to 
-the need of persistent identifiers for Life Sciences. Naturalis has decided to use PURL as a persistent identifier mechanism 
-because of their ease-of-use, relative implementation-ease and strong technical community support. 
+the need of persistent identifiers for Life Sciences. Naturalis has decided to use PURL as a persistent identifier mechanism because of their ease-of-use, relative implementation-ease and strong technical community support. 
 
-Every Naturalis specimen PURL refers to a physical object in the our botanical, geological and zoological collections.
-Because Naturalis can not (yet) serve a physicial object via the http protocol, Naturalis will instead serve 
-one or more digital representations of the requested physical object, e.g. a specimen document in text/html format.  
+Every Naturalis specimen PURL refers to a physical object in the our botanical, geological and zoological collections. Because Naturalis can not (yet) serve a physicial object via the http protocol, Naturalis will instead serve one or more digital representations of the requested physical object, e.g. a specimen document in text/html format.  
 
-The specimen PURL service returns each specific specimen document default as text/html. 
-Each text/html document is default shown in a detail page of the 'Naturalis Bioportal'_. 
+The specimen PURL service returns each specific specimen document default as text/html. Each text/html document is default shown in a detail page of the 'Naturalis Bioportal'_. 
 
-Through 'http content negotiation'_ three other document content types can - depending on 
-their availability - also be served, i.e. application/json, image/jpeg and video/mp4. 
-Currently about 7,3 million Naturalis' specimens can be directly accessed through 
-this PURL service.  
+Through 'http content negotiation'_ three other document content types can - depending on their availability - also be served, i.e. application/json, image/jpeg and video/mp4. Currently about 7,3 million Naturalis' specimens can be directly accessed through this PURL service.  
 
+.. _wiki : https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator
+
+.. _A Beginner's Guide to Persistent Identifiers: http://www.gbif.org/resource/80575
+  
 ------
 Access
 ------
@@ -93,8 +90,7 @@ for transferring data like e.g. `curl`_ or in case a rest client browser plugin,
 you want to work with a browser.
  
 .. _curl : http://curl.haxx.se/
-.. _wiki : https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator
-  
+
 -----------
 Quick start
 -----------
@@ -236,8 +232,6 @@ It's actionability is mainly restricted by the availability of the requested spe
 **A PID allows for universal cross linking of information**
 Cross linking through PIDs is not yet implemented in the specimen PURL service.
 
-.. _A Beginner's Guide to Persistent Identifiers: http://www.gbif.org/resource/80575
-
 .. _GBIF: http://www.gbif.org/resource/80575
 
 -----------------------------
@@ -247,7 +241,4 @@ If you want to know more about PURLs please consult this documentation.
 http://www.paradigm.ac.uk/workbook/metadata/pids-purl.html
 
 .. _content negotiation: https://en.wikipedia.org/wiki/Content_negotiation
-
-.. _Naturalis Bioportal: http://bioportal.naturalis.nl
-
 

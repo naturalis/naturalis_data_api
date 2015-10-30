@@ -33,7 +33,7 @@ A specimen PURL example:
 
   http://data.biodiversitydata.nl/naturalis/specimen/RMNH.INS.389961
 
-PURL description 1 [ " : " ]*
+PURL description 1 [ " : " ]
    PURLs (Persistent Uniform Resource Locators) are Web addresses that act as permanent identifiers in the face of a 
    dynamic and changing Web infrastructure. Instead of resolving directly to Web resources, PURLs provide a level of 
    indirection that allows the underlying Web addresses of resources to change over time without negatively affecting 

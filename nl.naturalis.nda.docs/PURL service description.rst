@@ -44,12 +44,12 @@ PURL description 1
 
 PURL description 2
    PURL identifiers are based on URIs and use the HTTP redirect mechanism to avoid broken links.
-   a. e.g., http://purl.oclc.org/example/specimen/12921 and http://purl.org/dc/terms/contributor
-   b. web-based identifier using standard HTTP and HTTP redirect. Can be resolved through use of a common PURL resolver.
-   c. promoted by the OCLC (Online Computer Library Center) [OCLC]
-   d. independent generation is enabled by the use of domain names.
-   e. may not be opaque due to the use of domain names, context names and sometimes descriptive object identifiers.  
-   f. authority, context and object identifier components can be defined using the path portion of the PURL (as shown in the example above).
+    a. e.g., http://purl.oclc.org/example/specimen/12921 and http://purl.org/dc/terms/contributor
+    b. web-based identifier using standard HTTP and HTTP redirect. Can be resolved through use of a common PURL resolver.
+    c. promoted by the OCLC (Online Computer Library Center) [OCLC]
+    d. independent generation is enabled by the use of domain names.
+    e. may not be opaque due to the use of domain names, context names and sometimes descriptive object identifiers.  
+    f. authority, context and object identifier components can be defined using the path portion of the PURL (as shown in the example above).
    
   Source: `A Beginner's Guide to Persistent Identifiers`_
   

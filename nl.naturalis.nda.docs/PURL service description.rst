@@ -58,14 +58,17 @@ the need of persistent identifiers for Life Sciences. Naturalis has decided to u
 
 Every Naturalis specimen PURL refers to a physical object in the our botanical, geological and zoological collections. Because Naturalis can not (yet) serve a physicial object via the http protocol, Naturalis will instead serve one or more digital representations of the requested physical object, e.g. a specimen document in text/html format.  
 
-The specimen PURL service returns each specific specimen document default as text/html. Each text/html document is default shown in a detail page of the 'Naturalis Bioportal'_. 
+The specimen PURL service returns each specific specimen document default as text/html. Each text/html document is default shown in `a detail page of the Naturalis Bioportal`_. 
 
 Through 'http content negotiation'_ three other document content types can - depending on their availability - also be served, i.e. application/json, image/jpeg and video/mp4. Currently about 7,3 million Naturalis' specimens can be directly accessed through this PURL service.  
+
+
 
 .. _wiki : https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator
 
 .. _A Beginner's Guide to Persistent Identifiers: http://www.gbif.org/resource/80575
-  
+
+.. _detail page of the Naturalis Bioportal : http://data.biodiversitydata.nl/naturalis/specimen/ZMA.MOLL.228360
 ------
 Access
 ------
@@ -109,8 +112,8 @@ the available {name of data owner organisation or institute name} = naturalis an
 
   http://data.biodiversitydata.nl/naturalis/specimen/{unitID}
 
-Each specimen PURL request returns specimen data default in a text/html formatted document on the 
-`Naturalis Bioportal`_ detail page. 
+Each specimen PURL request returns specimen data default in a text/html formatted document on `a 
+Naturalis Bioportal detail page`_. 
 
 Content type: *text/html*, an example
 
@@ -152,6 +155,8 @@ Content type: *video/mp4*, an example
 .. code:: html
 
       http://data.biodiversitydata.nl/naturalis/specimen/RMNH.AVES.110091?__accept=video/mp4
+
+.. _a Naturalis Bioportal detail page : http://data.biodiversitydata.nl/naturalis/specimen/ZMA.MOLL.228360
 
 -------------------------
 PURL processing in detail
@@ -242,3 +247,4 @@ http://www.paradigm.ac.uk/workbook/metadata/pids-purl.html
 
 .. _content negotiation: https://en.wikipedia.org/wiki/Content_negotiation
 
+.. _Naturalis Bioportal : http://bioportal.naturalis.nl

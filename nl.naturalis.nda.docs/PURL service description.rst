@@ -33,16 +33,16 @@ A specimen PURL example:
 
   http://data.biodiversitydata.nl/naturalis/specimen/RMNH.INS.389961
 
-PURL description 1 [ " : " ]
+PURL description 1
    PURLs (Persistent Uniform Resource Locators) are Web addresses that act as permanent identifiers in the face of a 
    dynamic and changing Web infrastructure. Instead of resolving directly to Web resources, PURLs provide a level of 
    indirection that allows the underlying Web addresses of resources to change over time without negatively affecting 
    systems that depend on them. This capability provides continuity of references to network resources that may migrate 
    from machine to machine for business, social or technical reasons. 
    
-   Source: 'wiki'_
+   Source: `wiki`_
 
-PURL description 2 [ " : " ]*
+PURL description 2
   PURL identifiers are based on URIs and use the HTTP redirect mechanism to avoid broken links.
    a. e.g., http://purl.oclc.org/example/specimen/12921 and http://purl.org/dc/terms/contributor
    b. web-based identifier using standard HTTP and HTTP redirect. Can be resolved through use of a common PURL resolver.
@@ -168,29 +168,29 @@ All purl requests are subjected to two basic checks.
 a. purl service forwards to Bioportal (303 See Other) - text/html is available for all specimens
 		
    if accept header value(s) is either
-	- absent, e,g, empty, or
-	- solely text/html, or
-	- text/html followed by other content types, e.g. text/html,application/json,image/jpeg, or
-	- other content types followed by text/html, e.g. image/jpeg,video/mp4,text/html, if all the other content types
-	  are not available.
+    - absent, e,g, empty, or
+    - solely text/html, or
+    - text/html followed by other content types, e.g. text/html,application/json,image/jpeg, or
+    - other content types followed by text/html, e.g. image/jpeg,video/mp4,text/html, if all the other content types
+       are not available.
 		
 		
 b. purl service forwards to NBA (303 See Other) -  application/json is available for all specimens
 	
    if accept header value(s) is either
-	- solely application/json, or,
-	- application/json followed by other content types, e.g. application/json,text/hrml,image/jpeg etc, or
-	- other content types followed by application/json, e.g. image/jpeg,video/mp4,application/json, if all the other content types, or
-	  are not available.
+    - solely application/json, or,
+    - application/json followed by other content types, e.g. application/json,text/hrml,image/jpeg etc, or
+    - other content types followed by application/json, e.g. image/jpeg,video/mp4,application/json, if all the other
+      content types, or are not available.
 	
 c. purl service forwards to Naturalis Medialib (303 See Other) 
 	
    if 
     - one of the multimedia content types is available, i.e. image/jpeg or video/mp4, and
-	- text/html and application/json are not requested in the accept header.
+    - text/html and application/json are not requested in the accept header.
 		
    or,
-	- purl service forwards to 406 (Not Acceptable) if not one of the multimedia content types is available
+    - purl service forwards to 406 (Not Acceptable) if not one of the multimedia content types is available
 
 ----------
 Versioning

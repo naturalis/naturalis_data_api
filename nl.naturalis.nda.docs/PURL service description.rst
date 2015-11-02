@@ -23,7 +23,7 @@ Document management
 -------------------------
 Introduction
 -------------------------
-With the specimen PURL service Naturalis introduces a new type of webservice in the Naturalis' webservice portfolio. 
+With the specimen PURL service Naturalis introduces a new type of webservice in the Naturalis webservice portfolio. 
 The PURL service is primarly intended for computers to communicate with other computers.
 Each PURL is a kind of Persistent Identifier that relies on HTTP.
 

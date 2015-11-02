@@ -56,11 +56,11 @@ PURL description 2
 With the publication of the specimen PURL service Naturalis takes a first step in it's planned contribution to 
 the need of persistent identifiers for Life Sciences. Naturalis has decided to use PURL as a persistent identifier mechanism because of their ease-of-use, relative implementation-ease and strong technical community support. 
 
-Every Naturalis specimen PURL refers to a physical object in the our botanical, geological and zoological collections. Because Naturalis can not (yet) serve a physicial object via the http protocol, Naturalis will instead serve one or more digital representations of the requested physical object, e.g. a specimen document in text/html format.  
+Every Naturalis specimen PURL refers to a physical object in the our botanical, geological and zoological collections. Because Naturalis cannot (yet) serve a physicial object via the http protocol, Naturalis will instead serve one or more digital representations of the requested physical object, e.g. a specimen document in text/html format.  
 
-The specimen PURL service returns each specific specimen document default as text/html. Each text/html document is default shown in `a detail page of the Naturalis Bioportal`_. 
+The specimen PURL service returns each specific specimen document default as text/html. Each text/html document is default shown in `a specimen detail page of the Naturalis Bioportal`_. 
 
-Through 'http content negotiation'_ three other document content types can - depending on their availability - also be served, i.e. application/json, image/jpeg and video/mp4. Currently about 7,3 million Naturalis' specimens can be directly accessed through this PURL service.  
+Through 'HTTP content negotiation'_ three other document content types can - depending on their availability - also be served, i.e. application/json, image/jpeg and video/mp4. Currently about 7,3 million Naturalis' specimens can be directly accessed through this PURL service.  
 
 .. _wiki : https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator
 
@@ -87,7 +87,7 @@ Recommended tooling
 -------------------
 
 For exploration or testing of the PURL service and/or NBA services we recommend using a command-line tool 
-for transferring data like e.g. `curl`_ or in case a rest client browser plugin, e.g. the chrome rest client, in case
+for transferring data like e.g. `curl`_ or a REST client browser plugin, e.g. the chrome rest client, in case
 you want to work with a browser.
  
 .. _curl : http://curl.haxx.se/
@@ -119,7 +119,7 @@ Content type: *text/html*, an example
 
   http://data.biodiversitydata.nl/naturalis/specimen/ZMA.AVES.39215
 
-Through content negotiation more content types of a specimen can be requested for.
+HTTP content negotiation can be used to request alternative media types besides HTML. Content negotiation through HTTP Accept headers can be mimicked by including an "__accept" query parameter in the URL (see example below).
 
 .. list-table:: 
    :widths: 50 80
@@ -161,7 +161,7 @@ PURL processing in detail
 -------------------------
 All purl requests are subjected to two basic checks.
 
-1. specimen unitID presence check, if no, purl service serves 404 (Not Found)
+1. specimen unitID presence check, if no, purl service responds with HTTP 404 (Not Found)
 2. content type presence check, i.e.
 
 a. purl service forwards to `Bioportal`_ (303 See Other). A text/html document is available for all specimens if accept header value(s) is either
@@ -180,7 +180,7 @@ c. purl service forwards to `Naturalis Medialib`_ (303 See Other) if
     - one of the multimedia content types is available, i.e. image/jpeg or video/mp4, and
     - text/html and application/json are not requested in the accept header.
 		
-d. purl service forwards to 406 (Not Acceptable) if non of the requested multimedia content types is available.
+d. purl service responds with HTTP 406 (Not Acceptable) if non of the requested multimedia content types is available. Along with the response comes a list of alternative media types that are servicable.
 
 .. _Bioportal : http://bioportal.naturalis.nl
 
@@ -202,19 +202,20 @@ But how does this service comply to the general characteristics of a Persistent 
 We've tried to 'score' the service and/or comment on it's feature.
 
 **A PID is globally unique**
-Naturalis beliefs the chosen url structure guarantees globally uniqueness for specimens.
+Naturalis beliefs the chosen url structure guarantees global uniqueness for specimens.
 Especially the combination of the data owner institution or organisation name, and, a 
-unitID which abides to international bio information standards is key in guaranteeing the uniqueness.
+unitID which abides to [complies with] international bio information standards is key in guaranteeing the uniqueness.
 
 **A PID exists indefinitely**
 Naturalis will try to assure the permanent character of its PURLs.
+Naturalis makes a dedicated effort to assure the permanent character of its PURLs.
 
-**A PID is unambigious applied**
+**A PID is unambigiously applied**
 The specimen PURL service serves digital representations of physical specimens in our collection catalogues. 
 Multiple content types per physical specimen can be requested. 
 Specimen representations are being served based on their availability. 
 
-**A PID is opace**
+**A PID is opaque**
 One of the most important qualities of a good Persistent identifier is opacity. 
 That is, the identifier itself should not contain any readable information. 
 Underlying argument is that Persistent identifiers are intended for computers to communicate with other computers. 
@@ -224,6 +225,8 @@ can quickly understand the nature of the data on offer.
 
 **A PID is permantly assigned to an object**
 Naturalis will try to assure the permanent assignment to an object.
+Naturalis makes a dedicated effort to assure the permanent assignment to an object.
+
 
 **A PID is actionable**
 Naturalis PURL specimen service is highly actionable. 

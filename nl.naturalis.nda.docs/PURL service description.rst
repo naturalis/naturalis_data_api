@@ -68,7 +68,7 @@ Through 'HTTP content negotiation'_ three other document content types can - dep
 
 .. _A Beginner's Guide to Persistent Identifiers : http://www.gbif.org/resource/80575
 
-.. _a detail page of the Naturalis Bioportal : http://data.biodiversitydata.nl/naturalis/specimen/ZMA.MOLL.228360
+.. _a specimen detail page of the Naturalis Bioportal : http://data.biodiversitydata.nl/naturalis/specimen/ZMA.MOLL.228360
 ------
 Access
 ------

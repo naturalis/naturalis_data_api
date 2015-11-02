@@ -121,7 +121,7 @@ Content type: *text/html*, an example
 
   http://data.biodiversitydata.nl/naturalis/specimen/ZMA.AVES.39215
 
-HTTP content negotiation can be used to request alternative media types besides HTML. Content negotiation through HTTP Accept headers can be mimicked by including an "__accept" query parameter in the URL (see example below).
+HTTP content negotiation can be used to request alternative media types besides HTML. Content negotiation through HTTP Accept headers can be mimicked by including an "__accept" query parameter in the URL (see example below). This feature has been designed for testing purposes but do feel free to use this feature for your own specific needs. 
 
 .. list-table:: 
    :widths: 50 80
@@ -209,7 +209,6 @@ Especially the combination of the data owner institution or organisation name, a
 unitID which abides to [complies with] international bio information standards is key in guaranteeing the uniqueness.
 
 **A PID exists indefinitely**
-Naturalis will try to assure the permanent character of its PURLs.
 Naturalis makes a dedicated effort to assure the permanent character of its PURLs.
 
 **A PID is unambigiously applied**
@@ -226,9 +225,7 @@ In this case Naturalis chose for non-opacity so a researcher searching for relev
 can quickly understand the nature of the data on offer.
 
 **A PID is permantly assigned to an object**
-Naturalis will try to assure the permanent assignment to an object.
 Naturalis makes a dedicated effort to assure the permanent assignment to an object.
-
 
 **A PID is actionable**
 Naturalis PURL specimen service is highly actionable. 

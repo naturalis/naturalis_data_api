@@ -150,6 +150,7 @@
 
 	<target name="test" depends="compile-test-sources">
 		<echo message="Testing ${ant.project.name}" />
+		<mkdir dir="${home}/nl.naturalis.nda.build/test-reports"/>
 		<junit printsummary="yes" haltonfailure="yes">
 			<assertions>
 				<enable />

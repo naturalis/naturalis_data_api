@@ -25,7 +25,7 @@ Introduction
 -------------------------
 With the specimen PURL service Naturalis introduces a new type of webservice in the Naturalis webservice portfolio. The PURL service is primarly intended for computers to communicate with other computers.
 
-When referencing Naturalis specimens (e.g. in scientific articles), PURLs should be used in preference to more transient URLs like those from the Naturalis Bioportal.
+When referencing Naturalis specimens, e.g. in scientific articles, PURLs should be used in preference to more transient URLs like those from the Naturalis Bioportal.
 
 Each PURL is a kind of Persistent Identifier that relies on HTTP.
 

@@ -152,6 +152,7 @@
 		<echo message="Testing ${ant.project.name}" />
 		<mkdir dir="${home}/nl.naturalis.nda.build/test-reports"/>
 		<junit printsummary="yes" haltonfailure="yes">
+			<sysproperty key="ndaConfDir" value="${nda.import.install.dir}/conf"/>
 			<assertions>
 				<enable />
 			</assertions>

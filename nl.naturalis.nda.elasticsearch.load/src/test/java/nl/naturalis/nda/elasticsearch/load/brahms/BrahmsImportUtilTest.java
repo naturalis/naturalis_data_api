@@ -13,7 +13,6 @@ public class BrahmsImportUtilTest {
 	@BeforeClass
 	public static void init()
 	{
-		System.setProperty("ndaConfDir", "/home/ayco/projects/nba/import/conf");
 	}
 
 	@Test
@@ -51,8 +50,6 @@ public class BrahmsImportUtilTest {
 		date = BrahmsImportUtil.getDate(year, month, day);
 		assertNotNull("Date should not be null with out-of-bounds months numbers (feb!)", date);
 		assertEquals("20120302", sdf.format(date));
-		
-
 	}
 
 }

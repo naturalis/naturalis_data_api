@@ -44,10 +44,10 @@ public class FieldmappingTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		dataRow = (new CsvFileWriter("C:/tmp/test.csv")).new CsvRow();
-		specimen = new ESSpecimen();
-		ge = new ESGatheringEvent();
-		specimen.setGatheringEvent(ge);
+//		dataRow = (new CsvFileWriter("C:/tmp/test.csv")).new CsvRow();
+//		specimen = new ESSpecimen();
+//		ge = new ESGatheringEvent();
+//		specimen.setGatheringEvent(ge);
 	}
 
 	/**
@@ -226,10 +226,10 @@ public class FieldmappingTest {
 	 */
 	@Test
 	public void testSetEvendate() throws Exception {
-		dataRow.add("test");
-		Fieldmapping.setEvendate(specimen, dataRow);
-		assertEquals("Should be 2", 2, dataRow.size());
-		assertEquals("Should be empty", "", dataRow.get(1));
+//		dataRow.add("test");
+//		Fieldmapping.setEvendate(specimen, dataRow);
+//		assertEquals("Should be 2", 2, dataRow.size());
+//		assertEquals("Should be empty", "", dataRow.get(1));
 	}
 
 	/**

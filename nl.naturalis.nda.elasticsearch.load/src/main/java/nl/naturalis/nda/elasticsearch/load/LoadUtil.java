@@ -23,7 +23,9 @@ public final class LoadUtil {
 	
 	static {
 		try {
-			purlBuilder = new URIBuilder(PURL_SERVER_BASE_URL);
+			String property = "purl.baseurl";
+			String value = Registry.getInstance().getConfig().get(property, PURL_SERVER_BASE_URL);
+			purlBuilder = new URIBuilder(value);
 		}
 		catch (URISyntaxException e) {
 			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
@@ -118,6 +120,5 @@ public final class LoadUtil {
 			throw new ETLRuntimeException(e);
 		}
 	}
-
 
 }

@@ -20,12 +20,14 @@ import org.slf4j.Logger;
 public final class LoadUtil {
 
 	private static final URIBuilder purlBuilder;
+	private static final String purlSpecimenPath;
 	
 	static {
 		try {
 			String property = "purl.baseurl";
 			String value = Registry.getInstance().getConfig().get(property, PURL_SERVER_BASE_URL);
 			purlBuilder = new URIBuilder(value);
+			purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
 		}
 		catch (URISyntaxException e) {
 			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
@@ -113,7 +115,7 @@ public final class LoadUtil {
 	public static String getSpecimenPurl(String unitID)
 	{
 		try {
-			purlBuilder.setPath("/naturalis/specimen/" + unitID);
+			purlBuilder.setPath(purlSpecimenPath + unitID);
 			return purlBuilder.build().toString();
 		}
 		catch (URISyntaxException e) {

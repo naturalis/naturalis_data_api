@@ -21,17 +21,23 @@ public final class LoadUtil {
 
 	private static final URIBuilder purlBuilder;
 	private static final String purlSpecimenPath;
-	
+
 	static {
+		purlBuilder = getPurlBuilder();
+		purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
+	}
+
+	private static URIBuilder getPurlBuilder()
+	{
+		String value = null;
 		try {
 			String property = "purl.baseurl";
-			String value = Registry.getInstance().getConfig().get(property, PURL_SERVER_BASE_URL);
-			purlBuilder = new URIBuilder(value);
-			purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
+			value = Registry.getInstance().getConfig().get(property, PURL_SERVER_BASE_URL);
+			return new URIBuilder(value);
 		}
 		catch (URISyntaxException e) {
 			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
-			String msg = String.format(fmt, PURL_SERVER_BASE_URL, e.getMessage());
+			String msg = String.format(fmt, value, e.getMessage());
 			throw new ETLRuntimeException(msg);
 		}
 	}

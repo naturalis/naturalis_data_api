@@ -15,7 +15,7 @@ public class BrahmsImportUtilTest {
 	{
 	}
 
-	//@Test
+	@Test
 	public void testGetDate_happy_path()
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -27,7 +27,7 @@ public class BrahmsImportUtilTest {
 		assertEquals("20120612", sdf.format(date));
 	}
 
-	//@Test
+	@Test
 	public void testGetDate_year_zero()
 	{
 		String year = "0";
@@ -40,7 +40,7 @@ public class BrahmsImportUtilTest {
 		assertNull("Date should be null when year is empty", date);
 	}
 
-	//@Test
+	@Test
 	public void testGetDate_month_zero()
 	{
 		String year = "2012";

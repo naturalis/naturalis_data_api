@@ -15,41 +15,59 @@ public class BrahmsImportUtilTest {
 	{
 	}
 
-	@Test
-	public void testGetDate()
+	//@Test
+	public void testGetDate_happy_path()
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		
 		String year = "2012";
 		String month = "6";
 		String day = "12";
 		Date date = BrahmsImportUtil.getDate(year, month, day);
 		assertNotNull("Date should not be null", date);
 		assertEquals("20120612", sdf.format(date));
+	}
 
+	//@Test
+	public void testGetDate_year_zero()
+	{
+		String year = "0";
+		String month = "6";
+		String day = "12";
+		Date date = BrahmsImportUtil.getDate(year, month, day);
+		assertNull("Date should be null when year is zero", date);
 		year = "";
 		date = BrahmsImportUtil.getDate(year, month, day);
 		assertNull("Date should be null when year is empty", date);
-		
-		year = "2012";
-		month = "89";
-		date = BrahmsImportUtil.getDate(year, month, day);
-		assertNotNull("Date should not be null with out-of-bounds months numbers", date);
-		assertEquals("20120112", sdf.format(date));
-		
-		year = "2012";
-		month = "-5";
-		day = "12";
-		date = BrahmsImportUtil.getDate(year, month, day);
-		assertNotNull("Date should not be null with out-of-bounds months numbers", date);
-		assertEquals("20120112", sdf.format(date));
-		
-		year = "2012";
-		month = "02";
-		day = "31";
-		date = BrahmsImportUtil.getDate(year, month, day);
-		assertNotNull("Date should not be null with out-of-bounds months numbers (feb!)", date);
-		assertEquals("20120302", sdf.format(date));
 	}
+
+	//@Test
+	public void testGetDate_month_zero()
+	{
+		String year = "2012";
+		String month = "0";
+		String day = "12";
+		Date date = BrahmsImportUtil.getDate(year, month, day);
+		assertNull("Date should be null when month is zero", date);
+		month = "";
+		date = BrahmsImportUtil.getDate(year, month, day);
+		assertNull("Date should be null when month is empty", date);
+	}
+
+	@Test
+	public void testGetDate_day_zero()
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String year = "2012";
+		String month = "3";
+		String day = "0";
+		Date date = BrahmsImportUtil.getDate(year, month, day);
+		assertNotNull("Date should not be null when day is zero", date);
+		assertEquals("20120301", sdf.format(date));
+		day = "";
+		date = BrahmsImportUtil.getDate(year, month, day);
+		assertNotNull("Date should not be null when day is empty", date);
+		assertEquals("20120301", sdf.format(date));
+	}
+
 
 }

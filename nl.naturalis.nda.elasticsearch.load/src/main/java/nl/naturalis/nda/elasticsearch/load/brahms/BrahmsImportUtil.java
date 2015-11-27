@@ -31,9 +31,9 @@ import org.slf4j.Logger;
  */
 class BrahmsImportUtil {
 
-	static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
-	static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
-	static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
+	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
+	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 
 	private BrahmsImportUtil()
 	{
@@ -122,7 +122,7 @@ class BrahmsImportUtil {
 			int monthInt = (int) Float.parseFloat(month);
 			if (monthInt == 0)
 				return null;
-
+			
 			int dayInt;
 			if ((day = day.trim()).length() == 0)
 				dayInt = 1;

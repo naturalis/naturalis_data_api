@@ -1,37 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import static nl.naturalis.nda.domain.TaxonomicRank.FAMILY;
-import static nl.naturalis.nda.domain.TaxonomicRank.GENUS;
-import static nl.naturalis.nda.domain.TaxonomicRank.KINGDOM;
-import static nl.naturalis.nda.domain.TaxonomicRank.ORDER;
-import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
-import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.AUTHOR1;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.AUTHOR2;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.AUTHOR3;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.COLLECTOR;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.CONTINENT;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.COUNTRY;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.DAY;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.DAYIDENT;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.DETBY;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.FAMCLASS;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.LATITUDE;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.LOCNOTES;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.LONGITUDE;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.MAJORAREA;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.MONTH;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.MONTHIDENT;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.RANK1;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.RANK2;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.SP1;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.SP2;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.SP3;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.VERNACULAR;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.YEAR;
-import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.YEARIDENT;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -39,22 +10,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
 import org.apache.commons.csv.CSVRecord;
+import org.domainobject.util.ConfigObject;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 
 /**
@@ -67,6 +33,7 @@ class BrahmsImportUtil {
 
 	static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
 	static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
+	static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 
 	private BrahmsImportUtil()
 	{
@@ -129,7 +96,12 @@ class BrahmsImportUtil {
 
 	/**
 	 * Constructs a {@code Date} object from the date fields in a Brahms export
-	 * file.
+	 * file. If {@code year} or {@code month} are empty or zero, {@code null} is
+	 * returned. If {@code day} is empty or zero, the date is rounded to the
+	 * first day of the month. If {@code year}, {@code month} or {@code day} are
+	 * not numeric, a warning is logged, and {@code null} is returned. If
+	 * {@code month} or {@code day} are out-of-range (e.g. 13 for month), the
+	 * result is undefined.
 	 * 
 	 * @param year
 	 * @param month
@@ -139,35 +111,101 @@ class BrahmsImportUtil {
 	static Date getDate(String year, String month, String day)
 	{
 		try {
-
-			year = year.trim();
-			if (year.length() == 0)
+			if ((year = year.trim()).length() == 0)
 				return null;
 			int yearInt = (int) Float.parseFloat(year);
+			if (yearInt == 0)
+				return null;
 
-			// NB Brahms month numbers are one-based
-			month = month.trim();
-			if (month.length() == 0)
-				month = "1";
+			if ((month = month.trim()).length() == 0)
+				return null;
 			int monthInt = (int) Float.parseFloat(month);
-			if (monthInt < 1 || monthInt > 12)
-				monthInt = 1;
-			// Make zero-based
-			monthInt--;
+			if (monthInt == 0)
+				return null;
 
-			day = day.trim();
-			if (day.length() == 0)
-				day = "1";
-			int dayInt = (int) Float.parseFloat(day);
-			if (dayInt < 1 || dayInt > 31)
+			int dayInt;
+			if ((day = day.trim()).length() == 0)
 				dayInt = 1;
+			else {
+				dayInt = (int) Float.parseFloat(day);
+				if (dayInt == 0)
+					dayInt = 1;
+			}
 
-			return new GregorianCalendar(yearInt, monthInt, dayInt).getTime();
+			LocalDate date = new LocalDate(yearInt, monthInt, dayInt);
+			return date.toDate();
 		}
 		catch (Exception e) {
-			if (logger.isDebugEnabled()) {
+			if (!suppressErrors) {
 				String fmt = "Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s";
-				logger.debug(String.format(fmt, year, month, day, e.getMessage()));
+				logger.warn(String.format(fmt, year, month, day, e.getMessage()));
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * Constructs a {@code Date} object from the date fields in a Brahms export
+	 * file. Used to construct a begin and end date from problematic gathering
+	 * event dates in the source data. If {@code year} is empty or zero,
+	 * {@code null} is returned. If {@code month} is empty or zero, the month is
+	 * set to january. If {@code day} is empty or zero, the day is set to the
+	 * first day or the last day of the month depending on the value of the
+	 * {@code lastDayOfMonth} argument. If {@code year}, {@code month} or
+	 * {@code day} are not numeric, a warning is logged, and {@code null} is
+	 * returned. If {@code month} or {@code day} are out-of-range (e.g. 13 for
+	 * month), the result is undefined.
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param lastDayOfMonth
+	 * @return
+	 */
+	static Date getDate(String year, String month, String day, boolean lastDayOfMonth)
+	{
+		try {
+
+			if ((year = year.trim()).length() == 0)
+				return null;
+			int yearInt = (int) Float.parseFloat(year);
+			if (yearInt == 0)
+				return null;
+
+			int monthInt;
+			if ((month = month.trim()).length() == 0)
+				monthInt = 1;
+			else {
+				monthInt = (int) Float.parseFloat(month);
+				if (monthInt == 0)
+					monthInt = 1;
+			}
+
+			int dayInt;
+			if ((day = day.trim()).length() == 0)
+				dayInt = -1;
+			else {
+				dayInt = (int) Float.parseFloat(day);
+				if (dayInt == 0)
+					dayInt = -1;
+			}
+
+			LocalDate date;
+			if (dayInt == -1) {
+				date = new LocalDate(yearInt, monthInt, 1);
+				if (lastDayOfMonth)
+					date = date.dayOfMonth().withMaximumValue();
+			}
+			else {
+				date = new LocalDate(yearInt, monthInt, dayInt);
+			}
+
+			return date.toDate();
+		}
+		catch (Exception e) {
+			if (!suppressErrors) {
+				String fmt = "Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s";
+				logger.warn(String.format(fmt, year, month, day, e.getMessage()));
 			}
 			return null;
 		}
@@ -181,15 +219,13 @@ class BrahmsImportUtil {
 	 */
 	static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
 	{
-		final SpecimenIdentification identification = new SpecimenIdentification();
+		SpecimenIdentification identification = new SpecimenIdentification();
 		String s = val(record, DETBY);
-		if (s != null) {
+		if (s != null)
 			identification.addIdentifier(new Agent(s));
-		}
 		s = val(record, VERNACULAR);
-		if (s != null) {
+		if (s != null)
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
-		}
 		String y = val(record, YEARIDENT);
 		String m = val(record, MONTHIDENT);
 		String d = val(record, DAYIDENT);
@@ -312,9 +348,8 @@ class BrahmsImportUtil {
 		String y = val(record, YEAR);
 		String m = val(record, MONTH);
 		String d = val(record, DAY);
-		Date date = getDate(y, m, d);
-		ge.setDateTimeBegin(date);
-		ge.setDateTimeEnd(date);
+		ge.setDateTimeBegin(getDate(y, m, d, false));
+		ge.setDateTimeEnd(getDate(y, m, d, true));
 		Double lat = getDouble(record, LATITUDE);
 		Double lon = getDouble(record, LONGITUDE);
 		if (lat == 0D && lon == 0D) {
@@ -322,11 +357,11 @@ class BrahmsImportUtil {
 			lon = null;
 		}
 		if (lon != null && (lon < -180D || lon > 180D)) {
-			BrahmsSpecimenImporter.logger.error("Invalid longitude: " + lon);
+			logger.error("Invalid longitude: " + lon);
 			lon = null;
 		}
 		if (lat != null && (lat < -90D || lat > 90D)) {
-			BrahmsSpecimenImporter.logger.error("Invalid latitude: " + lat);
+			logger.error("Invalid latitude: " + lat);
 			lat = null;
 		}
 		if (lat != null || lon != null) {
@@ -350,22 +385,22 @@ class BrahmsImportUtil {
 	{
 		List<Monomial> sc = new ArrayList<>(8);
 		if (dc.getKingdom() != null) {
-			sc.add(new Monomial(KINGDOM, dc.getKingdom()));
+			sc.add(new Monomial(TaxonomicRank.KINGDOM, dc.getKingdom()));
 		}
 		if (dc.getOrder() != null) {
-			sc.add(new Monomial(ORDER, dc.getOrder()));
+			sc.add(new Monomial(TaxonomicRank.ORDER, dc.getOrder()));
 		}
 		if (dc.getFamily() != null) {
-			sc.add(new Monomial(FAMILY, dc.getFamily()));
+			sc.add(new Monomial(TaxonomicRank.FAMILY, dc.getFamily()));
 		}
 		if (dc.getGenus() != null) {
-			sc.add(new Monomial(GENUS, dc.getGenus()));
+			sc.add(new Monomial(TaxonomicRank.GENUS, dc.getGenus()));
 		}
 		if (dc.getSpecificEpithet() != null) {
-			sc.add(new Monomial(SPECIES, dc.getSpecificEpithet()));
+			sc.add(new Monomial(TaxonomicRank.SPECIES, dc.getSpecificEpithet()));
 		}
 		if (dc.getInfraspecificEpithet() != null) {
-			sc.add(new Monomial(SUBSPECIES, dc.getInfraspecificEpithet()));
+			sc.add(new Monomial(TaxonomicRank.SUBSPECIES, dc.getInfraspecificEpithet()));
 		}
 		return sc;
 	}

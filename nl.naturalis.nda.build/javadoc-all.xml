@@ -20,6 +20,7 @@
 			<link href="https://docs.oracle.com/javase/8/docs/api/" />
 			<link href="https://commons.apache.org/proper/commons-csv/archives/1.2/apidocs" />
 			<link href="http://www.slf4j.org/api/" />
+			<link href="http://www.joda.org/joda-time/apidocs/" />
 		</javadoc>
 	</target>
 </project>

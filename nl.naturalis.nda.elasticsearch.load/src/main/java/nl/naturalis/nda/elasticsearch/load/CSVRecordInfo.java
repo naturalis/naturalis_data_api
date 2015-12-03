@@ -5,19 +5,22 @@ import nl.naturalis.nda.elasticsearch.load.CSVExtractor.NoSuchFieldException;
 import org.apache.commons.csv.CSVRecord;
 
 /**
- * A java bean encapsulating a commons-csv {@link CSVRecord} instance, the line
- * within the CSV file from which it was created, and the line number of the
- * line. {@link CSVTransformer}s receive {@code CSVRecordInfo} instances
- * rather than just {@code CSVRecord} instances for improved error reporting.
+ * Immutable class wrapping a commons-csv {@link CSVRecord} instance.
  * 
  * @author Ayco Holleman
  *
+ * @param <T>
+ *            An enum class whose constants symbolize the fields in the CSV
+ *            record. In other words the first constant symbolizes the first CSV
+ *            field, the second constant symbolizes the second CSV field, etc.
+ *            The enum class must have exactly as many constants as the number
+ *            of CSV fields in the CSV record.
  */
-public class CSVRecordInfo<T extends Enum<T>> {
+public final class CSVRecordInfo<T extends Enum<T>> {
 
-	private CSVRecord record;
-	private String line;
-	private int lineNumber;
+	private final CSVRecord record;
+	private final String line;
+	private final int lineNumber;
 
 	public CSVRecordInfo(CSVRecord record, String line, int lineNumber)
 	{
@@ -26,25 +29,60 @@ public class CSVRecordInfo<T extends Enum<T>> {
 		this.lineNumber = lineNumber;
 	}
 
-	public CSVRecord getRecord()
+	/**
+	 * Returns the value of the specified CSV field. Equivalent to calling
+	 * {@code get(field, true)}.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public String get(T field)
 	{
-		return record;
-	}
-	
-	public String get(T field) {
-		int fieldNo = field.ordinal();
-		if (fieldNo < record.size()) {
-			String s = record.get(fieldNo).trim();
-			return s.length() == 0 ? null : s;
-		}
-		throw new NoSuchFieldException(record, fieldNo);	
+		return get(field, true);
 	}
 
+	/**
+	 * Returns the value of the specified CSV field.
+	 * 
+	 * @param field
+	 *            The CSV field corresponding to the ordinal value of the
+	 *            specified enum constant.
+	 * @param emptyIsNull
+	 *            If {@code true}, the value of the field is whitespace-trimmed
+	 *            and, if a zero-length string remains, {@code null} is
+	 *            returned, otherwise the whitespace-trimmed string. If
+	 *            {@code false}, the value of the field is returned as-is.
+	 * @return
+	 */
+	public String get(T field, boolean emptyIsNull)
+	{
+		int fieldNo = field.ordinal();
+		if (fieldNo < record.size()) {
+			if (emptyIsNull) {
+				String s = record.get(fieldNo).trim();
+				return s.length() == 0 ? null : s;
+			}
+			return record.get(fieldNo);
+		}
+		throw new NoSuchFieldException(record, fieldNo);
+	}
+
+	/**
+	 * Returns the raw line within the CSV file from which this instance was
+	 * created.
+	 * 
+	 * @return
+	 */
 	public String getLine()
 	{
 		return line;
 	}
 
+	/**
+	 * Returns the line number of the line from which this instance was created.
+	 * 
+	 * @return
+	 */
 	public int getLineNumber()
 	{
 		return lineNumber;

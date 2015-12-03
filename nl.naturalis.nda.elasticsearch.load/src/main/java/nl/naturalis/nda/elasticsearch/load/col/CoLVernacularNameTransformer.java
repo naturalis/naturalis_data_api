@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameCsvField.taxonID;
@@ -48,7 +47,7 @@ class CoLVernacularNameTransformer extends
 	@Override
 	protected String getObjectID()
 	{
-		return val(input.getRecord(), taxonID);
+		return input.get(taxonID);
 	}
 
 	@Override
@@ -68,7 +67,7 @@ class CoLVernacularNameTransformer extends
 			if (taxon == null) {
 				stats.objectsRejected++;
 				if (!suppressErrors) {
-					error("Orphan vernacular name: " + val(input.getRecord(), vernacularName));
+					error("Orphan vernacular name: " + input.get(vernacularName));
 				}
 			}
 			else {
@@ -110,7 +109,7 @@ class CoLVernacularNameTransformer extends
 	public List<ESTaxon> clean(CSVRecordInfo<CoLVernacularNameCsvField> recInf)
 	{
 		this.input = recInf;
-		objectID = val(recInf.getRecord(), taxonID);
+		objectID = input.get(taxonID);
 		// Not much can go wrong here, so:
 		stats.recordsProcessed++;
 		stats.recordsAccepted++;
@@ -142,10 +141,9 @@ class CoLVernacularNameTransformer extends
 
 	private VernacularName createVernacularName()
 	{
-		CSVRecord record = input.getRecord();
 		VernacularName vn = new VernacularName();
-		vn.setName(val(record, vernacularName));
-		vn.setLanguage(val(record, language));
+		vn.setName(input.get(vernacularName));
+		vn.setLanguage(input.get(language));
 		return vn;
 	}
 }

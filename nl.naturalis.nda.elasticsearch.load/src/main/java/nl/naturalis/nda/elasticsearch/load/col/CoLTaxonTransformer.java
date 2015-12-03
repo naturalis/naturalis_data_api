@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.domain.TaxonomicRank.*;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.*;
 
 import java.net.URI;
@@ -54,20 +53,19 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 		 * If it is set, the record is itself not an accepted name record, so we
 		 * must skip it.
 		 */
-		return val(input.getRecord(), acceptedNameUsageID) != null;
+		return input.get(acceptedNameUsageID) != null;
 	}
 
 	@Override
 	protected String getObjectID()
 	{
-		return val(input.getRecord(), taxonID);
+		return input.get(taxonID);
 	}
 
 	@Override
 	protected List<ESTaxon> doTransform()
 	{
-		CSVRecord rec = input.getRecord();
-		String rank = val(rec, taxonRank);
+		String rank = input.get(taxonRank);
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
 			if (logger.isDebugEnabled())
@@ -79,10 +77,10 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 			stats.objectsProcessed++;
 			ESTaxon taxon = new ESTaxon();
 			taxon.setSourceSystem(SourceSystem.COL);
-			taxon.setSourceSystemId(val(rec, taxonID));
-			taxon.setTaxonRank(val(rec, taxonRank));
-			taxon.setAcceptedName(getScientificName(rec));
-			taxon.setDefaultClassification(getClassification(rec));
+			taxon.setSourceSystemId(input.get(taxonID));
+			taxon.setTaxonRank(input.get(taxonRank));
+			taxon.setAcceptedName(getScientificName());
+			taxon.setDefaultClassification(getClassification());
 			addMonomials(taxon);
 			setRecordURI(taxon);
 			setTaxonDescription(taxon);
@@ -97,7 +95,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 
 	private void setTaxonDescription(ESTaxon taxon)
 	{
-		String descr = val(input.getRecord(), description);
+		String descr = input.get(description);
 		if (descr != null) {
 			TaxonDescription td = new TaxonDescription();
 			td.setDescription(descr);
@@ -107,7 +105,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 
 	private void setRecordURI(ESTaxon taxon)
 	{
-		String refs = val(input.getRecord(), references);
+		String refs = input.get(references);
 		if (refs == null) {
 			if (!suppressErrors)
 				warn("RecordURI not set. Missing Catalogue Of Life URL");
@@ -136,30 +134,30 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 		}
 	}
 
-	private static DefaultClassification getClassification(CSVRecord record)
+	private DefaultClassification getClassification()
 	{
 		DefaultClassification dc = new DefaultClassification();
-		dc.setKingdom(val(record, kingdom));
-		dc.setPhylum(val(record, phylum));
-		dc.setClassName(val(record, classRank));
-		dc.setOrder(val(record, order));
-		dc.setSuperFamily(val(record, superfamily));
-		dc.setFamily(val(record, family));
-		dc.setGenus(val(record, genericName));
-		dc.setSubgenus(val(record, subgenus));
-		dc.setSpecificEpithet(val(record, specificEpithet));
-		dc.setInfraspecificEpithet(val(record, infraspecificEpithet));
+		dc.setKingdom(input.get(kingdom));
+		dc.setPhylum(input.get(phylum));
+		dc.setClassName(input.get(classRank));
+		dc.setOrder(input.get(order));
+		dc.setSuperFamily(input.get(superfamily));
+		dc.setFamily(input.get(family));
+		dc.setGenus(input.get(genericName));
+		dc.setSubgenus(input.get(subgenus));
+		dc.setSpecificEpithet(input.get(specificEpithet));
+		dc.setInfraspecificEpithet(input.get(infraspecificEpithet));
 		return dc;
 	}
 
-	private static ScientificName getScientificName(CSVRecord record)
+	private ScientificName getScientificName()
 	{
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, scientificName));
-		sn.setGenusOrMonomial(val(record, genericName));
-		sn.setSpecificEpithet(val(record, specificEpithet));
-		sn.setInfraspecificEpithet(val(record, infraspecificEpithet));
-		sn.setAuthorshipVerbatim(val(record, scientificNameAuthorship));
+		sn.setFullScientificName(input.get(scientificName));
+		sn.setGenusOrMonomial(input.get(genericName));
+		sn.setSpecificEpithet(input.get(specificEpithet));
+		sn.setInfraspecificEpithet(input.get(infraspecificEpithet));
+		sn.setAuthorshipVerbatim(input.get(scientificNameAuthorship));
 		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
 		return sn;
 	}

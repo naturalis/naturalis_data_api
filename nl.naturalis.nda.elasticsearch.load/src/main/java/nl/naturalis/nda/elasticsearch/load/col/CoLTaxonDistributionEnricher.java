@@ -96,9 +96,9 @@ public class CoLTaxonDistributionEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String taxonId = CSVImportUtil.val(record, CoLVernacularNameCsvField.taxonID.ordinal());
+					String taxonId = null;//CSVImportUtil.val(record, CoLVernacularNameCsvField.taxonID.ordinal());
 					String esId = /*CoLImportAll.ID_PREFIX +*/ taxonId;
-					String loc = CSVImportUtil.val(record, CoLVernacularNameCsvField.locality.ordinal());
+					String loc = null;//CSVImportUtil.val(record, CoLVernacularNameCsvField.locality.ordinal());
 
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {

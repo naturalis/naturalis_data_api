@@ -1,14 +1,13 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
-import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.getScientificName;
-import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.acceptedNameUsageID;
-import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.scientificName;
+import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.*;
 
 import java.util.Arrays;
 import java.util.List;
 
+import nl.naturalis.nda.domain.ScientificName;
+import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
@@ -18,8 +17,7 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.Transformer;
-
-import org.apache.commons.csv.CSVRecord;
+import nl.naturalis.nda.elasticsearch.load.normalize.TaxonomicStatusNormalizer;
 
 /**
  * A implementation of {@link CSVTransformer} that enriches {@link ESTaxon}
@@ -31,6 +29,7 @@ import org.apache.commons.csv.CSVRecord;
 class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTaxon> {
 
 	private final IndexManagerNative index;
+	private final TaxonomicStatusNormalizer statusNormalizer;
 
 	private CoLTaxonLoader loader;
 
@@ -38,6 +37,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	{
 		super(stats);
 		this.index = Registry.getInstance().getNbaIndexManager();
+		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
 
 	void setLoader(CoLTaxonLoader loader)
@@ -53,13 +53,13 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		 * If it is empty, the record is itself IS an accepted name record, so
 		 * we must skip it.
 		 */
-		return val(input.getRecord(), acceptedNameUsageID) == null;
+		return input.get(acceptedNameUsageID) == null;
 	}
 
 	@Override
 	protected String getObjectID()
 	{
-		return val(input.getRecord(), acceptedNameUsageID);
+		return input.get(acceptedNameUsageID);
 	}
 
 	@Override
@@ -68,9 +68,8 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			CSVRecord record = input.getRecord();
 			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
-			String synonym = val(record, scientificName);
+			String synonym = input.get(scientificName);
 			ESTaxon taxon = loader.findInQueue(elasticID);
 			if (taxon != null) {
 				/*
@@ -86,7 +85,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 				 */
 				if (!taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
-					taxon.addSynonym(getScientificName(record));
+					taxon.addSynonym(getScientificName());
 				}
 				else {
 					stats.objectsRejected++;
@@ -103,7 +102,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 			if (taxon != null) {
 				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
-					taxon.addSynonym(getScientificName(record));
+					taxon.addSynonym(getScientificName());
 					return Arrays.asList(taxon);
 				}
 				if (!suppressErrors) {
@@ -137,8 +136,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	{
 		stats.recordsProcessed++;
 		this.input = recInf;
-		CSVRecord record = recInf.getRecord();
-		objectID = val(record, acceptedNameUsageID);
+		objectID = input.get(acceptedNameUsageID);
 		if (objectID == null) {
 			// This is an accepted name
 			stats.recordsSkipped++;
@@ -171,4 +169,16 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		return result;
 	}
 
+	private ScientificName getScientificName()
+	{
+		ScientificName sn = new ScientificName();
+		sn.setFullScientificName(input.get(scientificName));
+		sn.setGenusOrMonomial(input.get(genericName));
+		sn.setSpecificEpithet(input.get(specificEpithet));
+		sn.setInfraspecificEpithet(input.get(infraspecificEpithet));
+		sn.setAuthorshipVerbatim(input.get(scientificNameAuthorship));
+		TaxonomicStatus status = statusNormalizer.getEnumConstant(input.get(taxonomicStatus));
+		sn.setTaxonomicStatus(status);
+		return sn;
+	}
 }

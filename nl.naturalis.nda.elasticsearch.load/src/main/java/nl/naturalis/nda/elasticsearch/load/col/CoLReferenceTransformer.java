@@ -1,6 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLReferenceCsvField.date;
@@ -18,10 +17,8 @@ import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.*;
 
-import org.apache.commons.csv.CSVRecord;
-
 /**
- * A subclass of {@link CSVTransformer} that transforms CSV records into
+ * Subclass of {@link CSVTransformer} that transforms CSV records into
  * {@link ESTaxon} objects.
  * 
  * @author Ayco Holleman
@@ -42,7 +39,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	@Override
 	protected String getObjectID()
 	{
-		return val(input.getRecord(), taxonID);
+		return input.get(taxonID);
 	}
 
 	@Override
@@ -62,7 +59,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 			if (taxon == null) {
 				stats.objectsRejected++;
 				if (!suppressErrors) {
-					error("Orphan reference: " + val(input.getRecord(), title));
+					error("Orphan reference: " + input.get(title));
 				}
 			}
 			else {
@@ -104,7 +101,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	public List<ESTaxon> clean(CSVRecordInfo<CoLReferenceCsvField> recInf)
 	{
 		this.input = recInf;
-		objectID = val(recInf.getRecord(), taxonID);
+		objectID = input.get(taxonID);
 		// Not much can go wrong here, so:
 		stats.recordsProcessed++;
 		stats.recordsAccepted++;
@@ -136,16 +133,15 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 
 	private Reference createReference()
 	{
-		CSVRecord record = input.getRecord();
 		Reference ref = new Reference();
-		ref.setTitleCitation(val(record, title));
-		ref.setCitationDetail(val(record, description));
+		ref.setTitleCitation(input.get(title));
+		ref.setCitationDetail(input.get(description));
 		String s;
-		if ((s = val(record, date)) != null) {
+		if ((s = input.get(date)) != null) {
 			Date pubDate = TransformUtil.parseDate(s);
 			ref.setPublicationDate(pubDate);
 		}
-		if ((s = val(record, creator)) != null) {
+		if ((s = input.get(creator)) != null) {
 			ref.setAuthor(new Person(s));
 		}
 		return ref;

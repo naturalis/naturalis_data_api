@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
 import static nl.naturalis.nda.domain.SourceSystem.BRAHMS;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
@@ -31,7 +30,6 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
-import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.ConfigObject;
 
 /**
@@ -60,7 +58,7 @@ class BrahmsMultiMediaTransformer extends
 	@Override
 	protected String getObjectID()
 	{
-		return val(input.getRecord(), BARCODE);
+		return input.get(BARCODE);
 	}
 
 	@Override
@@ -69,7 +67,7 @@ class BrahmsMultiMediaTransformer extends
 		// No record-level validations for Brahms multimedia, so:
 		stats.recordsAccepted++;
 		ArrayList<ESMultiMediaObject> result = new ArrayList<>(3);
-		String images = val(input.getRecord(), IMAGELIST);
+		String images = input.get(IMAGELIST);
 		if (images != null) {
 			String[] urls = images.split(",");
 			for (int i = 0; i < urls.length; ++i) {
@@ -87,7 +85,6 @@ class BrahmsMultiMediaTransformer extends
 		stats.objectsProcessed++;
 		try {
 			URI uri = getUri(url);
-			CSVRecord rec = input.getRecord();
 			ESMultiMediaObject mmo = newMultiMediaObject();
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
 			mmo.setUnitID(objectID + '_' + uriHash);
@@ -95,10 +92,10 @@ class BrahmsMultiMediaTransformer extends
 			mmo.setAssociatedSpecimenReference(objectID);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, BRAHMS);
 			mmo.setTheme(themes);
-			mmo.setDescription(val(rec, PLANTDESC));
-			mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(rec)));
-			mmo.setIdentifications(Arrays.asList(getIdentification(rec)));
-			mmo.setSpecimenTypeStatus(typeStatusNormalizer.normalize(val(rec, TYPE)));
+			mmo.setDescription(input.get(PLANTDESC));
+			mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(input)));
+			mmo.setIdentifications(Arrays.asList(getIdentification()));
+			mmo.setSpecimenTypeStatus(typeStatusNormalizer.normalize(input.get(TYPE)));
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
 			stats.objectsAccepted++;
 			return mmo;
@@ -134,19 +131,19 @@ class BrahmsMultiMediaTransformer extends
 		return new URI(url);
 	}
 
-	private static MultiMediaContentIdentification getIdentification(CSVRecord record)
+	private MultiMediaContentIdentification getIdentification()
 	{
 		MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
-		String s = val(record, VERNACULAR);
+		String s = input.get(VERNACULAR);
 		if (s != null) {
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
 		}
-		String y = val(record, YEARIDENT);
-		String m = val(record, MONTHIDENT);
-		String d = val(record, DAYIDENT);
+		String y = input.get(YEARIDENT);
+		String m = input.get(MONTHIDENT);
+		String d = input.get(DAYIDENT);
 		identification.setDateIdentified(getDate(y, m, d));
-		ScientificName sn = getScientificName(record);
-		DefaultClassification dc = getDefaultClassification(record, sn);
+		ScientificName sn = getScientificName(input);
+		DefaultClassification dc = getDefaultClassification(input, sn);
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
 		identification.setSystemClassification(getSystemClassification(dc));

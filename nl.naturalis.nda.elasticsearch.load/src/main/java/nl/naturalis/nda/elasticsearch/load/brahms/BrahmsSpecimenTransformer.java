@@ -1,21 +1,15 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
 import static nl.naturalis.nda.domain.SourceSystem.BRAHMS;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getFloat;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.DocumentType.SPECIMEN;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.BRAHMS_ABCD_COLLECTION_TYPE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.BRAHMS_ABCD_SOURCE_ID;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.ES_ID_PREFIX_BRAHMS;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.*;
 import static nl.naturalis.nda.elasticsearch.load.LoadUtil.getSpecimenPurl;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.NOTONLINE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.PLANTDESC;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.TYPE;
+import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getFloat;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getGatheringEvent;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSpecimenIdentification;
 
@@ -29,7 +23,6 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
-import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.ConfigObject;
 
 /**
@@ -57,7 +50,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 	@Override
 	protected String getObjectID()
 	{
-		return val(input.getRecord(), BARCODE);
+		return input.get(BARCODE);
 	}
 
 	@Override
@@ -67,7 +60,6 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			CSVRecord record = input.getRecord();
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
@@ -75,21 +67,21 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 			setConstants(specimen);
 			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);
 			specimen.setTheme(themes);
-			String s = val(record, CATEGORY);
+			String s = input.get(CATEGORY);
 			if (s == null)
 				specimen.setRecordBasis("Preserved Specimen");
 			else
 				specimen.setRecordBasis(s);
-			specimen.setAssemblageID(getAssemblageID(record));
-			specimen.setNotes(val(record, PLANTDESC));
-			specimen.setTypeStatus(getTypeStatus(record));
-			s = val(record, NOTONLINE);
+			specimen.setAssemblageID(getAssemblageID());
+			specimen.setTypeStatus(getTypeStatus());
+			specimen.setNotes(input.get(PLANTDESC));
+			s = input.get(NOTONLINE);
 			if (s == null || s.equals("0"))
 				specimen.setObjectPublic(true);
 			else
 				specimen.setObjectPublic(false);
-			specimen.setGatheringEvent(getGatheringEvent(record));
-			specimen.addIndentification(getSpecimenIdentification(record));
+			specimen.setGatheringEvent(getGatheringEvent(input));
+			specimen.addIndentification(getSpecimenIdentification(input));
 			stats.objectsAccepted++;
 			return Arrays.asList(specimen);
 		}
@@ -114,17 +106,17 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 		specimen.setCollectionType(BRAHMS_ABCD_COLLECTION_TYPE);
 	}
 
-	private static String getAssemblageID(CSVRecord record)
+	private String getAssemblageID()
 	{
-		Float f = getFloat(record, BrahmsCsvField.BRAHMS);
+		Float f = getFloat(input, BrahmsCsvField.BRAHMS);
 		if (f == null)
 			return null;
 		return ES_ID_PREFIX_BRAHMS + f.intValue();
 	}
 
-	private static String getTypeStatus(CSVRecord record)
+	private String getTypeStatus()
 	{
-		return typeStatusNormalizer.normalize(val(record, TYPE));
+		return typeStatusNormalizer.normalize(input.get(TYPE));
 	}
 
 }

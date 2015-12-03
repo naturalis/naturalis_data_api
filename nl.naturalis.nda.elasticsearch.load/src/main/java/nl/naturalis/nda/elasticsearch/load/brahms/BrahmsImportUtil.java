@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDouble;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.*;
 
 import java.io.File;
@@ -15,6 +13,7 @@ import java.util.List;
 import nl.naturalis.nda.domain.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
+import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
@@ -34,6 +33,9 @@ class BrahmsImportUtil {
 	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+
+	private static final String MSG_INVALID_INTEGER = "Invalid integer in field %s: \"%s\" (value set to 0)";
+	private static final String MSG_INVALID_NUMBER = "Invalid number in field %s: \"%s\" (value set to 0)";
 
 	private BrahmsImportUtil()
 	{
@@ -122,7 +124,7 @@ class BrahmsImportUtil {
 			int monthInt = (int) Float.parseFloat(month);
 			if (monthInt == 0)
 				return null;
-			
+
 			int dayInt;
 			if ((day = day.trim()).length() == 0)
 				dayInt = 1;
@@ -217,18 +219,18 @@ class BrahmsImportUtil {
 	 * @param record
 	 * @return
 	 */
-	static SpecimenIdentification getSpecimenIdentification(CSVRecord record)
+	static SpecimenIdentification getSpecimenIdentification(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		SpecimenIdentification identification = new SpecimenIdentification();
-		String s = val(record, DETBY);
+		String s = record.get(DETBY);
 		if (s != null)
 			identification.addIdentifier(new Agent(s));
-		s = val(record, VERNACULAR);
+		s = record.get(VERNACULAR);
 		if (s != null)
 			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
-		String y = val(record, YEARIDENT);
-		String m = val(record, MONTHIDENT);
-		String d = val(record, DAYIDENT);
+		String y = record.get(YEARIDENT);
+		String m = record.get(MONTHIDENT);
+		String d = record.get(DAYIDENT);
 		identification.setDateIdentified(getDate(y, m, d));
 		ScientificName sn = getScientificName(record);
 		DefaultClassification dc = getDefaultClassification(record, sn);
@@ -245,13 +247,13 @@ class BrahmsImportUtil {
 	 * @param record
 	 * @return
 	 */
-	static ScientificName getScientificName(CSVRecord record)
+	static ScientificName getScientificName(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, SPECIES));
+		sn.setFullScientificName(record.get(SPECIES));
 		sn.setAuthorshipVerbatim(getAuthor(record));
-		sn.setGenusOrMonomial(val(record, GENUS));
-		sn.setSpecificEpithet(val(record, SP1));
+		sn.setGenusOrMonomial(record.get(GENUS));
+		sn.setSpecificEpithet(record.get(SP1));
 		sn.setInfraspecificMarker(getInfraspecificMarker(record));
 		sn.setInfraspecificEpithet(getInfraspecificEpithet(record));
 		if (sn.getFullScientificName() == null) {
@@ -296,14 +298,15 @@ class BrahmsImportUtil {
 	 * @param sn
 	 * @return
 	 */
-	static DefaultClassification getDefaultClassification(CSVRecord record, ScientificName sn)
+	static DefaultClassification getDefaultClassification(CSVRecordInfo<BrahmsCsvField> record,
+			ScientificName sn)
 	{
 		DefaultClassification dc = TransformUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
 		// Phylum deliberately not set
-		dc.setClassName(val(record, FAMCLASS));
-		dc.setOrder(val(record, ORDER));
-		dc.setFamily(val(record, FAMILY));
+		dc.setClassName(record.get(FAMCLASS));
+		dc.setOrder(record.get(ORDER));
+		dc.setFamily(record.get(FAMILY));
 		return dc;
 	}
 
@@ -313,13 +316,13 @@ class BrahmsImportUtil {
 	 * @param record
 	 * @return
 	 */
-	static ESGatheringEvent getGatheringEvent(CSVRecord record)
+	static ESGatheringEvent getGatheringEvent(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		final ESGatheringEvent ge = new ESGatheringEvent();
-		ge.setWorldRegion(val(record, CONTINENT));
+		ge.setWorldRegion(record.get(CONTINENT));
 		ge.setContinent(ge.getWorldRegion());
-		ge.setCountry(val(record, COUNTRY));
-		ge.setProvinceState(val(record, MAJORAREA));
+		ge.setCountry(record.get(COUNTRY));
+		ge.setProvinceState(record.get(MAJORAREA));
 		StringBuilder sb = new StringBuilder(50);
 		if (ge.getWorldRegion() != null) {
 			sb.append(ge.getWorldRegion());
@@ -336,7 +339,7 @@ class BrahmsImportUtil {
 			}
 			sb.append(ge.getProvinceState());
 		}
-		String locNotes = val(record, LOCNOTES);
+		String locNotes = record.get(LOCNOTES);
 		if (locNotes != null) {
 			ge.setLocality(locNotes);
 			if (sb.length() != 0) {
@@ -345,9 +348,9 @@ class BrahmsImportUtil {
 			sb.append(locNotes);
 		}
 		ge.setLocalityText(sb.toString());
-		String y = val(record, YEAR);
-		String m = val(record, MONTH);
-		String d = val(record, DAY);
+		String y = record.get(YEAR);
+		String m = record.get(MONTH);
+		String d = record.get(DAY);
 		ge.setDateTimeBegin(getDate(y, m, d, false));
 		ge.setDateTimeEnd(getDate(y, m, d, true));
 		Double lat = getDouble(record, LATITUDE);
@@ -367,7 +370,7 @@ class BrahmsImportUtil {
 		if (lat != null || lon != null) {
 			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
 		}
-		String collector = val(record, COLLECTOR);
+		String collector = record.get(COLLECTOR);
 		if (collector != null) {
 			ge.setGatheringPersons(Arrays.asList(new Person(collector)));
 		}
@@ -405,42 +408,72 @@ class BrahmsImportUtil {
 		return sc;
 	}
 
-	private static String getAuthor(CSVRecord record)
+	private static String getAuthor(CSVRecordInfo<BrahmsCsvField> record)
 	{
-		if (val(record, SP3) == null) {
-			if (val(record, SP2) == null) {
-				return val(record, AUTHOR1);
+		if (record.get(SP3) == null) {
+			if (record.get(SP2) == null) {
+				return record.get(AUTHOR1);
 			}
-			return val(record, AUTHOR2);
+			return record.get(AUTHOR2);
 		}
-		return val(record, AUTHOR3);
+		return record.get(AUTHOR3);
 	}
 
-	private static String getInfraspecificMarker(CSVRecord record)
+	private static String getInfraspecificMarker(CSVRecordInfo<BrahmsCsvField> record)
 	{
-		String s = val(record, RANK2);
-		return s == null ? val(record, RANK1) : s;
+		String s = record.get(RANK2);
+		return s == null ? record.get(RANK1) : s;
 	}
 
-	private static String getInfraspecificEpithet(CSVRecord record)
+	private static String getInfraspecificEpithet(CSVRecordInfo<BrahmsCsvField> record)
 	{
-		String s = val(record, SP3);
-		return s == null ? val(record, SP2) : s;
+		String s = record.get(SP3);
+		return s == null ? record.get(SP2) : s;
 	}
 
-	private static String getTaxonRank(CSVRecord record)
+	private static String getTaxonRank(CSVRecordInfo<BrahmsCsvField> record)
 	{
-		if (val(record, SP3) == null) {
-			if (val(record, SP2) == null) {
-				if (val(record, SP1) == null) {
+		if (record.get(SP3) == null) {
+			if (record.get(SP2) == null) {
+				if (record.get(SP1) == null) {
 					// TODO: replace literal with DefaultClassification.Rank
 					return "genus";
 				}
 				return "species";
 			}
-			return val(record, RANK1);
+			return record.get(RANK1);
 		}
-		return val(record, RANK2);
+		return record.get(RANK2);
+	}
+
+	public static Double getDouble(CSVRecordInfo<BrahmsCsvField> record, BrahmsCsvField field)
+	{
+		String s = record.get(field);
+		if (s == null)
+			return null;
+		try {
+			return Double.valueOf(s);
+		}
+		catch (NumberFormatException e) {
+			if (!suppressErrors)
+				logger.warn(String.format(MSG_INVALID_NUMBER, field.ordinal(), s));
+			return null;
+		}
+	}
+
+	public static Float getFloat(CSVRecordInfo<BrahmsCsvField> record, BrahmsCsvField field)
+	{
+		String s = record.get(field);
+		if (s == null)
+			return null;
+		try {
+			return Float.valueOf(s);
+		}
+		catch (NumberFormatException e) {
+			if (!suppressErrors)
+				logger.warn(String.format(MSG_INVALID_NUMBER, field.ordinal(), s));
+			return null;
+		}
 	}
 
 	private static File getDataDir()

@@ -10,10 +10,13 @@ import java.util.List;
  * @author Ayco Holleman
  *
  * @param <T>
+ *            An enum whose constants represent the fields in the CSV file.
+ * @param <OUTPUT>
  *            The type of object that is output by the transformer.
  */
-public interface CSVTransformer<T> extends Transformer<CSVRecordInfo, T> {
+public interface CSVTransformer<T extends Enum<T>, OUTPUT> extends
+		Transformer<CSVRecordInfo<T>, OUTPUT> {
 
-	List<T> transform(CSVRecordInfo record);
+	List<OUTPUT> transform(CSVRecordInfo<T> record);
 
 }

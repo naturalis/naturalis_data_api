@@ -16,14 +16,7 @@ import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.Reference;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
-import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
-import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
-import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.LoadConstants;
-import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.TransformUtil;
-import nl.naturalis.nda.elasticsearch.load.Transformer;
+import nl.naturalis.nda.elasticsearch.load.*;
 
 import org.apache.commons.csv.CSVRecord;
 
@@ -34,7 +27,7 @@ import org.apache.commons.csv.CSVRecord;
  * @author Ayco Holleman
  *
  */
-class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
+class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvField, ESTaxon> {
 
 	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
@@ -45,7 +38,6 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 		this.index = Registry.getInstance().getNbaIndexManager();
 		this.loader = loader;
 	}
-
 
 	@Override
 	protected String getObjectID()
@@ -109,7 +101,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<ESTaxon> {
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> clean(CSVRecordInfo recInf)
+	public List<ESTaxon> clean(CSVRecordInfo<CoLReferenceCsvField> recInf)
 	{
 		this.input = recInf;
 		objectID = val(recInf.getRecord(), taxonID);

@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
-import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.createExtractor;
 
 import java.io.File;
 import java.util.List;
@@ -62,7 +61,7 @@ public class CoLTaxonImporter {
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
-		CSVExtractor extractor = null;
+		CSVExtractor<CoLTaxonCsvField> extractor = null;
 		CoLTaxonTransformer transformer = null;
 		CoLTaxonLoader loader = null;
 		try {
@@ -71,13 +70,13 @@ public class CoLTaxonImporter {
 				throw new ETLRuntimeException("No such file: " + path);
 			LoadUtil.truncate(LUCENE_TYPE_TAXON, SourceSystem.COL);
 			stats = new ETLStatistics();
-			extractor = createExtractor(stats, f, suppressErrors);
+			extractor = createExtractor(stats, f);
 			transformer = new CoLTaxonTransformer(stats);
 			transformer.setColYear(colYear);
 			transformer.setSuppressErrors(suppressErrors);
 			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
 			logger.info("Processing file " + f.getAbsolutePath());
-			for (CSVRecordInfo rec : extractor) {
+			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
 				if (rec == null) {
 					continue;
 				}
@@ -99,4 +98,14 @@ public class CoLTaxonImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
+
+	private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)
+	{
+		CSVExtractor<CoLTaxonCsvField> extractor;
+		extractor = new CSVExtractor<>(f, stats);
+		extractor.setSkipHeader(true);
+		extractor.setDelimiter('\t');
+		extractor.setSuppressErrors(suppressErrors);
+		return extractor;
+	}
 }

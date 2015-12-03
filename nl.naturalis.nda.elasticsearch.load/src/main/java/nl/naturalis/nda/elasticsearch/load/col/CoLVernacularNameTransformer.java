@@ -30,7 +30,8 @@ import org.slf4j.Logger;
  * @author Ayco Holleman
  *
  */
-class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
+class CoLVernacularNameTransformer extends
+		AbstractCSVTransformer<CoLVernacularNameCsvField, ESTaxon> {
 
 	static Logger logger = Registry.getInstance().getLogger(CoLVernacularNameTransformer.class);
 
@@ -43,7 +44,6 @@ class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
 		this.index = Registry.getInstance().getNbaIndexManager();
 		this.loader = loader;
 	}
-
 
 	@Override
 	protected String getObjectID()
@@ -107,7 +107,7 @@ class CoLVernacularNameTransformer extends AbstractCSVTransformer<ESTaxon> {
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> clean(CSVRecordInfo recInf)
+	public List<ESTaxon> clean(CSVRecordInfo<CoLVernacularNameCsvField> recInf)
 	{
 		this.input = recInf;
 		objectID = val(recInf.getRecord(), taxonID);

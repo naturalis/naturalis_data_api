@@ -38,7 +38,7 @@ import org.domainobject.util.ConfigObject;
  * @author Ayco Holleman
  *
  */
-class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
+class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, ESSpecimen> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;

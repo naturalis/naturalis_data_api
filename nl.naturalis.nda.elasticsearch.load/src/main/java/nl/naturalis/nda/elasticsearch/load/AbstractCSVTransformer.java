@@ -10,7 +10,8 @@ import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.getDefaultMessag
  * @param <OUTPUT>
  *            The type of object that is output from the transformer
  */
-public abstract class AbstractCSVTransformer<OUTPUT> extends AbstractTransformer<CSVRecordInfo, OUTPUT> {
+public abstract class AbstractCSVTransformer<T extends Enum<T>, OUTPUT> extends
+		AbstractTransformer<CSVRecordInfo<T>, OUTPUT> {
 
 	public AbstractCSVTransformer(ETLStatistics stats)
 	{

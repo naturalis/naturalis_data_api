@@ -28,7 +28,7 @@ import org.apache.commons.csv.CSVRecord;
  * @author Ayco Holleman
  *
  */
-class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
+class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTaxon> {
 
 	private final IndexManagerNative index;
 
@@ -133,7 +133,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<ESTaxon> {
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> clean(CSVRecordInfo recInf)
+	public List<ESTaxon> clean(CSVRecordInfo<CoLTaxonCsvField> recInf)
 	{
 		stats.recordsProcessed++;
 		this.input = recInf;

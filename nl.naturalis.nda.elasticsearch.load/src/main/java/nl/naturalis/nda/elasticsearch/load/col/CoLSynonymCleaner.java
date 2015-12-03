@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.createExtractor;
-
 import java.io.File;
 import java.util.List;
 
@@ -62,7 +60,7 @@ public class CoLSynonymCleaner {
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
-		CSVExtractor extractor = null;
+		CSVExtractor<CoLTaxonCsvField> extractor = null;
 		CoLTaxonLoader loader = null;
 		CoLSynonymTransformer transformer = null;
 		try {
@@ -71,13 +69,13 @@ public class CoLSynonymCleaner {
 				throw new ETLRuntimeException("No such file: " + path);
 			stats = new ETLStatistics();
 			stats.setNested(true);
-			extractor = createExtractor(stats, f, suppressErrors);
+			extractor = createExtractor(stats, f);
 			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
 			transformer = new CoLSynonymTransformer(stats);
 			transformer.setSuppressErrors(suppressErrors);
 			transformer.setLoader(loader);
 			logger.info("Processing file " + f.getAbsolutePath());
-			for (CSVRecordInfo rec : extractor) {
+			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
 				List<ESTaxon> taxa = transformer.clean(rec);
@@ -97,4 +95,14 @@ public class CoLSynonymCleaner {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
+
+	private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)
+	{
+		CSVExtractor<CoLTaxonCsvField> extractor;
+		extractor = new CSVExtractor<>(f, stats);
+		extractor.setSkipHeader(true);
+		extractor.setDelimiter('\t');
+		extractor.setSuppressErrors(suppressErrors);
+		return extractor;
+	}
 }

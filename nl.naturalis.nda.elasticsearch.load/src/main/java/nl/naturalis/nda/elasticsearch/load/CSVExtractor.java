@@ -26,7 +26,7 @@ import org.slf4j.Logger;
  * @author Ayco Holleman
  *
  */
-public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecordInfo> {
+public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T>>, Iterable<CSVRecordInfo<T>> {
 
 	/**
 	 * Thrown by a {@code CSVExtractor} if a client specified an invalid field
@@ -177,7 +177,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	}
 
 	@Override
-	public Iterator<CSVRecordInfo> iterator()
+	public Iterator<CSVRecordInfo<T>> iterator()
 	{
 		if (lnr != null)
 			IOUtil.close(lnr);
@@ -205,7 +205,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	}
 
 	@Override
-	public CSVRecordInfo next()
+	public CSVRecordInfo<T> next()
 	{
 		if (lnr == null || line == null) {
 			throw new IllegalStateException("Iterator not initialized");
@@ -215,7 +215,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 		try {
 			CSVParser parser = CSVParser.parse(line, csvFormat);
 			CSVRecord record = (CSVRecord) nextRecordMethod.invoke(parser);
-			return new CSVRecordInfo(record, line, lnr.getLineNumber());
+			return new CSVRecordInfo<>(record, line, lnr.getLineNumber());
 		}
 		catch (Throwable t) {
 			stats.badInput++;

@@ -40,7 +40,8 @@ import org.domainobject.util.ConfigObject;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<ESMultiMediaObject> {
+class BrahmsMultiMediaTransformer extends
+		AbstractCSVTransformer<BrahmsCsvField, ESMultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;

@@ -26,7 +26,7 @@ import org.apache.commons.csv.CSVRecord;
  * @author Ayco Holleman
  *
  */
-class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
+class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTaxon> {
 
 	private static final List<String> allowedTaxonRanks;
 

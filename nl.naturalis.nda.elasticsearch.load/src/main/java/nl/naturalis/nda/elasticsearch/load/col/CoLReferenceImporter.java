@@ -1,7 +1,5 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.col.CoLImportUtil.createExtractor;
-
 import java.io.File;
 import java.util.List;
 
@@ -56,7 +54,7 @@ public class CoLReferenceImporter {
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = null;
-		CSVExtractor extractor = null;
+		CSVExtractor<CoLReferenceCsvField> extractor = null;
 		CoLReferenceTransformer transformer = null;
 		CoLTaxonLoader loader = null;
 		try {
@@ -65,12 +63,12 @@ public class CoLReferenceImporter {
 				throw new ETLRuntimeException("No such file: " + path);
 			stats = new ETLStatistics();
 			stats.setNested(true);
-			extractor = createExtractor(stats, f, suppressErrors);
+			extractor = createExtractor(stats, f);
 			loader = new CoLTaxonLoader(stats,esBulkRequestSize);
 			transformer = new CoLReferenceTransformer(stats, loader);
 			transformer.setSuppressErrors(suppressErrors);
 			logger.info("Processing file " + f.getAbsolutePath());
-			for (CSVRecordInfo rec : extractor) {
+			for (CSVRecordInfo<CoLReferenceCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
 				List<ESTaxon> taxa = transformer.transform(rec);
@@ -89,4 +87,14 @@ public class CoLReferenceImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 	
+
+	private CSVExtractor<CoLReferenceCsvField> createExtractor(ETLStatistics stats, File f)
+	{
+		CSVExtractor<CoLReferenceCsvField> extractor;
+		extractor = new CSVExtractor<>(f, stats);
+		extractor.setSkipHeader(true);
+		extractor.setDelimiter('\t');
+		extractor.setSuppressErrors(suppressErrors);
+		return extractor;
+	}
 }

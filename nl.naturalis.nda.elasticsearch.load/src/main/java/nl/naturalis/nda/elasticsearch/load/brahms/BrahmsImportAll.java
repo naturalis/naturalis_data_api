@@ -157,7 +157,7 @@ public class BrahmsImportAll {
 		ETLStatistics multimediaStats = new ETLStatistics();
 		multimediaStats.setOneToMany(true);
 		ETLStatistics extractionStats = new ETLStatistics();
-		CSVExtractor extractor = null;
+		CSVExtractor<BrahmsCsvField> extractor = null;
 		BrahmsSpecimenTransformer specimenTransformer = null;
 		BrahmsMultiMediaTransformer multimediaTransformer = null;
 		BrahmsSpecimenLoader specimenLoader = null;
@@ -168,7 +168,7 @@ public class BrahmsImportAll {
 			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
 			multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
 			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
-			for (CSVRecordInfo rec : extractor) {
+			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
 				specimenLoader.load(specimenTransformer.transform(rec));
@@ -191,9 +191,9 @@ public class BrahmsImportAll {
 		logger.info(" ");
 	}
 
-	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)
+	private CSVExtractor<BrahmsCsvField> createExtractor(File f, ETLStatistics extractionStats)
 	{
-		CSVExtractor extractor = new CSVExtractor(f, extractionStats);
+		CSVExtractor<BrahmsCsvField> extractor = new CSVExtractor<>(f, extractionStats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter(',');
 		extractor.setCharset(Charset.forName("Windows-1252"));

@@ -20,7 +20,14 @@ public class CSVImportUtil {
 	private CSVImportUtil()
 	{
 	}
-
+	
+	/**
+	 * Returns the default prefix for messages written to the log file.
+	 * 
+	 * @param lineNo The line number within the CSV file
+	 * @param objectID The ID of the object
+	 * @return
+	 */
 	public static String getDefaultMessagePrefix(int lineNo, String objectID)
 	{
 		return "Line " + lpad(lineNo, 6, '0', " | ") + rpad(objectID, 16, " | ");

@@ -399,7 +399,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 
 	private String getPhaseOrStage(Element record)
 	{
-		String raw = val(record, "abcd:PhaseOrStage");
+		String raw = val(record, "dwc:lifeStage");
 		if (raw == null)
 			return null;
 		String result = posNormalizer.normalize(raw);
@@ -425,7 +425,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 
 	private String getSex(Element record)
 	{
-		String raw = val(record, "abcd:Sex");
+		String raw = val(record, "dwc:sex");
 		if (raw == null)
 			return null;
 		String result = sexNormalizer.normalize(raw);

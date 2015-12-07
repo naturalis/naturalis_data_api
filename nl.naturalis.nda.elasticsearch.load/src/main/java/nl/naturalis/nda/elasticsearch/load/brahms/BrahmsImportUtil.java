@@ -34,7 +34,6 @@ class BrahmsImportUtil {
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 
-	private static final String MSG_INVALID_INTEGER = "Invalid integer in field %s: \"%s\" (value set to 0)";
 	private static final String MSG_INVALID_NUMBER = "Invalid number in field %s: \"%s\" (value set to 0)";
 
 	private BrahmsImportUtil()

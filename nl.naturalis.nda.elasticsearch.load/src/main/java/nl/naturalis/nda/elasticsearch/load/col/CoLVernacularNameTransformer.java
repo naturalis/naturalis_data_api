@@ -19,7 +19,6 @@ import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.Transformer;
 
-import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 
 /**

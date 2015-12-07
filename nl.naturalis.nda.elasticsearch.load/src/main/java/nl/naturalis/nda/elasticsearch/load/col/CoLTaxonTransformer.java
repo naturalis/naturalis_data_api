@@ -17,8 +17,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 
-import org.apache.commons.csv.CSVRecord;
-
 /**
  * The transformer component in the CoL ETL cycle.
  * 

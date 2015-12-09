@@ -11,18 +11,22 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
+import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
 import org.domainobject.util.DOMUtil;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 public class NsrExtractor implements Iterable<XMLRecordInfo> {
 
+	private static final Logger logger;
 	private static final Iterator<XMLRecordInfo> zeroRecordsIterator;
 
 	static {
+		logger = Registry.getInstance().getLogger(NsrExtractor.class);
 		zeroRecordsIterator = new Iterator<XMLRecordInfo>() {
 
 			public XMLRecordInfo next()
@@ -48,7 +52,9 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 	{
 		this.stats = stats;
 		try {
+			logger.info("Parsing XML");
 			Document doc = getDocumentBuilder().parse(f);
+			logger.info("Queueing XML records");
 			Element taxa = DOMUtil.getChild(doc.getDocumentElement());
 			elems = taxa == null ? null : DOMUtil.getChildren(taxa);
 		}
@@ -97,7 +103,7 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 	private static DocumentBuilder getDocumentBuilder()
 	{
 		DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
-		bf.setNamespaceAware(false);
+		bf.setNamespaceAware(true);
 		try {
 			return bf.newDocumentBuilder();
 		}

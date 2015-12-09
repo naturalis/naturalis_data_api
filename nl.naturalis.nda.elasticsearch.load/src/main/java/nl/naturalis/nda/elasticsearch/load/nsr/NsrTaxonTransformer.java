@@ -39,8 +39,8 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		translations.put("isInvalidNameOf", SYNONYM);
 	}
 
-	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies", "varietas",
-			"cultivar", "forma_specialis", "forma");
+	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
+			"varietas", "cultivar", "forma_specialis", "forma");
 
 	public NsrTaxonTransformer(ETLStatistics stats)
 	{
@@ -192,17 +192,19 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	private void setRecordURI(ESTaxon taxon)
 	{
 		String uri = val(input.getRecord(), "url");
-		if (uri == null)
+		if (uri == null) {
 			if (!suppressErrors)
 				warn("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId());
-			else
-				try {
-					taxon.setRecordURI(new URI(uri));
-				}
-				catch (URISyntaxException e) {
-					if (!suppressErrors)
-						warn("Invalid URL: \"%s\"", uri);
-				}
+		}
+		else {
+			try {
+				taxon.setRecordURI(new URI(uri));
+			}
+			catch (URISyntaxException e) {
+				if (!suppressErrors)
+					warn("Invalid URL: \"%s\"", uri);
+			}
+		}
 	}
 
 	private void addDescriptions(ESTaxon taxon)

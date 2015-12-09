@@ -9,6 +9,7 @@ import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.getXmlFiles;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.removeBackupExtension;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
@@ -94,7 +95,10 @@ public class NsrImporter {
 			for (File f : xmlFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
 				int i = 0;
-				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
+				NsrExtractor extractor = new NsrExtractor(f, taxonStats);
+				Iterator<XMLRecordInfo> iterator = extractor.iterator();
+				while(iterator.hasNext()) {
+					XMLRecordInfo extracted = iterator.next();
 					List<ESTaxon> taxa = tTransformer.transform(extracted);
 					taxonLoader.load(taxa);
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));

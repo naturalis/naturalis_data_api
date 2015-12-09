@@ -35,6 +35,10 @@ public interface LoadConstants {
 	 */
 	String ES_ID_PREFIX_CRS = "CRS-";
 	/**
+	 * ElastichSearch {@code _id} prefix for NDFF documents.
+	 */
+	String ES_ID_PREFIX_NDFF = "NDFF-";
+	/**
 	 * Naturalis Biodiversity Center
 	 */
 	String SOURCE_INSTITUTION_ID = "Naturalis Biodiversity Center";

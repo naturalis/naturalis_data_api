@@ -19,7 +19,6 @@
 
 
 
-
 ##########################################################
 # General settings
 ##########################################################
@@ -33,7 +32,6 @@ elasticsearch.index.name=nda
 # ElasticSearch configuration (load module only)
 elasticsearch.index.numshards=9
 elasticsearch.index.numreplicas=1
-
 
 
 
@@ -57,7 +55,6 @@ ear.install.dir=/opt/wildfly_deployments
 
 
 
-
 ##########################################################
 # Import module
 ##########################################################
@@ -73,6 +70,7 @@ nda.import.crs.datadir=/data/nda-import/data/crs
 nda.import.col.datadir=/data/nda-import/data/col
 nda.import.brahms.datadir=/data/nda-import/data/brahms
 nda.import.nsr.datadir=/data/nda-import/data/nsr
+nda.import.ndff.datadir=/data/nda-import/data/ndff
 
 # Variable used to generate URLs for Catalogue of Life
 nda.import.col.year=2014
@@ -108,20 +106,3 @@ nda.export.output.dir=/data/nda-export/output
 nda.export.user.conf.dir=/data/nda-export/conf
 
 nda.export.log.dir=/data/nda-export/log
-
-
-
-
-##########################################################
-# Remote deployment (from development PC/laptop)
-##########################################################
-
-ear.install.scp.keyfile=C:/Users/admin.ayco.holleman/ayco.ppk
-ear.install.scp.user=ayco.holleman
-# You can specify at most 4 remote hosts to which to
-# deploy the ear file. Install dir, ssh key file and
-# user are assumed to be the same for all hosts
-ear.install.scp.host0=10.42.1.146
-ear.install.scp.host1=
-ear.install.scp.host2=
-ear.install.scp.host3=

@@ -8,6 +8,7 @@ import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.species_sci;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nda.domain.ScientificName;
@@ -20,7 +21,7 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 
 public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField, ESSpecimen> {
 
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public NdffSpecimenTransformer(ETLStatistics stats)
 	{
@@ -53,10 +54,13 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 			specimen.setCollectionType("Dutch Butterfly Conservation");
 
 			SpecimenIdentification si = new SpecimenIdentification();
-			specimen.addIndentification(si);
 			ScientificName sn = new ScientificName();
 			si.setScientificName(sn);
 			sn.setFullScientificName(input.get(species_sci));
+			// MUST add identification affter setting scientific
+			// name, otherwise NullPointerException.
+			// TODO refactor in API/domain package
+			specimen.addIndentification(si);
 
 			ESGatheringEvent ge = new ESGatheringEvent();
 			specimen.setGatheringEvent(ge);
@@ -72,21 +76,22 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 			try {
 				s = input.get(period_stop);
 				if (s != null)
-					ge.setDateTimeBegin(sdf.parse(s));
+					ge.setDateTimeEnd(sdf.parse(s));
 			}
 			catch (ParseException e) {
 				warn("Invalid %s date: \"%s\"", period_stop, s);
 			}
-
+			stats.objectsAccepted++;
+			return Arrays.asList(specimen);
 		}
 		catch (Throwable t) {
 			stats.objectsRejected++;
-			error(t.getMessage());
+			error(t.toString());
+			t.printStackTrace();
 			error(input.getLine());
 			return null;
 		}
 
-		return null;
 	}
 
 	private int getNumberOfSpecimen()

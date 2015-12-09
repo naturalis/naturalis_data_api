@@ -82,7 +82,6 @@ public class NsrImporter {
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
 		mediaStats.setOneToMany(true);
-		//mediaStats.setUseObjectsAccepted(true);
 		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(taxonStats);
 		tTransformer.setSuppressErrors(suppressErrors);
 		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mediaStats);

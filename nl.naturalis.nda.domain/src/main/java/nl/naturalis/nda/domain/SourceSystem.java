@@ -6,7 +6,7 @@ public class SourceSystem {
 	public static final SourceSystem COL = new SourceSystem("COL", "Species 2000 - Catalogue Of Life");
 	public static final SourceSystem CRS = new SourceSystem("CRS", "Naturalis - Zoology and Geology catalogues");
 	public static final SourceSystem NSR = new SourceSystem("NSR", "Naturalis - Nederlands Soortenregister");
-	public static final SourceSystem NDFF = new SourceSystem("NDFF", "NDFF - Nederlandse Vlinderstichting");
+	public static final SourceSystem NDFF = new SourceSystem("NDFF", "NDFF - Nationale Databank Flora en Fauna");
 
 	private String code;
 	private String name;

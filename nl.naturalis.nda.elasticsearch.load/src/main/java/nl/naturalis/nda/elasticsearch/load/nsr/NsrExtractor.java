@@ -41,10 +41,8 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 		};
 	}
 
-	private static DocumentBuilder docBuilder;
-
-	private final ETLStatistics stats;
-	private final List<Element> elems;
+	private ETLStatistics stats;
+	private List<Element> elems;
 
 	public NsrExtractor(File f, ETLStatistics stats)
 	{
@@ -62,8 +60,9 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 	@Override
 	public Iterator<XMLRecordInfo> iterator()
 	{
-		if (elems == null)
+		if (elems == null) {
 			return zeroRecordsIterator;
+		}
 		return new Iterator<XMLRecordInfo>() {
 
 			private int i;
@@ -97,16 +96,13 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 
 	private static DocumentBuilder getDocumentBuilder()
 	{
-		if (docBuilder == null) {
-			DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
-			bf.setNamespaceAware(false);
-			try {
-				docBuilder = bf.newDocumentBuilder();
-			}
-			catch (ParserConfigurationException e) {
-				throw new ETLRuntimeException(e);
-			}
+		DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
+		bf.setNamespaceAware(false);
+		try {
+			return bf.newDocumentBuilder();
 		}
-		return docBuilder;
+		catch (ParserConfigurationException e) {
+			throw new ETLRuntimeException(e);
+		}
 	}
 }

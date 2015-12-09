@@ -458,6 +458,21 @@
               },
               "point": {
                 "type": "geo_shape"
+              },
+              "gridCellSystem": {
+                "type": "string"
+              },
+              "gridLatitudeDecimal": {
+                "type": "float"
+              },
+              "gridLongitudeDecimal": {
+                "type": "float"
+              },
+              "gridCellCode": {
+                "type": "string"
+              },
+              "gridQualifier": {
+	            "type": "string"
               }
             }
           },

@@ -1,20 +1,18 @@
 package nl.naturalis.nda.elasticsearch.load.ndff;
 
-import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.abundance_min;
-import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.ndff_identity;
-import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.period_start;
-import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.period_stop;
-import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.species_sci;
+import static nl.naturalis.nda.elasticsearch.load.ndff.NdffCsvField.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nda.domain.ScientificName;
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
@@ -64,23 +62,13 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 
 			ESGatheringEvent ge = new ESGatheringEvent();
 			specimen.setGatheringEvent(ge);
-			String s = null;
-			try {
-				s = input.get(period_start);
-				if (s != null)
-					ge.setDateTimeBegin(sdf.parse(s));
-			}
-			catch (ParseException e) {
-				warn("Invalid %s date: \"%s\"", period_start, s);
-			}			
-			try {
-				s = input.get(period_stop);
-				if (s != null)
-					ge.setDateTimeEnd(sdf.parse(s));
-			}
-			catch (ParseException e) {
-				warn("Invalid %s date: \"%s\"", period_stop, s);
-			}
+			ge.setDateTimeBegin(getDate(period_start));
+			ge.setDateTimeEnd(getDate(period_stop));
+			ESGatheringSiteCoordinates coords = new ESGatheringSiteCoordinates();
+			ge.setSiteCoordinates(Arrays.asList(coords));
+			coords.setGridLatitudeDecimal(getCoordinate(rd_y_5km));
+			coords.setGridLongitudeDecimal(getCoordinate(rd_x_5km));
+			coords.setGridCellSystem("Amersfoort");
 			stats.objectsAccepted++;
 			return Arrays.asList(specimen);
 		}
@@ -91,7 +79,34 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 			error(input.getLine());
 			return null;
 		}
+	}
 
+	private Date getDate(NdffCsvField field)
+	{
+		String s = input.get(field);
+		if (s != null) {
+			try {
+				return sdf.parse(s);
+			}
+			catch (ParseException e) {
+				warn("Invalid value for field %s: \"%s\"", field, s);
+			}
+		}
+		return null;
+	}
+
+	private Double getCoordinate(NdffCsvField field)
+	{
+		String s = input.get(field);
+		if (s != null) {
+			try {
+				return Double.valueOf(s);
+			}
+			catch (NumberFormatException e) {
+				warn("Invalid value for field %s: \"%s\"", field, s);
+			}
+		}
+		return null;
 	}
 
 	private int getNumberOfSpecimen()

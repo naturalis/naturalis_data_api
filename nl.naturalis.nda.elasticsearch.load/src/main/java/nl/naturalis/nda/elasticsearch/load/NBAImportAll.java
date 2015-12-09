@@ -6,6 +6,7 @@ import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
+import nl.naturalis.nda.elasticsearch.load.ndff.NdffSpecimenImporter;
 import nl.naturalis.nda.elasticsearch.load.nsr.NsrImporter;
 
 import org.domainobject.util.FileUtil;
@@ -68,6 +69,16 @@ public class NBAImportAll {
 		long start = System.currentTimeMillis();
 
 		try {
+
+			logger.info("[>--- Starting NDFF import ---<]");
+			try {
+				NdffSpecimenImporter ndffImporter = new NdffSpecimenImporter();
+				ndffImporter.importSpecimens();
+			}
+			catch (Throwable t) {
+				logger.error(t.getMessage(), t);
+				logger.error("NDFF import Failed!");
+			}
 
 			logger.info("[>--- Starting NSR import ---<]");
 			try {

@@ -73,7 +73,7 @@ nda.import.nsr.datadir=/data/nda-import/data/nsr
 nda.import.ndff.datadir=/data/nda-import/data/ndff
 
 # Variable used to generate URLs for Catalogue of Life
-nda.import.col.year=2014
+nda.import.col.year=2015
 
 # Directory into which to write log files for the import
 # module. If you want to finetune logging, you will have to

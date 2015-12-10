@@ -7,13 +7,7 @@ import java.util.List;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
-import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.LoadConstants;
-import nl.naturalis.nda.elasticsearch.load.LoadUtil;
-import nl.naturalis.nda.elasticsearch.load.NBAImportAll;
-import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.ThemeCache;
-import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
+import nl.naturalis.nda.elasticsearch.load.*;
 import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
@@ -21,6 +15,7 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalize
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
  * Class that manages the import of CRS multimedia, sourced from files on the
@@ -77,6 +72,7 @@ public class CrsMultiMediaImportOffline {
 			return;
 		}
 		LoadUtil.truncate(NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.CRS);
+		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getCacheMisses();
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
@@ -97,14 +93,29 @@ public class CrsMultiMediaImportOffline {
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		PhaseOrStageNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
-		stats.logStatistics(logger);
+		stats.logStatistics(logger);	
 		LoadUtil.logDuration(logger, getClass(), start);
+		int cacheFailuresEnd = MimeTypeCacheFactory.getInstance().getCache().getCacheMisses();
+		if(cacheFailuresBegin != cacheFailuresEnd) {
+			int misses = cacheFailuresEnd-cacheFailuresBegin;
+			String fmt = "%s mime type cache lookup failures for CRS multimedia";
+			logger.warn(String.format(fmt, String.valueOf(misses)));
+			logger.warn("THE MIME TYPE CACHE IS OUT-OF-DATE!");
+		}
 	}
 
 	private void importFile(File f)
 	{
 		logger.info("Processing file " + f.getName());
-		CrsExtractor extractor = new CrsExtractor(f, stats);
+		CrsExtractor extractor;
+		try {
+			extractor = new CrsExtractor(f, stats);
+		}
+		catch (SAXException e) {
+			logger.error("Processing failed!");
+			logger.error(e.getMessage());
+			return;
+		}
 		for (XMLRecordInfo extracted : extractor) {
 			List<ESMultiMediaObject> transformed = transformer.transform(extracted);
 			loader.load(transformed);

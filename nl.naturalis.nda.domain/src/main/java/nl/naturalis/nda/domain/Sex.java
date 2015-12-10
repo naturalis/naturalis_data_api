@@ -5,7 +5,7 @@ public enum Sex
 
 	MALE, FEMALE, MIXED, HERMAPHRODITE;
 
-	public static Sex forName(String name)
+	public static Sex parse(String name)
 	{
 		if (name == null) {
 			return null;

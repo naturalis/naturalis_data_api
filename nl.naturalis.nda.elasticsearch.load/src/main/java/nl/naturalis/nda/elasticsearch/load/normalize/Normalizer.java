@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nl.naturalis.nda.domain.PhaseOrStage;
+import nl.naturalis.nda.domain.Sex;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
@@ -18,25 +19,26 @@ import org.slf4j.Logger;
  * <p>
  * A Normalizer maps found-in-the-wild values to canonical values. It
  * standardizes the set of allowed values for a particular field in a domain
- * model class (e.g. the {@link PhaseOrStage phaseOrStage} field in the
- * {@link Specimen} class). Normalizers enable stronger typing in the domain
- * model classes by using {@link Enum enum} fields rather than free-text fields.
+ * model class (e.g. the {@link PhaseOrStage phaseOrStage} or {@link Sex sex}
+ * field in the {@link Specimen} class). Normalizers enable stronger typing in
+ * the domain model classes by using {@link Enum enum} fields rather than
+ * free-text fields.
  * </p>
  * <h3>Null and whitespace handling</h3>
  * <p>
- * You can map {@code null} values and whitespace to a particular canonical
- * value, effectively making that canonical value the default value. To do so,
- * include a mapping of the string "[NULL]" to that canonical value. For
+ * You can map {@code null} values and whitespace to a canonical value,
+ * effectively making that particular canonical value the default value. To do
+ * so, include a mapping of the string "[NULL]" to that canonical value. For
  * example:<br>
  * 
  * <pre>
- * [NULL]:accepted name
+ * [NULL]:female
  * </pre>
  * 
  * Alternatively, you are also allowed to include the following mapping:<br>
  * 
  * <pre>
- * :accepted name
+ * :female
  * </pre>
  * 
  * Conversely, you can also map certain rogue values to {@code null},
@@ -56,9 +58,9 @@ import org.slf4j.Logger;
  * </pre>
  * 
  * Note that if you would not include a mapping for "Unknown", the effect would
- * be the same: the field in question would be set to null {@code null} for
- * "Unknown" values. However, if you include the mapping, your log file won't
- * get contaminated with unnecessary warnings telling you that a rogue value of
+ * be the same: the field in question would be set to {@code null} for "Unknown"
+ * values. However, if you include the mapping, your log file won't get
+ * contaminated with unnecessary warnings telling you that a rogue value of
  * "Unknown" was found and ignored.
  * </p>
  * 
@@ -74,14 +76,19 @@ public class Normalizer<T extends Enum<T>> {
 
 	/**
 	 * The value returned by {@link #normalize(String)} if no mapping was found
-	 * for the specified argument.
+	 * for the argument passed to it. Compare the return value of
+	 * {@code normalize} with {@code NOT_MAPPED} using the {@code ==} operator.
+	 * Do not use the {@code equals()} method.
 	 */
-	public static final String ROGUE_VALUE = new String();
-
-	private static final String NULL_STRING = "[NULL]";
+	public static final String NOT_MAPPED = new String();
+	/**
+	 * "[NULL]". String symbolizing {@code null} values and whitespace. You can
+	 * include this string both as a key and as a value in your mappings.
+	 */
+	public static final String NULL_STRING = "[NULL]";
 
 	private final Logger logger;
-	private final HashMap<String, String> mappings;
+	private final HashMap<String, T> mappings;
 	private final T[] enumConstants;
 
 	private boolean skipHeader = false;
@@ -98,7 +105,7 @@ public class Normalizer<T extends Enum<T>> {
 		}
 	}
 
-	private HashMap<String, IntHolder> rogueValues;
+	private HashMap<String, IntHolder> badValues;
 
 	/**
 	 * Creates a normalizer for the specified {@link Enum enumeration}.
@@ -111,7 +118,7 @@ public class Normalizer<T extends Enum<T>> {
 		logger.info("Creating normalizer for " + enumClass.getSimpleName());
 		enumConstants = enumClass.getEnumConstants();
 		mappings = new HashMap<>();
-		rogueValues = new HashMap<>();
+		badValues = new HashMap<>();
 	}
 
 	/**
@@ -138,23 +145,40 @@ public class Normalizer<T extends Enum<T>> {
 				if (parts.length != 2) {
 					throw new ETLRuntimeException(String.format("Invalid mapping: \"%s\"", line));
 				}
-				String key = parts[0];
-				String val = parts[1];
-				if (key.equals(NULL_STRING) || key.trim().length() == 0) {
+				String key = parts[0].trim();
+				String val = parts[1].trim();
+				if (key.equals(NULL_STRING) || key.length() == 0)
 					key = null;
-				}
-				else {
+				else
 					key = key.toLowerCase();
+				T constant = null;
+				if (!val.equals(NULL_STRING) && val.length() != 0) {
+					constant = find(val);
+					/*
+					 * Make sure canonical values always and only map to
+					 * themselves. In other words no value in the HashMap may
+					 * occur as a key that does not map to itself.
+					 */
+					if (mappings.containsKey(constant.toString())) {
+						T self = mappings.get(constant.toString());
+						if (constant != self) {
+							String fmt = "\"%s\" is included as a canonical value and "
+									+ "can therefore not be mapped to another value (\"%s\")";
+							msg = String.format(fmt, constant, self);
+							throw new ETLRuntimeException(msg);
+						}
+					}
+					else {
+						mappings.put(constant.toString(), constant);
+					}
 				}
-				if (val.equals(NULL_STRING) || val.trim().length() == 0) {
-					val = null;
-				}
-				mappings.put(key, val);
+				mappings.put(key, constant);
 			}
-			if (autoMapNull && !mappings.containsKey(null))
+			if (autoMapNull && !mappings.containsKey(null)) {
 				mappings.put(null, null);
-			logger.info("Number of canonical values: " + enumConstants.length);
+			}
 			logger.info("Number of mapped values: " + mappings.size());
+			logger.info("Number of canonical values: " + mappings.values());
 		}
 		catch (IOException e) {
 			throw new ETLRuntimeException(e);
@@ -164,12 +188,12 @@ public class Normalizer<T extends Enum<T>> {
 	/**
 	 * Returns the canonical value for the specified found-in-the-wild value. If
 	 * no mappings exists for the specified value, a special value is returned:
-	 * {@link #ROGUE_VALUE}. This allows clients to distinguish between input
+	 * {@link #NOT_MAPPED}. This allows clients to distinguish between input
 	 * that could not be mapped to a canonical value (illegal input) and input
 	 * that was explicitly mapped to {@code null} (valid input). To be on the
 	 * safe side, clients should compare references rather than use the
 	 * {@code equals} method when comparing the result of
-	 * {@link #normalize(String)} with {@link #ROGUE_VALUE}.
+	 * {@link #normalize(String)} with {@link #NOT_MAPPED}.
 	 * 
 	 * @param input
 	 * @return
@@ -179,14 +203,15 @@ public class Normalizer<T extends Enum<T>> {
 		if (input != null)
 			input = input.toLowerCase();
 		if (!mappings.containsKey(input)) {
-			IntHolder ih = rogueValues.get(input);
+			IntHolder ih = badValues.get(input);
 			if (ih == null)
-				rogueValues.put(input, new IntHolder());
+				badValues.put(input, new IntHolder());
 			else
 				ih.i++;
-			return ROGUE_VALUE;
+			return NOT_MAPPED;
 		}
-		return mappings.get(input);
+		T t = mappings.get(input);
+		return t == null ? null : t.toString();
 	}
 
 	/**
@@ -198,14 +223,17 @@ public class Normalizer<T extends Enum<T>> {
 	 */
 	public T getEnumConstant(String input)
 	{
-		String val = normalize(input);
-		if (val != null && val != ROGUE_VALUE) {
-			for (T constant : enumConstants) {
-				if (constant.toString().equals(val))
-					return constant;
-			}
+		if (input != null)
+			input = input.toLowerCase();
+		if (!mappings.containsKey(input)) {
+			IntHolder ih = badValues.get(input);
+			if (ih == null)
+				badValues.put(input, new IntHolder());
+			else
+				ih.i++;
+			return null;
 		}
-		return null;
+		return mappings.get(input);
 	}
 
 	/**
@@ -213,7 +241,7 @@ public class Normalizer<T extends Enum<T>> {
 	 */
 	public void resetStatistics()
 	{
-		rogueValues = new HashMap<>();
+		badValues = new HashMap<>();
 	}
 
 	/**
@@ -221,7 +249,7 @@ public class Normalizer<T extends Enum<T>> {
 	 */
 	public void logStatistics()
 	{
-		for (Map.Entry<String, IntHolder> entry : rogueValues.entrySet()) {
+		for (Map.Entry<String, IntHolder> entry : badValues.entrySet()) {
 			String fmt = "Invalid value \"%s\" occurs in at least %s records";
 			String msg = String.format(fmt, entry.getKey(), entry.getValue());
 			logger.info(msg);
@@ -272,11 +300,11 @@ public class Normalizer<T extends Enum<T>> {
 	}
 
 	/**
-	 * Whether or not to automatically map {@code null} to {@code null} if no
-	 * explicit mapping was provided. Default {@code true}. If {@code false},
-	 * {@code null} values will be treated as rogue (illegal) values and
-	 * {@link #normalize(String)} will return {@link #ROGUE_VALUE} in stead of
-	 * simply {@code null}.
+	 * Whether or not to automatically map whitespace to {@code null} if no
+	 * explicit mapping is provided (see {@link Normalizer class description}.
+	 * Default {@code true}. If {@code false}, whitespace will be treated as an
+	 * illegal value and {@link #normalize(String)} will return
+	 * {@link #NOT_MAPPED} in stead of simply {@code null}.
 	 * 
 	 * @return
 	 */
@@ -294,6 +322,17 @@ public class Normalizer<T extends Enum<T>> {
 	public void setAutoMapNull(boolean autoMapNull)
 	{
 		this.autoMapNull = autoMapNull;
+	}
+
+	private T find(String val)
+	{
+		for (T constant : enumConstants) {
+			if (constant.toString().equals(val))
+				return constant;
+		}
+		String fmt = "No constant of type %s has been declared for canonical value \"%s\"";
+		String msg = String.format(fmt, enumConstants[0].getClass().getSimpleName(), val);
+		throw new ETLRuntimeException(msg);
 	}
 
 }

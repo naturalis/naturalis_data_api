@@ -39,7 +39,8 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected static final String JPEG = "image/jpeg";
 
-	private static final Logger logger = Registry.getInstance().getLogger(AbstractMimeTypeCache.class);
+	private static final Logger logger = Registry.getInstance().getLogger(
+			AbstractMimeTypeCache.class);
 
 	private final SimpleHttpHead httpHead = new SimpleHttpHead();
 
@@ -49,7 +50,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	private boolean changed = false;
 
 	private int cacheHits = 0;
-	private int medialibRequests = 0;
+	private int cacheMisses = 0;
 	private int requestFailures = 0;
 
 	AbstractMimeTypeCache(String cacheFileName)
@@ -71,14 +72,15 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		}
 		logger.info("Initializing mime type cache");
 		numEntries = buildCache(cacheFile);
-		logger.info(String.format("Initialization complete. Number of entries in cache: %s", numEntries));
+		logger.info(String.format("Initialization complete. Number of entries in cache: %s",
+				numEntries));
 	}
 
 	@Override
 	public void resetCounters()
 	{
 		cacheHits = 0;
-		medialibRequests = 0;
+		cacheMisses = 0;
 		requestFailures = 0;
 	}
 
@@ -86,29 +88,12 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	{
 		String mimetype = getEntry(unitID);
 		if (mimetype == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Retrieving mime type for unitID \"%s\"", unitID));
-			}
-			String url = MEDIALIB_URL_START + unitID;
-			++medialibRequests;
-			mimetype = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
-			if (httpHead.isOK()) {
-				addEntry(unitID, mimetype);
-				changed = true;
-			}
-			else {
-				++requestFailures;
-				// We are still going to cache this UnitID, associating it
-				// with an empty mime type, because it's probably not going
-				// to get any better for this UnitID next time round, so no
-				// use going out to the medialib again and again for this
-				// UnitID.
-				addEntry(unitID, "");
-				if (logger.isDebugEnabled()) {
-					String fmt = "Error retrieving mime type for URL %s: HTTP %s (%s). Mime type set to \"\"";
-					logger.debug(String.format(fmt, url, httpHead.getStatus(), httpHead.getError()));
-				}
-			}
+			++cacheMisses;
+			mimetype = JPEG;
+			String fmt = "UnitID \"%s\" not found in mime type cache. The mime type cache is out-of-date!";
+			logger.warn(String.format(fmt, unitID));
+			//TODO: Enable medialib calls for mimetype lookups (???)
+			//mimetype = callMedialib(unitID);
 		}
 		else {
 			++cacheHits;
@@ -123,20 +108,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	}
 
 	/**
-	 * Get the number of times the request to the medialib for some reason
-	 * failed to return HTTP 200 (OK)
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getRequestFailures()
-	{
-		return requestFailures;
-	}
-
-	/**
-	 * Get the number of successful mime type lookups (without having to call
-	 * the medialib).
+	 * Get the number of successful mime type lookups.
 	 * 
 	 * @return
 	 */
@@ -147,15 +119,26 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	}
 
 	/**
-	 * Get the number of times the mime type had to be retrieved by calling the
-	 * medialib.
+	 * Get the number failed cache lookups.
 	 * 
 	 * @return
 	 */
 	@Override
-	public int getMedialibRequests()
+	public int getCacheMisses()
 	{
-		return medialibRequests;
+		return cacheMisses;
+	}
+
+	/**
+	 * Get the number of times the request to the medialib for some reason
+	 * failed to return HTTP 200 (OK)
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getRequestFailures()
+	{
+		return requestFailures;
 	}
 
 	/**
@@ -213,4 +196,31 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 * @throws IOException
 	 */
 	protected abstract void closeCache() throws IOException;
+
+	@SuppressWarnings("unused")
+	private String callMedialib(String unitID)
+	{
+		String mimetype;
+		String fmt;
+		String url = MEDIALIB_URL_START + unitID;
+		mimetype = httpHead.setBaseUrl(url).execute().getHttpResponse()
+				.getFirstHeader("Content-Type").getValue();
+		if (httpHead.isOK()) {
+			addEntry(unitID, mimetype);
+			changed = true;
+		}
+		else {
+			++requestFailures;
+			// We are still going to cache this UnitID, associating it
+			// with an empty mime type, because it's probably not going
+			// to get any better for this UnitID next time round, so no
+			// use going out to the medialib again and again for this
+			// UnitID.
+			addEntry(unitID, "");
+			fmt = "Error retrieving mime type for URL %s: HTTP %s (%s). Mime type set to \"\"";
+			logger.warn(String.format(fmt, url, httpHead.getStatus(), httpHead.getError()));
+		}
+		return mimetype;
+	}
+
 }

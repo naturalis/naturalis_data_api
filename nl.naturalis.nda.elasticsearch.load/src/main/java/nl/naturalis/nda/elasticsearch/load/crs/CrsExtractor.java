@@ -49,14 +49,15 @@ class CrsExtractor implements Iterable<XMLRecordInfo> {
 	 * 
 	 * @param f
 	 * @param stats
+	 * @throws SAXException 
 	 */
-	CrsExtractor(File f, ETLStatistics stats)
+	CrsExtractor(File f, ETLStatistics stats) throws SAXException
 	{
 		this.stats = stats;
 		try {
 			doc = getDocumentBuilder().parse(f);
 		}
-		catch (SAXException | IOException e) {
+		catch (IOException e) {
 			throw new ETLRuntimeException(e);
 		}
 	}

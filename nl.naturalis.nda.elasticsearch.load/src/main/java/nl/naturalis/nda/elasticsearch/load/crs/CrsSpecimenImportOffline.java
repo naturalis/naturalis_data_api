@@ -21,6 +21,7 @@ import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalize
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
  * Class that manages the import of CRS specimens, sourced from files on the
@@ -103,7 +104,15 @@ public class CrsSpecimenImportOffline {
 	private void importFile(File f)
 	{
 		logger.info("Processing file " + f.getName());
-		CrsExtractor extractor = new CrsExtractor(f, stats);
+		CrsExtractor extractor;
+		try {
+			extractor = new CrsExtractor(f, stats);
+		}
+		catch (SAXException e) {
+			logger.error("Processing failed!");
+			logger.error(e.getMessage());
+			return;
+		}
 		for (XMLRecordInfo extracted : extractor) {
 			List<ESSpecimen> transformed = transformer.transform(extracted);
 			loader.load(transformed);

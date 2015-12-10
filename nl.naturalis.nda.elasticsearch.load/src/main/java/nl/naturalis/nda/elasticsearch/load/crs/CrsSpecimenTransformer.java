@@ -3,7 +3,7 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.ROGUE_VALUE;
+import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.NOT_MAPPED;
 import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.ArrayList;
@@ -455,8 +455,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		if (raw == null)
 			return null;
 		String result = posNormalizer.normalize(raw);
-		if (result == ROGUE_VALUE) {
-			warn("Ignoring rogue value for PhaseOrStage: " + raw);
+		if (result == NOT_MAPPED) {
+			if (!suppressErrors)
+				warn("Ignoring rogue value for PhaseOrStage: " + raw);
 			return null;
 		}
 		return result;
@@ -468,8 +469,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		if (raw == null)
 			return null;
 		String result = tsNormalizer.normalize(raw);
-		if (result == ROGUE_VALUE) {
-			warn("Ignoring rogue value for TypeStatus: " + raw);
+		if (result == NOT_MAPPED) {
+			if (!suppressErrors)
+				warn("Ignoring rogue value for TypeStatus: " + raw);
 			return null;
 		}
 		return result;
@@ -481,8 +483,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		if (raw == null)
 			return null;
 		String result = sexNormalizer.normalize(raw);
-		if (result == ROGUE_VALUE) {
-			warn("Ignoring rogue value for Sex: " + raw);
+		if (result == NOT_MAPPED) {
+			if (!suppressErrors)
+				warn("Ignoring rogue value for Sex: " + raw);
 			return null;
 		}
 		return result;

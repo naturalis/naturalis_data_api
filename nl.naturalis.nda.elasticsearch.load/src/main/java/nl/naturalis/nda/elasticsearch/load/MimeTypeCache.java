@@ -52,7 +52,7 @@ public interface MimeTypeCache extends Closeable {
 	 * 
 	 * @return
 	 */
-	int getCacheHits();
+	int getHits();
 
 	/**
 	 * Get the number of times the mimetype had to be retrieved by calling the
@@ -61,7 +61,7 @@ public interface MimeTypeCache extends Closeable {
 	 * 
 	 * @return
 	 */
-	int getCacheMisses();
+	int getMisses();
 
 	/**
 	 * Get the number of times the request to the medialib for some reason

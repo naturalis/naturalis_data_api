@@ -72,7 +72,7 @@ public class CrsMultiMediaImportOffline {
 			return;
 		}
 		LoadUtil.truncate(NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.CRS);
-		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getCacheMisses();
+		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
@@ -93,11 +93,11 @@ public class CrsMultiMediaImportOffline {
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		PhaseOrStageNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
-		stats.logStatistics(logger);	
+		stats.logStatistics(logger);
 		LoadUtil.logDuration(logger, getClass(), start);
-		int cacheFailuresEnd = MimeTypeCacheFactory.getInstance().getCache().getCacheMisses();
-		if(cacheFailuresBegin != cacheFailuresEnd) {
-			int misses = cacheFailuresEnd-cacheFailuresBegin;
+		int cacheFailuresEnd = MimeTypeCacheFactory.getInstance().getCache().getMisses();
+		if (cacheFailuresBegin != cacheFailuresEnd) {
+			int misses = cacheFailuresEnd - cacheFailuresBegin;
 			String fmt = "%s mime type cache lookup failures for CRS multimedia";
 			logger.warn(String.format(fmt, String.valueOf(misses)));
 			logger.warn("THE MIME TYPE CACHE IS OUT-OF-DATE!");
@@ -131,6 +131,7 @@ public class CrsMultiMediaImportOffline {
 		String path = config.required("crs.data_dir");
 		logger.info("Data directory for CRS multimedia import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {
+
 			public boolean accept(File dir, String name)
 			{
 				if (!name.startsWith("multimedia.")) {

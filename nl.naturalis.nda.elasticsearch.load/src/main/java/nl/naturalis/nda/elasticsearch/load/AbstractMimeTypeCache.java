@@ -49,8 +49,8 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	private boolean changed = false;
 
-	private int cacheHits = 0;
-	private int cacheMisses = 0;
+	private int hits = 0;
+	private int misses = 0;
 	private int requestFailures = 0;
 
 	AbstractMimeTypeCache(String cacheFileName)
@@ -79,8 +79,8 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	@Override
 	public void resetCounters()
 	{
-		cacheHits = 0;
-		cacheMisses = 0;
+		hits = 0;
+		misses = 0;
 		requestFailures = 0;
 	}
 
@@ -88,7 +88,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	{
 		String mimetype = getEntry(unitID);
 		if (mimetype == null) {
-			++cacheMisses;
+			++misses;
 			mimetype = JPEG;
 			String fmt = "UnitID \"%s\" not found in mime type cache. The mime type cache is out-of-date!";
 			logger.warn(String.format(fmt, unitID));
@@ -96,7 +96,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 			//mimetype = callMedialib(unitID);
 		}
 		else {
-			++cacheHits;
+			++hits;
 		}
 		return mimetype;
 	}
@@ -113,9 +113,9 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 * @return
 	 */
 	@Override
-	public int getCacheHits()
+	public int getHits()
 	{
-		return cacheHits;
+		return hits;
 	}
 
 	/**
@@ -124,9 +124,9 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 * @return
 	 */
 	@Override
-	public int getCacheMisses()
+	public int getMisses()
 	{
-		return cacheMisses;
+		return misses;
 	}
 
 	/**

@@ -116,7 +116,7 @@ public class NBAImportAll {
 			Registry.getInstance().closeESClient();
 		}
 		
-		int i = MimeTypeCacheFactory.getInstance().getCache().getCacheMisses();
+		int i = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		if(i != 0) {
 			String fmt = "%s mime type cache lookup failures";
 			logger.warn(String.format(fmt, String.valueOf(i)));

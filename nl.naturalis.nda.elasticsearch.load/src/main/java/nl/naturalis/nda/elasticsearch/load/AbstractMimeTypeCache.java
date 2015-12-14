@@ -58,17 +58,17 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		String ndaConfDir = System.getProperty(SYSPROP_CONFIG_DIR);
 		if (ndaConfDir == null) {
 			String fmt = "Missing system property \"%1$s\". Add -D%1$s=/path/to/conf/dir to command line arguments";
-			throw new RuntimeException(String.format(fmt, SYSPROP_CONFIG_DIR));
+			throw new ETLRuntimeException(String.format(fmt, SYSPROP_CONFIG_DIR));
 		}
 		File dir = new File(ndaConfDir);
 		if (!dir.isDirectory()) {
 			String fmt = "Invalid directory specified for property \"ndaConfDir\": \"%s\"";
-			throw new RuntimeException(String.format(fmt, ndaConfDir));
+			throw new ETLRuntimeException(String.format(fmt, ndaConfDir));
 		}
 		cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
 		if (!cacheFile.isFile()) {
 			String fmt = "Missing cache file (%s). You should put it in %s.";
-			throw new RuntimeException(String.format(fmt, cacheFileName, ndaConfDir));
+			throw new ETLRuntimeException(String.format(fmt, cacheFileName, ndaConfDir));
 		}
 		logger.info("Initializing mime type cache");
 		numEntries = buildCache(cacheFile);
@@ -92,7 +92,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 			mimetype = JPEG;
 			String fmt = "UnitID \"%s\" not found in mime type cache. The mime type cache is out-of-date!";
 			logger.warn(String.format(fmt, unitID));
-			//TODO: Enable medialib calls for mimetype lookups (???)
+			//TODO: Re-enable medialib calls for mimetype lookups (???)
 			//mimetype = callMedialib(unitID);
 		}
 		else {

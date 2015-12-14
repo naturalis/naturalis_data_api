@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import nl.naturalis.nda.domain.PhaseOrStage;
@@ -156,14 +157,14 @@ public class Normalizer<T extends Enum<T>> {
 					constant = find(val);
 					/*
 					 * Make sure canonical values always and only map to
-					 * themselves. In other words no value in the HashMap may
-					 * occur as a key that does not map to itself.
+					 * themselves. In other words each value in the HashMap must
+					 * also be a key that maps to itself.
 					 */
 					if (mappings.containsKey(constant.toString())) {
 						T self = mappings.get(constant.toString());
 						if (constant != self) {
-							String fmt = "\"%s\" is included as a canonical value and "
-									+ "can therefore not be mapped to another value (\"%s\")";
+							String fmt = "\"%s\" is a canonical value and can therefore "
+									+ "not be mapped to another value (\"%s\")";
 							msg = String.format(fmt, constant, self);
 							throw new ETLRuntimeException(msg);
 						}
@@ -178,7 +179,7 @@ public class Normalizer<T extends Enum<T>> {
 				mappings.put(null, null);
 			}
 			logger.info("Number of mapped values: " + mappings.size());
-			logger.info("Number of canonical values: " + mappings.values());
+			logger.info("Number of canonical values: " + new HashSet<>(mappings.values()).size());
 		}
 		catch (IOException e) {
 			throw new ETLRuntimeException(e);

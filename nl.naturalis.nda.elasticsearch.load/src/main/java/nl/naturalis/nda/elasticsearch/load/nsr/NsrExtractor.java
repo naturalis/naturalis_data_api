@@ -54,7 +54,7 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 		try {
 			logger.info("Parsing XML");
 			Document doc = getDocumentBuilder().parse(f);
-			logger.info("Queueing XML records");
+			logger.info("Creating");
 			Element taxa = DOMUtil.getChild(doc.getDocumentElement());
 			elems = taxa == null ? null : DOMUtil.getChildren(taxa);
 		}

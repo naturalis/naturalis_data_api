@@ -78,8 +78,8 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLStatistics tStats = new ETLStatistics();
-		ETLStatistics mStats = new ETLStatistics();
+		ETLStatistics tStats = new ETLStatistics(); // Global taxon statistics
+		ETLStatistics mStats = new ETLStatistics(); // Global multimedia statistics
 		mStats.setOneToMany(true);
 		try {
 			LoadUtil.truncate(LUCENE_TYPE_TAXON, SourceSystem.NSR);
@@ -109,7 +109,9 @@ public class NsrImporter {
 		NsrMultiMediaLoader ml = null;
 		try {
 			NsrTaxonTransformer st = new NsrTaxonTransformer(myTStats);
+			st.setSuppressErrors(suppressErrors);
 			NsrMultiMediaTransformer mt = new NsrMultiMediaTransformer(myMStats);
+			mt.setSuppressErrors(suppressErrors);
 			sl = new NsrTaxonLoader(esBulkRequestSize, myTStats);
 			ml = new NsrMultiMediaLoader(esBulkRequestSize, myMStats);
 			for (XMLRecordInfo rec : new NsrExtractor(f, extractionStats)) {
@@ -120,6 +122,9 @@ public class NsrImporter {
 					ml.load(mt.transform(rec));
 				}
 			}
+		}
+		catch(Throwable t) {
+			t.printStackTrace();
 		}
 		finally {
 			IOUtil.close(sl, ml);

@@ -120,6 +120,10 @@ public class NsrImporter {
 				List<ESTaxon> taxa = specimenTransformer.transform(rec);
 				specimenLoader.load(taxa);
 				// Ayco
+				if(true) {
+					;
+				}
+					
 				multimediaTransformer.setTaxon(taxa.get(0));
 				multimediaLoader.load(multimediaTransformer.transform(rec));
 			}

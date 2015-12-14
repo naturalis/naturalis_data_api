@@ -211,10 +211,10 @@ public class BioportalMultiMediaObjectDao extends AbstractDao {
 				: filterAllowedFieldMappings(fields, allowedFieldNames);
 
 		QueryAndHighlightFields nameResolutionQuery = null;
-		if (params.containsKey("_search")) {
+		//if (params.containsKey("_search")) {
 			nameResolutionQuery = buildNameResolutionQuery(fields, params.getParam("_search"),
 					bioportalTaxonDao, true, getOperator(params), sessionId);
-		}
+		//}
 
 		SearchResponse searchResponse = executeExtendedSearch(params, allowedFields,
 				MULTI_MEDIA_OBJECT_TYPE, true, nameResolutionQuery, sessionId);

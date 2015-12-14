@@ -119,6 +119,7 @@ public class NsrImporter {
 			for (XMLRecordInfo rec : new NsrExtractor(f, extractionStats)) {
 				List<ESTaxon> taxa = specimenTransformer.transform(rec);
 				specimenLoader.load(taxa);
+				// Ayco
 				multimediaTransformer.setTaxon(taxa.get(0));
 				multimediaLoader.load(multimediaTransformer.transform(rec));
 			}

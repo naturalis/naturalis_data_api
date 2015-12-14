@@ -26,7 +26,8 @@ import org.slf4j.Logger;
  * @author Ayco Holleman
  *
  */
-public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T>>, Iterable<CSVRecordInfo<T>> {
+public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T>>,
+		Iterable<CSVRecordInfo<T>> {
 
 	/**
 	 * Thrown by a {@code CSVExtractor} if a client specified an invalid field
@@ -36,8 +37,10 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	 * @author Ayco Holleman
 	 *
 	 */
-	public static class NoSuchFieldException extends RuntimeException {
+	public static class NoSuchFieldException extends ETLRuntimeException {
+
 		static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record (%s)";
+
 		public NoSuchFieldException(CSVRecord record, int fieldNo)
 		{
 			super(String.format(MSG, fieldNo, record.size()));
@@ -247,10 +250,12 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 	private static String nextLine(LineNumberReader lnr)
 	{
 		try {
-			// Let's do first iteration outside loop. Empty lines won't happen
-			// that often.
+			/*
+			 * Return 1st non-empty line. Let's do first iteration outside loop.
+			 * Empty lines won't happen that often.
+			 */
 			String line = lnr.readLine();
-			if (line == null) {
+			if (line == null) { /* EOF */
 				lnr.close();
 				return null;
 			}
@@ -291,7 +296,8 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 		if (!Charset.defaultCharset().equals(UTF_8)) {
 			logger.error("CSV imports require a default character encoding of UTF-8");
 			logger.error("Please, add the following command line argument: -Dfile.encoding=UTF-8");
-			String message = "Invalid default character encoding: " + Charset.defaultCharset().name();
+			String message = "Invalid default character encoding: "
+					+ Charset.defaultCharset().name();
 			throw new ETLRuntimeException(message);
 		}
 	}

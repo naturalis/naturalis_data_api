@@ -1,19 +1,19 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SYSPROP_CONFIG_DIR;
 import static org.apache.commons.io.Charsets.UTF_8;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.domainobject.util.ConfigObject;
+import org.domainobject.util.FileUtil;
 import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 
 /**
  * Abstract base class for mimetype caches. Provides the public interface of a
- * mimetype cache, while delegating the heavy lifting to subclasses through a
- * set of abstract template methods.
+ * mimetype cache, while delegating the heavy lifting of building the cache to
+ * subclasses.
  * 
  * @author Ayco Holleman
  *
@@ -27,15 +27,16 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected static final byte[] NEWLINE_BYTES = "\n".getBytes(UTF_8);
 	/**
-	 * The size of the buffer used when loading the cache file into memory. The
-	 * cache file is loaded in chunks of 64K at a time.
+	 * The size of the buffer used to load the cache file into memory. The cache
+	 * file is loaded in chunks of 64K at a time.
 	 */
 	protected static final int READ_BUFFER_SIZE = 1024 * 64;
 	/**
-	 * The mime type for JPEG images (image/jpeg), which are by far the most
+	 * The mime type for JPEG images (image/jpeg), which is by far the most
 	 * common media type in the medialib. To conserve memory, if a mime type in
 	 * the cache file {@code equals} {@code JPEG}, {@code JPEG} should be added
-	 * to the cache, rather than the original {@code String}.
+	 * to the cache, rather than the original {@code String}. The mime type
+	 * cache WILL blow your memory if you don't.
 	 */
 	protected static final String JPEG = "image/jpeg";
 
@@ -55,20 +56,11 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	AbstractMimeTypeCache(String cacheFileName)
 	{
-		String ndaConfDir = System.getProperty(SYSPROP_CONFIG_DIR);
-		if (ndaConfDir == null) {
-			String fmt = "Missing system property \"%1$s\". Add -D%1$s=/path/to/conf/dir to command line arguments";
-			throw new ETLRuntimeException(String.format(fmt, SYSPROP_CONFIG_DIR));
-		}
-		File dir = new File(ndaConfDir);
-		if (!dir.isDirectory()) {
-			String fmt = "Invalid directory specified for property \"ndaConfDir\": \"%s\"";
-			throw new ETLRuntimeException(String.format(fmt, ndaConfDir));
-		}
-		cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
+		File dir = Registry.getInstance().getConfDir();
+		cacheFile = FileUtil.newFile(dir, cacheFileName);
 		if (!cacheFile.isFile()) {
 			String fmt = "Missing cache file (%s). You should put it in %s.";
-			throw new ETLRuntimeException(String.format(fmt, cacheFileName, ndaConfDir));
+			throw new ETLRuntimeException(String.format(fmt, cacheFileName, dir.getAbsolutePath()));
 		}
 		logger.info("Initializing mime type cache");
 		numEntries = buildCache(cacheFile);
@@ -84,6 +76,9 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		requestFailures = 0;
 	}
 
+	/**
+	 * Look up the mime type of the media file with the specified UnitID.
+	 */
 	public String getMimeType(String unitID)
 	{
 		String mimetype = getEntry(unitID);
@@ -101,6 +96,9 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		return mimetype;
 	}
 
+	/**
+	 * Returns the number of entries in the mime type cache.
+	 */
 	@Override
 	public int getSize()
 	{

@@ -9,11 +9,6 @@ package nl.naturalis.nda.elasticsearch.load;
 public interface LoadConstants {
 
 	/**
-	 * Required system property telling us the location of the config dir (e.g.
-	 * containing nda-import.properties).
-	 */
-	String SYSPROP_CONFIG_DIR = "ndaConfDir";
-	/**
 	 * Optional system property specifying the number of documents to be indexed
 	 * at once.
 	 */

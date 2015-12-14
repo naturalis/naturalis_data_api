@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import nl.naturalis.nda.domain.SourceSystem;
 
+import org.domainobject.util.FileUtil;
 import org.slf4j.Logger;
 
 /**
@@ -35,7 +36,6 @@ public class ThemeCache {
 		int matches = 0;
 	}
 
-	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
 	private static final Logger logger = Registry.getInstance().getLogger(ThemeCache.class);
 	private static ThemeCache instance;
 
@@ -246,23 +246,8 @@ public class ThemeCache {
 
 	private static File getThematicSearchDir()
 	{
-		String confDir = System.getProperty(SYSPROP_CONFIG_DIR);
-		if (confDir == null) {
-			String msg = String.format("Missing system property \"%s\"", SYSPROP_CONFIG_DIR);
-			throw new ETLRuntimeException(msg);
-		}
-		File dir = new File(confDir);
-		if (!dir.isDirectory()) {
-			String fmt = "Invalid directory specified for system property \"%s\": \"%s\"";
-			String msg = String.format(fmt, SYSPROP_CONFIG_DIR, confDir);
-			throw new ETLRuntimeException(msg);
-		}
-		try {
-			return new File(dir.getAbsolutePath() + "/thematic-search").getCanonicalFile();
-		}
-		catch (IOException e) {
-			throw new ETLRuntimeException(e);
-		}
+		File f = Registry.getInstance().getConfDir();
+		return FileUtil.newFile(f, "thematic-search");
 	}
 
 }

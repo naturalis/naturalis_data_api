@@ -16,6 +16,12 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
+/**
+ * The transformer component for the NDFF specimen import.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 
 public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField, ESSpecimen> {
 

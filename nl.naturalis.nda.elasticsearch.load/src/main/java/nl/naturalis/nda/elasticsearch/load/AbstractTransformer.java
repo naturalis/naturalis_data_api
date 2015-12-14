@@ -7,8 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 
 /**
- * Abstract base class for all transformers. Provides functionality for uniform
- * error reporting.
+ * Abstract base class for all transformation components within the ETL cycle.
+ * Provides functionality for uniform error reporting.
  * 
  * @author Ayco Holleman
  *
@@ -90,8 +90,8 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	 * Whether or not to skip the current record. By default all records are
 	 * processed, but subclasses can override this method to discard records
 	 * before they are even handed over to the {@link #doTransform()} method.
-	 * They can use the protected {@link #input} field to determine if the
-	 * record should be skipped.
+	 * Subclasses can inspect the protected {@link #input} field to determine if
+	 * the record should be skipped.
 	 * 
 	 * @return
 	 */
@@ -101,13 +101,13 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	}
 
 	/**
-	 * Get the value of the field that is to be regarded as the ID of the
-	 * object. Subclasses must implement this, because this abstract base class
-	 * needs it for reporting purposes. Subclasses can use the protected
-	 * {@link #input} field to retrieve the ID in an implementation-dependent
-	 * way.
+	 * Get the ID of the currently processed record. Subclasses can use the
+	 * protected {@link #input} field, holding the currently processed record,
+	 * to retrieve the ID.
 	 * 
 	 * @return
+	 * 
+	 * @see #messagePrefix()
 	 */
 	protected abstract String getObjectID();
 
@@ -248,10 +248,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	 * log methods in this class. The idea is that any message is by default
 	 * prefixed with the ID of the object for which the message was generated.
 	 * By default the message prefix is a right-padded column containing the
-	 * object ID of the validated object. Therefore, one of the first things
-	 * subclasses must do in their implementation of {@link #transform(Object)
-	 * transform()} is set the {@link #objectID} field. Subclasses may override
-	 * {@code messagePrefix()} if appropriate.
+	 * object ID of the validated object.
 	 * 
 	 * @return
 	 * 
@@ -259,6 +256,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	 * @see #warn(String, Object...)
 	 * @see #info(String, Object...)
 	 * @see #debug(String, Object...)
+	 * @see #getObjectID()
 	 * 
 	 */
 	protected String messagePrefix()

@@ -105,19 +105,21 @@ public class NsrImporter {
 		ETLStatistics myMultimediaStats = new ETLStatistics();
 		myMultimediaStats.setOneToMany(true);
 		ETLStatistics extractionStats = new ETLStatistics();
-		NsrExtractor extractor = null;
-		NsrTaxonTransformer specimenTransformer = null;
-		NsrMultiMediaTransformer multimediaTransformer = null;
+		//NsrExtractor extractor = null;
+		//NsrTaxonTransformer specimenTransformer = null;
+		//NsrMultiMediaTransformer multimediaTransformer = null;
 		NsrTaxonLoader specimenLoader = null;
 		NsrMultiMediaLoader multimediaLoader = null;
 		try {
-			extractor = new NsrExtractor(f, extractionStats);
-			specimenTransformer = new NsrTaxonTransformer(myTaxonStats);
+			//NsrExtractor extractor = new NsrExtractor(f, extractionStats);
+			NsrTaxonTransformer specimenTransformer = new NsrTaxonTransformer(myTaxonStats);
+			NsrMultiMediaTransformer multimediaTransformer = new NsrMultiMediaTransformer(myMultimediaStats);
 			specimenLoader = new NsrTaxonLoader(esBulkRequestSize, myTaxonStats);
-			multimediaTransformer = new NsrMultiMediaTransformer(myMultimediaStats);
 			multimediaLoader = new NsrMultiMediaLoader(esBulkRequestSize, myMultimediaStats);
-			for (XMLRecordInfo rec : extractor) {
-				specimenLoader.load(specimenTransformer.transform(rec));
+			for (XMLRecordInfo rec : new NsrExtractor(f, extractionStats)) {
+				List<ESTaxon> taxa = specimenTransformer.transform(rec);
+				specimenLoader.load(taxa);
+				multimediaTransformer.setTaxon(taxa.get(0));
 				multimediaLoader.load(multimediaTransformer.transform(rec));
 			}
 		}

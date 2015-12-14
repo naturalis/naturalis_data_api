@@ -45,8 +45,8 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 		};
 	}
 
-	private ETLStatistics stats;
-	private List<Element> elems;
+	private final ETLStatistics stats;
+	private final List<Element> elems;
 
 	public NsrExtractor(File f, ETLStatistics stats)
 	{

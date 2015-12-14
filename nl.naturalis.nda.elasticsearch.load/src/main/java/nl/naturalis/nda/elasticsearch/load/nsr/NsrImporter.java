@@ -101,37 +101,35 @@ public class NsrImporter {
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
-		ETLStatistics myTaxonStats = new ETLStatistics();
-		ETLStatistics myMultimediaStats = new ETLStatistics();
-		myMultimediaStats.setOneToMany(true);
+		ETLStatistics myTStats = new ETLStatistics(); // Local taxon statistics
+		ETLStatistics myMStats = new ETLStatistics(); // Local multimedia statistics
+		myMStats.setOneToMany(true);
 		ETLStatistics extractionStats = new ETLStatistics();
-		//NsrExtractor extractor = null;
-		//NsrTaxonTransformer specimenTransformer = null;
-		//NsrMultiMediaTransformer multimediaTransformer = null;
-		NsrTaxonLoader specimenLoader = null;
-		NsrMultiMediaLoader multimediaLoader = null;
+		NsrTaxonLoader sl = null;
+		NsrMultiMediaLoader ml = null;
 		try {
-			//NsrExtractor extractor = new NsrExtractor(f, extractionStats);
-			NsrTaxonTransformer specimenTransformer = new NsrTaxonTransformer(myTaxonStats);
-			NsrMultiMediaTransformer multimediaTransformer = new NsrMultiMediaTransformer(myMultimediaStats);
-			specimenLoader = new NsrTaxonLoader(esBulkRequestSize, myTaxonStats);
-			multimediaLoader = new NsrMultiMediaLoader(esBulkRequestSize, myMultimediaStats);
+			NsrTaxonTransformer st = new NsrTaxonTransformer(myTStats);
+			NsrMultiMediaTransformer mt = new NsrMultiMediaTransformer(myMStats);
+			sl = new NsrTaxonLoader(esBulkRequestSize, myTStats);
+			ml = new NsrMultiMediaLoader(esBulkRequestSize, myMStats);
 			for (XMLRecordInfo rec : new NsrExtractor(f, extractionStats)) {
-				List<ESTaxon> taxa = specimenTransformer.transform(rec);
-				specimenLoader.load(taxa);
-				multimediaTransformer.setTaxon(taxa.get(0));
-				multimediaLoader.load(multimediaTransformer.transform(rec));
+				List<ESTaxon> taxa = st.transform(rec);
+				if (taxa != null) {
+					sl.load(taxa);
+					mt.setTaxon(taxa.get(0));
+					ml.load(mt.transform(rec));
+				}
 			}
 		}
 		finally {
-			IOUtil.close(specimenLoader, multimediaLoader);
+			IOUtil.close(sl, ml);
 		}
-		myTaxonStats.add(extractionStats);
-		myMultimediaStats.add(extractionStats);
-		myTaxonStats.logStatistics(logger, "Specimens");
-		myMultimediaStats.logStatistics(logger, "Multimedia");
-		sStats.add(myTaxonStats);
-		mStats.add(myMultimediaStats);
+		myTStats.add(extractionStats);
+		myMStats.add(extractionStats);
+		myTStats.logStatistics(logger, "Specimens");
+		myMStats.logStatistics(logger, "Multimedia");
+		sStats.add(myTStats);
+		mStats.add(myMStats);
 		logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
 		logger.info(" ");
 		logger.info(" ");

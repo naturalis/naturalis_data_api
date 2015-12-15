@@ -1,6 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,7 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
 import org.domainobject.util.DOMUtil;
+import org.domainobject.util.xml.LineNumberXMLParser;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,7 +55,9 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 		this.stats = stats;
 		try {
 			logger.info("Parsing XML");
-			Document doc = getDocumentBuilder().parse(f);
+//			DocumentBuilder docBuilder = getDocumentBuilder();
+//			Document doc = docBuilder.parse(f);	
+			Document doc = LineNumberXMLParser.readXML(new FileInputStream(f));
 			logger.info("Queueing records");
 			Element taxa = DOMUtil.getChild(doc.getDocumentElement());
 			elems = taxa == null ? null : DOMUtil.getChildren(taxa);

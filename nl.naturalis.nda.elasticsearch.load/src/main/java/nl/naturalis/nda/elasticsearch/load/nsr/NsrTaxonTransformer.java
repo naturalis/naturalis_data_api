@@ -216,13 +216,6 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		if (pageElems == null)
 			return;
 		for (Element pageElem : pageElems) {
-			String text = val(pageElem, "text");
-			// Hack: ignore 3 descriptions which consists of raw image bytes
-			if(text.length() > 5000) {
-				if(!suppressErrors)
-					warn("Skipping description excedding 5000 characters (%s)", text.length());
-				continue;
-			}
 			TaxonDescription descr = new TaxonDescription();
 			descr.setCategory(val(pageElem, "title"));
 			descr.setDescription(val(pageElem, "text"));

@@ -11,7 +11,6 @@ import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.removeBackup
 import java.io.File;
 import java.util.List;
 
-import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
@@ -78,66 +77,43 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLStatistics tStats = new ETLStatistics(); // Global taxon statistics
-		ETLStatistics mStats = new ETLStatistics(); // Global multimedia statistics
-		mStats.setOneToMany(true);
+		LoadUtil.truncate(LUCENE_TYPE_TAXON, NSR);
+		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
+		ETLStatistics taxonStats = new ETLStatistics();
+		ETLStatistics mediaStats = new ETLStatistics();
+		mediaStats.setOneToMany(true);
+		//mediaStats.setUseObjectsAccepted(true);
+		NsrTaxonTransformer tTransformer = new NsrTaxonTransformer(taxonStats);
+		tTransformer.setSuppressErrors(suppressErrors);
+		NsrMultiMediaTransformer mTransformer = new NsrMultiMediaTransformer(mediaStats);
+		mTransformer.setSuppressErrors(suppressErrors);
+		NsrTaxonLoader taxonLoader = null;
+		NsrMultiMediaLoader mediaLoader = null;
 		try {
-			LoadUtil.truncate(LUCENE_TYPE_TAXON, SourceSystem.NSR);
-			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.NSR);
+			taxonLoader = new NsrTaxonLoader(esBulkRequestSize, taxonStats);
+			mediaLoader = new NsrMultiMediaLoader(esBulkRequestSize, mediaStats);
 			for (File f : xmlFiles) {
-				processFile(f, tStats, mStats);
+				logger.info("Processing file " + f.getAbsolutePath());
+				int i = 0;
+				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
+					List<ESTaxon> taxa = tTransformer.transform(extracted);
+					taxonLoader.load(taxa);
+					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
+					List<ESMultiMediaObject> multimedia = mTransformer.transform(extracted);
+					mediaLoader.load(multimedia);
+					if (++i % 5000 == 0)
+						logger.info("Records processed: " + i);
+				}
 				backupXmlFile(f);
 			}
 		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
-		}
-		tStats.logStatistics(logger, "Taxa");
-		mStats.logStatistics(logger, "Multimedia");
-		LoadUtil.logDuration(logger, getClass(), start);
-	}
-
-	private void processFile(File f, ETLStatistics sStats, ETLStatistics mStats)
-	{
-		long start = System.currentTimeMillis();
-		logger.info("Processing file " + f.getAbsolutePath());
-		ETLStatistics myTStats = new ETLStatistics(); // Local taxon statistics
-		ETLStatistics myMStats = new ETLStatistics(); // Local multimedia statistics
-		myMStats.setOneToMany(true);
-		ETLStatistics extractionStats = new ETLStatistics();
-		NsrTaxonLoader sl = null;
-		NsrMultiMediaLoader ml = null;
-		try {
-			NsrTaxonTransformer st = new NsrTaxonTransformer(myTStats);
-			st.setSuppressErrors(suppressErrors);
-			NsrMultiMediaTransformer mt = new NsrMultiMediaTransformer(myMStats);
-			mt.setSuppressErrors(suppressErrors);
-			sl = new NsrTaxonLoader(esBulkRequestSize, myTStats);
-			ml = new NsrMultiMediaLoader(esBulkRequestSize, myMStats);
-			for (XMLRecordInfo rec : new NsrExtractor(f, extractionStats)) {
-				List<ESTaxon> taxa = st.transform(rec);
-				if (taxa != null) {
-					sl.load(taxa);
-					mt.setTaxon(taxa.get(0));
-					ml.load(mt.transform(rec));
-				}
-			}
-		}
-		catch(Throwable t) {
-			t.printStackTrace();
-		}
 		finally {
-			IOUtil.close(sl, ml);
+			IOUtil.close(taxonLoader, mediaLoader);
 		}
-		myTStats.add(extractionStats);
-		myMStats.add(extractionStats);
-		myTStats.logStatistics(logger, "Specimens");
-		myMStats.logStatistics(logger, "Multimedia");
-		sStats.add(myTStats);
-		mStats.add(myMStats);
-		logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
-		logger.info(" ");
-		logger.info(" ");
+		taxonStats.logStatistics(logger, "Taxa");
+		mediaStats.badInput = taxonStats.badInput;
+		mediaStats.logStatistics(logger, "Multimedia");
+		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
 	/**
@@ -237,8 +213,8 @@ public class NsrImporter {
 	}
 
 	/**
-	 * Removes the "&#46;imported" file name extension from the files in the NSR
-	 * data directory. Nice for repitive testing. Not meant for production
+	 * Removes the "&#46;imported" file name extension from the files in the
+	 * NSR data directory. Nice for repitive testing. Not meant for production
 	 * purposes.
 	 */
 	public void reset()

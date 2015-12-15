@@ -54,9 +54,10 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 		try {
 			logger.info("Parsing XML");
 			Document doc = getDocumentBuilder().parse(f);
-			logger.info("Creating");
+			logger.info("Queueing records");
 			Element taxa = DOMUtil.getChild(doc.getDocumentElement());
 			elems = taxa == null ? null : DOMUtil.getChildren(taxa);
+			logger.info("Extractor ready");
 		}
 		catch (SAXException | IOException e) {
 			throw new ETLRuntimeException(e);

@@ -115,6 +115,13 @@ public class NBAImportAll {
 			LoadUtil.logDuration(logger, getClass(), start);
 			Registry.getInstance().closeESClient();
 		}
+		
+		int i = MimeTypeCacheFactory.getInstance().getCache().getMisses();
+		if(i != 0) {
+			String fmt = "%s mime type cache lookup failures";
+			logger.warn(String.format(fmt, String.valueOf(i)));
+			logger.warn("THE MIME TYPE CACHE IS OUT-OF-DATE!");
+		}		
 
 	}
 

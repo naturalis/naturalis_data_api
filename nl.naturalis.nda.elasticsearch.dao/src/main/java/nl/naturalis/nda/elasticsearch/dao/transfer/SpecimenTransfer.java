@@ -32,8 +32,8 @@ public class SpecimenTransfer {
 		specimen.setRecordBasis(esSpecimen.getRecordBasis());
 		specimen.setKindOfUnit(esSpecimen.getKindOfUnit());
 		specimen.setCollectionType(esSpecimen.getCollectionType());
-		specimen.setSex(Sex.forName(esSpecimen.getSex()));
-		specimen.setPhaseOrStage(PhaseOrStage.forName(esSpecimen.getPhaseOrStage()));
+		specimen.setSex(Sex.parse(esSpecimen.getSex()));
+		specimen.setPhaseOrStage(PhaseOrStage.parse(esSpecimen.getPhaseOrStage()));
 		specimen.setTitle(esSpecimen.getTitle());
 		specimen.setNotes(esSpecimen.getNotes());
 		specimen.setPreparationType(esSpecimen.getPreparationType());

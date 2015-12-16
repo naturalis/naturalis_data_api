@@ -7,7 +7,7 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nda.elasticsearch.load.MimeTypeCache.MEDIALIB_URL_START;
-import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.ROGUE_VALUE;
+import static nl.naturalis.nda.elasticsearch.load.normalize.Normalizer.NOT_MAPPED;
 import static org.domainobject.util.DOMUtil.getChild;
 import static org.domainobject.util.DOMUtil.getDescendant;
 import static org.domainobject.util.DOMUtil.getDescendantValue;
@@ -403,7 +403,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (raw == null)
 			return null;
 		String result = posNormalizer.normalize(raw);
-		if (result == ROGUE_VALUE) {
+		if (result == NOT_MAPPED) {
 			warn("Ignoring rogue value for PhaseOrStage: " + raw);
 			return null;
 		}
@@ -416,7 +416,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (raw == null)
 			return null;
 		String result = tsNormalizer.normalize(raw);
-		if (result == ROGUE_VALUE) {
+		if (result == NOT_MAPPED) {
 			warn("Ignoring rogue value for TypeStatus: " + raw);
 			return null;
 		}
@@ -429,7 +429,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		if (raw == null)
 			return null;
 		String result = sexNormalizer.normalize(raw);
-		if (result == ROGUE_VALUE) {
+		if (result == NOT_MAPPED) {
 			warn("Ignoring rogue value for Sex: " + raw);
 			return null;
 		}

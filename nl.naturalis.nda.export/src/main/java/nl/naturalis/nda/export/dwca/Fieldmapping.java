@@ -30,6 +30,24 @@ public class Fieldmapping {
 
 	static SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
 	static SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
+	private static String specificEpithet = "";
+	private static String fullScientificName = "";
+	private static String genusName = "";
+	private static String subGenusName = "";
+	private static String authorVerbatim = "";
+	private static String infraSpecificEpithet = "";
+
+	private static int identification = 0;
+
+	private static List<String> trueList = new ArrayList<>();
+	private static List<String> allValueList = new ArrayList<>();
+	private static List<String> allFalseList = new ArrayList<>();
+
+	private static boolean preferred;
+
+	public static String toString(boolean value) {
+		return value ? "true" : "false";
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -560,53 +578,43 @@ public class Fieldmapping {
 	public static void setGenus(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 
-		int cnt = specimen.getIdentifications().size();
+		if (getIdentificationsPreferred(specimen)) {
 
-		if (cnt > 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String genusName = specimen.getIdentifications().get(i)
-						.getScientificName().getGenusOrMonomial();
-				if (preferred && genusName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial());
-					break;
-				} else if (preferred == false && genusName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial());
-					break;
-				} else if (preferred && genusName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
-			}
-		} else if (cnt == 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String genusName = specimen.getIdentifications().get(i)
-						.getScientificName().getGenusOrMonomial();
-				if (preferred == false && genusName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial());
-					break;
-				} else if (genusName == null && preferred) {
-					dataRow.add(EMPTY_STRING);
-					break;
-
-				} else if (preferred && genusName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial());
-					break;
-				} else {
-					if (genusName == null && preferred == false) {
-						dataRow.add(EMPTY_STRING);
-						break;
-					}
-				}
+			if (genusName != null) {
+				dataRow.add(genusName);
+			} else {
+				dataRow.add(EMPTY_STRING);
 			}
 		}
+
+		/*
+		 * int cnt = specimen.getIdentifications().size();
+		 * 
+		 * if (cnt > 1) { for (int i = 0; i < cnt; i++) { boolean preferred =
+		 * specimen.getIdentifications().get(i) .isPreferred(); if (preferred) {
+		 * String genusName = specimen.getIdentifications().get(i)
+		 * .getScientificName().getGenusOrMonomial(); if (preferred && genusName
+		 * != null) { dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getGenusOrMonomial()); break; } else if
+		 * (preferred == false && genusName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getGenusOrMonomial()); break; } else if
+		 * (preferred && genusName == null) { dataRow.add(EMPTY_STRING); break;
+		 * } } } } else if (cnt == 1) { for (int i = 0; i < cnt; i++) { boolean
+		 * preferred = specimen.getIdentifications().get(i) .isPreferred(); if
+		 * (preferred || preferred == false) { String genusName =
+		 * specimen.getIdentifications().get(i)
+		 * .getScientificName().getGenusOrMonomial(); if (preferred == false &&
+		 * genusName != null) { dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getGenusOrMonomial()); break; } else if
+		 * (genusName == null && preferred) { dataRow.add(EMPTY_STRING); break;
+		 * 
+		 * } else if (preferred && genusName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getGenusOrMonomial()); break; } else { if
+		 * (genusName == null && preferred == false) {
+		 * dataRow.add(EMPTY_STRING); break; } } } } }
+		 */
 	}
 
 	/**
@@ -841,54 +849,47 @@ public class Fieldmapping {
 	public static void setInfraspecificEpithet(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 
-		int cnt = specimen.getIdentifications().size();
-		if (cnt > 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String infraSpecificeEpithet = specimen.getIdentifications()
-						.get(i).getScientificName().getInfraspecificEpithet();
-				
-				if (preferred && infraSpecificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getInfraspecificEpithet());
-					break;
-				} else if (preferred == false && infraSpecificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getInfraspecificEpithet());
-					break;
-				} else if (preferred == false && infraSpecificeEpithet == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred && infraSpecificeEpithet == null){
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
-			}
-		} else if (cnt == 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String infraSpecificeEpithet = specimen.getIdentifications()
-						.get(i).getScientificName().getInfraspecificEpithet();
-				
-				if (preferred == false && infraSpecificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getInfraspecificEpithet());
-					break;
-				} else if (preferred && infraSpecificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getInfraspecificEpithet());
-					break;
-				} else if (preferred && infraSpecificeEpithet == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && infraSpecificeEpithet == null)  {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
+		if (getIdentificationsPreferred(specimen)) {
+			if (infraSpecificEpithet != null) {
+				dataRow.add(infraSpecificEpithet);
+			} else {
+				dataRow.add(EMPTY_STRING);
 			}
 		}
+		/*
+		 * int cnt = specimen.getIdentifications().size(); if (cnt > 1) { for
+		 * (int i = 0; i < cnt; i++) { boolean preferred =
+		 * specimen.getIdentifications().get(i) .isPreferred(); if (preferred) {
+		 * String infraSpecificeEpithet = specimen
+		 * .getIdentifications().get(i).getScientificName()
+		 * .getInfraspecificEpithet();
+		 * 
+		 * if (preferred && infraSpecificeEpithet != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getInfraspecificEpithet()); break; } else if
+		 * (preferred == false && infraSpecificeEpithet != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getInfraspecificEpithet()); break; } else if
+		 * (preferred == false && infraSpecificeEpithet == null) {
+		 * dataRow.add(EMPTY_STRING); break; } else if (preferred &&
+		 * infraSpecificeEpithet == null) { dataRow.add(EMPTY_STRING); break; }
+		 * } } } else if (cnt == 1) { for (int i = 0; i < cnt; i++) { boolean
+		 * preferred = specimen.getIdentifications().get(i) .isPreferred(); if
+		 * (preferred || !preferred) { String infraSpecificeEpithet = specimen
+		 * .getIdentifications().get(i).getScientificName()
+		 * .getInfraspecificEpithet();
+		 * 
+		 * if (preferred == false && infraSpecificeEpithet != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getInfraspecificEpithet()); break; } else if
+		 * (preferred && infraSpecificeEpithet != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getInfraspecificEpithet()); break; } else if
+		 * (preferred && infraSpecificeEpithet == null) {
+		 * dataRow.add(EMPTY_STRING); break; } else if (preferred == false &&
+		 * infraSpecificeEpithet == null) { dataRow.add(EMPTY_STRING); break; }
+		 * } } }
+		 */
 
 		/*
 		 * if
@@ -1272,53 +1273,47 @@ public class Fieldmapping {
 	 */
 	public static void setFullScientificName(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
-		int cnt = specimen.getIdentifications().size();
-		if (cnt > 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String scientificName = specimen.getIdentifications().get(i)
-						.getScientificName().getFullScientificName();
-				if (preferred && scientificName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getFullScientificName());
-					break;
-				} else if (preferred == false && scientificName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getFullScientificName());
-					break;
-				} else if (preferred && scientificName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && scientificName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
-			}
-		} else if (cnt == 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String scientificName = specimen.getIdentifications().get(i)
-						.getScientificName().getFullScientificName();
 
-				if (preferred == false && scientificName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getFullScientificName());
-					break;
-				} else if (preferred && scientificName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getFullScientificName());
-					break;
-				} else if (preferred && scientificName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && scientificName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
+		if (getIdentificationsPreferred(specimen)) {
+			if (fullScientificName != null) {
+				dataRow.add(fullScientificName);
+			} else {
+				dataRow.add(EMPTY_STRING);
 			}
 		}
+
+		/*
+		 * int cnt = specimen.getIdentifications().size(); if (cnt > 1) { for
+		 * (int i = 0; i < cnt; i++) { boolean preferred =
+		 * specimen.getIdentifications().get(i) .isPreferred(); if (preferred) {
+		 * String scientificName = specimen.getIdentifications()
+		 * .get(i).getScientificName().getFullScientificName(); if (preferred &&
+		 * scientificName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getFullScientificName()); break; } else if
+		 * (preferred == false && scientificName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getFullScientificName()); break; } else if
+		 * (preferred && scientificName == null) { dataRow.add(EMPTY_STRING);
+		 * break; } else if (preferred == false && scientificName == null) {
+		 * dataRow.add(EMPTY_STRING); break; } } } } else if (cnt == 1) { for
+		 * (int i = 0; i < cnt; i++) { boolean preferred =
+		 * specimen.getIdentifications().get(i) .isPreferred();
+		 * 
+		 * if (preferred || !preferred) { String scientificName =
+		 * specimen.getIdentifications()
+		 * .get(i).getScientificName().getFullScientificName();
+		 * 
+		 * if (preferred == false && scientificName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getFullScientificName()); break; } else if
+		 * (preferred && scientificName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getFullScientificName()); break; } else if
+		 * (preferred && scientificName == null) { dataRow.add(EMPTY_STRING);
+		 * break; } else if (preferred == false && scientificName == null) {
+		 * dataRow.add(EMPTY_STRING); break; } } } }
+		 */
 
 		/*
 		 * if
@@ -1365,54 +1360,46 @@ public class Fieldmapping {
 	public static void setAuthorshipVerbatim(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 
-		int cnt = specimen.getIdentifications().size();
-		if (cnt > 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String authorName = specimen.getIdentifications().get(i)
-						.getScientificName().getAuthorshipVerbatim();
-				if (preferred && authorName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim());
-					break;
-				} else if (preferred == false && authorName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim());
-					break;
-				} else if (preferred && authorName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && authorName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
-
-			}
-		} else if (cnt == 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String authorName = specimen.getIdentifications().get(i)
-						.getScientificName().getAuthorshipVerbatim();
-				if (preferred && authorName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim());
-					break;
-				} else if (preferred == false && authorName != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim());
-					break;
-				} else if (preferred && authorName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && authorName == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
+		if (getIdentificationsPreferred(specimen)) {
+			if (authorVerbatim != null) {
+				dataRow.add(authorVerbatim);
+			} else {
+				dataRow.add(EMPTY_STRING);
 			}
 		}
 
+		/*
+		 * int cnt = specimen.getIdentifications().size(); if (cnt > 1) { for
+		 * (int i = 0; i < cnt; i++) { boolean preferred =
+		 * specimen.getIdentifications().get(i) .isPreferred(); if (preferred) {
+		 * String authorName = specimen.getIdentifications().get(i)
+		 * .getScientificName().getAuthorshipVerbatim(); if (preferred &&
+		 * authorName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getAuthorshipVerbatim()); break; } else if
+		 * (preferred == false && authorName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getAuthorshipVerbatim()); break; } else if
+		 * (preferred && authorName == null) { dataRow.add(EMPTY_STRING); break;
+		 * } else if (preferred == false && authorName == null) {
+		 * dataRow.add(EMPTY_STRING); break; } }
+		 * 
+		 * } } else if (cnt == 1) { for (int i = 0; i < cnt; i++) { boolean
+		 * preferred = specimen.getIdentifications().get(i) .isPreferred();
+		 * 
+		 * if (preferred || !preferred) { String authorName =
+		 * specimen.getIdentifications().get(i)
+		 * .getScientificName().getAuthorshipVerbatim(); if (preferred &&
+		 * authorName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getAuthorshipVerbatim()); break; } else if
+		 * (preferred == false && authorName != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getAuthorshipVerbatim()); break; } else if
+		 * (preferred && authorName == null) { dataRow.add(EMPTY_STRING); break;
+		 * } else if (preferred == false && authorName == null) {
+		 * dataRow.add(EMPTY_STRING); break; } } } }
+		 */
 		/*
 		 * if
 		 * (specimen.getIdentifications().iterator().next().getScientificName()
@@ -1464,6 +1451,212 @@ public class Fieldmapping {
 		}
 	}
 
+	/*
+	 * public static boolean getPreferred(ESSpecimen specimen) { int cnt =
+	 * specimen.getIdentifications().size(); for (int i = 0; i < cnt; i++) {
+	 * allValueList.add(toString(specimen.getIdentifications().get(i)
+	 * .isPreferred())); if (allValueList.contains("true")) { return true; } }
+	 * return false; }
+	 */
+
+	public static boolean getPreferredFalse(ESSpecimen specimen) {
+		int cnt = specimen.getIdentifications().size();
+		for (int i = 0; i < cnt; i++) {
+			if (!specimen.getIdentifications().get(i).isPreferred()) {
+				allFalseList.add(toString(specimen.getIdentifications().get(i)
+						.isPreferred()));
+			}
+			if (allFalseList.contains("false")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	 * public static boolean getPreferredtrue(ESSpecimen esSpecimen) { int cnt =
+	 * esSpecimen.getIdentifications().size(); for (int i = 0; i < cnt; i++) {
+	 * if (esSpecimen.getIdentifications().get(i).isPreferred()) { return true;
+	 * } } return false; }
+	 */
+
+	public static boolean getIdentificationsPreferred(ESSpecimen specimen) {
+		int cnt = specimen.getIdentifications().size();
+		allFalseList.clear();
+
+		for (int i = 0; i < cnt; i++) {
+			trueList.clear();
+			specificEpithet = "";
+			fullScientificName = "";
+			genusName = "";
+			subGenusName = "";
+			authorVerbatim = "";
+			infraSpecificEpithet = "";
+
+			preferred = specimen.getIdentifications().get(i).isPreferred();
+
+			if (preferred) {
+				trueList.add(toString(preferred));
+			}
+
+			if (trueList.contains("true")) { // && cnt > i) {
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getSpecificEpithet() != null) {
+					specificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getSpecificEpithet().trim();
+				} else {
+					specificEpithet = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getFullScientificName() != null) {
+					fullScientificName = specimen.getIdentifications().get(i)
+							.getScientificName().getFullScientificName().trim();
+				} else {
+					fullScientificName = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getGenusOrMonomial() != null) {
+					genusName = specimen.getIdentifications().get(i)
+							.getScientificName().getGenusOrMonomial().trim();
+				} else {
+					genusName = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getSubgenus() != null) {
+					subGenusName = specimen.getIdentifications().get(i)
+							.getScientificName().getSubgenus().trim();
+				} else
+					subGenusName = EMPTY_STRING;
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getAuthorshipVerbatim() != null) {
+					authorVerbatim = specimen.getIdentifications().get(i)
+							.getScientificName().getAuthorshipVerbatim().trim();
+				} else {
+					authorVerbatim = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getInfraspecificEpithet() != null) {
+					infraSpecificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getInfraspecificEpithet()
+							.trim();
+				} else {
+					infraSpecificEpithet = EMPTY_STRING;
+				}
+
+				return true;
+			} else if (getPreferredFalse(specimen)) { // && !trueList.isEmpty()
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getSpecificEpithet() != null) {
+					specificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getSpecificEpithet().trim();
+				} else {
+					specificEpithet = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getFullScientificName() != null) {
+					fullScientificName = specimen.getIdentifications().get(i)
+							.getScientificName().getFullScientificName().trim();
+				} else {
+					fullScientificName = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getGenusOrMonomial() != null) {
+					genusName = specimen.getIdentifications().get(i)
+							.getScientificName().getGenusOrMonomial().trim();
+				} else {
+					genusName = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getSubgenus() != null) {
+					subGenusName = specimen.getIdentifications().get(i)
+							.getScientificName().getSubgenus().trim();
+				} else
+					subGenusName = EMPTY_STRING;
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getAuthorshipVerbatim() != null) {
+					authorVerbatim = specimen.getIdentifications().get(i)
+							.getScientificName().getAuthorshipVerbatim().trim();
+				} else {
+					authorVerbatim = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getInfraspecificEpithet() != null) {
+					infraSpecificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getInfraspecificEpithet()
+							.trim();
+				} else {
+					infraSpecificEpithet = EMPTY_STRING;
+				}
+
+				return true;
+			} else if (cnt == i + 1 && getPreferredFalse(specimen)) {
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getSpecificEpithet() != null) {
+					specificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getSpecificEpithet().trim();
+				} else {
+					specificEpithet = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getFullScientificName() != null) {
+					fullScientificName = specimen.getIdentifications().get(i)
+							.getScientificName().getFullScientificName().trim();
+				} else {
+					fullScientificName = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getGenusOrMonomial() != null) {
+					genusName = specimen.getIdentifications().get(i)
+							.getScientificName().getGenusOrMonomial().trim();
+				} else {
+					genusName = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getSubgenus() != null) {
+					subGenusName = specimen.getIdentifications().get(i)
+							.getScientificName().getSubgenus().trim();
+				} else
+					subGenusName = EMPTY_STRING;
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getAuthorshipVerbatim() != null) {
+					authorVerbatim = specimen.getIdentifications().get(i)
+							.getScientificName().getAuthorshipVerbatim().trim();
+				} else {
+					authorVerbatim = EMPTY_STRING;
+				}
+
+				if (specimen.getIdentifications().get(i).getScientificName()
+						.getInfraspecificEpithet() != null) {
+					infraSpecificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getInfraspecificEpithet()
+							.trim();
+				} else {
+					infraSpecificEpithet = EMPTY_STRING;
+				}
+
+				return true;
+			}
+		}
+		return false;
+
+	}
+
 	/**
 	 * Get SpecificEpithet value for Zoology and Geology
 	 * 
@@ -1476,62 +1669,45 @@ public class Fieldmapping {
 	 */
 	public static void setSpecificEpithet(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
-		int cnt = specimen.getIdentifications().size();
-		if (cnt > 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String specificeEpithet = specimen.getIdentifications().get(i)
-						.getScientificName().getSpecificEpithet();
-				if (preferred && specificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet());
-					break;
-				} else if (preferred == false && specificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet());
-					break;
-				} else if (preferred && specificeEpithet == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && specificeEpithet == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
+		if (getIdentificationsPreferred(specimen)) {
+			if (specificEpithet != null) {
+				dataRow.add(specificEpithet);
+			} else {
+				dataRow.add(EMPTY_STRING);
 			}
-		} else if (cnt == 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String specificeEpithet = specimen.getIdentifications().get(i)
-						.getScientificName().getSpecificEpithet();
-				if (preferred && specificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet());
-					break;
-				} else if (preferred == false && specificeEpithet != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet());
-					break;
-				} else if (preferred && specificeEpithet == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && specificeEpithet == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
-			}
+			/*
+			 * if (cnt > 1) { for (int i = 0; i < cnt; i++) { preferred =
+			 * specimen.getIdentifications().get(i) .isPreferred();
+			 * 
+			 * if (preferred) { specificeEpithet =
+			 * specimen.getIdentifications().get(i)
+			 * .getScientificName().getSpecificEpithet();
+			 * 
+			 * if (specificeEpithet != null) {
+			 * dataRow.add(specimen.getIdentifications().get(i)
+			 * .getScientificName().getSpecificEpithet()); break; } else if
+			 * (specificeEpithet == null) { dataRow.add(EMPTY_STRING); break; }
+			 * } }
+			 * 
+			 * } else if (cnt == 1) { for (int i = 0; i < cnt; i++) { boolean
+			 * preferred = specimen.getIdentifications().get(i) .isPreferred();
+			 * 
+			 * if (preferred || !preferred) { preferredTrue = preferred;
+			 * specificeEpithet = specimen.getIdentifications().get(i)
+			 * .getScientificName().getSpecificEpithet();
+			 * 
+			 * if (preferred && specificeEpithet != null) {
+			 * dataRow.add(specimen.getIdentifications().get(i)
+			 * .getScientificName().getSpecificEpithet()); break; } else if
+			 * (preferred == false && specificeEpithet != null) {
+			 * dataRow.add(specimen.getIdentifications().get(i)
+			 * .getScientificName().getSpecificEpithet()); break; } else if
+			 * (preferred && specificeEpithet == null) {
+			 * dataRow.add(EMPTY_STRING); break; } else if (preferred == false
+			 * && specificeEpithet == null) { dataRow.add(EMPTY_STRING); break;
+			 * } } } }
+			 */
 		}
-
-		/*
-		 * if
-		 * (specimen.getIdentifications().iterator().next().getScientificName()
-		 * .getSpecificEpithet() != null &&
-		 * specimen.getIdentifications().iterator().next() .isPreferred() ==
-		 * true) { dataRow.add(specimen.getIdentifications().iterator().next()
-		 * .getScientificName().getSpecificEpithet()); } else {
-		 * dataRow.add(EMPTY_STRING); }
-		 */
 	}
 
 	/**
@@ -1567,7 +1743,9 @@ public class Fieldmapping {
 	 */
 	public static void setProvinceState(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getGatheringEvent().getProvinceState() != null && !specimen.getGatheringEvent().getProvinceState().contains("0")) {
+		if (specimen.getGatheringEvent().getProvinceState() != null
+				&& !specimen.getGatheringEvent().getProvinceState()
+						.contains("0")) {
 			/* NDA-303/372 */
 			dataRow.add(specimen.getGatheringEvent().getProvinceState());
 		} else {
@@ -1588,62 +1766,80 @@ public class Fieldmapping {
 	public static void setSubGenus(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 
-		int cnt = specimen.getIdentifications().size();
-		if (cnt > 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String subGenus = specimen.getIdentifications().get(i)
-						.getScientificName().getSubgenus();
-				if (preferred && subGenus != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus());
-					break;
-				} else if (preferred == false && subGenus != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus());
-					break;
-				} else if (preferred && subGenus == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && subGenus == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
+		if (getIdentificationsPreferred(specimen)) {
+			if (subGenusName != null) {
+
+				if (specimen.getUnitID().equals("RGM.542617")) {
+					System.out.println("OK");
 				}
-			}
-		} else if (cnt == 1) {
-			for (int i = 0; i < cnt; i++) {
-				boolean preferred = specimen.getIdentifications().get(i)
-						.isPreferred();
-				String subGenus = specimen.getIdentifications().get(i)
-						.getScientificName().getSubgenus();
-				if (preferred && subGenus != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus());
-					break;
-				} else if (preferred == false && subGenus != null) {
-					dataRow.add(specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus());
-					break;
-				} else if (preferred && subGenus == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				} else if (preferred == false && subGenus == null) {
-					dataRow.add(EMPTY_STRING);
-					break;
-				}
+
+				dataRow.add(subGenusName);
+			} else {
+				dataRow.add(EMPTY_STRING);
 			}
 		}
 
 		/*
-		 * if
-		 * (specimen.getIdentifications().iterator().next().getScientificName()
-		 * .getSubgenus() != null &&
-		 * specimen.getIdentifications().iterator().next() .isPreferred() ==
-		 * true) { dataRow.add(specimen.getIdentifications().iterator().next()
-		 * .getScientificName().getSubgenus()); } else {
-		 * dataRow.add(EMPTY_STRING); }
-		 */
+		 * String subGenus = "";
+		 * 
+		 * int cnt = specimen.getIdentifications().size(); if (cnt > 1) {
+		 * trueList.clear(); for (int i = 0; i < cnt; i++) { boolean preferred =
+		 * specimen.getIdentifications().get(i) .isPreferred();
+		 * 
+		 * if (preferred) { trueList.add(toString(preferred)); }
+		 * 
+		 * if (preferred) { subGenus = specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus();
+		 * 
+		 * if (subGenus != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus()); break; }
+		 * 
+		 * if (subGenus == null) { dataRow.add(EMPTY_STRING); break; } }
+		 * 
+		 * 
+		 * else if (!preferredFalse) { subGenus =
+		 * specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus(); if (subGenus != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus()); break; }
+		 * 
+		 * if (subGenus == null) { dataRow.add(EMPTY_STRING); break; } }
+		 * 
+		 * } } else if (cnt == 1) { trueList.clear(); for (int i = 0; i < cnt;
+		 * i++) { boolean preferred = specimen.getIdentifications().get(i)
+		 * .isPreferred();
+		 * 
+		 * if (preferred) { trueList.add(toString(preferred)); }
+		 * 
+		 * if (preferred || !preferred) { subGenus =
+		 * specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus();
+		 * 
+		 * if (preferred && subGenus != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus()); break; } else if (!preferred &&
+		 * subGenus != null) { dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus()); break; } else if (preferred &&
+		 * subGenus == null) { dataRow.add(EMPTY_STRING); break; } else if
+		 * (!preferred && subGenus == null) { dataRow.add(EMPTY_STRING); break;
+		 * } } else if (!preferredFalse) { if (subGenus != null) {
+		 * dataRow.add(specimen.getIdentifications().get(i)
+		 * .getScientificName().getSubgenus()); break; } else if (subGenus ==
+		 * null) { dataRow.add(EMPTY_STRING); break; } }
+		 * 
+		 * 
+		 * } }
+		 *//*
+			 * if
+			 * (specimen.getIdentifications().iterator().next().getScientificName
+			 * () .getSubgenus() != null &&
+			 * specimen.getIdentifications().iterator().next() .isPreferred() ==
+			 * true) {
+			 * dataRow.add(specimen.getIdentifications().iterator().next()
+			 * .getScientificName().getSubgenus()); } else {
+			 * dataRow.add(EMPTY_STRING); }
+			 */
 	}
 
 	/**
@@ -1779,7 +1975,10 @@ public class Fieldmapping {
 	 */
 	public static void setTypeStatus(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getTypeStatus() != null) {
+
+		identification = specimen.getIdentifications().size();
+
+		if (specimen.getTypeStatus() != null && identification > 0) {
 			dataRow.add(specimen.getTypeStatus());
 		} else {
 			dataRow.add(EMPTY_STRING);

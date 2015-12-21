@@ -32,18 +32,19 @@ import org.slf4j.Logger;
  *
  */
 public class TransformUtil {
-
+	
 	private static final Logger logger = Registry.getInstance().getLogger(TransformUtil.class);
 
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyy/MM/dd");
 	private static final SimpleDateFormat DATE_FORMAT2 = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_FORMAT3 = new SimpleDateFormat("dd MMMM yyyy");
-	private static final SimpleDateFormat DATE_FORMAT4 = new SimpleDateFormat("yyyy");
-	private static final SimpleDateFormat DATE_FORMAT5 = new SimpleDateFormat("yy");
+	private static final SimpleDateFormat DATE_FORMAT4 = new SimpleDateFormat("MM/yyyy");
+	private static final SimpleDateFormat DATE_FORMAT5 = new SimpleDateFormat("yyyy");
+	private static final SimpleDateFormat DATE_FORMAT6 = new SimpleDateFormat("yy");
 
 	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(DATE_FORMAT0, DATE_FORMAT1,
-			DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5);
+			DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5, DATE_FORMAT6);
 
 	/**
 	 * Attempts to parse the specified string into a date using the following
@@ -70,6 +71,7 @@ public class TransformUtil {
 			return null;
 		for (SimpleDateFormat df : DATE_FORMATS) {
 			try {
+				System.out.println("Trying " + df.toPattern());
 				return df.parse(s);
 			}
 			catch (ParseException e) {

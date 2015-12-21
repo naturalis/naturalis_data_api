@@ -51,11 +51,12 @@ public class CsvFileWriter extends BufferedWriter
                 builder.append('\t');
             if(column != null)
             {
-            	if (indexOfFirstContainedCharacter(column, "\n"+"\r"+"\"+-,") !=-1){
-                    column = column.replaceAll("\"", "\"\"");
+            	//if (indexOfFirstContainedCharacter(column, "\n"+"\r"+"\"+-,") !=-1){
+            	if (indexOfFirstContainedCharacter(column, "\n"+"\r") !=-1){
+                    //column = column.replaceAll("\"", "\"\"");
                     column = column.replace('\r', ' ');
                		column = column.replace('\n', ' ');
-                    builder.append(String.format("\"%s\"",column));;
+                    builder.append(String.format("\"%s\"",column));
                 }
                 else
                 	builder.append(column);
@@ -72,7 +73,7 @@ public class CsvFileWriter extends BufferedWriter
     public static int indexOfFirstContainedCharacter(String s1, String s2) {
         if (s1 == null || s1.isEmpty())
             return -1;
-        Set<Character> set = new HashSet<Character>();
+        Set<Character> set = new HashSet<>();
         for (int i=0; i<s2.length(); i++) {
             set.add(s2.charAt(i)); // Build a constant-time lookup table.
         }

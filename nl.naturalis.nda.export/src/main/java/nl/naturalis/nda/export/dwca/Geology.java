@@ -329,6 +329,6 @@ public class Geology
 			 * adding data row
 			 */
      		filewriter.WriteRow(dataRow);
-		}
+ 		}
 	}
 }

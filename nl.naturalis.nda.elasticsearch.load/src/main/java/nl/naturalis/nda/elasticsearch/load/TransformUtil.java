@@ -71,7 +71,6 @@ public class TransformUtil {
 			return null;
 		for (SimpleDateFormat df : DATE_FORMATS) {
 			try {
-				System.out.println("Trying " + df.toPattern());
 				return df.parse(s);
 			}
 			catch (ParseException e) {

@@ -493,7 +493,17 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private Date date(Element e, String tag)
 	{
-		return TransformUtil.parseDate(val(e, tag));
+		String s = val(e, tag);
+		String year = s.substring(0, 4);
+		if (year.equals("0000"))
+			return null;
+		String month = s.substring(4, 6);
+		String day = s.substring(6, 8);
+		if (month.equals("00"))
+			month = "01";
+		if (day.equals("00"))
+			day = "01";
+		return TransformUtil.parseDate(year + '/' + month + '/' + day);
 	}
 
 	private Double dval(Element e, String tag)

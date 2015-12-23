@@ -494,6 +494,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	private Date date(Element e, String tag)
 	{
 		String s = val(e, tag);
+		if (s == null)
+			return null;
 		String year = s.substring(0, 4);
 		if (year.equals("0000"))
 			return null;

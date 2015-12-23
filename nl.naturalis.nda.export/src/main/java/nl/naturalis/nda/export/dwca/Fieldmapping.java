@@ -2,6 +2,7 @@ package nl.naturalis.nda.export.dwca;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,21 +31,21 @@ public class Fieldmapping {
 
 	static SimpleDateFormat datetimebegin = new SimpleDateFormat("yyyy-MM-dd");
 	static SimpleDateFormat datetimenend = new SimpleDateFormat("yyyy-MM-dd");
-	/*
-	 * private static String specificEpithet = ""; private static String
-	 * fullScientificName = ""; private static String genusName = ""; private
-	 * static String subGenusName = ""; private static String authorVerbatim =
-	 * ""; private static String infraSpecificEpithet = ""; private static
-	 * String className = "";
-	 */
+	static SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
 
+	private static String specificEpithet = "";
+	private static String fullScientificName = "";
+	private static String infraSpecificEpithet = "";
+	private static String taxonRank = "";
+	private static String family = "";
+	private static String genusName = "";
+	private static String order = "";
+	private static String dateiden = "";
+	private static String authorVerbatim = "";
+	private static String subGenusName = ""; 
+	
 	private static int identification = 0;
-
-	// private static List<String> trueList = new ArrayList<>();
-	// private static List<String> allValueList = new ArrayList<>();
 	private static List<String> allFalseList = new ArrayList<>();
-
-	// private static boolean preferred;
 
 	public static String toString(boolean value) {
 		return value ? "true" : "false";
@@ -303,55 +304,58 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
+	@SuppressWarnings("null")
 	public static void setDateIndentified(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String dateiden = "";
+		Date datumidentified = new Date();
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getDateIdentified() != null
-						&& list.contains("true")) {
-					SimpleDateFormat dateidentified = new SimpleDateFormat(
-							"yyyy-MM-dd");
-					dateiden = dateidentified.format(specimen
-							.getIdentifications().get(i)
-							.getDateIdentified());
+				/*
+				 * dateiden = dateidentified.format(specimen
+				 * .getIdentifications().get(i).getDateIdentified());
+				 */
+				datumidentified = specimen.getIdentifications().get(i)
+						.getDateIdentified();
+				if (datumidentified == null && list.contains("true")) {
+					datumidentified = null;
+				} else if (datumidentified != null && list.contains("true")) {
+					datumidentified = specimen.getIdentifications().get(i)
+							.getDateIdentified();
 				}
 			} else {
-				if (specimen.getIdentifications().get(i).getDateIdentified() != null
-						&& list.isEmpty()) {
-					SimpleDateFormat dateidentified = new SimpleDateFormat(
-							"yyyy-MM-dd");
-					dateiden = dateidentified.format(specimen
-							.getIdentifications().get(i)
-							.getDateIdentified());
+				if (datumidentified != null && list.isEmpty()) {
+					datumidentified = specimen.getIdentifications().get(i)
+							.getDateIdentified();
+				}
+				if (datumidentified == null && list.isEmpty()) {
+					datumidentified = null;
 				}
 			}
 		}
 
-		if (dateiden != null) {
-			dataRow.add(dateiden);
+		if (datumidentified != null) {
+			dataRow.add(dateidentified.format(datumidentified));
 		} else {
 			dataRow.add(EMPTY_STRING);
 		}
 
 		list.clear();
 
-		/*if (specimen.getIdentifications().iterator().next().getDateIdentified() != null
-				&& specimen.getIdentifications().iterator().next()
-						.isPreferred() == true) {
-			SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
-			String dateiden = dateidentified
-					.format(specimen.getIdentifications().iterator().next()
-							.getDateIdentified());
-			dataRow.add(dateiden);
-		} else {
-			dataRow.add(EMPTY_STRING);
-		}*/
+		/*
+		 * if
+		 * (specimen.getIdentifications().iterator().next().getDateIdentified()
+		 * != null && specimen.getIdentifications().iterator().next()
+		 * .isPreferred() == true) { SimpleDateFormat dateidentified = new
+		 * SimpleDateFormat("yyyy-MM-dd"); String dateiden = dateidentified
+		 * .format(specimen.getIdentifications().iterator().next()
+		 * .getDateIdentified()); dataRow.add(dateiden); } else {
+		 * dataRow.add(EMPTY_STRING); }
+		 */
 
 	}
 
@@ -594,14 +598,17 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String family = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i)
-						.getDefaultClassification().getFamily() != null
-						&& list.contains("true")) {
+				family = specimen.getIdentifications().get(i)
+						.getDefaultClassification().getFamily();
+				if (family != null && list.contains("true")) {
+					family = specimen.getIdentifications().get(i)
+							.getDefaultClassification().getFamily();
+				} else if (family == null && list.contains("true")) {
 					family = specimen.getIdentifications().get(i)
 							.getDefaultClassification().getFamily();
 				}
@@ -669,14 +676,17 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String genusName = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getGenusOrMonomial() != null
-						&& list.contains("true")) {
+				genusName = specimen.getIdentifications().get(i)
+						.getScientificName().getGenusOrMonomial();
+				if (genusName != null && list.contains("true")) {
+					genusName = specimen.getIdentifications().get(i)
+							.getScientificName().getGenusOrMonomial();
+				} else if (genusName == null && list.contains("true")) {
 					genusName = specimen.getIdentifications().get(i)
 							.getScientificName().getGenusOrMonomial();
 				}
@@ -969,14 +979,16 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String infraSpecificEpithet = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getInfraspecificEpithet() != null
-						&& list.contains("true")) {
+				infraSpecificEpithet = specimen.getIdentifications().get(i)
+						.getScientificName().getInfraspecificEpithet();
+				if ((infraSpecificEpithet != null && list.contains("true"))
+						|| (infraSpecificEpithet == null && list
+								.contains("true"))) {
 					infraSpecificEpithet = specimen.getIdentifications().get(i)
 							.getScientificName().getInfraspecificEpithet();
 				}
@@ -1124,45 +1136,44 @@ public class Fieldmapping {
 	public static void setKingdom(ESSpecimen specimen,
 			CsvFileWriter.CsvRow dataRow) throws Exception {
 
-		List<String> list = new ArrayList<>();
-		int size = specimen.getIdentifications().size();
-		String kingDom = "";
-		for (int i = 0; i < size; i++) {
-			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				if (specimen.getIdentifications().get(i)
-						.getDefaultClassification() != null
-						&& list.contains("true")) {
-					kingDom = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getKingdom();
-				}
-			} else {
-				if (specimen.getIdentifications().get(i)
-						.getDefaultClassification() != null
-						&& list.isEmpty()) {
-					kingDom = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getKingdom();
-				}
-			}
-		}
-
-		if (kingDom != null) {
-			dataRow.add(kingDom);
+		/*
+		 * List<String> list = new ArrayList<>(); int size =
+		 * specimen.getIdentifications().size();
+		 * 
+		 * for (int i = 0; i < size; i++) { if
+		 * (specimen.getIdentifications().get(i).isPreferred()) {
+		 * list.add(toString(specimen.getIdentifications().get(i)
+		 * .isPreferred())); if (specimen.getIdentifications().get(i)
+		 * .getDefaultClassification() != null) { kingDom =
+		 * specimen.getIdentifications
+		 * ().get(i).getDefaultClassification().getKingdom(); }
+		 * 
+		 * if (kingDom != null && list.contains("true")) { kingDom =
+		 * specimen.getIdentifications().get(i)
+		 * .getDefaultClassification().getKingdom(); } else if(kingDom == null
+		 * && list.contains("true")) { kingDom = EMPTY_STRING; }
+		 * 
+		 * 
+		 * } else { if (specimen.getIdentifications().get(i)
+		 * .getDefaultClassification() != null && list.isEmpty()) { kingDom =
+		 * specimen.getIdentifications().get(i)
+		 * .getDefaultClassification().getKingdom(); } } }
+		 * 
+		 * if (kingDom != null) { dataRow.add(kingDom); } else {
+		 * dataRow.add(EMPTY_STRING); }
+		 * 
+		 * list.clear();
+		 */
+		if (specimen.getIdentifications().iterator().next()
+				.getDefaultClassification() != null
+				&& specimen.getIdentifications().iterator().next()
+						.isPreferred()) {
+			dataRow.add(specimen.getIdentifications().iterator().next()
+					.getDefaultClassification().getKingdom());
 		} else {
 			dataRow.add(EMPTY_STRING);
 		}
 
-		list.clear();
-
-		/*
-		 * if (specimen.getIdentifications().iterator().next()
-		 * .getDefaultClassification() != null &&
-		 * specimen.getIdentifications().iterator().next() .isPreferred() ==
-		 * true) { dataRow.add(specimen.getIdentifications().iterator().next()
-		 * .getDefaultClassification().getKingdom()); } else {
-		 * dataRow.add(EMPTY_STRING); }
-		 */
 	}
 
 	/**
@@ -1334,29 +1345,31 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String orderId = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i)
-						.getDefaultClassification().getOrder() != null
-						&& list.contains("true")) {
-					orderId = specimen.getIdentifications().get(i)
+				order = specimen.getIdentifications().get(i)
+						.getDefaultClassification().getOrder();
+
+				if ((order != null && list.contains("true"))
+						|| (order == null && list.contains("true"))) {
+					order = specimen.getIdentifications().get(i)
 							.getDefaultClassification().getOrder();
 				}
 			} else {
 				if (specimen.getIdentifications().get(i)
 						.getDefaultClassification().getOrder() != null
 						&& list.isEmpty()) {
-					orderId = specimen.getIdentifications().get(i)
+					order = specimen.getIdentifications().get(i)
 							.getDefaultClassification().getOrder();
 				}
 			}
 		}
 
-		if (orderId != null) {
-			dataRow.add(orderId);
+		if (order != null) {
+			dataRow.add(order);
 		} else {
 			dataRow.add(EMPTY_STRING);
 		}
@@ -1486,14 +1499,15 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String fullScientificName = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getFullScientificName() != null
-						&& list.contains("true")) {
+				fullScientificName = specimen.getIdentifications().get(i)
+						.getScientificName().getFullScientificName();
+				if ((fullScientificName != null && list.contains("true"))
+						|| (fullScientificName == null && list.contains("true"))) {
 					fullScientificName = specimen.getIdentifications().get(i)
 							.getScientificName().getFullScientificName();
 				}
@@ -1601,14 +1615,17 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String authorVerbatim = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getAuthorshipVerbatim() != null
-						&& list.contains("true")) {
+				authorVerbatim = specimen.getIdentifications().get(i)
+						.getScientificName().getAuthorshipVerbatim();
+				if (authorVerbatim != null && list.contains("true")) {
+					authorVerbatim = specimen.getIdentifications().get(i)
+							.getScientificName().getAuthorshipVerbatim();
+				} else if (authorVerbatim == null && list.contains("true")) {
 					authorVerbatim = specimen.getIdentifications().get(i)
 							.getScientificName().getAuthorshipVerbatim();
 				}
@@ -1892,14 +1909,21 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String specificEpithet = "";
+		
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getSpecificEpithet() != null
+				specificEpithet = specimen.getIdentifications().get(i)
+						.getScientificName().getSpecificEpithet();
+				if (specificEpithet != null
 						&& list.contains("true")) {
+					specificEpithet = specimen.getIdentifications().get(i)
+							.getScientificName().getSpecificEpithet();
+				}
+				else if (specificEpithet == null
+						&& list.contains("true"))
+				{
 					specificEpithet = specimen.getIdentifications().get(i)
 							.getScientificName().getSpecificEpithet();
 				}
@@ -2018,13 +2042,18 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String subGenusName = "";
+		
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getSubgenus() != null
+				subGenusName = specimen.getIdentifications().get(i)
+						.getScientificName().getSubgenus();
+				if (subGenusName != null
+						&& list.contains("true")) {
+					subGenusName = specimen.getIdentifications().get(i)
+							.getScientificName().getSubgenus();
+				}else if (subGenusName == null
 						&& list.contains("true")) {
 					subGenusName = specimen.getIdentifications().get(i)
 							.getScientificName().getSubgenus();
@@ -2151,12 +2180,19 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String taxonRank = "";
+		
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
-				if (specimen.getIdentifications().get(i).getTaxonRank() != null
+				taxonRank = specimen.getIdentifications().get(i)
+						.getTaxonRank();
+				if (taxonRank != null
+						&& list.contains("true")) {
+					taxonRank = specimen.getIdentifications().get(i)
+							.getTaxonRank();
+				}
+				else if (taxonRank == null
 						&& list.contains("true")) {
 					taxonRank = specimen.getIdentifications().get(i)
 							.getTaxonRank();
@@ -2567,12 +2603,18 @@ public class Fieldmapping {
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		String taxonRank = "";
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
 				list.add(toString(specimen.getIdentifications().get(i)
 						.isPreferred()));
+				taxonRank = specimen.getIdentifications().get(i)
+						.getTaxonRank();
 				if (specimen.getIdentifications().get(i).getTaxonRank() != null
+						&& list.contains("true")) {
+					taxonRank = specimen.getIdentifications().get(i)
+							.getTaxonRank();
+				} else if (specimen.getIdentifications().get(i).getTaxonRank() == null
 						&& list.contains("true")) {
 					taxonRank = specimen.getIdentifications().get(i)
 							.getTaxonRank();

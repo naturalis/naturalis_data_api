@@ -884,6 +884,7 @@ public class DwCAExporter {
 				}
 				else
 				{
+					e.printStackTrace();
 					logger.info("Error: " + e.getMessage());
 				}
 			}

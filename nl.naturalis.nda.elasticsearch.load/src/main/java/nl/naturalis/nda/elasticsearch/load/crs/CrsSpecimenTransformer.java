@@ -129,7 +129,11 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
-				return o1.isPreferred() ? 1 : o2.isPreferred() ? -1 : 0;
+				if(o1.isPreferred())
+					return -1;
+				if(o2.isPreferred())
+					return 1;
+				return 0;
 			}
 		});
 

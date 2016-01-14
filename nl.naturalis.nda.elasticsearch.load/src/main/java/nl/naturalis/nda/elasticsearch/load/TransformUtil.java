@@ -43,8 +43,8 @@ public class TransformUtil {
 	private static final SimpleDateFormat DATE_FORMAT5 = new SimpleDateFormat("yyyy");
 	private static final SimpleDateFormat DATE_FORMAT6 = new SimpleDateFormat("yy");
 
-	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(DATE_FORMAT0, DATE_FORMAT1,
-			DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5, DATE_FORMAT6);
+	public static final List<SimpleDateFormat> DATE_FORMATS = Arrays.asList(DATE_FORMAT0,
+			DATE_FORMAT1, DATE_FORMAT2, DATE_FORMAT3, DATE_FORMAT4, DATE_FORMAT5, DATE_FORMAT6);
 
 	/**
 	 * Attempts to parse the specified string into a date using the following
@@ -73,8 +73,7 @@ public class TransformUtil {
 			try {
 				return df.parse(s);
 			}
-			catch (ParseException e) {
-			}
+			catch (ParseException e) {}
 		}
 		logger.warn(String.format("Invalid date: \"%s\"", s));
 		return null;
@@ -167,12 +166,14 @@ public class TransformUtil {
 		else if (dc.getGenus() == null && sn.getGenusOrMonomial() != null) {
 			dc.setGenus(sn.getGenusOrMonomial());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, GENUS, NAME, CLASSIFICATION, sn.getGenusOrMonomial()));
+				logger.debug(String.format(EQUALIZE, GENUS, NAME, CLASSIFICATION,
+						sn.getGenusOrMonomial()));
 		}
 		else if (dc.getGenus() != null && sn.getGenusOrMonomial() == null) {
 			sn.setGenusOrMonomial(dc.getGenus());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, GENUS, CLASSIFICATION, NAME, sn.getGenusOrMonomial()));
+				logger.debug(String.format(EQUALIZE, GENUS, CLASSIFICATION, NAME,
+						sn.getGenusOrMonomial()));
 		}
 
 		if (dc.getSubgenus() != null && sn.getSubgenus() != null) {
@@ -182,12 +183,14 @@ public class TransformUtil {
 		else if (dc.getSubgenus() == null && sn.getSubgenus() != null) {
 			dc.setSubgenus(sn.getSubgenus());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SUBGENUS, NAME, CLASSIFICATION, sn.getSubgenus()));
+				logger.debug(String.format(EQUALIZE, SUBGENUS, NAME, CLASSIFICATION,
+						sn.getSubgenus()));
 		}
 		else if (dc.getSubgenus() != null && sn.getSubgenus() == null) {
 			sn.setSubgenus(dc.getSubgenus());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SUBGENUS, CLASSIFICATION, NAME, sn.getSubgenus()));
+				logger.debug(String.format(EQUALIZE, SUBGENUS, CLASSIFICATION, NAME,
+						sn.getSubgenus()));
 		}
 
 		if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() != null) {
@@ -196,12 +199,14 @@ public class TransformUtil {
 		}
 		else if (dc.getSpecificEpithet() == null && sn.getSpecificEpithet() != null) {
 			dc.setSpecificEpithet(sn.getSpecificEpithet());
-			logger.debug(String.format(EQUALIZE, SPECIES, NAME, CLASSIFICATION, sn.getSpecificEpithet()));
+			logger.debug(String.format(EQUALIZE, SPECIES, NAME, CLASSIFICATION,
+					sn.getSpecificEpithet()));
 		}
 		else if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() == null) {
 			sn.setSpecificEpithet(dc.getSpecificEpithet());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SPECIES, CLASSIFICATION, NAME, sn.getSpecificEpithet()));
+				logger.debug(String.format(EQUALIZE, SPECIES, CLASSIFICATION, NAME,
+						sn.getSpecificEpithet()));
 		}
 
 		if (dc.getInfraspecificEpithet() != null && sn.getInfraspecificEpithet() != null) {

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
  
 
 /**  
@@ -49,9 +51,15 @@ public class CsvFileWriter extends BufferedWriter
                 builder.append('\t');
             if(column != null)
             {
-           		column = column.replace('\r', ' ');
-           		column = column.replace('\n', ' ');
-           		builder.append(column);
+            	//if (indexOfFirstContainedCharacter(column, "\n"+"\r"+"\"+-,") !=-1){
+            	if (indexOfFirstContainedCharacter(column, "\n"+"\r") !=-1){
+                    //column = column.replaceAll("\"", "\"\"");
+                    column = column.replace('\r', ' ');
+               		column = column.replace('\n', ' ');
+                    builder.append(String.format("\"%s\"",column));
+                }
+                else
+                	builder.append(column);
             	firstColumn = false;
             }
         }
@@ -61,6 +69,22 @@ public class CsvFileWriter extends BufferedWriter
         builder.setLength(0);
         builder.trimToSize();
     }
+    
+    public static int indexOfFirstContainedCharacter(String s1, String s2) {
+        if (s1 == null || s1.isEmpty())
+            return -1;
+        Set<Character> set = new HashSet<>();
+        for (int i=0; i<s2.length(); i++) {
+            set.add(s2.charAt(i)); // Build a constant-time lookup table.
+        }
+        for (int i=0; i<s1.length(); i++) {
+            if (set.contains(s1.charAt(i))) {
+                return i; // Found a character in s1 also in s2.
+            }
+        }
+        return -1; // No matches.
+    }
+     
      
     /**
      *

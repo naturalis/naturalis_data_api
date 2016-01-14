@@ -129,7 +129,11 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
-				return o1.isPreferred() ? 1 : o2.isPreferred() ? -1 : 0;
+				if(o1.isPreferred())
+					return -1;
+				if(o2.isPreferred())
+					return 1;
+				return 0;
 			}
 		});
 
@@ -493,7 +497,18 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 	private Date date(Element e, String tag)
 	{
-		return TransformUtil.parseDate(val(e, tag));
+		String s = val(e, tag);
+		if (s == null)
+			return null;
+		char[] chars = new char[8];
+		Arrays.fill(chars, '0');
+		for (int i = 0; i < s.length(); ++i)
+			chars[i] = s.charAt(i);
+		if (chars[4] == '0' && chars[5] == '0')
+			chars[5] = '1';
+		if (chars[6] == '0' && chars[7] == '0')
+			chars[7] = '1';
+		return TransformUtil.parseDate(new String(chars));
 	}
 
 	private Double dval(Element e, String tag)

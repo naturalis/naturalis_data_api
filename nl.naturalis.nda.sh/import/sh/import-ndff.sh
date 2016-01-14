@@ -6,10 +6,10 @@ action="${1}"
 
 if [ "x${action}" = x ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.ndff.NdffImporter
+    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.ndff.NdffSpecimenImporter
 elif [ "${action}" = reset ]
 then
-    java -cp ${classpath} $JAVA_OPTS ${loadPackage}.nsr.NsrImporter reset
+    echo "Backup / undo backup not implemented yet"
 else
 	echo "USAGE: ${0} [reset]"
 fi

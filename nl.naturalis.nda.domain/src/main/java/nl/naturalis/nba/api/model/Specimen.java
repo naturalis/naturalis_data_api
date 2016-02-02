@@ -1,34 +1,24 @@
-package nl.naturalis.nda.elasticsearch.dao.estypes;
+package nl.naturalis.nba.api.model;
 
-import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.annotations.NotAnalyzed;
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.NdaTraceableObject;
-import nl.naturalis.nda.domain.SpecimenIdentification;
-
-
-public class ESSpecimen extends NdaTraceableObject {
+public class Specimen extends NdaTraceableObject {
 
 	private String unitID;
-	@NotAnalyzed
 	private String unitGUID;
 	private String collectorsFieldNumber;
 	private String assemblageID;
 	private String sourceInstitutionID;
 	private String sourceID;
 	private String owner;
-	private String licenceType;
-	private String licence;
+	private String licenseType;
+	private String license;
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
-	private String typeStatus;
-	private String sex;
-	private String phaseOrStage;
+	private SpecimenTypeStatus typeStatus;
+	private Sex sex;
+	private PhaseOrStage phaseOrStage;
 	private String title;
 	private String notes;
 	private String preparationType;
@@ -36,33 +26,17 @@ public class ESSpecimen extends NdaTraceableObject {
 	private boolean fromCaptivity;
 	private boolean objectPublic;
 	private boolean multiMediaPublic;
-	
 
 	private Agent acquiredFrom;
-	private ESGatheringEvent gatheringEvent;
+	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
-	private List<String> identifyingEpithets;
-	private List<String> theme;
+	private List<Specimen> otherSpecimensInAssemblage;
+	private List<Taxon> associatedTaxa;
 
 
 	public void addIndentification(SpecimenIdentification identification)
 	{
-		if (identifications == null) {
-			identifications = new ArrayList<SpecimenIdentification>();
-			identifyingEpithets = new ArrayList<String>();
-		}
 		identifications.add(identification);
-		//@formatter:off
-        String identifier =
-                identification.getScientificName().getGenusOrMonomial() +
-                        IDENTIFYING_EPITHETS_DELIMITER +
-                        identification.getScientificName().getSubgenus() +
-                        IDENTIFYING_EPITHETS_DELIMITER +
-                        identification.getScientificName().getSpecificEpithet() +
-                        IDENTIFYING_EPITHETS_DELIMITER +
-                        identification.getScientificName().getInfraspecificEpithet();
-        //@formatter:on
-		identifyingEpithets.add(identifier);
 	}
 
 
@@ -150,27 +124,27 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public String getLicenceType()
+	public String getLicenseType()
 	{
-		return licenceType;
+		return licenseType;
 	}
 
 
-	public void setLicenceType(String licenceType)
+	public void setLicenseType(String licenseType)
 	{
-		this.licenceType = licenceType;
+		this.licenseType = licenseType;
 	}
 
 
-	public String getLicence()
+	public String getLicense()
 	{
-		return licence;
+		return license;
 	}
 
 
-	public void setLicence(String licence)
+	public void setLicense(String license)
 	{
-		this.licence = licence;
+		this.license = license;
 	}
 
 
@@ -210,37 +184,37 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public String getTypeStatus()
+	public SpecimenTypeStatus getTypeStatus()
 	{
 		return typeStatus;
 	}
 
 
-	public void setTypeStatus(String typeStatus)
+	public void setTypeStatus(SpecimenTypeStatus typeStatus)
 	{
 		this.typeStatus = typeStatus;
 	}
 
 
-	public String getSex()
+	public Sex getSex()
 	{
 		return sex;
 	}
 
 
-	public void setSex(String sex)
+	public void setSex(Sex sex)
 	{
 		this.sex = sex;
 	}
 
 
-	public String getPhaseOrStage()
+	public PhaseOrStage getPhaseOrStage()
 	{
 		return phaseOrStage;
 	}
 
 
-	public void setPhaseOrStage(String phaseOrStage)
+	public void setPhaseOrStage(PhaseOrStage phaseOrStage)
 	{
 		this.phaseOrStage = phaseOrStage;
 	}
@@ -342,13 +316,13 @@ public class ESSpecimen extends NdaTraceableObject {
 	}
 
 
-	public ESGatheringEvent getGatheringEvent()
+	public GatheringEvent getGatheringEvent()
 	{
 		return gatheringEvent;
 	}
 
 
-	public void setGatheringEvent(ESGatheringEvent gatheringEvent)
+	public void setGatheringEvent(GatheringEvent gatheringEvent)
 	{
 		this.gatheringEvent = gatheringEvent;
 	}
@@ -363,40 +337,30 @@ public class ESSpecimen extends NdaTraceableObject {
 	public void setIdentifications(List<SpecimenIdentification> identifications)
 	{
 		this.identifications = identifications;
-		this.identifyingEpithets = new ArrayList<>();
-		if (identifications != null) {
-			for (SpecimenIdentification identification : identifications) {
-				//@formatter:off
-                String identifier =
-                        identification.getScientificName().getGenusOrMonomial() +
-                                IDENTIFYING_EPITHETS_DELIMITER +
-                                identification.getScientificName().getSubgenus() +
-                                IDENTIFYING_EPITHETS_DELIMITER +
-                                identification.getScientificName().getSpecificEpithet() +
-                                IDENTIFYING_EPITHETS_DELIMITER +
-                                identification.getScientificName().getInfraspecificEpithet();
-                //@formatter:on
-				identifyingEpithets.add(identifier);
-			}
-		}
 	}
 
 
-	public List<String> getIdentifyingEpithets()
+	public List<Specimen> getOtherSpecimensInAssemblage()
 	{
-		return identifyingEpithets;
+		return otherSpecimensInAssemblage;
 	}
 
 
-	public List<String> getTheme()
+	public void setOtherSpecimensInAssemblage(List<Specimen> otherSpecimensInAssemblage)
 	{
-		return theme;
+		this.otherSpecimensInAssemblage = otherSpecimensInAssemblage;
 	}
 
 
-	public void setTheme(List<String> themes)
+	public List<Taxon> getAssociatedTaxa()
 	{
-		this.theme = themes;
+		return associatedTaxa;
+	}
+
+
+	public void setAssociatedTaxa(List<Taxon> associatedTaxa)
+	{
+		this.associatedTaxa = associatedTaxa;
 	}
 
 }

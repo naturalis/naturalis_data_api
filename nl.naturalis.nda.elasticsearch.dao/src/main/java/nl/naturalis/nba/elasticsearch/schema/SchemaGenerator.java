@@ -2,26 +2,48 @@ package nl.naturalis.nba.elasticsearch.schema;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 
 import nl.naturalis.nba.annotations.NotAnalyzed;
+import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+
+import org.domainobject.util.ClassUtil;
 
 public class SchemaGenerator {
 
+	private static final String ES_STRING = "string";
+	private static final String ES_INT = "integer";
+	private static final String ES_LONG = "long";
+	private static final String ES_BOOLEAN = "boolean";
+	private static final String ES_DOUBLE = "double";
+	private static final String ES_DATE = "date";
+
 	private static final String INDENT = "\t";
+
+	private static final Package PKG_DOMAIN = Specimen.class.getPackage();
+	private static final Package PKG_ESTYPES = ESSpecimen.class.getPackage();
 
 	private static HashMap<Class<?>, String> typeMap = new HashMap<>();
 
 	static {
-		typeMap.put(String.class, "string");
-		typeMap.put(int.class, "integer");
-		typeMap.put(Integer.class, "integer");
-		typeMap.put(boolean.class, "boolean");
-		typeMap.put(Boolean.class, "boolean");
+		typeMap.put(String.class, ES_STRING);
+		typeMap.put(char.class, ES_STRING);
+		typeMap.put(Character.class, ES_STRING);
+		typeMap.put(int.class, ES_INT);
+		typeMap.put(Integer.class, ES_INT);
+		typeMap.put(long.class, ES_LONG);
+		typeMap.put(Long.class, ES_LONG);
+		typeMap.put(double.class, ES_DOUBLE);
+		typeMap.put(Double.class, ES_DOUBLE);
+		typeMap.put(boolean.class, ES_BOOLEAN);
+		typeMap.put(Boolean.class, ES_BOOLEAN);
+		typeMap.put(Date.class, ES_DATE);
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws Exception
 	{
 		PrintWriter pw = new PrintWriter(System.out);
 		SchemaGenerator sg = new SchemaGenerator(pw);
@@ -49,46 +71,47 @@ public class SchemaGenerator {
 
 	public void processClass(int level, Class<?> cls)
 	{
-		String pkg = cls.getPackage().getName();
-		if (!pkg.equals("nl.naturalis.nda.elasticsearch.dao.estypes")
-				&& !pkg.equals("nl.naturalis.nda.domain")) {
-			// TODO: throw something
-			return;
+		Package pkg = cls.getPackage();
+		if (!PKG_DOMAIN.equals(pkg) && !PKG_ESTYPES.equals(pkg)) {
+			throw new RuntimeException("Class not allowed/supported: " + cls.getName());
 		}
 		beginObject(level, "properties");
 		Field[] fields = cls.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
-			if (i != 0) {
-				pw.println(',');
-			}
-			processField(level, fields[i]);
+			processField(level + 1, i == fields.length - 1, fields[i]);
 		}
+		pw.println();
 		endObject(level);
 	}
 
-	public void processField(int level, Field f)
+	public void processField(int level, boolean last, Field f)
 	{
 		println(level, jsonVar(f.getName()), " {");
-		String esType = typeMap.get(f.getType());
+		Class<?> type = getType(f);
+		String esType = typeMap.get(type);
 		if (esType == null) {
-			processClass(level + 1, f.getType());
-			return;
-		}
-		print(level + 1, jsonVar("type", esType));
-		if (f.getAnnotation(NotAnalyzed.class) != null) {
-			pw.println(',');
-			println(level + 1, jsonVar("index", "not_analyzed"));
+			processClass(level + 1, type);
 		}
 		else {
-			pw.println(",");
-			beginObject(level + 1, "fields");
-			beginObject(level + 2, "raw");
-			printField(level + 3, false, "index", "not_analyzed");
-			printField(level + 3, false, "type", esType);
-			endObject(level + 2);
-			endObject(level + 1);
+			print(level + 1, jsonVar("type", esType));
+			if (f.getAnnotation(NotAnalyzed.class) != null) {
+				pw.println(',');
+				println(level + 1, jsonVar("index", "not_analyzed"));
+			}
+			else {
+				pw.println(",");
+				beginObject(level + 1, "fields");
+				beginObject(level + 2, "raw");
+				printField(level + 3, false, "index", "not_analyzed");
+				printField(level + 3, true, "type", esType);
+				endObject(level + 2);
+				endObject(level + 1);
+			}
 		}
-		print(level, "}");
+		if (last)
+			println(level, "}");
+		else
+			println(level, "},");
 	}
 
 	private void beginObject(int level, String name)
@@ -128,6 +151,32 @@ public class SchemaGenerator {
 	{
 		for (int i = 0; i < level; ++i)
 			pw.print(INDENT);
+	}
+
+	private static Class<?> getType(Field f)
+	{
+		Class<?> c = f.getType();
+		if (c.isArray()) {
+			return c.getComponentType();
+		}
+		if (ClassUtil.isA(c, Collection.class)) {
+			return getClassForTypeArgument(f);
+		}
+		return c;
+	}
+
+	private static Class<?> getClassForTypeArgument(Field f)
+	{
+		String s = f.getGenericType().toString();
+		int i = s.indexOf('<');
+		s = s.substring(i + 1, s.length() - 1);
+		try {
+			return Class.forName(s);
+		}
+		catch (ClassNotFoundException e) {
+			// TODO
+			throw new RuntimeException(e);
+		}
 	}
 
 	private static String jsonVar(String name, String value)

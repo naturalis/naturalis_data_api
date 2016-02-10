@@ -43,42 +43,41 @@ The NBA needs the following dependencies to build and run:
 ### Installation
 
 1. Copy the `nl.naturalis.nda.build/build.properties.tpl` file to `nl.naturalis.nda.build/build.properties` and edit the properties in the `nl.naturalis.nda.build/build.properties` file with the directory structure below.
-
-```
- nda
- ├── export                       # Directory into which to install the export module.
-   ├── conf                       # Top directory for user-editable configuration files.
-   ├── output                     # Top directory for output from the export programs.
-   └── log                        # Directory into which to write log files for the import module.
- ├── import                       # Directory to which to copy the shell scripts for the import programs.
-   ├── conf                       # Directory containing the mimetype.cache.
-     └── mimetype.cache  
-   ├── data                       # Directory containing the CSV dumps, XML dumps, etc.
-     ├── brahms  
-     ├── col
-     ├── crs
-     ├── log
-     └── nsr     
-  └── service                     # Directory containing nda.properties.
-    └── nda.properties  
-```
-
+  ```
+   nda
+   ├── export                       # Directory into which to install the export module.
+     ├── conf                       # Top directory for user-editable configuration files.
+     ├── output                     # Top directory for output from the export programs.
+     └── log                        # Directory into which to write log files for the import module.
+   ├── import                       # Directory to which to copy the shell scripts for the import programs.
+     ├── conf                       # Directory containing the mimetype.cache.
+       └── mimetype.cache  
+     ├── data                       # Directory containing the CSV dumps, XML dumps, etc.
+       ├── brahms  
+       ├── col
+       ├── crs
+       ├── log
+       └── nsr     
+    └── service                     # Directory containing nda.properties.
+      └── nda.properties  
+  ```
+  
 2. In the `WILDFLY_HOME_DIR/standalone/configuration/standalone.xml` file you need to add the following lines of code after the `extensions` tag.
-```
-<system-properties>
-        <property name="nl.naturalis.nda.conf.dir" value="PATH_TO_NBA_DIR/nba/service"/>
-</system-properties>
-```
+  ```
+  <system-properties>
+          <property name="nl.naturalis.nda.conf.dir" value="PATH_TO_NBA_DIR/nba/service"/>
+  </system-properties>
+  ```
 
 3. Within Eclipse add a new WildFly 8.x server and add the `nl.naturalis.nda.ear` resource to the server.
 4. Copy the `nl.natualis.nda.ear/.settings/org.eclipse.wst.common.project.facet.core.xml.__tmpl__` file to `nl.natualis.nda.ear/.settings/org.eclipse.wst.common.project.facet.core.xml`.
 5. In the `PATH_TO_NBA_DIR/nba/service` directory, create a new file called `nba.properties` and add the following lines:
-```
-elasticsearch.cluster.name=YOUR_CLUSTER_NAME
-elasticsearch.transportaddress.host=YOUR_HOST
-elasticsearch.transportaddress.port=YOUR_PORT
-elasticsearch.index.name=nda
-
-nda.export.output.dir=YOUR_EXPORT_OUTPUT_DIR
-```
+  ```
+  elasticsearch.cluster.name=YOUR_CLUSTER_NAME
+  elasticsearch.transportaddress.host=YOUR_HOST
+  elasticsearch.transportaddress.port=YOUR_PORT
+  elasticsearch.index.name=nda
+  
+  nda.export.output.dir=YOUR_EXPORT_OUTPUT_DIR
+  ```
 6. Done.

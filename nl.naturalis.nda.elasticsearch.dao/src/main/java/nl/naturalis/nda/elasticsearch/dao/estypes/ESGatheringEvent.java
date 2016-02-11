@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.estypes;
 
+import nl.naturalis.nba.annotations.NGram;
 import nl.naturalis.nda.domain.Organization;
 import nl.naturalis.nda.domain.Person;
 import nl.naturalis.nda.domain.BioStratigraphy;
@@ -21,6 +22,7 @@ public class ESGatheringEvent {
     private String locality;
     private String city;
     private String sublocality;
+    @NGram("nda_ngram_analyzer")
     private String localityText;
     private Date dateTimeBegin;
     private Date dateTimeEnd;
@@ -33,12 +35,7 @@ public class ESGatheringEvent {
     private List<Organization> gatheringOrganizations;
     private List<ESGatheringSiteCoordinates> siteCoordinates;
     
-    /* Add by: 	Reinier Kartowikromo 
-     * Date: 	13-01-2015 
-     * Descr:	BioStratigraphy properties
-     * 			ChronoStratigraphy properties
-     * 			LithoStratigraphy properties
-    */
+    
     private List<BioStratigraphy> bioStratigraphy;
     private List<ChronoStratigraphy> chronoStratigraphy;
     private List<LithoStratigraphy> lithoStratigraphy;

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
+import nl.naturalis.nba.annotations.NGram;
 import nl.naturalis.nba.annotations.NotAnalyzed;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -15,10 +16,13 @@ import org.domainobject.util.ClassUtil;
 public class SchemaGenerator {
 
 	private static final String ES_STRING = "string";
+	private static final String ES_BYTE = "byte";
+	private static final String ES_SHORT = "short";
 	private static final String ES_INT = "integer";
 	private static final String ES_LONG = "long";
-	private static final String ES_BOOLEAN = "boolean";
+	private static final String ES_FLOAT = "float";
 	private static final String ES_DOUBLE = "double";
+	private static final String ES_BOOLEAN = "boolean";
 	private static final String ES_DATE = "date";
 
 	private static final String INDENT = "\t";
@@ -32,10 +36,16 @@ public class SchemaGenerator {
 		typeMap.put(String.class, ES_STRING);
 		typeMap.put(char.class, ES_STRING);
 		typeMap.put(Character.class, ES_STRING);
+		typeMap.put(byte.class, ES_BYTE);
+		typeMap.put(Byte.class, ES_BYTE);
+		typeMap.put(short.class, ES_SHORT);
+		typeMap.put(Short.class, ES_BOOLEAN);
 		typeMap.put(int.class, ES_INT);
 		typeMap.put(Integer.class, ES_INT);
 		typeMap.put(long.class, ES_LONG);
 		typeMap.put(Long.class, ES_LONG);
+		typeMap.put(float.class, ES_FLOAT);
+		typeMap.put(Float.class, ES_FLOAT);
 		typeMap.put(double.class, ES_DOUBLE);
 		typeMap.put(Double.class, ES_DOUBLE);
 		typeMap.put(boolean.class, ES_BOOLEAN);
@@ -63,7 +73,7 @@ public class SchemaGenerator {
 		beginObject(1, cls.getSimpleName());
 		printField(2, false, "dynamic", "strict");
 		processClass(2, cls);
-		endObject(1);
+		endObject(1, true);
 		println(0, "}");
 		pw.flush();
 		pw.close();
@@ -81,7 +91,7 @@ public class SchemaGenerator {
 			processField(level + 1, i == fields.length - 1, fields[i]);
 		}
 		pw.println();
-		endObject(level);
+		endObject(level, true);
 	}
 
 	public void processField(int level, boolean last, Field f)
@@ -93,8 +103,10 @@ public class SchemaGenerator {
 			processClass(level + 1, type);
 		}
 		else {
+			NotAnalyzed notAnalyzed = f.getAnnotation(NotAnalyzed.class);
+			NGram ngram = f.getAnnotation(NGram.class);
 			print(level + 1, jsonVar("type", esType));
-			if (f.getAnnotation(NotAnalyzed.class) != null) {
+			if (notAnalyzed != null) {
 				pw.println(',');
 				println(level + 1, jsonVar("index", "not_analyzed"));
 			}
@@ -104,8 +116,15 @@ public class SchemaGenerator {
 				beginObject(level + 2, "raw");
 				printField(level + 3, false, "index", "not_analyzed");
 				printField(level + 3, true, "type", esType);
-				endObject(level + 2);
-				endObject(level + 1);
+				endObject(level + 2, true);
+				endObject(level + 1, ngram == null);
+			}
+			if (ngram != null) {
+				//pw.print(",");
+				beginObject(level + 1, "ngram");
+				printField(level + 2, false, "type", ngram.type());
+				printField(level + 2, true, "index_analyzer", ngram.value());
+				endObject(level + 1, true);
 			}
 		}
 		if (last)
@@ -119,9 +138,12 @@ public class SchemaGenerator {
 		println(level, jsonVar(name), " {");
 	}
 
-	private void endObject(int level)
+	private void endObject(int level, boolean last)
 	{
-		println(level, "}");
+		if (last)
+			println(level, "}");
+		else
+			println(level, "},");
 	}
 
 	private void printField(int level, boolean last, String name, String value)

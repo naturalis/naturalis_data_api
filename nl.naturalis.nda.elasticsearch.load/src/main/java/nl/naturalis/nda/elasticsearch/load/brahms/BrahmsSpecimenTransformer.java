@@ -21,6 +21,8 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSpe
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
@@ -42,10 +44,13 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
+	private static final String UNIT_ID_REGEX = "([a-zA-Z0-9_1.-]){3,}";
+	private static final Pattern unitIDPattern;
 
 	static {
 		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		themeCache = ThemeCache.getInstance();
+		unitIDPattern = Pattern.compile(UNIT_ID_REGEX);
 	}
 
 	public BrahmsSpecimenTransformer(ETLStatistics stats)
@@ -71,7 +76,12 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
-			specimen.setUnitGUID(getSpecimenPurl(objectID));
+			if (unitIDPattern.matcher(objectID).matches()) {
+				specimen.setUnitGUID(getSpecimenPurl(objectID));
+			}
+			else {
+				warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
+			}
 			setConstants(specimen);
 			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);
 			specimen.setTheme(themes);

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExportUtil {
-
+	
 	private ExportUtil()
 	{
 		// Static methods only
@@ -82,6 +82,7 @@ public class ExportUtil {
 				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host, port);
 				((TransportClient) esClient).addTransportAddress(transportAddress);
 			}
+			
 			if (logger.isDebugEnabled()) {
 				ClusterStatsRequest request = new ClusterStatsRequest();
 				ClusterStatsResponse response = esClient.admin().cluster().clusterStats(request).actionGet();

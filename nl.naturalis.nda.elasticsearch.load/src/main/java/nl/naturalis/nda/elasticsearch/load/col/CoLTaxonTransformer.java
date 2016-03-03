@@ -1,11 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
 import static nl.naturalis.nda.domain.TaxonomicRank.*;
-import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.ival;
 import static nl.naturalis.nda.elasticsearch.load.CSVImportUtil.val;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.*;
-import static org.domainobject.util.StringUtil.lpad;
-import static org.domainobject.util.StringUtil.rpad;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -18,29 +15,30 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.domain.TaxonDescription;
 import nl.naturalis.nda.domain.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
-import nl.naturalis.nda.elasticsearch.load.CSVTransformer;
+import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
 
-class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
+/**
+ * The transformer component in the CoL ETL cycle.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class CoLTaxonTransformer extends AbstractCSVTransformer<ESTaxon> {
 
-	static Logger logger = Registry.getInstance().getLogger(CoLTaxonTransformer.class);
-	static List<String> allowedTaxonRanks = Arrays.asList("species", "infraspecies");
+	private static final List<String> allowedTaxonRanks;
 
-	private final ETLStatistics stats;
+	static {
+		allowedTaxonRanks = Arrays.asList("species", "infraspecies");
+	}
 
-	private String objectID;
-	private int lineNo;
-	private boolean suppressErrors;
 	private String colYear;
 
 	public CoLTaxonTransformer(ETLStatistics stats)
 	{
-		this.stats = stats;
+		super(stats);
 	}
 
 	public void setColYear(String colYear)
@@ -48,45 +46,68 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 		this.colYear = colYear;
 	}
 
-	public void setSuppressErrors(boolean suppressErrors)
+	@Override
+	protected boolean skipRecord()
 	{
-		this.suppressErrors = suppressErrors;
+		/*
+		 * acceptedNameUsageID field is a foreign key to accepted name record.
+		 * If it is set, the record is itself not an accepted name record, so we
+		 * must skip it.
+		 */
+		return val(input.getRecord(), acceptedNameUsageID) != null;
 	}
 
 	@Override
-	public List<ESTaxon> transform(CSVRecordInfo info)
+	protected String getObjectID()
 	{
+		return val(input.getRecord(), taxonID);
+	}
 
-		stats.recordsProcessed++;
-		CSVRecord record = info.getRecord();
-		lineNo = info.getLineNumber();
-		objectID = val(record, taxonID);
-
-		if (ival(record, acceptedNameUsageID) != 0) {
-			// This is a synonym
-			stats.recordsSkipped++;
-			return null;
-		}
-
-		// TODO: Stricty speaking, we should start a big try-catch block here to
-		// allow for the possibility that we have to reject the record, but with
-		// the CoL this is never the case.
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-
-		String rank = val(record, taxonRank);
+	@Override
+	protected List<ESTaxon> doTransform()
+	{
+		CSVRecord rec = input.getRecord();
+		String rank = val(rec, taxonRank);
 		if (!allowedTaxonRanks.contains(rank)) {
+			stats.recordsSkipped++;
 			if (logger.isDebugEnabled())
 				debug("Ignoring taxon with rank \"%s\"", rank);
 			return null;
 		}
+		try {
+			stats.recordsAccepted++;
+			stats.objectsProcessed++;
+			ESTaxon taxon = new ESTaxon();
+			taxon.setSourceSystem(SourceSystem.COL);
+			taxon.setSourceSystemId(val(rec, taxonID));
+			taxon.setTaxonRank(val(rec, taxonRank));
+			taxon.setAcceptedName(getScientificName(rec));
+			taxon.setDefaultClassification(getClassification(rec));
+			addMonomials(taxon);
+			setRecordURI(taxon);
+			setTaxonDescription(taxon);
+			stats.objectsAccepted++;
+			return Arrays.asList(taxon);
+		}
+		catch (Throwable t) {
+			handleError(t);
+			return null;
+		}
+	}
 
-		ESTaxon taxon = new ESTaxon();
+	private void setTaxonDescription(ESTaxon taxon)
+	{
+		String descr = val(input.getRecord(), description);
+		if (descr != null) {
+			TaxonDescription td = new TaxonDescription();
+			td.setDescription(descr);
+			taxon.addDescription(td);
+		}
+	}
 
-		taxon.setSourceSystem(SourceSystem.COL);
-		taxon.setSourceSystemId(val(record, taxonID));
-
-		String refs = val(record, references);
+	private void setRecordURI(ESTaxon taxon)
+	{
+		String refs = val(input.getRecord(), references);
 		if (refs == null) {
 			if (!suppressErrors)
 				warn("RecordURI not set. Missing Catalogue Of Life URL");
@@ -113,20 +134,11 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 				}
 			}
 		}
-		taxon.setTaxonRank(val(record, taxonRank));
+	}
 
-		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(record, scientificName));
-		sn.setGenusOrMonomial(val(record, genericName));
-		sn.setSpecificEpithet(val(record, specificEpithet));
-		sn.setInfraspecificEpithet(val(record, infraspecificEpithet));
-		sn.setAuthorshipVerbatim(val(record, scientificNameAuthorship));
-		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
-		taxon.setAcceptedName(sn);
-
+	private static DefaultClassification getClassification(CSVRecord record)
+	{
 		DefaultClassification dc = new DefaultClassification();
-		taxon.setDefaultClassification(dc);
-
 		dc.setKingdom(val(record, kingdom));
 		dc.setPhylum(val(record, phylum));
 		dc.setClassName(val(record, classRank));
@@ -137,17 +149,19 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 		dc.setSubgenus(val(record, subgenus));
 		dc.setSpecificEpithet(val(record, specificEpithet));
 		dc.setInfraspecificEpithet(val(record, infraspecificEpithet));
+		return dc;
+	}
 
-		addMonomials(taxon);
-
-		String descr = val(record, description);
-		if (descr != null) {
-			TaxonDescription td = new TaxonDescription();
-			td.setDescription(descr);
-			taxon.addDescription(td);
-		}
-
-		return Arrays.asList(taxon);
+	private static ScientificName getScientificName(CSVRecord record)
+	{
+		ScientificName sn = new ScientificName();
+		sn.setFullScientificName(val(record, scientificName));
+		sn.setGenusOrMonomial(val(record, genericName));
+		sn.setSpecificEpithet(val(record, specificEpithet));
+		sn.setInfraspecificEpithet(val(record, infraspecificEpithet));
+		sn.setAuthorshipVerbatim(val(record, scientificNameAuthorship));
+		sn.setTaxonomicStatus(TaxonomicStatus.ACCEPTED_NAME);
+		return sn;
 	}
 
 	private static void addMonomials(ESTaxon taxon)
@@ -195,37 +209,6 @@ class CoLTaxonTransformer implements CSVTransformer<ESTaxon> {
 			m = new Monomial(SUBSPECIES, dc.getInfraspecificEpithet());
 			taxon.addMonomial(m);
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private void error(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.error(msg);
-	}
-
-	private void warn(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.warn(msg);
-	}
-
-	@SuppressWarnings("unused")
-	private void info(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.info(msg);
-	}
-
-	private void debug(String pattern, Object... args)
-	{
-		String msg = messagePrefix() + String.format(pattern, args);
-		logger.debug(msg);
-	}
-
-	private String messagePrefix()
-	{
-		return "Line " + lpad(lineNo, 6, '0', " | ") + rpad(objectID, 16, " | ");
 	}
 
 }

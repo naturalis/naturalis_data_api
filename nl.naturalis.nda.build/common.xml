@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="common">
+<project xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless"
+         basedir="."
+         name="common">
 
 	<property file="build.properties" />
 
@@ -10,15 +14,16 @@
 	<path id="ivy.lib.path">
 		<fileset dir="${env.IVY_HOME}" includes="**/*.jar" />
 	</path>
-	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+	<taskdef resource="org/apache/ivy/ant/antlib.xml"
+	         uri="antlib:org.apache.ivy.ant"
+	         classpathref="ivy.lib.path" />
 
 	<property name="javac.source" value="1.7" />
 	<property name="javac.target" value="1.7" />
 	<property name="javac.debug" value="source,lines,vars" />
 
 	<property name="home" location="${basedir}/../" />
-
-
+	
 	<!-- ===============[ TASKS ]=============== -->
 
 	<target name="git-info" description="Retrieve current git branch, tag and commit">
@@ -41,8 +46,6 @@
 		<property name="got-git-info" value="true" />
 	</target>
 
-
-
 	<target name="clean">
 		<echo message="Performing cleanup for ${ant.project.name}" />
 		<available file="build" type="dir" property="build.dir.exists" />
@@ -56,7 +59,7 @@
 	</target>
 
 	<target name="resources">
-		<echo message="Copying resources to build directories" />
+		<echo message="Copying non-Java resources to build directories" />
 		<copy includeemptydirs="false" todir="build/main">
 			<fileset dir="src/main/java">
 				<exclude name="**/*.java" />
@@ -85,10 +88,11 @@
 	</target>
 
 	<target name="compile-sources" depends="resources">
-		<echo message="Setting up classpath" />
+		<echo message="Collecting jar files" />
 		<mkdir dir="build/classpath" />
 		<echo message="Adding Ivy-managed dependencies to ${basedir}/build/classpath" />
-		<ivy:retrieve pattern="build/classpath/[artifact]-[revision](-[classifier]).[ext]" log="download-only" />
+		<ivy:retrieve pattern="build/classpath/[artifact]-[revision](-[classifier]).[ext]"
+		              log="download-only" />
 		<echo message="Adding external libraries to ${basedir}/build/classpath" />
 		<copy todir="build/classpath">
 			<path refid="non-ivy-dependencies" />
@@ -99,8 +103,14 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
-		<echo message="Compiling sources" />
-		<javac encoding="UTF8" destdir="build/main" debug="true" debuglevel="${javac.debug}" includeantruntime="false" source="${javac.source}" target="${javac.target}">
+		<echo message="Compiling classes for ${ant.project.name}" />
+		<javac encoding="UTF8"
+		       destdir="build/main"
+		       debug="true"
+		       debuglevel="${javac.debug}"
+		       includeantruntime="false"
+		       source="${javac.source}"
+		       target="${javac.target}">
 			<src path="src/main/java" />
 			<classpath>
 				<fileset dir="build/classpath">
@@ -110,21 +120,51 @@
 		</javac>
 	</target>
 
-	<target name="compile-test-sources" depends="resources,resolve,compile-sources">
-		<echo message="Compiling test classes for ${ant.project.name}" />
-		<javac destdir="build/test" debug="true" debuglevel="${javacDebugLevel}" includeantruntime="false" source="${javacSource}" target="${javacTarget}">
+	<!-- We rely on the compile-sources task to build our classpath -->
+	<target name="compile-test-sources" depends="compile-sources">
+		<!-- But for purity's sake add junit jar file ourselves -->
+		<copy todir="build/classpath">
+			<fileset dir="${build.module.location}/lib">
+				<include name="**/junit*.jar" />
+				<include name="**/hamcrest-core*.jar" />
+			</fileset>
+		</copy>
+		<echo message="Compiling unit tests for ${ant.project.name}" />
+		<javac encoding="UTF8"
+		       destdir="build/test"
+		       debug="true"
+		       debuglevel="${javac.debug}"
+		       includeantruntime="false"
+		       source="${javac.source}"
+		       target="${javac.target}">
 			<src path="src/test/java" />
-			<classpath refid="${ant.project.name}.classpath" />
+			<classpath>
+				<fileset dir="build/classpath">
+					<include name="**/*.jar" />
+				</fileset>
+				<!-- Required to include "main" Java classes in classpath -->
+				<dirset dir="build/main" />
+			</classpath>
 		</javac>
 	</target>
 
 	<target name="test" depends="compile-test-sources">
 		<echo message="Testing ${ant.project.name}" />
+		<mkdir dir="${home}/nl.naturalis.nda.build/test-reports"/>
 		<junit printsummary="yes" haltonfailure="yes">
-			<classpath refid="${ant.project.name}.classpath" />
-			<formatter type="xml" />
+			<sysproperty key="ndaConfDir" value="${nda.import.install.dir}/conf"/>
+			<assertions>
+				<enable />
+			</assertions>
+			<classpath>
+				<fileset dir="build/classpath">
+					<include name="**/*.jar" />
+				</fileset>
+				<dirset dir="build/main" />
+				<dirset dir="build/test" />
+			</classpath>
 			<formatter type="plain" />
-			<batchtest todir="${nl.naturalis.nda.build.location}/test-reports">
+			<batchtest todir="${home}/nl.naturalis.nda.build/test-reports">
 				<fileset dir="src/test/java">
 					<include name="**/*Test.java" />
 				</fileset>
@@ -132,7 +172,7 @@
 		</junit>
 	</target>
 
-	<target name="package">
+	<target name="package" depends="test">
 		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" />
 	</target>
 

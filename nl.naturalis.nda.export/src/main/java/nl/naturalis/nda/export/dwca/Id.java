@@ -6,6 +6,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
+
+/**
+ * <h1>ID</h1>
+ *  Description: Methods what is used in the DwCAExporter- and Core class method<br>
+ *               public void exportDwca(String zipFileName, String namecollectiontype, String totalsize) throws Exception
+ *               
+ *  @version	 1.0
+ *  @author 	 Reinier.Kartowikromo 
+ *  @since		 12-02-2015
+ *  
+ * */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "id")
 public class Id
@@ -18,11 +30,18 @@ public class Id
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 
+	 * @return result index
+	 */
 	public int getIndex()
 	{
 		return index;
 	}
-
+    /**
+     * 
+     * @param index set value index
+     */
 	public void setIndex(int index)
 	{
 		this.index = index;

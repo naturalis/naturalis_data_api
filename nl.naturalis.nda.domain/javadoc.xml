@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="package" author="true" classpath="build/test" destdir="doc" doctitle="NBA Domain Model Classes" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="nl.naturalis.nda.search,nl.naturalis.nda.domain" source="1.8" sourcepath="src/main/resources:src/main/java:src/test/resources:src/test/java" splitindex="true" use="true" version="true">
+            <link href="https://docs.oracle.com/javase/8/docs/api/"/>
+        </javadoc>
+    </target>
+</project>

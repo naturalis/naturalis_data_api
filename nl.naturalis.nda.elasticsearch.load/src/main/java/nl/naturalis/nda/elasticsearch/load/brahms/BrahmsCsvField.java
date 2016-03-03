@@ -1,5 +1,11 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
+/**
+ * Enumerates the CSV fields in a Brahms export file.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 enum BrahmsCsvField
 {
 	TAG,

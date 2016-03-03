@@ -10,6 +10,14 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpHead;
 import org.slf4j.Logger;
 
+/**
+ * Abstract base class for mimetype caches. Provides the public interface of a
+ * mimetype cache, while delegating the heavy lifting to subclasses through a
+ * set of abstract template methods.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	/**
@@ -31,7 +39,8 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected static final String JPEG = "image/jpeg";
 
-	private static final Logger logger = Registry.getInstance().getLogger(AbstractMimeTypeCache.class);
+	private static final Logger logger = Registry.getInstance().getLogger(
+			AbstractMimeTypeCache.class);
 
 	private final SimpleHttpHead httpHead = new SimpleHttpHead();
 
@@ -40,77 +49,57 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	private boolean changed = false;
 
-	private int cacheHits = 0;
-	private int medialibRequests = 0;
+	private int hits = 0;
+	private int misses = 0;
 	private int requestFailures = 0;
-
 
 	AbstractMimeTypeCache(String cacheFileName)
 	{
 		String ndaConfDir = System.getProperty(SYSPROP_CONFIG_DIR);
 		if (ndaConfDir == null) {
 			String fmt = "Missing system property \"%1$s\". Add -D%1$s=/path/to/conf/dir to command line arguments";
-			throw new RuntimeException(String.format(fmt, SYSPROP_CONFIG_DIR));
+			throw new ETLRuntimeException(String.format(fmt, SYSPROP_CONFIG_DIR));
 		}
 		File dir = new File(ndaConfDir);
 		if (!dir.isDirectory()) {
 			String fmt = "Invalid directory specified for property \"ndaConfDir\": \"%s\"";
-			throw new RuntimeException(String.format(fmt, ndaConfDir));
+			throw new ETLRuntimeException(String.format(fmt, ndaConfDir));
 		}
 		cacheFile = new File(dir.getAbsolutePath() + '/' + cacheFileName);
 		if (!cacheFile.isFile()) {
 			String fmt = "Missing cache file (%s). You should put it in %s.";
-			throw new RuntimeException(String.format(fmt, cacheFileName, ndaConfDir));
+			throw new ETLRuntimeException(String.format(fmt, cacheFileName, ndaConfDir));
 		}
 		logger.info("Initializing mime type cache");
 		numEntries = buildCache(cacheFile);
-		logger.info(String.format("Initialization complete. Number of entries in cache: %s", numEntries));
+		logger.info(String.format("Initialization complete. Number of entries in cache: %s",
+				numEntries));
 	}
-
 
 	@Override
 	public void resetCounters()
 	{
-		cacheHits = 0;
-		medialibRequests = 0;
+		hits = 0;
+		misses = 0;
 		requestFailures = 0;
 	}
-
 
 	public String getMimeType(String unitID)
 	{
 		String mimetype = getEntry(unitID);
 		if (mimetype == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Retrieving mime type for unitID \"%s\"", unitID));
-			}
-			String url = MEDIALIB_URL_START + unitID;
-			++medialibRequests;
-			mimetype = httpHead.setBaseUrl(url).execute().getHttpResponse().getFirstHeader("Content-Type").getValue();
-			if (httpHead.isOK()) {
-				addEntry(unitID, mimetype);
-				changed = true;
-			}
-			else {
-				++requestFailures;
-				// We are still going to cache this UnitID, associating it
-				// with an empty mime type, because it's probably not going
-				// to get any better for this UnitID next time round, so no
-				// use going out to the medialib again and again for this
-				// UnitID.
-				addEntry(unitID, "");
-				if (logger.isDebugEnabled()) {
-					String fmt = "Error retrieving mime type for URL %s: HTTP %s (%s). Mime type set to \"\"";
-					logger.debug(String.format(fmt, url, httpHead.getStatus(), httpHead.getError()));
-				}
-			}
+			++misses;
+			mimetype = JPEG;
+			String fmt = "UnitID \"%s\" not found in mime type cache. The mime type cache is out-of-date!";
+			logger.warn(String.format(fmt, unitID));
+			//TODO: Re-enable medialib calls for mimetype lookups (???)
+			//mimetype = callMedialib(unitID);
 		}
 		else {
-			++cacheHits;
+			++hits;
 		}
 		return mimetype;
 	}
-
 
 	@Override
 	public int getSize()
@@ -118,6 +107,27 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		return numEntries;
 	}
 
+	/**
+	 * Get the number of successful mime type lookups.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getHits()
+	{
+		return hits;
+	}
+
+	/**
+	 * Get the number failed cache lookups.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getMisses()
+	{
+		return misses;
+	}
 
 	/**
 	 * Get the number of times the request to the medialib for some reason
@@ -130,33 +140,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	{
 		return requestFailures;
 	}
-
-
-	/**
-	 * Get the number of successful mime type lookups (without having to call
-	 * the medialib).
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCacheHits()
-	{
-		return cacheHits;
-	}
-
-
-	/**
-	 * Get the number of times the mime type had to be retrieved by calling the
-	 * medialib.
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getMedialibRequests()
-	{
-		return medialibRequests;
-	}
-
 
 	/**
 	 * Closes the cache. If the cache has changed since it was instantiated
@@ -173,7 +156,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 		closeCache();
 	}
 
-
 	/**
 	 * Load the cache file into memory and return the number of entries found in
 	 * the cache file. Called in the constructor.
@@ -183,7 +165,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected abstract int buildCache(File cacheFile);
 
-
 	/**
 	 * Add a new entry to the cache. Called in case of a cache miss.
 	 * 
@@ -191,7 +172,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 * @param mimeType
 	 */
 	protected abstract void addEntry(String unitID, String mimeType);
-
 
 	/**
 	 * Look up the specified UnitID in the mimetype cache and, if found, return
@@ -202,7 +182,6 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected abstract String getEntry(String unitID);
 
-
 	/**
 	 * Save the cache back to the cache file. Called if at least one new entry
 	 * has been added to the cache.
@@ -211,11 +190,37 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected abstract void saveCache(File cacheFile) throws IOException;
 
-
 	/**
 	 * Release all memory and resources associated with the cache.
 	 * 
 	 * @throws IOException
 	 */
 	protected abstract void closeCache() throws IOException;
+
+	@SuppressWarnings("unused")
+	private String callMedialib(String unitID)
+	{
+		String mimetype;
+		String fmt;
+		String url = MEDIALIB_URL_START + unitID;
+		mimetype = httpHead.setBaseUrl(url).execute().getHttpResponse()
+				.getFirstHeader("Content-Type").getValue();
+		if (httpHead.isOK()) {
+			addEntry(unitID, mimetype);
+			changed = true;
+		}
+		else {
+			++requestFailures;
+			// We are still going to cache this UnitID, associating it
+			// with an empty mime type, because it's probably not going
+			// to get any better for this UnitID next time round, so no
+			// use going out to the medialib again and again for this
+			// UnitID.
+			addEntry(unitID, "");
+			fmt = "Error retrieving mime type for URL %s: HTTP %s (%s). Mime type set to \"\"";
+			logger.warn(String.format(fmt, url, httpHead.getStatus(), httpHead.getError()));
+		}
+		return mimetype;
+	}
+
 }

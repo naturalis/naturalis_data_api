@@ -82,6 +82,10 @@ nda.import.col.year=2014
 # manually edit ${nda.import.install.dir}/conf/logback.xml
 nda.import.log.dir=/data/nda-import/log
 
+# The base URL for PURLs. If you leave this blank, the
+# base URL for the production environment is used
+# (http://data.biodiversitydata.nl).
+nda.import.purl.baseurl=
 
 
 

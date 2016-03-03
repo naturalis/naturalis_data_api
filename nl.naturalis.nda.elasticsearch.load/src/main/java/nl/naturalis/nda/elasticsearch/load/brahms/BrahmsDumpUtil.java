@@ -24,7 +24,7 @@ import com.ibm.icu.text.CharsetMatch;
  * converting them to UTF-8. This class is not used any longer because the
  * conversion is now done on the fly (while importing specimens/multimedia).
  * 
- * @deprecated
+ * @deprecated UTF-8 conversion now happends on the fly
  * 
  * @author Ayco Holleman
  *

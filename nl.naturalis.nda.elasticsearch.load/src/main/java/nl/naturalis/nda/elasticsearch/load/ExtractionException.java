@@ -1,11 +1,15 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 /**
+ * @deprecated Should be handled and logged by {@link Transformer}s without
+ *             throwing an exception. Only here because NSR has not been
+ *             converted to the ETL framework yet.
+ *             
  * @author Ayco Holleman
  *
  */
 public class ExtractionException extends RuntimeException {
-	
+
 	private final String line;
 	private final int lineNo;
 

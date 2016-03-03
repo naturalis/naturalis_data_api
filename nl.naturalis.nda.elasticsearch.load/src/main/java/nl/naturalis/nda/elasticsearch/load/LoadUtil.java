@@ -1,30 +1,58 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static org.domainobject.util.StringUtil.zpad;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URISyntaxException;
 
 import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 
 /**
- * Utility class providing common functionality for all import programs.
+ * Utility class providing common functionality used throughout this library.
  * 
  * @author Ayco Holleman
  *
  */
 public final class LoadUtil {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = Registry.getInstance().getLogger(LoadUtil.class);
+	private static final URIBuilder purlBuilder;
+	private static final String purlSpecimenPath;
+
+	static {
+		purlBuilder = getPurlBuilder();
+		purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
+	}
+
+	private static URIBuilder getPurlBuilder()
+	{
+		String value = null;
+		try {
+			String property = "purl.baseurl";
+			value = Registry.getInstance().getConfig().get(property, PURL_SERVER_BASE_URL);
+			return new URIBuilder(value);
+		}
+		catch (URISyntaxException e) {
+			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
+			String msg = String.format(fmt, value, e.getMessage());
+			throw new ETLRuntimeException(msg);
+		}
+	}
 
 	private LoadUtil()
 	{
 	}
 
+	/**
+	 * Get root cause of the specified {@code Throwable}. Returns the
+	 * {@code Throwable} itself if it doesn't have a cause.
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public static Throwable getRootCause(Throwable t)
 	{
 		while (t.getCause() != null)
@@ -32,12 +60,29 @@ public final class LoadUtil {
 		return t;
 	}
 
+	/**
+	 * Deletes all documents of the specified type and the specified source
+	 * system.
+	 * 
+	 * @param luceneType
+	 * @param sourceSystem
+	 */
 	public static void truncate(String luceneType, SourceSystem sourceSystem)
 	{
-		IndexNative indexManager = Registry.getInstance().getNbaIndexManager();
-		indexManager.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
+		IndexManagerNative idxMgr = Registry.getInstance().getNbaIndexManager();
+		idxMgr.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
 	}
 
+	/**
+	 * Logs a nice message about how long an import program took.
+	 * 
+	 * @param logger
+	 *            The logger to log to
+	 * @param cls
+	 *            The main class of the import program
+	 * @param start
+	 *            The start of the program
+	 */
 	public static void logDuration(Logger logger, Class<?> cls, long start)
 	{
 		logger.info(cls.getSimpleName() + " took " + getDuration(start));
@@ -73,21 +118,14 @@ public final class LoadUtil {
 		return zpad(hours, 2, ":") + zpad(minutes, 2, ":") + zpad(seconds, 2);
 	}
 
-	/**
-	 * Equivalent to {@code URLEncoder.encode(raw, "UTF-8")} suppressing the
-	 * {@code UnsupportedEncodingException}.
-	 * 
-	 * @param raw
-	 * @return
-	 */
-	public static String urlEncode(String raw)
+	public static String getSpecimenPurl(String unitID)
 	{
 		try {
-			return URLEncoder.encode(raw, "UTF-8");
+			purlBuilder.setPath(purlSpecimenPath + unitID);
+			return purlBuilder.build().toString();
 		}
-		catch (UnsupportedEncodingException e) {
-			// Won't happen with UTF-8
-			return null;
+		catch (URISyntaxException e) {
+			throw new ETLRuntimeException(e);
 		}
 	}
 

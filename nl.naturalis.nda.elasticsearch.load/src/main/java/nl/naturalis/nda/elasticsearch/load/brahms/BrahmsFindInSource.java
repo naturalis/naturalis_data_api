@@ -12,11 +12,16 @@ import java.util.Scanner;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+/**
+ * Utility class for finding values in Brahms export files.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class BrahmsFindInSource {
 
 	static String FileCSVnm = null;
 	private int bulkRequestSize = 1000;
-
 
 	public static void main(String[] args) throws Exception
 	{
@@ -46,7 +51,6 @@ public class BrahmsFindInSource {
 
 	}
 
-
 	public List<BrahmsMembers> ReadValueFromCsv(String path) throws IOException
 	{
 		LineNumberReader br = new LineNumberReader(new FileReader(path));
@@ -60,7 +64,7 @@ public class BrahmsFindInSource {
 				Scanner scanner = new Scanner(line);
 				scanner.useDelimiter(",");
 				while (scanner.hasNext()) {
-					//System.out.println("" + scanner.hasNext());
+					// System.out.println("" + scanner.hasNext());
 
 					String data = scanner.next();
 					switch (count) {
@@ -369,7 +373,7 @@ public class BrahmsFindInSource {
 
 					}
 					count++;
-					//System.out.println("" + scanner.nextLine());
+					// System.out.println("" + scanner.nextLine());
 				}
 
 				count = 0;
@@ -392,1200 +396,1000 @@ public class BrahmsFindInSource {
 			return TAG;
 		}
 
-
 		public void setTAG(String tAG)
 		{
 			TAG = tAG;
 		}
-
 
 		public String getDEL()
 		{
 			return DEL;
 		}
 
-
 		public void setDEL(String dEL)
 		{
 			DEL = dEL;
 		}
-
 
 		public String getHERBARIUM()
 		{
 			return HERBARIUM;
 		}
 
-
 		public void setHERBARIUM(String hERBARIUM)
 		{
 			HERBARIUM = hERBARIUM;
 		}
-
 
 		public String getCATEGORY()
 		{
 			return CATEGORY;
 		}
 
-
 		public void setCATEGORY(String cATEGORY)
 		{
 			CATEGORY = cATEGORY;
 		}
-
 
 		public String getSPECID()
 		{
 			return SPECID;
 		}
 
-
 		public void setSPECID(String sPECID)
 		{
 			SPECID = sPECID;
 		}
-
 
 		public String getBRAHMS()
 		{
 			return BRAHMS;
 		}
 
-
 		public void setBRAHMS(String bRAHMS)
 		{
 			BRAHMS = bRAHMS;
 		}
-
 
 		public String getACCESSION()
 		{
 			return ACCESSION;
 		}
 
-
 		public void setACCESSION(String aCCESSION)
 		{
 			ACCESSION = aCCESSION;
 		}
-
 
 		public String getBARCODE()
 		{
 			return BARCODE;
 		}
 
-
 		public void setBARCODE(String bARCODE)
 		{
 			BARCODE = bARCODE;
 		}
-
 
 		public String getOLDBARCODE()
 		{
 			return OLDBARCODE;
 		}
 
-
 		public void setOLDBARCODE(String oLDBARCODE)
 		{
 			OLDBARCODE = oLDBARCODE;
 		}
-
 
 		public String getPHENOLOGY()
 		{
 			return PHENOLOGY;
 		}
 
-
 		public void setPHENOLOGY(String pHENOLOGY)
 		{
 			PHENOLOGY = pHENOLOGY;
 		}
-
 
 		public String getCOLLECTOR()
 		{
 			return COLLECTOR;
 		}
 
-
 		public void setCOLLECTOR(String cOLLECTOR)
 		{
 			COLLECTOR = cOLLECTOR;
 		}
-
 
 		public String getPREFIX()
 		{
 			return PREFIX;
 		}
 
-
 		public void setPREFIX(String pREFIX)
 		{
 			PREFIX = pREFIX;
 		}
-
 
 		public String getNUMBER()
 		{
 			return NUMBER;
 		}
 
-
 		public void setNUMBER(String nUMBER)
 		{
 			NUMBER = nUMBER;
 		}
-
 
 		public String getSUFFIX()
 		{
 			return SUFFIX;
 		}
 
-
 		public void setSUFFIX(String sUFFIX)
 		{
 			SUFFIX = sUFFIX;
 		}
-
 
 		public String getADDCO()
 		{
 			return ADDCO;
 		}
 
-
 		public void setADDCO(String aDDCO)
 		{
 			ADDCO = aDDCO;
 		}
-
 
 		public String getADDCOLLALL()
 		{
 			return ADDCOLLALL;
 		}
 
-
 		public void setADDCOLLALL(String aDDCOLLALL)
 		{
 			ADDCOLLALL = aDDCOLLALL;
 		}
-
 
 		public String getTYPE()
 		{
 			return TYPE;
 		}
 
-
 		public void setTYPE(String tYPE)
 		{
 			TYPE = tYPE;
 		}
-
 
 		public String getTYPE_OF()
 		{
 			return TYPE_OF;
 		}
 
-
 		public void setTYPE_OF(String tYPE_OF)
 		{
 			TYPE_OF = tYPE_OF;
 		}
-
 
 		public String getTYPEURL()
 		{
 			return TYPEURL;
 		}
 
-
 		public void setTYPEURL(String tYPEURL)
 		{
 			TYPEURL = tYPEURL;
 		}
-
 
 		public String getDAY()
 		{
 			return DAY;
 		}
 
-
 		public void setDAY(String dAY)
 		{
 			DAY = dAY;
 		}
-
 
 		public String getMONTH()
 		{
 			return MONTH;
 		}
 
-
 		public void setMONTH(String mONTH)
 		{
 			MONTH = mONTH;
 		}
-
 
 		public String getYEAR()
 		{
 			return YEAR;
 		}
 
-
 		public void setYEAR(String yEAR)
 		{
 			YEAR = yEAR;
 		}
-
 
 		public String getDATERES()
 		{
 			return DATERES;
 		}
 
-
 		public void setDATERES(String dATERES)
 		{
 			DATERES = dATERES;
 		}
-
 
 		public String getFAMCLASS()
 		{
 			return FAMCLASS;
 		}
 
-
 		public void setFAMCLASS(String fAMCLASS)
 		{
 			FAMCLASS = fAMCLASS;
 		}
-
 
 		public String getORDER()
 		{
 			return ORDER;
 		}
 
-
 		public void setORDER(String oRDER)
 		{
 			ORDER = oRDER;
 		}
-
 
 		public String getFAMILY()
 		{
 			return FAMILY;
 		}
 
-
 		public void setFAMILY(String fAMILY)
 		{
 			FAMILY = fAMILY;
 		}
-
 
 		public String getCF()
 		{
 			return CF;
 		}
 
-
 		public void setCF(String cF)
 		{
 			CF = cF;
 		}
-
 
 		public String getTAXSTAT()
 		{
 			return TAXSTAT;
 		}
 
-
 		public void setTAXSTAT(String tAXSTAT)
 		{
 			TAXSTAT = tAXSTAT;
 		}
-
 
 		public String getSPECIES()
 		{
 			return SPECIES;
 		}
 
-
 		public void setSPECIES(String sPECIES)
 		{
 			SPECIES = sPECIES;
 		}
-
 
 		public String getDETSTATUS()
 		{
 			return DETSTATUS;
 		}
 
-
 		public void setDETSTATUS(String dETSTATUS)
 		{
 			DETSTATUS = dETSTATUS;
 		}
-
 
 		public String getDETBY()
 		{
 			return DETBY;
 		}
 
-
 		public void setDETBY(String dETBY)
 		{
 			DETBY = dETBY;
 		}
-
 
 		public String getDAYIDENT()
 		{
 			return DAYIDENT;
 		}
 
-
 		public void setDAYIDENT(String dAYIDENT)
 		{
 			DAYIDENT = dAYIDENT;
 		}
-
 
 		public String getMONTHIDENT()
 		{
 			return MONTHIDENT;
 		}
 
-
 		public void setMONTHIDENT(String mONTHIDENT)
 		{
 			MONTHIDENT = mONTHIDENT;
 		}
-
 
 		public String getYEARIDENT()
 		{
 			return YEARIDENT;
 		}
 
-
 		public void setYEARIDENT(String yEARIDENT)
 		{
 			YEARIDENT = yEARIDENT;
 		}
-
 
 		public String getDETDATE()
 		{
 			return DETDATE;
 		}
 
-
 		public void setDETDATE(String dETDATE)
 		{
 			DETDATE = dETDATE;
 		}
-
 
 		public String getDETHISTORY()
 		{
 			return DETHISTORY;
 		}
 
-
 		public void setDETHISTORY(String dETHISTORY)
 		{
 			DETHISTORY = dETHISTORY;
 		}
-
 
 		public String getDETNOTES()
 		{
 			return DETNOTES;
 		}
 
-
 		public void setDETNOTES(String dETNOTES)
 		{
 			DETNOTES = dETNOTES;
 		}
-
 
 		public String getCURATENOTE()
 		{
 			return CURATENOTE;
 		}
 
-
 		public void setCURATENOTE(String cURATENOTE)
 		{
 			CURATENOTE = cURATENOTE;
 		}
-
 
 		public String getORIGINSTAT()
 		{
 			return ORIGINSTAT;
 		}
 
-
 		public void setORIGINSTAT(String oRIGINSTAT)
 		{
 			ORIGINSTAT = oRIGINSTAT;
 		}
-
 
 		public String getORIGINID()
 		{
 			return ORIGINID;
 		}
 
-
 		public void setORIGINID(String oRIGINID)
 		{
 			ORIGINID = oRIGINID;
 		}
-
 
 		public String getCONTINENT()
 		{
 			return CONTINENT;
 		}
 
-
 		public void setCONTINENT(String cONTINENT)
 		{
 			CONTINENT = cONTINENT;
 		}
-
 
 		public String getREGION()
 		{
 			return REGION;
 		}
 
-
 		public void setREGION(String rEGION)
 		{
 			REGION = rEGION;
 		}
-
 
 		public String getCOUNTRY()
 		{
 			return COUNTRY;
 		}
 
-
 		public void setCOUNTRY(String cOUNTRY)
 		{
 			COUNTRY = cOUNTRY;
 		}
-
 
 		public String getMAJORAREA()
 		{
 			return MAJORAREA;
 		}
 
-
 		public void setMAJORAREA(String mAJORAREA)
 		{
 			MAJORAREA = mAJORAREA;
 		}
-
 
 		public String getMINORAREA()
 		{
 			return MINORAREA;
 		}
 
-
 		public void setMINORAREA(String mINORAREA)
 		{
 			MINORAREA = mINORAREA;
 		}
-
 
 		public String getLOCPREFIX()
 		{
 			return LOCPREFIX;
 		}
 
-
 		public void setLOCPREFIX(String lOCPREFIX)
 		{
 			LOCPREFIX = lOCPREFIX;
 		}
-
 
 		public String getGAZETTEER()
 		{
 			return GAZETTEER;
 		}
 
-
 		public void setGAZETTEER(String gAZETTEER)
 		{
 			GAZETTEER = gAZETTEER;
 		}
-
 
 		public String getLOCNOTES()
 		{
 			return LOCNOTES;
 		}
 
-
 		public void setLOCNOTES(String lOCNOTES)
 		{
 			LOCNOTES = lOCNOTES;
 		}
-
 
 		public String getHABITATTXT()
 		{
 			return HABITATTXT;
 		}
 
-
 		public void setHABITATTXT(String hABITATTXT)
 		{
 			HABITATTXT = hABITATTXT;
 		}
-
 
 		public String getNOTE()
 		{
 			return NOTE;
 		}
 
-
 		public void setNOTE(String nOTE)
 		{
 			NOTE = nOTE;
 		}
-
 
 		public String getCULTNOTES()
 		{
 			return CULTNOTES;
 		}
 
-
 		public void setCULTNOTES(String cULTNOTES)
 		{
 			CULTNOTES = cULTNOTES;
 		}
-
 
 		public String getLATITUDE()
 		{
 			return LATITUDE;
 		}
 
-
 		public void setLATITUDE(String lATITUDE)
 		{
 			LATITUDE = lATITUDE;
 		}
-
 
 		public String getNS()
 		{
 			return NS;
 		}
 
-
 		public void setNS(String nS)
 		{
 			NS = nS;
 		}
-
 
 		public String getLONGITUDE()
 		{
 			return LONGITUDE;
 		}
 
-
 		public void setLONGITUDE(String lONGITUDE)
 		{
 			LONGITUDE = lONGITUDE;
 		}
-
 
 		public String getEW()
 		{
 			return EW;
 		}
 
-
 		public void setEW(String eW)
 		{
 			EW = eW;
 		}
-
 
 		public String getLLUNIT()
 		{
 			return LLUNIT;
 		}
 
-
 		public void setLLUNIT(String lLUNIT)
 		{
 			LLUNIT = lLUNIT;
 		}
-
 
 		public String getLLRES()
 		{
 			return LLRES;
 		}
 
-
 		public void setLLRES(String lLRES)
 		{
 			LLRES = lLRES;
 		}
-
 
 		public String getLLORIG()
 		{
 			return LLORIG;
 		}
 
-
 		public void setLLORIG(String lLORIG)
 		{
 			LLORIG = lLORIG;
 		}
-
 
 		public String getLATLONG()
 		{
 			return LATLONG;
 		}
 
-
 		public void setLATLONG(String lATLONG)
 		{
 			LATLONG = lATLONG;
 		}
-
 
 		public String getLATDEC()
 		{
 			return LATDEC;
 		}
 
-
 		public void setLATDEC(String lATDEC)
 		{
 			LATDEC = lATDEC;
 		}
-
 
 		public String getLONGDEC()
 		{
 			return LONGDEC;
 		}
 
-
 		public void setLONGDEC(String lONGDEC)
 		{
 			LONGDEC = lONGDEC;
 		}
-
 
 		public String getDEGSQ()
 		{
 			return DEGSQ;
 		}
 
-
 		public void setDEGSQ(String dEGSQ)
 		{
 			DEGSQ = dEGSQ;
 		}
-
 
 		public String getMINEL()
 		{
 			return MINEL;
 		}
 
-
 		public void setMINEL(String mINEL)
 		{
 			MINEL = mINEL;
 		}
-
 
 		public String getMAXELEV()
 		{
 			return MAXELEV;
 		}
 
-
 		public void setMAXELEV(String mAXELEV)
 		{
 			MAXELEV = mAXELEV;
 		}
-
 
 		public String getALTRES()
 		{
 			return ALTRES;
 		}
 
-
 		public void setALTRES(String aLTRES)
 		{
 			ALTRES = aLTRES;
 		}
-
 
 		public String getALTTEXT()
 		{
 			return ALTTEXT;
 		}
 
-
 		public void setALTTEXT(String aLTTEXT)
 		{
 			ALTTEXT = aLTTEXT;
 		}
-
 
 		public String getALTRANGE()
 		{
 			return ALTRANGE;
 		}
 
-
 		public void setALTRANGE(String aLTRANGE)
 		{
 			ALTRANGE = aLTRANGE;
 		}
-
 
 		public String getGEODATA()
 		{
 			return GEODATA;
 		}
 
-
 		public void setGEODATA(String gEODATA)
 		{
 			GEODATA = gEODATA;
 		}
-
 
 		public String getPLANTDESC()
 		{
 			return PLANTDESC;
 		}
 
-
 		public void setPLANTDESC(String pLANTDESC)
 		{
 			PLANTDESC = pLANTDESC;
 		}
-
 
 		public String getNOTES()
 		{
 			return NOTES;
 		}
 
-
 		public void setNOTES(String nOTES)
 		{
 			NOTES = nOTES;
 		}
-
 
 		public String getVERNACULAR()
 		{
 			return VERNACULAR;
 		}
 
-
 		public void setVERNACULAR(String vERNACULAR)
 		{
 			VERNACULAR = vERNACULAR;
 		}
-
 
 		public String getLANGUAGE()
 		{
 			return LANGUAGE;
 		}
 
-
 		public void setLANGUAGE(String lANGUAGE)
 		{
 			LANGUAGE = lANGUAGE;
 		}
-
 
 		public String getGENUS()
 		{
 			return GENUS;
 		}
 
-
 		public void setGENUS(String gENUS)
 		{
 			GENUS = gENUS;
 		}
-
 
 		public String getSP1()
 		{
 			return SP1;
 		}
 
-
 		public void setSP1(String sP1)
 		{
 			SP1 = sP1;
 		}
-
 
 		public String getAUTHOR1()
 		{
 			return AUTHOR1;
 		}
 
-
 		public void setAUTHOR1(String aUTHOR1)
 		{
 			AUTHOR1 = aUTHOR1;
 		}
-
 
 		public String getRANK1()
 		{
 			return RANK1;
 		}
 
-
 		public void setRANK1(String rANK1)
 		{
 			RANK1 = rANK1;
 		}
-
 
 		public String getSP2()
 		{
 			return SP2;
 		}
 
-
 		public void setSP2(String sP2)
 		{
 			SP2 = sP2;
 		}
-
 
 		public String getAUTHOR2()
 		{
 			return AUTHOR2;
 		}
 
-
 		public void setAUTHOR2(String aUTHOR2)
 		{
 			AUTHOR2 = aUTHOR2;
 		}
-
 
 		public String getRANK2()
 		{
 			return RANK2;
 		}
 
-
 		public void setRANK2(String rANK2)
 		{
 			RANK2 = rANK2;
 		}
-
 
 		public String getSP3()
 		{
 			return SP3;
 		}
 
-
 		public void setSP3(String sP3)
 		{
 			SP3 = sP3;
 		}
-
 
 		public String getAUTHOR3()
 		{
 			return AUTHOR3;
 		}
 
-
 		public void setAUTHOR3(String aUTHOR3)
 		{
 			AUTHOR3 = aUTHOR3;
 		}
-
 
 		public String getUNIQUE()
 		{
 			return UNIQUE;
 		}
 
-
 		public void setUNIQUE(String uNIQUE)
 		{
 			UNIQUE = uNIQUE;
 		}
-
 
 		public String getHSACCODE()
 		{
 			return HSACCODE;
 		}
 
-
 		public void setHSACCODE(String hSACCODE)
 		{
 			HSACCODE = hSACCODE;
 		}
-
 
 		public String getGAZCODE()
 		{
 			return GAZCODE;
 		}
 
-
 		public void setGAZCODE(String gAZCODE)
 		{
 			GAZCODE = gAZCODE;
 		}
-
 
 		public String getHBCODE()
 		{
 			return HBCODE;
 		}
 
-
 		public void setHBCODE(String hBCODE)
 		{
 			HBCODE = hBCODE;
 		}
-
 
 		public String getHSTYPE()
 		{
 			return HSTYPE;
 		}
 
-
 		public void setHSTYPE(String hSTYPE)
 		{
 			HSTYPE = hSTYPE;
 		}
-
 
 		public String getSPTYPE()
 		{
 			return SPTYPE;
 		}
 
-
 		public void setSPTYPE(String sPTYPE)
 		{
 			SPTYPE = sPTYPE;
 		}
-
 
 		public String getSPNUMBER()
 		{
 			return SPNUMBER;
 		}
 
-
 		public void setSPNUMBER(String sPNUMBER)
 		{
 			SPNUMBER = sPNUMBER;
 		}
-
 
 		public String getSPCODETYPE()
 		{
 			return SPCODETYPE;
 		}
 
-
 		public void setSPCODETYPE(String sPCODETYPE)
 		{
 			SPCODETYPE = sPCODETYPE;
 		}
-
 
 		public String getCSCODE()
 		{
 			return CSCODE;
 		}
 
-
 		public void setCSCODE(String cSCODE)
 		{
 			CSCODE = cSCODE;
 		}
-
 
 		public String getALTCS()
 		{
 			return ALTCS;
 		}
 
-
 		public void setALTCS(String aLTCS)
 		{
 			ALTCS = aLTCS;
 		}
-
 
 		public String getADDCSCODE()
 		{
 			return ADDCSCODE;
 		}
 
-
 		public void setADDCSCODE(String aDDCSCODE)
 		{
 			ADDCSCODE = aDDCSCODE;
 		}
-
 
 		public String getDETBYCODE()
 		{
 			return DETBYCODE;
 		}
 
-
 		public void setDETBYCODE(String dETBYCODE)
 		{
 			DETBYCODE = dETBYCODE;
 		}
-
 
 		public String getCONUMBER()
 		{
 			return CONUMBER;
 		}
 
-
 		public void setCONUMBER(String cONUMBER)
 		{
 			CONUMBER = cONUMBER;
 		}
-
 
 		public String getCCID()
 		{
 			return CCID;
 		}
 
-
 		public void setCCID(String cCID)
 		{
 			CCID = cCID;
 		}
-
 
 		public String getENTRYDATE()
 		{
 			return ENTRYDATE;
 		}
 
-
 		public void setENTRYDATE(String eNTRYDATE)
 		{
 			ENTRYDATE = eNTRYDATE;
 		}
-
 
 		public String getWHO()
 		{
 			return WHO;
 		}
 
-
 		public void setWHO(String wHO)
 		{
 			WHO = wHO;
 		}
-
 
 		public String getNOTONLINE()
 		{
 			return NOTONLINE;
 		}
 
-
 		public void setNOTONLINE(String nOTONLINE)
 		{
 			NOTONLINE = nOTONLINE;
 		}
-
 
 		public String getDATELASTM()
 		{
 			return DATELASTM;
 		}
 
-
 		public void setDATELASTM(String dATELASTM)
 		{
 			DATELASTM = dATELASTM;
 		}
-
 
 		public String getIMAGELIST()
 		{
 			return IMAGELIST;
 		}
 
-
 		public void setIMAGELIST(String iMAGELIST)
 		{
 			IMAGELIST = iMAGELIST;
 		}
-
 
 		@Override
 		public String toString()

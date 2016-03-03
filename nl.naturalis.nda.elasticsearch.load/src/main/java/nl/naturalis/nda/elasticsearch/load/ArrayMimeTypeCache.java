@@ -10,6 +10,7 @@ import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.TreeMap;
 import java.util.zip.ZipInputStream;
 
 import org.domainobject.util.IOUtil;
@@ -17,10 +18,14 @@ import org.slf4j.Logger;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a sorted array as backbone
- * for the cache.
+ * for the mime type cache. This implementation may be a bit more memory
+ * efficient than the {@link MapMimeTypeCache original implementation}, which
+ * uses a {@link TreeMap}, but it's also somewhat slower. Therefore it's not the
+ * default implementation used by the import programs. The make them use an
+ * {@code ArrayMimeTypeCache}, specify {@code -Dmimetypecache.type=array} on the
+ * command line.
  * 
  * @author Ayco Holleman
- * @created Aug 5, 2015
  *
  */
 public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
@@ -33,7 +38,6 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		int key;
 		String unitID;
 		final String mimeType;
-
 
 		Entry(int key, String unitID, String mimeType)
 		{
@@ -59,12 +63,10 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 
 	private Entry[] cache;
 
-
 	ArrayMimeTypeCache(String cacheFileName)
 	{
 		super(cacheFileName);
 	}
-
 
 	@Override
 	protected int buildCache(File cacheFile)
@@ -84,7 +86,6 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 
 	private static final Entry scratchpad = new Entry(0, null, null);
 
-
 	@Override
 	protected String getEntry(String unitID)
 	{
@@ -97,27 +98,23 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		return cache[index].mimeType;
 	}
 
-
 	@Override
 	protected void addEntry(String unitID, String mimeType)
 	{
-		//TODO
+		// TODO
 	}
-
 
 	@Override
 	protected void saveCache(File cacheFile) throws IOException
 	{
-		//TODO
+		// TODO
 	}
-
 
 	@Override
 	protected void closeCache() throws IOException
 	{
 		cache = null;
 	}
-
 
 	private static Entry[] pack(Entry[] tempCache, int shrinkToSize)
 	{
@@ -131,7 +128,6 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		logger.info(String.format("Cache shrunk by %s%%", pct));
 		return cache;
 	}
-
 
 	private static void sort(Entry[] cache)
 	{
@@ -150,7 +146,6 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		}
 		logger.info("Sort completed");
 	}
-
 
 	private static int loadCacheFile(File cacheFile, Entry[] cache) throws IOException
 	{
@@ -184,7 +179,6 @@ public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 		}
 		return numEntries;
 	}
-
 
 	private static Entry[] createTempCache()
 	{

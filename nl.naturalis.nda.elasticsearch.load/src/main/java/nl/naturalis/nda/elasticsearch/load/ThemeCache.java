@@ -14,17 +14,18 @@ import nl.naturalis.nda.domain.SourceSystem;
 import org.slf4j.Logger;
 
 /**
- * A cache that associates UnitIDs with one or more "themes". Themes are
- * predefined categories of specimens, for example "Extinct Birds". If a
- * specimen is an extinct bird, its UnitID is associated with that theme.
+ * A cache that maps UnitIDs to "themes". Themes are predefined categories of
+ * specimens, for example "Extinct Birds". If a specimen is an extinct bird, its
+ * UnitID is associated with that theme. A specimen can belong to more than one
+ * theme.
  * 
  * @author Ayco Holleman
- * @created Aug 4, 2015
  *
  */
 public class ThemeCache {
 
 	private class Theme {
+
 		String code;
 		String file;
 		String identifier;
@@ -40,6 +41,11 @@ public class ThemeCache {
 
 	private final ArrayList<Theme> themes = new ArrayList<>();
 
+	/**
+	 * Returns a {@code ThemeCache} object.
+	 * 
+	 * @return
+	 */
 	public static ThemeCache getInstance()
 	{
 		if (instance == null) {
@@ -54,7 +60,8 @@ public class ThemeCache {
 	}
 
 	/**
-	 * Establish which themes the object with the specified id belongs to.
+	 * Returns the themes that the object (specimen, multimedia object, etc.)
+	 * with the specified id belongs to.
 	 * 
 	 * @param id
 	 * @param type
@@ -67,14 +74,16 @@ public class ThemeCache {
 		}
 		List<String> identifiers = null;
 		for (Theme theme : themes) {
-			if (type != null && theme.types != null && !theme.types.contains(type)) {
+			if (type != null && theme.types != null && !theme.types.contains(type))
 				continue;
-			}
-			if (system != null && theme.systems != null && !theme.systems.contains(system)) {
+			if (system != null && theme.systems != null && !theme.systems.contains(system))
 				continue;
-			}
 			if (Collections.binarySearch(theme.ids, id) >= 0) {
-				logger.debug(String.format("Found match for ID %s in theme %s (%s)", id, theme.code, theme.file));
+				if (logger.isDebugEnabled()) {
+					String fmt = "Found match for ID %s in theme %s (%s)";
+					String msg = String.format(fmt, id, theme.code, theme.file);
+					logger.debug(msg);
+				}
 				++theme.matches;
 				if (identifiers == null) {
 					identifiers = new ArrayList<>(2);
@@ -95,7 +104,8 @@ public class ThemeCache {
 	public void logMatchInfo()
 	{
 		for (Theme theme : themes) {
-			logger.info(String.format("Number of indexed documents for theme \"%s\": %s", theme.code, theme.matches));
+			logger.info(String.format("Number of indexed documents for theme \"%s\": %s",
+					theme.code, theme.matches));
 		}
 	}
 
@@ -152,7 +162,7 @@ public class ThemeCache {
 								break;
 							default: {
 								String fmt = "Unknown system in \"%s.systems\": \"%s\" (allowed: CRS, BRAHMS, NSR, COL)";
-								throw new RuntimeException(String.format(fmt, code, systemCode));
+								throw new ETLRuntimeException(String.format(fmt, code, systemCode));
 							}
 						}
 					}
@@ -177,7 +187,9 @@ public class ThemeCache {
 		logger.info(String.format("Caching IDs for theme \"%s\"", theme.code));
 		File file = new File(theme.file);
 		if (!file.isFile()) {
-			throw new RuntimeException(String.format("Missing file \"%s\"", file.getAbsolutePath(), theme.code));
+			String fmt = "Missing file \"%s\"";
+			String msg = String.format(fmt, file.getAbsolutePath(), theme.code);
+			throw new ETLRuntimeException(msg);
 		}
 		List<String> ids = new ArrayList<>(1000);
 		try {
@@ -197,7 +209,7 @@ public class ThemeCache {
 			lnr.close();
 		}
 		catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ETLRuntimeException(e);
 		}
 		Collections.sort(ids);
 		logger.info("Number of IDs cached: " + ids.size());
@@ -213,7 +225,8 @@ public class ThemeCache {
 			logger.warn(msg);
 			return null;
 		}
-		File propertyFile = new File(thematicSearchDir.getAbsolutePath() + "/thematic-search.properties");
+		File propertyFile = new File(thematicSearchDir.getAbsolutePath()
+				+ "/thematic-search.properties");
 		if (!propertyFile.isFile()) {
 			String fmt = "Missing file \"%s\". Themes will not be indexed!";
 			String msg = String.format(fmt, propertyFile.getAbsolutePath());
@@ -227,7 +240,7 @@ public class ThemeCache {
 			return props;
 		}
 		catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ETLRuntimeException(e);
 		}
 	}
 
@@ -236,18 +249,19 @@ public class ThemeCache {
 		String confDir = System.getProperty(SYSPROP_CONFIG_DIR);
 		if (confDir == null) {
 			String msg = String.format("Missing system property \"%s\"", SYSPROP_CONFIG_DIR);
-			throw new RuntimeException(msg);
+			throw new ETLRuntimeException(msg);
 		}
 		File dir = new File(confDir);
 		if (!dir.isDirectory()) {
-			String msg = String.format("Invalid directory specified for system property \"%s\": \"%s\"", SYSPROP_CONFIG_DIR, confDir);
-			throw new RuntimeException(msg);
+			String fmt = "Invalid directory specified for system property \"%s\": \"%s\"";
+			String msg = String.format(fmt, SYSPROP_CONFIG_DIR, confDir);
+			throw new ETLRuntimeException(msg);
 		}
 		try {
 			return new File(dir.getAbsolutePath() + "/thematic-search").getCanonicalFile();
 		}
 		catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ETLRuntimeException(e);
 		}
 	}
 

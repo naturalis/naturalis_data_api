@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
@@ -13,11 +13,18 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
+import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.slf4j.Logger;
 
+/**
+ * Driver class for the import of Brahms multimedia.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class BrahmsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
@@ -35,6 +42,9 @@ public class BrahmsMultiMediaImporter {
 		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 	}
 
+	/**
+	 * Imports the Source files in the Brahms data directory.
+	 */
 	public void importCsvFiles()
 	{
 		long start = System.currentTimeMillis();
@@ -43,8 +53,10 @@ public class BrahmsMultiMediaImporter {
 			logger.info("No CSV files to process");
 			return;
 		}
+		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
+		stats.setOneToMany(true);
 		try {
 			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
@@ -54,22 +66,23 @@ public class BrahmsMultiMediaImporter {
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
+		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger, "Multimedia");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
 
-	private void processFile(File f, ETLStatistics mStats)
+	private void processFile(File f, ETLStatistics globalStats)
 	{
 		long start = System.currentTimeMillis();
 		logger.info("Processing file " + f.getAbsolutePath());
+		ETLStatistics myStats = new ETLStatistics();
+		myStats.setOneToMany(true);
 		BrahmsMultiMediaLoader multimediaLoader = null;
 		try {
-			ETLStatistics multimediaStats = new ETLStatistics();
-			ETLStatistics extractionStats = new ETLStatistics();
-			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
-			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
-			CSVExtractor extractor = createExtractor(f, extractionStats);
+			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(myStats);
+			multimediaLoader = new BrahmsMultiMediaLoader(myStats);
+			CSVExtractor extractor = createExtractor(f, myStats);
 			for (CSVRecordInfo rec : extractor) {
 				if (rec == null)
 					continue;
@@ -78,21 +91,22 @@ public class BrahmsMultiMediaImporter {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}
 			}
-			multimediaStats.add(extractionStats);
-			multimediaStats.logStatistics(logger, "Multimedia");
-			mStats.add(multimediaStats);
-			logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
-			logger.info(" ");
-			logger.info(" ");
 		}
 		finally {
+			// Important! Flushes the remaining objects in the ES bulk request
+			// batch.
 			IOUtil.close(multimediaLoader);
 		}
+		globalStats.add(myStats);
+		myStats.logStatistics(logger, "Multimedia");
+		LoadUtil.logDuration(logger, getClass(), start);
+		logger.info(" ");
+		logger.info(" ");
 	}
 
-	private CSVExtractor createExtractor(File f, ETLStatistics extractionStats)
+	private CSVExtractor createExtractor(File f, ETLStatistics stats)
 	{
-		CSVExtractor extractor = new CSVExtractor(f, extractionStats);
+		CSVExtractor extractor = new CSVExtractor(f, stats);
 		extractor.setSkipHeader(true);
 		extractor.setDelimiter(',');
 		extractor.setCharset(Charset.forName("Windows-1252"));

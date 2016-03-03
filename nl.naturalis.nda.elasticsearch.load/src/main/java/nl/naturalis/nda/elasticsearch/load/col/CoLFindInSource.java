@@ -9,7 +9,15 @@ import java.util.Scanner;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+/**
+ * Utility class for finding values in the CoL data sources (taxa.txt,
+ * reference.txt, vernacular.txt).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CoLFindInSource {
+	
 	public static void main(String[] args) throws IOException
 	{
 		try {
@@ -31,78 +39,65 @@ public class CoLFindInSource {
 		private String locality;
 		private String transliteration;
 
-
 		public int getId()
 		{
 			return taxonID;
 		}
-
 
 		public void setId(int taxonID)
 		{
 			this.taxonID = taxonID;
 		}
 
-
 		public String getVernacularName()
 		{
 			return vernacularName;
 		}
-
 
 		public void setName(String vernacularname)
 		{
 			this.vernacularName = vernacularname;
 		}
 
-
 		public String getLanguage()
 		{
 			return language;
 		}
-
 
 		public void setLanguage(String language)
 		{
 			this.language = language;
 		}
 
-
 		public String getcountryCode()
 		{
 			return countryCode;
 		}
-
 
 		public void setCountryCode(String countryCode)
 		{
 			this.countryCode = countryCode;
 		}
 
-
 		public String getLocality()
 		{
 			return locality;
 		}
-
 
 		public void setLocality(String locality)
 		{
 			this.locality = locality;
 		}
 
-
 		public String getTransliteratio()
 		{
 			return transliteration;
 		}
 
-
 		public void setTransliteration(String transliteration)
 		{
 			this.transliteration = transliteration;
 		}
-
 
 		@Override
 		public String toString()
@@ -112,7 +107,6 @@ public class CoLFindInSource {
 					+ "\n ................................................." + "\n file vernacular.txt [record ]" + getId();
 		}
 	}
-
 
 	public void ReadValueFromCsv(String path) throws IOException
 	{

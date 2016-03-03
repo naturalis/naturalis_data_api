@@ -9,9 +9,8 @@ import static nl.naturalis.nda.elasticsearch.load.LoadConstants.BRAHMS_ABCD_SOUR
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.ES_ID_PREFIX_BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
-import static nl.naturalis.nda.elasticsearch.load.LoadConstants.PURL_SERVER_BASE_URL;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nda.elasticsearch.load.LoadUtil.urlEncode;
+import static nl.naturalis.nda.elasticsearch.load.LoadUtil.getSpecimenPurl;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsCsvField.NOTONLINE;
@@ -22,36 +21,36 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSpe
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
-import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.ConfigObject;
-import org.slf4j.Logger;
 
 /**
+ * The transformer component in the Brahms ETL cycle for specimens.
+ * 
  * @author Ayco Holleman
  *
  */
 class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger;
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
 	private static final String UNIT_ID_REGEX = "([a-zA-Z0-9_1.-]){3,}";
+	private static final Pattern unitIDPattern;
 
 	static {
-		logger = Registry.getInstance().getLogger(BrahmsSpecimenTransformer.class);
 		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		themeCache = ThemeCache.getInstance();
+		unitIDPattern = Pattern.compile(UNIT_ID_REGEX);
 	}
 
 	public BrahmsSpecimenTransformer(ETLStatistics stats)
@@ -61,27 +60,28 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 	}
 
 	@Override
-	public List<ESSpecimen> transform(CSVRecordInfo info)
+	protected String getObjectID()
 	{
-		stats.recordsProcessed++;
-		recInf = info;
-		CSVRecord record = info.getRecord();
-		objectID = val(record, BARCODE);
-		if (objectID == null) {
-			stats.recordsRejected++;
-			if (!suppressErrors) {
-				objectID = "?";
-				error("Missing barcode");
-			}
-			return null;
-		}
+		return val(input.getRecord(), BARCODE);
+	}
 
+	@Override
+	protected List<ESSpecimen> doTransform()
+	{
+		// No record-level validations, so:
+		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
+			CSVRecord record = input.getRecord();
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
-			specimen.setUnitGUID(getPurl());
+			if (unitIDPattern.matcher(objectID).matches()) {
+				specimen.setUnitGUID(getSpecimenPurl(objectID));
+			}
+			else {
+				warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
+			}
 			setConstants(specimen);
 			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);
 			specimen.setTheme(themes);
@@ -100,24 +100,17 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 				specimen.setObjectPublic(false);
 			specimen.setGatheringEvent(getGatheringEvent(record));
 			specimen.addIndentification(getSpecimenIdentification(record));
+			stats.objectsAccepted++;
 			return Arrays.asList(specimen);
 		}
 		catch (Throwable t) {
 			stats.objectsRejected++;
 			if (!suppressErrors) {
 				error(t.getMessage());
-				error(recInf.getLine());
+				error(input.getLine());
 			}
 			return null;
 		}
-	}
-
-	private String getPurl()
-	{
-		if (objectID.matches(UNIT_ID_REGEX))
-			return PURL_SERVER_BASE_URL + "/naturalis/specimen/" + urlEncode(objectID);
-		warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
-		return null;
 	}
 
 	private static void setConstants(ESSpecimen specimen)
@@ -141,7 +134,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<ESSpecimen> {
 
 	private static String getTypeStatus(CSVRecord record)
 	{
-		return typeStatusNormalizer.getNormalizedValue(val(record, TYPE));
+		return typeStatusNormalizer.normalize(val(record, TYPE));
 	}
 
 }

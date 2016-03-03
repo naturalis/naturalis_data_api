@@ -4,6 +4,17 @@ import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
+/**
+ * <h1>BRAHMS</h1>
+ * Description: Match the fields what is described in the botany.properties<br>
+ *				and set value to the CSV datarow
+ * 
+ * @version		1.0
+ * @author  	Reinier.Kartowikromo 
+ * @since 		01-07-2015
+ *  
+ * */
+
 public class Brahms
 {
 		
@@ -12,6 +23,15 @@ public class Brahms
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * This method will add all values to a list.
+	 * Used in the class DwCAExporter method
+	 * private static void writeBrahmsCsvHeader()
+	 * @param list of Specimen for Brahms
+	 * @param filewriter used class CSVFileWriter
+	 * @param MAPPING_FILE_NAME Add mapping filename
+	 * @throws Exception if field not exists
+	 */
 	
 	public static void addBrahmsOccurrencefield(List<ESSpecimen> list, CsvFileWriter filewriter,
 			String MAPPING_FILE_NAME) throws Exception 

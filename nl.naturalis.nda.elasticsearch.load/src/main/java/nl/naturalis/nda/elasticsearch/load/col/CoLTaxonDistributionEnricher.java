@@ -1,18 +1,18 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.elasticsearch.load.NDAIndexManager.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
-import nl.naturalis.nda.elasticsearch.client.Index;
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
+import nl.naturalis.nda.elasticsearch.client.IndexManager;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
-import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter.CsvField;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -28,7 +28,7 @@ public class CoLTaxonDistributionEnricher {
 
 	public static void main(String[] args) throws Exception
 	{
-		IndexNative index = null;
+		IndexManagerNative index = null;
 		try {
 			index = Registry.getInstance().getNbaIndexManager();
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
@@ -44,7 +44,7 @@ public class CoLTaxonDistributionEnricher {
 
 	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonDistributionEnricher.class);
 
-	private final Index index;
+	private final IndexManager index;
 	private final int bulkRequestSize;
 	private final int maxRecords;
 
@@ -53,7 +53,7 @@ public class CoLTaxonDistributionEnricher {
 	 * 
 	 * @param index
 	 */
-	public CoLTaxonDistributionEnricher(Index index)
+	public CoLTaxonDistributionEnricher(IndexManager index)
 	{
 		this.index = index;
 		String prop = System.getProperty("bulkRequestSize", "1000");
@@ -70,8 +70,8 @@ public class CoLTaxonDistributionEnricher {
 		format = format.withDelimiter('\t');
 		LineNumberReader lnr = new LineNumberReader(new FileReader(path));
 
-		ArrayList<ESTaxon> objects = new ArrayList<ESTaxon>(bulkRequestSize);
-		ArrayList<String> ids = new ArrayList<String>(bulkRequestSize);
+		ArrayList<ESTaxon> objects = new ArrayList<>(bulkRequestSize);
+		ArrayList<String> ids = new ArrayList<>(bulkRequestSize);
 
 		int lineNo = 0;
 		int processed = 0;
@@ -96,9 +96,9 @@ public class CoLTaxonDistributionEnricher {
 				++processed;
 				try {
 					record = CSVParser.parse(line, format).iterator().next();
-					String taxonId = CSVImportUtil.val(record, CsvField.taxonID.ordinal());
-					String esId = CoLImportAll.ID_PREFIX + taxonId;
-					String loc = CSVImportUtil.val(record, CsvField.locality.ordinal());
+					String taxonId = CSVImportUtil.val(record, CoLVernacularNameCsvField.taxonID.ordinal());
+					String esId = /*CoLImportAll.ID_PREFIX +*/ taxonId;
+					String loc = CSVImportUtil.val(record, CoLVernacularNameCsvField.locality.ordinal());
 
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {
@@ -138,7 +138,12 @@ public class CoLTaxonDistributionEnricher {
 				}
 			}
 			if (!objects.isEmpty()) {
-				index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+				try {
+					index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+				}
+				catch (BulkIndexException e) {
+					throw new RuntimeException(e);
+				}
 				indexed += objects.size();
 			}
 		}

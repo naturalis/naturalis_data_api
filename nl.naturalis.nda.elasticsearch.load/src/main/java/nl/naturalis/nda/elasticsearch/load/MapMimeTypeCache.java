@@ -20,10 +20,10 @@ import org.slf4j.Logger;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a {@link TreeMap} as
- * backbone for the cache.
+ * backbone for the mime type cache. This is the default implementation used by
+ * the import programs.
  * 
  * @author Ayco Holleman
- * @created Aug 5, 2015
  *
  */
 public class MapMimeTypeCache extends AbstractMimeTypeCache {
@@ -32,16 +32,14 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 
 	private TreeMap<String, String> cache;
 
-
 	MapMimeTypeCache(String cacheFileName)
 	{
 		super(cacheFileName);
 	}
 
-
 	protected int buildCache(File cacheFile)
 	{
-		cache = new TreeMap<String, String>();
+		cache = new TreeMap<>();
 		LineNumberReader lnr = null;
 		ZipInputStream zis = null;
 		try {
@@ -64,12 +62,10 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 			throw new RuntimeException(e);
 		}
 		finally {
-			IOUtil.close(lnr);
-			IOUtil.close(zis);
+			IOUtil.close(lnr, zis);
 		}
 		return cache.size();
 	}
-
 
 	@Override
 	protected void addEntry(String unitID, String mimeType)
@@ -77,13 +73,11 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 		cache.put(unitID, mimeType);
 	}
 
-
 	@Override
 	protected String getEntry(String unitID)
 	{
 		return cache.get(unitID);
 	}
-
 
 	@Override
 	protected void saveCache(File cacheFile) throws IOException
@@ -110,7 +104,6 @@ public class MapMimeTypeCache extends AbstractMimeTypeCache {
 			IOUtil.close(zos);
 		}
 	}
-
 
 	@Override
 	protected void closeCache() throws IOException

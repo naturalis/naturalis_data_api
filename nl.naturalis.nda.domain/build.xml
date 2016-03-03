@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.domain" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless"
+         basedir="."
+         name="nl.naturalis.nda.domain"
+         default="build">
 
 	<import file="../nl.naturalis.nda.build/properties.xml" />
 	<import file="../nl.naturalis.nda.build/common.xml" />
@@ -13,12 +18,14 @@
 	<target name="-projects" />
 
 	<!-- Create jar file, but only if it does not exist already -->
-	<target name="-package" depends="-projects,compile-sources,package" />
+	<target name="-package" depends="-projects,package" />
 
 	<target name="build">
 		<available file="build/${domain.module.artifact}" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
-		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
+		<echo if:set="${ant.project.name}.packaged"
+		      message="${ant.project.name} already built. Clean project to force rebuild." />
+		<echo unless:set="${ant.project.name}.packaged"
+		      message="*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 

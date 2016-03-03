@@ -1,6 +1,8 @@
 package nl.naturalis.nda.elasticsearch.load;
 
 import static org.apache.commons.io.Charsets.UTF_8;
+import static org.domainobject.util.StringUtil.lchop;
+import static org.domainobject.util.StringUtil.lpad;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,17 +13,29 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.domainobject.util.IOUtil;
-import org.domainobject.util.StringUtil;
 import org.slf4j.Logger;
 
+/**
+ * A generic CSV extraction component taking raw CSV lines as input and
+ * outputting commons-csv {@code CSVRecordInfo} instances.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecordInfo> {
 
+	/**
+	 * Thrown by a {@code CSVExtractor} if a client specified an invalid field
+	 * number (less than zero or greater than the number of fields in the CSV
+	 * record).
+	 * 
+	 * @author Ayco Holleman
+	 *
+	 */
 	public static class NoSuchFieldException extends RuntimeException {
 		static final String MSG = "Specified field number (%s) exceeds number of fields in CSV record (%s)";
 		public NoSuchFieldException(CSVRecord record, int fieldNo)
@@ -44,6 +58,13 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 	private LineNumberReader lnr;
 	private String line;
 
+	/**
+	 * Creates a CSV extractor for the specified CSV file and updating the
+	 * specified statistics object as it extracts records from the file.
+	 * 
+	 * @param csvFile
+	 * @param stats
+	 */
 	public CSVExtractor(File csvFile, ETLStatistics stats)
 	{
 		checkEncoding();
@@ -53,51 +74,103 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 		this.charset = UTF_8;
 	}
 
+	/**
+	 * Whether to skip the first line in the CSV file.
+	 * 
+	 * @return
+	 */
 	public boolean isSkipHeader()
 	{
 		return skipHeader;
 	}
 
+	/**
+	 * Whether to skip the first line in the CSV file.
+	 * 
+	 * @param skipHeader
+	 */
 	public void setSkipHeader(boolean skipHeader)
 	{
 		this.skipHeader = skipHeader;
 	}
 
+	/**
+	 * Returns the format of the CSV file.
+	 * 
+	 * @return
+	 */
 	public CSVFormat getCsvFormat()
 	{
 		return csvFormat;
 	}
 
+	/**
+	 * Sets the format of the CSV file.
+	 * 
+	 * @param csvFormat
+	 */
 	public void setCsvFormat(CSVFormat csvFormat)
 	{
 		this.csvFormat = csvFormat;
 	}
 
+	/**
+	 * Returns the field separator. Default TAB ('\t').
+	 * 
+	 * @return
+	 */
 	public char getDelimiter()
 	{
 		return delimiter;
 	}
 
+	/**
+	 * Sets the field separator.
+	 * 
+	 * @param delimiter
+	 */
 	public void setDelimiter(char delimiter)
 	{
 		this.delimiter = delimiter;
 	}
 
+	/**
+	 * Returns the character set of the CSV file.
+	 * 
+	 * @return
+	 */
 	public Charset getCharset()
 	{
 		return charset;
 	}
 
+	/**
+	 * Sets the character set of the CSV file. Default UTF-8.
+	 * 
+	 * @param charset
+	 */
 	public void setCharset(Charset charset)
 	{
 		this.charset = charset.equals(UTF_8) ? UTF_8 : charset;
 	}
 
+	/**
+	 * Whether to suppress WARN and ERROR messages, but let through INFO
+	 * messages. This might make log files easier to read if you expect a lot of
+	 * well-known, but not soon-to-be-solved errors.
+	 * 
+	 * @return
+	 */
 	public boolean isSuppressErrors()
 	{
 		return suppressErrors;
 	}
 
+	/**
+	 * Suppress/enable error suppression.
+	 * 
+	 * @param suppressErrors
+	 */
 	public void setSuppressErrors(boolean suppressErrors)
 	{
 		this.suppressErrors = suppressErrors;
@@ -153,9 +226,9 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 					t = t.getCause();
 				String msg;
 				if (t instanceof IOException)
-					msg = "Line " + lnr.getLineNumber() + ": " + StringUtil.lchop(t.getMessage(), "(line 1) ");
+					msg = message(lnr.getLineNumber(), lchop(t.getMessage(), "(line 1) "));
 				else
-					msg = "Line " + lnr.getLineNumber() + ": " + t.getMessage();
+					msg = message(lnr.getLineNumber(), t.getMessage());
 				logger.error(msg);
 			}
 			return null;
@@ -186,7 +259,7 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 			}
 			while (true) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("Line " + lnr.getLineNumber() + ": ignoring empty line");
+					logger.debug(message(lnr.getLineNumber(), "ignoring empty line"));
 				}
 				if ((line = lnr.readLine()) == null) {
 					lnr.close();
@@ -221,6 +294,11 @@ public class CSVExtractor implements Iterator<CSVRecordInfo>, Iterable<CSVRecord
 			String message = "Invalid default character encoding: " + Charset.defaultCharset().name();
 			throw new ETLRuntimeException(message);
 		}
+	}
+
+	private static String message(int line, String msg)
+	{
+		return "Line " + lpad(line, 6, '0', " | ") + msg;
 	}
 
 	/*

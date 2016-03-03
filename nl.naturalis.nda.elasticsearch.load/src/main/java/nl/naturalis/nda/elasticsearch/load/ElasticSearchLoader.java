@@ -5,30 +5,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.client.IndexNative;
+import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
+import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
+import nl.naturalis.nda.elasticsearch.load.col.CoLReferenceImporter;
+import nl.naturalis.nda.elasticsearch.load.col.CoLSynonymImporter;
+import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter;
+import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter;
 
 import org.slf4j.Logger;
 
 /**
  * <p>
  * Abstract base class for objects responsible for the insertion of data into
- * ElasticSearch (a.k.a. indexing). Subclasses need only implement one method:
+ * ElasticSearch (a.k.a. indexing). Subclasses must implement only one method:
  * {@link #getIdGenerator()}, which must extract the ElasticSearch {@code _id}
  * from the object to be stored. The assumption is that you will never want to
- * rely on ElasticSearch to generate and ID for you. If you <i>do</i> want this,
+ * rely on ElasticSearch to generate an ID for you. If you <i>do</i> want this,
  * your implementation can and should simply return {@code null}. Subclasses may
  * also override {@link #getParentIdGenerator()} in case they need to establish
- * parent-child relationsships, but this is not required (the {@code Loader}
- * class itself already provides an implementation that just returns
+ * parent-child relationships, but this is not required (the {@code Loader}
+ * class itself already provides a default implementation that just returns
  * {@code null}).
  * </p>
  * <p>
  * Once you have processed all data from all datasources that you want to index
- * using a particular writer, you SHOULD always call {@link #flush()} on that
- * instance to write any remaining objects in the writer's internal buffer to
- * ElasticSearch. You are practically guranteed to loose data if you don't call
- * {@link #flush()} when done, because the last object you added (see
- * {@link #load(List) add}) is unlikely to have triggered an automatic flush.
+ * using a particular writer, you <b>should</b> always call {@link #flush()} on
+ * that instance to write any remaining objects in the writer's internal buffer
+ * to ElasticSearch. You are practically guranteed to loose data if you don't
+ * call {@link #flush()} when done, because the last object you added (see
+ * {@link #load(List) add}) is unlikely to trigger an automatic flush.
  * </p>
  * 
  * @author Ayco Holleman
@@ -81,7 +86,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 
 	private final Logger logger = Registry.getInstance().getLogger(getClass());
 
-	private final IndexNative indexManager;
+	private final IndexManagerNative idxMgr;
 	private final String type;
 	private final int treshold;
 	private final ETLStatistics stats;
@@ -102,35 +107,84 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 * @param documentType
 	 * @param treshold
 	 */
-	public ElasticSearchLoader(IndexNative indexManager, String documentType, int treshold, ETLStatistics stats)
+	public ElasticSearchLoader(IndexManagerNative indexManager, String documentType, int treshold,
+			ETLStatistics stats)
 	{
-		this.indexManager = indexManager;
+		this.idxMgr = indexManager;
 		this.type = documentType;
 		this.treshold = treshold;
 		this.stats = stats;
-		objs = new ArrayList<>(treshold + 8);
-		ids = getIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
-		parIds = getParentIdGenerator() == null ? null : new ArrayList<String>(treshold + 8);
+		/*
+		 * Make all lists a bit bigger than the treshold, because the
+		 * treshold-tipping call to load() may actually exceed it.
+		 */
+		objs = new ArrayList<>(treshold + 16);
+		if (getIdGenerator() != null)
+			ids = new ArrayList<>(treshold + 16);
+		else
+			ids = null;
+		if (getParentIdGenerator() == null)
+			parIds = null;
+		else
+			parIds = new ArrayList<>(treshold + 16);
 	}
 
-	public final void load(List<T> items)
+	/**
+	 * Adds the specified objects to a queue of to-be-indexed objects. When the
+	 * size of the queue reaches the treshold, all objects in the queue are
+	 * flushed at once to ElasticSearch. In other words, calling {@code load}
+	 * does not necessarily immediately trigger the specified objects to be
+	 * indexed. The specified list of object is most likely retrieved from a
+	 * call to {@link Transformer#transform(Object)}, which is allowed to return
+	 * an empty list or {@code null} if no output can or should be produced from
+	 * the input object. Therefore, this method explicitly accepts empty lists
+	 * and {@code null} arguments (resulting in a no-op).
+	 * 
+	 * @param objects
+	 */
+	public final void load(List<T> objects)
 	{
-		if (items == null || items.size() == 0)
+		if (objects == null || objects.size() == 0)
 			return;
-		objs.addAll(items);
+		objs.addAll(objects);
 		if (ids != null) {
-			for (T item : items) {
+			for (T item : objects) {
 				ids.add(getIdGenerator().getId(item));
 			}
 		}
 		if (parIds != null) {
-			for (T item : items) {
+			for (T item : objects) {
 				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}
-		if (objs.size() >= treshold) {
+		if (objs.size() >= treshold)
 			flush();
+	}
+
+	/**
+	 * Checks if the specified id belongs to an object that is about to be
+	 * indexed and, if so, returns the object. This functionality is needed for
+	 * import programs that enrich existing documents rather than creating new
+	 * ones. This applies to all CoL import programs except the
+	 * {@link CoLTaxonImporter taxon importer}. The {@link CoLSynonymImporter
+	 * synonym importer}, {@link CoLReferenceImporter literature reference
+	 * importer} and {@link CoLVernacularNameImporter vernacular name importer}
+	 * all enrich taxon documents rather than creating their own type of
+	 * documents.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public T findInQueue(String id)
+	{
+		assert (ids != null);
+		int i;
+		for (i = 0; i < ids.size(); ++i) {
+			if (ids.get(i).equals(id)) {
+				return objs.get(i);
+			}
 		}
+		return null;
 	}
 
 	/**
@@ -157,11 +211,13 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	{
 		if (!objs.isEmpty()) {
 			try {
-				indexManager.saveObjects(type, objs, ids, parIds);
-				stats.objectsIndexed += objs.size();
-				if (++batch % 50 == 0) {
-					logger.info("Documents indexed: " + stats.objectsIndexed);
-				}
+				idxMgr.saveObjects(type, objs, ids, parIds);
+				stats.documentsIndexed += objs.size();
+			}
+			catch (BulkIndexException e) {
+				stats.documentsRejected += e.getFailureCount();
+				stats.documentsIndexed += e.getSuccessCount();
+				logger.warn(e.getMessage());
 			}
 			finally {
 				objs.clear();
@@ -169,6 +225,9 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 					ids.clear();
 				if (parIds != null)
 					parIds.clear();
+			}
+			if (++batch % 50 == 0) {
+				logger.info("Documents indexed: " + stats.documentsIndexed);
 			}
 		}
 	}
@@ -194,5 +253,6 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	{
 		return null;
 	}
+
 
 }

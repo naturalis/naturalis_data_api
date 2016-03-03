@@ -8,35 +8,35 @@
 	<property name="home" location="${basedir}/../" />
 
 	<property name="build.module.name" value="nl.naturalis.nda.build" />
-	<property name="build.module.location" location="${home}/${build.module.name}" />	
-	
+	<property name="build.module.location" location="${home}/${build.module.name}" />
+
 	<property name="ear.module.name" value="nl.naturalis.nda.ear" />
-	<property name="ear.module.location" location="${home}/${ear.module.name}" />	
-	
+	<property name="ear.module.location" location="${home}/${ear.module.name}" />
+
 	<property name="rest.module.name" value="nl.naturalis.nda.service.rest" />
 	<property name="rest.module.location" location="${home}/${rest.module.name}" />
 	<property name="rest.module.artifact" value="${rest.module.name}.war" />
-	
+
 	<property name="ejb.module.name" value="nl.naturalis.nda.ejb" />
 	<property name="ejb.module.location" location="${home}/${ejb.module.name}" />
-	<property name="ejb.module.artifact" value="${ejb.module.name}.jar" />	
-	
+	<property name="ejb.module.artifact" value="${ejb.module.name}.jar" />
+
 	<property name="domain.module.name" value="nl.naturalis.nda.domain" />
 	<property name="domain.module.location" location="${home}/${domain.module.name}" />
-	<property name="domain.module.artifact" value="${domain.module.name}.jar" />	
-	
+	<property name="domain.module.artifact" value="${domain.module.name}.jar" />
+
 	<property name="client.module.name" value="nl.naturalis.nda.client" />
 	<property name="client.module.location" location="${home}/${client.module.name}" />
 	<property name="client.module.artifact" value="${client.module.name}.jar" />
-	
+
 	<property name="dao.module.name" value="nl.naturalis.nda.elasticsearch.dao" />
 	<property name="dao.module.location" location="${home}/${dao.module.name}" />
-	<property name="dao.module.artifact" value="${dao.module.name}.jar" />	
-	
+	<property name="dao.module.artifact" value="${dao.module.name}.jar" />
+
 	<property name="load.module.name" value="nl.naturalis.nda.elasticsearch.load" />
 	<property name="load.module.location" location="${home}/${load.module.name}" />
-	<property name="load.module.artifact" value="${load.module.name}.jar" />	
-	
+	<property name="load.module.artifact" value="${load.module.name}.jar" />
+
 	<property name="export.module.name" value="nl.naturalis.nda.export" />
 	<property name="export.module.location" location="${home}/${export.module.name}" />
 	<property name="export.module.artifact" value="${export.module.name}.jar" />

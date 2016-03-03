@@ -1,6 +1,5 @@
 package nl.naturalis.nda.export.dwca;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+/**  
+ * <h1>CORE</h1>
+ *  Description: Class to create the element header of the Meta.xml file.
+ * 
+ *  @version 	1.0
+ *  @author  	Reinier.Kartowikromo 
+ *  @since		12-02-2015
+ *   
+ */
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "core")
@@ -47,131 +56,196 @@ public class Core
 		// TODO Auto-generated constructor stub
 	}
 	
-
+    /**
+     * 
+     * @return files
+     */
 	public Files getFiles()
 	{
 		return files;
 	}
 
-
+    /**
+     * 
+     * @param files set files
+     */
+	
 	public void setFiles(Files files)
 	{
 		this.files = files;
 	}
 
-
-
+    /**
+     * 
+     * @return encoding
+     */
 	public String getEncoding()
 	{
 		return encoding;
 	}
 
-
+    /**
+     * 
+     * @param encoding set encoding
+     */
 	public void setEncoding(String encoding)
 	{
 		this.encoding = encoding;
 	}
 
-
+    /**
+     * 
+     * @return fieldsEnclosedBy
+     */
 	public String getFieldsEnclosedBy()
 	{
 		return fieldsEnclosedBy;
 	}
 
-
+    /**
+     * 
+     * @param fieldsEnclosedBy set fieldsEnclosedBy
+     */
 	public void setFieldsEnclosedBy(String fieldsEnclosedBy)
 	{
 		this.fieldsEnclosedBy = fieldsEnclosedBy;
 	}
 
-
+    /**
+     * 
+     * @return fieldsEnclosedBy
+     */
 	public String getFieldsTerminatedBy()
 	{
 		return fieldsTerminatedBy;
 	}
 
-
+    /**
+     * 
+     * @param fieldsTerminatedBy set fieldsEnclosedBy
+     */
 	public void setFieldsTerminatedBy(String fieldsTerminatedBy)
 	{
 		this.fieldsTerminatedBy = fieldsTerminatedBy;
 	}
 
-
+    /**
+     * 
+     * @return linesTerminatedBy
+     */
 	public String getLinesTerminatedBy()
 	{
 		return linesTerminatedBy;
 	}
 
-
+    /**
+     * 
+     * @param linesTerminatedBy set linesTerminatedBy
+     */
 	public void setLinesTerminatedBy(String linesTerminatedBy)
 	{
 		this.linesTerminatedBy = linesTerminatedBy;
 	}
 
-
+    /**
+     * 
+     * @return ignoreHeaderLines
+     */
 	public String getIgnoreHeaderLines()
 	{
 		return ignoreHeaderLines;
 	}
 
-
+    /**
+     * 
+     * @param ignoreHeaderLines set ignoreHeaderLines
+     */
 	public void setIgnoreHeaderLines(String ignoreHeaderLines)
 	{
 		this.ignoreHeaderLines = ignoreHeaderLines;
 	}
 
-
+    /**
+     * 
+     * @return rowType
+     */
 	public String getRowtype()
 	{
 		return rowType;
 	}
 
-
+    /**
+     * 
+     * @param rowType set rowType
+     */
 	public void setRowtype(String rowType)
 	{
 		this.rowType = rowType;
 	}
 
-
+    /**
+     * 
+     * @return id
+     */
 	public Id getId()
 	{
 		return id;
 	}
 
-
+    /**
+     * 
+     * @param id set value id
+     */
 	public void setId(Id id)
 	{
 		this.id = id;
 	}
 
-
-
+    /**
+     * 
+     * @return result index
+     */
 	public String getIndex()
 	{
 		return index;
 	}
 
+	/**
+	 * 
+	 * @param index set value index
+	 */
 	public void setIndex(String index)
 	{
 		this.index = index;
 	}
 
-
+    /**
+     * 
+     * @return result fields
+     */
 	public List<Field> getField()
 	{
 		return fields;
 	}
-
+ 
+	/**
+	 * 
+	 * @param field set value fields
+	 */
 	public void setField(List<Field> field)
 	{
 		this.fields = field;
 	}
 
+	/**
+	 * 
+	 * @param field set value field
+	 */
 	public void addField(Field field)
 	{
 		if (fields == null)
 		{
-			fields = new ArrayList<Field>();
+			fields = new ArrayList<>();
 		}
 		fields.add(field);
 	}

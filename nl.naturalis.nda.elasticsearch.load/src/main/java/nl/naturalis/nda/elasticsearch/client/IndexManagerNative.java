@@ -8,6 +8,7 @@ import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -43,7 +44,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.indices.TypeMissingException;
-import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

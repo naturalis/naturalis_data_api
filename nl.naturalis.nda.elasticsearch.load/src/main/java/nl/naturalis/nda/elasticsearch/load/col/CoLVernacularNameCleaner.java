@@ -12,9 +12,9 @@ import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * Utility class that erases all vernacular names from taxon documents

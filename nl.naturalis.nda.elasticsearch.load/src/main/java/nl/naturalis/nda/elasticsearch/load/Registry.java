@@ -7,6 +7,8 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
@@ -16,14 +18,6 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.FileAppender;
 
 /**
  * Class providing centralized access to core services such as logging and
@@ -38,16 +32,14 @@ import ch.qos.logback.core.FileAppender;
  */
 public class Registry {
 
-	private static final String SYSPROP_CONFIG_DIR = "ndaConfDir";
-	private static final String CONFIG_FILE_NAME = "nda-import.properties";
+	private static final String SYSPROP_CONFIG_DIR = "nba.v1.conf.dir";
+	private static final String CONFIG_FILE_NAME = "nba-import.properties";
 
 	private static Registry instance;
 
 	private File confDir;
 	private ConfigObject config;
 	private Client esClient;
-
-	private LoggerContext ctx;
 
 	/*
 	 * This is the registry's own logger. No need (and confusing) to make it
@@ -87,7 +79,6 @@ public class Registry {
 	{
 		setConfDir();
 		loadConfig();
-		configureLogging();
 	}
 
 	/**
@@ -134,10 +125,7 @@ public class Registry {
 	 */
 	public Logger getLogger(Class<?> cls)
 	{
-		ch.qos.logback.classic.Logger logger = ctx.getLogger(cls);
-		// TODO: in the future we may allow nda-import.properties or some other
-		// config file to include separate log levels for different classes
-		return logger;
+		return LogManager.getLogger(cls);
 	}
 
 	/**
@@ -219,34 +207,6 @@ public class Registry {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void configureLogging()
-	{
-		ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
-		ctx.reset();
-		ch.qos.logback.classic.Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
-		Level logLevel = Level.toLevel(config.required("logger.level"));
-		root.setLevel(logLevel);
-		if (config.isTrue("logger.to_file")) {
-			FileAppender fileAppender = new FileAppender();
-			fileAppender.setName("FILE");
-			fileAppender.setContext(ctx);
-			fileAppender.setFile(getLogFile());
-			fileAppender.setEncoder(createPatternLayoutEncoder(ctx));
-			fileAppender.start();
-			root.addAppender(fileAppender);
-		}
-		if (config.isTrue("logger.to_console")) {
-			ConsoleAppender consoleAppender = new ConsoleAppender();
-			consoleAppender.setName("CONSOLE");
-			consoleAppender.setContext(ctx);
-			consoleAppender.setEncoder(createPatternLayoutEncoder(ctx));
-			consoleAppender.start();
-			root.addAppender(consoleAppender);
-		}
-		logger = getLogger(getClass());
-	}
-
 	private String[] getPorts(int numHosts)
 	{
 		String port = config.get("elasticsearch.transportaddress.port", true);
@@ -286,15 +246,6 @@ public class Registry {
 		File logFile = FileUtil.newFile(logDir, logFileName);
 		System.out.println("Created log file: " + logFile.getAbsolutePath());
 		return logFile.getAbsolutePath();
-	}
-
-	private static PatternLayoutEncoder createPatternLayoutEncoder(LoggerContext ctx)
-	{
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setContext(ctx);
-		encoder.setPattern("%date{yyyy-MM-dd HH:mm:ss} %5p | %-50logger{50} | %m %n");
-		encoder.start();
-		return encoder;
 	}
 
 }

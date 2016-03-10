@@ -13,8 +13,8 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.zip.ZipInputStream;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a sorted array as backbone

@@ -12,9 +12,9 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 import org.mozilla.universalchardet.UniversalDetector;
-import org.slf4j.Logger;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;

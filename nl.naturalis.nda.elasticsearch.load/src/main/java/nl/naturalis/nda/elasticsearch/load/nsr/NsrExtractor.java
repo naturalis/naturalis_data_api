@@ -1,7 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -15,9 +14,8 @@ import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.DOMUtil;
-import org.domainobject.util.xml.LineNumberXMLParser;
-import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;

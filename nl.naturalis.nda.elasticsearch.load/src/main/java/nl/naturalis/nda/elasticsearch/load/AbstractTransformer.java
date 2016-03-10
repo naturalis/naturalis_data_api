@@ -4,7 +4,8 @@ import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.List;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * Abstract base class for all transformation components within the ETL cycle.

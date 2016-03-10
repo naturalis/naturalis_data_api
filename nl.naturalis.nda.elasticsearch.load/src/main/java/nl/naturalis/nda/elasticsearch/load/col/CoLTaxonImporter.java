@@ -15,9 +15,9 @@ import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * Imports taxa from the taxa.txt file. This is the only import program for the

@@ -19,7 +19,8 @@ import nl.naturalis.nda.elasticsearch.load.LoadConstants;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.Transformer;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * A subclass of {@link CSVTransformer} that transforms CSV records into

@@ -3,7 +3,8 @@ package nl.naturalis.nda.elasticsearch.load;
 import static org.domainobject.util.StringUtil.lpad;
 import static org.domainobject.util.StringUtil.rpad;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * 

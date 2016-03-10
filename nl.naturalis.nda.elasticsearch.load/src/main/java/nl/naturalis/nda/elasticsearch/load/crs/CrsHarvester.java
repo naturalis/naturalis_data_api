@@ -13,9 +13,9 @@ import java.util.Date;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
-import org.slf4j.Logger;
 
 /**
  * Harvests the CRS OAI service and saves its output to files on the local file

@@ -7,8 +7,8 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.DOMUtil;
-import org.slf4j.Logger;
 import org.w3c.dom.Element;
 
 /**
@@ -125,7 +125,7 @@ class NsrImportUtil {
 
 	private static File getDataDir()
 	{
-		return Registry.getInstance().getConfig().getDirectory("nsr.xml_dir");
+		return Registry.getInstance().getConfig().getDirectory("nsr.data_dir");
 	}
 
 }

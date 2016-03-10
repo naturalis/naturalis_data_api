@@ -14,7 +14,7 @@ import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>

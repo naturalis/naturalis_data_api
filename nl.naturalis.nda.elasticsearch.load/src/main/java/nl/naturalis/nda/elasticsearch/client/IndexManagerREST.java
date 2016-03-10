@@ -8,12 +8,12 @@ import java.util.List;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ExceptionUtil;
 import org.domainobject.util.http.SimpleHttpDelete;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.domainobject.util.http.SimpleHttpPut;
 import org.domainobject.util.http.SimpleHttpRequest;
-import org.slf4j.Logger;
 
 /**
  * Implementation of {@link IndexManager} that uses ElasticSearch's REST API to

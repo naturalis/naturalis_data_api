@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.crs;
 
-import static nl.naturalis.nda.elasticsearch.load.crs.CrsImportUtil.*;
+import static nl.naturalis.nda.elasticsearch.load.crs.CrsImportUtil.callMultimediaService;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * Class that manages the import of CRS multimedia, sourced through "live"

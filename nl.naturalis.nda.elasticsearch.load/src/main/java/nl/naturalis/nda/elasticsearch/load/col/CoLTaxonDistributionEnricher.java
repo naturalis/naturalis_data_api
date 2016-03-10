@@ -11,13 +11,12 @@ import nl.naturalis.nda.elasticsearch.client.BulkIndexException;
 import nl.naturalis.nda.elasticsearch.client.IndexManager;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
-import nl.naturalis.nda.elasticsearch.load.CSVImportUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 

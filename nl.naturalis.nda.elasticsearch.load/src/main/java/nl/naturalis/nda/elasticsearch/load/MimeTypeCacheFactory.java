@@ -1,6 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * Produces a {@link MimeTypeCache} instances based on the value of a system

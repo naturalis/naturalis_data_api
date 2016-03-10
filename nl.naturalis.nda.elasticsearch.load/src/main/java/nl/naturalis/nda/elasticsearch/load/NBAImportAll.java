@@ -9,9 +9,9 @@ import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
 import nl.naturalis.nda.elasticsearch.load.ndff.NdffSpecimenImporter;
 import nl.naturalis.nda.elasticsearch.load.nsr.NsrImporter;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.StringUtil;
-import org.slf4j.Logger;
 
 /**
  * The "main" class of the import library. Start here. Allows you to bootstrap

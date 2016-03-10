@@ -18,9 +18,9 @@ import nl.naturalis.nda.elasticsearch.load.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SexNormalizer;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
 /**

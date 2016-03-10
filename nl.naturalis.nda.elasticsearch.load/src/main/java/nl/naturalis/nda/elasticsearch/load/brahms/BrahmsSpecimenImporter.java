@@ -15,9 +15,9 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.ThemeCache;
 import nl.naturalis.nda.elasticsearch.load.normalize.SpecimenTypeStatusNormalizer;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * Manages the import of Brahms specimens.

@@ -21,8 +21,8 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.StringUtil;
-import org.slf4j.Logger;
 
 /**
  * Provides common functionality for the various {@link Transformer}

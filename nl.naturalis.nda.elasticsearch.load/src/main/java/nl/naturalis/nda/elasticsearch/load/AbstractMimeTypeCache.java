@@ -5,10 +5,10 @@ import static org.apache.commons.io.Charsets.UTF_8;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.http.SimpleHttpHead;
-import org.slf4j.Logger;
 
 /**
  * Abstract base class for mimetype caches. Provides the public interface of a

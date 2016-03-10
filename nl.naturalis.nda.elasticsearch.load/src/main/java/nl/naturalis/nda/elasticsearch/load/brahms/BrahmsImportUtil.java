@@ -18,9 +18,9 @@ import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.TransformUtil;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.joda.time.LocalDate;
-import org.slf4j.Logger;
 
 /**
  * Provides common functionality related to the Brahms ETL cycle.

@@ -3,7 +3,8 @@ package nl.naturalis.nda.elasticsearch.load;
 import static org.domainobject.util.StringUtil.pad;
 import static org.domainobject.util.StringUtil.rpad;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * A Java bean maintaining a set of running totals for an ETL program. A

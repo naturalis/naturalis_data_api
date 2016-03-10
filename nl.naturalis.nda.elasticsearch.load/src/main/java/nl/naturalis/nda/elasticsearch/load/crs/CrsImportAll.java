@@ -2,7 +2,8 @@ package nl.naturalis.nda.elasticsearch.load.crs;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * Class that manages the import of CRS specimens and multimedia. Currently,

@@ -16,8 +16,8 @@ import java.util.Iterator;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * A generic CSV extraction component taking raw CSV lines as input and

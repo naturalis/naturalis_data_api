@@ -12,7 +12,8 @@ import nl.naturalis.nda.elasticsearch.load.col.CoLSynonymImporter;
 import nl.naturalis.nda.elasticsearch.load.col.CoLTaxonImporter;
 import nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameImporter;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * <p>

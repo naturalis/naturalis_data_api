@@ -11,8 +11,8 @@ import java.util.Properties;
 
 import nl.naturalis.nda.domain.SourceSystem;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
-import org.slf4j.Logger;
 
 /**
  * A cache that maps UnitIDs to "themes". Themes are predefined categories of

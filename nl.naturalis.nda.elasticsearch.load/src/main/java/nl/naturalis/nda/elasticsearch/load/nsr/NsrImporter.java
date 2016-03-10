@@ -19,9 +19,9 @@ import nl.naturalis.nda.elasticsearch.load.LoadUtil;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 import nl.naturalis.nda.elasticsearch.load.XMLRecordInfo;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
-import org.slf4j.Logger;
 
 /**
  * Driver class for the import of NSR taxa and multimedia. Also allows you to

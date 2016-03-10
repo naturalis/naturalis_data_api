@@ -5,10 +5,10 @@ import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.load.Registry;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
 
 /**
  * Class providing common functionality for CRS imports.

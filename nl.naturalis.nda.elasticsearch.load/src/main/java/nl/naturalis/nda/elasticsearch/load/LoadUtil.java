@@ -9,7 +9,7 @@ import nl.naturalis.nda.domain.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Utility class providing common functionality used throughout this library.

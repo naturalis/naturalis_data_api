@@ -1,8 +1,8 @@
-package nl.naturalis.nba.elasticsearch.schema;
+package nl.naturalis.nba.elasticsearch.map;
 
 public enum Index
 {
-	NOT_ANALYZED;
+	ANALYZED, NOT_ANALYZED, NO;
 
 	public String toString()
 	{

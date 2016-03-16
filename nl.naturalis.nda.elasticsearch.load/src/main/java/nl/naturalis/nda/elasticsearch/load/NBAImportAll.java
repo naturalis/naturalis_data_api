@@ -1,10 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
 
-import nl.naturalis.nba.elasticsearch.schema.MappingGenerator;
+import nl.naturalis.nba.elasticsearch.map.Mapping;
+import nl.naturalis.nba.elasticsearch.map.MappingFactory;
+import nl.naturalis.nba.elasticsearch.map.MappingSerializer;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
@@ -15,7 +15,6 @@ import nl.naturalis.nda.elasticsearch.load.nsr.NsrImporter;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
-import org.domainobject.util.StringUtil;
 
 /**
  * The "main" class of the import library. Start here. Allows you to bootstrap
@@ -151,9 +150,13 @@ public class NBAImportAll {
 		String settings = FileUtil.getContents(reg.getFile("es-settings.json"));
 		logger.info("Creating index using settings: " + settings);
 		index.create(settings);
-		MappingGenerator mg = new MappingGenerator();
-		//index.addType(LUCENE_TYPE_SPECIMEN, FileUtil.getContents("/home/ayco/test2.json"));
-		index.addType(LUCENE_TYPE_SPECIMEN, mg.getMapping(ESSpecimen.class));
+		MappingFactory mf = new MappingFactory();
+		MappingSerializer ms = MappingSerializer.getInstance();
+		Mapping mapping = mf.getMapping(ESSpecimen.class);
+		index.addType(LUCENE_TYPE_SPECIMEN, FileUtil.getContents("/home/ayco/test2.json"));
+		//String json = ms.serializePretty(mapping);
+		//System.out.println(json);
+		//index.addType(LUCENE_TYPE_SPECIMEN, json);
 		
 		
 //		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");

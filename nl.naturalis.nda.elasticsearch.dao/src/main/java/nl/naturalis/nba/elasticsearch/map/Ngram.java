@@ -1,20 +1,20 @@
-package nl.naturalis.nba.elasticsearch.schema;
+package nl.naturalis.nba.elasticsearch.map;
 
 class Ngram {
 
 	private final Type type;
-	private final String index_analyzer;
+	private final String analyzer;
 
 	Ngram(String analyzer)
 	{
 		this.type = Type.STRING;
-		this.index_analyzer = analyzer;
+		this.analyzer = analyzer;
 	}
 
 	Ngram(Type type, String analyzer)
 	{
 		this.type = type;
-		this.index_analyzer = analyzer;
+		this.analyzer = analyzer;
 	}
 
 	public Type getType()
@@ -22,9 +22,9 @@ class Ngram {
 		return type;
 	}
 
-	public String getIndex_analyzer()
+	public String getAnalyzer()
 	{
-		return index_analyzer;
+		return analyzer;
 	}
 
 }

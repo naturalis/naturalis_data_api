@@ -1,11 +1,11 @@
-package nl.naturalis.nba.elasticsearch.schema;
+package nl.naturalis.nba.elasticsearch.map;
+
 
 class ESScalar extends ESField {
 
 	private final Type type;
-	private Fields fields;
 	private Index index;
-	private Ngram ngram;
+	private String analyzer;
 
 	ESScalar(Type type)
 	{
@@ -22,16 +22,6 @@ class ESScalar extends ESField {
 		return type;
 	}
 
-	public Fields getFields()
-	{
-		return fields;
-	}
-
-	public void setFields(Fields fields)
-	{
-		this.fields = fields;
-	}
-
 	public Index getIndex()
 	{
 		return index;
@@ -42,14 +32,14 @@ class ESScalar extends ESField {
 		this.index = index;
 	}
 
-	public Ngram getNgram()
+	public String getAnalyzer()
 	{
-		return ngram;
+		return analyzer;
 	}
 
-	public void setNgram(Ngram ngram)
+	public void setAnalyzer(String analyzer)
 	{
-		this.ngram = ngram;
+		this.analyzer = analyzer;
 	}
 
 }

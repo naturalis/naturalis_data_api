@@ -1,4 +1,4 @@
-package nl.naturalis.nba.elasticsearch.schema;
+package nl.naturalis.nba.elasticsearch.map;
 
 import java.util.LinkedHashMap;
 

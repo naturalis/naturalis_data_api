@@ -1,10 +1,7 @@
-package nl.naturalis.nba.elasticsearch.schema;
+package nl.naturalis.nba.elasticsearch.map;
 
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 
 import nl.naturalis.nba.annotations.NGram;
 import nl.naturalis.nba.annotations.NotAnalyzed;
@@ -25,11 +22,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author ayco
  *
  */
-public class MappingGenerator2 {
+public class MappingFactory {
 
 	public static void main(String[] args) throws Exception
 	{
-		MappingGenerator2 mg = new MappingGenerator2();
+		MappingFactory mg = new MappingFactory();
 		Mapping m = mg.getMapping(ESSpecimen.class);
 		ObjectMapper om = new ObjectMapper();
 		om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
@@ -42,36 +39,13 @@ public class MappingGenerator2 {
 	private static final Package PKG_DOMAIN = Specimen.class.getPackage();
 	private static final Package PKG_ESTYPES = ESSpecimen.class.getPackage();
 
-	private static HashMap<Class<?>, Type> typeMap = new HashMap<>();
-
-	static {
-		typeMap.put(String.class, Type.STRING);
-		typeMap.put(char.class, Type.STRING);
-		typeMap.put(Character.class, Type.STRING);
-		typeMap.put(URI.class, Type.STRING);
-		typeMap.put(Enum.class, Type.STRING);
-		typeMap.put(byte.class, Type.BYTE);
-		typeMap.put(Byte.class, Type.BYTE);
-		typeMap.put(short.class, Type.SHORT);
-		typeMap.put(Short.class, Type.BOOLEAN);
-		typeMap.put(int.class, Type.INTEGER);
-		typeMap.put(Integer.class, Type.INTEGER);
-		typeMap.put(long.class, Type.LONG);
-		typeMap.put(Long.class, Type.LONG);
-		typeMap.put(float.class, Type.FLOAT);
-		typeMap.put(Float.class, Type.FLOAT);
-		typeMap.put(double.class, Type.DOUBLE);
-		typeMap.put(Double.class, Type.DOUBLE);
-		typeMap.put(boolean.class, Type.BOOLEAN);
-		typeMap.put(Boolean.class, Type.BOOLEAN);
-		typeMap.put(Date.class, Type.DATE);
-	}
-
 	private final Ngram defaultNgram;
+	private final TypeMap typeMap;
 
-	public MappingGenerator2()
+	public MappingFactory()
 	{
 		defaultNgram = new Ngram("nda_ngram_analyzer");
+		typeMap = TypeMap.getInstance();
 	}
 
 	public Mapping getMapping(Class<?> forClass)
@@ -91,7 +65,7 @@ public class MappingGenerator2 {
 	private ESField processField(Field f)
 	{
 		Class<?> type = getType(f);
-		Type esType = typeMap.get(type);
+		Type esType = typeMap.getESType(type);
 		if (esType == null) {
 			return getESObject(type);
 		}

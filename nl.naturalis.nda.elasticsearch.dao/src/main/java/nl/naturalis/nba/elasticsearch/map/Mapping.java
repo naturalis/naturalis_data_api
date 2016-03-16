@@ -1,7 +1,7 @@
-package nl.naturalis.nba.elasticsearch.schema;
+package nl.naturalis.nba.elasticsearch.map;
 
 
-class Mapping extends ESObject {
+public class Mapping extends ESObject {
 
 	private final String dynamic = "strict";
 

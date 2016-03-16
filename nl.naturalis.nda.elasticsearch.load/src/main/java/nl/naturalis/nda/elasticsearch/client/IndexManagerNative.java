@@ -18,8 +18,6 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequestBuilder;
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
@@ -28,7 +26,6 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.get.MultiGetItemResponse;
@@ -37,12 +34,9 @@ import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermFilterBuilder;
-import org.elasticsearch.indices.IndexMissingException;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.Settings.Builder;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.indices.TypeMissingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -151,7 +145,9 @@ public class IndexManagerNative implements IndexManager {
 	{
 		logger.info("Creating index " + indexName);
 		CreateIndexRequestBuilder request = admin.prepareCreate(indexName);
-		request.setSettings(ImmutableSettings.settingsBuilder().loadFromSource(settings).build());
+		Builder builder = Settings.settingsBuilder();
+		builder.loadFromSource(settings);
+		request.setSettings(builder.build());
 		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
 			throw new IndexManagerException("Failed to create index " + indexName);
@@ -172,7 +168,7 @@ public class IndexManagerNative implements IndexManager {
 			logger.info("Index deleted");
 			return true;
 		}
-		catch (IndexMissingException e) {
+		catch (IndexNotFoundException e) {
 			logger.info(String.format("No such index \"%s\" (nothing deleted)", indexName));
 			return false;
 		}
@@ -211,22 +207,23 @@ public class IndexManagerNative implements IndexManager {
 	@Override
 	public boolean deleteType(String name)
 	{
-		logger.info(String.format("Deleting type \"%s\"", name));
-		DeleteMappingRequestBuilder request = esClient.admin().indices().prepareDeleteMapping();
-		request.setIndices(indexName);
-		request.setType(name);
-		try {
-			DeleteMappingResponse response = request.execute().actionGet();
-			if (!response.isAcknowledged()) {
-				throw new IndexManagerException(String.format("Failed to delete type \"%s\"", name));
-			}
-			logger.info("Type deleted");
-			return true;
-		}
-		catch (TypeMissingException e) {
-			logger.info(String.format("No such type \"%s\" (nothing deleted)", name));
-			return false;
-		}
+//		logger.info(String.format("Deleting type \"%s\"", name));
+//		DeleteMappingRequestBuilder request = esClient.admin().indices().prepareDeleteMapping();
+//		request.setIndices(indexName);
+//		request.setType(name);
+//		try {
+//			DeleteMappingResponse response = request.execute().actionGet();
+//			if (!response.isAcknowledged()) {
+//				throw new IndexManagerException(String.format("Failed to delete type \"%s\"", name));
+//			}
+//			logger.info("Type deleted");
+//			return true;
+//		}
+//		catch (TypeMissingException e) {
+//			logger.info(String.format("No such type \"%s\" (nothing deleted)", name));
+//			return false;
+//		}
+		return true;
 	}
 
 	@Override
@@ -288,13 +285,13 @@ public class IndexManagerNative implements IndexManager {
 	@Override
 	public void deleteWhere(String type, String field, String value)
 	{
-		logger.info(String.format("Deleting %s documents where %s equals \"%s\"", type, field, value));
-		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
-		request.setTypes(type);
-		TermFilterBuilder filter = FilterBuilders.termFilter(field, value);
-		FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
-		request.setQuery(query);
-		request.execute().actionGet();
+//		logger.info(String.format("Deleting %s documents where %s equals \"%s\"", type, field, value));
+//		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
+//		request.setTypes(type);
+//		TermFilterBuilder filter = FilterBuilders.termFilter(field, value);
+//		FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
+//		request.setQuery(query);
+//		request.execute().actionGet();
 	}
 
 	@Override

@@ -1,7 +1,10 @@
 package nl.naturalis.nba.elasticsearch.schema;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,21 +12,37 @@ import java.util.HashMap;
 import nl.naturalis.nba.annotations.NGram;
 import nl.naturalis.nba.annotations.NotAnalyzed;
 import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.ClassUtil;
 
-public class SchemaGenerator {
+/**
+ * Generates an Elasticsearch mappings from {@link Class} objects.
+ * 
+ * @author ayco
+ *
+ */
+public class MappingGenerator {
 
-	private static final String ES_STRING = "string";
-	private static final String ES_BYTE = "byte";
-	private static final String ES_SHORT = "short";
-	private static final String ES_INT = "integer";
-	private static final String ES_LONG = "long";
-	private static final String ES_FLOAT = "float";
-	private static final String ES_DOUBLE = "double";
-	private static final String ES_BOOLEAN = "boolean";
-	private static final String ES_DATE = "date";
+	public static void main(String[] args) throws Exception
+	{
+		StringWriter sw = new StringWriter(2048);
+		PrintWriter pw = new PrintWriter(sw);
+		MappingGenerator sg = new MappingGenerator(pw);
+		sg.printMapping(ESSpecimen.class);
+		System.out.println(sw.toString());
+	}
+
+	static final String ES_STRING = "string";
+	static final String ES_BYTE = "byte";
+	static final String ES_SHORT = "short";
+	static final String ES_INT = "integer";
+	static final String ES_LONG = "long";
+	static final String ES_FLOAT = "float";
+	static final String ES_DOUBLE = "double";
+	static final String ES_BOOLEAN = "boolean";
+	static final String ES_DATE = "date";
 
 	private static final String INDENT = "\t";
 
@@ -36,6 +55,8 @@ public class SchemaGenerator {
 		typeMap.put(String.class, ES_STRING);
 		typeMap.put(char.class, ES_STRING);
 		typeMap.put(Character.class, ES_STRING);
+		typeMap.put(URI.class, ES_STRING);
+		typeMap.put(Enum.class, ES_STRING);
 		typeMap.put(byte.class, ES_BYTE);
 		typeMap.put(Byte.class, ES_BYTE);
 		typeMap.put(short.class, ES_SHORT);
@@ -53,30 +74,53 @@ public class SchemaGenerator {
 		typeMap.put(Date.class, ES_DATE);
 	}
 
-	public static void main(String[] args) throws Exception
+	private PrintWriter pw;
+
+	public MappingGenerator()
 	{
-		PrintWriter pw = new PrintWriter(System.out);
-		SchemaGenerator sg = new SchemaGenerator(pw);
-		sg.generate(ESSpecimen.class);
+		this.pw = null;
 	}
 
-	private final PrintWriter pw;
-
-	public SchemaGenerator(PrintWriter pw)
+	public MappingGenerator(Writer writer)
 	{
-		this.pw = pw;
+		writeTo(writer);
 	}
 
-	public void generate(Class<?> cls)
+	public void writeTo(Writer writer)
 	{
+		if (writer instanceof PrintWriter) {
+			pw = (PrintWriter) writer;
+		}
+		else {
+			pw = new PrintWriter(writer);
+		}
+	}
+
+	public void printMapping(Class<?> cls)
+	{
+		if (pw == null) {
+			pw = new PrintWriter(System.out);
+		}
 		println(0, "{");
-		beginObject(1, cls.getSimpleName());
-		printField(2, false, "dynamic", "strict");
-		processClass(2, cls);
-		endObject(1, true);
+		printField(1, false, "dynamic", "strict");
+		processFields(1, cls);
 		println(0, "}");
 		pw.flush();
 		pw.close();
+	}
+
+	public String getMapping(Class<?> forClass)
+	{
+		PrintWriter old = pw;
+		StringWriter sw = new StringWriter(4096);
+		pw = new PrintWriter(sw);
+		try {
+			printMapping(forClass);
+		}
+		finally {
+			pw = old;
+		}
+		return sw.toString();
 	}
 
 	public void processClass(int level, Class<?> cls)
@@ -85,12 +129,16 @@ public class SchemaGenerator {
 		if (!PKG_DOMAIN.equals(pkg) && !PKG_ESTYPES.equals(pkg)) {
 			throw new RuntimeException("Class not allowed/supported: " + cls.getName());
 		}
+		processFields(level, cls);
+	}
+
+	private void processFields(int level, Class<?> cls)
+	{
 		beginObject(level, "properties");
 		Field[] fields = cls.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			processField(level + 1, i == fields.length - 1, fields[i]);
 		}
-		pw.println();
 		endObject(level, true);
 	}
 
@@ -106,21 +154,22 @@ public class SchemaGenerator {
 			NotAnalyzed notAnalyzed = f.getAnnotation(NotAnalyzed.class);
 			NGram ngram = f.getAnnotation(NGram.class);
 			print(level + 1, jsonVar("type", esType));
-			if (notAnalyzed != null) {
-				pw.println(',');
-				println(level + 1, jsonVar("index", "not_analyzed"));
-			}
-			else {
-				pw.println(",");
-				beginObject(level + 1, "fields");
-				beginObject(level + 2, "raw");
-				printField(level + 3, false, "index", "not_analyzed");
-				printField(level + 3, true, "type", esType);
-				endObject(level + 2, true);
-				endObject(level + 1, ngram == null);
+			if (esType == ES_STRING) {
+				if (notAnalyzed != null) {
+					pw.println(',');
+					println(level + 1, jsonVar("index", "not_analyzed"));
+				}
+				else {
+					pw.println(",");
+					beginObject(level + 1, "fields");
+					beginObject(level + 2, "raw");
+					printField(level + 3, false, "index", "not_analyzed");
+					printField(level + 3, true, "type", "string");
+					endObject(level + 2, true);
+					endObject(level + 1, ngram == null);
+				}
 			}
 			if (ngram != null) {
-				//pw.print(",");
 				beginObject(level + 1, "ngram");
 				printField(level + 2, false, "type", ngram.type());
 				printField(level + 2, true, "index_analyzer", ngram.value());
@@ -180,6 +229,9 @@ public class SchemaGenerator {
 		Class<?> c = f.getType();
 		if (c.isArray()) {
 			return c.getComponentType();
+		}
+		if (ClassUtil.isA(c, Enum.class)) {
+			return String.class;
 		}
 		if (ClassUtil.isA(c, Collection.class)) {
 			return getClassForTypeArgument(f);

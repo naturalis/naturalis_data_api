@@ -14,6 +14,6 @@
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.elasticsearch.load&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
 	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.http.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

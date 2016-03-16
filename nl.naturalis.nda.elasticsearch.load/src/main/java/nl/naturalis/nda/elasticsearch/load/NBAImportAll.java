@@ -1,8 +1,12 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 
+import nl.naturalis.nba.elasticsearch.schema.MappingGenerator;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
@@ -147,11 +151,16 @@ public class NBAImportAll {
 		String settings = FileUtil.getContents(reg.getFile("es-settings.json"));
 		logger.info("Creating index using settings: " + settings);
 		index.create(settings);
-		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-		index.addType(LUCENE_TYPE_TAXON, mapping);
-		mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-		index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-		mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
+		MappingGenerator mg = new MappingGenerator();
+		//index.addType(LUCENE_TYPE_SPECIMEN, FileUtil.getContents("/home/ayco/test2.json"));
+		index.addType(LUCENE_TYPE_SPECIMEN, mg.getMapping(ESSpecimen.class));
+		
+		
+//		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
+//		index.addType(LUCENE_TYPE_TAXON, mapping);
+//		mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
+//		index.addType(LUCENE_TYPE_SPECIMEN, mapping);
+//		mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
+//		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
 	}
 }

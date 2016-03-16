@@ -2,8 +2,9 @@ package nl.naturalis.nda.elasticsearch.load;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
@@ -11,12 +12,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
+import org.domainobject.util.debug.BeanPrinter;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 /**
@@ -41,12 +45,7 @@ public class Registry {
 	private ConfigObject config;
 	private Client esClient;
 
-	/*
-	 * This is the registry's own logger. No need (and confusing) to make it
-	 * static because logging only become available once the registry is
-	 * instantiated.
-	 */
-	private Logger logger;
+	private static final Logger logger = LogManager.getLogger(Registry.class);
 
 	/**
 	 * Instantiates and initializes a {@code Registry} instance. This method
@@ -136,28 +135,19 @@ public class Registry {
 	public Client getESClient()
 	{
 		if (esClient == null) {
-			logger.info("Initializing ElasticSearch session");
-			String cluster = config.required("elasticsearch.cluster.name");
-			String[] hosts = config.required("elasticsearch.transportaddress.host").trim()
-					.split(",");
-			String[] ports = getPorts(hosts.length);
-			Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", cluster)
-					.build();
-			esClient = new TransportClient(settings);
+			logger.info("Connecting to Elasticsearch cluster");
+			InetAddress[] hosts = getHosts();
+			int[] ports = getPorts(hosts.length);
+			esClient = createClient();
 			for (int i = 0; i < hosts.length; ++i) {
-				String host = hosts[i].trim();
-				int port = Integer.parseInt(ports[i].trim());
-				logger.info(String.format("Adding transport address \"%s:%s\"", host, port));
-				InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(host,
-						port);
-				((TransportClient) esClient).addTransportAddress(transportAddress);
+				InetAddress host = hosts[i];
+				int port = ports[i];
+				logger.info("Adding transport address \"{}:{}\"", host, port);
+				InetSocketTransportAddress addr;
+				addr = new InetSocketTransportAddress(host, port);
+				((TransportClient) esClient).addTransportAddress(addr);
 			}
-			if (logger.isDebugEnabled()) {
-				ClusterStatsRequest request = new ClusterStatsRequest();
-				ClusterStatsResponse response = esClient.admin().cluster().clusterStats(request)
-						.actionGet();
-				logger.debug("Cluster stats: " + response.toString());
-			}
+			ping();
 		}
 		return esClient;
 	}
@@ -207,22 +197,77 @@ public class Registry {
 		}
 	}
 
-	private String[] getPorts(int numHosts)
+	private Client createClient()
 	{
-		String port = config.get("elasticsearch.transportaddress.port", true);
-		String[] ports = port == null ? new String[] { "9300" } : port.trim().split(",");
-		if (ports.length > 1 && ports.length != numHosts) {
-			throw new RuntimeException(
-					"Error creating ES client: number of ports does not match number of hosts");
-		}
-		else if (ports.length == 1 && numHosts > 1) {
-			port = ports[0];
-			ports = new String[numHosts];
-			for (int i = 0; i < ports.length; ++i) {
-				ports[i] = port;
+		Builder builder = Settings.settingsBuilder();
+		String cluster = config.required("elasticsearch.cluster.name");
+		builder.put("cluster.name", cluster);
+		Settings settings = builder.build();
+		return TransportClient.builder().settings(settings).build();
+	}
+
+	private InetAddress[] getHosts()
+	{
+		String s = config.required("elasticsearch.transportaddress.host");
+		String names[] = s.trim().split(",");
+		InetAddress[] addresses = new InetAddress[names.length];
+		for (int i = 0; i < names.length; ++i) {
+			String name = names[i].trim();
+			try {
+				addresses[i] = InetAddress.getByName(name);
+			}
+			catch (UnknownHostException e) {
+				String msg = "Unknown host: \"" + name + "\"";
+				throw new ConnectionFailureException(msg);
 			}
 		}
-		return ports;
+		return addresses;
+	}
+
+	private int[] getPorts(int numHosts)
+	{
+		int[] ports = new int[numHosts];
+		String s = config.get("elasticsearch.transportaddress.port");
+		if (s == null) {
+			Arrays.fill(ports, 9300);
+			return ports;
+		}
+		String[] chunks = s.trim().split(",");
+		if (chunks.length == 1) {
+			int port = Integer.parseInt(chunks[0].trim());
+			Arrays.fill(ports, port);
+			return ports;
+		}
+		if (chunks.length == numHosts) {
+			for (int i = 0; i < numHosts; ++i) {
+				int port = Integer.parseInt(chunks[i].trim());
+				ports[i] = port;
+			}
+			return ports;
+		}
+		String msg = "Number of ports must be either one or match number of hosts";
+		throw new ConnectionFailureException(msg);
+	}
+
+	private void ping()
+	{
+		ClusterStatsRequest request = new ClusterStatsRequest();
+		ClusterStatsResponse response = null;
+		try {
+			response = esClient.admin().cluster().clusterStats(request).actionGet();
+			if (logger.isDebugEnabled()) {
+				logger.debug("Cluster stats: " + response.toString());
+			}
+		}
+		catch (NoNodeAvailableException e) {
+			String msg = "Ping resulted in NoNodeAvailableException. Check "
+					+ "configuration and make sure Elasticsearch  client and "
+					+ "server versions are equal";
+			throw new ConnectionFailureException(msg);
+		}
+		if (response.getStatus().equals(ClusterHealthStatus.RED)) {
+			throw new ConnectionFailureException("ElasticSearch cluster in bad health");
+		}
 	}
 
 	private void loadConfig()
@@ -233,19 +278,6 @@ public class Registry {
 			throw new InitializationException(msg);
 		}
 		this.config = new ConfigObject(file);
-	}
-
-	private String getLogFile()
-	{
-		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
-		String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-		String command = System.getProperty("sun.java.command");
-		String[] chunks = command.split("\\.");
-		String mainClass = chunks[chunks.length - 1].split(" ")[0];
-		String logFileName = mainClass + "-" + now + ".log";
-		File logFile = FileUtil.newFile(logDir, logFileName);
-		System.out.println("Created log file: " + logFile.getAbsolutePath());
-		return logFile.getAbsolutePath();
 	}
 
 }

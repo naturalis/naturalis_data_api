@@ -1,5 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load;
 
+import java.io.File;
 import java.util.Arrays;
 
 import nl.naturalis.nba.elasticsearch.map.Mapping;
@@ -120,9 +121,10 @@ public class NBAImportAll {
 	public void bootstrap()
 	{
 		index.delete();
-		Registry reg = Registry.getInstance();
-		String settings = FileUtil.getContents(reg.getFile("es-settings.json"));
-		logger.info("Creating index using settings: " + settings);
+		Registry registry = Registry.getInstance();
+		File settingsFile = registry.getFile("es-settings.json");
+		String settings = FileUtil.getContents(settingsFile);
+		logger.debug("Creating index using\n" + settings);
 		index.create(settings);
 		MappingFactory mf = new MappingFactory();
 		MappingSerializer ms = MappingSerializer.getInstance();

@@ -4,24 +4,24 @@ public class ESScalar extends ESField {
 
 	static final ESScalar RAW = new ESScalar(Index.NOT_ANALYZED);
 
-	private final ESDataType eSDataType;
+	private final ESDataType type;
 	private Index index;
 	private String analyzer;
 
 	public ESScalar(ESDataType eSDataType)
 	{
-		this.eSDataType = eSDataType;
+		this.type = eSDataType;
 	}
 
 	private ESScalar(Index index)
 	{
-		this.eSDataType = ESDataType.STRING;
+		this.type = ESDataType.STRING;
 		this.index = index;
 	}
 
 	public ESDataType getType()
 	{
-		return eSDataType;
+		return type;
 	}
 
 	public Index getIndex()

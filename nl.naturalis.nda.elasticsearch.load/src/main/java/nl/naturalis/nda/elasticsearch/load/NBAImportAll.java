@@ -6,7 +6,9 @@ import nl.naturalis.nba.elasticsearch.map.Mapping;
 import nl.naturalis.nba.elasticsearch.map.MappingFactory;
 import nl.naturalis.nba.elasticsearch.map.MappingSerializer;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportAll;
 import nl.naturalis.nda.elasticsearch.load.col.CoLImportAll;
 import nl.naturalis.nda.elasticsearch.load.crs.CrsImportAll;
@@ -74,68 +76,40 @@ public class NBAImportAll {
 		try {
 
 			logger.info("[>--- Starting NDFF import ---<]");
-			try {
-				NdffSpecimenImporter ndffImporter = new NdffSpecimenImporter();
-				ndffImporter.importSpecimens();
-			}
-			catch (Throwable t) {
-				logger.error(t.getMessage(), t);
-				logger.error("NDFF import Failed!");
-			}
+			NdffSpecimenImporter ndffImporter = new NdffSpecimenImporter();
+			ndffImporter.importSpecimens();
 
 			logger.info("[>--- Starting NSR import ---<]");
-			try {
-				NsrImporter nsrImporter = new NsrImporter();
-				nsrImporter.importAll();
-			}
-			catch (Throwable t) {
-				logger.error(t.getMessage(), t);
-				logger.error("NSR import Failed!");
-			}
+			NsrImporter nsrImporter = new NsrImporter();
+			nsrImporter.importAll();
 
 			logger.info("[>--- Starting Brahms import ---<]");
-			try {
-				BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
-				brahmsImportAll.importAll();
-			}
-			catch (Throwable t) {
-				logger.error(t.getMessage(), t);
-				logger.error("Brahms import Failed!");
-			}
+			BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
+			brahmsImportAll.importAll();
 
 			logger.info("[>--- Starting CRS import ---<]");
-			try {
-				CrsImportAll crsImportAll = new CrsImportAll();
-				crsImportAll.importAll();
-			}
-			catch (Throwable t) {
-				logger.error(t.getMessage(), t);
-				logger.error("CRS specimen import Failed!");
-			}
+			CrsImportAll crsImportAll = new CrsImportAll();
+			crsImportAll.importAll();
 
 			logger.info("[>--- Starting CoL import ---<]");
-			try {
-				CoLImportAll colImportAll = new CoLImportAll();
-				colImportAll.importAll();
-			}
-			catch (Throwable t) {
-				logger.error(t.getMessage(), t);
-				logger.error("CoL import Failed!");
-			}
+			CoLImportAll colImportAll = new CoLImportAll();
+			colImportAll.importAll();
 
 		}
-
+		catch (Throwable t) {
+			logger.error("NBA Import failed!");
+		}
 		finally {
 			LoadUtil.logDuration(logger, getClass(), start);
 			Registry.getInstance().closeESClient();
 		}
-		
+
 		int i = MimeTypeCacheFactory.getInstance().getCache().getMisses();
-		if(i != 0) {
+		if (i != 0) {
 			String fmt = "%s mime type cache lookup failures";
 			logger.warn(String.format(fmt, String.valueOf(i)));
-			logger.warn("THE MIME TYPE CACHE IS OUT-OF-DATE!");
-		}		
+			logger.warn("The mime type cache is out-of-date!");
+		}
 
 	}
 
@@ -152,18 +126,17 @@ public class NBAImportAll {
 		index.create(settings);
 		MappingFactory mf = new MappingFactory();
 		MappingSerializer ms = MappingSerializer.getInstance();
+
 		Mapping mapping = mf.getMapping(ESSpecimen.class);
-		index.addType(LUCENE_TYPE_SPECIMEN, FileUtil.getContents("/home/ayco/test2.json"));
-		//String json = ms.serializePretty(mapping);
-		//System.out.println(json);
-		//index.addType(LUCENE_TYPE_SPECIMEN, json);
-		
-		
-//		String mapping = StringUtil.getResourceAsString("/es-mappings/Taxon.json");
-//		index.addType(LUCENE_TYPE_TAXON, mapping);
-//		mapping = StringUtil.getResourceAsString("/es-mappings/Specimen.json");
-//		index.addType(LUCENE_TYPE_SPECIMEN, mapping);
-//		mapping = StringUtil.getResourceAsString("/es-mappings/MultiMediaObject.json");
-//		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, mapping);
+		String json = ms.serialize(mapping);
+		index.addType(LUCENE_TYPE_SPECIMEN, json);
+
+		mapping = mf.getMapping(ESMultiMediaObject.class);
+		json = ms.serialize(mapping);
+		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, json);
+
+		mapping = mf.getMapping(ESTaxon.class);
+		json = ms.serialize(mapping);
+		index.addType(LUCENE_TYPE_TAXON, json);
 	}
 }

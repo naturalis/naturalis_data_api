@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import nl.naturalis.nba.annotations.NGram;
 import nl.naturalis.nba.annotations.NotAnalyzed;
+import nl.naturalis.nba.annotations.NotIndexed;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
@@ -38,14 +39,10 @@ public class MappingFactory {
 
 	private static final Package PKG_DOMAIN = Specimen.class.getPackage();
 	private static final Package PKG_ESTYPES = ESSpecimen.class.getPackage();
-
-	private final Ngram defaultNgram;
-	private final TypeMap typeMap;
+	private static final TypeMap typeMap = TypeMap.getInstance();
 
 	public MappingFactory()
 	{
-		defaultNgram = new Ngram("nda_ngram_analyzer");
-		typeMap = TypeMap.getInstance();
 	}
 
 	public Mapping getMapping(Class<?> forClass)
@@ -55,43 +52,52 @@ public class MappingFactory {
 		return mapping;
 	}
 
-	private void addFields(Class<?> cls, ESObject esObject)
+	private static void addFields(Class<?> cls, ESObject esObject)
 	{
 		for (Field f : cls.getDeclaredFields()) {
 			esObject.addField(f.getName(), processField(f));
 		}
 	}
 
-	private ESField processField(Field f)
+	private static ESField processField(Field f)
 	{
 		Class<?> type = getType(f);
 		Type esType = typeMap.getESType(type);
 		if (esType == null) {
 			return getESObject(type);
 		}
-		return getESScalar(f, esType);
+		return getSimpleField(f, esType);
 	}
 
-	private ESScalar getESScalar(Field field, Type esType)
+	private static ESSimpleField getSimpleField(Field field, Type esType)
 	{
-		ESScalar sf = new ESScalar(esType);
+		ESSimpleField sf = new ESSimpleField(esType);
 		if (esType == Type.STRING) {
-			NotAnalyzed notAnalyzed = field.getAnnotation(NotAnalyzed.class);
-			NGram ngram = field.getAnnotation(NGram.class);
-			if (notAnalyzed != null) {
-				sf.setIndex(Index.NOT_ANALYZED);
+			NotIndexed notIndexed = field.getAnnotation(NotIndexed.class);
+			if (notIndexed == null) {
+				NotAnalyzed notAnalyzed = field.getAnnotation(NotAnalyzed.class);
+				if (notAnalyzed == null) {
+					sf.addRawField();
+				}
+				else {
+					sf.setIndex(Index.NOT_ANALYZED);
+				}
 			}
 			else {
-				sf.setFields(Fields.DEFAULT);
+				sf.setIndex(Index.NO);
 			}
+			NGram ngram = field.getAnnotation(NGram.class);
 			if (ngram != null) {
-				sf.setNgram(defaultNgram);
+				Type type = Type.parse(ngram.type());
+				ESScalar scalar = new ESScalar(type);
+				scalar.setAnalyzer(ngram.value());
+				sf.addToFields("ngram", scalar);
 			}
 		}
 		return sf;
 	}
 
-	private ESField getESObject(Class<?> cls)
+	private static ESField getESObject(Class<?> cls)
 	{
 		Package pkg = cls.getPackage();
 		if (!PKG_DOMAIN.equals(pkg) && !PKG_ESTYPES.equals(pkg)) {

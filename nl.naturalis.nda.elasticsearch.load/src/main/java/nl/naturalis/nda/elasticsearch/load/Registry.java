@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
-import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
@@ -261,8 +260,9 @@ public class Registry {
 		}
 		catch (NoNodeAvailableException e) {
 			String msg = "Ping resulted in NoNodeAvailableException. Check "
-					+ "configuration and make sure Elasticsearch  client and "
-					+ "server versions are equal";
+					+ "configuration, make sure Elasticsearch is running, "
+					+ "make sure Elasticsearch client and server libraries "
+					+ "are equal";
 			throw new ConnectionFailureException(msg);
 		}
 		if (response.getStatus().equals(ClusterHealthStatus.RED)) {

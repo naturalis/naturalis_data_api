@@ -1,20 +1,22 @@
 package nl.naturalis.nba.elasticsearch.map;
 
+public class ESScalar extends ESField {
 
-class ESScalar extends ESField {
+	static final ESScalar RAW = new ESScalar(Index.NOT_ANALYZED);
 
 	private final Type type;
 	private Index index;
 	private String analyzer;
 
-	ESScalar(Type type)
+	public ESScalar(Type type)
 	{
 		this.type = type;
 	}
 
-	ESScalar()
+	private ESScalar(Index index)
 	{
 		this.type = Type.STRING;
+		this.index = index;
 	}
 
 	public Type getType()

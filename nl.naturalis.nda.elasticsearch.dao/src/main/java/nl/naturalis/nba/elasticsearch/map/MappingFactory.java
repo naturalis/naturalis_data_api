@@ -39,7 +39,7 @@ public class MappingFactory {
 
 	private static final Package PKG_DOMAIN = Specimen.class.getPackage();
 	private static final Package PKG_ESTYPES = ESSpecimen.class.getPackage();
-	private static final TypeMap typeMap = TypeMap.getInstance();
+	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
 	public MappingFactory()
 	{
@@ -62,17 +62,17 @@ public class MappingFactory {
 	private static ESField processField(Field f)
 	{
 		Class<?> type = getType(f);
-		Type esType = typeMap.getESType(type);
+		ESDataType esType = dataTypeMap.getESType(type);
 		if (esType == null) {
 			return getESObject(type);
 		}
 		return getSimpleField(f, esType);
 	}
 
-	private static ESSimpleField getSimpleField(Field field, Type esType)
+	private static ESSimpleField getSimpleField(Field field, ESDataType esType)
 	{
 		ESSimpleField sf = new ESSimpleField(esType);
-		if (esType == Type.STRING) {
+		if (esType == ESDataType.STRING) {
 			NotIndexed notIndexed = field.getAnnotation(NotIndexed.class);
 			if (notIndexed == null) {
 				NotAnalyzed notAnalyzed = field.getAnnotation(NotAnalyzed.class);
@@ -88,8 +88,8 @@ public class MappingFactory {
 			}
 			NGram ngram = field.getAnnotation(NGram.class);
 			if (ngram != null) {
-				Type type = Type.parse(ngram.type());
-				ESScalar scalar = new ESScalar(type);
+				ESDataType eSDataType = ESDataType.parse(ngram.type());
+				ESScalar scalar = new ESScalar(eSDataType);
 				scalar.setAnalyzer(ngram.value());
 				sf.addToFields("ngram", scalar);
 			}

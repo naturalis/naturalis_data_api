@@ -2,16 +2,16 @@ package nl.naturalis.nba.elasticsearch.map;
 
 import java.util.LinkedHashMap;
 
-class ESSimpleField extends ESScalar {
+public class ESSimpleField extends ESScalar {
 
 	private LinkedHashMap<String, ESScalar> fields;
 
-	ESSimpleField(Type type)
+	public ESSimpleField(ESDataType eSDataType)
 	{
-		super(type);
+		super(eSDataType);
 	}
 
-	LinkedHashMap<String, ESScalar> getFields()
+	public LinkedHashMap<String, ESScalar> getFields()
 	{
 		return fields;
 	}
@@ -24,7 +24,7 @@ class ESSimpleField extends ESScalar {
 	public void addToFields(String name, ESScalar field)
 	{
 		if (fields == null) {
-			fields = new LinkedHashMap<>(4);
+			fields = new LinkedHashMap<>(2);
 		}
 		fields.put(name, field);
 	}

@@ -2,7 +2,7 @@ package nl.naturalis.nba.elasticsearch.map;
 
 import java.util.HashMap;
 
-public enum Type
+public enum ESDataType
 {
 
 	STRING("string"),
@@ -15,23 +15,23 @@ public enum Type
 	FLOAT("float"),
 	DOUBLE("double");
 
-	private static final HashMap<String, Type> reverse;
+	private static final HashMap<String, ESDataType> reverse;
 
 	static {
-		reverse = new HashMap<String, Type>(10, 1);
-		for (Type t : values()) {
+		reverse = new HashMap<String, ESDataType>(10, 1);
+		for (ESDataType t : values()) {
 			reverse.put(t.esName, t);
 		}
 	}
 
-	public static Type parse(String name)
+	public static ESDataType parse(String name)
 	{
 		return reverse.get(name);
 	}
 
 	private final String esName;
 
-	private Type(String esName)
+	private ESDataType(String esName)
 	{
 		this.esName = esName;
 	}

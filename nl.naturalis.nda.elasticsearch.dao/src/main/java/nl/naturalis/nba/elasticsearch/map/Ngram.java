@@ -2,24 +2,24 @@ package nl.naturalis.nba.elasticsearch.map;
 
 class Ngram {
 
-	private final Type type;
+	private final ESDataType esDataType;
 	private final String analyzer;
 
-	Ngram(String analyzer)
+	public Ngram(String analyzer)
 	{
-		this.type = Type.STRING;
+		this.esDataType = ESDataType.STRING;
 		this.analyzer = analyzer;
 	}
 
-	Ngram(Type type, String analyzer)
+	public Ngram(ESDataType eSDataType, String analyzer)
 	{
-		this.type = type;
+		this.esDataType = eSDataType;
 		this.analyzer = analyzer;
 	}
 
-	public Type getType()
+	public ESDataType getType()
 	{
-		return type;
+		return esDataType;
 	}
 
 	public String getAnalyzer()

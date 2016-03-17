@@ -1,6 +1,6 @@
 package nl.naturalis.nba.elasticsearch.map;
 
-class ESField {
+public class ESField {
 
 	ESField()
 	{

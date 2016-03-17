@@ -5,11 +5,11 @@ public class Mapping extends ESObject {
 
 	private final String dynamic = "strict";
 
-	Mapping()
+	public Mapping()
 	{
 	}
 
-	String getDynamic()
+	public String getDynamic()
 	{
 		return dynamic;
 	}

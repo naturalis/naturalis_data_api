@@ -10,4 +10,9 @@ public class ConnectionFailureException extends InitializationException {
 		super(PREFIX + message);
 	}
 
+	public ConnectionFailureException(Throwable cause)
+	{
+		super(cause);
+	}
+
 }

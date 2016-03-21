@@ -6,9 +6,9 @@ public class DocumentField extends ESScalar {
 
 	private LinkedHashMap<String, ESScalar> fields;
 
-	public DocumentField(ESDataType eSDataType)
+	public DocumentField(ESDataType esDataType)
 	{
-		super(eSDataType);
+		super(esDataType);
 	}
 
 	public LinkedHashMap<String, ESScalar> getFields()

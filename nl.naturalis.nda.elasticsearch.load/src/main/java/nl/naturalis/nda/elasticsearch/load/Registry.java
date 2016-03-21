@@ -259,11 +259,17 @@ public class Registry {
 			}
 		}
 		catch (NoNodeAvailableException e) {
-			String msg = "Ping resulted in NoNodeAvailableException. Check "
-					+ "configuration, make sure Elasticsearch is running, "
-					+ "make sure Elasticsearch client and server libraries "
-					+ "are equal";
-			throw new ConnectionFailureException(msg);
+			String cluster = config.required("elasticsearch.cluster.name");
+			String hosts = config.required("elasticsearch.transportaddress.host");
+			String ports = config.get("elasticsearch.transportaddress.port");
+			String msg = "Ping resulted in NoNodeAvailableException\n" + "* Check configuration:\n"
+					+ "  > elasticsearch.cluster.name={}\n"
+					+ "  > elasticsearch.transportaddress.host={}\n"
+					+ "  > elasticsearch.transportaddress.port={}\n"
+					+ "* Make sure Elasticsearch is running\n"
+					+ "* Make sure client version matches server version";
+			logger.error(msg, cluster, hosts, ports);
+			throw new ConnectionFailureException(e);
 		}
 		if (response.getStatus().equals(ClusterHealthStatus.RED)) {
 			throw new ConnectionFailureException("ElasticSearch cluster in bad health");

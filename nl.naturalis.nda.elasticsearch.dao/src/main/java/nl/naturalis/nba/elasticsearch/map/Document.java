@@ -8,6 +8,12 @@ public class Document extends ESField {
 
 	public Document()
 	{
+		this(null);
+	}
+
+	public Document(ESDataType type)
+	{
+		super(type);
 		properties = new LinkedHashMap<>();
 	}
 

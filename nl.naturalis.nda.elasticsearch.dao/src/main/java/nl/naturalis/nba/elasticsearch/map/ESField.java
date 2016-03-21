@@ -1,9 +1,17 @@
 package nl.naturalis.nba.elasticsearch.map;
 
-public class ESField {
+public abstract class ESField {
 
-	ESField()
+	protected final ESDataType type;
+
+	public ESField(ESDataType type)
 	{
+		this.type = type;
+	}
+
+	public ESDataType getType()
+	{
+		return type;
 	}
 
 }

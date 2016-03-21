@@ -2,11 +2,11 @@ package nl.naturalis.nba.elasticsearch.map;
 
 import java.util.LinkedHashMap;
 
-public class ESObject extends ESField {
+public class Document extends ESField {
 
 	private final LinkedHashMap<String, ESField> properties;
 
-	public ESObject()
+	public Document()
 	{
 		properties = new LinkedHashMap<>();
 	}

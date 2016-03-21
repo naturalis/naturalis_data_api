@@ -19,6 +19,7 @@ public class MappingSerializer {
 	}
 
 	private final ObjectMapper serializer;
+	private boolean pretty;
 
 	private MappingSerializer()
 	{
@@ -31,6 +32,9 @@ public class MappingSerializer {
 	public String serialize(Mapping mapping)
 	{
 		try {
+			if (pretty) {
+				return serializer.writerWithDefaultPrettyPrinter().writeValueAsString(mapping);
+			}
 			return serializer.writeValueAsString(mapping);
 		}
 		catch (JsonProcessingException e) {
@@ -38,14 +42,14 @@ public class MappingSerializer {
 		}
 	}
 
-	public String serializePretty(Mapping mapping)
+	public boolean isPretty()
 	{
-		try {
-			return serializer.writerWithDefaultPrettyPrinter().writeValueAsString(mapping);
-		}
-		catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
+		return pretty;
+	}
+
+	public void setPretty(boolean pretty)
+	{
+		this.pretty = pretty;
 	}
 
 }

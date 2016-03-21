@@ -126,19 +126,37 @@ public class NBAImportAll {
 		String settings = FileUtil.getContents(settingsFile);
 		logger.debug("Creating index using\n" + settings);
 		index.create(settings);
-		MappingFactory mf = new MappingFactory();
-		MappingSerializer ms = MappingSerializer.getInstance();
+		MappingFactory mappingFactory = new MappingFactory();
+		MappingSerializer serializer = MappingSerializer.getInstance();
+		if (logger.isDebugEnabled()) {
+			serializer.setPretty(true);
+		}
 
-		Mapping mapping = mf.getMapping(ESSpecimen.class);
-		String json = ms.serialize(mapping);
+		Mapping mapping = mappingFactory.getMapping(ESSpecimen.class);
+		String json = serializer.serialize(mapping);
+		if (logger.isDebugEnabled()) {
+			logger.debug("*********************************************");
+			logger.debug("Mapping for type Specimen:\n" + json);
+			logger.debug("*********************************************");
+		}
 		index.addType(LUCENE_TYPE_SPECIMEN, json);
 
-		mapping = mf.getMapping(ESMultiMediaObject.class);
-		json = ms.serialize(mapping);
+		mapping = mappingFactory.getMapping(ESMultiMediaObject.class);
+		json = serializer.serialize(mapping);
+		if (logger.isDebugEnabled()) {
+			logger.debug("*********************************************");
+			logger.debug("Mapping for type MultiMediaObject:\n" + json);
+			logger.debug("*********************************************");
+		}
 		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, json);
 
-		mapping = mf.getMapping(ESTaxon.class);
-		json = ms.serialize(mapping);
+		mapping = mappingFactory.getMapping(ESTaxon.class);
+		json = serializer.serialize(mapping);
+		if (logger.isDebugEnabled()) {
+			logger.debug("*********************************************");
+			logger.debug("Mapping for type Taxon:\n" + json);
+			logger.debug("*********************************************");
+		}
 		index.addType(LUCENE_TYPE_TAXON, json);
 	}
 }

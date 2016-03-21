@@ -2,11 +2,11 @@ package nl.naturalis.nba.elasticsearch.map;
 
 import java.util.LinkedHashMap;
 
-public class ESSimpleField extends ESScalar {
+public class DocumentField extends ESScalar {
 
 	private LinkedHashMap<String, ESScalar> fields;
 
-	public ESSimpleField(ESDataType eSDataType)
+	public DocumentField(ESDataType eSDataType)
 	{
 		super(eSDataType);
 	}

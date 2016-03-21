@@ -1,6 +1,8 @@
 package nl.naturalis.nba.elasticsearch.map;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import nl.naturalis.nba.annotations.NGram;
@@ -11,12 +13,6 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.ClassUtil;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 /**
  * Generates an Elasticsearch mappings from {@link Class} objects.
  * 
@@ -24,18 +20,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  */
 public class MappingFactory {
-
-	public static void main(String[] args) throws Exception
-	{
-		MappingFactory mg = new MappingFactory();
-		Mapping m = mg.getMapping(ESSpecimen.class);
-		ObjectMapper om = new ObjectMapper();
-		om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		om.setSerializationInclusion(Include.NON_NULL);
-		om.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-		String s = om.writerWithDefaultPrettyPrinter().writeValueAsString(m);
-		System.out.println(s);
-	}
 
 	private static final Package PKG_DOMAIN = Specimen.class.getPackage();
 	private static final Package PKG_ESTYPES = ESSpecimen.class.getPackage();
@@ -48,15 +32,31 @@ public class MappingFactory {
 	public Mapping getMapping(Class<?> forClass)
 	{
 		Mapping mapping = new Mapping();
-		addFields(forClass, mapping);
+		ArrayList<Field> javaFields = getAllFieldsInHierarchy(forClass);
+		for (Field f : javaFields) {
+			mapping.addField(f.getName(), processField(f));
+		}
 		return mapping;
 	}
 
-	private static void addFields(Class<?> cls, ESObject esObject)
+	private static ArrayList<Field> getAllFieldsInHierarchy(Class<?> cls)
 	{
-		for (Field f : cls.getDeclaredFields()) {
-			esObject.addField(f.getName(), processField(f));
+		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
+		do {
+			hierarchy.add(cls);
+			cls = cls.getSuperclass();
+		} while (cls != Object.class);
+		ArrayList<Field> allFields = new ArrayList<>();
+		for (int i = hierarchy.size() - 1; i >= 0; i--) {
+			cls = hierarchy.get(i);
+			Field[] fields = cls.getDeclaredFields();
+			for (Field f : fields) {
+				if (Modifier.isStatic(f.getModifiers()))
+					continue;
+				allFields.add(f);
+			}
 		}
+		return allFields;
 	}
 
 	private static ESField processField(Field f)
@@ -64,14 +64,14 @@ public class MappingFactory {
 		Class<?> type = getType(f);
 		ESDataType esType = dataTypeMap.getESType(type);
 		if (esType == null) {
-			return getESObject(type);
+			return createDocument(type);
 		}
 		return getSimpleField(f, esType);
 	}
 
-	private static ESSimpleField getSimpleField(Field field, ESDataType esType)
+	private static DocumentField getSimpleField(Field field, ESDataType esType)
 	{
-		ESSimpleField sf = new ESSimpleField(esType);
+		DocumentField sf = new DocumentField(esType);
 		if (esType == ESDataType.STRING) {
 			NotIndexed notIndexed = field.getAnnotation(NotIndexed.class);
 			if (notIndexed == null) {
@@ -97,15 +97,18 @@ public class MappingFactory {
 		return sf;
 	}
 
-	private static ESField getESObject(Class<?> cls)
+	private static Document createDocument(Class<?> cls)
 	{
 		Package pkg = cls.getPackage();
 		if (!PKG_DOMAIN.equals(pkg) && !PKG_ESTYPES.equals(pkg)) {
 			throw new RuntimeException("Class not allowed/supported: " + cls.getName());
 		}
-		ESObject field = new ESObject();
-		addFields(cls, field);
-		return field;
+		Document document = new Document();
+		ArrayList<Field> javaFields = getAllFieldsInHierarchy(cls);
+		for (Field f : javaFields) {
+			document.addField(f.getName(), processField(f));
+		}
+		return document;
 	}
 
 	private static Class<?> getType(Field f)

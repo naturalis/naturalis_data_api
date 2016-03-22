@@ -2,6 +2,7 @@ package nl.naturalis.nda.elasticsearch.dao.estypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import nl.naturalis.nba.api.annotations.MappedProperty;
 import nl.naturalis.nba.api.model.GeoPoint;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -26,7 +27,7 @@ public class ESGatheringSiteCoordinates {
         this.latitudeDecimal = latitude;
     }
 
-
+	@MappedProperty
     public GeoPoint getPoint() {
         if (longitudeDecimal == null || latitudeDecimal == null) {
             return null;

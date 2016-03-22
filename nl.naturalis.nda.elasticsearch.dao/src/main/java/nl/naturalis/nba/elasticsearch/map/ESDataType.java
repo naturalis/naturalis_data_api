@@ -14,12 +14,14 @@ public enum ESDataType
 	LONG("long"),
 	FLOAT("float"),
 	DOUBLE("double"),
+	GEO_SHAPE("geo_shape"),
+	OBJECT("object"),
 	NESTED("nested");
 
 	private static final HashMap<String, ESDataType> reverse;
 
 	static {
-		reverse = new HashMap<String, ESDataType>(11, 1);
+		reverse = new HashMap<String, ESDataType>(12, 1);
 		for (ESDataType t : values()) {
 			reverse.put(t.esName, t);
 		}

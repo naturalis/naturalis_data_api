@@ -15,6 +15,7 @@ public class MappingFactoryTest {
 		ms.setPretty(true);
 		String s = ms.serialize(mf.getMapping(ESSpecimen.class));
 		System.out.println(s);
+		int[] ii = new int[10];
 	}
 
 }

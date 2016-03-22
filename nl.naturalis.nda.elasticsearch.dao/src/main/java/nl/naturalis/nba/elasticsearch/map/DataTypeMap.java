@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 
+import nl.naturalis.nba.api.model.GeoShape;
+
 public class DataTypeMap {
 
 	private static final DataTypeMap instance = new DataTypeMap();
@@ -37,11 +39,18 @@ public class DataTypeMap {
 		map.put(boolean.class, ESDataType.BOOLEAN);
 		map.put(Boolean.class, ESDataType.BOOLEAN);
 		map.put(Date.class, ESDataType.DATE);
+		map.put(GeoShape.class, ESDataType.GEO_SHAPE);
 	}
 
 	public ESDataType getESType(Class<?> javaType)
 	{
-		return map.get(javaType);
+		while (javaType != Object.class) {
+			ESDataType t = map.get(javaType);
+			if (t != null)
+				return t;
+			javaType = javaType.getSuperclass();
+		}
+		return null;
 	}
 
 }

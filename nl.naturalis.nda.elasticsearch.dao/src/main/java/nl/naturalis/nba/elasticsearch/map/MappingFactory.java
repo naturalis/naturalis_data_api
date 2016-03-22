@@ -26,8 +26,8 @@ import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
  */
 public class MappingFactory {
 
-	private static final Package PKG_DOMAIN = Specimen.class.getPackage();
-	private static final Package PKG_ESTYPES = ESSpecimen.class.getPackage();
+	private static final Package apiModelPackage = Specimen.class.getPackage();
+	private static final Package esModelPackage = ESSpecimen.class.getPackage();
 	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
 	public MappingFactory()
@@ -37,21 +37,22 @@ public class MappingFactory {
 	public Mapping getMapping(Class<?> forClass)
 	{
 		Mapping mapping = new Mapping();
-		ArrayList<Field> javaFields = getFields(forClass);
-		for (Field f : javaFields) {
-			mapping.addField(f.getName(), createESField(f));
-		}
+		addFieldsToDocument(mapping, forClass);
 		return mapping;
 	}
 
 	private static ESField createESField(Field field)
 	{
 		Class<?> realType = field.getType();
-		Class<?> mapToType = mapType(field.getType(), field.getGenericType());
+		Class<?> mapToType = mapType(realType, field.getGenericType());
 		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
-			boolean nested = realType.isArray() || isA(realType, Collection.class);
-			return createDocument(field, nested, mapToType);
+			/*
+			 * The Java type does not map to a simple Elasticsearch type like
+			 * "string" or "boolean". The Elastichsearch type must be "object"
+			 * or "nested".
+			 */
+			return createDocument(field, mapToType);
 		}
 		return createSimpleField(field, esType);
 	}
@@ -62,8 +63,7 @@ public class MappingFactory {
 		Class<?> mapToType = mapType(realType, method.getGenericReturnType());
 		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
-			boolean nested = realType.isArray() || isA(realType, Collection.class);
-			return createDocument(method, nested, mapToType);
+			return createDocument(method, mapToType);
 		}
 		return createSimpleField(method, esType);
 	}
@@ -77,6 +77,72 @@ public class MappingFactory {
 			processNGramAnnotation(df, fm);
 		}
 		return df;
+	}
+
+	private static Document createDocument(Field field, Class<?> mapToType)
+	{
+		checkPackage(mapToType);
+		Class<?> realType = field.getType();
+		Document document;
+		if (realType.isArray() || isA(realType, Collection.class)) {
+			if (field.getAnnotation(NotNested.class) == null) {
+				document = new Document(ESDataType.NESTED);
+			}
+			else {
+				document = new Document();
+			}
+		}
+		else {
+			document = new Document();
+		}
+		addFieldsToDocument(document, mapToType);
+		return document;
+	}
+
+	private static Document createDocument(Method method, Class<?> mapToType)
+	{
+		checkPackage(mapToType);
+		Class<?> realType = method.getReturnType();
+		Document document;
+		if (realType.isArray() || isA(realType, Collection.class)) {
+			if (method.getAnnotation(NotNested.class) == null) {
+				document = new Document(ESDataType.NESTED);
+			}
+			else {
+				document = new Document();
+			}
+		}
+		else {
+			document = new Document();
+		}
+		addFieldsToDocument(document, mapToType);
+		return document;
+	}
+
+	private static void addFieldsToDocument(Document document, Class<?> forClass)
+	{
+		for (Field f : getFields(forClass)) {
+			document.addField(f.getName(), createESField(f));
+		}
+		for (Method m : getMappedProperties(forClass)) {
+			String methodName = m.getName();
+			String fieldName;
+			if(methodName.startsWith("get")) {
+				fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+			}
+			else {
+				fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+			}			
+			document.addField(fieldName, createESField(m));
+		}
+	}
+
+	private static void checkPackage(Class<?> cls)
+	{
+		Package pkg = cls.getPackage();
+		if (!apiModelPackage.equals(pkg) && !esModelPackage.equals(pkg)) {
+			throw new MappingException("Class not allowed/supported: " + cls.getName());
+		}
 	}
 
 	private static boolean processNotIndexedAnnotation(DocumentField df, AnnotatedElement fm)
@@ -111,34 +177,11 @@ public class MappingFactory {
 		}
 	}
 
-	private static Document createDocument(AnnotatedElement fm, boolean nested, Class<?> cls)
-	{
-		Package pkg = cls.getPackage();
-		if (!PKG_DOMAIN.equals(pkg) && !PKG_ESTYPES.equals(pkg)) {
-			throw new RuntimeException("Class not allowed/supported: " + cls.getName());
-		}
-		Document document;
-		if (nested) {
-			if (fm.getAnnotation(NotNested.class) == null) {
-				document = new Document(ESDataType.NESTED);
-			}
-			else {
-				document = new Document();
-			}
-		}
-		else {
-			document = new Document();
-		}
-		ArrayList<Field> javaFields = getFields(cls);
-		for (Field f : javaFields) {
-			document.addField(f.getName(), createESField(f));
-		}
-		for (Method m : getMappedProperties(cls)) {
-			document.addField(m.getName(), createESField(m));
-		}
-		return document;
-	}
-
+	/*
+	 * Maps a class to the class that must be mapped in its place. For example,
+	 * when mapping arrays, it's not the array that is mapped but the class of
+	 * its elements.
+	 */
 	private static Class<?> mapType(Class<?> realType, Type typeArg)
 	{
 		if (realType.isArray())
@@ -159,8 +202,8 @@ public class MappingFactory {
 			return Class.forName(s);
 		}
 		catch (ClassNotFoundException e) {
-			// TODO
-			throw new RuntimeException(e);
+			assert (false);
+			return null;
 		}
 	}
 
@@ -214,8 +257,9 @@ public class MappingFactory {
 		if (returnType == void.class)
 			return false;
 		String name = m.getName();
-		if (name.startsWith("get") && Character.isUpperCase(name.charAt(3)))
+		if (name.startsWith("get") && Character.isUpperCase(name.charAt(3))) {
 			return null != m.getAnnotation(MappedProperty.class);
+		}
 		if (name.startsWith("is") && Character.isUpperCase(name.charAt(2))) {
 			if (returnType == boolean.class || returnType == Boolean.class) {
 				return null != m.getAnnotation(MappedProperty.class);

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api.model;
 
+
 public class GatheringSiteCoordinates {
 
 	private Double longitudeDecimal;
@@ -22,7 +23,6 @@ public class GatheringSiteCoordinates {
 		this.longitudeDecimal = longitude;
 		this.latitudeDecimal = latitude;
 	}
-
 
 	public GeoPoint getPoint()
 	{

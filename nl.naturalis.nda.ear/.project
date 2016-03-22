@@ -4,12 +4,12 @@
 	<comment></comment>
 	<projects>
 		<project>nl.naturalis.nda.ejb</project>
-		<project>nl.naturalis.nda.domain</project>
 		<project>nl.naturalis.nda.service.rest</project>
 		<project>org.domainobject.util.debug</project>
 		<project>org.domainobject.util</project>
 		<project>nl.naturalis.nda.elasticsearch.dao</project>
 		<project>nl.naturalis.nda.elasticsearch.load</project>
+		<project>nl.naturalis.nba.api</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

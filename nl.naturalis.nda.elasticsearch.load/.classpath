@@ -4,7 +4,6 @@
 	<classpathentry kind="src" output="build/main" path="src/main/resources"/>
 	<classpathentry kind="src" output="build/test" path="src/test/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
@@ -15,5 +14,6 @@
 	<classpathentry kind="lib" path="/nl.naturalis.nda.build/lib/org.domainobject.util.http.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.api"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

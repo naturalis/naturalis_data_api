@@ -4,12 +4,12 @@
 	<classpathentry kind="src" output="build/main" path="src/main/resources"/>
 	<classpathentry kind="src" output="build/test" path="src/test/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nda.domain"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.ejb&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.api"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

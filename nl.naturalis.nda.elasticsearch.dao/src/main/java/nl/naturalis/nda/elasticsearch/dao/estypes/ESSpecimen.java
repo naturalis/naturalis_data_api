@@ -5,7 +5,6 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EP
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.annotations.NotAnalyzed;
 import nl.naturalis.nda.domain.Agent;
 import nl.naturalis.nda.domain.NdaTraceableObject;
 import nl.naturalis.nda.domain.SpecimenIdentification;
@@ -14,7 +13,6 @@ import nl.naturalis.nda.domain.SpecimenIdentification;
 public class ESSpecimen extends NdaTraceableObject {
 
 	private String unitID;
-	@NotAnalyzed
 	private String unitGUID;
 	private String collectorsFieldNumber;
 	private String assemblageID;

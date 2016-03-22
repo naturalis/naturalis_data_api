@@ -1,5 +1,7 @@
 package nl.naturalis.nba.elasticsearch.map;
 
+import static org.domainobject.util.ClassUtil.isA;
+
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,13 +14,12 @@ import nl.naturalis.nba.annotations.MappedProperty;
 import nl.naturalis.nba.annotations.NGram;
 import nl.naturalis.nba.annotations.NotAnalyzed;
 import nl.naturalis.nba.annotations.NotIndexed;
+import nl.naturalis.nba.annotations.NotNested;
 import nl.naturalis.nda.domain.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
-import org.domainobject.util.ClassUtil;
-
 /**
- * Generates an Elasticsearch mappings from {@link Class} objects.
+ * Generates Elasticsearch mappings from {@link Class} objects.
  * 
  * @author ayco
  *
@@ -36,69 +37,99 @@ public class MappingFactory {
 	public Mapping getMapping(Class<?> forClass)
 	{
 		Mapping mapping = new Mapping();
-		ArrayList<Field> javaFields = getAllFieldsInHierarchy(forClass);
+		ArrayList<Field> javaFields = getFields(forClass);
 		for (Field f : javaFields) {
 			mapping.addField(f.getName(), createESField(f));
 		}
 		return mapping;
 	}
 
-	private static ESField createESField(Field f)
+	private static ESField createESField(Field field)
 	{
-		Class<?> type = mapType(f.getType(), f.getGenericType());
-		ESDataType esType = dataTypeMap.getESType(type);
+		Class<?> realType = field.getType();
+		Class<?> mapToType = mapType(field.getType(), field.getGenericType());
+		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
-			return createDocument(type);
+			boolean nested = realType.isArray() || isA(realType, Collection.class);
+			return createDocument(field, nested, mapToType);
 		}
-		return createSimpleField(f, esType);
+		return createSimpleField(field, esType);
 	}
 
-	private static ESField createESField(Method m)
+	private static ESField createESField(Method method)
 	{
-		Class<?> type = mapType(m.getReturnType(), m.getGenericReturnType());
-		ESDataType esType = dataTypeMap.getESType(type);
+		Class<?> realType = method.getReturnType();
+		Class<?> mapToType = mapType(realType, method.getGenericReturnType());
+		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
-			return createDocument(type);
+			boolean nested = realType.isArray() || isA(realType, Collection.class);
+			return createDocument(method, nested, mapToType);
 		}
-		return createSimpleField(m, esType);
+		return createSimpleField(method, esType);
 	}
 
 	private static DocumentField createSimpleField(AnnotatedElement fm, ESDataType esType)
 	{
 		DocumentField df = new DocumentField(esType);
 		if (esType == ESDataType.STRING) {
-			NotIndexed notIndexed = fm.getAnnotation(NotIndexed.class);
-			if (notIndexed == null) {
-				NotAnalyzed notAnalyzed = fm.getAnnotation(NotAnalyzed.class);
-				if (notAnalyzed == null) {
-					df.addRawField();
-				}
-				else {
-					df.setIndex(Index.NOT_ANALYZED);
-				}
-			}
-			else {
-				df.setIndex(Index.NO);
-			}
-			NGram ngram = fm.getAnnotation(NGram.class);
-			if (ngram != null) {
-				ESDataType eSDataType = ESDataType.parse(ngram.type());
-				ESScalar scalar = new ESScalar(eSDataType);
-				scalar.setAnalyzer(ngram.value());
-				df.addToFields("ngram", scalar);
-			}
+			if (!processNotIndexedAnnotation(df, fm))
+				processNotAnalyzedAnnotation(df, fm);
+			processNGramAnnotation(df, fm);
 		}
 		return df;
 	}
 
-	private static Document createDocument(Class<?> cls)
+	private static boolean processNotIndexedAnnotation(DocumentField df, AnnotatedElement fm)
+	{
+		NotIndexed notIndexed = fm.getAnnotation(NotIndexed.class);
+		if (notIndexed == null) {
+			return false;
+		}
+		df.setIndex(Index.NO);
+		return true;
+	}
+
+	private static void processNotAnalyzedAnnotation(DocumentField df, AnnotatedElement fm)
+	{
+		NotAnalyzed notAnalyzed = fm.getAnnotation(NotAnalyzed.class);
+		if (notAnalyzed == null) {
+			df.addRawField();
+		}
+		else {
+			df.setIndex(Index.NOT_ANALYZED);
+		}
+	}
+
+	private static void processNGramAnnotation(DocumentField df, AnnotatedElement fm)
+	{
+		NGram ngram = fm.getAnnotation(NGram.class);
+		if (ngram != null) {
+			ESDataType dt = ESDataType.parse(ngram.type());
+			ESScalar scalar = new ESScalar(dt);
+			scalar.setAnalyzer(ngram.value());
+			df.addToFields("ngram", scalar);
+		}
+	}
+
+	private static Document createDocument(AnnotatedElement fm, boolean nested, Class<?> cls)
 	{
 		Package pkg = cls.getPackage();
 		if (!PKG_DOMAIN.equals(pkg) && !PKG_ESTYPES.equals(pkg)) {
 			throw new RuntimeException("Class not allowed/supported: " + cls.getName());
 		}
-		Document document = new Document();
-		ArrayList<Field> javaFields = getAllFieldsInHierarchy(cls);
+		Document document;
+		if (nested) {
+			if (fm.getAnnotation(NotNested.class) == null) {
+				document = new Document(ESDataType.NESTED);
+			}
+			else {
+				document = new Document();
+			}
+		}
+		else {
+			document = new Document();
+		}
+		ArrayList<Field> javaFields = getFields(cls);
 		for (Field f : javaFields) {
 			document.addField(f.getName(), createESField(f));
 		}
@@ -108,19 +139,15 @@ public class MappingFactory {
 		return document;
 	}
 
-	private static Class<?> mapType(Class<?> type, Type typeArg)
+	private static Class<?> mapType(Class<?> realType, Type typeArg)
 	{
-		if (type.isArray()) {
-			return type.getComponentType();
-		}
-		if (ClassUtil.isA(type, Enum.class)) {
+		if (realType.isArray())
+			return realType.getComponentType();
+		if (isA(realType, Enum.class))
 			return String.class;
-		}
-		if (ClassUtil.isA(type, Collection.class)) {
+		if (isA(realType, Collection.class))
 			return getClassForTypeArgument(typeArg);
-		}
-		return type;
-
+		return realType;
 	}
 
 	private static Class<?> getClassForTypeArgument(Type t)
@@ -137,7 +164,7 @@ public class MappingFactory {
 		}
 	}
 
-	private static ArrayList<Field> getAllFieldsInHierarchy(Class<?> cls)
+	private static ArrayList<Field> getFields(Class<?> cls)
 	{
 		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
 		do {

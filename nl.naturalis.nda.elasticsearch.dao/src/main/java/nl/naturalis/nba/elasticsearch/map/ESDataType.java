@@ -13,12 +13,13 @@ public enum ESDataType
 	SHORT("short"),
 	LONG("long"),
 	FLOAT("float"),
-	DOUBLE("double");
+	DOUBLE("double"),
+	NESTED("nested");
 
 	private static final HashMap<String, ESDataType> reverse;
 
 	static {
-		reverse = new HashMap<String, ESDataType>(10, 1);
+		reverse = new HashMap<String, ESDataType>(11, 1);
 		for (ESDataType t : values()) {
 			reverse.put(t.esName, t);
 		}

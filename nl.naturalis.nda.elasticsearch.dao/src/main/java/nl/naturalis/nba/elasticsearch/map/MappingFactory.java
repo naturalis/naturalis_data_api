@@ -10,12 +10,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import nl.naturalis.nba.annotations.MappedProperty;
-import nl.naturalis.nba.annotations.NGram;
-import nl.naturalis.nba.annotations.NotAnalyzed;
-import nl.naturalis.nba.annotations.NotIndexed;
-import nl.naturalis.nba.annotations.NotNested;
-import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nba.api.annotations.MappedProperty;
+import nl.naturalis.nba.api.annotations.NGram;
+import nl.naturalis.nba.api.annotations.NotAnalyzed;
+import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.api.annotations.NotNested;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 /**

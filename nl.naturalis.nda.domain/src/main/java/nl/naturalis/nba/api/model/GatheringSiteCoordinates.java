@@ -3,7 +3,8 @@ package nl.naturalis.nba.api.model;
 public class GatheringSiteCoordinates {
 
 	private Double longitudeDecimal;
-	private Double latitudeDecimal;	
+	private Double latitudeDecimal;
+	
 	private String gridCellSystem;
 	private Double gridLatitudeDecimal;
 	private Double gridLongitudeDecimal;

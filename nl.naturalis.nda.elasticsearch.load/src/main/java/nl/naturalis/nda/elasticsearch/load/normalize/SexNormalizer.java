@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.normalize;
 
-import nl.naturalis.nda.domain.Sex;
+import nl.naturalis.nba.api.model.Sex;
 
 /**
  * Normalizes different names for the various sexes. For example "F", "fem", and

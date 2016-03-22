@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.transfer;
 
-import nl.naturalis.nda.domain.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
 package nl.naturalis.nda.elasticsearch.dao.transfer;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.GatheringEvent;
-import nl.naturalis.nda.domain.MultiMediaGatheringEvent;
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 
 import java.util.ArrayList;

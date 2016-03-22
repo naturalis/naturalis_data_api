@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.normalize;
 
-import nl.naturalis.nda.domain.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 
 /**
  * Normalizer different names for the various specimen type statuses.

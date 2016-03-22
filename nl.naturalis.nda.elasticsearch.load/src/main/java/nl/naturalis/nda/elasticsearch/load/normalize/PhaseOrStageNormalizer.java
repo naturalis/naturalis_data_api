@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.normalize;
 
-import nl.naturalis.nda.domain.PhaseOrStage;
+import nl.naturalis.nba.api.model.PhaseOrStage;
 
 /**
  * Normalizes different names for the various life stages.

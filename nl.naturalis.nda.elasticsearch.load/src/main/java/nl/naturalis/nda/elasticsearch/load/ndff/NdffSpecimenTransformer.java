@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;

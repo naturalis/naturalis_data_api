@@ -1,11 +1,11 @@
 package nl.naturalis.nda.elasticsearch.dao.estypes;
 
-import nl.naturalis.nba.annotations.NGram;
-import nl.naturalis.nda.domain.Organization;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.BioStratigraphy;
-import nl.naturalis.nda.domain.ChronoStratigraphy;
-import nl.naturalis.nda.domain.LithoStratigraphy;
+import nl.naturalis.nba.api.annotations.NGram;
+import nl.naturalis.nba.api.model.BioStratigraphy;
+import nl.naturalis.nba.api.model.ChronoStratigraphy;
+import nl.naturalis.nba.api.model.LithoStratigraphy;
+import nl.naturalis.nba.api.model.Organization;
+import nl.naturalis.nba.api.model.Person;
 
 import java.util.Date;
 import java.util.List;

@@ -1,7 +1,7 @@
 package nl.naturalis.nda.client;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

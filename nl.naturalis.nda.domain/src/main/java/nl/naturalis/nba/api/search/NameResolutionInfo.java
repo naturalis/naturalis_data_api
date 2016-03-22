@@ -1,6 +1,6 @@
-package nl.naturalis.nda.search;
+package nl.naturalis.nba.api.search;
 
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.Taxon;
 
 public class NameResolutionInfo {
 

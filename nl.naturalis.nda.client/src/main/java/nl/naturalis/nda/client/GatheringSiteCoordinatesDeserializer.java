@@ -2,7 +2,7 @@ package nl.naturalis.nda.client;
 
 import java.io.IOException;
 
-import nl.naturalis.nda.domain.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

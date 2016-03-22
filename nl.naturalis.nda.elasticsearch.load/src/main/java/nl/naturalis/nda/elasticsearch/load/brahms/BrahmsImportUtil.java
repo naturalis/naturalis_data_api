@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.*;
+import nl.naturalis.nba.api.model.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;

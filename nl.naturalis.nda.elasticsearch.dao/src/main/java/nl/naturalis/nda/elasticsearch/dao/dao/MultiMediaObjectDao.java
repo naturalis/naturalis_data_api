@@ -5,7 +5,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.Fields.UNIT_ID
 //import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
 

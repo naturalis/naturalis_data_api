@@ -15,12 +15,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.search.QueryParams;
+import nl.naturalis.nba.api.search.ResultGroupSet;
+import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.ResultGroupSet;
-import nl.naturalis.nda.search.SearchResultSet;
 import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;
 

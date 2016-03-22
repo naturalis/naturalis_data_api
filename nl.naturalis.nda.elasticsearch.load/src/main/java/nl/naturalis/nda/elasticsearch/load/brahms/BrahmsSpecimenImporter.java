@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import static nl.naturalis.nda.domain.SourceSystem.BRAHMS;
+import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getCsvFiles;
 

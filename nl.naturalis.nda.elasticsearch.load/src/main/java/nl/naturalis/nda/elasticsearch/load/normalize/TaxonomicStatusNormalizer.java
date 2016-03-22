@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.normalize;
 
-import nl.naturalis.nda.domain.TaxonomicStatus;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
 
 /**
  * Normalizes different names for the various taxonomic statuses.

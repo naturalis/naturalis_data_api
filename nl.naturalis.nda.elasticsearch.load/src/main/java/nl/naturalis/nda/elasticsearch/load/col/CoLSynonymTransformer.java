@@ -6,8 +6,8 @@ import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.*;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.TaxonomicStatus;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;

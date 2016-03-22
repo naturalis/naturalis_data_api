@@ -1,7 +1,7 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
-import static nl.naturalis.nda.domain.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
-import static nl.naturalis.nda.domain.SourceSystem.NSR;
+import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
+import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;

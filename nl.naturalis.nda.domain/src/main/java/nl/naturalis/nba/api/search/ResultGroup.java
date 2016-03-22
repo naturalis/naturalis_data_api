@@ -1,7 +1,7 @@
-package nl.naturalis.nda.search;
+package nl.naturalis.nba.api.search;
 
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.Taxon;
 
 import java.util.ArrayList;
 import java.util.List;

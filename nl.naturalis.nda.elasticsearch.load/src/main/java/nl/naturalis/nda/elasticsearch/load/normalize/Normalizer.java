@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import nl.naturalis.nda.domain.PhaseOrStage;
-import nl.naturalis.nda.domain.Sex;
-import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nda.elasticsearch.load.ETLRuntimeException;
 import nl.naturalis.nda.elasticsearch.load.Registry;
 

@@ -2,9 +2,9 @@ package nl.naturalis.nda.client;
 
 import java.io.IOException;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.Organization;
-import nl.naturalis.nda.domain.Person;
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.Organization;
+import nl.naturalis.nba.api.model.Person;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

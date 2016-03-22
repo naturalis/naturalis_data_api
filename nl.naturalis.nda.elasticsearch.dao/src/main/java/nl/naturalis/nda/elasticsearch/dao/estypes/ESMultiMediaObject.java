@@ -5,10 +5,10 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EP
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.MultiMediaObject.Type;
-import nl.naturalis.nda.domain.NdaTraceableObject;
-import nl.naturalis.nda.domain.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.NdaTraceableObject;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 
 public class ESMultiMediaObject extends NdaTraceableObject {
 

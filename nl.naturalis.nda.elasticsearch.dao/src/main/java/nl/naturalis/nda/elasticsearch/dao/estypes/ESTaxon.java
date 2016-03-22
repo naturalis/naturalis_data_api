@@ -5,14 +5,7 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EP
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Expert;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.NdaTraceableObject;
-import nl.naturalis.nda.domain.Reference;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.TaxonDescription;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nba.api.model.*;
 
 public class ESTaxon extends NdaTraceableObject
 {

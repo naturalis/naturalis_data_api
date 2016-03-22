@@ -15,12 +15,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.ObjectType;
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.ObjectType;
+import nl.naturalis.nba.api.search.QueryParams;
+import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectDao;
 import nl.naturalis.nda.elasticsearch.dao.dao.MultiMediaObjectDao;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResultSet;
 import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;

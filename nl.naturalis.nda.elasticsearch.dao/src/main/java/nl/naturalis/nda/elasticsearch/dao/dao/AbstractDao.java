@@ -3,15 +3,15 @@ package nl.naturalis.nda.elasticsearch.dao.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.search.QueryParams;
+import nl.naturalis.nba.api.search.SearchResult;
+import nl.naturalis.nba.api.search.SearchResultSet;
+import nl.naturalis.nba.api.search.StringMatchInfo;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
 import nl.naturalis.nda.elasticsearch.dao.util.SearchParamFieldMapping;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
-import nl.naturalis.nda.search.StringMatchInfo;
 
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.grouping.GroupingSearch;

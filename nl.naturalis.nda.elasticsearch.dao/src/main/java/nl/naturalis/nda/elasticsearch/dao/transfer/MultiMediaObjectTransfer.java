@@ -1,9 +1,9 @@
 package nl.naturalis.nda.elasticsearch.dao.transfer;
 
-import nl.naturalis.nda.domain.MultiMediaGatheringEvent;
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.ServiceAccessPoint;
-import nl.naturalis.nda.domain.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 

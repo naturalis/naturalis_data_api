@@ -11,19 +11,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.search.Link;
+import nl.naturalis.nba.api.search.QueryParams;
+import nl.naturalis.nba.api.search.SearchResult;
+import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;

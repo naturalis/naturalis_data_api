@@ -2,7 +2,7 @@ package nl.naturalis.nda.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
-import nl.naturalis.nda.domain.MultiMediaObject;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 
 public class MultiMediaClient extends AbstractClient {
 

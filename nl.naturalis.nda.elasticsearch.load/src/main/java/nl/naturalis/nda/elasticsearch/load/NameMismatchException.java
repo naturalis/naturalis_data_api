@@ -1,9 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.TaxonomicRank;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.TaxonomicRank;
 
 /**
  * Thrown when some part of a {@link ScientificName} does not match the

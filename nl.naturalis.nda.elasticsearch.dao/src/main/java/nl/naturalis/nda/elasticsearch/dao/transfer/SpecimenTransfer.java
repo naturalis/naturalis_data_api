@@ -1,9 +1,9 @@
 package nl.naturalis.nda.elasticsearch.dao.transfer;
 
-import nl.naturalis.nda.domain.PhaseOrStage;
-import nl.naturalis.nda.domain.Sex;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 public class SpecimenTransfer {

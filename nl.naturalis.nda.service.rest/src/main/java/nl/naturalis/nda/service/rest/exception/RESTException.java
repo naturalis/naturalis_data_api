@@ -10,7 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
-import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nba.api.search.QueryParams;
 
 /**
  * Base {@code Exception} thrown by resource methods. Resource methods must trap

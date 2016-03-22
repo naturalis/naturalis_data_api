@@ -5,8 +5,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nda.search.AbstractResultSet;
-import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nba.api.search.AbstractResultSet;
+import nl.naturalis.nba.api.search.QueryParams;
 import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
 import nl.naturalis.nda.service.rest.exception.RESTException;
 

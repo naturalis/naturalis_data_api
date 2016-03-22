@@ -1,7 +1,7 @@
 package nl.naturalis.nba.api.model;
 
-import nl.naturalis.nda.search.ResultGroup;
-import nl.naturalis.nda.search.SearchResult;
+import nl.naturalis.nba.api.search.ResultGroup;
+import nl.naturalis.nba.api.search.SearchResult;
 
 /**
  * The base class for all other classes within this package. It currently does

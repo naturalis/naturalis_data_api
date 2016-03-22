@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import static nl.naturalis.nda.domain.SourceSystem.BRAHMS;
+import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.DocumentType.SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.*;
 import static nl.naturalis.nda.elasticsearch.load.LoadUtil.getSpecimenPurl;
@@ -16,7 +16,7 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.getSpe
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;

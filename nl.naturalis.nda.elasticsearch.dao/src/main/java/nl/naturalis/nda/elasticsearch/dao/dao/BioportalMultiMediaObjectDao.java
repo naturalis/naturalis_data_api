@@ -1,14 +1,14 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.*;
+import nl.naturalis.nba.api.model.*;
+import nl.naturalis.nba.api.search.Link;
+import nl.naturalis.nba.api.search.QueryParams;
+import nl.naturalis.nba.api.search.SearchResult;
+import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.transfer.MultiMediaObjectTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
-import nl.naturalis.nda.search.Link;
-import nl.naturalis.nda.search.QueryParams;
-import nl.naturalis.nda.search.SearchResult;
-import nl.naturalis.nda.search.SearchResultSet;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;

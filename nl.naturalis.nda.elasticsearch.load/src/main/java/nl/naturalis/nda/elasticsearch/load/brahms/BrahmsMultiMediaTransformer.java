@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.brahms;
 
-import static nl.naturalis.nda.domain.SourceSystem.BRAHMS;
+import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nda.elasticsearch.load.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE;
 import static nl.naturalis.nda.elasticsearch.load.LoadConstants.LICENCE_TYPE;
@@ -18,12 +18,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.ServiceAccessPoint;
-import nl.naturalis.nda.domain.ServiceAccessPoint.Variant;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;

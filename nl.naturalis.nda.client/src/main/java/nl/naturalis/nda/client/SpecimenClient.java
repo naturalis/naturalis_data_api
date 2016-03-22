@@ -2,9 +2,8 @@ package nl.naturalis.nda.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
-
-import nl.naturalis.nda.domain.MultiMediaObject;
-import nl.naturalis.nda.domain.Specimen;
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.Specimen;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

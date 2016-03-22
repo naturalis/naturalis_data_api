@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.ndff;
 
-import static nl.naturalis.nda.domain.SourceSystem.NDFF;
+import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nda.elasticsearch.load.ndff.NdffImportUtil.getCsvFiles;
 

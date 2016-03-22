@@ -3,7 +3,7 @@ package nl.naturalis.nda.service.rest.exception;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nda.domain.ObjectType;
+import nl.naturalis.nba.api.model.ObjectType;
 
 /**
  * @author Ayco Holleman

@@ -1,10 +1,10 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
-import static nl.naturalis.nda.domain.SourceSystem.NSR;
-import static nl.naturalis.nda.domain.TaxonomicStatus.ACCEPTED_NAME;
-import static nl.naturalis.nda.domain.TaxonomicStatus.BASIONYM;
-import static nl.naturalis.nda.domain.TaxonomicStatus.HOMONYM;
-import static nl.naturalis.nda.domain.TaxonomicStatus.SYNONYM;
+import static nl.naturalis.nba.api.model.SourceSystem.NSR;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.ACCEPTED_NAME;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nda.elasticsearch.load.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nda.elasticsearch.load.TransformUtil.parseDate;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.val;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import nl.naturalis.nda.domain.*;
+import nl.naturalis.nba.api.model.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractXMLTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;

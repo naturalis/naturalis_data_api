@@ -1,10 +1,11 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.search.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.dao.transfer.TaxonTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
-import nl.naturalis.nda.search.*;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;

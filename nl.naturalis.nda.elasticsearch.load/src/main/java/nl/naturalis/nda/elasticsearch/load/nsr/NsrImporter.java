@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.load.nsr;
 
-import static nl.naturalis.nda.domain.SourceSystem.NSR;
+import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
 import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nda.elasticsearch.load.nsr.NsrImportUtil.backupXmlFile;

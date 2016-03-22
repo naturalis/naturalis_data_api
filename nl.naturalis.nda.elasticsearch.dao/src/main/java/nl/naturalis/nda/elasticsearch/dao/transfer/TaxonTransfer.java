@@ -1,6 +1,6 @@
 package nl.naturalis.nda.elasticsearch.dao.transfer;
 
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 public class TaxonTransfer {

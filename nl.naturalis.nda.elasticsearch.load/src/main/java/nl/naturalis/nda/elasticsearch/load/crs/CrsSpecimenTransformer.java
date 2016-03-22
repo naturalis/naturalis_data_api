@@ -13,16 +13,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.BioStratigraphy;
-import nl.naturalis.nda.domain.ChronoStratigraphy;
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.LithoStratigraphy;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nba.api.model.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;

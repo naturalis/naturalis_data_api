@@ -8,7 +8,7 @@ import static nl.naturalis.nda.elasticsearch.load.col.CoLVernacularNameCsvField.
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.VernacularName;
+import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;

@@ -5,7 +5,7 @@ import static org.domainobject.util.StringUtil.zpad;
 
 import java.net.URISyntaxException;
 
-import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
 import org.apache.http.client.utils.URIBuilder;

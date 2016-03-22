@@ -1,4 +1,4 @@
-package nl.naturalis.nda.search;
+package nl.naturalis.nba.api.search;
 
 public class MatchInfo<T> {
 

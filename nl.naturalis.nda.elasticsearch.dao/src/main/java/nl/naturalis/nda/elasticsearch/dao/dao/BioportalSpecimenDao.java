@@ -1,14 +1,15 @@
 package nl.naturalis.nda.elasticsearch.dao.dao;
 
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.Specimen;
-import nl.naturalis.nda.domain.SpecimenIdentification;
-import nl.naturalis.nda.domain.Taxon;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.search.*;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nda.elasticsearch.dao.util.FieldMapping;
 import nl.naturalis.nda.elasticsearch.dao.util.QueryAndHighlightFields;
-import nl.naturalis.nda.search.*;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;

@@ -9,9 +9,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.Person;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 

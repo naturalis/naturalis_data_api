@@ -1,7 +1,7 @@
 //
 package nl.naturalis.nda.elasticsearch.dao.util;
 
-import nl.naturalis.nda.search.QueryParams;
+import nl.naturalis.nba.api.search.QueryParams;
 
 import java.io.IOException;
 import java.io.InputStream;

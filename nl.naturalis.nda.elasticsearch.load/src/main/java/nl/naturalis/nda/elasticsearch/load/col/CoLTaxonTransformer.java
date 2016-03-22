@@ -1,18 +1,18 @@
 package nl.naturalis.nda.elasticsearch.load.col;
 
-import static nl.naturalis.nda.domain.TaxonomicRank.*;
+import static nl.naturalis.nba.api.model.TaxonomicRank.*;
 import static nl.naturalis.nda.elasticsearch.load.col.CoLTaxonCsvField.*;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SourceSystem;
-import nl.naturalis.nda.domain.TaxonDescription;
-import nl.naturalis.nda.domain.TaxonomicStatus;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.TaxonDescription;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.AbstractCSVTransformer;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;

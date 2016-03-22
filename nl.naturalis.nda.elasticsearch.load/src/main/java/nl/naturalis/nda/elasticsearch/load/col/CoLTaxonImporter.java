@@ -5,7 +5,7 @@ import static nl.naturalis.nda.elasticsearch.load.NBAImportAll.LUCENE_TYPE_TAXON
 import java.io.File;
 import java.util.List;
 
-import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;

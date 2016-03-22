@@ -2,6 +2,8 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.NGram;
+
 /**
  * This class encapsulates a taxon's full scientific name and the components it
  * is composed of. Only the full scientific name will always be set. Individual
@@ -12,8 +14,10 @@ public class ScientificName {
 
 	private String fullScientificName;
 	private TaxonomicStatus taxonomicStatus;
+	@NGram("nda_ngram_analyzer")
 	private String genusOrMonomial;
 	private String subgenus;
+	@NGram("nda_ngram_analyzer")
 	private String specificEpithet;
 	private String infraspecificEpithet;
 	private String infraspecificMarker;

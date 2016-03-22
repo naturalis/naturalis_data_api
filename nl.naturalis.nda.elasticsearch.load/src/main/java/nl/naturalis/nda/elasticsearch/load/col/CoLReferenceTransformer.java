@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.Person;
-import nl.naturalis.nda.domain.Reference;
+import nl.naturalis.nba.api.model.Person;
+import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 import nl.naturalis.nda.elasticsearch.load.*;

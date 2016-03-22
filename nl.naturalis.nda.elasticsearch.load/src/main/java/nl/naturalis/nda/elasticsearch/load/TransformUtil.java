@@ -1,9 +1,9 @@
 package nl.naturalis.nda.elasticsearch.load;
 
-import static nl.naturalis.nda.domain.TaxonomicRank.GENUS;
-import static nl.naturalis.nda.domain.TaxonomicRank.SPECIES;
-import static nl.naturalis.nda.domain.TaxonomicRank.SUBGENUS;
-import static nl.naturalis.nda.domain.TaxonomicRank.SUBSPECIES;
+import static nl.naturalis.nba.api.model.TaxonomicRank.GENUS;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SPECIES;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SUBGENUS;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nda.domain.DefaultClassification;
-import nl.naturalis.nda.domain.Monomial;
-import nl.naturalis.nda.domain.MultiMediaContentIdentification;
-import nl.naturalis.nda.domain.ScientificName;
-import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;

@@ -9,7 +9,7 @@ import static nl.naturalis.nda.elasticsearch.load.brahms.BrahmsImportUtil.remove
 import java.io.File;
 import java.nio.charset.Charset;
 
-import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nda.elasticsearch.load.CSVExtractor;
 import nl.naturalis.nda.elasticsearch.load.CSVRecordInfo;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;

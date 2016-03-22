@@ -5,9 +5,9 @@ import static nl.naturalis.nda.elasticsearch.dao.util.ESConstants.IDENTIFYING_EP
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nda.domain.Agent;
-import nl.naturalis.nda.domain.NdaTraceableObject;
-import nl.naturalis.nda.domain.SpecimenIdentification;
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.NdaTraceableObject;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 
 
 public class ESSpecimen extends NdaTraceableObject {

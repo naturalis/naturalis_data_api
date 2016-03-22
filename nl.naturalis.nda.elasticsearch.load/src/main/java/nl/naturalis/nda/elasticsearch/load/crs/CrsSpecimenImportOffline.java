@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nda.domain.SourceSystem;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import nl.naturalis.nda.elasticsearch.load.ETLStatistics;
 import nl.naturalis.nda.elasticsearch.load.LoadConstants;

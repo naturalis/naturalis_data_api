@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import nl.naturalis.nda.elasticsearch.client.IndexManagerNative;
 
@@ -44,15 +46,10 @@ public class Registry {
 	private ConfigObject config;
 	private Client esClient;
 
-	private static final Logger logger = LogManager.getLogger(Registry.class);
+	private Logger logger;
 
 	/**
-	 * Instantiates and initializes a {@code Registry} instance. This method
-	 * must be called before handling any PURL request. If anything goes wrong
-	 * while initializing the {@code Registry}, an
-	 * {@link InitializationException} is thrown, causing the PURL server to die
-	 * during startup. An explanation of what went wrong is written to the
-	 * Wildfly log (standalone/log/server.log).
+	 * Instantiates and initializes a {@code Registry} instance.
 	 */
 	public static void initialize()
 	{
@@ -77,6 +74,7 @@ public class Registry {
 	{
 		setConfDir();
 		loadConfig();
+		setupLogging();
 	}
 
 	/**
@@ -284,6 +282,41 @@ public class Registry {
 			throw new InitializationException(msg);
 		}
 		this.config = new ConfigObject(file);
+	}
+
+	private void setupLogging()
+	{
+		/*
+		 * log4j2.xml should have parameterized the location of the log file by
+		 * using ${nba.import.log.file}
+		 */
+		System.setProperty("nba.import.log.file", getLogFileName());
+		if (System.getProperty("log4j.configurationFile") == null) {
+			File f = FileUtil.newFile(confDir, "log4j2.xml");
+			if (f.exists()) {
+				System.setProperty("log4j.configurationFile", f.getAbsolutePath());
+			}
+			else {
+				String fmt = "Log4j config file not in default location "
+						+ "(%s) and no system property \"log4j.configurationFile\"";
+				String msg = String.format(fmt, f.getAbsolutePath());
+				throw new InitializationException(msg);
+			}
+		}
+		logger = LogManager.getLogger(getClass());
+	}
+
+	private String getLogFileName()
+	{
+		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
+		String now = new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date());
+		String command = System.getProperty("sun.java.command");
+		String[] chunks = command.split("\\.");
+		String mainClass = chunks[chunks.length - 1].split(" ")[0];
+		String logFileName = now + "." + mainClass + ".log";
+		File logFile = FileUtil.newFile(logDir, logFileName);
+		System.out.println("Log file: " + logFile.getAbsolutePath());
+		return logFile.getAbsolutePath();
 	}
 
 }

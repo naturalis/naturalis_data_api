@@ -17,12 +17,13 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class CrsImportAll {
-
+	
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			CrsImportAll crsImportAll = new CrsImportAll();
-			crsImportAll.importAll();
+			logger.info("Hello, World!");
+//			CrsImportAll crsImportAll = new CrsImportAll();
+//			crsImportAll.importAll();
 		}
 		finally {
 			Registry.getInstance().closeESClient();

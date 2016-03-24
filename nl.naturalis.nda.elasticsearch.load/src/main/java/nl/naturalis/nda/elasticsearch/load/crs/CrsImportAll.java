@@ -21,9 +21,8 @@ public class CrsImportAll {
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			logger.info("Hello, World!");
-//			CrsImportAll crsImportAll = new CrsImportAll();
-//			crsImportAll.importAll();
+			CrsImportAll crsImportAll = new CrsImportAll();
+			crsImportAll.importAll();
 		}
 		finally {
 			Registry.getInstance().closeESClient();

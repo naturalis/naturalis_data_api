@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>nl.naturalis.nda.elasticsearch.load</name>
+	<name>nl.naturalis.nba.etl</name>
 	<comment></comment>
 	<projects>
 	</projects>

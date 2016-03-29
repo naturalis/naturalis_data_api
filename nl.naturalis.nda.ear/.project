@@ -8,8 +8,8 @@
 		<project>org.domainobject.util.debug</project>
 		<project>org.domainobject.util</project>
 		<project>nl.naturalis.nda.elasticsearch.dao</project>
-		<project>nl.naturalis.nda.elasticsearch.load</project>
 		<project>nl.naturalis.nba.api</project>
+		<project>nl.naturalis.nba.etl</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

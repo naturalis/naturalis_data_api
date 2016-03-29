@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 
 /**
- * The "main" class of the import library. Start here. Allows you to bootstrap
+ * The central class of the import library. Start here. Allows you to bootstrap
  * the NBA index (i.e. create an empty NBA index) and to import all datasources
  * one by one. In other words this class lets you do a full import.
  * 

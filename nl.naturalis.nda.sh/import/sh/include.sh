@@ -2,14 +2,14 @@
 
 ndaImportHome=@nda.import.install.dir@
 
-ndaConfDir=${ndaImportHome}/conf
+confDir=${ndaImportHome}/conf
 libDir=${ndaImportHome}/lib
 loadPackage=nl.naturalis.nda.elasticsearch.load
 
-# Make ${ndaConfDir} the first entry on the classpath so
+# Make ${confDir} the first entry on the classpath so
 # that libraries like logback will search here first for
 # configuration files
-classpath="${ndaConfDir}"
+classpath="${confDir}"
 
 for file in `find ${libDir} -type f`
 do
@@ -17,6 +17,6 @@ do
 done
 #echo CLASSPATH: $classpath
 
-JAVA_OPTS="-server -Xms1536m -Xmx1536m"
+JAVA_OPTS="-server -Xms256m -Xmx1536m"
 
-JAVA_OPTS="$JAVA_OPTS -DndaConfDir=${ndaConfDir}"
+JAVA_OPTS="$JAVA_OPTS -Dnba.v2.conf.dir=${confDir}"

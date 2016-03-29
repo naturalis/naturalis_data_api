@@ -166,8 +166,10 @@ public class BrahmsImportAll {
 			extractor = createExtractor(f, extractionStats);
 			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
 			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
+			specimenLoader.setSuppressErrors(suppressErrors);
 			multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
 			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
+			multimediaLoader.setSuppressErrors(suppressErrors);
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;

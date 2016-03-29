@@ -14,7 +14,6 @@ import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 import org.apache.logging.log4j.Logger;
 
-
 /**
  * <p>
  * Abstract base class for objects responsible for the insertion of data into
@@ -55,6 +54,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 *            The object to be indexed
 	 */
 	public static interface IdGenerator<T> {
+
 		/**
 		 * Extract a document ID from the specified object.
 		 * 
@@ -75,6 +75,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	 *            The object to be indexed
 	 */
 	public static interface ParentIdGenerator<T> {
+
 		/**
 		 * Extract the ID of the parent document from the specified object.
 		 * 
@@ -97,6 +98,7 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	private final ArrayList<String> parIds;
 
 	private int batch;
+	private boolean suppressErrors;
 
 	/**
 	 * Create a loader that uses the specified index manager for bulk-indexing
@@ -218,7 +220,8 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 			catch (BulkIndexException e) {
 				stats.documentsRejected += e.getFailureCount();
 				stats.documentsIndexed += e.getSuccessCount();
-				logger.warn(e.getMessage());
+				if (!suppressErrors)
+					logger.warn(e.getMessage());
 			}
 			finally {
 				objs.clear();
@@ -255,5 +258,26 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		return null;
 	}
 
+	/**
+	 * Whether or not ERROR and WARN messages are suppressed.
+	 * 
+	 * @return
+	 */
+	public boolean isSuppressErrors()
+	{
+		return suppressErrors;
+	}
+
+	/**
+	 * Determines whether to suppress ERROR and WARN messages, while still
+	 * letting through INFO messages. This may be helpful if you expect large
+	 * amounts of well-known ERROR messages that just clog up your log file.
+	 * 
+	 * @param suppressErrors
+	 */
+	public void setSuppressErrors(boolean suppressErrors)
+	{
+		this.suppressErrors = suppressErrors;
+	}
 
 }

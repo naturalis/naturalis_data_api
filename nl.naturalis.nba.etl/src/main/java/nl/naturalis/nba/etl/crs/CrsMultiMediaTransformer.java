@@ -25,6 +25,9 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.MimeTypeCache;
@@ -34,9 +37,6 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
 import org.w3c.dom.Element;
 

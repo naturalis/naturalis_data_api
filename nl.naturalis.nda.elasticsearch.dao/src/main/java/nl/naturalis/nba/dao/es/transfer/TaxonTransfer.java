@@ -1,0 +1,34 @@
+package nl.naturalis.nba.dao.es.transfer;
+
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
+
+public class TaxonTransfer {
+
+	private TaxonTransfer()
+	{
+		// Only static method in transfer objects
+	}
+
+
+	public static Taxon transfer(ESTaxon esTaxon)
+	{
+		Taxon taxon = new Taxon();
+		taxon.setSourceSystem(esTaxon.getSourceSystem());
+		taxon.setSourceSystemId(esTaxon.getSourceSystemId());
+		taxon.setSourceSystemParentId(esTaxon.getSourceSystemParentId());
+		taxon.setRecordURI(esTaxon.getRecordURI());
+		taxon.setTaxonRank(esTaxon.getTaxonRank());
+		taxon.setAcceptedName(esTaxon.getAcceptedName());
+		taxon.setDefaultClassification(esTaxon.getDefaultClassification());
+		taxon.setSystemClassification(esTaxon.getSystemClassification());
+		taxon.setSynonyms(esTaxon.getSynonyms());
+		taxon.setVernacularNames(esTaxon.getVernacularNames());
+		taxon.setDescriptions(esTaxon.getDescriptions());
+		taxon.setReferences(esTaxon.getReferences());
+		taxon.setExperts(esTaxon.getExperts());
+		// Distribution data not yet disclosed through domain model
+		//taxon.setLocalities(esTaxon.getLocalities());
+		return taxon;
+	}
+}

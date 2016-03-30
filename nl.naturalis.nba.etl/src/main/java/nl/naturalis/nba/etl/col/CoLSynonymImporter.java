@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.col;
 import java.io.File;
 import java.util.List;
 
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRuntimeException;
@@ -10,7 +11,6 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;

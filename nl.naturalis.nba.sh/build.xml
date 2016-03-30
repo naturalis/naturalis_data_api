@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.sh" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless"
+         basedir="."
+         name="nl.naturalis.nba.sh"
+         default="build">
 
-	<import file="../nl.naturalis.nda.build/properties.xml" />
-	<import file="../nl.naturalis.nda.build/common.xml" />
-	<property file="../nl.naturalis.nda.build/build.properties" />
-	<property environment="env" />
+	<import file="../nl.naturalis.nba.build/common.xml" />
 
 
 
@@ -12,62 +14,80 @@
 	<!-- ******************** [ IMPORT ] ********************** -->
 	<!-- ****************************************************** -->
 
-	<target name="clean-import">
-		<available file="${nda.import.install.dir}" type="dir" property="import.module.installed" />
-		<echo unless:set="import.module.installed" message="Installation directory does not exist: ${nda.import.install.dir} (nothing to clean)" />
-		<echo if:set="import.module.installed" message="Deleting shell scripts in ${nda.import.install.dir}/sh" />
-		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/sh" />
-		<echo if:set="import.module.installed" message="Deleting configuration files in ${nda.import.install.dir}/conf" />
-		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/conf" />
-		<echo if:set="import.module.installed" message="Deleting Java libraries in ${nda.import.install.dir}/lib" />
-		<delete if:set="import.module.installed" dir="${nda.import.install.dir}/lib" />
+	<!-- Uninstalls the command line interface for the ETL module -->
+	<target name="uninstall-import-cli">
+		<available file="${nba.import.install.dir}"
+		           type="dir"
+		           property="import.module.installed" />
+		<echo unless:set="import.module.installed"
+		      message="Installation directory does not exist: ${nba.import.install.dir} (nothing to clean)" />
+		<delete if:set="import.module.installed" dir="${nba.import.install.dir}/sh" />
+		<delete if:set="import.module.installed" dir="${nba.import.install.dir}/conf" />
+		<delete if:set="import.module.installed" dir="${nba.import.install.dir}/lib" />
 	</target>
 
+	<!-- Installs the command line interface for the ETL module -->
 	<target name="install-import-cli">
 		<!-- Check if the installation directory is present -->
-		<available file="${nda.import.install.dir}" type="dir" property="sh.module.installed" />
-		<fail unless:set="sh.module.installed" message="Missing directory ${nda.import.install.dir}. You have problably never installed the import module before." />
-		<echo message="Installing configuration files into ${nda.import.install.dir}/conf" />
-		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
+		<available file="${nba.import.install.dir}"
+		           type="dir"
+		           property="sh.module.installed" />
+		<fail unless:set="sh.module.installed"
+		      message="Missing directory ${nba.import.install.dir}. You have problably never installed the import module before." />
+		<echo message="Installing configuration files into ${nba.import.install.dir}/conf" />
+		<copy todir="${nba.import.install.dir}/conf" overwrite="true">
 			<fileset dir="import/conf">
 				<exclude name="**/*.git*" />
 				<exclude name="es-settings.json" />
-				<exclude name="logback.xml" />
-				<exclude name="nda-import.properties" />
+				<exclude name="nba-import.properties" />
 			</fileset>
 		</copy>
-		<copy todir="${nda.import.install.dir}/conf" overwrite="true">
+		<copy todir="${nba.import.install.dir}/conf" overwrite="true">
 			<fileset dir="import/conf">
 				<include name="es-settings.json" />
-				<include name="logback.xml" />
-				<include name="nda-import.properties" />
+				<include name="nba-import.properties" />
 			</fileset>
-			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
-		<echo message="Installing shell scripts into ${nda.import.install.dir}/sh" />
-		<copy todir="${nda.import.install.dir}/sh" overwrite="true">
+		<echo message="Installing shell scripts into ${nba.import.install.dir}/sh" />
+		<copy todir="${nba.import.install.dir}/sh" overwrite="true">
 			<fileset dir="import/sh" excludes="**/*.git*" />
-			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
 		<!-- Make shell scripts executable -->
-		<chmod dir="${nda.import.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
+		<chmod dir="${nba.import.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 	</target>
 
 	<target name="install-import-libs">
-		<mkdir dir="${nda.import.install.dir}" />
-		<echo message="Installing libraries into ${nda.import.install.dir}/lib" />
-		<mkdir dir="${nda.import.install.dir}/lib" />
-		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${nda.import.install.dir}/lib" />
-		<copy todir="${nda.import.install.dir}/lib">
-			<fileset dir="${domain.module.location}/build/classpath" />
+		<!-- Create installation directory -->
+		<mkdir dir="${nba.import.install.dir}" />
+		<echo message="Installing libraries into ${nba.import.install.dir}/lib" />
+		<!-- Create lib dir under installation directory -->
+		<mkdir dir="${nba.import.install.dir}/lib" />
+		<!-- Copy the api jar to the lib dir -->
+		<copy file="${api.module.location}/build/${api.module.artifact}"
+		      todir="${nba.import.install.dir}/lib" />
+		<!-- Copy all dependencies for the api module to the lib dir -->
+		<copy todir="${nba.import.install.dir}/lib">
+			<fileset dir="${api.module.location}/build/classpath" />
 		</copy>
-		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${nda.import.install.dir}/lib" />
-		<copy todir="${nda.import.install.dir}/lib">
+		<!-- Copy the dao jar to the lib dir -->
+		<copy file="${dao.module.location}/build/${dao.module.artifact}"
+		      todir="${nba.import.install.dir}/lib" />
+		<!-- Copy all dependencies for the dao module to the lib dir -->
+		<copy todir="${nba.import.install.dir}/lib">
 			<fileset dir="${dao.module.location}/build/classpath" />
 		</copy>
-		<copy file="${load.module.location}/build/${load.module.artifact}" todir="${nda.import.install.dir}/lib" />
-		<copy todir="${nda.import.install.dir}/lib">
-			<fileset dir="${load.module.location}/build/classpath" />
+		<!-- Copy the etl jar to the lib dir -->
+		<copy file="${etl.module.location}/build/${etl.module.artifact}"
+		      todir="${nba.import.install.dir}/lib" />
+		<!-- Copy all dependencies for the etl module to the lib dir -->
+		<copy todir="${nba.import.install.dir}/lib">
+			<fileset dir="${etl.module.location}/build/classpath" />
 		</copy>
 	</target>
 
@@ -78,69 +98,91 @@
 	<!-- ****************************************************** -->
 
 	<target name="clean-export">
-		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
-		<echo unless:set="export.module.installed" message="Installation directory does not exist: ${nda.export.install.dir} (nothing to clean)" />
-		<echo if:set="export.module.installed" message="Deleting shell scripts in ${nda.export.install.dir}/sh" />
-		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/sh" />
-		<echo if:set="export.module.installed" message="Deleting configuration files in ${nda.export.install.dir}/conf" />
-		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/conf" />
-		<echo if:set="export.module.installed" message="Deleting Java libraries in ${nda.export.install.dir}/lib" />
-		<delete if:set="export.module.installed" dir="${nda.export.install.dir}/lib" />
+		<available file="${nba.export.install.dir}"
+		           type="dir"
+		           property="export.module.installed" />
+		<echo unless:set="export.module.installed"
+		      message="Installation directory does not exist: ${nba.export.install.dir} (nothing to clean)" />
+		<echo if:set="export.module.installed"
+		      message="Deleting shell scripts in ${nba.export.install.dir}/sh" />
+		<delete if:set="export.module.installed" dir="${nba.export.install.dir}/sh" />
+		<echo if:set="export.module.installed"
+		      message="Deleting configuration files in ${nba.export.install.dir}/conf" />
+		<delete if:set="export.module.installed" dir="${nba.export.install.dir}/conf" />
+		<echo if:set="export.module.installed"
+		      message="Deleting Java libraries in ${nba.export.install.dir}/lib" />
+		<delete if:set="export.module.installed" dir="${nba.export.install.dir}/lib" />
 	</target>
 
 	<target name="install-export-cli">
-		<available file="${nda.export.install.dir}" type="dir" property="export.module.installed" />
-		<fail unless:set="export.module.installed" message="Missing directory ${nda.export.install.dir}. You have problably never installed the export module before." />
-		<echo message="Installing configuration files into ${nda.export.install.dir}/conf" />
-		<copy todir="${nda.export.install.dir}/conf" overwrite="true">
+		<available file="${nba.export.install.dir}"
+		           type="dir"
+		           property="export.module.installed" />
+		<fail unless:set="export.module.installed"
+		      message="Missing directory ${nba.export.install.dir}. You have problably never installed the export module before." />
+		<echo message="Installing configuration files into ${nba.export.install.dir}/conf" />
+		<copy todir="${nba.export.install.dir}/conf" overwrite="true">
 			<fileset dir="export/conf" excludes="**/*.git*" />
-			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/build.properties" />
 		</copy>
-		<echo message="Installing shell scripts into ${nda.export.install.dir}/sh" />
-		<copy todir="${nda.export.install.dir}/sh" overwrite="true">
+		<echo message="Installing shell scripts into ${nba.export.install.dir}/sh" />
+		<copy todir="${nba.export.install.dir}/sh" overwrite="true">
 			<fileset dir="export/sh" excludes="**/*.git*" />
-			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/build.properties" />
 		</copy>
 		<!-- Make shell scripts executable -->
-		<chmod dir="${nda.export.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
+		<chmod dir="${nba.export.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 	</target>
 
 	<target name="install-export">
 		<!-- Create installation directory if it does not exist yet -->
-		<mkdir dir="${nda.export.install.dir}" />
+		<mkdir dir="${nba.export.install.dir}" />
 		<!-- Copy shell scripts and config files to installation directory -->
 		<antcall target="install-export-cli" />
 		<!-- Copy libraries to installation directory -->
-		<property name="libdir" value="${nda.export.install.dir}/lib" />
+		<property name="libdir" value="${nba.export.install.dir}/lib" />
 		<echo message="Installing libraries into ${libdir}" />
 		<mkdir dir="${libdir}" />
 		<!-- Copy domain module jar and its dependencies to lib dir -->
-		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${libdir}" />
+		<copy file="${api.module.location}/build/${api.module.artifact}"
+		      todir="${libdir}" />
 		<copy todir="${libdir}">
-			<fileset dir="${domain.module.location}/build/classpath" />
+			<fileset dir="${api.module.location}/build/classpath" />
 		</copy>
 		<!-- Copy dao module jar and its dependencies to lib dir -->
-		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${libdir}" />
+		<copy file="${dao.module.location}/build/${dao.module.artifact}"
+		      todir="${libdir}" />
 		<copy todir="${libdir}">
 			<fileset dir="${dao.module.location}/build/classpath" />
 		</copy>
 		<!-- Copy export module jar and its dependencies to lib dir -->
-		<copy file="${export.module.location}/build/${export.module.artifact}" todir="${libdir}" />
+		<copy file="${export.module.location}/build/${export.module.artifact}"
+		      todir="${libdir}" />
 		<copy todir="${libdir}">
 			<fileset dir="${export.module.location}/build/classpath" />
 		</copy>
 		<!-- Make shell scripts executable -->
-		<chmod dir="${nda.export.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
+		<chmod dir="${nba.export.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 		<!--
 			Make sure export program can write to output directory, if it exists
 			(otherwise they'll create it themselves)
 		-->
-		<available file="${nda.export.output.dir}" type="dir" property="nda.export.output.dir.exists" />
-		<chmod if:set="nda.export.output.dir.exists" perm="ug+rw" dir="${nda.export.output.dir}" includes="**/*" />
+		<available file="${nba.export.output.dir}"
+		           type="dir"
+		           property="nba.export.output.dir.exists" />
+		<chmod if:set="nba.export.output.dir.exists"
+		       perm="ug+rw"
+		       dir="${nba.export.output.dir}"
+		       includes="**/*" />
 	</target>
 
 	<target name="test-export">
-		<exec executable="${nda.export.install.dir}/sh/export-dwca.sh" dir="${nda.export.install.dir}/sh">
+		<exec executable="${nba.export.install.dir}/sh/export-dwca.sh"
+		      dir="${nba.export.install.dir}/sh">
 			<arg value="mammalia" />
 		</exec>
 	</target>

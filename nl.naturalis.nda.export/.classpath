@@ -4,11 +4,11 @@
 	<classpathentry kind="src" output="build/main" path="src/test/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
 	<classpathentry kind="src" output="build/test" path="src/main/resources"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/nl.naturalis.nda.elasticsearch.dao"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.export&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.dao"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

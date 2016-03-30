@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.*;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;

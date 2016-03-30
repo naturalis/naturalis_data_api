@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." name="properties">
+<project basedir="." name="config">
 
-	<property name="javac.source" value="1.7" />
-	<property name="javac.target" value="1.7" />
+	<property name="build.properties.file" value="build.v2.properties" />
+
+	<property name="javac.source" value="1.8" />
+	<property name="javac.target" value="1.8" />
 	<property name="javac.debug" value="source,lines,vars" />
 
-	<property name="home" location="${basedir}/../" />
+	<!-- Prefix for environment variables -->
+	<property environment="env" />
 
-	<property name="build.module.name" value="nl.naturalis.nda.build" />
+	<!-- Make sure we always know where we are -->
+	<dirname property="config.base.dir" file="${ant.file.config}" />
+
+	<!-- Machine-dependent variables -->
+	<property file="${config.base.dir}/${build.properties.file}" />
+
+	<!-- Parent directory of the build module -->
+	<property name="home" location="${config.base.dir}/../" />
+
+	<property name="build.module.name" value="nl.naturalis.nba.build" />
 	<property name="build.module.location" location="${home}/${build.module.name}" />
 
-	<property name="ear.module.name" value="nl.naturalis.nda.ear" />
+	<property name="ear.module.name" value="nl.naturalis.nba.ear" />
 	<property name="ear.module.location" location="${home}/${ear.module.name}" />
 
-	<property name="rest.module.name" value="nl.naturalis.nda.service.rest" />
+	<property name="rest.module.name" value="nl.naturalis.nba.rest" />
 	<property name="rest.module.location" location="${home}/${rest.module.name}" />
 	<property name="rest.module.artifact" value="${rest.module.name}.war" />
 
-	<property name="ejb.module.name" value="nl.naturalis.nda.ejb" />
+	<property name="ejb.module.name" value="nl.naturalis.nba.ejb" />
 	<property name="ejb.module.location" location="${home}/${ejb.module.name}" />
 	<property name="ejb.module.artifact" value="${ejb.module.name}.jar" />
 
-	<property name="domain.module.name" value="nl.naturalis.nda.domain" />
-	<property name="domain.module.location" location="${home}/${domain.module.name}" />
-	<property name="domain.module.artifact" value="${domain.module.name}.jar" />
+	<property name="api.module.name" value="nl.naturalis.nba.api" />
+	<property name="api.module.location" location="${home}/${api.module.name}" />
+	<property name="api.module.artifact" value="${api.module.name}.jar" />
 
-	<property name="client.module.name" value="nl.naturalis.nda.client" />
+	<property name="client.module.name" value="nl.naturalis.nba.client" />
 	<property name="client.module.location" location="${home}/${client.module.name}" />
 	<property name="client.module.artifact" value="${client.module.name}.jar" />
 
@@ -33,9 +45,9 @@
 	<property name="dao.module.location" location="${home}/${dao.module.name}" />
 	<property name="dao.module.artifact" value="${dao.module.name}.jar" />
 
-	<property name="load.module.name" value="nl.naturalis.nda.elasticsearch.load" />
-	<property name="load.module.location" location="${home}/${load.module.name}" />
-	<property name="load.module.artifact" value="${load.module.name}.jar" />
+	<property name="etl.module.name" value="nl.naturalis.nba.etl" />
+	<property name="etl.module.location" location="${home}/${etl.module.name}" />
+	<property name="etl.module.artifact" value="${etl.module.name}.jar" />
 
 	<property name="export.module.name" value="nl.naturalis.nda.export" />
 	<property name="export.module.location" location="${home}/${export.module.name}" />

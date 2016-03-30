@@ -13,9 +13,9 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.*;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 /**
  * Subclass of {@link CSVTransformer} that transforms CSV records into

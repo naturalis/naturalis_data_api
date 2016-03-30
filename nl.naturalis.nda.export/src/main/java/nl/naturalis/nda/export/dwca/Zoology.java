@@ -1,7 +1,8 @@
 package nl.naturalis.nda.export.dwca;
 
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 import java.util.List;
+
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 
 /**

@@ -5,6 +5,7 @@ import static nl.naturalis.nba.etl.crs.CrsImportUtil.callMultimediaService;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
@@ -12,7 +13,6 @@ import nl.naturalis.nba.etl.NBAImportAll;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;

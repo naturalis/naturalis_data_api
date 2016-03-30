@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.ConfigObject;
 

@@ -13,9 +13,9 @@ import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 /**
  * The transformer component in the CoL ETL cycle.

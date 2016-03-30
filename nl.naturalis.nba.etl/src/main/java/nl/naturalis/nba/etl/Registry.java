@@ -37,7 +37,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
  */
 public class Registry {
 
-	private static final String SYSPROP_CONFIG_DIR = "nba.v1.conf.dir";
+	private static final String SYSPROP_CONFIG_DIR = "nba.v2.import.conf.dir";
 	private static final String CONFIG_FILE_NAME = "nba-import.properties";
 
 	private static Registry instance;
@@ -139,7 +139,7 @@ public class Registry {
 			for (int i = 0; i < hosts.length; ++i) {
 				InetAddress host = hosts[i];
 				int port = ports[i];
-				logger.info("Adding transport address \"{}:{}\"", host, port);
+				logger.info("Adding transport address \"{}:{}\"", host.getHostAddress(), port);
 				InetSocketTransportAddress addr;
 				addr = new InetSocketTransportAddress(host, port);
 				((TransportClient) esClient).addTransportAddress(addr);

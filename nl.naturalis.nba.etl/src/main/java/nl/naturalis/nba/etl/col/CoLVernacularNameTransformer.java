@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
@@ -17,7 +18,6 @@ import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.Transformer;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 import org.apache.logging.log4j.Logger;
 

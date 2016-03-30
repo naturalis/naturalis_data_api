@@ -17,9 +17,9 @@ import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.StringUtil;

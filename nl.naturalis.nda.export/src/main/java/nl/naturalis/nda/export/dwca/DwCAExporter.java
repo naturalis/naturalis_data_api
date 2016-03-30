@@ -21,7 +21,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nda.export.ExportUtil;
 
 import org.domainobject.util.ConfigObject;

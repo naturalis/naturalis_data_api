@@ -19,8 +19,8 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.search.QueryParams;
 import nl.naturalis.nba.api.search.ResultGroupSet;
 import nl.naturalis.nba.api.search.SearchResultSet;
-import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
-import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
+import nl.naturalis.nba.dao.es.BioportalTaxonDao;
+import nl.naturalis.nba.dao.es.TaxonDao;
 import nl.naturalis.nda.service.rest.util.NDA;
 import nl.naturalis.nda.service.rest.util.ResourceUtil;
 

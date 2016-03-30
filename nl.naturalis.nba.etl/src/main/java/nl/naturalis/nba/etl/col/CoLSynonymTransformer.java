@@ -8,6 +8,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
@@ -17,7 +18,6 @@ import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.Transformer;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 /**
  * A implementation of {@link CSVTransformer} that enriches {@link ESTaxon}

@@ -11,11 +11,11 @@ import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.*;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.TransformUtil;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;

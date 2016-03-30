@@ -3,13 +3,10 @@
          xmlns:if="ant:if"
          xmlns:unless="ant:unless"
          basedir="."
-         name="nl.naturalis.nda.domain"
+         name="nl.naturalis.nba.api"
          default="build">
 
-	<import file="../nl.naturalis.nda.build/properties.xml" />
-	<import file="../nl.naturalis.nda.build/common.xml" />
-	<property file="../nl.naturalis.nda.build/build.properties" />
-	<property environment="env" />
+	<import file="../nl.naturalis.nba.build/common.xml" />
 
 	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
 	<path id="non-ivy-dependencies" />
@@ -21,7 +18,8 @@
 	<target name="-package" depends="-projects,package" />
 
 	<target name="build">
-		<available file="build/${domain.module.artifact}" property="${ant.project.name}.packaged" />
+		<available file="build/${api.module.artifact}"
+		           property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged"
 		      message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged"

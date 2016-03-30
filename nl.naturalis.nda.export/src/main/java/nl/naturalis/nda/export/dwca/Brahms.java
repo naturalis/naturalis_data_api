@@ -2,7 +2,7 @@ package nl.naturalis.nda.export.dwca;
 
 import java.util.List;
 
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 /**
  * <h1>BRAHMS</h1>

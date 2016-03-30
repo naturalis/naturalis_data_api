@@ -3,18 +3,18 @@ package nl.naturalis.nba.etl;
 import java.io.File;
 import java.util.Arrays;
 
-import nl.naturalis.nba.elasticsearch.map.Mapping;
-import nl.naturalis.nba.elasticsearch.map.MappingFactory;
-import nl.naturalis.nba.elasticsearch.map.MappingSerializer;
+import nl.naturalis.nba.dao.es.map.Mapping;
+import nl.naturalis.nba.dao.es.map.MappingFactory;
+import nl.naturalis.nba.dao.es.map.MappingSerializer;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.ndff.NdffSpecimenImporter;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;

@@ -6,15 +6,12 @@
          name="nl.naturalis.nda.elasticsearch.dao"
          default="build">
 
-	<import file="../nl.naturalis.nda.build/properties.xml" />
-	<import file="../nl.naturalis.nda.build/common.xml" />
-	<property file="../nl.naturalis.nda.build/build.properties" />
-	<property environment="env" />
+	<import file="../nl.naturalis.nba.build/common.xml" />
 
 	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
 	<path id="non-ivy-dependencies">
 		<!-- project dependencies -->
-		<filelist dir="${domain.module.location}/build" files="${domain.module.artifact}" />
+		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
 		<!-- required libraries not inside the lib directory -->
 		<filelist dir="${build.module.location}/lib">
 			<file name="org.domainobject.util.jar" />
@@ -24,7 +21,7 @@
 	<!-- Build referenced projects -->
 	<target name="-projects">
 		<echo message="Building required projects for ${ant.project.name}" />
-		<ant antfile="${domain.module.location}/build.xml"
+		<ant antfile="${api.module.location}/build.xml"
 		     useNativeBasedir="true"
 		     inheritrefs="true" />
 	</target>
@@ -33,7 +30,8 @@
 	<target name="-package" depends="-projects,package" />
 
 	<target name="build">
-		<available file="build/${dao.module.artifact}" property="${ant.project.name}.packaged" />
+		<available file="build/${dao.module.artifact}"
+		           property="${ant.project.name}.packaged" />
 		<echo if:set="${ant.project.name}.packaged"
 		      message="${ant.project.name} already built. Clean project to force rebuild." />
 		<echo unless:set="${ant.project.name}.packaged"

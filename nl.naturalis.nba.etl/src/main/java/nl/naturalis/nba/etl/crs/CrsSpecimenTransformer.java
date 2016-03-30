@@ -14,6 +14,9 @@ import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.*;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.DocumentType;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -23,9 +26,6 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;

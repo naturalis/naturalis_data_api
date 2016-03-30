@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 /**
  * <h1>FieldMapping</h1> Description: FieldMapping class for BRAHMS, GEOLOGY and

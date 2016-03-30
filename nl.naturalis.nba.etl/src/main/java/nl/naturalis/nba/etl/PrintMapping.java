@@ -1,10 +1,10 @@
 package nl.naturalis.nba.etl;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.elasticsearch.map.Mapping;
-import nl.naturalis.nba.elasticsearch.map.MappingFactory;
-import nl.naturalis.nba.elasticsearch.map.MappingSerializer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nba.dao.es.map.Mapping;
+import nl.naturalis.nba.dao.es.map.MappingFactory;
+import nl.naturalis.nba.dao.es.map.MappingSerializer;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 /**
  * Prints the Elasticsearch mapping for the provided type.

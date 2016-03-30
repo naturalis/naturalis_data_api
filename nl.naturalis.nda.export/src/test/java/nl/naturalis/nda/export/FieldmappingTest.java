@@ -3,8 +3,8 @@
  */
 package nl.naturalis.nda.export;
 
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nda.export.dwca.CsvFileWriter;
 import nl.naturalis.nda.export.dwca.Fieldmapping;
 
@@ -69,7 +69,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setDummyValue(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setDummyValue(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -79,7 +79,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setBasisOfRecord(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setBasisOfRecord(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -89,7 +89,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setBasisOfRecord_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setBasisOfRecord_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -99,7 +99,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCatalogNumber(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCatalogNumber(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -109,7 +109,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setClassName(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setClassName(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -119,7 +119,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setClassName_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setClassName_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -129,7 +129,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCollectionType(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCollectionType(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -139,7 +139,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCollectionCode_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCollectionCode_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -149,7 +149,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setContinent(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setContinent(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -159,7 +159,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCountry(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCountry(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -169,7 +169,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCounty(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setCounty(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -179,7 +179,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setDateIndentified(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setDateIndentified(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -189,7 +189,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setDateIndentified_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setDateIndentified_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -199,7 +199,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setLatitudeDecimal(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setLatitudeDecimal(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -209,7 +209,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setLongitudeDecimal(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setLongitudeDecimal(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -219,7 +219,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setEvendate(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setEvendate(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 * 
 	 * @throws Exception
@@ -234,7 +234,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setEvendate_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setEvendate_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -244,7 +244,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFamily(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFamily(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -254,7 +254,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFamily_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFamily_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -264,7 +264,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGenus(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGenus(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -274,7 +274,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGenus_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGenus_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -284,7 +284,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGeodeticDatum(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGeodeticDatum(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -294,7 +294,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setHabitat(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setHabitat(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -304,7 +304,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setHigherClassification(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setHigherClassification(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -314,7 +314,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setHigherClassification_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setHigherClassification_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -324,7 +324,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setIdentifiersFullName(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setIdentifiersFullName(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -334,7 +334,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setIdentifiersFullName_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setIdentifiersFullName_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -344,7 +344,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNumberOfSpecimen(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNumberOfSpecimen(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -354,7 +354,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInformationWithHeld(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInformationWithHeld(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -364,7 +364,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInfraspecificEpithet(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInfraspecificEpithet(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -374,7 +374,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInfraspecificEpithet_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInfraspecificEpithet_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -384,7 +384,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setIsland(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setIsland(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -394,7 +394,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInstitudeCode(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setInstitudeCode(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -404,7 +404,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setKingdom(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setKingdom(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -414,7 +414,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setKingdom_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setKingdom_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -424,7 +424,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setPhaseOrStage(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setPhaseOrStage(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -434,7 +434,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setLocality(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setLocality(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -444,7 +444,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setMaximumElevationInMeters(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setMaximumElevationInMeters(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -454,7 +454,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setMinimumElevationInMeters(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setMinimumElevationInMeters(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -464,7 +464,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNomenclaturalCode_Zoology(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNomenclaturalCode_Zoology(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -474,7 +474,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNomenclaturalCode_Geology(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNomenclaturalCode_Geology(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -484,7 +484,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNomenclaturalCode_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setNomenclaturalCode_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -494,7 +494,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setOccurrenceID(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setOccurrenceID(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -504,7 +504,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setOrder(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setOrder(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -514,7 +514,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setOrder_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setOrder_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -524,7 +524,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setPhylum(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setPhylum(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -534,7 +534,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setPreparationType(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setPreparationType(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -544,7 +544,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGatheringAgents_FullName(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setGatheringAgents_FullName(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -554,7 +554,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFullScientificName(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFullScientificName(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -564,7 +564,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFullScientificName_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setFullScientificName_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -574,7 +574,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setAuthorshipVerbatim(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setAuthorshipVerbatim(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -584,7 +584,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setAuthorshipVerbatim_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setAuthorshipVerbatim_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -594,7 +594,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSex(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSex(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -604,7 +604,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSpecificEpithet(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSpecificEpithet(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -614,7 +614,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSpecificEpithet_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSpecificEpithet_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -624,7 +624,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setProvinceState(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setProvinceState(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -634,7 +634,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSubGenus(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSubGenus(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -644,7 +644,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSubGenus_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setSubGenus_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -654,7 +654,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonrank(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonrank(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -664,7 +664,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonrank_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonrank_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -674,7 +674,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonRemarks(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonRemarks(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -684,7 +684,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTypeStatus(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTypeStatus(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -694,7 +694,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimCoordinates(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimCoordinates(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -704,7 +704,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimCoordinates_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimCoordinates_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -714,7 +714,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimDepth(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimDepth(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -724,7 +724,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setAltitudeUnifOfMeasurement(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setAltitudeUnifOfMeasurement(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -734,7 +734,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimEventDate(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimEventDate(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -744,7 +744,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimEventDate_Brahms(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setVerbatimEventDate_Brahms(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test
@@ -754,7 +754,7 @@ public class FieldmappingTest {
 
 	/**
 	 * Test method for
-	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonRank_Is_VerbatimTaxonRank(nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
+	 * {@link nl.naturalis.nda.export.dwca.Fieldmapping#setTaxonRank_Is_VerbatimTaxonRank(nl.naturalis.nba.dao.es.types.ESSpecimen, nl.naturalis.nda.export.dwca.CsvFileWriter.CsvRow)}
 	 * .
 	 */
 	@Test

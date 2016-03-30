@@ -24,11 +24,11 @@ import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
 import org.domainobject.util.ConfigObject;
 

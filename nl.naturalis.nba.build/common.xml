@@ -5,27 +5,27 @@
          basedir="."
          name="common">
 
-	<property file="build.properties" />
+	<!-- Make sure we don't loose ourselves when we are imported -->
+	<dirname property="common.base.dir" file="${ant.file.common}" />
 
-	<!-- Prefix for environment variables -->
-	<property environment="env" />
+	<!-- Load build settings -->
+	<import file="${common.base.dir}/properties.xml" />
 
-	<!-- Configure Ivy. Only required for ant builds within Eclipse. -->
-	<path id="ivy.lib.path">
-		<fileset dir="${env.IVY_HOME}" includes="**/*.jar" />
-	</path>
-	<taskdef resource="org/apache/ivy/ant/antlib.xml"
-	         uri="antlib:org.apache.ivy.ant"
-	         classpathref="ivy.lib.path" />
+	<!-- Configure Ivy ant tasks -->
+	<taskdef uri="antlib:org.apache.ivy.ant"
+	         classpath="${build.module.location}/antlib/ivy-2.4.0.jar"
+	         resource="org/apache/ivy/ant/antlib.xml" />
 
-	<property name="javac.source" value="1.7" />
-	<property name="javac.target" value="1.7" />
-	<property name="javac.debug" value="source,lines,vars" />
+	<!-- Configure naturalis ant tasks -->
+	<taskdef uri="antlib:nl.naturalis.ant.contrib"
+	         classpath="${build.module.location}/antlib/nl.naturalis.ant.contrib.jar"
+	         resource="nl/naturalis/ant/contrib/antlib.xml" />
 
-	<property name="home" location="${basedir}/../" />
-	
-	<!-- ===============[ TASKS ]=============== -->
 
+
+	<!-- ===============[ COMMON TASKS ]=============== -->
+
+	<!-- Get info about git branch -->
 	<target name="git-info" description="Retrieve current git branch, tag and commit">
 		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
 			<arg value="rev-parse" />
@@ -47,18 +47,21 @@
 	</target>
 
 	<target name="clean">
-		<echo message="Performing cleanup for ${ant.project.name}" />
+		<echo message="Performing cleanup for module ${ant.project.name}" />
 		<available file="build" type="dir" property="build.dir.exists" />
 		<delete includeemptydirs="true" if:set="build.dir.exists">
 			<fileset dir="build" includes="**/*" />
 		</delete>
+	</target>
+
+	<target name="-init">
 		<mkdir dir="build" />
 		<mkdir dir="build/main" />
 		<mkdir dir="build/test" />
 		<mkdir dir="build/classpath" />
 	</target>
 
-	<target name="resources">
+	<target name="copy-resources" depends="-init">
 		<echo message="Copying non-Java resources to build directories" />
 		<copy includeemptydirs="false" todir="build/main">
 			<fileset dir="src/main/java">
@@ -87,18 +90,20 @@
 		<ivy:resolve />
 	</target>
 
-	<target name="compile-sources" depends="resources">
-		<echo message="Collecting jar files" />
+	<target name="compile-sources" depends="copy-resources">
+		<echo message="Constructing classpath" />
 		<mkdir dir="build/classpath" />
-		<echo message="Adding Ivy-managed dependencies to ${basedir}/build/classpath" />
+		<echo message="Adding Ivy-managed dependencies to classpath" />
 		<ivy:retrieve pattern="build/classpath/[artifact]-[revision](-[classifier]).[ext]"
 		              log="download-only" />
 		<echo message="Adding external libraries to ${basedir}/build/classpath" />
 		<copy todir="build/classpath">
 			<path refid="non-ivy-dependencies" />
 		</copy>
-		<echo message="Adding libraries in ${basedir}/lib to ${basedir}/build/classpath" />
-		<copy todir="build/classpath">
+		<available file="lib" type="dir" property="lib.dir.exists" />
+		<echo if:set="lib.dir.exists"
+		      message="Adding libraries in ${basedir}/lib to ${basedir}/build/classpath" />
+		<copy if:set="lib.dir.exists" todir="build/classpath">
 			<fileset dir="lib">
 				<include name="**/*.jar" />
 			</fileset>
@@ -150,9 +155,9 @@
 
 	<target name="test" depends="compile-test-sources">
 		<echo message="Testing ${ant.project.name}" />
-		<mkdir dir="${home}/nl.naturalis.nda.build/test-reports"/>
+		<mkdir dir="${home}/nl.naturalis.nda.build/test-reports" />
 		<junit printsummary="yes" haltonfailure="yes">
-			<sysproperty key="ndaConfDir" value="${nda.import.install.dir}/conf"/>
+			<sysproperty key="ndaConfDir" value="${nda.import.install.dir}/conf" />
 			<assertions>
 				<enable />
 			</assertions>
@@ -173,20 +178,9 @@
 	</target>
 
 	<target name="package" depends="test">
-		<jar destfile="build/${ant.project.name}.jar" basedir="build/main" excludes="**/.git*" />
+		<jar destfile="build/${ant.project.name}.jar"
+		     basedir="build/main"
+		     excludes="**/.git*" />
 	</target>
-
-	<target name="templates">
-		<echo message="Creating/modifying Eclipse metadata files" />
-		<copy todir="${basedir}">
-			<fileset dir="${basedir}" includes="**/*.__tmpl__" />
-			<globmapper from="*.__tmpl__" to="*" />
-		</copy>
-		<echo message=" " />
-		<echo message="****************************************************************" />
-		<echo message="Install the IvyDE Eclipse plugin before importing your projects!" />
-		<echo message="****************************************************************" />
-	</target>
-
 
 </project>

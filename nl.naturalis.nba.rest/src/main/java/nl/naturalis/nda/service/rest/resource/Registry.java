@@ -8,12 +8,12 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
-import nl.naturalis.nda.elasticsearch.dao.dao.BioportalMultiMediaObjectDao;
-import nl.naturalis.nda.elasticsearch.dao.dao.BioportalSpecimenDao;
-import nl.naturalis.nda.elasticsearch.dao.dao.BioportalTaxonDao;
-import nl.naturalis.nda.elasticsearch.dao.dao.MultiMediaObjectDao;
-import nl.naturalis.nda.elasticsearch.dao.dao.SpecimenDao;
-import nl.naturalis.nda.elasticsearch.dao.dao.TaxonDao;
+import nl.naturalis.nba.dao.es.BioportalMultiMediaObjectDao;
+import nl.naturalis.nba.dao.es.BioportalSpecimenDao;
+import nl.naturalis.nba.dao.es.BioportalTaxonDao;
+import nl.naturalis.nba.dao.es.MultiMediaObjectDao;
+import nl.naturalis.nba.dao.es.SpecimenDao;
+import nl.naturalis.nba.dao.es.TaxonDao;
 import nl.naturalis.nda.service.rest.util.LogUtil;
 import nl.naturalis.nda.service.rest.util.NDA;
 

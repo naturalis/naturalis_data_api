@@ -2,11 +2,12 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.etl.LoadConstants.ES_ID_PREFIX_BRAHMS;
 import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ElasticSearchLoader;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESMultiMediaObject;
 
 /**
  * The loader component in the ETL cycle for Brahms multimedia.

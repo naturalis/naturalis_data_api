@@ -2,11 +2,12 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.etl.LoadConstants.ES_ID_PREFIX_CRS;
 import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_SPECIMEN;
+
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ElasticSearchLoader;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 
 /**
  * The loader component for the CRS specimen import.

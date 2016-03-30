@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
 import nl.naturalis.nba.etl.elasticsearch.IndexManager;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

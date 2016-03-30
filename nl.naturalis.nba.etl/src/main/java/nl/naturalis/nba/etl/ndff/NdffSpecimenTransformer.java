@@ -11,11 +11,11 @@ import java.util.List;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringEvent;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESGatheringSiteCoordinates;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESSpecimen;
 /**
  * The transformer component for the NDFF specimen import.
  * 

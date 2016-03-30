@@ -2,11 +2,12 @@ package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.etl.LoadConstants.ES_ID_PREFIX_NSR;
 import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
+
+import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ElasticSearchLoader;
 import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-import nl.naturalis.nda.elasticsearch.dao.estypes.ESTaxon;
 
 /**
  * The loader component for the NSR taxon import.

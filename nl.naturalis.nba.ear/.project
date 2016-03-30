@@ -9,7 +9,6 @@
 		<project>nl.naturalis.nba.etl</project>
 		<project>nl.naturalis.nba.ejb</project>
 		<project>nl.naturalis.nba.rest</project>
-		<project>nl.naturalis.nba.dao</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

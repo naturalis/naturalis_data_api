@@ -27,23 +27,25 @@
 
 	<!-- Get info about git branch -->
 	<target name="git-info" description="Retrieve current git branch, tag and commit">
-		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
+		<exec executable="git" outputproperty="git.commit">
 			<arg value="rev-parse" />
 			<arg value="--verify" />
 			<arg value="HEAD" />
 		</exec>
-		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
+		<exec executable="git" outputproperty="git.tag">
 			<arg value="describe" />
 			<arg value="--tags" />
 			<arg value="--abbrev=0" />
 		</exec>
-		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
+		<exec executable="git" outputproperty="git.branch">
 			<arg value="rev-parse" />
 			<arg value="--abbrev-ref" />
 			<arg value="HEAD" />
 		</exec>
-		<echo message="branch=${git.branch};tag=${git.tag};commit=${git.commit}" />
-		<property name="got-git-info" value="true" />
+		<exec executable="git" outputproperty="git.status">
+			<arg value="status" />
+			<arg value="-s" />
+		</exec>
 	</target>
 
 	<target name="clean">

@@ -1,7 +1,7 @@
 Testsuite: nl.naturalis.nba.elasticsearch.map.MappingFactoryTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 sec
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 sec
 ------------- Standard Output ---------------
 0070/10/23 00:00:00
 ------------- ---------------- ---------------
 
-Testcase: testGetMapping took 0.003 sec
+Testcase: testGetMapping took 0.006 sec

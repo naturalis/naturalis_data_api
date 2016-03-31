@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.ear" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless"
+         basedir="."
+         name="nl.naturalis.nba.ear"
+         default="build">
 
 	<import file="../nl.naturalis.nba.build/common.xml" />
 
@@ -9,10 +14,18 @@
 	<!-- Build referenced projects -->
 	<target name="-projects">
 		<echo message="Building referenced projects for ${ant.project.name}" />
-		<ant antfile="${domain.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${dao.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${ejb.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
-		<ant antfile="${rest.module.location}/build.xml" useNativeBasedir="true" inheritrefs="true" />
+		<ant antfile="${api.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritrefs="true" />
+		<ant antfile="${dao.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritrefs="true" />
+		<ant antfile="${ejb.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritrefs="true" />
+		<ant antfile="${rest.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritrefs="true" />
 	</target>
 
 	<!-- Collect stuff for ear file -->
@@ -21,12 +34,16 @@
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
 		<mkdir dir="${assemblydir}/lib" />
-		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${assemblydir}/lib" />
-		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${assemblydir}/lib" />
-		<copy file="${ejb.module.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
-		<copy file="${rest.module.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
+		<copy file="${api.module.location}/build/${api.module.artifact}"
+		      todir="${assemblydir}/lib" />
+		<copy file="${dao.module.location}/build/${dao.module.artifact}"
+		      todir="${assemblydir}/lib" />
+		<copy file="${ejb.module.location}/build/nl.naturalis.nda.ejb.jar"
+		      todir="${assemblydir}" />
+		<copy file="${rest.module.location}/build/nl.naturalis.nda.service.rest.war"
+		      todir="${assemblydir}" />
 		<copy todir="${assemblydir}/lib">
-			<fileset dir="${domain.module.location}/build/classpath" />
+			<fileset dir="${api.module.location}/build/classpath" />
 			<fileset dir="${dao.module.location}/build/classpath" />
 			<fileset dir="${ejb.module.location}/build/classpath" />
 			<fileset dir="${rest.module.location}/build/classpath" />
@@ -41,10 +58,14 @@
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
 		<mkdir dir="${assemblydir}/lib" />
-		<copy file="${domain.module.location}/build/${domain.module.artifact}" todir="${assemblydir}/lib" />
-		<copy file="${dao.module.location}/build/${dao.module.artifact}" todir="${assemblydir}/lib" />
-		<copy file="${ejb.module.location}/build/nl.naturalis.nda.ejb.jar" todir="${assemblydir}" />
-		<copy file="${rest.module.location}/build/nl.naturalis.nda.service.rest.war" todir="${assemblydir}" />
+		<copy file="${api.module.location}/build/${api.module.artifact}"
+		      todir="${assemblydir}/lib" />
+		<copy file="${dao.module.location}/build/${dao.module.artifact}"
+		      todir="${assemblydir}/lib" />
+		<copy file="${ejb.module.location}/build/${ejb.module.artifact}"
+		      todir="${assemblydir}" />
+		<copy file="${rest.module.location}/build/${rest.module.artifact}"
+		      todir="${assemblydir}" />
 		<copy todir="${assemblydir}/META-INF">
 			<fileset dir="EarContent/META-INF" />
 		</copy>
@@ -70,43 +91,35 @@
 	</target>
 
 	<target name="build" depends="git-info">
-		<property unless:set="signal.nightly" name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.tag}.ear" />
-		<property if:set="signal.nightly" name="ear.module.artifact" value="${ear.module.location}/build/nba.${git.commit}.ear" />
-		<available file="${ear.module.artifact}" property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged" message="${ant.project.name} already built. Clean project to force rebuild." />
-		<echo unless:set="${ant.project.name}.packaged" message="*************** [ Building ${ant.project.name} ] ***************" />
+		<property unless:set="signal.nightly"
+		          name="ear.module.artifact"
+		          value="${ear.module.location}/build/nba.${git.tag}.ear" />
+		<property if:set="signal.nightly"
+		          name="ear.module.artifact"
+		          value="${ear.module.location}/build/nba.${git.commit}.ear" />
+		<available file="${ear.module.artifact}"
+		           property="${ant.project.name}.packaged" />
+		<echo if:set="${ant.project.name}.packaged"
+		      message="${ant.project.name} already built. Clean project to force rebuild." />
+		<echo unless:set="${ant.project.name}.packaged"
+		      message="*************** [ Building ${ant.project.name} ] ***************" />
 		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
 	</target>
 
 	<target name="install-config">
-		<available file="${nl.naturalis.nda.conf.dir}" type="dir" property="nda.conf.dir.exists" />
-		<fail unless:set="nda.conf.dir.exists" message="No such directory: ${nl.naturalis.nda.conf.dir}; check build.properties (nl.naturalis.nda.conf.dir)" />
+		<available file="${nl.naturalis.nda.conf.dir}"
+		           type="dir"
+		           property="nda.conf.dir.exists" />
+		<fail unless:set="nda.conf.dir.exists"
+		      message="No such directory: ${nl.naturalis.nda.conf.dir}; check build.properties (nl.naturalis.nda.conf.dir)" />
 		<copy todir="${nl.naturalis.nda.conf.dir}" file="nda.properties" overwrite="true">
-			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/build.properties" />
 		</copy>
 	</target>
 
 	<target name="rebuild" depends="clean,build" />
-
-	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host0} -->
-	<target name="host0">
-		<property name="deploy.to.host0" value="true" />
-	</target>
-
-	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host1} -->
-	<target name="host1">
-		<property name="deploy.to.host1" value="true" />
-	</target>
-
-	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host2} -->
-	<target name="host2">
-		<property name="deploy.to.host2" value="true" />
-	</target>
-
-	<!-- Fake target that only signals that we want to deploy to ${ear.install.scp.host3} -->
-	<target name="host3">
-		<property name="deploy.to.host3" value="true" />
-	</target>
 
 	<target name="deploy" depends="build">
 		<!--
@@ -114,8 +127,10 @@
 		    wildfly deployments directory requires the ear file
 		    to be named nba.ear
 		-->
-		<available file="${ear.module.location}/build/nba.ear" property="earfile.renamed" />
-		<copy file="${ear.module.artifact}" tofile="${ear.module.location}/build/nba.ear" />
+		<available file="${ear.module.location}/build/nba.ear"
+		           property="earfile.renamed" />
+		<copy file="${ear.module.artifact}"
+		      tofile="${ear.module.location}/build/nba.ear" />
 		<condition property="deploy.local">
 			<and>
 				<not>
@@ -138,10 +153,18 @@
 			targets, we assume we are on the server and do a local
 			deployment.
 		-->
-		<move if:set="deploy.local" file="${ear.module.location}/build/nba.ear" todir="${ear.install.dir}" />
-		<echo if:set="deploy.local" message="Copying configuration files to ${nl.naturalis.nda.conf.dir}" />
-		<copy if:set="deploy.local" todir="${nl.naturalis.nda.conf.dir}" file="nda.properties" overwrite="true">
-			<filterset begintoken="@" endtoken="@" filtersfile="${build.module.location}/build.properties" />
+		<move if:set="deploy.local"
+		      file="${ear.module.location}/build/nba.ear"
+		      todir="${ear.install.dir}" />
+		<echo if:set="deploy.local"
+		      message="Copying configuration files to ${nl.naturalis.nda.conf.dir}" />
+		<copy if:set="deploy.local"
+		      todir="${nl.naturalis.nda.conf.dir}"
+		      file="nda.properties"
+		      overwrite="true">
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/build.properties" />
 		</copy>
 
 
@@ -152,8 +175,13 @@
 
 		<property name="scp" value="${build.module.location}/pscp.exe" />
 
-		<echo if:set="deploy.to.host0" message="Deploying to ${ear.install.scp.host0} ..." />
-		<exec if:set="deploy.to.host0" executable="${scp}" errorproperty="host0.deploy.error" outputproperty="host0.deploy.output" failifexecutionfails="true">
+		<echo if:set="deploy.to.host0"
+		      message="Deploying to ${ear.install.scp.host0} ..." />
+		<exec if:set="deploy.to.host0"
+		      executable="${scp}"
+		      errorproperty="host0.deploy.error"
+		      outputproperty="host0.deploy.output"
+		      failifexecutionfails="true">
 			<arg value="-i" />
 			<arg value="${ear.install.scp.keyfile}" />
 			<arg value="${ear.module.location}/build/nba.ear" />
@@ -162,8 +190,13 @@
 		<echo if:set="host0.deploy.error" message="${host0.deploy.error}" />
 		<echo if:set="host0.deploy.output" message="${host0.deploy.output}" />
 
-		<echo if:set="deploy.to.host1" message="Deploying to ${ear.install.scp.host1} ..." />
-		<exec if:set="deploy.to.host1" executable="${scp}" errorproperty="host1.deploy.error" outputproperty="host1.deploy.output" failifexecutionfails="true">
+		<echo if:set="deploy.to.host1"
+		      message="Deploying to ${ear.install.scp.host1} ..." />
+		<exec if:set="deploy.to.host1"
+		      executable="${scp}"
+		      errorproperty="host1.deploy.error"
+		      outputproperty="host1.deploy.output"
+		      failifexecutionfails="true">
 			<arg value="-i" />
 			<arg value="${ear.install.scp.keyfile}" />
 			<arg value="${ear.module.location}/build/nba.ear" />
@@ -172,8 +205,13 @@
 		<echo if:set="host1.deploy.error" message="${host1.deploy.error}" />
 		<echo if:set="host1.deploy.output" message="${host1.deploy.output}" />
 
-		<echo if:set="deploy.to.host2" message="Deploying to ${ear.install.scp.host2} ..." />
-		<exec if:set="deploy.to.host2" executable="${scp}" errorproperty="host2.deploy.error" outputproperty="host2.deploy.output" failifexecutionfails="true">
+		<echo if:set="deploy.to.host2"
+		      message="Deploying to ${ear.install.scp.host2} ..." />
+		<exec if:set="deploy.to.host2"
+		      executable="${scp}"
+		      errorproperty="host2.deploy.error"
+		      outputproperty="host2.deploy.output"
+		      failifexecutionfails="true">
 			<arg value="-i" />
 			<arg value="${ear.install.scp.keyfile}" />
 			<arg value="${ear.module.location}/build/nba.ear" />
@@ -182,8 +220,13 @@
 		<echo if:set="host2.deploy.error" message="${host2.deploy.error}" />
 		<echo if:set="host2.deploy.output" message="${host2.deploy.output}" />
 
-		<echo if:set="deploy.to.host3" message="Deploying to ${ear.install.scp.host3} ..." />
-		<exec if:set="deploy.to.host3" executable="${scp}" errorproperty="host3.deploy.error" outputproperty="host3.deploy.output" failifexecutionfails="true">
+		<echo if:set="deploy.to.host3"
+		      message="Deploying to ${ear.install.scp.host3} ..." />
+		<exec if:set="deploy.to.host3"
+		      executable="${scp}"
+		      errorproperty="host3.deploy.error"
+		      outputproperty="host3.deploy.output"
+		      failifexecutionfails="true">
 			<arg value="-i" />
 			<arg value="${ear.install.scp.keyfile}" />
 			<arg value="${ear.module.location}/build/nba.ear" />

@@ -41,7 +41,7 @@
 	<property name="client.module.location" location="${home}/${client.module.name}" />
 	<property name="client.module.artifact" value="${client.module.name}.jar" />
 
-	<property name="dao.module.name" value="nl.naturalis.nda.elasticsearch.dao" />
+	<property name="dao.module.name" value="nl.naturalis.nba.dao" />
 	<property name="dao.module.location" location="${home}/${dao.module.name}" />
 	<property name="dao.module.artifact" value="${dao.module.name}.jar" />
 

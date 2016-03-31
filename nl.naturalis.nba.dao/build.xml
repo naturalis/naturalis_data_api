@@ -3,7 +3,7 @@
          xmlns:if="ant:if"
          xmlns:unless="ant:unless"
          basedir="."
-         name="nl.naturalis.nda.elasticsearch.dao"
+         name="nl.naturalis.nba.dao"
          default="build">
 
 	<import file="../nl.naturalis.nba.build/common.xml" />

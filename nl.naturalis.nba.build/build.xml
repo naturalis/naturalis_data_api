@@ -1,64 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nda.build" default="help">
+<project xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless"
+         basedir="."
+         name="nl.naturalis.nba.build"
+         default="help">
+
+	<import file="./common.xml" />
 
 	<tstamp>
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
 	</tstamp>
 
-	<property file="build.properties" />
-
 	<target name="-verify">
 		<echo message="Verifying build environment" />
 		<!-- Do we have a Git command line client? -->
-		<exec executable="git" outputproperty="git.available" failifexecutionfails="false">
-			<arg value="branch" />
+		<exec executable="which" outputproperty="which.git">
+			<arg value="git" />
 		</exec>
-		<fail unless:set="git.available" message="Git not installed, or Git bin directory not added to PATH yet" />
-		<echo if:set="git.available" message="Git available" />
+		<fail message="Git not installed or not in PATH">
+			<condition>
+				<equals arg1="${which.git}" arg2="" />
+			</condition>
+		</fail>
 		<!-- Do we have build.properties? -->
-		<condition property="build.properties.missing">
+		<condition property="${build.properties.file}">
 			<not>
 				<resourcecount count="1">
 					<fileset dir="${basedir}" includes="build.properties" />
 				</resourcecount>
 			</not>
 		</condition>
-		<fail if:set="build.properties.missing" message="Copy build.properties.tpl to build.properties and make sure it contains the correct settings" />
-		<echo unless:set="build.properties.missing" message="build.properties present" />
-
+		<fail if:set="build.properties.missing"
+		      message="Missing ${build.properties.file} (copy and tune ${build.properties.file}.tpl)" />
 		<!-- We're good to go -->
-		<property name="signal.clear" value="on" />
 		<echo message="You got clearance" />
 	</target>
 
-	<target name="verify" description="Make sure everything is in place to do Ant builds for the NBA">
-		<antcall target="-verify" unless:set="signal.clear" />
-	</target>
-
-	<target name="-git-get-info" depends="verify">
-		<!-- Which branch ar we on? -->
-		<exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
-			<arg value="rev-parse" />
-			<arg value="--abbrev-ref" />
-			<arg value="HEAD" />
-		</exec>
-		<!-- What's the most recent tag on that branch? -->
-		<exec executable="git" outputproperty="git.tag" failifexecutionfails="true">
-			<arg value="describe" />
-			<arg value="--tags" />
-			<arg value="--abbrev=0" />
-		</exec>
-		<!-- From which commit are we building? -->
-		<exec executable="git" outputproperty="git.commit" failifexecutionfails="true">
-			<arg value="rev-parse" />
-			<arg value="--verify" />
-			<arg value="HEAD" />
-		</exec>
-		<!-- Do we have uncommitted changes? -->
-		<exec executable="git" outputproperty="git.status" failifexecutionfails="true">
-			<arg value="status" />
-			<arg value="-s" />
-		</exec>
+	<target name="git-show-info"
+	        depends="-verify,git-info"
+	        description="Show info about the Git branch for this build">
 		<echo message="" />
 		<echo message="" />
 		<echo message="****************************************************************" />
@@ -72,165 +53,21 @@
 			</not>
 		</condition>
 		<echo if:true="${git.show.status}" message=" " />
-		<echo if:true="${git.show.status}" message="There are uncommitted changes in branch ${git.branch}:" />
+		<echo if:true="${git.show.status}"
+		      message="There are uncommitted changes in branch ${git.branch}:" />
 		<echo if:true="${git.show.status}" message="${git.status}" />
 		<echo message="" />
 		<!-- Allow some time for a heart attack -->
 		<echo message="You got 3 seconds before the build continues ..." />
 		<sleep seconds="3" />
-		<property name="git.got.info" value="true" />
 	</target>
-
-	<target name="git-info" description="Show information about the Git branch you will be doing your build on">
-		<antcall target="-git-get-info" unless:set="git.got.info" />
-	</target>
-
-	<target name="clean" description="Signal that you want to clean up before executing the subsequently specified target">
-		<property name="signal.clean" value="on" />
-	</target>
-
-	<target name="nightly" description="Signal that you want to make a nightly build of the ear file (use before build or build-ear-file)">
-		<fail message="Cannot make nightly build and release build at the same time" if:set="signal.release" />
-		<property name="signal.nightly" value="on" />
-	</target>
-
-	<target name="release" description="Signal that you want to make a release build of the ear file (use before build or build-ear-file)">
-		<fail message="Cannot make nightly build and release build at the same time" if:set="signal.nightly" />
-		<property name="signal.release" value="on" />
-	</target>
-
-	<target name="-build-domain-module" depends="git-info">
-		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" inheritrefs="true" />
-	</target>
-
-	<target name="-build-dao-module" depends="-build-domain-module">
-		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" inheritrefs="true" />
-	</target>
-
-	<target name="-build-ejb-module" depends="-build-dao-module">
-		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" inheritrefs="true" />
-	</target>
-
-	<target name="-build-rest-module" depends="-build-ejb-module">
-		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" inheritrefs="true" />
-	</target>
-
-	<target name="clean-ear-module" description="Cleans up ear module and all modules it depends on">
-		<ant antfile="../nl.naturalis.nda.domain/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.ejb/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.elasticsearch.dao/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.service.rest/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" target="clean" />
-	</target>
-
-	<target name="build-ear-file" depends="-build-rest-module" description="Create the NBA ear file">
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" />
-	</target>
-
-	<target name="install-nba-config" description="Copies the NBA config files to the NBA config directory">
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritall="true" inheritrefs="true" target="install-config" />
-	</target>
-
-	<target name="clean-import-module" description="Perform cleanup for import module, but do not build or install">
-		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-import" />
-	</target>
-
-	<target name="-build-import-module" depends="-build-dao-module">
-		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.elasticsearch.load/build.xml" useNativeBasedir="true" inheritrefs="true" />
-	</target>
-
-	<target name="install-import-cli" depends="verify" description="Install shell scripts and config files but not Java libraries. Use when build.properties has changed, but source code has not">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-cli" />
-	</target>
-
-	<target name="install-import-libs" depends="verify" description="Install Java libraries but not shell scripts and config files. Use when source code has changed, but build.properties has not">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-import-libs" />
-	</target>
-
-	<target name="install-import-module" depends="-build-import-module" description="Install import module (Java libraries, shell scripts, config files)">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="clean-import" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import-libs" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" inheritrefs="true" target="install-import-cli" />
-	</target>
-
-	<target name="clean-export-module" description="Perform cleanup for export module, but do not build or install">
-		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" />
-	</target>
-
-	<target name="-build-export-module" depends="-build-dao-module">
-		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" target="clean" />
-		<ant antfile="../nl.naturalis.nda.export/build.xml" useNativeBasedir="true" />
-	</target>
-
-	<target name="install-export-cli" depends="verify" description="Install shell scripts and config files but not Java libraries. Use when build.properties has changed, but source code has not">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export-cli" />
-	</target>
-
-	<target name="install-export-module" depends="-build-export-module" description="Install export module (Java libraries, shell scripts, config files)">
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="clean-export" if:set="signal.clean" />
-		<ant antfile="../nl.naturalis.nda.sh/build.xml" useNativeBasedir="true" target="install-export" />
-	</target>
-
-	<target name="build" depends="build-ear-file" description="Create the NBA ear file" />
-
-	<target name="rebuild" depends="clean,build" description="Rebuild the NBA ear file from scratch" />
-
-	<target name="eclipse" depends="git-info" description="Create/adjust Eclipse metadata files">
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritrefs="true" target="eclipse" />
-	</target>
-
-	<target name="host0" description="Signal that you want to remotely deploy to ear.install.scp.host0 (see build.properties)">
-		<property name="deploy.to.host0" value="true" />
-	</target>
-
-	<target name="host1" description="Signal that you want to remotely deploy to ear.install.scp.host1 (see build.properties)">
-		<property name="deploy.to.host1" value="true" />
-	</target>
-
-	<target name="host2" description="Signal that you want to remotely deploy to ear.install.scp.host2 (see build.properties)">
-		<property name="deploy.to.host2" value="true" />
-	</target>
-
-	<target name="host3" description="Signal that you want to remotely deploy to ear.install.scp.host3 (see build.properties)">
-		<property name="deploy.to.host3" value="true" />
-	</target>
-
-	<target name="deploy-ear-file" depends="build-ear-file" description="Deploy ear file to Wildfly server. Remote deployment if preceded by host0, host1, etc.)">
-		<ant antfile="../nl.naturalis.nda.ear/build.xml" useNativeBasedir="true" inheritAll="true" target="deploy" />
-	</target>
-
-	<target name="build-config" description="List all settings in build.properties">
-		<echoproperties>
-			<propertyset>
-				<propertyref prefix="elasticsearch" />
-				<propertyref prefix="nda" />
-				<propertyref prefix="ear" />
-				<propertyref prefix="nl.naturalis" />
-			</propertyset>
-		</echoproperties>
-	</target>
+	
+	
+	
+	<target name="install-service" depends="-verify" />
 
 	<target name="help" description="Show help text">
 		<echo message="Show all build targets ...............................: ant -p" />
-		<echo message="Examples" />
-		<echo message="*    Deploy ear file to Wildfly:" />
-		<echo message="         ant deploy-ear-file" />
-		<echo message="     Note: if the ear file does not exist yet, it will be built first; otherwise the current ear file is deployed" />
-		<echo message="*    Deploy ear file to Wildfly:" />
-		<echo message="         ant clean deploy-ear-file" />
-		<echo message="     Note: this will discard the current ear file (if any) and build a new one from scratch" />
-		<echo message="*    Remote deployment (from your PC/laptop to Wildfly server)" />
-		<echo message="         ant host0 deploy-ear-file" />
-		<echo message="     Note: this will scp the ear file to a host specified by a property in build.properties (ear.install.scp.host0)" />
 		<echo message="More help is on the way" />
 	</target>
 

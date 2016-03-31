@@ -1,3 +1,4 @@
 /test-reports/
 /build.properties
+/build.v2.properties
 /.ant-targets-build.xml

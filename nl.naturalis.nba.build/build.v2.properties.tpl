@@ -41,11 +41,11 @@ nl.naturalis.nba.baseurl=v2
 # For now, you must maintain this variable both here and
 # in Wildfly's standalone.xml. I will change the code
 # soon such that you will only have to set it here.
-nl.naturalis.nba.conf.dir=/home/ayco/projects/nba/v1/service
+nl.naturalis.nba.conf.dir=/home/ayco/projects/nba/v2/service
 
-# Directory to which to copy ear file such that gets
-# picked up automatically by wildfly
-ear.install.dir=/opt/wildfly-8.2.1.Final/standalone/deployments
+# Full path (including file name) of the destination of
+# the ear file once it it has been built. 
+ear.install.path=/home/ayco/programs/wildfly-8.1.0/standalone/deployments/nba.ear
 
 
 
@@ -58,7 +58,7 @@ ear.install.dir=/opt/wildfly-8.2.1.Final/standalone/deployments
 # import programs. Will contain an sh directory (shell
 # scripts), a conf directory (config files), and a lib
 # directory (jar files).
-nba.import.install.dir=/home/ayco/projects/nba/v1/import
+nba.import.install.dir=/home/ayco/projects/nba/v2/import
 
 # Directories containing the CSV dumps, XML dumps, etc.
 nba.import.crs.datadir=/home/ayco/projects/nba/data/crs
@@ -73,7 +73,7 @@ nba.import.col.year=2015
 # Directory into which to write log files for the import
 # module. If you want to finetune logging, you will have to
 # manually edit ${nba.import.install.dir}/conf/logback.xml
-nba.import.log.dir=/home/ayco/projects/nba/v0/import/log
+nba.import.log.dir=/home/ayco/projects/nba/v2/import/log
 
 # The base URL for PURLs. If you leave this blank, the
 # base URL for the production environment is used

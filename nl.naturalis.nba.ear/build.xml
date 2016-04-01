@@ -18,19 +18,23 @@
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
 		<mkdir dir="${assemblydir}/lib" />
+		<!-- Copy ejb jar and web app to root of archive -->
+		<copy todir="${assemblydir}"
+		      file="${ejb.module.location}/build/${ejb.module.artifact}" />
+		<copy todir="${assemblydir}"
+		      file="${rest.module.location}/build/${rest.module.artifact}" />
+		<!-- Copy api and dao libraries to lib dir -->
 		<copy todir="${assemblydir}/lib"
 		      file="${api.module.location}/build/${api.module.artifact}" />
 		<copy todir="${assemblydir}/lib"
 		      file="${dao.module.location}/build/${dao.module.artifact}" />
-		<copy todir="${assemblydir}"
-		      file="${ejb.module.location}/build/${ejb.module.artifact}" />
-		<copy file="${rest.module.location}/build/${rest.module.artifact}"
-		      todir="${assemblydir}" />
+		<!-- Copy dependencies to lib dir -->
 		<copy todir="${assemblydir}/lib">
 			<fileset dir="${api.module.location}/build/classpath" />
 			<fileset dir="${dao.module.location}/build/classpath" />
 			<fileset dir="${ejb.module.location}/build/classpath" />
-			<fileset dir="${rest.module.location}/build/classpath" />
+			<fileset dir="${rest.module.location}/build/classpath"
+			         excludes="${ejb.module.artifact}" />
 		</copy>
 		<copy todir="${assemblydir}/META-INF">
 			<fileset dir="EarContent/META-INF" />
@@ -39,184 +43,28 @@
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
 		<!--
-			Make sure we don't also have our ejb jar and web app in the
+			Make sure we don't have the ejb jar and web app in the
 			ear file's lib directory b/c Wildfly will choke over it
-		-->
 		<delete dir="${assemblydir}/lib" file="${ejb.module.artifact}" />
 		<delete dir="${assemblydir}/lib" file="${rest.module.artifact}" />
+		-->
 	</target>
 
-	<target name="-assemble-hack">
-		<echo message="Collecting files for ear file" />
-		<mkdir dir="${assemblydir}" />
-		<mkdir dir="${assemblydir}/META-INF" />
-		<mkdir dir="${assemblydir}/lib" />
-		<copy todir="${assemblydir}/lib"
-		      file="${api.module.location}/build/${api.module.artifact}" />
-		<copy todir="${assemblydir}/lib"
-		      file="${dao.module.location}/build/${dao.module.artifact}" />
-		<copy todir="${assemblydir}"
-		      file="${ejb.module.location}/build/${ejb.module.artifact}" />
-		<copy file="${rest.module.location}/build/${rest.module.artifact}"
-		      todir="${assemblydir}" />
-		<copy todir="${assemblydir}/META-INF">
-			<fileset dir="EarContent/META-INF" />
-		</copy>
-		<copy todir="${assemblydir}/lib">
-			<fileset dir="EarContent/lib" />
-			<filterset begintoken="@"
-			           endtoken="@"
-			           filtersfile="${build.module.location}/${build.properties.file}" />
-		</copy>
-	</target>
-
-	<!-- Create ear file, but only if it does not exist already -->
-	<target name="-package">
+	<target name="create-ear-file" depends="-assemble">
 		<jar destfile="build/${ear.module.artifact}" basedir="${assemblydir}" />
 	</target>
 
-	<target name="-clean">
-		<available file="build" type="dir" property="build.dir.exists" />
-		<delete includeemptydirs="true" if:set="build.dir.exists">
-			<fileset dir="build" includes="**/*" />
-		</delete>
-		<mkdir dir="build" />
-		<mkdir dir="build/assemble" />
-	</target>
+	<target name="build" depends="build-rest-module,clean,create-ear-file" />
 
-	<target name="build" depends="build-rest-module,-clean,-assemble,-package" />
-
-	<target name="install-config">
-		<available file="${nl.naturalis.nba.conf.dir}"
-		           type="dir"
-		           property="nba.conf.dir.exists" />
-		<fail unless:set="nba.conf.dir.exists"
-		      message="No such directory: ${nl.naturalis.nba.conf.dir}. Check ${build.properties.file}" />
+	<target name="install" depends="build">
+		<copy file="build/${ear.module.artifact}"
+		      tofile="${ear.install.path}"
+		      overwrite="true" />
 		<copy todir="${nl.naturalis.nba.conf.dir}" file="nda.properties" overwrite="true">
 			<filterset begintoken="@"
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
-	</target>
-
-	<target name="deploy" depends="build">
-		<!--
-			Hot deployment through dropping the earfile into the
-		    wildfly deployments directory requires the ear file
-		    to be named nba.ear
-		-->
-		<available file="${ear.module.location}/build/nba.ear"
-		           property="earfile.renamed" />
-		<copy file="${ear.module.artifact}"
-		      tofile="${ear.module.location}/build/nba.ear" />
-		<condition property="deploy.local">
-			<and>
-				<not>
-					<isset property="deploy.to.host0" />
-				</not>
-				<not>
-					<isset property="deploy.to.host1" />
-				</not>
-				<not>
-					<isset property="deploy.to.host2" />
-				</not>
-				<not>
-					<isset property="deploy.to.host3" />
-				</not>
-			</and>
-		</condition>
-
-		<!--
-			If no host was specified through one of the above host
-			targets, we assume we are on the server and do a local
-			deployment.
-		-->
-		<move if:set="deploy.local"
-		      file="${ear.module.location}/build/nba.ear"
-		      todir="${ear.install.dir}" />
-		<echo if:set="deploy.local"
-		      message="Copying configuration files to ${nl.naturalis.nda.conf.dir}" />
-		<copy if:set="deploy.local"
-		      todir="${nl.naturalis.nda.conf.dir}"
-		      file="nda.properties"
-		      overwrite="true">
-			<filterset begintoken="@"
-			           endtoken="@"
-			           filtersfile="${build.module.location}/build.properties" />
-		</copy>
-
-
-		<!--
-			Otherwise we assume we want to do a deployment from our
-			PC/laptop.
-		-->
-
-		<property name="scp" value="${build.module.location}/pscp.exe" />
-
-		<echo if:set="deploy.to.host0"
-		      message="Deploying to ${ear.install.scp.host0} ..." />
-		<exec if:set="deploy.to.host0"
-		      executable="${scp}"
-		      errorproperty="host0.deploy.error"
-		      outputproperty="host0.deploy.output"
-		      failifexecutionfails="true">
-			<arg value="-i" />
-			<arg value="${ear.install.scp.keyfile}" />
-			<arg value="${ear.module.location}/build/nba.ear" />
-			<arg value="${ear.install.scp.user}@${ear.install.scp.host0}:${ear.install.dir}" />
-		</exec>
-		<echo if:set="host0.deploy.error" message="${host0.deploy.error}" />
-		<echo if:set="host0.deploy.output" message="${host0.deploy.output}" />
-
-		<echo if:set="deploy.to.host1"
-		      message="Deploying to ${ear.install.scp.host1} ..." />
-		<exec if:set="deploy.to.host1"
-		      executable="${scp}"
-		      errorproperty="host1.deploy.error"
-		      outputproperty="host1.deploy.output"
-		      failifexecutionfails="true">
-			<arg value="-i" />
-			<arg value="${ear.install.scp.keyfile}" />
-			<arg value="${ear.module.location}/build/nba.ear" />
-			<arg value="${ear.install.scp.user}@${ear.install.scp.host1}:${ear.install.dir}" />
-		</exec>
-		<echo if:set="host1.deploy.error" message="${host1.deploy.error}" />
-		<echo if:set="host1.deploy.output" message="${host1.deploy.output}" />
-
-		<echo if:set="deploy.to.host2"
-		      message="Deploying to ${ear.install.scp.host2} ..." />
-		<exec if:set="deploy.to.host2"
-		      executable="${scp}"
-		      errorproperty="host2.deploy.error"
-		      outputproperty="host2.deploy.output"
-		      failifexecutionfails="true">
-			<arg value="-i" />
-			<arg value="${ear.install.scp.keyfile}" />
-			<arg value="${ear.module.location}/build/nba.ear" />
-			<arg value="${ear.install.scp.user}@${ear.install.scp.host2}:${ear.install.dir}" />
-		</exec>
-		<echo if:set="host2.deploy.error" message="${host2.deploy.error}" />
-		<echo if:set="host2.deploy.output" message="${host2.deploy.output}" />
-
-		<echo if:set="deploy.to.host3"
-		      message="Deploying to ${ear.install.scp.host3} ..." />
-		<exec if:set="deploy.to.host3"
-		      executable="${scp}"
-		      errorproperty="host3.deploy.error"
-		      outputproperty="host3.deploy.output"
-		      failifexecutionfails="true">
-			<arg value="-i" />
-			<arg value="${ear.install.scp.keyfile}" />
-			<arg value="${ear.module.location}/build/nba.ear" />
-			<arg value="${ear.install.scp.user}@${ear.install.scp.host3}:${ear.install.dir}" />
-		</exec>
-		<echo if:set="host3.deploy.error" message="${host3.deploy.error}" />
-		<echo if:set="host3.deploy.output" message="${host3.deploy.output}" />
-
-	</target>
-
-	<target name="eclipse">
-		<antcall target="templates" />
 	</target>
 
 </project>

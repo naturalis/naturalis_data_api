@@ -1,49 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant"
-         xmlns:if="ant:if"
-         xmlns:unless="ant:unless"
-         basedir="."
-         name="nl.naturalis.nba.etl"
-         default="build">
+<project basedir="." name="nl.naturalis.nba.etl">
 
 	<import file="../nl.naturalis.nba.build/common.xml" />
+	<import file="../nl.naturalis.nba.build/modules.xml" />
 
-	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
+	<!-- Project dependencies and non-Ivy-managed dependencies -->
 	<path id="non-ivy-dependencies">
-		<!-- projects that this project depends on -->
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
 		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
-		<!-- libraries not inside this project's lib dir -->
 		<filelist dir="${build.module.location}/lib">
 			<file name="org.domainobject.util.jar" />
 			<file name="org.domainobject.util.http.jar" />
 		</filelist>
 	</path>
 
-	<!-- Build referenced projects -->
-	<target name="-projects">
-		<echo message="Building required projects for ${ant.project.name}" />
-		<ant antfile="${api.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritrefs="true" />
-		<ant antfile="${dao.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritrefs="true" />
-	</target>
-
-	<!-- Create jar file, but only if it does not exist already -->
-	<target name="-package" depends="-projects,package" />
-
-	<target name="build">
-		<available file="build/${etl.module.artifact}"
-		           property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged"
-		      message="${ant.project.name} already built. Clean project to force rebuild." />
-		<echo unless:set="${ant.project.name}.packaged"
-		      message="********************************* [ Building ${ant.project.name} ] *********************************" />
-		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
-	</target>
-
-	<target name="rebuild" depends="clean,build" />
+	<target name="build" depends="build-dao-module,clean,package" />
 
 </project>

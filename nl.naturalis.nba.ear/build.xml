@@ -7,26 +7,10 @@
          default="build">
 
 	<import file="../nl.naturalis.nba.build/common.xml" />
+	<import file="../nl.naturalis.nba.build/modules.xml" />
 
 	<!-- Directory into which to collect the contents of the ear file -->
 	<property name="assemblydir" location="${basedir}/build/assemble" />
-
-	<!-- Build referenced projects -->
-	<target name="-projects">
-		<echo message="Building referenced projects for ${ant.project.name}" />
-		<ant antfile="${api.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritrefs="true" />
-		<ant antfile="${dao.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritrefs="true" />
-		<ant antfile="${ejb.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritrefs="true" />
-		<ant antfile="${rest.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritrefs="true" />
-	</target>
 
 	<!-- Collect stuff for ear file -->
 	<target name="-assemble">
@@ -34,13 +18,13 @@
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
 		<mkdir dir="${assemblydir}/lib" />
-		<copy file="${api.module.location}/build/${api.module.artifact}"
-		      todir="${assemblydir}/lib" />
-		<copy file="${dao.module.location}/build/${dao.module.artifact}"
-		      todir="${assemblydir}/lib" />
-		<copy file="${ejb.module.location}/build/nl.naturalis.nda.ejb.jar"
-		      todir="${assemblydir}" />
-		<copy file="${rest.module.location}/build/nl.naturalis.nda.service.rest.war"
+		<copy todir="${assemblydir}/lib"
+		      file="${api.module.location}/build/${api.module.artifact}" />
+		<copy todir="${assemblydir}/lib"
+		      file="${dao.module.location}/build/${dao.module.artifact}" />
+		<copy todir="${assemblydir}"
+		      file="${ejb.module.location}/build/${ejb.module.artifact}" />
+		<copy file="${rest.module.location}/build/${rest.module.artifact}"
 		      todir="${assemblydir}" />
 		<copy todir="${assemblydir}/lib">
 			<fileset dir="${api.module.location}/build/classpath" />
@@ -58,12 +42,12 @@
 		<mkdir dir="${assemblydir}" />
 		<mkdir dir="${assemblydir}/META-INF" />
 		<mkdir dir="${assemblydir}/lib" />
-		<copy file="${api.module.location}/build/${api.module.artifact}"
-		      todir="${assemblydir}/lib" />
-		<copy file="${dao.module.location}/build/${dao.module.artifact}"
-		      todir="${assemblydir}/lib" />
-		<copy file="${ejb.module.location}/build/${ejb.module.artifact}"
-		      todir="${assemblydir}" />
+		<copy todir="${assemblydir}/lib"
+		      file="${api.module.location}/build/${api.module.artifact}" />
+		<copy todir="${assemblydir}/lib"
+		      file="${dao.module.location}/build/${dao.module.artifact}" />
+		<copy todir="${assemblydir}"
+		      file="${ejb.module.location}/build/${ejb.module.artifact}" />
 		<copy file="${rest.module.location}/build/${rest.module.artifact}"
 		      todir="${assemblydir}" />
 		<copy todir="${assemblydir}/META-INF">
@@ -75,13 +59,11 @@
 	</target>
 
 	<!-- Create ear file, but only if it does not exist already -->
-	<target name="-package" depends="-projects,-assemble-hack">
+	<target name="-package" depends="-assemble-hack">
 		<jar destfile="${ear.module.artifact}" basedir="${assemblydir}" />
 	</target>
 
-	<!-- Overrides clean in common.xml -->
-	<target name="clean">
-		<echo message="Performing cleanup for ${ant.project.name}" />
+	<target name="-clean">
 		<available file="build" type="dir" property="build.dir.exists" />
 		<delete includeemptydirs="true" if:set="build.dir.exists">
 			<fileset dir="build" includes="**/*" />
@@ -90,21 +72,7 @@
 		<mkdir dir="build/assemble" />
 	</target>
 
-	<target name="build" depends="git-info">
-		<property unless:set="signal.nightly"
-		          name="ear.module.artifact"
-		          value="${ear.module.location}/build/nba.${git.tag}.ear" />
-		<property if:set="signal.nightly"
-		          name="ear.module.artifact"
-		          value="${ear.module.location}/build/nba.${git.commit}.ear" />
-		<available file="${ear.module.artifact}"
-		           property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged"
-		      message="${ant.project.name} already built. Clean project to force rebuild." />
-		<echo unless:set="${ant.project.name}.packaged"
-		      message="*************** [ Building ${ant.project.name} ] ***************" />
-		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
-	</target>
+	<target name="build" depends="build-api-module,-clean" />
 
 	<target name="install-config">
 		<available file="${nl.naturalis.nda.conf.dir}"

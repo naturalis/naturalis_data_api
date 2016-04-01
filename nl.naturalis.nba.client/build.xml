@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." name="nl.naturalis.nda.client" default="build">
+<project basedir="." name="nl.naturalis.nba.client">
 
-	<import file="../nl.naturalis.nda.build/properties.xml" />
-	<import file="../nl.naturalis.nda.build/common.xml" />
-	<property file="../nl.naturalis.nda.build/build.properties" />
-	<property environment="env" />
+	<import file="../nl.naturalis.nba.build/common.xml" />
+	<import file="../nl.naturalis.nba.build/modules.xml" />
 
-	<target name="build" />
+	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
+	<path id="non-ivy-dependencies">
+		<!-- project dependencies -->
+		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
+		<!-- required libraries not inside the lib directory -->
+		<filelist dir="${build.module.location}/lib">
+			<file name="org.domainobject.util.jar" />
+			<file name="org.domainobject.util.http.jar" />
+		</filelist>
+	</path>
+
+	<target name="build" depends="build-api-module,clean,package" />
+
 
 </project>

@@ -7,7 +7,7 @@
 			<module name="org.slf4j.impl" />
 		</exclusions>
 	</deployment>
-	<sub-deployment name="nl.naturalis.nda.service.rest.war">
+	<sub-deployment name="nl.naturalis.nba.rest.war">
 		<exclusions>
 			<module name="org.slf4j" />
 			<module name="org.slf4j.impl" />

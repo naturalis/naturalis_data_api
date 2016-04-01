@@ -1,32 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant"
-         xmlns:if="ant:if"
-         xmlns:unless="ant:unless"
-         basedir="."
-         name="nl.naturalis.nba.api"
-         default="build">
+<project basedir="." name="nl.naturalis.nba.api">
 
 	<import file="../nl.naturalis.nba.build/common.xml" />
+	<import file="../nl.naturalis.nba.build/modules.xml" />
 
-	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
+	<!-- Project dependencies and non-Ivy-managed dependencies -->
 	<path id="non-ivy-dependencies" />
 
-	<!-- Build referenced projects -->
-	<target name="-projects" />
-
-	<!-- Create jar file, but only if it does not exist already -->
-	<target name="-package" depends="-projects,package" />
-
-	<target name="build">
-		<available file="build/${api.module.artifact}"
-		           property="${ant.project.name}.packaged" />
-		<echo if:set="${ant.project.name}.packaged"
-		      message="${ant.project.name} already built. Clean project to force rebuild." />
-		<echo unless:set="${ant.project.name}.packaged"
-		      message="*************** [ Building ${ant.project.name} ] ***************" />
-		<antcall target="-package" unless:set="${ant.project.name}.packaged" />
-	</target>
-
-	<target name="rebuild" depends="clean,build" />
+	<target name="build" depends="clean,package" />
 
 </project>

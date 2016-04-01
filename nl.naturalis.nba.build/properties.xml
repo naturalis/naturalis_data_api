@@ -24,6 +24,7 @@
 
 	<property name="ear.module.name" value="nl.naturalis.nba.ear" />
 	<property name="ear.module.location" location="${home}/${ear.module.name}" />
+	<property name="ear.module.artifact" value="${ear.module.name}.ear" />
 
 	<property name="rest.module.name" value="nl.naturalis.nba.rest" />
 	<property name="rest.module.location" location="${home}/${rest.module.name}" />

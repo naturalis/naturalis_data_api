@@ -7,7 +7,7 @@
   <module>
     <web>
       <web-uri>nl.naturalis.nba.rest.war</web-uri>
-      <context-root>v0</context-root>
+      <context-root>@nl.naturalis.nba.baseurl@</context-root>
     </web>
   </module>
 </application>

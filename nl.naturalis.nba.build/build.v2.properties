@@ -1,22 +1,14 @@
 ##########################################################
 ##########################################################
 ##                                                      ##
-##         Configuration file for Ant builds            ##
+##         Configuration file for NBA builds            ##
 ##                                                      ##
 ##########################################################
 ##########################################################
 
-# This is a master configuration file that is read during
-# Ant builds to generate application configuration files
-# like nba.properties, nba-import.properties and
-# nba-export.properties, and various other files (e.g.
-# unix shell scripts).
-#
-# You must make a copy of this file named
-# build.v2.properties before you can start executing Ant
-# targets. Adjust the properties in that file as
-# appropriate before executing Ant targets.
-
+# This is the template for the master configuration file
+# for NBA builds. Make a copy named build.v2.properties
+# and edit that file as appropriate for your environment.
 
 
 
@@ -30,7 +22,7 @@ elasticsearch.transportaddress.host=127.0.0.1
 elasticsearch.transportaddress.port=9300
 elasticsearch.index.name=nda
 
-# ElasticSearch configuration (load module only)
+# ElasticSearch configuration (ETL module only)
 elasticsearch.index.numshards=1
 elasticsearch.index.numreplicas=0
 
@@ -43,13 +35,13 @@ elasticsearch.index.numreplicas=0
 
 # The context root a.k.a. base URL for this installation
 # of the NBA REST service
-nl.naturalis.nba.baseurl=v1
+nl.naturalis.nba.baseurl=v2
 
 # Directory containing nba.properties (service config).
 # For now, you must maintain this variable both here and
 # in Wildfly's standalone.xml. I will change the code
 # soon such that you will only have to set it here.
-nl.naturalis.nba.conf.dir=/home/ayco/projects/nba/
+nl.naturalis.nba.conf.dir=/home/ayco/projects/nba/v1/service
 
 # Directory to which to copy ear file such that gets
 # picked up automatically by wildfly

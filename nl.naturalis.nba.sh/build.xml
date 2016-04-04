@@ -7,91 +7,32 @@
          default="build">
 
 	<import file="../nl.naturalis.nba.build/common.xml" />
-
-
-
-	<!-- ****************************************************** -->
-	<!-- ******************** [ IMPORT ] ********************** -->
-	<!-- ****************************************************** -->
-
-	<!-- Uninstalls the command line interface for the ETL module -->
-	<target name="uninstall-import-cli">
-		<available file="${nba.import.install.dir}"
-		           type="dir"
-		           property="import.module.installed" />
-		<echo unless:set="import.module.installed"
-		      message="Installation directory does not exist: ${nba.import.install.dir} (nothing to clean)" />
-		<delete if:set="import.module.installed" dir="${nba.import.install.dir}/sh" />
-		<delete if:set="import.module.installed" dir="${nba.import.install.dir}/conf" />
-		<delete if:set="import.module.installed" dir="${nba.import.install.dir}/lib" />
-	</target>
+	<import file="../nl.naturalis.nba.build/modules.xml" />
 
 	<!-- Installs the command line interface for the ETL module -->
-	<target name="install-import-cli">
-		<!-- Check if the installation directory is present -->
-		<available file="${nba.import.install.dir}"
-		           type="dir"
-		           property="sh.module.installed" />
-		<fail unless:set="sh.module.installed"
-		      message="Missing directory ${nba.import.install.dir}. You have problably never installed the import module before." />
-		<echo message="Installing configuration files into ${nba.import.install.dir}/conf" />
-		<copy todir="${nba.import.install.dir}/conf" overwrite="true">
-			<fileset dir="import/conf">
-				<exclude name="**/*.git*" />
-				<exclude name="es-settings.json" />
-				<exclude name="nba-import.properties" />
-			</fileset>
+	<target name="install-etl-module" depends="build-etl-module">
+		<mkdir dir="${nba.import.install.dir}" />
+		<mkdir dir="${nba.import.install.dir}/conf" />
+		<mkdir dir="${nba.import.install.dir}/sh" />
+		<delete dir="${nba.import.install.dir}/lib" />
+		<mkdir dir="${nba.import.install.dir}/lib" />
+		<copy todir="${nba.import.install.dir}/conf" overwrite="false">
+			<fileset dir="import/conf" />
 		</copy>
-		<copy todir="${nba.import.install.dir}/conf" overwrite="true">
-			<fileset dir="import/conf">
-				<include name="es-settings.json" />
-				<include name="nba-import.properties" />
-			</fileset>
-			<filterset begintoken="@"
-			           endtoken="@"
-			           filtersfile="${build.module.location}/${build.properties.file}" />
-		</copy>
-		<echo message="Installing shell scripts into ${nba.import.install.dir}/sh" />
 		<copy todir="${nba.import.install.dir}/sh" overwrite="true">
 			<fileset dir="import/sh" excludes="**/*.git*" />
 			<filterset begintoken="@"
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
-		<!-- Make shell scripts executable -->
+		<copy todir="${nba.import.install.dir}/lib" overwrite="true">
+			<fileset dir="${api.module.location}/build/classpath" />
+			<fileset dir="${dao.module.location}/build/classpath" />
+			<fileset dir="${etl.module.location}/build/classpath" />
+			<fileset file="${etl.module.location}/build/${etl.module.artifact}" />
+		</copy>
 		<chmod dir="${nba.import.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 	</target>
-
-	<target name="install-import-libs">
-		<!-- Create installation directory -->
-		<mkdir dir="${nba.import.install.dir}" />
-		<echo message="Installing libraries into ${nba.import.install.dir}/lib" />
-		<!-- Create lib dir under installation directory -->
-		<mkdir dir="${nba.import.install.dir}/lib" />
-		<!-- Copy the api jar to the lib dir -->
-		<copy file="${api.module.location}/build/${api.module.artifact}"
-		      todir="${nba.import.install.dir}/lib" />
-		<!-- Copy all dependencies for the api module to the lib dir -->
-		<copy todir="${nba.import.install.dir}/lib">
-			<fileset dir="${api.module.location}/build/classpath" />
-		</copy>
-		<!-- Copy the dao jar to the lib dir -->
-		<copy file="${dao.module.location}/build/${dao.module.artifact}"
-		      todir="${nba.import.install.dir}/lib" />
-		<!-- Copy all dependencies for the dao module to the lib dir -->
-		<copy todir="${nba.import.install.dir}/lib">
-			<fileset dir="${dao.module.location}/build/classpath" />
-		</copy>
-		<!-- Copy the etl jar to the lib dir -->
-		<copy file="${etl.module.location}/build/${etl.module.artifact}"
-		      todir="${nba.import.install.dir}/lib" />
-		<!-- Copy all dependencies for the etl module to the lib dir -->
-		<copy todir="${nba.import.install.dir}/lib">
-			<fileset dir="${etl.module.location}/build/classpath" />
-		</copy>
-	</target>
-
-
 
 	<!-- ****************************************************** -->
 	<!-- ******************** [ EXPORT ] ********************** -->

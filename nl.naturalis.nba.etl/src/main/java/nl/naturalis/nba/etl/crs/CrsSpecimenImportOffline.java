@@ -125,7 +125,7 @@ public class CrsSpecimenImportOffline {
 	private static File[] getXmlFiles()
 	{
 		ConfigObject config = Registry.getInstance().getConfig();
-		String path = config.required("crs.data_dir");
+		String path = config.required("crs.data.dir");
 		logger.info("Data directory for CRS specimen import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name)

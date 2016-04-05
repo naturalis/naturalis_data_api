@@ -128,7 +128,7 @@ public class CrsMultiMediaImportOffline {
 	private static File[] getXmlFiles()
 	{
 		ConfigObject config = Registry.getInstance().getConfig();
-		String path = config.required("crs.data_dir");
+		String path = config.required("crs.data.dir");
 		logger.info("Data directory for CRS multimedia import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {
 

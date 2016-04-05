@@ -404,7 +404,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			return null;
 		String result = posNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			warn("Ignoring rogue value for PhaseOrStage: " + raw);
+			if (!suppressErrors)
+				warn("Ignoring rogue value for PhaseOrStage: " + raw);
 			return null;
 		}
 		return result;
@@ -417,7 +418,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			return null;
 		String result = tsNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			warn("Ignoring rogue value for TypeStatus: " + raw);
+			if (!suppressErrors)
+				warn("Ignoring rogue value for TypeStatus: " + raw);
 			return null;
 		}
 		return result;
@@ -430,7 +432,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			return null;
 		String result = sexNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			warn("Ignoring rogue value for Sex: " + raw);
+			if (!suppressErrors)
+				warn("Ignoring rogue value for Sex: " + raw);
 			return null;
 		}
 		return result;

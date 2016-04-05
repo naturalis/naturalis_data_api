@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+import nl.naturalis.nba.api.annotations.NotAnalyzed;
+
 public class SourceSystem extends NBADomainObject {
 
 	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS",
@@ -13,6 +15,7 @@ public class SourceSystem extends NBADomainObject {
 	public static final SourceSystem NDFF = new SourceSystem("NDFF",
 			"NDFF - Nationale Databank Flora en Fauna");
 
+	@NotAnalyzed
 	private String code;
 	private String name;
 

@@ -477,7 +477,7 @@ class BrahmsImportUtil {
 
 	private static File getDataDir()
 	{
-		return Registry.getInstance().getConfig().getDirectory("brahms.data_dir");
+		return Registry.getInstance().getConfig().getDirectory("brahms.data.dir");
 	}
 
 }

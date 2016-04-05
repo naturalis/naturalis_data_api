@@ -26,7 +26,7 @@ import nl.naturalis.nba.api.search.QueryParams;
 import nl.naturalis.nba.api.search.ResultGroupSet;
 import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nba.dao.es.BioportalSpecimenDao;
-import nl.naturalis.nba.dao.es.SpecimenDao;
+import nl.naturalis.nba.dao.es.SpecimenDaoOld;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.service.rest.util.NDA;

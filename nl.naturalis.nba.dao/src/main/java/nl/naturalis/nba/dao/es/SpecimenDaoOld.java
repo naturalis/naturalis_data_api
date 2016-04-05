@@ -32,7 +32,7 @@ import org.elasticsearch.index.query.FilteredQueryBuilder;
 //import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 
-public class SpecimenDao extends AbstractDao {
+public class SpecimenDaoOld extends AbstractDao {
 //
 //	private final TaxonDao taxonDao;
 //

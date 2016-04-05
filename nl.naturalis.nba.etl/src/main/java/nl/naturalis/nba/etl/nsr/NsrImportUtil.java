@@ -125,7 +125,7 @@ class NsrImportUtil {
 
 	private static File getDataDir()
 	{
-		return Registry.getInstance().getConfig().getDirectory("nsr.data_dir");
+		return Registry.getInstance().getConfig().getDirectory("nba.import.nsr.data.dir");
 	}
 
 }

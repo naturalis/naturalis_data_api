@@ -11,27 +11,30 @@
 
 	<!-- Installs the command line interface for the ETL module -->
 	<target name="install-etl-module" depends="build-etl-module">
-		<mkdir dir="${nba.import.install.dir}" />
-		<mkdir dir="${nba.import.install.dir}/conf" />
-		<mkdir dir="${nba.import.install.dir}/sh" />
-		<delete dir="${nba.import.install.dir}/lib" />
-		<mkdir dir="${nba.import.install.dir}/lib" />
-		<copy todir="${nba.import.install.dir}/conf" overwrite="false">
-			<fileset dir="import/conf" />
-		</copy>
-		<copy todir="${nba.import.install.dir}/sh" overwrite="true">
-			<fileset dir="import/sh" excludes="**/*.git*" />
+		<mkdir dir="${etl.install.dir}" />
+		<mkdir dir="${etl.install.dir}/conf" />
+		<mkdir dir="${etl.install.dir}/sh" />
+		<delete dir="${etl.install.dir}/lib" />
+		<mkdir dir="${etl.install.dir}/lib" />
+		<copy todir="${etl.install.dir}/conf" overwrite="false">
+			<fileset dir="etl/conf" />
 			<filterset begintoken="@"
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
-		<copy todir="${nba.import.install.dir}/lib" overwrite="true">
+		<copy todir="${etl.install.dir}/sh" overwrite="true">
+			<fileset dir="etl/sh" excludes="**/*.git*" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/${build.properties.file}" />
+		</copy>
+		<copy todir="${etl.install.dir}/lib" overwrite="true">
 			<fileset dir="${api.module.location}/build/classpath" />
 			<fileset dir="${dao.module.location}/build/classpath" />
 			<fileset dir="${etl.module.location}/build/classpath" />
 			<fileset file="${etl.module.location}/build/${etl.module.artifact}" />
 		</copy>
-		<chmod dir="${nba.import.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
+		<chmod dir="${etl.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
 	</target>
 
 	<!-- ****************************************************** -->

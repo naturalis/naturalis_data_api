@@ -1,9 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+public class DistributionLocality extends NBADomainObject {
 
-
-public class DistributionLocality
-{
 	private String locality;
 
 	public String getLocality()
@@ -16,7 +14,6 @@ public class DistributionLocality
 		this.locality = locality;
 	}
 
-	
 	@Override
 	public boolean equals(Object obj)
 	{

@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.Agent;
-import nl.naturalis.nba.api.model.NdaTraceableObject;
+import nl.naturalis.nba.api.model.NBATraceableObject;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 
 
-public class ESSpecimen extends NdaTraceableObject {
+public class ESSpecimen extends NBATraceableObject {
 
 	private String unitID;
 	private String unitGUID;

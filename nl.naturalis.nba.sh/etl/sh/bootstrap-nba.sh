@@ -6,5 +6,5 @@
 
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${loadPackage}.NBAImportAll bootstrap
+java -cp ${classpath} $JAVA_OPTS ${etl_package}.NBAImportAll bootstrap
 

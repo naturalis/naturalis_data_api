@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dwc:scientificName
  */
-public class MultiMediaObject extends NdaTraceableObject {
+public class MultiMediaObject extends NBATraceableObject {
 
 	/**
 	 * Enumeration of the possible types of a {@code Media} object.

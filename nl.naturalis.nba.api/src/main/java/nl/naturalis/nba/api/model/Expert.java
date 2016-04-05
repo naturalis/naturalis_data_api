@@ -8,7 +8,8 @@ package nl.naturalis.nba.api.model;
  * even though it has no properties of its known. This is because for an
  * {@code Expert}, his/her name may be unknown ({@code null}), which would be
  * dubious for a regular {@code Person}. With an {@code Expert} either his/her
- * name or his/her organization may be unknown as long as at least one is known.
+ * name or his/her {@link Organization organization} may be unknown as long as
+ * at least one is known.
  */
 public class Expert extends Person {
 

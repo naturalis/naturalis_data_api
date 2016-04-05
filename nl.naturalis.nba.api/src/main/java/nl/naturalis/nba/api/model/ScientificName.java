@@ -10,7 +10,7 @@ import nl.naturalis.nba.api.annotations.NGram;
  * name components will only be set if they were provided separately by the
  * source system.
  */
-public class ScientificName {
+public class ScientificName extends NBADomainObject {
 
 	private String fullScientificName;
 	private TaxonomicStatus taxonomicStatus;
@@ -199,7 +199,8 @@ public class ScientificName {
 		if (genusOrMonomial != null ? !genusOrMonomial.equals(scientificName.genusOrMonomial)
 				: scientificName.genusOrMonomial != null)
 			return false;
-		if (infraspecificEpithet != null ? !infraspecificEpithet.equals(scientificName.infraspecificEpithet)
+		if (infraspecificEpithet != null
+				? !infraspecificEpithet.equals(scientificName.infraspecificEpithet)
 				: scientificName.infraspecificEpithet != null)
 			return false;
 		if (specificEpithet != null ? !specificEpithet.equals(scientificName.specificEpithet)

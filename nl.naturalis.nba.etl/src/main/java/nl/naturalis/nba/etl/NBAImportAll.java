@@ -3,6 +3,9 @@ package nl.naturalis.nba.etl;
 import java.io.File;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.Logger;
+import org.domainobject.util.FileUtil;
+
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
@@ -15,9 +18,6 @@ import nl.naturalis.nba.etl.crs.CrsImportAll;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.ndff.NdffSpecimenImporter;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
-
-import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
 
 /**
  * The central class of the import library. Start here. Allows you to bootstrap

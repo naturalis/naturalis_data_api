@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class Agent extends NdaDomainObject {
+public class Agent extends NBADomainObject {
 
 	private String agentText;
 

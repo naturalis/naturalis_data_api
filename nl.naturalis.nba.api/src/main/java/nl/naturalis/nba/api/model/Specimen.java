@@ -2,7 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
-public class Specimen extends NdaTraceableObject {
+public class Specimen extends NBATraceableObject {
 
 	private String unitID;
 	private String unitGUID;

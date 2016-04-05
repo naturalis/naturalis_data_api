@@ -4,13 +4,14 @@ import nl.naturalis.nba.api.annotations.NGram;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
+import nl.naturalis.nba.api.model.NBADomainObject;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 
 import java.util.Date;
 import java.util.List;
 
-public class ESGatheringEvent {
+public class ESGatheringEvent extends NBADomainObject {
 
 	private String projectTitle;
 	private String worldRegion;

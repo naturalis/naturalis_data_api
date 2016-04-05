@@ -2,7 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
-public class Taxon extends NdaTraceableObject {
+public class Taxon extends NBATraceableObject {
 
 	private String sourceSystemParentId;
 

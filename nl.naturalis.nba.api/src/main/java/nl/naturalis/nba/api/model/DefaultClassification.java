@@ -23,7 +23,8 @@ public class DefaultClassification {
 	 * @param systemClassification
 	 * @return
 	 */
-	public static DefaultClassification fromSystemClassification(List<Monomial> systemClassification)
+	public static DefaultClassification fromSystemClassification(
+			List<Monomial> systemClassification)
 	{
 		if (systemClassification == null) {
 			return null;

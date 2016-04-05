@@ -127,12 +127,12 @@ public class MappingFactory {
 		for (Method m : getMappedProperties(forClass)) {
 			String methodName = m.getName();
 			String fieldName;
-			if(methodName.startsWith("get")) {
+			if (methodName.startsWith("get")) {
 				fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
 			}
 			else {
 				fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
-			}			
+			}
 			document.addField(fieldName, createESField(m));
 		}
 	}
@@ -257,10 +257,12 @@ public class MappingFactory {
 		if (returnType == void.class)
 			return false;
 		String name = m.getName();
-		if (name.startsWith("get") && Character.isUpperCase(name.charAt(3))) {
+		if (name.startsWith("get")
+				&& (name.charAt(3) == '_' || Character.isUpperCase(name.charAt(3)))) {
 			return null != m.getAnnotation(MappedProperty.class);
 		}
-		if (name.startsWith("is") && Character.isUpperCase(name.charAt(2))) {
+		if (name.startsWith("is")
+				&& (name.charAt(2) == '_' || Character.isUpperCase(name.charAt(2)))) {
 			if (returnType == boolean.class || returnType == Boolean.class) {
 				return null != m.getAnnotation(MappedProperty.class);
 			}

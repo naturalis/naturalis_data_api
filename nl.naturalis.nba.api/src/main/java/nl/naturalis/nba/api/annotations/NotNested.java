@@ -18,7 +18,7 @@ import java.util.Collection;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface NotNested {
 
 }

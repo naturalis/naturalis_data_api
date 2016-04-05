@@ -3,11 +3,10 @@ package nl.naturalis.nba.api.model;
 public enum TaxonomicRank
 {
 
-	//@formatter:off
-	KINGDOM("kingdom","regnum"),
+	KINGDOM("kingdom", "regnum"),
 	PHYLUM("phylum"),
-	CLASS("class","classis"),
-	ORDER("order","ordo"),
+	CLASS("class", "classis"),
+	ORDER("order", "ordo"),
 	SUPER_FAMILY("superfamily", "suprafamilia"),
 	FAMILY("family", "familia"),
 	TRIBE("tribe", "tribus"),
@@ -15,11 +14,9 @@ public enum TaxonomicRank
 	SUBGENUS("subgenus"),
 	SPECIES("species"),
 	SUBSPECIES("subspecies");
-	//@formatter:on
 
 	private final String englishName;
 	private final String latinName;
-
 
 	private TaxonomicRank(String englishName, String latinName)
 	{
@@ -27,35 +24,30 @@ public enum TaxonomicRank
 		this.latinName = latinName;
 	}
 
-
 	private TaxonomicRank(String latinName)
 	{
 		this.englishName = latinName;
 		this.latinName = latinName;
 	}
 
-
 	public String getEnglishName()
 	{
 		return englishName;
 	}
-
 
 	public String getLatinName()
 	{
 		return latinName;
 	}
 
-
 	public String toString()
 	{
 		return englishName;
 	}
 
-
 	public static TaxonomicRank forName(String name)
 	{
-		if(name == null) {
+		if (name == null) {
 			return null;
 		}
 		name = name.toLowerCase();

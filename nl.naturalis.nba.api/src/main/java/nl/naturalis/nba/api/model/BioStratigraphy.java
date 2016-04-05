@@ -1,7 +1,7 @@
 package nl.naturalis.nba.api.model;
 
-public class BioStratigraphy
-{
+public class BioStratigraphy extends NBADomainObject {
+
 	private String youngBioDatingQualifier;
 	private String youngBioName;
 	private String youngFossilZone;
@@ -17,12 +17,12 @@ public class BioStratigraphy
 	private String oldFossilSubzone;
 	private String oldBioCertainty;
 	private String oldBioStratType;
-	
+
 	public String getYoungBioDatingQualifier()
 	{
 		return youngBioDatingQualifier;
 	}
-	
+
 	public void setYoungBioDatingQualifier(String youngBioDatingQualifier)
 	{
 		this.youngBioDatingQualifier = youngBioDatingQualifier;

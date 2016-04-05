@@ -8,8 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
@@ -24,6 +22,8 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
+import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
+
 /**
  * Class providing centralized access to core services such as logging and
  * elasticsearch. If anything goes wrong while configuring those services an
@@ -37,8 +37,21 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
  */
 public class Registry {
 
-	private static final String SYSPROP_CONFIG_DIR = "nba.v2.import.conf.dir";
-	private static final String CONFIG_FILE_NAME = "nba-import.properties";
+	/*
+	 * System property telling us where the directory containing all sort of
+	 * configuration files is. This directory contains nba.etl.properties,
+	 * log4j2.xml, es-settings.json, etc.
+	 */
+	private static final String SYSPROP_CONFIG_DIR = "nba.v2.etl.conf.dir";
+	/*
+	 * System property that we are going to set and that tells log4j how to name
+	 * the log file.
+	 */
+	private static final String SYSPROP_ETL_LOGFILE = "nba.v2.etl.logfile";
+	/*
+	 * Name of the main configuration file.
+	 */
+	private static final String CONFIG_FILE_NAME = "nba.etl.properties";
 
 	private static Registry instance;
 
@@ -167,8 +180,8 @@ public class Registry {
 	 */
 	public IndexManagerNative getNbaIndexManager()
 	{
-		return new IndexManagerNative(getESClient(), getConfig().required(
-				"elasticsearch.index.name"));
+		return new IndexManagerNative(getESClient(),
+				getConfig().required("elasticsearch.index.name"));
 	}
 
 	private void setConfDir()
@@ -286,11 +299,7 @@ public class Registry {
 
 	private void setupLogging()
 	{
-		/*
-		 * log4j2.xml should have parameterized the location of the log file by
-		 * using ${nba.import.log.file}
-		 */
-		System.setProperty("nba.import.log.file", getLogFileName());
+		System.setProperty(SYSPROP_ETL_LOGFILE, getLogFileName());
 		if (System.getProperty("log4j.configurationFile") == null) {
 			File f = FileUtil.newFile(confDir, "log4j2.xml");
 			if (f.exists()) {
@@ -309,7 +318,7 @@ public class Registry {
 	private String getLogFileName()
 	{
 		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
-		String now = new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date());
+		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 		String command = System.getProperty("sun.java.command");
 		String[] chunks = command.split("\\.");
 		String mainClass = chunks[chunks.length - 1].split(" ")[0];

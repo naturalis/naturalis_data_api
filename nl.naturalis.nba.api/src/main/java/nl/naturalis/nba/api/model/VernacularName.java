@@ -2,7 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
-public class VernacularName {
+public class VernacularName extends NBADomainObject {
 
 	private String name;
 	private String language;

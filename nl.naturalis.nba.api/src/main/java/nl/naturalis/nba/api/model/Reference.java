@@ -8,7 +8,7 @@ import java.util.Date;
  * @see http://wiki.tdwg.org/twiki/bin/view/ABCD/AbcdConcept0282
  * 
  */
-public class Reference {
+public class Reference extends NBADomainObject {
 
 	private String titleCitation;
 	private String citationDetail;
@@ -76,7 +76,8 @@ public class Reference {
 		}
 		Reference other = (Reference) obj;
 		// TODO: compare more properties
-		return eq(titleCitation, other.titleCitation) && eq(author, other.author) && eq(citationDetail, other.citationDetail)
+		return eq(titleCitation, other.titleCitation) && eq(author, other.author)
+				&& eq(citationDetail, other.citationDetail)
 				&& eq(publicationDate, other.publicationDate);
 	}
 

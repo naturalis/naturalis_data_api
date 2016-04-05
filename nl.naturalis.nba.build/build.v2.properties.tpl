@@ -17,7 +17,7 @@
 ##########################################################
 
 # ElasticSearch configuration (all modules)
-elasticsearch.cluster.name=ayco-01
+elasticsearch.cluster.name=ayco-es2
 elasticsearch.transportaddress.host=127.0.0.1
 elasticsearch.transportaddress.port=9300
 elasticsearch.index.name=nda
@@ -33,10 +33,6 @@ elasticsearch.index.numreplicas=0
 # NBA service
 ##########################################################
 
-# The context root a.k.a. base URL for this installation
-# of the NBA REST service
-nl.naturalis.nba.baseurl=v2
-
 # Directory containing nba.properties (service config).
 # For now, you must maintain this variable both here and
 # in Wildfly's standalone.xml. I will change the code
@@ -51,34 +47,29 @@ ear.install.path=/home/ayco/programs/wildfly-8.1.0/standalone/deployments/nba.ea
 
 
 ##########################################################
-# Import module
+# ETL module
 ##########################################################
 
 # Directory to which to copy the shell scripts for the
 # import programs. Will contain an sh directory (shell
 # scripts), a conf directory (config files), and a lib
 # directory (jar files).
-nba.import.install.dir=/home/ayco/projects/nba/v2/import
+etl.install.dir=/home/ayco/projects/nba/v2/import
 
 # Directories containing the CSV dumps, XML dumps, etc.
-nba.import.crs.datadir=/home/ayco/projects/nba/data/crs
-nba.import.col.datadir=/home/ayco/projects/nba/data/col
-nba.import.brahms.datadir=/home/ayco/projects/nba/data/brahms
-nba.import.nsr.datadir=/home/ayco/projects/nba/data/nsr
-nba.import.ndff.datadir=/home/ayco/projects/nba/data/ndff
+etl.crs.data.dir=/home/ayco/projects/nba/data/crs
+etl.col.data.dir=/home/ayco/projects/nba/data/col
+etl.brahms.data.dir=/home/ayco/projects/nba/data/brahms
+etl.nsr.data.dir=/home/ayco/projects/nba/data/nsr
+etl.ndff.data.dir=/home/ayco/projects/nba/data/ndff
 
 # Variable used to generate URLs for Catalogue of Life
-nba.import.col.year=2015
-
-# Directory into which to write log files for the import
-# module. If you want to finetune logging, you will have to
-# manually edit ${nba.import.install.dir}/conf/logback.xml
-nba.import.log.dir=/home/ayco/projects/nba/v2/import/log
+etl.col.year=2015
 
 # The base URL for PURLs. If you leave this blank, the
 # base URL for the production environment is used
 # (http://data.biodiversitydata.nl).
-nba.import.purl.baseurl=
+etl.purl.baseurl=
 
 
 

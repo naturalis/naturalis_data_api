@@ -28,7 +28,11 @@ import nl.naturalis.nba.dao.es.exception.ConnectionFailureException;
  */
 public class ESClientFactory {
 
-	private static final Logger logger = Registry.getInstance().getLogger(ESClientFactory.class);
+	private static final Logger logger;
+	
+	static {
+		logger = Registry.getInstance().getLogger(ESClientFactory.class);
+	}
 
 	private static HashMap<ConfigObject, ESClientFactory> factories;
 

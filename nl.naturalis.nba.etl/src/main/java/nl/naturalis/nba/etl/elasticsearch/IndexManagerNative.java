@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import nl.naturalis.nba.etl.Registry;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
@@ -37,10 +35,11 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.indices.TypeMissingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import nl.naturalis.nba.etl.Registry;
 
 /**
  * An implementation of {@link IndexManager} that uses ElasticSearch's Native

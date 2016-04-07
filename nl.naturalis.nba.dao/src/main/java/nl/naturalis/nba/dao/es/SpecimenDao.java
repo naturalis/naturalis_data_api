@@ -1,13 +1,15 @@
 package nl.naturalis.nba.dao.es;
 
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.domainobject.util.ConfigObject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
@@ -23,14 +25,18 @@ public class SpecimenDao {
 
 	private static ObjectMapper objectMapper;
 
+	private final String[] indices;
+
 	public SpecimenDao()
 	{
+		ConfigObject config = Registry.getInstance().getConfig();
+		indices = config.requiredArray("specimen.index");
 	}
 
 	public List<Specimen> findByUnitID(String unitID)
 	{
 		SearchRequestBuilder request = basicSearchRequest();
-		TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("unitID", unitID);
+		TermQueryBuilder termQueryBuilder = termQuery("unitID", unitID);
 		request.setQuery(termQueryBuilder);
 		SearchResponse response = request.execute().actionGet();
 		SearchHit[] hits = response.getHits().getHits();
@@ -58,15 +64,13 @@ public class SpecimenDao {
 		return objectMapper;
 	}
 
-	protected SearchRequestBuilder basicSearchRequest()
+	private SearchRequestBuilder basicSearchRequest()
 	{
-		Registry reg = Registry.getInstance();
-		ESClientFactory factory = reg.getESClientFactory();
+		Registry registry = Registry.getInstance();
+		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
-		String[] indices = reg.getIndices(ESSpecimen.class);
-		String type = reg.getType(ESSpecimen.class);
 		SearchRequestBuilder request = client.prepareSearch(indices);
-		request.setTypes(type);
+		request.setTypes(registry.getType(ESSpecimen.class));
 		return request;
 	}
 }

@@ -10,7 +10,7 @@ import nl.naturalis.nba.api.model.NBATraceableObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 
-public class ESMultiMediaObject extends NBATraceableObject {
+public class ESMultiMediaObject extends NBATraceableObject implements ESType {
 
 	private String sourceInstitutionID;
 	private String sourceID;
@@ -40,7 +40,6 @@ public class ESMultiMediaObject extends NBATraceableObject {
 	private List<String> identifyingEpithets;
 	private List<String> theme;
 
-
 	public void addServiceAccessPoint(ServiceAccessPoint sap)
 	{
 		if (serviceAccessPoints == null) {
@@ -49,300 +48,250 @@ public class ESMultiMediaObject extends NBATraceableObject {
 		serviceAccessPoints.add(sap);
 	}
 
-
 	public String getSourceInstitutionID()
 	{
 		return sourceInstitutionID;
 	}
-
 
 	public void setSourceInstitutionID(String sourceInstitutionID)
 	{
 		this.sourceInstitutionID = sourceInstitutionID;
 	}
 
-
 	public String getSourceID()
 	{
 		return sourceID;
 	}
-
 
 	public void setSourceID(String sourceID)
 	{
 		this.sourceID = sourceID;
 	}
 
-
 	public String getOwner()
 	{
 		return owner;
 	}
-
 
 	public void setOwner(String owner)
 	{
 		this.owner = owner;
 	}
 
-
 	public String getLicenceType()
 	{
 		return licenceType;
 	}
-
 
 	public void setLicenceType(String licenceType)
 	{
 		this.licenceType = licenceType;
 	}
 
-
 	public String getLicence()
 	{
 		return licence;
 	}
-
 
 	public void setLicence(String licence)
 	{
 		this.licence = licence;
 	}
 
-
 	public String getUnitID()
 	{
 		return unitID;
 	}
-
 
 	public void setUnitID(String unitID)
 	{
 		this.unitID = unitID;
 	}
 
-
 	public String getCollectionType()
 	{
 		return collectionType;
 	}
-
 
 	public void setCollectionType(String collectionType)
 	{
 		this.collectionType = collectionType;
 	}
 
-
 	public String getTitle()
 	{
 		return title;
 	}
-
 
 	public void setTitle(String title)
 	{
 		this.title = title;
 	}
 
-
 	public String getCaption()
 	{
 		return caption;
 	}
-
 
 	public void setCaption(String caption)
 	{
 		this.caption = caption;
 	}
 
-
 	public String getDescription()
 	{
 		return description;
 	}
-
 
 	public void setDescription(String description)
 	{
 		this.description = description;
 	}
 
-
 	public List<ServiceAccessPoint> getServiceAccessPoints()
 	{
 		return serviceAccessPoints;
 	}
-
 
 	public void setServiceAccessPoints(List<ServiceAccessPoint> serviceAccessPoints)
 	{
 		this.serviceAccessPoints = serviceAccessPoints;
 	}
 
-
 	public Type getType()
 	{
 		return type;
 	}
-
 
 	public void setType(Type type)
 	{
 		this.type = type;
 	}
 
-
 	public int getTaxonCount()
 	{
 		return taxonCount;
 	}
-
 
 	public void setTaxonCount(int taxonCount)
 	{
 		this.taxonCount = taxonCount;
 	}
 
-
 	public String getCreator()
 	{
 		return creator;
 	}
-
 
 	public void setCreator(String creator)
 	{
 		this.creator = creator;
 	}
 
-
 	public String getCopyrightText()
 	{
 		return copyrightText;
 	}
-
 
 	public void setCopyrightText(String copyrightText)
 	{
 		this.copyrightText = copyrightText;
 	}
 
-
 	public String getAssociatedSpecimenReference()
 	{
 		return associatedSpecimenReference;
 	}
-
 
 	public void setAssociatedSpecimenReference(String associatedSpecimenReference)
 	{
 		this.associatedSpecimenReference = associatedSpecimenReference;
 	}
 
-
 	public String getAssociatedTaxonReference()
 	{
 		return associatedTaxonReference;
 	}
-
 
 	public void setAssociatedTaxonReference(String associatedTaxonReference)
 	{
 		this.associatedTaxonReference = associatedTaxonReference;
 	}
 
-
 	public String getSpecimenTypeStatus()
 	{
 		return specimenTypeStatus;
 	}
-
 
 	public void setSpecimenTypeStatus(String specimenTypeStatus)
 	{
 		this.specimenTypeStatus = specimenTypeStatus;
 	}
 
-
 	public boolean isMultiMediaPublic()
 	{
 		return multiMediaPublic;
 	}
-
 
 	public void setMultiMediaPublic(boolean multiMediaPublic)
 	{
 		this.multiMediaPublic = multiMediaPublic;
 	}
 
-
 	public List<String> getSubjectParts()
 	{
 		return subjectParts;
 	}
-
 
 	public void setSubjectParts(List<String> subjectParts)
 	{
 		this.subjectParts = subjectParts;
 	}
 
-
 	public List<String> getSubjectOrientations()
 	{
 		return subjectOrientations;
 	}
-
 
 	public void setSubjectOrientations(List<String> subjectOrientations)
 	{
 		this.subjectOrientations = subjectOrientations;
 	}
 
-
 	public List<String> getPhasesOrStages()
 	{
 		return phasesOrStages;
 	}
-
 
 	public void setPhasesOrStages(List<String> phasesOrStages)
 	{
 		this.phasesOrStages = phasesOrStages;
 	}
 
-
 	public List<String> getSexes()
 	{
 		return sexes;
 	}
-
 
 	public void setSexes(List<String> sexes)
 	{
 		this.sexes = sexes;
 	}
 
-
 	public List<ESGatheringEvent> getGatheringEvents()
 	{
 		return gatheringEvents;
 	}
-
 
 	public void setGatheringEvents(List<ESGatheringEvent> gatheringEvents)
 	{
 		this.gatheringEvents = gatheringEvents;
 	}
 
-
 	public List<MultiMediaContentIdentification> getIdentifications()
 	{
 		return identifications;
 	}
-
 
 	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
 	{
@@ -365,18 +314,15 @@ public class ESMultiMediaObject extends NBATraceableObject {
 		}
 	}
 
-
 	public List<String> getIdentifyingEpithets()
 	{
 		return identifyingEpithets;
 	}
 
-
 	public List<String> getTheme()
 	{
 		return theme;
 	}
-
 
 	public void setTheme(List<String> theme)
 	{

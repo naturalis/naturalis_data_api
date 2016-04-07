@@ -7,7 +7,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.*;
 
-public class ESTaxon extends NBATraceableObject
+public class ESTaxon extends NBATraceableObject implements ESType
 {
 
 	private String sourceSystemParentId;

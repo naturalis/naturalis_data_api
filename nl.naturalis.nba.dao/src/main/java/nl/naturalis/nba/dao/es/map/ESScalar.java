@@ -2,7 +2,14 @@ package nl.naturalis.nba.dao.es.map;
 
 public class ESScalar extends ESField {
 
+	/**
+	 * A raw, i.e. "not_analyzed" string field.
+	 */
 	static final ESScalar RAW = new ESScalar(Index.NOT_ANALYZED);
+	/**
+	 * A string field analyzed using the default analyzer.
+	 */
+	static final ESScalar DEFAULT = new ESScalar();
 
 	private Index index;
 	private String analyzer;
@@ -16,6 +23,11 @@ public class ESScalar extends ESField {
 	{
 		this(ESDataType.STRING);
 		this.index = index;
+	}
+
+	private ESScalar()
+	{
+		this(ESDataType.STRING);
 	}
 
 	public Index getIndex()

@@ -158,11 +158,10 @@ public class MappingFactory {
 	private static void processNotAnalyzedAnnotation(DocumentField df, AnnotatedElement fm)
 	{
 		NotAnalyzed notAnalyzed = fm.getAnnotation(NotAnalyzed.class);
+		df.setIndex(Index.NOT_ANALYZED);
 		if (notAnalyzed == null) {
-			df.addRawField();
-		}
-		else {
-			df.setIndex(Index.NOT_ANALYZED);
+			/* So the thing IS analyzed */
+			df.addDefaultAnalyzedField();
 		}
 	}
 

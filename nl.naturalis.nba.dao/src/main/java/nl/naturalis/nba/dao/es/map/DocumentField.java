@@ -21,6 +21,11 @@ public class DocumentField extends ESScalar {
 		addToFields("raw", ESScalar.RAW);
 	}
 
+	public void addDefaultAnalyzedField()
+	{
+		addToFields("analyzed", ESScalar.DEFAULT);
+	}
+
 	public void addToFields(String name, ESScalar field)
 	{
 		if (fields == null) {

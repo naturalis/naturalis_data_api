@@ -23,7 +23,7 @@ public abstract class NBADomainObject {
 	 */
 	@MappedProperty
 	@NotIndexed
-	public String get__type()
+	public String getRuntimeType()
 	{
 		return getClass().getSimpleName();
 	}

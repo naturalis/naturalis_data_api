@@ -8,6 +8,12 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import nl.naturalis.nba.dao.es.exception.InitializationException;
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
@@ -37,7 +43,7 @@ public class Registry {
 	 */
 	public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
 
-	private static Registry instance;
+	protected static Registry instance;
 
 	private File confDir;
 	private ConfigObject config;
@@ -59,7 +65,7 @@ public class Registry {
 		return instance;
 	}
 
-	private Registry()
+	protected Registry()
 	{
 		setConfDir();
 		loadConfig();
@@ -135,8 +141,7 @@ public class Registry {
 	 */
 	public String[] getIndices(Class<? extends ESType> type)
 	{
-		// TODO: become more intelligent
-		return new String[] { "nda" };
+		return config.requiredArray("elasticsearch.index.default");
 	}
 
 	/**
@@ -157,6 +162,16 @@ public class Registry {
 			return "MultiMediaObject";
 		assert (false);
 		return null;
+	}
+
+	public ObjectMapper getObjectMapper(Class<? extends ESType> type)
+	{
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+		return mapper;
 	}
 
 	private void setConfDir()

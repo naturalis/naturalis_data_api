@@ -134,14 +134,14 @@ public class Registry {
 	}
 
 	/**
-	 * Returns the names of the indices storing the specified type.
+	 * Returns the names of the Elasticsearch index storing the specified type.
 	 * 
 	 * @param type
 	 * @return
 	 */
-	public String[] getIndices(Class<? extends ESType> type)
+	public String getIndex(Class<? extends ESType> type)
 	{
-		return config.requiredArray("elasticsearch.index.default");
+		return config.get("elasticsearch.index.default");
 	}
 
 	/**

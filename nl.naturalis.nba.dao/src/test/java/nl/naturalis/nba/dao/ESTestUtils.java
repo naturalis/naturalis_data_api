@@ -10,6 +10,7 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
@@ -28,12 +29,6 @@ import nl.naturalis.nba.dao.es.types.ESType;
 
 public class ESTestUtils {
 
-	/*
-	 * Choose short index refresh interval. Unit tests won't be doing that many
-	 * CRUD operations and we don't want them to wait (sleep) everytime they do.
-	 */
-	private static final long INDEX_REFRESH_INTERVAL = 1;
-
 	private static final Registry registry;
 	private static final Logger logger;
 
@@ -44,14 +39,13 @@ public class ESTestUtils {
 
 	public static void createIndex(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndices(cls)[0];
+		String index = registry.getIndex(cls);
 		logger.info("Creating index {}", index);
 		CreateIndexRequestBuilder request = indices().prepareCreate(index);
 		Builder builder = Settings.settingsBuilder();
 		File settingsFile = registry.getFile("es-settings.json");
 		String settings = FileUtil.getContents(settingsFile);
 		builder.loadFromSource(settings);
-		//builder.put("index.refresh_interval", INDEX_REFRESH_INTERVAL);
 		request.setSettings(builder.build());
 		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
@@ -62,7 +56,7 @@ public class ESTestUtils {
 
 	public static void dropIndex(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndices(cls)[0];
+		String index = registry.getIndex(cls);
 		logger.info("Deleting index {}", index);
 		DeleteIndexRequestBuilder request = indices().prepareDelete(index);
 		try {
@@ -79,7 +73,7 @@ public class ESTestUtils {
 
 	public static void createType(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndices(cls)[0];
+		String index = registry.getIndex(cls);
 		String type = registry.getType(cls);
 		logger.info("Creating type {}", type);
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
@@ -104,7 +98,7 @@ public class ESTestUtils {
 
 	public static void saveObject(String id, String parentId, ESType obj)
 	{
-		String index = registry.getIndices(obj.getClass())[0];
+		String index = registry.getIndex(obj.getClass());
 		String type = registry.getType(obj.getClass());
 		String source;
 		try {
@@ -121,6 +115,13 @@ public class ESTestUtils {
 			irb.setParent(parentId);
 		irb.setSource(source);
 		irb.execute().actionGet();
+	}
+
+	public static void refreshIndex(Class<? extends ESType> cls)
+	{
+		String index = registry.getIndex(cls);
+		RefreshRequestBuilder request = indices().prepareRefresh(index);
+		request.execute().actionGet();
 	}
 
 	/**

@@ -13,9 +13,10 @@ public class SpecimenTransfer {
 		// Only static method in transfer objects
 	}
 
-	public static Specimen transfer(ESSpecimen esSpecimen)
+	public static Specimen transfer(ESSpecimen esSpecimen, String elasticsearchId)
 	{
 		Specimen specimen = new Specimen();
+		specimen.setId(elasticsearchId);
 		specimen.setCollectorsFieldNumber(esSpecimen.getCollectorsFieldNumber());
 		specimen.setSourceSystem(esSpecimen.getSourceSystem());
 		specimen.setSourceSystemId(esSpecimen.getSourceSystemId());

@@ -3,9 +3,10 @@ package nl.naturalis.nba.api.model;
 import java.net.URI;
 
 /**
- * The base class for all domain objects within the NDA API that can be traced
- * back to a single record in one of the NBA's source systems. In other words,
- * these objects are not aggregations or assembled from multiple source systems.
+ * Abstract base class for all domain model classes that can be traced back to a
+ * single record in one of the NBA's source systems. In other words, instances
+ * of these classes do not represent aggregations or compositions from multiple
+ * source systems.
  */
 public abstract class NBATraceableObject extends NBADomainObject {
 
@@ -37,7 +38,7 @@ public abstract class NBATraceableObject extends NBADomainObject {
 
 	/**
 	 * Returns the ID of the record within the source system. This is typically
-	 * a raw, meaningless, auto-generated database ID.
+	 * an auto-generated database ID.
 	 * 
 	 * @return
 	 */
@@ -47,8 +48,8 @@ public abstract class NBATraceableObject extends NBADomainObject {
 	}
 
 	/**
-	 * Sets the ID of the record within the source system. This is typically a
-	 * raw, meaningless, auto-generated database ID.
+	 * Sets the ID of the record within the source system. This is typically an
+	 * auto-generated database ID.
 	 * 
 	 * @param sourceSystemId
 	 */

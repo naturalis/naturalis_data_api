@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ArrayUtil;
+import org.elasticsearch.action.get.GetRequestBuilder;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -18,27 +19,52 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.ISpecimenDAO;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.ESClientFactory;
 import nl.naturalis.nba.dao.Registry;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDao {
+public class SpecimenDAO implements ISpecimenDAO {
 
-	private static final Logger logger = Registry.getInstance().getLogger(SpecimenDao.class);
+	private static final Logger logger = Registry.getInstance().getLogger(SpecimenDAO.class);
 
 	private final Registry registry;
-	private final String[] esIndices;
+	private final String esIndex;
 	private final String esType;
 
-	public SpecimenDao()
+	public SpecimenDAO()
 	{
 		registry = Registry.getInstance();
-		esIndices = registry.getIndices(ESSpecimen.class);
+		esIndex = registry.getIndex(ESSpecimen.class);
 		esType = registry.getType(ESSpecimen.class);
 	}
 
+	public Specimen findById(String id)
+	{
+		ESClientFactory factory = registry.getESClientFactory();
+		Client client = factory.getClient();
+		GetRequestBuilder request = client.prepareGet();
+		request.setIndex(esIndex);
+		request.setType(esType);
+		request.setId(id);
+		GetResponse response = request.execute().actionGet();
+		if (!response.isExists()) {
+			return null;
+		}
+		Map<String, Object> data = response.getSource();
+		return createSpecimen(id, data);
+	}
+
+	/**
+	 * Retrieves a {@link Specimen} by its UnitID. Since the UnitID is not
+	 * specified to be unique across all of the NBA's data sources, a list of
+	 * specimens is returned.
+	 * 
+	 * @param unitID
+	 * @return
+	 */
 	public List<Specimen> findByUnitID(String unitID)
 	{
 		if (logger.isDebugEnabled()) {
@@ -58,52 +84,29 @@ public class SpecimenDao {
 		}
 		List<Specimen> specimens = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
-			Specimen specimen = convert(hit);
+			String id = hit.getId();
+			Map<String, Object> data = hit.getSource();
+			Specimen specimen = createSpecimen(id, data);
 			specimens.add(specimen);
 		}
 		return specimens;
 	}
 
-	public List<Specimen> findByUnitID2(String unitID)
+	private Specimen createSpecimen(String id, Map<String, Object> data)
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Searching for specimens with UnitID \"{}\"", unitID);
-		}
-		SearchRequestBuilder request = basicSearchRequest();
-		request.setSource("{\"query\" : {\"match_all\": {}}}");
-		if (logger.isDebugEnabled()) {
-			logger.debug("Generated query:\n" + request.toString());
-		}
-		SearchResponse response = request.execute().actionGet();
-		SearchHit[] hits = response.getHits().getHits();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Number of hits: {}", hits.length);
-		}
-		List<Specimen> specimens = new ArrayList<>(hits.length);
-		for (SearchHit hit : hits) {
-			Specimen specimen = convert(hit);
-			specimens.add(specimen);
-		}
-		return specimens;
-	}
-
-	private Specimen convert(SearchHit hit)
-	{
-		Map<String, Object> data = hit.getSource();
 		ObjectMapper om = registry.getObjectMapper(ESSpecimen.class);
 		ESSpecimen esSpecimen = om.convertValue(data, ESSpecimen.class);
-		return SpecimenTransfer.transfer(esSpecimen);
+		return SpecimenTransfer.transfer(esSpecimen, id);
 	}
 
 	private SearchRequestBuilder basicSearchRequest()
 	{
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
-		SearchRequestBuilder request = client.prepareSearch(esIndices);
+		SearchRequestBuilder request = client.prepareSearch(esIndex);
 		request.setTypes(registry.getType(ESSpecimen.class));
 		if (logger.isTraceEnabled()) {
-			String s = ArrayUtil.implode(esIndices);
-			logger.trace("Target indices: {}", s);
+			logger.trace("Target indices: {}", esIndex);
 			logger.trace("Target type: {}", esType);
 		}
 		return request;

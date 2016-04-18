@@ -1,70 +1,98 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import nl.naturalis.nba.api.annotations.NotAnalyzed;
+namespace nl\naturalis\nba\client\php\model;
 
-public class SourceSystem extends NBADomainObject {
+use nl\naturalis\nba\client\php\model\NBADomainObject;
 
-	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS",
-			"Naturalis - Botany catalogues");
-	public static final SourceSystem COL = new SourceSystem("COL",
-			"Species 2000 - Catalogue Of Life");
-	public static final SourceSystem CRS = new SourceSystem("CRS",
-			"Naturalis - Zoology and Geology catalogues");
-	public static final SourceSystem NSR = new SourceSystem("NSR",
-			"Naturalis - Nederlands Soortenregister");
-	public static final SourceSystem NDFF = new SourceSystem("NDFF",
-			"NDFF - Nationale Databank Flora en Fauna");
+final class SourceSystem extends NBADomainObject {
 
-	@NotAnalyzed
-	private String code;
-	private String name;
+	private static $brahms;
+	private static $col;
+	private static $crs;
+	private static $nsr;
+	private static $ndff;
 
-	public SourceSystem()
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\SourceSystem
+	 */
+	public static function BRAHMS()
 	{
+		if (self::$brahms === null)
+			self::$brahms = new SourceSystem("BRAHMS", "Naturalis - Botany catalogues");
+		return self::$brahms;
 	}
 
-	public SourceSystem(String code, String name)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\SourceSystem
+	 */
+	public static function COL()
 	{
-		this.code = code;
-		this.name = name;
+		if (self::$col === null)
+			self::$col = new SourceSystem("COL", "Species 2000 - Catalogue Of Life");
+		return self::$col;
 	}
 
-	public String getCode()
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\SourceSystem
+	 */
+	public static function CRS()
+	{
+		if (self::$crs === null)
+			self::$crs = new SourceSystem("CRS", "Naturalis - Zoology and Geology catalogues");
+		return self::$crs;
+	}
+
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\SourceSystem
+	 */
+	public static function NSR()
+	{
+		if (self::$nsr === null)
+			self::$nsr = new SourceSystem("NSR", "Naturalis - Nederlands Soortenregister");
+		return self::$nsr;
+	}
+
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\SourceSystem
+	 */
+	public static function NDFF()
+	{
+		if (self::$ndff === null)
+			self::$ndff = new SourceSystem("NDFF", "NDFF - Nationale Databank Flora en Fauna");
+		return self::$ndff;
+	}
+
+	private final $code;
+	private final $name;
+
+	private function __construct(string $code, string $name)
+	{
+		$this->code = $code;
+		$this->name = $name;
+	}
+
+	public function getCode()
 	{
 		return code;
 	}
 
-	public void setCode(String code)
+	public function setCode(string $code)
 	{
-		this.code = code;
+		$this->code = $code;
 	}
 
-	public String getName()
+	public function getName()
 	{
 		return name;
 	}
 
-	public void setName(String name)
+	public function setName(string $name)
 	{
-		this.name = name;
+		$this->name = $name;
 	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		return this == obj;
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return System.identityHashCode(this);
-	}
-
-	@Override
-	public String toString()
-	{
-		return code;
-	}
-
 }

@@ -1,41 +1,44 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-public enum Sex
-{
+namespace nl\naturalis\nba\client\php\model;
 
-	MALE, FEMALE, MIXED, HERMAPHRODITE;
+class Sex {
 
-	public static Sex parse(String name)
+	private static $male;
+	private static $female;
+	private static $mixed;
+	private static $hermaphrodite;
+
+	public static function MALE()
 	{
-		if (name == null) {
-			return null;
-		}
-		for (Sex sex : Sex.values()) {
-			if (sex.name.equalsIgnoreCase(name)) {
-				return sex;
-			}
-		}
-		return null;
+		if (self::$male === null)
+			self::$male = new Sex("male");
+		return self::$male;
 	}
 
-	private final String name;
-
-
-	private Sex(String name)
+	public static function FEMALE()
 	{
-		this.name = name;
+		if (self::$female === null)
+			self::$female = new Sex("female");
+		return self::$female;
 	}
 
-
-	private Sex()
+	public static function HERMAPHRODITE()
 	{
-		this.name = this.name().toLowerCase();
+		if (self::$hermaphrodite === null)
+			self::$hermaphrodite = new Sex("hermaphrodite");
+		return self::$hermaphrodite;
 	}
 
+	private final $name;
 
-	public String toString()
+	private function __construct(string $name)
 	{
-		return name;
+		$this->name = $name;
 	}
 
+	public function __toString()
+	{
+		return $this->name;
+	}
 }

@@ -13,7 +13,7 @@ import java.util.List;
  * @author ayco_holleman
  * 
  */
-public class DefaultClassification {
+public class DefaultClassification extends NBADomainObject {
 
 	/**
 	 * Extract's the NBA's default taxonomic classification from a provided

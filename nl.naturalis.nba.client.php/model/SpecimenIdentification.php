@@ -1,97 +1,101 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-public class SpecimenIdentification extends TaxonomicIdentification {
+namespace nl\naturalis\nba\client\php\model;
 
-	private boolean preferred;
-	private String verificationStatus;
-	private String rockType;
-	private String associatedFossilAssemblage;
-	private String rockMineralUsage;
-	private String associatedMineralName;
-	private String remarks;
+use nl\naturalis\nba\client\php\model\TaxonomicIdentification;
+
+class SpecimenIdentification extends TaxonomicIdentification {
+
+	private $preferred;
+	private $verificationStatus;
+	private $rockType;
+	private $associatedFossilAssemblage;
+	private $rockMineralUsage;
+	private $associatedMineralName;
+	private $remarks;
 
 
-	public boolean isPreferred()
+	public function functionisPreferred()
 	{
-		return preferred;
+		return $this->preferred;
 	}
 
 
-	public void setPreferred(boolean preferred)
+	public function functionsetPreferred(bool $preferred)
 	{
-		this.preferred = preferred;
+		$this->preferred = $preferred;
 	}
 
 
-	public String getVerificationStatus()
+	public function functiongetVerificationStatus()
 	{
-		return verificationStatus;
+		return $this->verificationStatus;
 	}
 
 
-	public void setVerificationStatus(String verificationStatus)
+	public function functionsetVerificationStatus(string $verificationStatus)
 	{
-		this.verificationStatus = verificationStatus;
+		$this->verificationStatus = $verificationStatus;
 	}
 
 
-	public String getRockType()
+	public function functiongetRockType()
 	{
-		return rockType;
+		return $this->rockType;
 	}
 
 
-	public void setRockType(String rockType)
+	public function functionsetRockType(string $rockType)
 	{
-		this.rockType = rockType;
+		$this->rockType = $rockType;
 	}
 
 
-	public String getAssociatedFossilAssemblage()
+	public function functiongetAssociatedFossilAssemblage()
 	{
-		return associatedFossilAssemblage;
+		return $this->associatedFossilAssemblage;
 	}
 
 
-	public void setAssociatedFossilAssemblage(String associatedFossilAssemblage)
+	public function functionsetAssociatedFossilAssemblage(string $associatedFossilAssemblage)
 	{
-		this.associatedFossilAssemblage = associatedFossilAssemblage;
+		$this->associatedFossilAssemblage = $associatedFossilAssemblage;
 	}
 
 
-	public String getRockMineralUsage()
+	public function functiongetRockMineralUsage()
 	{
-		return rockMineralUsage;
+		return $this->rockMineralUsage;
 	}
 
 
-	public void setRockMineralUsage(String rockMineralUsage)
+	public function functionsetRockMineralUsage(string $rockMineralUsage)
 	{
-		this.rockMineralUsage = rockMineralUsage;
+		$this->rockMineralUsage = $rockMineralUsage;
 	}
 
 
-	public String getAssociatedMineralName()
+	public function functiongetAssociatedMineralName()
 	{
-		return associatedMineralName;
+		return $this->associatedMineralName;
 	}
 
 
-	public void setAssociatedMineralName(String associatedMineralName)
+	public function functionsetAssociatedMineralName(string $associatedMineralName)
 	{
-		this.associatedMineralName = associatedMineralName;
+		$this->associatedMineralName = $associatedMineralName;
 	}
 
 
-	public String getRemarks()
+	public function functiongetRemarks()
 	{
-		return remarks;
+		return $this->remarks;
 	}
 
 
-	public void setRemarks(String remarks)
+	public function functionsetRemarks(string $remarks)
 	{
-		this.remarks = remarks;
+		$this->remarks = $remarks;
 	}
 
 

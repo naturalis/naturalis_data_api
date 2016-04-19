@@ -1,395 +1,385 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+namespace nl\naturalis\nba\client\php\model;
 
-/**
- * 
- * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dwc:scientificName
- */
-public class MultiMediaObject extends NBATraceableObject {
+use nl\naturalis\nba\client\php\model\ServiceAccessPoint;
+use nl\naturalis\nba\client\php\model\ServiceAccessPointVariant;
+use nl\naturalis\nba\client\php\model\SpecimenTypeStatus;
 
-	/**
-	 * Enumeration of the possible types of a {@code Media} object.
-	 * 
-	 * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dc:type
-	 */
-	public static enum Type
+class MultiMediaObject extends NBATraceableObject {
+
+	private $sourceInstitutionID;
+	private $sourceID;
+	private $owner;
+	private $licenseType;
+	private $license;
+	private $unitID;
+	private $collectionType;
+	private $title;
+	private $caption;
+	private $description;
+	private $serviceAccessPoints;
+	private $type;
+	private $taxonCount;
+	private $creator;
+	private $copyrightText;
+	private $associatedSpecimenReference;
+	private $associatedTaxonReference;
+	private $specimenTypeStatus;
+	private $multimediaPublic;
+	private $subjectParts;
+	private $subjectOrientations;
+	private $phasesOrStages;
+	private $sexes;
+	private $gatheringEvents;
+	private $identifications;
+	private $associatedSpecimen;
+	private $associatedTaxon;
+
+
+	public function addServiceAccessPoint(string $uri, string $format, ServiceAccessPointVariant $variant)
 	{
-		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
-	}
-
-	private String sourceInstitutionID;
-	private String sourceID;
-	private String owner;
-	private String licenseType;
-	private String license;
-	private String unitID;
-	private String collectionType;
-	private String title;
-	private String caption;
-	private String description;
-	private Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints;
-	private Type type;
-	private int taxonCount;
-	private String creator;
-	private String copyrightText;
-	private String associatedSpecimenReference;
-	private String associatedTaxonReference;
-	private SpecimenTypeStatus specimenTypeStatus;
-	private boolean multimediaPublic;
-	private List<String> subjectParts;
-	private List<String> subjectOrientations;
-	private List<String> phasesOrStages;
-	private List<String> sexes;
-	private List<MultiMediaGatheringEvent> gatheringEvents;
-	private List<MultiMediaContentIdentification> identifications;
-
-	// Non-persistent data
-	private Specimen associatedSpecimen;
-	private Taxon associatedTaxon;
-
-
-	public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
-	{
-		if (serviceAccessPoints == null) {
-			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
+		if ($this->serviceAccessPoints == null) {
+			$this->serviceAccessPoints = array();
 		}
-		serviceAccessPoints.put(variant, new ServiceAccessPoint(uri, format, variant));
+		$key = $variant->__toString();
+		$val = new ServiceAccessPoint($uri, $format, $variant);
+		$this->serviceAccessPoints[$key] = $val;
 	}
 
 
-	public void addServiceAccessPoint(ServiceAccessPoint sap)
+	public function addServiceAccessPoint(ServiceAccessPoint $sap)
 	{
-		if (serviceAccessPoints == null) {
-			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
+		if ($this->serviceAccessPoints == null) {
+			$this->serviceAccessPoints = array();
 		}
-		serviceAccessPoints.put(sap.getVariant(), sap);
+		$key = $sap->getVariant()->__toString();
+		$val = $sap->getVariant();
+		$this->serviceAccessPoints[$key] = $val;
 	}
 
 
-	public String getSourceInstitutionID()
+	public function getSourceInstitutionID()
 	{
-		return sourceInstitutionID;
+		return $this->sourceInstitutionID;
 	}
 
 
-	public void setSourceInstitutionID(String sourceInstitutionID)
+	public function setSourceInstitutionID(string $sourceInstitutionID)
 	{
-		this.sourceInstitutionID = sourceInstitutionID;
+		$this->sourceInstitutionID = sourceInstitutionID;
 	}
 
 
-	public String getSourceID()
+	public function getSourceID()
 	{
-		return sourceID;
+		return $this->sourceID;
 	}
 
 
-	public void setSourceID(String sourceID)
+	public function setSourceID(string $sourceID)
 	{
-		this.sourceID = sourceID;
+		$this->sourceID = sourceID;
 	}
 
 
-	public String getOwner()
+	public function getOwner()
 	{
-		return owner;
+		return $this->owner;
 	}
 
 
-	public void setOwner(String owner)
+	public function setOwner(string $owner)
 	{
-		this.owner = owner;
+		$this->owner = owner;
 	}
 
 
-	public String getLicenseType()
+	public function getLicenseType()
 	{
-		return licenseType;
+		return $this->licenseType;
 	}
 
 
-	public void setLicenseType(String licenseType)
+	public function setLicenseType(string $licenseType)
 	{
-		this.licenseType = licenseType;
+		$this->licenseType = licenseType;
 	}
 
 
-	public String getLicense()
+	public function getLicense()
 	{
-		return license;
+		return $this->license;
 	}
 
 
-	public void setLicense(String license)
+	public function setLicense(string $license)
 	{
-		this.license = license;
+		$this->license = license;
 	}
 
 
-	public String getUnitID()
+	public function getUnitID()
 	{
-		return unitID;
+		return $this->unitID;
 	}
 
 
-	public void setUnitID(String unitID)
+	public function setUnitID(string $unitID)
 	{
-		this.unitID = unitID;
+		$this->unitID = unitID;
 	}
 
 
-	public String getCollectionType()
+	public function getCollectionType()
 	{
-		return collectionType;
+		return $this->collectionType;
 	}
 
 
-	public void setCollectionType(String collectionType)
+	public function setCollectionType(string $collectionType)
 	{
-		this.collectionType = collectionType;
+		$this->collectionType = collectionType;
 	}
 
 
-	public String getTitle()
+	public function getTitle()
 	{
-		return title;
+		return $this->title;
 	}
 
 
-	public void setTitle(String title)
+	public function setTitle(string $title)
 	{
-		this.title = title;
+		$this->title = title;
 	}
 
 
-	public String getCaption()
+	public function getCaption()
 	{
-		return caption;
+		return $this->caption;
 	}
 
 
-	public void setCaption(String caption)
+	public function setCaption(string $caption)
 	{
-		this.caption = caption;
+		$this->caption = caption;
 	}
 
 
-	public String getDescription()
+	public function getDescription()
 	{
-		return description;
+		return $this->description;
 	}
 
 
-	public void setDescription(String description)
+	public function setDescription(string $description)
 	{
-		this.description = description;
+		$this->description = description;
 	}
 
 
 	public Map<ServiceAccessPoint.Variant, ServiceAccessPoint> getServiceAccessPoints()
 	{
-		return serviceAccessPoints;
+		return $this->serviceAccessPoints;
 	}
 
 
-	public void setServiceAccessPoints(Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints)
+	public function setServiceAccessPoints(Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints)
 	{
-		this.serviceAccessPoints = serviceAccessPoints;
+		$this->serviceAccessPoints = serviceAccessPoints;
 	}
 
 
 	public Type getType()
 	{
-		return type;
+		return $this->type;
 	}
 
 
-	public void setType(Type type)
+	public function setType(Type type)
 	{
-		this.type = type;
+		$this->type = type;
 	}
 
 
 	public int getTaxonCount()
 	{
-		return taxonCount;
+		return $this->taxonCount;
 	}
 
 
-	public void setTaxonCount(int taxonCount)
+	public function setTaxonCount(int taxonCount)
 	{
-		this.taxonCount = taxonCount;
+		$this->taxonCount = taxonCount;
 	}
 
 
-	public String getCreator()
+	public function getCreator()
 	{
-		return creator;
+		return $this->creator;
 	}
 
 
-	public void setCreator(String creator)
+	public function setCreator(string $creator)
 	{
-		this.creator = creator;
+		$this->creator = creator;
 	}
 
 
-	public String getCopyrightText()
+	public function getCopyrightText()
 	{
-		return copyrightText;
+		return $this->copyrightText;
 	}
 
 
-	public void setCopyrightText(String copyrightText)
+	public function setCopyrightText(string $copyrightText)
 	{
-		this.copyrightText = copyrightText;
+		$this->copyrightText = copyrightText;
 	}
 
 
-	public String getAssociatedSpecimenReference()
+	public function getAssociatedSpecimenReference()
 	{
-		return associatedSpecimenReference;
+		return $this->associatedSpecimenReference;
 	}
 
 
-	public void setAssociatedSpecimenReference(String associatedSpecimenReference)
+	public function setAssociatedSpecimenReference(string $associatedSpecimenReference)
 	{
-		this.associatedSpecimenReference = associatedSpecimenReference;
+		$this->associatedSpecimenReference = associatedSpecimenReference;
 	}
 
 
-	public String getAssociatedTaxonReference()
+	public function getAssociatedTaxonReference()
 	{
-		return associatedTaxonReference;
+		return $this->associatedTaxonReference;
 	}
 
 
-	public void setAssociatedTaxonReference(String associatedTaxonReference)
+	public function setAssociatedTaxonReference(string $associatedTaxonReference)
 	{
-		this.associatedTaxonReference = associatedTaxonReference;
+		$this->associatedTaxonReference = associatedTaxonReference;
 	}
 
 
 	public SpecimenTypeStatus getSpecimenTypeStatus()
 	{
-		return specimenTypeStatus;
+		return $this->specimenTypeStatus;
 	}
 
 
-	public void setSpecimenTypeStatus(SpecimenTypeStatus specimenTypeStatus)
+	public function setSpecimenTypeStatus(SpecimenTypeStatus specimenTypeStatus)
 	{
-		this.specimenTypeStatus = specimenTypeStatus;
+		$this->specimenTypeStatus = specimenTypeStatus;
 	}
 
 
-	public boolean isMultimediaPublic()
+	public function isMultimediaPublic()
 	{
-		return multimediaPublic;
+		return $this->multimediaPublic;
 	}
 
 
-	public void setMultimediaPublic(boolean multimediaPublic)
+	public function setMultimediaPublic(bool $multimediaPublic)
 	{
-		this.multimediaPublic = multimediaPublic;
+		$this->multimediaPublic = multimediaPublic;
 	}
 
 
-	public List<String> getSubjectParts()
+	public function getSubjectParts()
 	{
-		return subjectParts;
+		return $this->subjectParts;
 	}
 
 
-	public void setSubjectParts(List<String> subjectParts)
+	public function setSubjectParts(array subjectParts)
 	{
-		this.subjectParts = subjectParts;
+		$this->subjectParts = subjectParts;
 	}
 
 
-	public List<String> getSubjectOrientations()
+	public function getSubjectOrientations()
 	{
-		return subjectOrientations;
+		return $this->subjectOrientations;
 	}
 
 
-	public void setSubjectOrientations(List<String> subjectOrientations)
+	public function setSubjectOrientations(List<String> subjectOrientations)
 	{
-		this.subjectOrientations = subjectOrientations;
+		$this->subjectOrientations = subjectOrientations;
 	}
 
 
-	public List<String> getPhasesOrStages()
+	public function getPhasesOrStages()
 	{
-		return phasesOrStages;
+		return $this->phasesOrStages;
 	}
 
 
-	public void setPhasesOrStages(List<String> phasesOrStages)
+	public function setPhasesOrStages(List<String> phasesOrStages)
 	{
-		this.phasesOrStages = phasesOrStages;
+		$this->phasesOrStages = phasesOrStages;
 	}
 
 
-	public List<String> getSexes()
+	public function getSexes()
 	{
-		return sexes;
+		return $this->sexes;
 	}
 
 
-	public void setSexes(List<String> sexes)
+	public function setSexes(List<String> sexes)
 	{
-		this.sexes = sexes;
+		$this->sexes = sexes;
 	}
 
 
 	public List<MultiMediaGatheringEvent> getGatheringEvents()
 	{
-		return gatheringEvents;
+		return $this->gatheringEvents;
 	}
 
 
-	public void setGatheringEvents(List<MultiMediaGatheringEvent> gatheringEvents)
+	public function setGatheringEvents(List<MultiMediaGatheringEvent> gatheringEvents)
 	{
-		this.gatheringEvents = gatheringEvents;
+		$this->gatheringEvents = gatheringEvents;
 	}
 
 
-	public List<MultiMediaContentIdentification> getIdentifications()
+	public function getIdentifications()
 	{
-		return identifications;
+		return $this->identifications;
 	}
 
 
-	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
+	public function setIdentifications(array $identifications)
 	{
-		this.identifications = identifications;
+		$this->identifications = identifications;
 	}
 
 
-	public Specimen getAssociatedSpecimen()
+	public function getAssociatedSpecimen()
 	{
-		return associatedSpecimen;
+		return $this->associatedSpecimen;
 	}
 
 
-	public void setAssociatedSpecimen(Specimen associatedSpecimen)
+	public function setAssociatedSpecimen(Specimen associatedSpecimen)
 	{
-		this.associatedSpecimen = associatedSpecimen;
+		$this->associatedSpecimen = associatedSpecimen;
 	}
 
 
-	public Taxon getAssociatedTaxon()
+	public function getAssociatedTaxon()
 	{
-		return associatedTaxon;
+		return $this->associatedTaxon;
 	}
 
 
-	public void setAssociatedTaxon(Taxon associatedTaxon)
+	public function setAssociatedTaxon(Taxon associatedTaxon)
 	{
-		this.associatedTaxon = associatedTaxon;
+		$this->associatedTaxon = associatedTaxon;
 	}
 
 }

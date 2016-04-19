@@ -1,41 +1,51 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-public class MultiMediaGatheringEvent extends GatheringEvent {
+namespace nl\naturalis\nba\client\php\model;
 
-	private Iptc4xmpExt iptc;
+use nl\naturalis\nba\client\php\model\GatheringEvent;
+use nl\naturalis\nba\client\php\model\Iptc4xmpExt;
+
+class MultiMediaGatheringEvent extends GatheringEvent {
 
 
-	public Iptc4xmpExt getIptc()
+	private $iptc;
+
+
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\Iptc4xmpExt
+	 */
+	public function getIptc()
 	{
-		if (iptc == null) {
-			iptc = new Iptc4xmpExt();
-			iptc.setCity(getCity());
-			iptc.setCountryCode(getIso3166Code());
-			iptc.setCountryName(getCountry());
-			String location = getLocalityText();
-			if (location == null) {
-				location = getCity();
+		if ($iptc === null) {
+			$iptc = new Iptc4xmpExt();
+			$iptc.setCity($this->getCity());
+			$iptc.setCountryCode($this->getIso3166Code());
+			$iptc.setCountryName($this->getCountry());
+			$location = $this->getLocalityText();
+			if ($location === null) {
+				$location = $this->getCity();
 			}
-			if (location == null) {
-				location = getLocality();
+			if ($location === null) {
+				$location = $this->getLocality();
 			}
-			if (location == null) {
-				location = getIsland();
+			if ($location === null) {
+				$location = $this->getIsland();
 			}
-			if (location == null) {
-				location = getCountry();
+			if ($location === null) {
+				$location = $this->getCountry();
 			}
-			if (location == null) {
-				location = getContinent();
+			if ($location === null) {
+				$location = $this->getContinent();
 			}
-			if (location == null) {
-				location = getWorldRegion();
+			if ($location === null) {
+				$location = $this->getWorldRegion();
 			}
-			iptc.setLocationShown(location);
-			iptc.setProvinceState(getProvinceState());
-			iptc.setWorldRegion(getWorldRegion());
+			$iptc.setLocationShown($location);
+			$iptc.setProvinceState($this->getProvinceState());
+			$iptc.setWorldRegion($this->getWorldRegion());
 		}
-		return iptc;
+		return $iptc;
 	}
 
 }

@@ -13,6 +13,10 @@ final class PhaseOrStage {
 	private static $larva;
 	private static $nymph;
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function ADULT()
 	{
 		if (self::$adult === null)
@@ -20,6 +24,10 @@ final class PhaseOrStage {
 		return self::$adult;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function SUBADULT()
 	{
 		if (self::$subadult === null)
@@ -27,6 +35,10 @@ final class PhaseOrStage {
 		return self::$subadult;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function EGG()
 	{
 		if (self::$egg === null)
@@ -34,6 +46,10 @@ final class PhaseOrStage {
 		return self::$egg;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function EMBRYO()
 	{
 		if (self::$embryo === null)
@@ -41,6 +57,10 @@ final class PhaseOrStage {
 		return self::$embryo;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function IMMATURE()
 	{
 		if (self::$immature === null)
@@ -48,6 +68,10 @@ final class PhaseOrStage {
 		return self::$immature;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function JUVENILE()
 	{
 		if (self::$juvenile === null)
@@ -55,6 +79,10 @@ final class PhaseOrStage {
 		return self::$juvenile;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function LARVA()
 	{
 		if (self::$larva === null)
@@ -62,6 +90,10 @@ final class PhaseOrStage {
 		return self::$larva;
 	}
 
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\PhaseOrStage
+	 */
 	public static function NYMPH()
 	{
 		if (self::$nymph === null)

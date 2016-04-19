@@ -1,65 +1,51 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.net.URI;
+namespace nl\naturalis\nba\client\php\model;
 
-public class ServiceAccessPoint extends NBADomainObject {
+use nl\naturalis\nba\client\php\model\NBADomainObject;
+use nl\naturalis\nba\client\php\model\ServiceAccessPointVariant;
 
-	public static enum Variant
+class ServiceAccessPoint extends NBADomainObject {
+
+	private $accessUri;
+	private $format;
+	private $variant;
+
+	public function __construct(string $uri, string $format, ServiceAccessPointVariant $variant)
 	{
-		THUMBNAIL, TRAILER, LOWER_QUALITY, MEDIUM_QUALITY, GOOD_QUALITY, BEST_QUALITY, OFFLINE
+		$this->accessUri = $uri;
+		$this->format = $format;
+		$this->variant = $variant;
 	}
 
-	private URI accessUri;
-	private String format;
-	private Variant variant;
-
-	public ServiceAccessPoint()
+	public function getAccessUri()
 	{
-		// Commentaar
+		return $this->accessUri;
 	}
 
-	public ServiceAccessPoint(URI uri, String format, Variant variant)
+	public function setAccessUri(string $accessUri)
 	{
-		this.accessUri = uri;
-		this.format = format;
-		this.variant = variant;
+		$this->accessUri = accessUri;
 	}
 
-	public ServiceAccessPoint(String uri, String format, Variant variant)
+	public function getFormat()
 	{
-		this.accessUri = URI.create(uri);
-		this.format = format;
-		this.variant = variant;
+		return $this->format;
 	}
 
-	public URI getAccessUri()
+	public function setFormat(string $format)
 	{
-		return accessUri;
+		$this->format = format;
 	}
 
-	public void setAccessUri(URI accessUri)
+	public function getVariant()
 	{
-		this.accessUri = accessUri;
+		return $this->variant;
 	}
 
-	public String getFormat()
+	public function setVariant(ServiceAccessPointVariant $variant)
 	{
-		return format;
-	}
-
-	public void setFormat(String format)
-	{
-		this.format = format;
-	}
-
-	public Variant getVariant()
-	{
-		return variant;
-	}
-
-	public void setVariant(Variant variant)
-	{
-		this.variant = variant;
+		$this->variant = variant;
 	}
 
 }

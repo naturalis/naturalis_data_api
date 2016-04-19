@@ -1,83 +1,72 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.net.URI;
+namespace nl\naturalis\nba\client\php\model;
 
-/**
- * Abstract base class for all domain model classes that can be traced back to a
- * single record in one of the NBA's source systems. In other words, instances
- * of these classes do not represent aggregations or compositions from multiple
- * source systems.
- */
-public abstract class NBATraceableObject extends NBADomainObject {
+use nl\naturalis\nba\client\php\model\NBADomainObject;
+use nl\naturalis\nba\client\php\model\SourceSystem;
 
-	private SourceSystem sourceSystem;
-	private String sourceSystemId;
-	private URI recordURI;
+abstract class NBATraceableObject extends NBADomainObject {
+
+	private $sourceSystem;
+	private $sourceSystemId;
+	private $recordURI;
+
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
 	/**
-	 * Returns the source system that contained the record corresponding to this
-	 * instance.
-	 * 
-	 * @return
+	 *
+	 * @return string
 	 */
-	public SourceSystem getSourceSystem()
+	public function getSourceSystem()
 	{
 		return sourceSystem;
 	}
 
 	/**
-	 * Sets the source system that contained the record corresponding to this
-	 * instance.
-	 * 
-	 * @param sourceSystem
+	 *
+	 * @param SourceSystem $sourceSystem
 	 */
-	public void setSourceSystem(SourceSystem sourceSystem)
+	public function setSourceSystem(SourceSystem $sourceSystem)
 	{
-		this.sourceSystem = sourceSystem;
+		$this->sourceSystem = $sourceSystem;
 	}
 
 	/**
-	 * Returns the ID of the record within the source system. This is typically
-	 * an auto-generated database ID.
-	 * 
-	 * @return
+	 *
+	 * @return string
 	 */
-	public String getSourceSystemId()
+	public function getSourceSystemId()
 	{
 		return sourceSystemId;
 	}
 
 	/**
-	 * Sets the ID of the record within the source system. This is typically an
-	 * auto-generated database ID.
-	 * 
-	 * @param sourceSystemId
+	 *
+	 * @param string $sourceSystemId
 	 */
-	public void setSourceSystemId(String sourceSystemId)
+	public function setSourceSystemId(string $sourceSystemId)
 	{
-		this.sourceSystemId = sourceSystemId;
+		$this->sourceSystemId = $sourceSystemId;
 	}
 
 	/**
-	 * Returns the URI through which the source system record can be accessed,
-	 * if applicable.
-	 * 
-	 * @return
+	 *
+	 * @return string
 	 */
-	public URI getRecordURI()
+	public function getRecordURI()
 	{
 		return recordURI;
 	}
 
 	/**
-	 * Sets the URI through which the source system record can be accessed, if
-	 * applicable.
-	 * 
-	 * @param recordURI
+	 *
+	 * @param string $recordURI
 	 */
-	public void setRecordURI(URI recordURI)
+	public function setRecordURI(string $recordURI)
 	{
-		this.recordURI = recordURI;
+		$this->recordURI = $recordURI;
 	}
-
 }

@@ -1,119 +1,79 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.util.List;
+namespace nl\naturalis\nba\client\php\model;
 
-public class VernacularName extends NBADomainObject {
+use nl\naturalis\nba\client\php\model\NBADomainObject;
+use nl\naturalis\nba\client\php\helper\ReferenceList;
+use nl\naturalis\nba\client\php\helper\ExpertList;
 
-	private String name;
-	private String language;
-	private Boolean preferred;
+class VernacularName extends NBADomainObject {
 
-	private List<Reference> references;
-	private List<Expert> experts;
+	private $name;
+	private $language;
+	private $preferred;
+	private $references;
+	private $experts;
 
-	public VernacularName()
+	public function __construct(string $name)
 	{
+		$this->name = $name;
 	}
 
-	public VernacularName(String name)
+	public function getName()
 	{
-		this.name = name;
+		return $this->name;
 	}
 
-	public String getName()
+	public function setName(string $name)
 	{
-		return name;
+		$this->name = $name;
 	}
 
-	public void setName(String name)
+	public function getLanguage()
 	{
-		this.name = name;
+		return $this->language;
 	}
 
-	public String getLanguage()
+	public function setLanguage(string $language)
 	{
-		return language;
+		$this->language = $language;
 	}
 
-	public void setLanguage(String language)
+	public function getPreferred()
 	{
-		this.language = language;
+		return $this->preferred;
 	}
 
-	public Boolean getPreferred()
+	public function setPreferred(bool $preferred)
 	{
-		return preferred;
+		$this->preferred = $preferred;
 	}
 
-	public void setPreferred(Boolean preferred)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\helper\ReferenceList
+	 */
+	public function getReferences()
 	{
-		this.preferred = preferred;
+		return $this->references;
 	}
 
-	public List<Reference> getReferences()
+	public function setReferences(ReferenceList $references)
 	{
-		return references;
+		$this->references = $references;
 	}
 
-	public void setReferences(List<Reference> references)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\helper\ExpertList
+	 */
+	public function getExperts()
 	{
-		this.references = references;
+		return $this->experts;
 	}
 
-	public List<Expert> getExperts()
+	public function setExperts(ExpertList $experts)
 	{
-		return experts;
-	}
-
-	public void setExperts(List<Expert> experts)
-	{
-		this.experts = experts;
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || !(obj instanceof VernacularName)) {
-			return false;
-		}
-		VernacularName other = (VernacularName) obj;
-		return eq(name, other.name) && eq(language, other.language);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int hash = 17;
-		hash = (hash * 31) + name.hashCode();
-		hash = (hash * 31) + language == null ? 0 : language.hashCode();
-		return hash;
-	}
-
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder(64);
-		sb.append("{name: ").append(quote(name));
-		sb.append(", language: ").append(quote(language));
-		sb.append("}");
-		return sb.toString();
-	}
-
-	private static String quote(Object obj)
-	{
-		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
-	}
-
-	private static boolean eq(Object obj0, Object obj1)
-	{
-		if (obj0 == null) {
-			if (obj1 == null) {
-				return true;
-			}
-			return false;
-		}
-		return obj1 == null ? false : obj0.equals(obj1);
+		$this->experts = $experts;
 	}
 }

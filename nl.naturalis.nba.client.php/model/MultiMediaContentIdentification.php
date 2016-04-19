@@ -1,6 +1,7 @@
-package nl.naturalis.nba.api.model;
+<?php
 
+namespace nl\naturalis\nba\client\php\model;
 
-public class MultiMediaContentIdentification extends TaxonomicIdentification {
-	
+class MultiMediaContentIdentification extends TaxonomicIdentification {
+
 }

@@ -1,30 +1,36 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.util.List;
+namespace nl\naturalis\nba\client\php\model;
 
-public class Synonym extends NBADomainObject {
+use nl\naturalis\nba\client\php\model\NBADomainObject;
+use nl\naturalis\nba\client\php\model\ScientificName;
 
-	private ScientificName scientificName;
-	private List<Taxon> taxa;
+class Synonym extends NBADomainObject {
 
-	public ScientificName getScientificName()
+	private $scientificName;
+	private $taxa;
+
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\ScientificName
+	 */
+	public function getScientificName()
 	{
-		return scientificName;
+		return $this->scientificName;
 	}
 
-	public void setScientificName(ScientificName scientificName)
+	public function setScientificName(ScientificName $scientificName)
 	{
-		this.scientificName = scientificName;
+		$this->scientificName = $scientificName;
 	}
 
-	public List<Taxon> getTaxa()
+	public function getTaxa()
 	{
-		return taxa;
+		return $this->taxa;
 	}
 
-	public void setTaxa(List<Taxon> taxa)
+	public function setTaxa(array $taxa)
 	{
-		this.taxa = taxa;
+		$this->taxa = taxa;
 	}
-
 }

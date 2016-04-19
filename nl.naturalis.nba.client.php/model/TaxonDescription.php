@@ -1,39 +1,42 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-public class TaxonDescription extends NBADomainObject {
+namespace nl\naturalis\nba\client\php\model;
 
-	private String category;
-	private String description;
-	private String language;
+use nl\naturalis\nba\client\php\model\NBADomainObject;
 
-	public String getCategory()
+class TaxonDescription extends NBADomainObject {
+
+	private $category;
+	private $description;
+	private $language;
+
+	public function getCategory()
 	{
-		return category;
+		return $this->category;
 	}
 
-	public void setCategory(String category)
+	public function setCategory(string $category)
 	{
-		this.category = category;
+		$this->category = category;
 	}
 
-	public String getDescription()
+	public function getDescription()
 	{
-		return description;
+		return $this->description;
 	}
 
-	public void setDescription(String description)
+	public function setDescription(string $description)
 	{
-		this.description = description;
+		$this->description = description;
 	}
 
-	public String getLanguage()
+	public function getLanguage()
 	{
-		return language;
+		return $this->language;
 	}
 
-	public void setLanguage(String language)
+	public function setLanguage(string $language)
 	{
-		this.language = language;
+		$this->language = language;
 	}
-
 }

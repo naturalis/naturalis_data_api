@@ -1,8 +1,17 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.util.List;
+namespace nl\naturalis\nba\client\php\model;
 
-public class Specimen extends NBATraceableObject implements INBARecord {
+use nl\naturalis\nba\client\php\model\INBARecord;
+use nl\naturalis\nba\client\php\model\Sex;
+use nl\naturalis\nba\client\php\model\PhaseOrStage;
+use nl\naturalis\nba\client\php\model\SpecimenTypeStatus;
+use nl\naturalis\nba\client\php\model\NBATraceableObject;
+use nl\naturalis\nba\client\php\model\Agent;
+use nl\naturalis\nba\client\php\model\SpecimenIdentification;
+use nl\naturalis\nba\client\php\model\GatheringEvent;
+
+class Specimen extends NBATraceableObject implements INBARecord {
 
 	private String id;
 	private String unitID;

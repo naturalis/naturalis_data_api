@@ -1,203 +1,197 @@
-package nl.naturalis.nba.api.model;
+<?php
 
-import java.util.List;
+namespace nl\naturalis\nba\client\php\model;
 
-public class Taxon extends NBATraceableObject {
+use nl\naturalis\nba\client\php\helper\ExpertList;
+use nl\naturalis\nba\client\php\helper\MonomialList;
+use nl\naturalis\nba\client\php\helper\ReferenceList;
+use nl\naturalis\nba\client\php\helper\SpecimenList;
+use nl\naturalis\nba\client\php\helper\SynonymList;
+use nl\naturalis\nba\client\php\helper\TaxonDescriptionList;
+use nl\naturalis\nba\client\php\helper\VernacularNameList;
+use nl\naturalis\nba\client\php\model\DefaultClassification;
+use nl\naturalis\nba\client\php\model\NBATraceableObject;
+use nl\naturalis\nba\client\php\model\ScientificName;
 
-	private String sourceSystemParentId;
+class Taxon extends NBATraceableObject {
 
-	private String taxonRank;
-	private ScientificName acceptedName;
-
-	private DefaultClassification defaultClassification;
-	private List<Monomial> systemClassification;
-
-	private List<ScientificName> synonyms;
-	private List<VernacularName> vernacularNames;
-	private List<TaxonDescription> descriptions;
-	private List<Reference> references;
-	private List<Expert> experts;
-
-	private List<Specimen> specimens;
-
-// Distribution data (from from CoLDistributionEnricher)
-//	private List<String> localities;
-
-	public String getSourceSystemParentId()
-	{
-		return sourceSystemParentId;
-	}
-
-
-	public void setSourceSystemParentId(String sourceSystemParentId)
-	{
-		this.sourceSystemParentId = sourceSystemParentId;
-	}
-
-
-	public String getTaxonRank()
-	{
-		return taxonRank;
-	}
-
-
-	public void setTaxonRank(String taxonRank)
-	{
-		this.taxonRank = taxonRank;
-	}
-
+	private $sourceSystemParentId;
+	private $taxonRank;
+	private $acceptedName;
+	private $defaultClassification;
+	private $systemClassification;
+	private $synonyms;
+	private $vernacularNames;
+	private $descriptions;
+	private $references;
+	private $experts;
+	private $specimens;
 
 	/**
-	 * Botanical
-	 * 
-	 * @return
+	 *
+	 * @return string
 	 */
-	public ScientificName getAcceptedName()
+	public function getSourceSystemParentId()
 	{
-		return acceptedName;
+		return $this->sourceSystemParentId;
 	}
 
+	public function setSourceSystemParentId(string $sourceSystemParentId)
+	{
+		$this->sourceSystemParentId = sourceSystemParentId;
+	}
 
 	/**
-	 * Zoological
-	 * 
-	 * @return
+	 *
+	 * @return string
 	 */
-	public ScientificName getValidName()
+	public function getTaxonRank()
 	{
-		return acceptedName;
+		return $this->taxonRank;
 	}
 
+	public function setTaxonRank(string $taxonRank)
+	{
+		$this->taxonRank = taxonRank;
+	}
 
 	/**
-	 * Botanical
+	 *
+	 * @return nl\naturalis\nba\client\php\model\ScientificName
 	 */
-	public void setAcceptedName(ScientificName scientificName)
+	public function getAcceptedName()
 	{
-		this.acceptedName = scientificName;
+		return $this->acceptedName;
 	}
 
+	public function setAcceptedName(ScientificName $scientificName)
+	{
+		$this->acceptedName = scientificName;
+	}
 
 	/**
-	 * Zoological
+	 *
+	 * @return nl\naturalis\nba\client\php\model\ScientificName
 	 */
-	public void setValidName(ScientificName scientificName)
+	public function getValidName()
 	{
-		this.acceptedName = scientificName;
+		return $this->acceptedName;
 	}
 
-
-	public DefaultClassification getDefaultClassification()
+	public function setValidName(ScientificName $scientificName)
 	{
-		return defaultClassification;
+		$this->acceptedName = scientificName;
 	}
-
-
-	public void setDefaultClassification(DefaultClassification defaultClassification)
-	{
-		this.defaultClassification = defaultClassification;
-	}
-
 
 	/**
-	 * Get the system classification of this taxon, i.e. the as-is
-	 * classification of the source system.
-	 * 
-	 * @return The system classification of this taxon
+	 *
+	 * @return nl\naturalis\nba\client\php\model\DefaultClassification
 	 */
-	public List<Monomial> getSystemClassification()
+	public function getDefaultClassification()
 	{
-		return systemClassification;
+		return $this->defaultClassification;
 	}
 
-
-	public void setSystemClassification(List<Monomial> systemClassification)
+	public function setDefaultClassification(DefaultClassification $defaultClassification)
 	{
-		this.systemClassification = systemClassification;
+		$this->defaultClassification = defaultClassification;
 	}
 
-
-	public List<ScientificName> getSynonyms()
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\MonomialList
+	 */
+	public function getSystemClassification()
 	{
-		return synonyms;
+		return $this->systemClassification;
 	}
 
-
-	public void setSynonyms(List<ScientificName> synonyms)
+	public function setSystemClassification(MonomialList $systemClassification)
 	{
-		this.synonyms = synonyms;
+		$this->systemClassification = systemClassification;
 	}
 
-
-	public List<VernacularName> getVernacularNames()
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\SynonymList
+	 */
+	public function getSynonyms()
 	{
-		return vernacularNames;
+		return $this->synonyms;
 	}
 
-
-	public void setVernacularNames(List<VernacularName> vernacularNames)
+	public function setSynonyms(SynonymList $synonyms)
 	{
-		this.vernacularNames = vernacularNames;
+		$this->synonyms = synonyms;
 	}
 
-
-	public List<TaxonDescription> getDescriptions()
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\VernacularNameList
+	 */
+	public function getVernacularNames()
 	{
-		return descriptions;
+		return $this->vernacularNames;
 	}
 
-
-	public void setDescriptions(List<TaxonDescription> descriptions)
+	public function setVernacularNames(VernacularNameList $vernacularNames)
 	{
-		this.descriptions = descriptions;
+		$this->vernacularNames = vernacularNames;
 	}
 
-
-	public List<Expert> getExperts()
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\TaxonDescriptionList
+	 */
+	public function getDescriptions()
 	{
-		return experts;
+		return $this->descriptions;
 	}
 
-
-	public void setExperts(List<Expert> experts)
+	public function setDescriptions(TaxonDescriptionList $descriptions)
 	{
-		this.experts = experts;
+		$this->descriptions = descriptions;
 	}
 
-
-	public List<Reference> getReferences()
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\ExpertList
+	 */
+	public function getExperts()
 	{
-		return references;
+		return $this->experts;
 	}
 
-
-	public void setReferences(List<Reference> references)
+	public function setExperts(ExpertList $experts)
 	{
-		this.references = references;
+		$this->experts = experts;
 	}
 
-
-	public List<Specimen> getSpecimens()
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\ReferenceList
+	 */
+	public function getReferences()
 	{
-		return specimens;
+		return $this->references;
 	}
 
-
-	public void setSpecimens(List<Specimen> specimens)
+	public function setReferences(ReferenceList $references)
 	{
-		this.specimens = specimens;
+		$this->references = references;
 	}
 
+	/**
+	 *
+	 * @return nl\naturalis\nba\client\php\helper\SpecimenList
+	 */
+	public function getSpecimens()
+	{
+		return $this->specimens;
+	}
 
-//	public List<String> getLocalities()
-//	{
-//		return localities;
-//	}
-//
-//
-//	public void setLocalities(List<String> localities)
-//	{
-//		this.localities = localities;
-//	}
-	
+	public function setSpecimens(SpecimenList $specimens)
+	{
+		$this->specimens = specimens;
+	}
 }

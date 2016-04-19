@@ -14,6 +14,10 @@ class SpecimenIdentification extends TaxonomicIdentification {
 	private $associatedMineralName;
 	private $remarks;
 
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
 	public function functionisPreferred()
 	{

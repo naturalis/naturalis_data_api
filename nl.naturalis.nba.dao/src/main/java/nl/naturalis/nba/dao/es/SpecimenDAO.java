@@ -28,7 +28,11 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class SpecimenDAO implements ISpecimenDAO {
 
-	private static final Logger logger = Registry.getInstance().getLogger(SpecimenDAO.class);
+	private static final Logger logger;
+	
+	static {
+		logger = Registry.getInstance().getLogger(SpecimenDAO.class);
+	}
 
 	private final Registry registry;
 	private final String esIndex;
@@ -41,6 +45,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 		esType = registry.getType(ESSpecimen.class);
 	}
 
+	@Override
 	public Specimen findById(String id)
 	{
 		ESClientFactory factory = registry.getESClientFactory();
@@ -57,14 +62,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 		return createSpecimen(id, data);
 	}
 
-	/**
-	 * Retrieves a {@link Specimen} by its UnitID. Since the UnitID is not
-	 * specified to be unique across all of the NBA's data sources, a list of
-	 * specimens is returned.
-	 * 
-	 * @param unitID
-	 * @return
-	 */
+	@Override
 	public List<Specimen> findByUnitID(String unitID)
 	{
 		if (logger.isDebugEnabled()) {
@@ -105,10 +103,6 @@ public class SpecimenDAO implements ISpecimenDAO {
 		Client client = factory.getClient();
 		SearchRequestBuilder request = client.prepareSearch(esIndex);
 		request.setTypes(registry.getType(ESSpecimen.class));
-		if (logger.isTraceEnabled()) {
-			logger.trace("Target indices: {}", esIndex);
-			logger.trace("Target type: {}", esType);
-		}
 		return request;
 	}
 }

@@ -32,6 +32,18 @@ public class SpecimenDAOTest {
 	{
 		//dropIndex(ESSpecimen.class);
 	}
+	
+	public void testFindById_1() {
+		ESSpecimen in = new ESSpecimen();
+		String unitID = "ZMA.MAM.12345";
+		String id = "ZMA.MAM.12345@CRS";
+		in.setUnitID(unitID);
+		saveObject(id, in);
+		refreshIndex(ESSpecimen.class);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen out = dao.findById(id);
+		assertNotNull("01", out);
+	}
 
 	@Test
 	public void testFindByUnitID_1()
@@ -74,6 +86,19 @@ public class SpecimenDAOTest {
 		result = dao.findByUnitID("L");
 		assertNotNull("04", result);
 		assertEquals("05", 0, result.size());
+	}
+
+	@Test
+	public void testFindByUnitID_3()
+	{
+		ESSpecimen specimen = new ESSpecimen();
+		specimen.setUnitID("A");
+		saveObject(specimen);
+		refreshIndex(ESSpecimen.class);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.findByUnitID("NOT A");
+		assertNotNull("01", result);
+		assertEquals("02", 0, result.size());
 	}
 
 }

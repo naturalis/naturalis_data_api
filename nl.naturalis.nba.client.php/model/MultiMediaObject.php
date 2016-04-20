@@ -10,6 +10,7 @@ use nl\naturalis\nba\client\php\model\SpecimenTypeStatus;
 use nl\naturalis\nba\client\php\helper\MultiMediaContentIdentificationList;
 
 class MultiMediaObject extends NBATraceableObject {
+
 	private $sourceInstitutionID;
 	private $sourceID;
 	private $owner;

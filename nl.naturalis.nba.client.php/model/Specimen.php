@@ -2,330 +2,345 @@
 
 namespace nl\naturalis\nba\client\php\model;
 
-use nl\naturalis\nba\client\php\model\INBARecord;
-use nl\naturalis\nba\client\php\model\Sex;
-use nl\naturalis\nba\client\php\model\PhaseOrStage;
-use nl\naturalis\nba\client\php\model\SpecimenTypeStatus;
-use nl\naturalis\nba\client\php\model\NBATraceableObject;
+use nl\naturalis\nba\client\php\helper\SpecimenIdentificationList;
+use nl\naturalis\nba\client\php\helper\SpecimenList;
+use nl\naturalis\nba\client\php\helper\TaxonList;
 use nl\naturalis\nba\client\php\model\Agent;
-use nl\naturalis\nba\client\php\model\SpecimenIdentification;
 use nl\naturalis\nba\client\php\model\GatheringEvent;
+use nl\naturalis\nba\client\php\model\INBARecord;
+use nl\naturalis\nba\client\php\model\NBATraceableObject;
+use nl\naturalis\nba\client\php\model\PhaseOrStage;
+use nl\naturalis\nba\client\php\model\Sex;
+use nl\naturalis\nba\client\php\model\SpecimenTypeStatus;
 
 class Specimen extends NBATraceableObject implements INBARecord {
 
-	private String id;
-	private String unitID;
-	private String unitGUID;
-	private String collectorsFieldNumber;
-	private String assemblageID;
-	private String sourceInstitutionID;
-	private String sourceID;
-	private String owner;
-	private String licenseType;
-	private String license;
-	private String recordBasis;
-	private String kindOfUnit;
-	private String collectionType;
-	private SpecimenTypeStatus typeStatus;
-	private Sex sex;
-	private PhaseOrStage phaseOrStage;
-	private String title;
-	private String notes;
-	private String preparationType;
-	private int numberOfSpecimen;
-	private boolean fromCaptivity;
-	private boolean objectPublic;
-	private boolean multiMediaPublic;
+	private $id;
+	private $unitID;
+	private $unitGUID;
+	private $collectorsFieldNumber;
+	private $assemblageID;
+	private $sourceInstitutionID;
+	private $sourceID;
+	private $owner;
+	private $licenseType;
+	private $license;
+	private $recordBasis;
+	private $kindOfUnit;
+	private $collectionType;
+	private $typeStatus;
+	private $sex;
+	private $phaseOrStage;
+	private $title;
+	private $notes;
+	private $preparationType;
+	private $numberOfSpecimen;
+	private $fromCaptivity;
+	private $objectPublic;
+	private $multiMediaPublic;
+	private $acquiredFrom;
+	private $gatheringEvent;
+	private $identifications;
+	private $otherSpecimensInAssemblage;
+	private $associatedTaxa;
 
-	private Agent acquiredFrom;
-	private GatheringEvent gatheringEvent;
-	private List<SpecimenIdentification> identifications;
-	private List<Specimen> otherSpecimensInAssemblage;
-	private List<Taxon> associatedTaxa;
-
-	public void addIndentification(SpecimenIdentification identification)
+	public function getId()
 	{
-		identifications.add(identification);
+		return $this->id;
 	}
 
-	public String getId()
+	public function setId(string $id)
 	{
-		return id;
+		$this->id = $id;
 	}
 
-	public void setId(String id)
+	public function getUnitID()
 	{
-		this.id = id;
+		return $this->unitID;
 	}
 
-	public String getUnitID()
+	public function setUnitID(string $unitID)
 	{
-		return unitID;
+		$this->unitID = $unitID;
 	}
 
-	public void setUnitID(String unitID)
+	public function getUnitGUID()
 	{
-		this.unitID = unitID;
+		return $this->unitGUID;
 	}
 
-	public String getUnitGUID()
+	public function setUnitGUID(string $unitGUID)
 	{
-		return unitGUID;
+		$this->unitGUID = $unitGUID;
 	}
 
-	public void setUnitGUID(String unitGUID)
+	public function getCollectorsFieldNumber()
 	{
-		this.unitGUID = unitGUID;
+		return $this->collectorsFieldNumber;
 	}
 
-	public String getCollectorsFieldNumber()
+	public function setCollectorsFieldNumber(string $collectorsFieldNumber)
 	{
-		return collectorsFieldNumber;
+		$this->collectorsFieldNumber = $collectorsFieldNumber;
 	}
 
-	public void setCollectorsFieldNumber(String collectorsFieldNumber)
+	public function getAssemblageID()
 	{
-		this.collectorsFieldNumber = collectorsFieldNumber;
+		return $this->assemblageID;
 	}
 
-	public String getAssemblageID()
+	public function setAssemblageID(string $assemblageID)
 	{
-		return assemblageID;
+		$this->assemblageID = $assemblageID;
 	}
 
-	public void setAssemblageID(String assemblageID)
+	public function getSourceInstitutionID()
 	{
-		this.assemblageID = assemblageID;
+		return $this->sourceInstitutionID;
 	}
 
-	public String getSourceInstitutionID()
+	public function setSourceInstitutionID(string $sourceInstitutionID)
 	{
-		return sourceInstitutionID;
+		$this->sourceInstitutionID = $sourceInstitutionID;
 	}
 
-	public void setSourceInstitutionID(String sourceInstitutionID)
+	public function getSourceID()
 	{
-		this.sourceInstitutionID = sourceInstitutionID;
+		return $this->sourceID;
 	}
 
-	public String getSourceID()
+	public function setSourceID(string $sourceID)
 	{
-		return sourceID;
+		$this->sourceID = $sourceID;
 	}
 
-	public void setSourceID(String sourceID)
+	public function getOwner()
 	{
-		this.sourceID = sourceID;
+		return $this->owner;
 	}
 
-	public String getOwner()
+	public function setOwner(string $owner)
 	{
-		return owner;
+		$this->owner = $owner;
 	}
 
-	public void setOwner(String owner)
+	public function getLicenseType()
 	{
-		this.owner = owner;
+		return $this->licenseType;
 	}
 
-	public String getLicenseType()
+	public function setLicenseType(string $licenseType)
 	{
-		return licenseType;
+		$this->licenseType = $licenseType;
 	}
 
-	public void setLicenseType(String licenseType)
+	public function getLicense()
 	{
-		this.licenseType = licenseType;
+		return $this->license;
 	}
 
-	public String getLicense()
+	public function setLicense(string $license)
 	{
-		return license;
+		$this->license = $license;
 	}
 
-	public void setLicense(String license)
+	public function getRecordBasis()
 	{
-		this.license = license;
+		return $this->recordBasis;
 	}
 
-	public String getRecordBasis()
+	public function setRecordBasis(string $recordBasis)
 	{
-		return recordBasis;
+		$this->recordBasis = $recordBasis;
 	}
 
-	public void setRecordBasis(String recordBasis)
+	public function getKindOfUnit()
 	{
-		this.recordBasis = recordBasis;
+		return $this->kindOfUnit;
 	}
 
-	public String getKindOfUnit()
+	public function setKindOfUnit(string $kindOfUnit)
 	{
-		return kindOfUnit;
+		$this->kindOfUnit = $kindOfUnit;
 	}
 
-	public void setKindOfUnit(String kindOfUnit)
+	public function getCollectionType()
 	{
-		this.kindOfUnit = kindOfUnit;
+		return $this->collectionType;
 	}
 
-	public String getCollectionType()
+	public function setCollectionType(string $collectionType)
 	{
-		return collectionType;
+		$this->collectionType = $collectionType;
 	}
 
-	public void setCollectionType(String collectionType)
+	public function getTypeStatus()
 	{
-		this.collectionType = collectionType;
+		return $this->typeStatus;
 	}
 
-	public SpecimenTypeStatus getTypeStatus()
+	public function setTypeStatus(SpecimenTypeStatus $typeStatus)
 	{
-		return typeStatus;
+		$this->typeStatus = $typeStatus;
 	}
 
-	public void setTypeStatus(SpecimenTypeStatus typeStatus)
+	public function getSex()
 	{
-		this.typeStatus = typeStatus;
+		return $this->sex;
 	}
 
-	public Sex getSex()
+	public function setSex(Sex $sex)
 	{
-		return sex;
+		$this->sex = $sex;
 	}
 
-	public void setSex(Sex sex)
+	public function getPhaseOrStage()
 	{
-		this.sex = sex;
+		return $this->phaseOrStage;
 	}
 
-	public PhaseOrStage getPhaseOrStage()
+	public function setPhaseOrStage(PhaseOrStage $phaseOrStage)
 	{
-		return phaseOrStage;
+		$this->phaseOrStage = $phaseOrStage;
 	}
 
-	public void setPhaseOrStage(PhaseOrStage phaseOrStage)
+	public function getTitle()
 	{
-		this.phaseOrStage = phaseOrStage;
+		return $this->title;
 	}
 
-	public String getTitle()
+	public function setTitle(string $title)
 	{
-		return title;
+		$this->title = $title;
 	}
 
-	public void setTitle(String title)
+	public function getNotes()
 	{
-		this.title = title;
+		return $this->notes;
 	}
 
-	public String getNotes()
+	public function setNotes(string $notes)
 	{
-		return notes;
+		$this->notes = $notes;
 	}
 
-	public void setNotes(String notes)
+	public function getPreparationType()
 	{
-		this.notes = notes;
+		return $this->preparationType;
 	}
 
-	public String getPreparationType()
+	public function setPreparationType(string $preparationType)
 	{
-		return preparationType;
+		$this->preparationType = $preparationType;
 	}
 
-	public void setPreparationType(String preparationType)
+	public function getNumberOfSpecimen()
 	{
-		this.preparationType = preparationType;
+		return $this->numberOfSpecimen;
 	}
 
-	public int getNumberOfSpecimen()
+	public function setNumberOfSpecimen(int $numberOfSpecimen)
 	{
-		return numberOfSpecimen;
+		$this->numberOfSpecimen = $numberOfSpecimen;
 	}
 
-	public void setNumberOfSpecimen(int numberOfSpecimen)
+	public function isFromCaptivity()
 	{
-		this.numberOfSpecimen = numberOfSpecimen;
+		return $this->fromCaptivity;
 	}
 
-	public boolean isFromCaptivity()
+	public function setFromCaptivity(bool $fromCaptivity)
 	{
-		return fromCaptivity;
+		$this->fromCaptivity = $fromCaptivity;
 	}
 
-	public void setFromCaptivity(boolean fromCaptivity)
+	public function isObjectPublic()
 	{
-		this.fromCaptivity = fromCaptivity;
+		return $this->objectPublic;
 	}
 
-	public boolean isObjectPublic()
+	public function setObjectPublic($objectPublic)
 	{
-		return objectPublic;
+		$this->objectPublic = $objectPublic;
 	}
 
-	public void setObjectPublic(boolean objectPublic)
+	public function isMultiMediaPublic()
 	{
-		this.objectPublic = objectPublic;
+		return $this->multiMediaPublic;
 	}
 
-	public boolean isMultiMediaPublic()
+	public function setMultiMediaPublic($multiMediaPublic)
 	{
-		return multiMediaPublic;
+		$this->multiMediaPublic = $multiMediaPublic;
 	}
 
-	public void setMultiMediaPublic(boolean multiMediaPublic)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\Agent
+	 */
+	public function getAcquiredFrom()
 	{
-		this.multiMediaPublic = multiMediaPublic;
+		return $this->acquiredFrom;
 	}
 
-	public Agent getAcquiredFrom()
+	public function setAcquiredFrom(Agent $acquiredFrom)
 	{
-		return acquiredFrom;
+		$this->acquiredFrom = $acquiredFrom;
 	}
 
-	public void setAcquiredFrom(Agent acquiredFrom)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\model\GatheringEvent
+	 */
+	public function getGatheringEvent()
 	{
-		this.acquiredFrom = acquiredFrom;
+		return $this->gatheringEvent;
 	}
 
-	public GatheringEvent getGatheringEvent()
+	public function setGatheringEvent(GatheringEvent $gatheringEvent)
 	{
-		return gatheringEvent;
+		$this->gatheringEvent = $gatheringEvent;
 	}
 
-	public void setGatheringEvent(GatheringEvent gatheringEvent)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\helper\SpecimenIdentificationList
+	 */
+	public function getIdentifications()
 	{
-		this.gatheringEvent = gatheringEvent;
+		return $this->identifications;
 	}
 
-	public List<SpecimenIdentification> getIdentifications()
+	public function setIdentifications(SpecimenIdentificationList $identifications)
 	{
-		return identifications;
+		$this->identifications = $identifications;
 	}
 
-	public void setIdentifications(List<SpecimenIdentification> identifications)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\helper\SpecimenList
+	 */
+	public function getOtherSpecimensInAssemblage()
 	{
-		this.identifications = identifications;
+		return $this->otherSpecimensInAssemblage;
 	}
 
-	public List<Specimen> getOtherSpecimensInAssemblage()
+	public function setOtherSpecimensInAssemblage(SpecimenList $otherSpecimensInAssemblage)
 	{
-		return otherSpecimensInAssemblage;
+		$this->otherSpecimensInAssemblage = $otherSpecimensInAssemblage;
 	}
 
-	public void setOtherSpecimensInAssemblage(List<Specimen> otherSpecimensInAssemblage)
+	/**
+	 *
+	 * @return \nl\naturalis\nba\client\php\helper\TaxonList
+	 */
+	public function getAssociatedTaxa()
 	{
-		this.otherSpecimensInAssemblage = otherSpecimensInAssemblage;
+		return $this->associatedTaxa;
 	}
 
-	public List<Taxon> getAssociatedTaxa()
+	public function setAssociatedTaxa(TaxonList $associatedTaxa)
 	{
-		return associatedTaxa;
+		$this->associatedTaxa = $associatedTaxa;
 	}
-
-	public void setAssociatedTaxa(List<Taxon> associatedTaxa)
-	{
-		this.associatedTaxa = associatedTaxa;
-	}
-
 }

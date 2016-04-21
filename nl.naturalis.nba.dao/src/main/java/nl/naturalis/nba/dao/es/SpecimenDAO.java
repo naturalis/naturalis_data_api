@@ -13,7 +13,10 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
@@ -21,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.ISpecimenDAO;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.query.Criterion;
+import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.ESClientFactory;
 import nl.naturalis.nba.dao.Registry;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
@@ -29,7 +34,7 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
 public class SpecimenDAO implements ISpecimenDAO {
 
 	private static final Logger logger;
-	
+
 	static {
 		logger = Registry.getInstance().getLogger(SpecimenDAO.class);
 	}
@@ -48,6 +53,9 @@ public class SpecimenDAO implements ISpecimenDAO {
 	@Override
 	public Specimen findById(String id)
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Retrieving specimen with id \"{}\"", id);
+		}
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
 		GetRequestBuilder request = client.prepareGet();
@@ -56,7 +64,13 @@ public class SpecimenDAO implements ISpecimenDAO {
 		request.setId(id);
 		GetResponse response = request.execute().actionGet();
 		if (!response.isExists()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Specimen with id \"{}\" not found", id);
+			}
 			return null;
+		}
+		if(logger.isDebugEnabled()) {
+			logger.debug("Response:\n{}", response.getSourceAsString());
 		}
 		Map<String, Object> data = response.getSource();
 		return createSpecimen(id, data);
@@ -68,17 +82,43 @@ public class SpecimenDAO implements ISpecimenDAO {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Searching for specimens with UnitID \"{}\"", unitID);
 		}
-		SearchRequestBuilder request = basicSearchRequest();
+		SearchRequestBuilder request = newSearchRequest();
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
 		request.setQuery(csq);
+		return processSearchRequest(request);
+	}
+
+	public List<Specimen> findByCollector(String name)
+	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Generated query:\n" + request.toString());
+			logger.debug("Searching for specimens from collector \"{}\"", name);
+		}
+		TermQueryBuilder tqb = termQuery("gatheringEvent.gatheringPersons.fullName", name);
+		NestedQueryBuilder nqb0 = QueryBuilders.nestedQuery("gatheringEvent.gatheringPersons", tqb);
+		ConstantScoreQueryBuilder csq = constantScoreQuery(nqb0);
+		SearchRequestBuilder request = newSearchRequest();
+		request.setQuery(csq);
+		return processSearchRequest(request);
+	}
+	
+	public List<Specimen> query(QuerySpec spec) {
+		SearchRequestBuilder request = newSearchRequest();
+		BoolQueryBuilder conditions = QueryBuilders.boolQuery();
+		ConstantScoreQueryBuilder csq = constantScoreQuery(conditions);
+		//Criterion criterion = 
+		return null;
+	}
+
+	private List<Specimen> processSearchRequest(SearchRequestBuilder request)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Query:\n{}", request);
 		}
 		SearchResponse response = request.execute().actionGet();
 		SearchHit[] hits = response.getHits().getHits();
 		if (logger.isDebugEnabled()) {
-			logger.debug("Number of hits: {}", hits.length);
+			logger.debug("Response:\n{}", response);
 		}
 		List<Specimen> specimens = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
@@ -97,7 +137,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 		return SpecimenTransfer.transfer(esSpecimen, id);
 	}
 
-	private SearchRequestBuilder basicSearchRequest()
+	private SearchRequestBuilder newSearchRequest()
 	{
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();

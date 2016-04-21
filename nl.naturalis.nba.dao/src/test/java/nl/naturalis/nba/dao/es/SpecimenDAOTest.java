@@ -6,15 +6,19 @@ import static nl.naturalis.nba.dao.ESTestUtils.dropIndex;
 import static nl.naturalis.nba.dao.ESTestUtils.refreshIndex;
 import static nl.naturalis.nba.dao.ESTestUtils.saveObject;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class SpecimenDAOTest {
@@ -32,8 +36,10 @@ public class SpecimenDAOTest {
 	{
 		//dropIndex(ESSpecimen.class);
 	}
-	
-	public void testFindById_1() {
+
+	@Test
+	public void testFindById_1()
+	{
 		ESSpecimen in = new ESSpecimen();
 		String unitID = "ZMA.MAM.12345";
 		String id = "ZMA.MAM.12345@CRS";
@@ -99,6 +105,33 @@ public class SpecimenDAOTest {
 		List<Specimen> result = dao.findByUnitID("NOT A");
 		assertNotNull("01", result);
 		assertEquals("02", 0, result.size());
+	}
+
+	@Test
+	public void testFindByCollector_1()
+	{
+		String unitID = "ZMA.MAM.12345";
+		String id = "ZMA.MAM.12345@CRS";
+		String collector = "Ayco Holleman";
+		Person personIn = new Person(collector);
+		ESGatheringEvent gathering = new ESGatheringEvent();
+		gathering.setGatheringPersons(Arrays.asList(personIn));
+		ESSpecimen specimen = new ESSpecimen();
+		specimen.setUnitID(unitID);
+		specimen.setGatheringEvent(gathering);
+		saveObject(id, specimen);
+		refreshIndex(ESSpecimen.class);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.findByCollector(collector);
+		assertNotNull("01", result);
+		assertNotNull("02", result.get(0));
+		assertNotNull("03", result.get(0).getGatheringEvent());
+		assertNotNull("04", result.get(0).getGatheringEvent().getGatheringAgents());
+		Agent agent = result.get(0).getGatheringEvent().getGatheringAgents().get(0);
+		assertNotNull("05", agent);
+		assertEquals("06", Person.class, agent.getClass());
+		Person personOut = (Person) agent;
+		assertEquals("07", personIn, personOut);
 	}
 
 }

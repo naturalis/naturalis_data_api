@@ -69,7 +69,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 			}
 			return null;
 		}
-		if(logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) {
 			logger.debug("Response:\n{}", response.getSourceAsString());
 		}
 		Map<String, Object> data = response.getSource();
@@ -101,11 +101,13 @@ public class SpecimenDAO implements ISpecimenDAO {
 		request.setQuery(csq);
 		return processSearchRequest(request);
 	}
-	
-	public List<Specimen> query(QuerySpec spec) {
+
+	public List<Specimen> query(QuerySpec spec)
+	{
 		SearchRequestBuilder request = newSearchRequest();
 		BoolQueryBuilder conditions = QueryBuilders.boolQuery();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(conditions);
+		//conditions.must(queryBuilder)
 		//Criterion criterion = 
 		return null;
 	}

@@ -1,8 +1,12 @@
 package nl.naturalis.nba.dao.es.util;
 
+import static org.elasticsearch.index.query.QueryBuilders.*;
+
 import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.query.Criterion;
 import nl.naturalis.nba.api.query.InvalidCriterionException;
@@ -16,7 +20,14 @@ public class CriterionResolver {
 		this.criterion = criterion;
 	}
 
-	public BoolQueryBuilder resolve(BoolQueryBuilder query) throws InvalidCriterionException
+	public BoolQueryBuilder resolve() throws InvalidCriterionException
+	{
+		BoolQueryBuilder query = boolQuery();
+		resolve(query);
+		return query;
+	}
+
+	public void resolve(BoolQueryBuilder query) throws InvalidCriterionException
 	{
 		List<Criterion> siblings = null;
 		boolean isOr = false;
@@ -28,20 +39,23 @@ public class CriterionResolver {
 			siblings = criterion.getOr();
 			isOr = true;
 		}
-		else if(criterion.getAnd()!= null) {
+		else if (criterion.getAnd() != null) {
 			siblings = criterion.getAnd();
 		}
-		if(siblings == null) {
-			
+		if (siblings == null) {
+			resolveThis(query);
 		}
-		return null;
+		else if (isOr) {
+			BoolQueryBuilder nested = QueryBuilders.boolQuery();
+		}
 	}
 
-	private BoolQueryBuilder resolveThis(BoolQueryBuilder query)
+	private void resolveThis(BoolQueryBuilder query) throws InvalidCriterionException
 	{
 		switch (criterion.getOperator()) {
 			case EQUALS:
-
+				TermQueryBuilder termQuery = termQuery(criterion.getField(), criterion.getValue());
+				query.must(termQuery);
 				break;
 			case GT:
 				break;
@@ -57,7 +71,6 @@ public class CriterionResolver {
 				break;
 
 		}
-		return null;
 	}
 
 }

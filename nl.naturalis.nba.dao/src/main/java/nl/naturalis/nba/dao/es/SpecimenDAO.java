@@ -24,12 +24,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.ISpecimenDAO;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Criterion;
+import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.ESClientFactory;
 import nl.naturalis.nba.dao.Registry;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.util.ConditionTranslator;
 
 public class SpecimenDAO implements ISpecimenDAO {
 
@@ -102,11 +104,21 @@ public class SpecimenDAO implements ISpecimenDAO {
 		return processSearchRequest(request);
 	}
 
-	public List<Specimen> query(QuerySpec spec)
+	public List<Specimen> query(QuerySpec spec) throws InvalidConditionException
 	{
 		SearchRequestBuilder request = newSearchRequest();
-		BoolQueryBuilder conditions = QueryBuilders.boolQuery();
-		ConstantScoreQueryBuilder csq = constantScoreQuery(conditions);
+//		Criterion criterion = spec.getCriterion();
+//		ConstantScoreQueryBuilder csq;
+//		if (criterion.getAnd() == null && criterion.getOr() == null) {
+//			CriterionResolver resolver = new CriterionResolver(criterion);
+//			csq = resolver.translate();
+//		}
+//		else if (criterion.getAnd() != null) {
+//			BoolQueryBuilder bqb =  QueryBuilders.boolQuery();
+//			
+//		}
+//		BoolQueryBuilder conditions = QueryBuilders.boolQuery();
+//		csq = constantScoreQuery(conditions);
 		//conditions.must(queryBuilder)
 		//Criterion criterion = 
 		return null;

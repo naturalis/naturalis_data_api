@@ -4,19 +4,19 @@ import java.util.List;
 
 public class QuerySpec {
 
-	private Criterion criterion;
+	private Condition criterion;
 	private List<String> sortBy;
 
 	public QuerySpec()
 	{
 	}
 
-	public Criterion getCriterion()
+	public Condition getCriterion()
 	{
 		return criterion;
 	}
 
-	public void setCriterion(Criterion criterion)
+	public void setCriterion(Condition criterion)
 	{
 		this.criterion = criterion;
 	}

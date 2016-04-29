@@ -1,0 +1,22 @@
+{
+  "bool" : {
+    "must" : [ {
+      "term" : {
+        "firstName" : "John"
+      }
+    }, {
+      "term" : {
+        "lastName" : "Smith"
+      }
+    } ],
+    "must_not" : [ {
+      "term" : {
+        "hasChildren" : "true"
+      }
+    }, {
+      "term" : {
+        "favoritePet" : "dog"
+      }
+    } ]
+  }
+}

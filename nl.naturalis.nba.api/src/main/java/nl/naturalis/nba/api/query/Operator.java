@@ -3,7 +3,7 @@ package nl.naturalis.nba.api.query;
 public enum Operator
 {
 
-	EQUALS("="), NOT_EQUALS("!="), LT("<"), LTE("<="), GT(">"), GTE(">=");
+	EQUALS("="), NOT_EQUALS("!="), LT("<"), LTE("<="), GT(">"), GTE(">="), BETWEEN, NOT_BETWEEN;
 
 	public static Operator parse(String s)
 	{

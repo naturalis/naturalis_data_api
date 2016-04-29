@@ -1,0 +1,13 @@
+{
+  "bool" : {
+    "should" : [ {
+      "term" : {
+        "firstName" : "John"
+      }
+    }, {
+      "term" : {
+        "lastName" : "Smith"
+      }
+    } ]
+  }
+}

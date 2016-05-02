@@ -8,10 +8,12 @@ public enum Operator
 	public static Operator parse(String s)
 	{
 		for (Operator co : values()) {
-			if (co.symbol != null && s.equals(co.symbol))
+			if (co.symbol != null && s.equals(co.symbol)) {
 				return co;
-			if (s.equalsIgnoreCase(co.name()))
+			}
+			if (s.equalsIgnoreCase(co.name())) {
 				return co;
+			}
 		}
 		return null;
 	}

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es;
 
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.ArrayList;
@@ -13,10 +14,9 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.ISpecimenDAO;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.ESClientFactory;
 import nl.naturalis.nba.dao.Registry;
@@ -96,32 +96,23 @@ public class SpecimenDAO implements ISpecimenDAO {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Searching for specimens from collector \"{}\"", name);
 		}
-		TermQueryBuilder tqb = termQuery("gatheringEvent.gatheringPersons.fullName", name);
-		NestedQueryBuilder nqb0 = QueryBuilders.nestedQuery("gatheringEvent.gatheringPersons", tqb);
-		ConstantScoreQueryBuilder csq = constantScoreQuery(nqb0);
+		TermQueryBuilder tq = termQuery("gatheringEvent.gatheringPersons.fullName", name);
+		NestedQueryBuilder nq = nestedQuery("gatheringEvent.gatheringPersons", tq);
+		ConstantScoreQueryBuilder csq = constantScoreQuery(nq);
 		SearchRequestBuilder request = newSearchRequest();
 		request.setQuery(csq);
 		return processSearchRequest(request);
 	}
 
-	public List<Specimen> query(QuerySpec spec) throws InvalidConditionException
+	public List<Specimen> query(QuerySpec spec) throws InvalidQueryException
 	{
+		Condition condition = spec.getCondition();
+		ConditionTranslator ct = new ConditionTranslator(condition);
+		QueryBuilder query = ct.translate();
+		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();
-//		Criterion criterion = spec.getCriterion();
-//		ConstantScoreQueryBuilder csq;
-//		if (criterion.getAnd() == null && criterion.getOr() == null) {
-//			CriterionResolver resolver = new CriterionResolver(criterion);
-//			csq = resolver.translate();
-//		}
-//		else if (criterion.getAnd() != null) {
-//			BoolQueryBuilder bqb =  QueryBuilders.boolQuery();
-//			
-//		}
-//		BoolQueryBuilder conditions = QueryBuilders.boolQuery();
-//		csq = constantScoreQuery(conditions);
-		//conditions.must(queryBuilder)
-		//Criterion criterion = 
-		return null;
+		request.setQuery(csq);
+		return processSearchRequest(request);
 	}
 
 	private List<Specimen> processSearchRequest(SearchRequestBuilder request)

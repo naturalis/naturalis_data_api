@@ -3,13 +3,15 @@ package nl.naturalis.nba.dao.es.util;
 import static nl.naturalis.nba.api.query.Operator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import java.util.EnumSet;
 import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
@@ -133,7 +135,13 @@ public class ConditionTranslator {
 		switch (condition.getOperator()) {
 			case EQUALS:
 			case NOT_EQUALS:
-				return termQuery(field(), value());
+				if (field().indexOf('.') == -1)
+					return termQuery(field(), value());
+				int i = field().lastIndexOf('.');
+				String path = field().substring(0, i);
+				String name = field().substring(i + 1);
+				TermQueryBuilder tq = termQuery(field(), value());
+				return nestedQuery(path, tq);
 			case GT:
 				break;
 			case GTE:

@@ -1,7 +1,6 @@
 package nl.naturalis.nba.api.query;
 
-
-public class InvalidConditionException extends Exception {
+public class InvalidConditionException extends InvalidQueryException {
 
 	public InvalidConditionException(String message)
 	{
@@ -12,6 +11,5 @@ public class InvalidConditionException extends Exception {
 	{
 		super(cause);
 	}
-
 
 }

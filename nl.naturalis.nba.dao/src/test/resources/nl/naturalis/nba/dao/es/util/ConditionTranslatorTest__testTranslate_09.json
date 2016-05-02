@@ -1,0 +1,23 @@
+{
+  "bool" : {
+    "must" : [ {
+      "nested" : {
+        "query" : {
+          "term" : {
+            "person.firstName" : "John"
+          }
+        },
+        "path" : "person"
+      }
+    }, {
+      "nested" : {
+        "query" : {
+          "term" : {
+            "person.address.street" : "Main st."
+          }
+        },
+        "path" : "person.address"
+      }
+    } ]
+  }
+}

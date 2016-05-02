@@ -4,21 +4,21 @@ import java.util.List;
 
 public class QuerySpec {
 
-	private Condition criterion;
+	private Condition condition;
 	private List<String> sortBy;
 
 	public QuerySpec()
 	{
 	}
 
-	public Condition getCriterion()
+	public Condition getCondition()
 	{
-		return criterion;
+		return condition;
 	}
 
-	public void setCriterion(Condition criterion)
+	public void setCondition(Condition condition)
 	{
-		this.criterion = criterion;
+		this.condition = condition;
 	}
 
 	public List<String> getSortBy()

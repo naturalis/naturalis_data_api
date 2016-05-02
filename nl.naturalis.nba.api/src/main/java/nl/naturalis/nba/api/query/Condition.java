@@ -21,7 +21,7 @@ import java.util.List;
  * You should not provide both {@link #setAnd(List) AND-joined siblings} and
  * {@link #setOr(List) OR-joined siblings} for one and the same
  * {@code Condition} instance. The API allows this because it makes for
- * intuitive coding. However, when the condition is validated, a
+ * elegant code. However, when the condition is validated, a
  * {@link InvalidConditionException} is thrown it contains both AND-joined
  * siblings and OR-joined siblings.
  * </p>

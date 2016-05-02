@@ -73,20 +73,17 @@ public class ConditionTranslator {
 				result = translateCondition();
 			}
 		}
-		else if (and() != null) {
+		else if (and() != null && or() == null) {
 			result = translateWithAndSiblings();
 		}
-		else if (or() != null) {
+		else if (or() != null && and() == null) {
 			result = translateWithOrSiblings();
 		}
 		else {
 			String msg = "A query condition cannot have both AND and OR siblings";
 			throw new InvalidConditionException(msg);
 		}
-		if (condition.isNegated()) {
-			return not(result);
-		}
-		return result;
+		return condition.isNegated() ? not(result) : result;
 	}
 
 	private QueryBuilder translateWithAndSiblings() throws InvalidConditionException

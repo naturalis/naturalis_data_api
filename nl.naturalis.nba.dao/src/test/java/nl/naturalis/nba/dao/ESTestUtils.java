@@ -44,6 +44,7 @@ public class ESTestUtils {
 		CreateIndexRequestBuilder request = indices().prepareCreate(index);
 		Builder builder = Settings.settingsBuilder();
 		File settingsFile = registry.getFile("es-settings.json");
+		logger.info("Reading Elasticsearch settings from " + settingsFile.getAbsolutePath());
 		String settings = FileUtil.getContents(settingsFile);
 		builder.loadFromSource(settings);
 		request.setSettings(builder.build());

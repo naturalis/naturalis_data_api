@@ -133,5 +133,9 @@ public class SpecimenDAOTest {
 		Person personOut = (Person) agent;
 		assertEquals("07", personIn, personOut);
 	}
+	
+	public void testQuery__QuerySpec__01() {
+		
+	}
 
 }

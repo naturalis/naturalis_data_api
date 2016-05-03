@@ -80,7 +80,7 @@ public class MappingFactory {
 		if (esType == ESDataType.STRING) {
 			df.setIndex(Index.NOT_ANALYZED);
 			if (checkIndexed(df, fm)) {
-				//addAnalyzedFields(df, fm);
+				addAnalyzedFields(df, fm);
 			}
 		}
 		return df;

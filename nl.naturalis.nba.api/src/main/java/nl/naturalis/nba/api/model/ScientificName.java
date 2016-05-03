@@ -1,8 +1,12 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.List;
 
-import nl.naturalis.nba.api.annotations.NGram;
+import nl.naturalis.nba.api.annotations.Analyzers;
 
 /**
  * This class encapsulates a taxon's full scientific name and the components it
@@ -14,10 +18,10 @@ public class ScientificName extends NBADomainObject {
 
 	private String fullScientificName;
 	private TaxonomicStatus taxonomicStatus;
-	@NGram("nda_ngram_analyzer")
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String genusOrMonomial;
 	private String subgenus;
-	@NGram("nda_ngram_analyzer")
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String specificEpithet;
 	private String infraspecificEpithet;
 	private String infraspecificMarker;

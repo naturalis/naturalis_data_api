@@ -3,20 +3,25 @@
 		"number_of_shards": @elasticsearch.index.numshards@,
 		"number_of_replicas": @elasticsearch.index.numreplicas@
 	},
-	"analysis": {
-		"analyzer": {
-			"nda_ngram_analyzer": {
-				"tokenizer": "nda_ngram_tokenizer",
-				"filter": "lowercase"
+    "analysis": {
+    	"analyzer": {
+    		"case_insensitive_analyzer":{
+    			"tokenizer": "keyword",
+    			"filter": "lowercase"
+    		}
+    	},
+    	"analyzer": {
+    		"like_analyzer": {
+    			"tokenizer": "like_tokenizer",
+    			"filter": "lowercase"
 			}
 		},
 		"tokenizer": {
-			"nda_ngram_tokenizer": {
+			"like_tokenizer": {
 				"type": "nGram",
 				"min_gram": "3",
 				"max_gram": "10",
-				"token_chars": ["letter",
-				"digit"]
+				"token_chars": ["letter", "digit"]
 			}
 		}
 	},

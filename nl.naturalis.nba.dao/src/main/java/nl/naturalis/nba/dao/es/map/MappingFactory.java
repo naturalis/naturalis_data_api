@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static nl.naturalis.nba.dao.es.map.ESScalar.CI_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.ESScalar.DEFAULT_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.ESScalar.LIKE_ANALYZED;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;
@@ -8,11 +11,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
 
+import nl.naturalis.nba.api.annotations.Analyzer;
+import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.MappedProperty;
-import nl.naturalis.nba.api.annotations.NGram;
-import nl.naturalis.nba.api.annotations.NotAnalyzed;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.api.model.Specimen;
@@ -72,9 +78,10 @@ public class MappingFactory {
 	{
 		DocumentField df = new DocumentField(esType);
 		if (esType == ESDataType.STRING) {
-			if (!processNotIndexedAnnotation(df, fm))
-				processNotAnalyzedAnnotation(df, fm);
-			processNGramAnnotation(df, fm);
+			df.setIndex(Index.NOT_ANALYZED);
+			if (checkIndexed(df, fm)) {
+				//addAnalyzedFields(df, fm);
+			}
 		}
 		return df;
 	}
@@ -145,41 +152,64 @@ public class MappingFactory {
 		}
 	}
 
-	private static boolean processNotIndexedAnnotation(DocumentField df, AnnotatedElement fm)
+	/*
+	 * Check whether or not the field is indexed and, if not, set the "index"
+	 * property of the field to "no".
+	 */
+	private static boolean checkIndexed(DocumentField df, AnnotatedElement fm)
 	{
-		NotIndexed notIndexed = fm.getAnnotation(NotIndexed.class);
-		if (notIndexed == null) {
-			return false;
+		NotIndexed annotation = fm.getAnnotation(NotIndexed.class);
+		if (annotation == null) {
+			return true;
 		}
 		df.setIndex(Index.NO);
-		return true;
-	}
-
-	private static void processNotAnalyzedAnnotation(DocumentField df, AnnotatedElement fm)
-	{
-		NotAnalyzed notAnalyzed = fm.getAnnotation(NotAnalyzed.class);
-		df.setIndex(Index.NOT_ANALYZED);
-		if (notAnalyzed == null) {
-			/* So the thing IS analyzed */
-			df.addDefaultAnalyzedField();
-		}
-	}
-
-	private static void processNGramAnnotation(DocumentField df, AnnotatedElement fm)
-	{
-		NGram ngram = fm.getAnnotation(NGram.class);
-		if (ngram != null) {
-			ESDataType dt = ESDataType.parse(ngram.type());
-			ESScalar scalar = new ESScalar(dt);
-			scalar.setAnalyzer(ngram.value());
-			df.addToFields("ngram", scalar);
-		}
+		return false;
 	}
 
 	/*
-	 * Maps a class to the class that must be mapped in its place. For example,
+	 * Returns false if the Java field does not contain the @Analyzers
+	 * annotation, or if its value was NONE. Otherwise it returns true.
+	 */
+	private static boolean addAnalyzedFields(DocumentField df, AnnotatedElement fm)
+	{
+		Analyzers annotation = fm.getAnnotation(Analyzers.class);
+		if (annotation == null) {
+			df.addMultiField("analyzed", DEFAULT_ANALYZED);
+			df.addMultiField("ci", CI_ANALYZED);
+			return false;
+		}
+		List<Analyzer> value = Arrays.asList(annotation.value());
+		EnumSet<Analyzer> analyzers = EnumSet.copyOf(value);
+		if (analyzers.contains(Analyzer.NONE)) {
+			if (analyzers.size() != 1) {
+				String msg = "Analyzer NONE cannot be combined with other Analyzers";
+				throw new MappingException(msg);
+			}
+			return false;
+		}
+		for (Analyzer a : analyzers) {
+			switch (a) {
+				case CASE_INSENSITIVE:
+					df.addMultiField("like", LIKE_ANALYZED);
+					break;
+				case DEFAULT:
+					df.addMultiField("analyzed", DEFAULT_ANALYZED);
+					break;
+				case LIKE:
+					df.addMultiField("ci", CI_ANALYZED);
+					break;
+				default:
+					break;
+			}
+		}
+		return true;
+	}
+
+	/*
+	 * Maps a class to the class that must be used in its place. For example,
 	 * when mapping arrays, it's not the array that is mapped but the class of
-	 * its elements.
+	 * its elements, because fields are intrinsically multi-valued in
+	 * Elasticsearch; no array type exists or is required in Elasticsearch.
 	 */
 	private static Class<?> mapType(Class<?> realType, Type typeArg)
 	{

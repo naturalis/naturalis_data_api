@@ -7,9 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface NGram {
+public @interface Analyzers {
 
-	String type() default "string";
-
-	String value();
+	Analyzer[] value();
+	
 }

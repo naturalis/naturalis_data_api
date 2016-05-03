@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Indicates that the field decorated with this annotation is not indexed
  * (i&#46;e&#46; it is not searchable). By default all fields are searchable. If
- * a field is not searchable, it is by definition also {@link NotAnalyzed}.
+ * a field is not searchable, it is by definition not analyzed.
  * Therefore it makes no sense to use both annotations to the same field,
  * although no exception is thrown if you do.
  * 

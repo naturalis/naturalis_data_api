@@ -1,15 +1,19 @@
 package nl.naturalis.nba.dao.es.types;
 
-import nl.naturalis.nba.api.annotations.NGram;
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
+import java.util.Date;
+import java.util.List;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
 import nl.naturalis.nba.api.model.NBADomainObject;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
-
-import java.util.Date;
-import java.util.List;
 
 public class ESGatheringEvent extends NBADomainObject {
 
@@ -23,7 +27,7 @@ public class ESGatheringEvent extends NBADomainObject {
 	private String locality;
 	private String city;
 	private String sublocality;
-	@NGram("nda_ngram_analyzer")
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String localityText;
 	private Date dateTimeBegin;
 	private Date dateTimeEnd;

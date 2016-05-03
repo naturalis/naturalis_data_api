@@ -16,17 +16,7 @@ public class DocumentField extends ESScalar {
 		return fields;
 	}
 
-	public void addRawField()
-	{
-		addToFields("raw", ESScalar.RAW);
-	}
-
-	public void addDefaultAnalyzedField()
-	{
-		addToFields("analyzed", ESScalar.DEFAULT);
-	}
-
-	public void addToFields(String name, ESScalar field)
+	public void addMultiField(String name, ESScalar field)
 	{
 		if (fields == null) {
 			fields = new LinkedHashMap<>(2);

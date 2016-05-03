@@ -1,15 +1,33 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static nl.naturalis.nba.dao.es.map.Index.*;
+import static nl.naturalis.nba.dao.es.map.ESDataType.*;
+
 public class ESScalar extends ESField {
 
 	/**
-	 * A raw, i.e. "not_analyzed" string field.
+	 * A raw, "not_analyzed" string field.
 	 */
-	static final ESScalar RAW = new ESScalar(Index.NOT_ANALYZED);
+	static final ESScalar RAW;
 	/**
 	 * A string field analyzed using the default analyzer.
 	 */
-	static final ESScalar DEFAULT = new ESScalar();
+	static final ESScalar DEFAULT_ANALYZED;
+	/**
+	 * A string field for case-insensitive comparisons.
+	 */
+	static final ESScalar CI_ANALYZED;
+	/**
+	 * A string field for case-insensitive comparisons.
+	 */
+	static final ESScalar LIKE_ANALYZED;
+
+	static {
+		RAW = new ESScalar(STRING, NOT_ANALYZED, null);
+		DEFAULT_ANALYZED = new ESScalar(STRING, ANALYZED, null);
+		CI_ANALYZED = new ESScalar(STRING, null, "case_insensitive_analyzer");
+		LIKE_ANALYZED = new ESScalar(STRING, null, "like_analyzer");
+	}
 
 	private Index index;
 	private String analyzer;
@@ -19,15 +37,11 @@ public class ESScalar extends ESField {
 		super(esDataType);
 	}
 
-	private ESScalar(Index index)
+	private ESScalar(ESDataType type, Index index, String analyzer)
 	{
-		this(ESDataType.STRING);
+		super(type);
 		this.index = index;
-	}
-
-	private ESScalar()
-	{
-		this(ESDataType.STRING);
+		this.analyzer = analyzer;
 	}
 
 	public Index getIndex()

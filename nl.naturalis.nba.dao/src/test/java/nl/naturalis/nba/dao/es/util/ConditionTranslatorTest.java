@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class ConditionTranslatorTest {
 
@@ -29,7 +30,7 @@ public class ConditionTranslatorTest {
 	public void testTranslate_01() throws InvalidConditionException
 	{
 		Condition condition = new Condition("name", EQUALS, "Smith");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof TermQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_01.json";
@@ -51,7 +52,7 @@ public class ConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_02.json";
@@ -72,7 +73,7 @@ public class ConditionTranslatorTest {
 	public void testTranslate_03() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", NOT_EQUALS, "John");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_03.json";
@@ -97,7 +98,7 @@ public class ConditionTranslatorTest {
 		condition.and("lastName", EQUALS, "Smith");
 		condition.and("hasChildren", NOT_EQUALS, "true");
 		condition.and("favoritePet", NOT_EQUALS, "dog");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_04.json";
@@ -119,7 +120,7 @@ public class ConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.or("lastName", EQUALS, "Smith");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_05.json";
@@ -143,7 +144,7 @@ public class ConditionTranslatorTest {
 		Condition condition = new Condition("firstName", NOT_EQUALS, "John");
 		condition.or("lastName", NOT_EQUALS, "Smith");
 		condition.or("favoritePet", EQUALS, "dog");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_06.json";
@@ -169,7 +170,7 @@ public class ConditionTranslatorTest {
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.and("lastName", NOT_EQUALS, "Smith").and(deeper);
 
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_07.json";
@@ -188,7 +189,7 @@ public class ConditionTranslatorTest {
 		 * exception; only when the condition is translated do you get the
 		 * exception
 		 */
-		new ConditionTranslator(condition).translate();
+		new ConditionTranslator(condition, ESSpecimen.class).translate();
 	}
 
 	/**
@@ -201,7 +202,7 @@ public class ConditionTranslatorTest {
 	{
 		Condition condition = new Condition("person.firstName", EQUALS, "John");
 		condition.and("person.address.street", EQUALS, "Main st.");
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		System.out.println(query.toString());

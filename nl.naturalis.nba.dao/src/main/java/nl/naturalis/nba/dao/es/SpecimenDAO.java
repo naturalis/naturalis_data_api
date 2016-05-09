@@ -20,7 +20,9 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import nl.naturalis.nba.api.ISpecimenDAO;
 import nl.naturalis.nba.api.model.Specimen;
@@ -29,6 +31,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.ESClientFactory;
 import nl.naturalis.nba.dao.Registry;
+import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.util.ConditionTranslator;
@@ -56,7 +59,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 	public Specimen findById(String id)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Retrieving specimen with id \"{}\"", id);
+			logger.debug("findById(\"{}\")", id);
 		}
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
@@ -82,7 +85,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 	public List<Specimen> findByUnitID(String unitID)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Searching for specimens with UnitID \"{}\"", unitID);
+			logger.debug("findByUnitID(\"{}\")", unitID);
 		}
 		SearchRequestBuilder request = newSearchRequest();
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
@@ -94,7 +97,7 @@ public class SpecimenDAO implements ISpecimenDAO {
 	public List<Specimen> findByCollector(String name)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Searching for specimens from collector \"{}\"", name);
+			logger.debug("findByCollector(\"{}\")", name);
 		}
 		TermQueryBuilder tq = termQuery("gatheringEvent.gatheringPersons.fullName", name);
 		NestedQueryBuilder nq = nestedQuery("gatheringEvent.gatheringPersons", tq);
@@ -106,8 +109,11 @@ public class SpecimenDAO implements ISpecimenDAO {
 
 	public List<Specimen> query(QuerySpec spec) throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Query using QuerySpec:\n{}", dump(spec));
+		}
 		Condition condition = spec.getCondition();
-		ConditionTranslator ct = new ConditionTranslator(condition);
+		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();
@@ -118,12 +124,12 @@ public class SpecimenDAO implements ISpecimenDAO {
 	private List<Specimen> processSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Query:\n{}", request);
+			logger.debug("Executing query:\n{}", request);
 		}
 		SearchResponse response = request.execute().actionGet();
 		SearchHit[] hits = response.getHits().getHits();
 		if (logger.isDebugEnabled()) {
-			logger.debug("Response:\n{}", response);
+			logger.debug("Processing response:\n{}", response);
 		}
 		List<Specimen> specimens = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
@@ -137,6 +143,9 @@ public class SpecimenDAO implements ISpecimenDAO {
 
 	private Specimen createSpecimen(String id, Map<String, Object> data)
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Creating Specimen instance with id {}", id);
+		}
 		ObjectMapper om = registry.getObjectMapper(ESSpecimen.class);
 		ESSpecimen esSpecimen = om.convertValue(data, ESSpecimen.class);
 		return SpecimenTransfer.transfer(esSpecimen, id);
@@ -144,10 +153,25 @@ public class SpecimenDAO implements ISpecimenDAO {
 
 	private SearchRequestBuilder newSearchRequest()
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Initializing search request");
+		}
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
 		SearchRequestBuilder request = client.prepareSearch(esIndex);
 		request.setTypes(registry.getType(ESSpecimen.class));
 		return request;
+	}
+
+	private static String dump(Object obj)
+	{
+		ObjectMapper om = new ObjectMapper();
+		ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
+		try {
+			return ow.writeValueAsString(obj);
+		}
+		catch (JsonProcessingException e) {
+			throw new DaoException(e);
+		}
 	}
 }

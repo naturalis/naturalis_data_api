@@ -3,13 +3,13 @@ package nl.naturalis.nba.dao.es.util;
 import static nl.naturalis.nba.api.query.Operator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.EnumSet;
 import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 
@@ -40,15 +40,17 @@ public class ConditionTranslator {
 	}
 
 	private final Condition condition;
+	private final Class<?> type;
 
 	/**
 	 * Creates a translator for the specified condition.
 	 * 
 	 * @param condition
 	 */
-	public ConditionTranslator(Condition condition)
+	public ConditionTranslator(Condition condition, Class<?> forType)
 	{
 		this.condition = condition;
+		this.type = forType;
 	}
 
 	/**
@@ -98,7 +100,7 @@ public class ConditionTranslator {
 			boolQuery.must(translateCondition());
 		}
 		for (Condition sibling : and()) {
-			ConditionTranslator translator = new ConditionTranslator(sibling);
+			ConditionTranslator translator = new ConditionTranslator(sibling, type);
 			if (translator.isNegatingOperator()) {
 				boolQuery.mustNot(translator.translate(true));
 			}
@@ -119,7 +121,7 @@ public class ConditionTranslator {
 			boolQuery.should(translateCondition());
 		}
 		for (Condition sibling : or()) {
-			ConditionTranslator translator = new ConditionTranslator(sibling);
+			ConditionTranslator translator = new ConditionTranslator(sibling, type);
 			if (translator.isNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
@@ -139,7 +141,6 @@ public class ConditionTranslator {
 					return termQuery(field(), value());
 				int i = field().lastIndexOf('.');
 				String path = field().substring(0, i);
-				String name = field().substring(i + 1);
 				TermQueryBuilder tq = termQuery(field(), value());
 				return nestedQuery(path, tq);
 			case GT:

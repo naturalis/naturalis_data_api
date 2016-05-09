@@ -308,22 +308,22 @@ public class ESSpecimen extends NBATraceableObject implements ESType {
 	public void setIdentifications(List<SpecimenIdentification> identifications)
 	{
 		this.identifications = identifications;
-		this.identifyingEpithets = new ArrayList<>();
-		if (identifications != null) {
-			for (SpecimenIdentification identification : identifications) {
-				//@formatter:off
-                String identifier =
-                        identification.getScientificName().getGenusOrMonomial() +
-                                IDENTIFYING_EPITHETS_DELIMITER +
-                                identification.getScientificName().getSubgenus() +
-                                IDENTIFYING_EPITHETS_DELIMITER +
-                                identification.getScientificName().getSpecificEpithet() +
-                                IDENTIFYING_EPITHETS_DELIMITER +
-                                identification.getScientificName().getInfraspecificEpithet();
-                //@formatter:on
-				identifyingEpithets.add(identifier);
-			}
-		}
+//		this.identifyingEpithets = new ArrayList<>();
+//		if (identifications != null) {
+//			for (SpecimenIdentification identification : identifications) {
+//				//@formatter:off
+//                String identifier =
+//                        identification.getScientificName().getGenusOrMonomial() +
+//                                IDENTIFYING_EPITHETS_DELIMITER +
+//                                identification.getScientificName().getSubgenus() +
+//                                IDENTIFYING_EPITHETS_DELIMITER +
+//                                identification.getScientificName().getSpecificEpithet() +
+//                                IDENTIFYING_EPITHETS_DELIMITER +
+//                                identification.getScientificName().getInfraspecificEpithet();
+//                //@formatter:on
+//				identifyingEpithets.add(identifier);
+//			}
+//		}
 	}
 
 	public List<String> getIdentifyingEpithets()

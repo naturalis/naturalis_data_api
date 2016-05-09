@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
@@ -23,6 +24,7 @@ import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
  * Generates Elasticsearch mappings from {@link Class} objects.
@@ -36,14 +38,20 @@ public class MappingFactory {
 	private static final Package esModelPackage = ESSpecimen.class.getPackage();
 	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
+	private static final HashMap<Class<? extends ESType>, Mapping> cache = new HashMap<>();
+
 	public MappingFactory()
 	{
 	}
 
-	public Mapping getMapping(Class<?> forClass)
+	public Mapping getMapping(Class<? extends ESType> forClass)
 	{
-		Mapping mapping = new Mapping();
-		addFieldsToDocument(mapping, forClass);
+		Mapping mapping = cache.get(forClass);
+		if (mapping == null) {
+			mapping = new Mapping();
+			addFieldsToDocument(mapping, forClass);
+			cache.put(forClass, mapping);
+		}
 		return mapping;
 	}
 

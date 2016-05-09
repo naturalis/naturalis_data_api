@@ -11,11 +11,14 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.Operator;
+import nl.naturalis.nba.dao.es.map.ESDataType;
+import nl.naturalis.nba.dao.es.map.MappingInspector;
+import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
+import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
  * Converts an NBA {@link Condition} instance to Elasticsearch
@@ -40,17 +43,19 @@ public class ConditionTranslator {
 	}
 
 	private final Condition condition;
-	private final Class<?> type;
+	private final Class<? extends ESType> type;
+	private final MappingInspector inspector;
 
 	/**
 	 * Creates a translator for the specified condition.
 	 * 
 	 * @param condition
 	 */
-	public ConditionTranslator(Condition condition, Class<?> forType)
+	public ConditionTranslator(Condition condition, Class<? extends ESType> forType)
 	{
 		this.condition = condition;
 		this.type = forType;
+		this.inspector = MappingInspector.forType(forType);
 	}
 
 	/**
@@ -137,12 +142,19 @@ public class ConditionTranslator {
 		switch (condition.getOperator()) {
 			case EQUALS:
 			case NOT_EQUALS:
-				if (field().indexOf('.') == -1)
-					return termQuery(field(), value());
-				int i = field().lastIndexOf('.');
-				String path = field().substring(0, i);
-				TermQueryBuilder tq = termQuery(field(), value());
-				return nestedQuery(path, tq);
+				ESDataType dataType;
+				try {
+					dataType = inspector.getType(field());
+				}
+				catch (NoSuchFieldException e) {
+					throw new InvalidConditionException(e.getMessage());
+				}
+				if (dataType == ESDataType.NESTED) {
+					int i = field().lastIndexOf('.');
+					String path = field().substring(0, i);
+					return nestedQuery(path, termQuery(field(), value()));
+				}
+				return termQuery(field(), value());
 			case GT:
 				break;
 			case GTE:

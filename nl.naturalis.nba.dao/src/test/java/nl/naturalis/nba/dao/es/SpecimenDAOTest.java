@@ -12,10 +12,14 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.List;
 
+import org.domainobject.util.debug.BeanPrinter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -171,15 +175,23 @@ public class SpecimenDAOTest {
 	public void testQuery__QuerySpec__02() throws InvalidQueryException
 	{
 		saveObject(specimen01);
-		String genus = "identifications.defaultClassification.genus";
-		String specificEpithet = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition(genus, EQUALS, "Parus");
-		condition.and(specificEpithet, EQUALS, "major");
-		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-
+		try {
+			String s = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(specimen01);
+			System.out.println(s);
+		}
+		catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		String genus = "identifications.defaultClassification.genus";
+//		String specificEpithet = "identifications.defaultClassification.specificEpithet";
+//		Condition condition = new Condition(genus, EQUALS, "Parus");
+//		condition.and(specificEpithet, EQUALS, "major");
+//		QuerySpec qs = new QuerySpec();
+//		qs.setCondition(condition);
+//		SpecimenDAO dao = new SpecimenDAO();
+//		List<Specimen> result = dao.query(qs);
+//		assertEquals("01", 1, result.size());
 	}
 
 }

@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 public class DocumentField extends ESScalar {
 
 	private LinkedHashMap<String, ESScalar> fields;
-
+	
 	public DocumentField(ESDataType esDataType)
 	{
 		super(esDataType);

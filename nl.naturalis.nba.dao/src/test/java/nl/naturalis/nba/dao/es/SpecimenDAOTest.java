@@ -9,6 +9,7 @@ import static nl.naturalis.nba.dao.ESTestUtils.saveObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -40,21 +42,36 @@ public class SpecimenDAOTest {
 	@BeforeClass
 	public static void setup()
 	{
+		
+		/* ****************************** */
+		/* ******** 1st SPECIMEN ******** */
+		/* ****************************** */
 
 		Person person = new Person("Wallich, N");
 		ESGatheringEvent gathering = new ESGatheringEvent();
 		gathering.setGatheringPersons(Arrays.asList(person));
 
-		DefaultClassification dc = new DefaultClassification();
-		dc.setGenus("Parus");
-		dc.setSpecificEpithet("major");
+		DefaultClassification defaultClassification = new DefaultClassification();
+		defaultClassification.setGenus("Parus");
+		defaultClassification.setSpecificEpithet("major");
+		
+		List<Monomial> systemClassification = new ArrayList<>();
+		systemClassification.add(new Monomial("kingdom", "Animalia"));
+		systemClassification.add(new Monomial("phylum", "Chordata"));
+		systemClassification.add(new Monomial("genus", "Parus"));
 
-		SpecimenIdentification si = new SpecimenIdentification();
-		si.setDefaultClassification(dc);
+		SpecimenIdentification identification = new SpecimenIdentification();
+		identification.setDefaultClassification(defaultClassification);
+		identification.setSystemClassification(systemClassification);
 
 		specimen01.setUnitID("ZMA.MAM.12345");
 		specimen01.setGatheringEvent(gathering);
-		specimen01.setIdentifications(Arrays.asList(si));
+		specimen01.setIdentifications(Arrays.asList(identification));
+
+		
+		/* ****************************** */
+		/* ******** 2nd SPECIMEN ******** */
+		/* ****************************** */
 
 		specimen02.setUnitID("L  0000123");
 	}
@@ -175,23 +192,16 @@ public class SpecimenDAOTest {
 	public void testQuery__QuerySpec__02() throws InvalidQueryException
 	{
 		saveObject(specimen01);
-		try {
-			String s = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(specimen01);
-			System.out.println(s);
-		}
-		catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		String genus = "identifications.defaultClassification.genus";
-//		String specificEpithet = "identifications.defaultClassification.specificEpithet";
-//		Condition condition = new Condition(genus, EQUALS, "Parus");
-//		condition.and(specificEpithet, EQUALS, "major");
-//		QuerySpec qs = new QuerySpec();
-//		qs.setCondition(condition);
-//		SpecimenDAO dao = new SpecimenDAO();
-//		List<Specimen> result = dao.query(qs);
-//		assertEquals("01", 1, result.size());
+		refreshIndex(ESSpecimen.class);
+		String genus = "identifications.defaultClassification.genus";
+		String specificEpithet = "identifications.defaultClassification.specificEpithet";
+		Condition condition = new Condition(genus, EQUALS, "Parus");
+		//condition.and(specificEpithet, EQUALS, "major");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
 	}
 
 }

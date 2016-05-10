@@ -54,6 +54,25 @@ public class MappingFactory {
 		}
 		return mapping;
 	}
+	
+	private static void addFieldsToDocument(Document document, Class<?> forClass)
+	{
+		for (Field f : getFields(forClass)) {
+			document.addField(f.getName(), createESField(f));
+		}
+		for (Method m : getMappedProperties(forClass)) {
+			String methodName = m.getName();
+			String fieldName;
+			if (methodName.startsWith("get")) {
+				fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+			}
+			else {
+				fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+			}
+			document.addField(fieldName, createESField(m));
+		}
+	}
+
 
 	private static ESField createESField(Field field)
 	{
@@ -132,24 +151,6 @@ public class MappingFactory {
 		}
 		addFieldsToDocument(document, mapToType);
 		return document;
-	}
-
-	private static void addFieldsToDocument(Document document, Class<?> forClass)
-	{
-		for (Field f : getFields(forClass)) {
-			document.addField(f.getName(), createESField(f));
-		}
-		for (Method m : getMappedProperties(forClass)) {
-			String methodName = m.getName();
-			String fieldName;
-			if (methodName.startsWith("get")) {
-				fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
-			}
-			else {
-				fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
-			}
-			document.addField(fieldName, createESField(m));
-		}
 	}
 
 	private static void checkPackage(Class<?> cls)

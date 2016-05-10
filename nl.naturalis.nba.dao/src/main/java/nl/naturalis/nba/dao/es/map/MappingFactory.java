@@ -58,7 +58,10 @@ public class MappingFactory {
 	private static void addFieldsToDocument(Document document, Class<?> forClass)
 	{
 		for (Field f : getFields(forClass)) {
-			document.addField(f.getName(), createESField(f));
+			ESField esField = createESField(f);
+			esField.setName(f.getName());
+			esField.setParent(document);
+			document.addField(f.getName(), esField);
 		}
 		for (Method m : getMappedProperties(forClass)) {
 			String methodName = m.getName();
@@ -69,11 +72,13 @@ public class MappingFactory {
 			else {
 				fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
 			}
-			document.addField(fieldName, createESField(m));
+			ESField esField = createESField(m);
+			esField.setName(fieldName);
+			esField.setParent(document);
+			document.addField(fieldName, esField);
 		}
 	}
-
-
+	
 	private static ESField createESField(Field field)
 	{
 		Class<?> realType = field.getType();

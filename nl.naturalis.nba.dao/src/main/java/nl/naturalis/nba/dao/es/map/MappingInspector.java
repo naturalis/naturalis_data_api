@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.domainobject.util.debug.BeanPrinter;
+
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -32,6 +34,7 @@ public class MappingInspector {
 		if (mi == null) {
 			MappingFactory mf = new MappingFactory();
 			Mapping mapping = mf.getMapping(type);
+			BeanPrinter.out(mapping);
 			mi = new MappingInspector(mapping);
 			cache.put(type, mi);
 		}

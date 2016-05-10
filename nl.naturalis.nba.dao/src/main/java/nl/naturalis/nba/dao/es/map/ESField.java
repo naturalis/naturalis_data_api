@@ -3,9 +3,9 @@ package nl.naturalis.nba.dao.es.map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Abstract base class for any kind of node in a mapping. A {@link Mapping},
- * {@link Document}, {@link DocumentField} and indexed "multi-fields" within a
- * {@code DocumentField} are all instances of an {@link ESField}.
+ * Abstract base class for any kind of node in a mapping. A {@link Mapping}, a
+ * {@link Document}, a {@link DocumentField} and any {@link IndexableField}
+ * within a {@link DocumentField} are all instances of an {@link ESField}.
  * 
  * @author Ayco Holleman
  *

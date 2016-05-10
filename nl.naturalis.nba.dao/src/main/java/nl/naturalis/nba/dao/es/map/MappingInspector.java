@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.domainobject.util.debug.BeanPrinter;
-
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -34,7 +32,6 @@ public class MappingInspector {
 		if (mi == null) {
 			MappingFactory mf = new MappingFactory();
 			Mapping mapping = mf.getMapping(type);
-			BeanPrinter.out(mapping);
 			mi = new MappingInspector(mapping);
 			cache.put(type, mi);
 		}
@@ -89,12 +86,11 @@ public class MappingInspector {
 	 */
 	public List<Document> getAncestors(String field)
 	{
-		LinkedHashMap<String, ESField> map = mapping.getProperties();
-		String[] chunks = field.split("\\.");
-		List<String> path = Arrays.asList(chunks);
-		List<Document> ancestors = getAncestors(new ArrayList<Document>(4), path, map);
-		if (ancestors == null) {
-			throw new NoSuchFieldException(field);
+		ESField f = getField(field).getParent();
+		List<Document> ancestors = new ArrayList<>(4);
+		while (f.getParent() != null) {
+			ancestors.add((Document) f);
+			f = f.getParent();
 		}
 		return ancestors;
 	}
@@ -105,28 +101,16 @@ public class MappingInspector {
 		if (f == null) {
 			return null;
 		}
-		if (f instanceof DocumentField || path.size() == 1) {
+		if (f instanceof DocumentField) {
+			if (path.size() != 1) {
+				// prevent access to fields specifying analyzers
+				return null;
+			}
 			return f;
 		}
 		path = path.subList(1, path.size());
 		map = ((Document) f).getProperties();
 		return getField(path, map);
-	}
-
-	private List<Document> getAncestors(List<Document> ancestors, List<String> path,
-			Map<String, ? extends ESField> map)
-	{
-		ESField f = map.get(path.get(0));
-		if (f == null) {
-			return null;
-		}
-		if (path.size() == 1) {
-			return ancestors;
-		}
-		ancestors.add((Document) f);
-		path = path.subList(1, path.size());
-		map = ((Document) f).getProperties();
-		return getAncestors(ancestors, path, map);
 	}
 
 }

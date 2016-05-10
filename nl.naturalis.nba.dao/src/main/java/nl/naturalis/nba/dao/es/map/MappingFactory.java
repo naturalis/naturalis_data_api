@@ -1,8 +1,8 @@
 package nl.naturalis.nba.dao.es.map;
 
-import static nl.naturalis.nba.dao.es.map.ESScalar.CI_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.ESScalar.DEFAULT_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.ESScalar.LIKE_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.IndexableField.CI_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.IndexableField.DEFAULT_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.IndexableField.LIKE_ANALYZED;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;

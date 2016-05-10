@@ -9,11 +9,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.es.map.Document;
+import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESDataType;
 import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class MappingInspectorTest {
 
@@ -36,14 +37,28 @@ public class MappingInspectorTest {
 	{
 		inspector.getField("bla.bla");
 	}
-	
+
 	@Test
 	public void testGetField_04()
 	{
 		ESField f = inspector.getField("gatheringEvent");
 		assertNotNull("01", f);
+		assertEquals("02", Document.class, f.getClass());
 	}
 
+	@Test
+	public void testGetField_05()
+	{
+		ESField f = inspector.getField("unitID");
+		assertNotNull("01", f);
+		assertEquals("02", DocumentField.class, f.getClass());
+	}
+
+	@Test(expected = NoSuchFieldException.class)
+	public void testGetField_06()
+	{
+		inspector.getField("unitID.analyzed");
+	}
 
 	@Test(expected = NoSuchFieldException.class)
 	public void testGetType_01()
@@ -146,22 +161,26 @@ public class MappingInspectorTest {
 		ESDataType type = inspector.getType("identifications.systemClassification.name");
 		assertEquals("01", ESDataType.STRING, type);
 	}
-	
+
 	@Test(expected = NoSuchFieldException.class)
-	public void testGetAncestors_01() {
+	public void testGetAncestors_01()
+	{
 		List<Document> ancestors = inspector.getAncestors("bla");
 		assertEquals("01", 2, ancestors.size());
 	}
-	
+
 	@Test(expected = NoSuchFieldException.class)
-	public void testGetAncestors_02() {
+	public void testGetAncestors_02()
+	{
 		List<Document> ancestors = inspector.getAncestors("identifications.bla");
 		assertEquals("01", 2, ancestors.size());
 	}
-	
+
 	@Test
-	public void testGetAncestors_03() {
-		List<Document> ancestors = inspector.getAncestors("identifications.systemClassification.name");
+	public void testGetAncestors_03()
+	{
+		String path = "identifications.systemClassification.name";
+		List<Document> ancestors = inspector.getAncestors(path);
 		assertEquals("01", 2, ancestors.size());
 	}
 }

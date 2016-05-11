@@ -2,6 +2,7 @@ package nl.naturalis.nba.elasticsearch.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -182,5 +183,29 @@ public class MappingInspectorTest {
 		String path = "identifications.systemClassification.name";
 		List<Document> ancestors = inspector.getAncestors(path);
 		assertEquals("01", 2, ancestors.size());
+	}
+
+	@Test
+	public void testGetNestedPath_01()
+	{
+		String path = "identifications.systemClassification.name";
+		String nested = inspector.getNestedPath(path);
+		assertEquals("01", "identifications.systemClassification", nested);
+	}
+
+	@Test
+	public void testGetNestedPath_02()
+	{
+		String path = "identifications.defaultClassification.genus";
+		String nested = inspector.getNestedPath(path);
+		assertEquals("01", "identifications", nested);
+	}
+
+	@Test
+	public void testGetNestedPath_03()
+	{
+		String path = "unitID";
+		String nested = inspector.getNestedPath(path);
+		assertNull("01", nested);
 	}
 }

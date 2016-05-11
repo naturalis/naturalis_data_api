@@ -2,10 +2,14 @@ package nl.naturalis.nba.dao.es.map;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.domainobject.util.CollectionUtil;
+import org.domainobject.util.convert.Stringifier;
 
 import nl.naturalis.nba.dao.es.types.ESType;
 
@@ -63,7 +67,8 @@ public class MappingInspector {
 	 * Returns the Elasticsearch data type of the specified field. Basically
 	 * equivalent to {@link #getField(String) getField(field).getType()}.
 	 * However, if {@code getType()} returns {@code null}, this method will
-	 * return the default data type ("object") instead.
+	 * return the appropriate default data type instead ("string" for fields;
+	 * "object" for nested documents).
 	 * 
 	 * @param path
 	 * @return
@@ -82,13 +87,55 @@ public class MappingInspector {
 	 */
 	public List<Document> getAncestors(String path)
 	{
-		ESField f = getField(path).getParent();
+		return getAncestors(getField(path));
+	}
+
+	/**
+	 * Returns the parent document and its ancestors of the specified field.
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public List<Document> getAncestors(ESField f)
+	{
 		List<Document> ancestors = new ArrayList<>(3);
+		f = f.getParent();
 		while (f.getParent() != null) {
 			ancestors.add((Document) f);
 			f = f.getParent();
 		}
 		return ancestors;
+	}
+
+	/**
+	 * Returns a substring of the specified path up to, and including the
+	 * <i>lowest level</i> nested object (with type "nested" rather than
+	 * "object"). This is the path to be used for a nested query on the
+	 * specified field. If this method returns {@code null}, this implicitly
+	 * means no nested query is required.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public String getNestedPath(String path)
+	{
+		List<Document> in = getAncestors(path);
+		List<Document> out;
+		for (int i = 0; i < in.size(); ++i) {
+			Document d = in.get(i);
+			if (d.getType() == ESDataType.NESTED) {
+				out = in.subList(i, in.size());
+				Collections.reverse(out);
+				return CollectionUtil.implode(out, ".", new Stringifier<Document>() {
+
+					public String execute(Document doc, Object... args)
+					{
+						return doc.getName();
+					}
+				});
+			}
+		}
+		return null;
 	}
 
 	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map)

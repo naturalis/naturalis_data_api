@@ -1,8 +1,7 @@
 package nl.naturalis.nba.dao.es.map;
 
-import static nl.naturalis.nba.dao.es.map.IndexableField.CI_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.IndexableField.DEFAULT_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.IndexableField.LIKE_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.MultiField.CI_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_ANALYZED;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;
@@ -188,7 +187,7 @@ public class MappingFactory {
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
-			df.addMultiField("analyzed", DEFAULT_ANALYZED);
+			df.addMultiField("analyzed", MultiField.DEFAULT_ANALYZED);
 			df.addMultiField("ci", CI_ANALYZED);
 			return false;
 		}
@@ -207,7 +206,7 @@ public class MappingFactory {
 					df.addMultiField("like", LIKE_ANALYZED);
 					break;
 				case DEFAULT:
-					df.addMultiField("analyzed", DEFAULT_ANALYZED);
+					df.addMultiField("analyzed", MultiField.DEFAULT_ANALYZED);
 					break;
 				case LIKE:
 					df.addMultiField("ci", CI_ANALYZED);

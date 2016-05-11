@@ -32,9 +32,10 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.ESClientFactory;
 import nl.naturalis.nba.dao.Registry;
 import nl.naturalis.nba.dao.es.exception.DaoException;
+import nl.naturalis.nba.dao.es.query.ConditionTranslator;
+import nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.util.ConditionTranslator;
 
 public class SpecimenDAO implements ISpecimenDAO {
 
@@ -113,7 +114,8 @@ public class SpecimenDAO implements ISpecimenDAO {
 			logger.debug("Query using QuerySpec:\n{}", dump(spec));
 		}
 		Condition condition = spec.getCondition();
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, ESSpecimen.class);
 		QueryBuilder query = ct.translate();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();

@@ -28,14 +28,14 @@ public class MappingInspector {
 	 */
 	public static MappingInspector forType(Class<? extends ESType> type)
 	{
-		MappingInspector mi = cache.get(type);
-		if (mi == null) {
+		MappingInspector inspector = cache.get(type);
+		if (inspector == null) {
 			MappingFactory mf = new MappingFactory();
 			Mapping mapping = mf.getMapping(type);
-			mi = new MappingInspector(mapping);
-			cache.put(type, mi);
+			inspector = new MappingInspector(mapping);
+			cache.put(type, inspector);
 		}
-		return mi;
+		return inspector;
 	}
 
 	private final Mapping mapping;
@@ -46,7 +46,7 @@ public class MappingInspector {
 	}
 
 	/**
-	 * Returns the {@link ESField} instance corresponding to the specified path.
+	 * Returns the {@link ESField} instance corresponding to the path string.
 	 * 
 	 * @param path
 	 * @return
@@ -56,11 +56,7 @@ public class MappingInspector {
 		LinkedHashMap<String, ESField> map = mapping.getProperties();
 		String[] chunks = path.split("\\.");
 		List<String> pathElements = Arrays.asList(chunks);
-		ESField f = getField(pathElements, map);
-		if (f == null) {
-			throw new NoSuchFieldException(path);
-		}
-		return f;
+		return getField(path, pathElements, map);
 	}
 
 	/**
@@ -69,25 +65,25 @@ public class MappingInspector {
 	 * However, if {@code getType()} returns {@code null}, this method will
 	 * return the default data type ("object") instead.
 	 * 
-	 * @param field
+	 * @param path
 	 * @return
 	 */
-	public ESDataType getType(String field)
+	public ESDataType getType(String path)
 	{
-		ESField f = getField(field);
+		ESField f = getField(path);
 		return f.getType() == null ? ESDataType.OBJECT : f.getType();
 	}
 
 	/**
 	 * Returns the parent document and its ancestors of the specified field.
 	 * 
-	 * @param field
+	 * @param path
 	 * @return
 	 */
-	public List<Document> getAncestors(String field)
+	public List<Document> getAncestors(String path)
 	{
-		ESField f = getField(field).getParent();
-		List<Document> ancestors = new ArrayList<>(4);
+		ESField f = getField(path).getParent();
+		List<Document> ancestors = new ArrayList<>(3);
 		while (f.getParent() != null) {
 			ancestors.add((Document) f);
 			f = f.getParent();
@@ -95,22 +91,22 @@ public class MappingInspector {
 		return ancestors;
 	}
 
-	private ESField getField(List<String> path, Map<String, ? extends ESField> map)
+	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map)
 	{
 		ESField f = map.get(path.get(0));
-		if (f == null) {
-			return null;
+		if (f == null || f instanceof MultiField) {
+			// Prevent access to MultiField fields
+			throw new NoSuchFieldException(origPath);
 		}
-		if (f instanceof DocumentField) {
-			if (path.size() != 1) {
-				// prevent access to fields specifying analyzers
-				return null;
-			}
+		if (path.size() == 1) {
 			return f;
 		}
-		path = path.subList(1, path.size());
-		map = ((Document) f).getProperties();
-		return getField(path, map);
+		if (f instanceof Document) {
+			path = path.subList(1, path.size());
+			map = ((Document) f).getProperties();
+			return getField(origPath, path, map);
+		}
+		throw new NoSuchFieldException(origPath);
 	}
 
 }

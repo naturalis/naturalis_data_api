@@ -4,19 +4,19 @@ import java.util.LinkedHashMap;
 
 public class DocumentField extends IndexableField {
 
-	private LinkedHashMap<String, IndexableField> fields;
-	
+	private LinkedHashMap<String, MultiField> fields;
+
 	public DocumentField(ESDataType esDataType)
 	{
 		super(esDataType);
 	}
 
-	public LinkedHashMap<String, IndexableField> getFields()
+	public LinkedHashMap<String, MultiField> getFields()
 	{
 		return fields;
 	}
 
-	public void addMultiField(String name, IndexableField field)
+	public void addMultiField(String name, MultiField field)
 	{
 		if (fields == null) {
 			fields = new LinkedHashMap<>(2);

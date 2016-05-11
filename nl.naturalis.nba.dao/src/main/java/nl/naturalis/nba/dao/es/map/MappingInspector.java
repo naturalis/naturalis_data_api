@@ -109,17 +109,32 @@ public class MappingInspector {
 
 	/**
 	 * Returns a substring of the specified path up to, and including the
-	 * <i>lowest level</i> nested object (with type "nested" rather than
-	 * "object"). This is the path to be used for a nested query on the
-	 * specified field. If this method returns {@code null}, this implicitly
-	 * means no nested query is required.
+	 * <i>lowest level</i> object with type "nested" (rather than "object").
+	 * This is the path to be used for a nested query on the specified field. If
+	 * this method returns {@code null}, this implicitly means no nested query
+	 * is required.
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public String getNestedPath(String path)
 	{
-		List<Document> in = getAncestors(path);
+		return getNestedPath(getField(path));
+	}
+
+	/**
+	 * Returns a substring of the specified path up to, and including the
+	 * <i>lowest level</i> object with type "nested" (rather than "object").
+	 * This is the path to be used for a nested query on the specified field. If
+	 * this method returns {@code null}, this implicitly means no nested query
+	 * is required.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public String getNestedPath(ESField field)
+	{
+		List<Document> in = getAncestors(field);
 		List<Document> out;
 		for (int i = 0; i < in.size(); ++i) {
 			Document d = in.get(i);

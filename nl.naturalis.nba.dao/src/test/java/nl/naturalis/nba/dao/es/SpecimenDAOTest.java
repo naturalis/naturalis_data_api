@@ -101,7 +101,7 @@ public class SpecimenDAOTest {
 		assertNotNull("01", out);
 	}
 
-	//@Test
+	@Test
 	public void testFindByUnitID_1()
 	{
 		String unitID = specimen01.getUnitID();
@@ -123,7 +123,7 @@ public class SpecimenDAOTest {
 		assertEquals("08", 0, result.size());
 	}
 
-	//@Test
+	@Test
 	public void testFindByUnitID_2()
 	{
 		String unitID0 = specimen02.getUnitID();
@@ -140,7 +140,7 @@ public class SpecimenDAOTest {
 		assertEquals("05", 0, result.size());
 	}
 
-	//@Test
+	@Test
 	public void testFindByUnitID_3()
 	{
 		ESSpecimen specimen = new ESSpecimen();
@@ -153,7 +153,7 @@ public class SpecimenDAOTest {
 		assertEquals("02", 0, result.size());
 	}
 
-	//@Test
+	@Test
 	public void testFindByCollector_1()
 	{
 		saveObject("ZMA.MAM.12345@CRS", specimen01);
@@ -173,7 +173,7 @@ public class SpecimenDAOTest {
 		assertEquals("07", person, personOut);
 	}
 
-	//@Test
+	@Test
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
 	{
 		saveObject(specimen01);
@@ -196,12 +196,76 @@ public class SpecimenDAOTest {
 		String genus = "identifications.defaultClassification.genus";
 		String specificEpithet = "identifications.defaultClassification.specificEpithet";
 		Condition condition = new Condition(genus, EQUALS, "Parus");
-		//condition.and(specificEpithet, EQUALS, "major");
+		condition.and(specificEpithet, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		List<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
+	}
+
+	@Test
+	public void testQuery__QuerySpec__03() throws InvalidQueryException
+	{
+		saveObject(specimen01);
+		refreshIndex(ESSpecimen.class);
+		String genus = "identifications.defaultClassification.genus";
+		String specificEpithet = "identifications.defaultClassification.specificEpithet";
+		Condition condition = new Condition(genus, EQUALS, "Parus");
+		condition.and(specificEpithet, EQUALS, "bla");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
+	}
+
+	@Test
+	public void testQuery__QuerySpec__04() throws InvalidQueryException
+	{
+		saveObject(specimen01);
+		refreshIndex(ESSpecimen.class);
+		String genus = "identifications.defaultClassification.genus";
+		String specificEpithet = "identifications.defaultClassification.specificEpithet";
+		Condition condition = new Condition(genus, EQUALS, "Parus");
+		condition.or(specificEpithet, EQUALS, "major");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
+	}
+
+	@Test
+	public void testQuery__QuerySpec__05() throws InvalidQueryException
+	{
+		saveObject(specimen01);
+		refreshIndex(ESSpecimen.class);
+		String genus = "identifications.defaultClassification.genus";
+		String specificEpithet = "identifications.defaultClassification.specificEpithet";
+		Condition condition = new Condition(genus, EQUALS, "Parus");
+		condition.or(specificEpithet, EQUALS, "bla");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
+	}
+
+	@Test
+	public void testQuery__QuerySpec__06() throws InvalidQueryException
+	{
+		saveObject(specimen01);
+		refreshIndex(ESSpecimen.class);
+		String genus = "identifications.defaultClassification.genus";
+		String specificEpithet = "identifications.defaultClassification.specificEpithet";
+		Condition condition = new Condition(genus, EQUALS, "bla");
+		condition.or(specificEpithet, EQUALS, "bla");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		List<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
 	}
 
 }

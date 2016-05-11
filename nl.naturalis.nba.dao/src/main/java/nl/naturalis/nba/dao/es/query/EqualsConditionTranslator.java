@@ -8,6 +8,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.dao.es.map.ESDataType;
+import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.types.ESType;
@@ -26,18 +27,17 @@ public class EqualsConditionTranslator extends ConditionTranslator {
 
 	protected QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		ESDataType dataType;
+		ESField f;
 		try {
-			dataType = inspector.getType(field());
+			f = inspector.getField(field());
 		}
 		catch (NoSuchFieldException e) {
 			throw new InvalidConditionException(e.getMessage());
 		}
-		if (dataType == ESDataType.NESTED) {
-			int i = field().lastIndexOf('.');
-			String path = field().substring(0, i);
-			return nestedQuery(path, termQuery(field(), value()));
+		String nestedPath = inspector.getNestedPath(f);
+		if (nestedPath == null) {
+			return termQuery(field(), value());
 		}
-		return termQuery(field(), value());
+		return nestedQuery(nestedPath, termQuery(field(), value()));
 	}
 }

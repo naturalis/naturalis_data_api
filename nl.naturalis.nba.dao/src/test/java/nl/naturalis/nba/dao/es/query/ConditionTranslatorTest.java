@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.util;
+package nl.naturalis.nba.dao.es.query;
 
 import static nl.naturalis.nba.api.query.Operator.EQUALS;
 import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS;
@@ -29,13 +29,15 @@ public class ConditionTranslatorTest {
 	@Test
 	public void testTranslate_01() throws InvalidConditionException
 	{
-		Condition condition = new Condition("name", EQUALS, "Smith");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		Condition condition = new Condition("firstName", EQUALS, "Smith");
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy01.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof TermQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_01.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
 	/**
@@ -52,12 +54,14 @@ public class ConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy01.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_02.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
 	/**
@@ -73,12 +77,14 @@ public class ConditionTranslatorTest {
 	public void testTranslate_03() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", NOT_EQUALS, "John");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy01.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_03.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
 	/**
@@ -96,14 +102,16 @@ public class ConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
-		condition.and("hasChildren", NOT_EQUALS, "true");
+		condition.and("hasChildren", NOT_EQUALS, true);
 		condition.and("favoritePet", NOT_EQUALS, "dog");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy01.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_04.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
 	/**
@@ -120,12 +128,14 @@ public class ConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.or("lastName", EQUALS, "Smith");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy01.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_05.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
 	/**
@@ -144,12 +154,14 @@ public class ConditionTranslatorTest {
 		Condition condition = new Condition("firstName", NOT_EQUALS, "John");
 		condition.or("lastName", NOT_EQUALS, "Smith");
 		condition.or("favoritePet", EQUALS, "dog");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy01.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_06.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
 	/**
@@ -170,14 +182,21 @@ public class ConditionTranslatorTest {
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.and("lastName", NOT_EQUALS, "Smith").and(deeper);
 
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy02.class);
 		QueryBuilder query = ct.translate();
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "ConditionTranslatorTest__testTranslate_07.json";
 		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
+		assertEquals("02", expected.trim(), query.toString().trim());
 	}
 
+	/**
+	 * Tests that you cannot specify both AND and OR siblings at the same time.
+	 * 
+	 * @throws InvalidConditionException
+	 */
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_08() throws InvalidConditionException
 	{
@@ -189,25 +208,27 @@ public class ConditionTranslatorTest {
 		 * exception; only when the condition is translated do you get the
 		 * exception
 		 */
-		new ConditionTranslator(condition, ESSpecimen.class).translate();
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		ConditionTranslator ct = ctf.getTranslator(condition, Dummy02.class);
+		ct.translate();
 	}
 
-	/**
-	 * Test with nested queries.
-	 * 
-	 * @throws InvalidConditionException
-	 */
-	@Test()
-	public void testTranslate_09() throws InvalidConditionException
-	{
-		Condition condition = new Condition("person.firstName", EQUALS, "John");
-		condition.and("person.address.street", EQUALS, "Main st.");
-		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
-		QueryBuilder query = ct.translate();
-		assertTrue("01", query instanceof BoolQueryBuilder);
-		System.out.println(query.toString());
-		String file = "ConditionTranslatorTest__testTranslate_09.json";
-		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-		assertEquals("02", expected, query.toString());
-	}
+//	/**
+//	 * Test with nested queries.
+//	 * 
+//	 * @throws InvalidConditionException
+//	 */
+//	@Test()
+//	public void testTranslate_09() throws InvalidConditionException
+//	{
+//		Condition condition = new Condition("person.firstName", EQUALS, "John");
+//		condition.and("person.address.street", EQUALS, "Main st.");
+//		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
+//		QueryBuilder query = ct.translate();
+//		assertTrue("01", query instanceof BoolQueryBuilder);
+//		System.out.println(query.toString());
+//		String file = "ConditionTranslatorTest__testTranslate_09.json";
+//		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
+//		assertEquals("02", expected, query.toString());
+//	}
 }

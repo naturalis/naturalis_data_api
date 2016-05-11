@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 
 
 public class MappingFactoryTest {
@@ -15,7 +15,7 @@ public class MappingFactoryTest {
 		MappingFactory mf = new MappingFactory();
 		MappingSerializer ms = MappingSerializer.getInstance();
 		ms.setPretty(true);
-		String s = ms.serialize(mf.getMapping(ESSpecimen.class));
+		String s = ms.serialize(mf.getMapping(ESMultiMediaObject.class));
 		System.out.println(s);
 	}
 

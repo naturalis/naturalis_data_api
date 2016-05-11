@@ -11,7 +11,7 @@
     } ],
     "must_not" : [ {
       "term" : {
-        "hasChildren" : "true"
+        "hasChildren" : true
       }
     }, {
       "term" : {

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.map;
 
 import static nl.naturalis.nba.dao.es.map.MultiField.CI_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_ANALYZED;
 import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_ANALYZED;
 import static org.domainobject.util.ClassUtil.isA;
 
@@ -21,8 +22,8 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.MappedProperty;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
+//import nl.naturalis.nba.api.model.Specimen;
+//import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -33,8 +34,8 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public class MappingFactory {
 
-	private static final Package apiModelPackage = Specimen.class.getPackage();
-	private static final Package esModelPackage = ESSpecimen.class.getPackage();
+	//private static final Package apiModelPackage = Specimen.class.getPackage();
+	//private static final Package esModelPackage = ESSpecimen.class.getPackage();
 	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
 	private static final HashMap<Class<? extends ESType>, Mapping> cache = new HashMap<>();
@@ -119,7 +120,7 @@ public class MappingFactory {
 
 	private static Document createDocument(Field field, Class<?> mapToType)
 	{
-		checkPackage(mapToType);
+		checkClass(mapToType);
 		Class<?> realType = field.getType();
 		Document document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
@@ -139,7 +140,7 @@ public class MappingFactory {
 
 	private static Document createDocument(Method method, Class<?> mapToType)
 	{
-		checkPackage(mapToType);
+		checkClass(mapToType);
 		Class<?> realType = method.getReturnType();
 		Document document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
@@ -157,12 +158,12 @@ public class MappingFactory {
 		return document;
 	}
 
-	private static void checkPackage(Class<?> cls)
-	{
-		Package pkg = cls.getPackage();
-		if (!apiModelPackage.equals(pkg) && !esModelPackage.equals(pkg)) {
-			throw new MappingException("Class not allowed/supported: " + cls.getName());
-		}
+	private static void checkClass(Class<?> cls)
+	{		
+//		Package pkg = cls.getPackage();
+//		if (!apiModelPackage.equals(pkg) && !esModelPackage.equals(pkg)) {
+//			throw new MappingException("Class not allowed/supported: " + cls.getName());
+//		}
 	}
 
 	/*
@@ -187,7 +188,7 @@ public class MappingFactory {
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
-			df.addMultiField("analyzed", MultiField.DEFAULT_ANALYZED);
+			df.addMultiField("analyzed", DEFAULT_ANALYZED);
 			df.addMultiField("ci", CI_ANALYZED);
 			return false;
 		}
@@ -206,7 +207,7 @@ public class MappingFactory {
 					df.addMultiField("like", LIKE_ANALYZED);
 					break;
 				case DEFAULT:
-					df.addMultiField("analyzed", MultiField.DEFAULT_ANALYZED);
+					df.addMultiField("analyzed", DEFAULT_ANALYZED);
 					break;
 				case LIKE:
 					df.addMultiField("ci", CI_ANALYZED);

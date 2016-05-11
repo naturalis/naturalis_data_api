@@ -13,14 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.domainobject.util.debug.BeanPrinter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.DefaultClassification;

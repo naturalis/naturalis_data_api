@@ -20,9 +20,13 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import nl.naturalis.nba.api.ISpecimenDAO;
 import nl.naturalis.nba.api.model.Specimen;
@@ -165,9 +169,25 @@ public class SpecimenDAO implements ISpecimenDAO {
 		return request;
 	}
 
-	private static String dump(Object obj)
+	static String dump(Object obj)
 	{
 		ObjectMapper om = new ObjectMapper();
+		ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
+		try {
+			return ow.writeValueAsString(obj);
+		}
+		catch (JsonProcessingException e) {
+			throw new DaoException(e);
+		}
+	}
+
+	static String dump(QuerySpec obj)
+	{
+		ObjectMapper om = new ObjectMapper();
+		om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+		om.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
+		om.setSerializationInclusion(Include.NON_NULL);
+		om.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
 		ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
 		try {
 			return ow.writeValueAsString(obj);

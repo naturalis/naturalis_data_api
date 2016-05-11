@@ -3,6 +3,8 @@ package nl.naturalis.nba.api.query;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.naturalis.nba.api.query.Not.*;
+
 /**
  * <p>
  * Class modeling a query condition. A condition basically consists of a field
@@ -20,8 +22,8 @@ import java.util.List;
  * <p>
  * You should not provide both {@link #setAnd(List) AND-joined siblings} and
  * {@link #setOr(List) OR-joined siblings} for one and the same
- * {@code Condition} instance. The API allows this because it makes for
- * elegant code. However, when the condition is validated, a
+ * {@code Condition} instance. The API allows this because it makes for elegant
+ * code. However, when the condition is validated, a
  * {@link InvalidConditionException} is thrown it contains both AND-joined
  * siblings and OR-joined siblings.
  * </p>
@@ -31,7 +33,7 @@ import java.util.List;
  */
 public class Condition {
 
-	private boolean negated;
+	private Not not;
 	private String field;
 	private Operator operator;
 	private Object value;
@@ -44,6 +46,14 @@ public class Condition {
 
 	public Condition(String field, Operator operator, Object value)
 	{
+		this.field = field;
+		this.operator = operator;
+		this.value = value;
+	}
+
+	public Condition(Not not, String field, Operator operator, Object value)
+	{
+		this.not = not;
 		this.field = field;
 		this.operator = operator;
 		this.value = value;
@@ -107,18 +117,23 @@ public class Condition {
 
 	public Condition negate()
 	{
-		negated = !negated;
+		not = (not == null ? NOT : null);
 		return this;
 	}
 
 	public boolean isNegated()
 	{
-		return negated;
+		return not == NOT;
 	}
 
-	public void setNegated(boolean negated)
+	public Not getNot()
 	{
-		this.negated = negated;
+		return not;
+	}
+
+	public void setNot(Not not)
+	{
+		this.not = not;
 	}
 
 	public String getField()

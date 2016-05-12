@@ -3,8 +3,13 @@ package nl.naturalis.nba.api;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.Specimen;
-
-public interface ISpecimenDAO {
+/**
+ * Specifies methods for accessing specimen-related data.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public interface ISpecimenAPI {
 
 	/**
 	 * Returns the {@link Specimen} with the specified id, or {@code null} if

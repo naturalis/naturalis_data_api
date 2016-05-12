@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import nl.naturalis.nba.api.ISpecimenDAO;
+import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -41,7 +41,7 @@ import nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDAO implements ISpecimenDAO {
+public class SpecimenDAO implements ISpecimenAPI {
 
 	private static final Logger logger;
 

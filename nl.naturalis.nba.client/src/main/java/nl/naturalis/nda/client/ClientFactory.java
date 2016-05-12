@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class ClientFactory {
 
-	private static HashMap<ClientConfig, ClientFactory> factories = new HashMap<>(8);
+	private static HashMap<ClientConfig, ClientFactory> factories = new HashMap<>(4);
 
 
 	public static ClientFactory getInstance(ClientConfig cfg)

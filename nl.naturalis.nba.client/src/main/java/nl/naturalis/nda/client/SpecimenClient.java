@@ -2,13 +2,17 @@ package nl.naturalis.nda.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
+
+import java.util.List;
+
+import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SpecimenClient extends AbstractClient {
+class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(SpecimenClient.class);
@@ -46,5 +50,19 @@ public class SpecimenClient extends AbstractClient {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);
+	}
+
+	@Override
+	public Specimen findById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Specimen> findByUnitID(String unitID)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

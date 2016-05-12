@@ -9,24 +9,29 @@ package nl.naturalis.nda.client;
  */
 public class ClientConfig {
 
-	/*
-	 * Currently the only thing that distinguishes one NBA instance from the
-	 * other is its base URL
-	 */
-	public final String baseUrl;
+	static final String PRODUCTION_BASE_URL = "http://api.biodiversitydata.nl/v2";
 
+	private String baseUrl;
 
 	public ClientConfig(String baseUrl)
 	{
 		this.baseUrl = baseUrl;
 	}
 
+	public ClientConfig()
+	{
+		this.baseUrl = PRODUCTION_BASE_URL;
+	}
 
 	public String getBaseUrl()
 	{
 		return baseUrl;
 	}
 
+	public void setBaseUrl(String baseUrl)
+	{
+		this.baseUrl = baseUrl;
+	}
 
 	@Override
 	public boolean equals(Object obj)
@@ -40,7 +45,6 @@ public class ClientConfig {
 		ClientConfig other = (ClientConfig) obj;
 		return baseUrl.equals(other.baseUrl);
 	}
-
 
 	@Override
 	public int hashCode()

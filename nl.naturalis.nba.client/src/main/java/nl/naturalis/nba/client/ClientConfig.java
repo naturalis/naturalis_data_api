@@ -1,4 +1,4 @@
-package nl.naturalis.nda.client;
+package nl.naturalis.nba.client;
 
 /**
  * A {@code ClientConfig} instance encapsulates the information necessary to

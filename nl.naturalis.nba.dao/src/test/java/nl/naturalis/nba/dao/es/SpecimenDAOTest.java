@@ -105,18 +105,18 @@ public class SpecimenDAOTest {
 		saveObject(specimen01);
 		refreshIndex(ESSpecimen.class);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.findByUnitID(unitID);
+		Specimen[] result = dao.findByUnitID(unitID);
 		assertNotNull("01", result);
-		assertEquals("02", 2, result.size());
-		assertEquals("03", unitID, result.get(0).getUnitID());
-		assertEquals("04", unitID, result.get(1).getUnitID());
+		assertEquals("02", 2, result.length);
+		assertEquals("03", unitID, result[0].getUnitID());
+		assertEquals("04", unitID, result[1].getUnitID());
 		// Make sure no weird analysis stuff is going on
 		result = dao.findByUnitID("ZMA");
 		assertNotNull("05", result);
-		assertEquals("06", 0, result.size());
+		assertEquals("06", 0, result.length);
 		result = dao.findByUnitID("12345");
 		assertNotNull("07", result);
-		assertEquals("08", 0, result.size());
+		assertEquals("08", 0, result.length);
 	}
 
 	@Test
@@ -126,14 +126,14 @@ public class SpecimenDAOTest {
 		saveObject(specimen02);
 		refreshIndex(ESSpecimen.class);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.findByUnitID(unitID0);
+		Specimen[] result = dao.findByUnitID(unitID0);
 		assertNotNull("01", result);
-		assertEquals("02", 1, result.size());
-		assertEquals("03", unitID0, result.get(0).getUnitID());
+		assertEquals("02", 1, result.length);
+		assertEquals("03", unitID0, result[0].getUnitID());
 		// Make sure no weird analysis stuff is going on
 		result = dao.findByUnitID("L");
 		assertNotNull("04", result);
-		assertEquals("05", 0, result.size());
+		assertEquals("05", 0, result.length);
 	}
 
 	@Test
@@ -144,9 +144,9 @@ public class SpecimenDAOTest {
 		saveObject(specimen);
 		refreshIndex(ESSpecimen.class);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.findByUnitID("NOT A");
+		Specimen[] result = dao.findByUnitID("NOT A");
 		assertNotNull("01", result);
-		assertEquals("02", 0, result.size());
+		assertEquals("02", 0, result.length);
 	}
 
 	@Test
@@ -157,12 +157,12 @@ public class SpecimenDAOTest {
 		SpecimenDAO dao = new SpecimenDAO();
 		Person person = specimen01.getGatheringEvent().getGatheringPersons().get(0);
 		String collector = person.getFullName();
-		List<Specimen> result = dao.findByCollector(collector);
+		Specimen[] result = dao.findByCollector(collector);
 		assertNotNull("01", result);
-		assertNotNull("02", result.get(0));
-		assertNotNull("03", result.get(0).getGatheringEvent());
-		assertNotNull("04", result.get(0).getGatheringEvent().getGatheringAgents());
-		Agent agent = result.get(0).getGatheringEvent().getGatheringAgents().get(0);
+		assertNotNull("02", result[0]);
+		assertNotNull("03", result[0].getGatheringEvent());
+		assertNotNull("04", result[0].getGatheringEvent().getGatheringAgents());
+		Agent agent = result[0].getGatheringEvent().getGatheringAgents().get(0);
 		assertNotNull("05", agent);
 		assertEquals("06", Person.class, agent.getClass());
 		Person personOut = (Person) agent;
@@ -179,9 +179,9 @@ public class SpecimenDAOTest {
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-		assertEquals("01", 1, result.size());
-		assertEquals("02", specimen01.getUnitID(), result.get(0).getUnitID());
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
+		assertEquals("02", specimen01.getUnitID(), result[0].getUnitID());
 	}
 
 	@Test
@@ -196,8 +196,8 @@ public class SpecimenDAOTest {
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-		assertEquals("01", 1, result.size());
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
 	}
 
 	@Test
@@ -212,8 +212,8 @@ public class SpecimenDAOTest {
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-		assertEquals("01", 0, result.size());
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 0, result.length);
 	}
 
 	@Test
@@ -228,8 +228,8 @@ public class SpecimenDAOTest {
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-		assertEquals("01", 1, result.size());
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
 	}
 
 	@Test
@@ -244,8 +244,8 @@ public class SpecimenDAOTest {
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-		assertEquals("01", 1, result.size());
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
 	}
 
 	@Test
@@ -260,8 +260,8 @@ public class SpecimenDAOTest {
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
-		List<Specimen> result = dao.query(qs);
-		assertEquals("01", 0, result.size());
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 0, result.length);
 	}
 
 }

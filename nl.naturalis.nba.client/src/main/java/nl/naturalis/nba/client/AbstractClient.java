@@ -1,4 +1,4 @@
-package nl.naturalis.nda.client;
+package nl.naturalis.nba.client;
 
 import org.domainobject.util.http.SimpleHttpGet;
 

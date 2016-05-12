@@ -1,4 +1,4 @@
-package nl.naturalis.nda.client;
+package nl.naturalis.nba.client;
 
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;

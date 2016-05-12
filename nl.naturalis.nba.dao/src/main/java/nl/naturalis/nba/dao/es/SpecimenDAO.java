@@ -4,8 +4,6 @@ import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -20,9 +18,9 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -87,7 +85,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	}
 
 	@Override
-	public List<Specimen> findByUnitID(String unitID)
+	public Specimen[] findByUnitID(String unitID)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("findByUnitID(\"{}\")", unitID);
@@ -99,7 +97,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
-	public List<Specimen> findByCollector(String name)
+	public Specimen[] findByCollector(String name)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("findByCollector(\"{}\")", name);
@@ -112,7 +110,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
-	public List<Specimen> query(QuerySpec spec) throws InvalidQueryException
+	public Specimen[] query(QuerySpec spec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Query using QuerySpec:\n{}", dump(spec));
@@ -127,7 +125,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
-	private List<Specimen> processSearchRequest(SearchRequestBuilder request)
+	private Specimen[] processSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing query:\n{}", request);
@@ -137,12 +135,12 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Processing response:\n{}", response);
 		}
-		List<Specimen> specimens = new ArrayList<>(hits.length);
-		for (SearchHit hit : hits) {
-			String id = hit.getId();
-			Map<String, Object> data = hit.getSource();
+		Specimen[] specimens = new Specimen[hits.length];
+		for (int i = 0; i < hits.length; ++i) {
+			String id = hits[i].getId();
+			Map<String, Object> data = hits[i].getSource();
 			Specimen specimen = createSpecimen(id, data);
-			specimens.add(specimen);
+			specimens[i] = specimen;
 		}
 		return specimens;
 	}

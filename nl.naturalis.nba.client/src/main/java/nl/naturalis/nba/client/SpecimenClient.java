@@ -1,16 +1,14 @@
-package nl.naturalis.nda.client;
+package nl.naturalis.nba.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
@@ -60,9 +58,14 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 	}
 
 	@Override
-	public List<Specimen> findByUnitID(String unitID)
+	public Specimen[] findByUnitID(String unitID)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		setPath("specimen/find/" + unitID);
+		int status = request.execute().getStatus();
+		if (status == HTTP_NOT_FOUND)
+			return null;
+		if (status != HTTP_OK)
+			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+		return ClientUtil.getObject(request.getResponseBody(), Specimen[].class);
 	}
 }

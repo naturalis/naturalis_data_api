@@ -1,4 +1,4 @@
-package nl.naturalis.nda.client;
+package nl.naturalis.nba.client;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -24,7 +24,7 @@ import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NO_CONTENT;
  * @author Ayco Holleman
  *
  */
-public class NBAResourceException extends Exception {
+public class NBAResourceException extends RuntimeException {
 
 	private static final long serialVersionUID = -8246486578070786218L;
 	private static final Logger logger = LoggerFactory.getLogger(NBAResourceException.class);

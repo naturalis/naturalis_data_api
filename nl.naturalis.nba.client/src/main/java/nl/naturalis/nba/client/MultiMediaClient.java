@@ -1,12 +1,14 @@
-package nl.naturalis.nda.client;
+package nl.naturalis.nba.client;
 
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
+
+import nl.naturalis.nba.api.IMultiMediaObjectAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 
-public class MultiMediaClient extends AbstractClient {
+class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
 
-	public MultiMediaClient(ClientConfig cfg)
+	MultiMediaClient(ClientConfig cfg)
 	{
 		super(cfg);
 	}

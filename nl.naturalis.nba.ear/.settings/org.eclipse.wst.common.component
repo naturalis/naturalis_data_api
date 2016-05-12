@@ -15,5 +15,8 @@
             <dependent-object/>
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="nl.naturalis.nba.dao.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nba.dao/nl.naturalis.nba.dao">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>

@@ -25,8 +25,6 @@ import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.NDA;
 import nl.naturalis.nba.rest.util.ResourceUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("/multimedia")
 @Stateless

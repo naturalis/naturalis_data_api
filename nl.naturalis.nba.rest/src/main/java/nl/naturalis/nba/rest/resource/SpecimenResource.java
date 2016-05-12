@@ -1,55 +1,56 @@
 package nl.naturalis.nba.rest.resource;
 
-import java.io.File;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nba.api.model.MultiMediaObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.ObjectType;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.search.QueryParams;
-import nl.naturalis.nba.api.search.ResultGroupSet;
-import nl.naturalis.nba.api.search.SearchResultSet;
-import nl.naturalis.nba.dao.es.BioportalSpecimenDao;
-import nl.naturalis.nba.dao.es.SpecimenDaoOld;
+import nl.naturalis.nba.dao.es.SpecimenDAO;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
-import nl.naturalis.nba.rest.util.NDA;
 import nl.naturalis.nba.rest.util.ResourceUtil;
 import nl.naturalis.nda.ejb.service.SpecimenService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("/specimen")
 @Stateless
 @LocalBean
 /* only here so @EJB injection works in JBoss AS; remove when possible */
 public class SpecimenResource {
-//
-//	private static final Logger logger = LoggerFactory.getLogger(SpecimenResource.class);
-//
-//	@EJB
-//	SpecimenService service;
-//
-//	@EJB
-//	Registry registry;
-//
-//
+
+	@SuppressWarnings("unused")
+	private static final Logger logger = LogManager.getLogger(SpecimenResource.class);
+
+	@EJB
+	SpecimenService service;
+
+	@EJB
+	Registry registry;
+	
+	@GET
+	@Path("/findByUnitID/{id}")
+	@Produces(ResourceUtil.JSON_CONTENT_TYPE)
+	public Specimen[] find(@PathParam("id") String unitID, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.findByUnitID(unitID);
+		}
+		catch (Throwable t) {
+			throw ResourceUtil.handleError(uriInfo, t);
+		}
+	}
+	
+
+
 //	/**
 //	 * Check if there is a specimen with the provided UnitID.
 //	 * 

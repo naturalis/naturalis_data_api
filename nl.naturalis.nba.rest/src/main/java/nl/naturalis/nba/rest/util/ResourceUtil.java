@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.util;
+package nl.naturalis.nba.rest.util;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
@@ -7,8 +7,8 @@ import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nba.api.search.AbstractResultSet;
 import nl.naturalis.nba.api.search.QueryParams;
-import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
-import nl.naturalis.nda.service.rest.exception.RESTException;
+import nl.naturalis.nba.rest.exception.HTTP200Exception;
+import nl.naturalis.nba.rest.exception.RESTException;
 
 public class ResourceUtil {
 

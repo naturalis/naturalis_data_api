@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class ConditionTranslatorTest {
 

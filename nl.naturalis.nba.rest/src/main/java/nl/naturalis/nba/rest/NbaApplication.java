@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest;
+package nl.naturalis.nba.rest;
 
 import java.util.Set;
 

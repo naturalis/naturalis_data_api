@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.resource;
+package nl.naturalis.nba.rest.resource;
 
 import static javax.ejb.ConcurrencyManagementType.BEAN;
 
@@ -14,8 +14,8 @@ import nl.naturalis.nba.dao.es.BioportalTaxonDao;
 import nl.naturalis.nba.dao.es.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.es.SpecimenDaoOld;
 import nl.naturalis.nba.dao.es.TaxonDao;
-import nl.naturalis.nda.service.rest.util.LogUtil;
-import nl.naturalis.nda.service.rest.util.NDA;
+import nl.naturalis.nba.rest.util.LogUtil;
+import nl.naturalis.nba.rest.util.NDA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

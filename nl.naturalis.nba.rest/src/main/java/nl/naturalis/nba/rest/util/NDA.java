@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.util;
+package nl.naturalis.nba.rest.util;
 
 import java.io.File;
 import java.io.IOException;

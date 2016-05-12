@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.exception;
+package nl.naturalis.nba.rest.exception;
 
 import java.util.ArrayList;
 import java.util.HashMap;

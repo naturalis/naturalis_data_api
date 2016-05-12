@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.exception;
+package nl.naturalis.nba.rest.exception;
 
 public class InvalidQueryException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.resource;
+package nl.naturalis.nba.rest.resource;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -21,8 +21,8 @@ import nl.naturalis.nba.api.search.ResultGroupSet;
 import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nba.dao.es.BioportalTaxonDao;
 import nl.naturalis.nba.dao.es.TaxonDao;
-import nl.naturalis.nda.service.rest.util.NDA;
-import nl.naturalis.nda.service.rest.util.ResourceUtil;
+import nl.naturalis.nba.rest.util.NDA;
+import nl.naturalis.nba.rest.util.ResourceUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

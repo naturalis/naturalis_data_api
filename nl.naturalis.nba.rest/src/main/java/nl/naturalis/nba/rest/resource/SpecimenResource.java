@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.resource;
+package nl.naturalis.nba.rest.resource;
 
 import java.io.File;
 
@@ -27,10 +27,10 @@ import nl.naturalis.nba.api.search.ResultGroupSet;
 import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nba.dao.es.BioportalSpecimenDao;
 import nl.naturalis.nba.dao.es.SpecimenDaoOld;
+import nl.naturalis.nba.rest.exception.HTTP404Exception;
+import nl.naturalis.nba.rest.util.NDA;
+import nl.naturalis.nba.rest.util.ResourceUtil;
 import nl.naturalis.nda.ejb.service.SpecimenService;
-import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
-import nl.naturalis.nda.service.rest.util.NDA;
-import nl.naturalis.nda.service.rest.util.ResourceUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

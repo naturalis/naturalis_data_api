@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.provider;
+package nl.naturalis.nba.rest.provider;
 
 import javax.enterprise.context.Dependent;
 import javax.ws.rs.NotFoundException;
@@ -8,12 +8,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import nl.naturalis.nda.service.rest.exception.HTTP200Exception;
-import nl.naturalis.nda.service.rest.exception.HTTP404Exception;
-import nl.naturalis.nda.service.rest.exception.RESTException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import nl.naturalis.nba.rest.exception.HTTP200Exception;
+import nl.naturalis.nba.rest.exception.HTTP404Exception;
+import nl.naturalis.nba.rest.exception.RESTException;
 
 @Provider
 @Dependent

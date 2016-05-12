@@ -1,4 +1,4 @@
-package nl.naturalis.nda.service.rest.exception;
+package nl.naturalis.nba.rest.exception;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;

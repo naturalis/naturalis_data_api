@@ -161,8 +161,8 @@ public class SpecimenDAOTest {
 		assertNotNull("01", result);
 		assertNotNull("02", result[0]);
 		assertNotNull("03", result[0].getGatheringEvent());
-		assertNotNull("04", result[0].getGatheringEvent().getGatheringAgents());
-		Agent agent = result[0].getGatheringEvent().getGatheringAgents().get(0);
+		assertNotNull("04", result[0].getGatheringEvent().getGatheringPersons());
+		Agent agent = result[0].getGatheringEvent().getGatheringPersons().get(0);
 		assertNotNull("05", agent);
 		assertEquals("06", Person.class, agent.getClass());
 		Person personOut = (Person) agent;

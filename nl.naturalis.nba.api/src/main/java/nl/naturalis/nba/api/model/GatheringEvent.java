@@ -8,13 +8,35 @@ public class GatheringEvent extends NBADomainObject {
 
 	private String projectTitle;
 	private String worldRegion;
+	/*
+	 * This is not strictly ABCD, but this information is provided by some
+	 * Naturalis data sources, and the meaning and specifity of continent is
+	 * rather more obvious than world region. If a data source provides a
+	 * continent, but not a world region, {@code content} and {@code
+	 * worldRegion} will both be set to the provided continent. If a data source
+	 * provides a world region, but not a continent, only the {@code
+	 * worldRegion} field will be set to the world region, unless a continent
+	 * could be parsed out of the world region.
+	 */
 	private String continent;
 	private String country;
 	private String iso3166Code;
 	private String provinceState;
 	private String island;
 	private String locality;
+	/*
+	 * This is not strictly ABCD, but it enables the generation of IPTC data
+	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s. If a
+	 * Naturalis data source happens to provide a city but not a locality, both
+	 * {@code city} and {@code locality} will be set to the provided locality.
+	 * If a locality was provided but not a city, only the {@code locality}
+	 * field will be set, unless a city could be parsed out of the locality.
+	 */
 	private String city;
+	/*
+	 * This is not strictly ABCD, but it enables the generation of IPTC data
+	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s.
+	 */
 	private String sublocality;
 	private String localityText;
 	private Date dateTimeBegin;
@@ -24,19 +46,12 @@ public class GatheringEvent extends NBADomainObject {
 	private String altitudeUnifOfMeasurement;
 	private String depth;
 	private String depthUnitOfMeasurement;
-	private List<Agent> gatheringAgents;
+	private List<Person> gatheringPersons;
+	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
 	private List<ChronoStratigraphy> chronoStratigraphy;
 	private List<BioStratigraphy> bioStratigraphic;
 	private List<LithoStratigraphy> lithoStratigraphy;
-
-	public void addGatheringAgent(Agent agent)
-	{
-		if (gatheringAgents == null) {
-			gatheringAgents = new ArrayList<Agent>();
-		}
-		gatheringAgents.add(agent);
-	}
 
 	public void addSiteCoordinates(GatheringSiteCoordinates coordinates)
 	{
@@ -71,19 +86,6 @@ public class GatheringEvent extends NBADomainObject {
 		this.worldRegion = worldRegion;
 	}
 
-	/**
-	 * N.B. This is not strictly ABCD, but this information is provided by some
-	 * Naturalis data sources, and the meaning and specifity of continent is
-	 * rather more obvious than world region. If a data source provides a
-	 * continent, but not a world region, {@code content} and
-	 * {@code worldRegion} will both be set to the provided continent. If a data
-	 * source provides a world region, but not a continent, only the
-	 * {@code worldRegion} field will be set to the world region, unless a
-	 * continent could be parsed out of the location data while populating the
-	 * search index.
-	 * 
-	 * @return
-	 */
 	public String getContinent()
 	{
 		return continent;
@@ -104,15 +106,6 @@ public class GatheringEvent extends NBADomainObject {
 		this.country = country;
 	}
 
-	/**
-	 * Get the ISO3166-1 or ISO3166-3 country code for the
-	 * {@code GatheringEvent}.
-	 * 
-	 * @see http://wiki.tdwg.org/twiki/bin/view/ABCD/AbcdConcept0962
-	 * 
-	 * @return The ISO3166-1 or ISO3166-3 country code for the
-	 *         {@code GatheringEvent}
-	 */
 	public String getIso3166Code()
 	{
 		return iso3166Code;
@@ -153,18 +146,6 @@ public class GatheringEvent extends NBADomainObject {
 		this.locality = locality;
 	}
 
-	/**
-	 * N.B. This is not strictly ABCD, but it enables the generation of IPTC
-	 * data ({@link Iptc4xmpExt} objects) from {@code GatheringEvent}s. If a
-	 * Naturalis data source happens to provide a city but not a locality, both
-	 * {@code city} and {@code locality} will be set to the provided locality.
-	 * If a locality was provided but not a city, only the {@code locality}
-	 * field will be set, unless a city could be parsed out of the location data
-	 * while populating the search index.
-	 * 
-	 * @return
-	 */
-
 	public String getCity()
 	{
 		return city;
@@ -175,12 +156,6 @@ public class GatheringEvent extends NBADomainObject {
 		this.city = city;
 	}
 
-	/**
-	 * N.B. This is not strictly ABCD, but it enables the generation of IPTC
-	 * data ({@link Iptc4xmpExt} objects) from {@code GatheringEvent}s.
-	 * 
-	 * @return
-	 */
 	public String getSublocality()
 	{
 		return sublocality;
@@ -271,14 +246,24 @@ public class GatheringEvent extends NBADomainObject {
 		this.depthUnitOfMeasurement = depthUnitOfMeasurement;
 	}
 
-	public List<Agent> getGatheringAgents()
+	public List<Person> getGatheringPersons()
 	{
-		return gatheringAgents;
+		return gatheringPersons;
 	}
 
-	public void setGatheringAgents(List<Agent> gatheringAgents)
+	public void setGatheringPersons(List<Person> gatheringPersons)
 	{
-		this.gatheringAgents = gatheringAgents;
+		this.gatheringPersons = gatheringPersons;
+	}
+
+	public List<Organization> getGatheringOrganizations()
+	{
+		return gatheringOrganizations;
+	}
+
+	public void setGatheringOrganizations(List<Organization> gatheringOrganizations)
+	{
+		this.gatheringOrganizations = gatheringOrganizations;
 	}
 
 	public List<GatheringSiteCoordinates> getSiteCoordinates()
@@ -301,12 +286,12 @@ public class GatheringEvent extends NBADomainObject {
 		this.chronoStratigraphy = chronoStratigraphy;
 	}
 
-	public List<BioStratigraphy> getBiostratigraphic()
+	public List<BioStratigraphy> getBioStratigraphic()
 	{
 		return bioStratigraphic;
 	}
 
-	public void setBiostratigraphic(List<BioStratigraphy> bioStratigraphic)
+	public void setBioStratigraphic(List<BioStratigraphy> bioStratigraphic)
 	{
 		this.bioStratigraphic = bioStratigraphic;
 	}

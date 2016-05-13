@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.es.exception;
 
-import nl.naturalis.nba.dao.Registry;
+import nl.naturalis.nba.dao.es.Registry;
 
 /**
  * Thrown during the instantiation of the central {@link Registry} object if

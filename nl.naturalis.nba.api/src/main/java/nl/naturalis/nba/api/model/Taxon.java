@@ -20,32 +20,28 @@ public class Taxon extends NBATraceableObject {
 
 	private List<Specimen> specimens;
 
-// Distribution data (from from CoLDistributionEnricher)
-//	private List<String> localities;
+	//  Distribution data (from CoL distribution data)
+	//	private List<String> localities;
 
 	public String getSourceSystemParentId()
 	{
 		return sourceSystemParentId;
 	}
 
-
 	public void setSourceSystemParentId(String sourceSystemParentId)
 	{
 		this.sourceSystemParentId = sourceSystemParentId;
 	}
-
 
 	public String getTaxonRank()
 	{
 		return taxonRank;
 	}
 
-
 	public void setTaxonRank(String taxonRank)
 	{
 		this.taxonRank = taxonRank;
 	}
-
 
 	/**
 	 * Botanical
@@ -57,7 +53,6 @@ public class Taxon extends NBATraceableObject {
 		return acceptedName;
 	}
 
-
 	/**
 	 * Zoological
 	 * 
@@ -68,7 +63,6 @@ public class Taxon extends NBATraceableObject {
 		return acceptedName;
 	}
 
-
 	/**
 	 * Botanical
 	 */
@@ -76,7 +70,6 @@ public class Taxon extends NBATraceableObject {
 	{
 		this.acceptedName = scientificName;
 	}
-
 
 	/**
 	 * Zoological
@@ -86,18 +79,15 @@ public class Taxon extends NBATraceableObject {
 		this.acceptedName = scientificName;
 	}
 
-
 	public DefaultClassification getDefaultClassification()
 	{
 		return defaultClassification;
 	}
 
-
 	public void setDefaultClassification(DefaultClassification defaultClassification)
 	{
 		this.defaultClassification = defaultClassification;
 	}
-
 
 	/**
 	 * Get the system classification of this taxon, i.e. the as-is
@@ -110,94 +100,80 @@ public class Taxon extends NBATraceableObject {
 		return systemClassification;
 	}
 
-
 	public void setSystemClassification(List<Monomial> systemClassification)
 	{
 		this.systemClassification = systemClassification;
 	}
-
 
 	public List<ScientificName> getSynonyms()
 	{
 		return synonyms;
 	}
 
-
 	public void setSynonyms(List<ScientificName> synonyms)
 	{
 		this.synonyms = synonyms;
 	}
-
 
 	public List<VernacularName> getVernacularNames()
 	{
 		return vernacularNames;
 	}
 
-
 	public void setVernacularNames(List<VernacularName> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
 	}
-
 
 	public List<TaxonDescription> getDescriptions()
 	{
 		return descriptions;
 	}
 
-
 	public void setDescriptions(List<TaxonDescription> descriptions)
 	{
 		this.descriptions = descriptions;
 	}
-
 
 	public List<Expert> getExperts()
 	{
 		return experts;
 	}
 
-
 	public void setExperts(List<Expert> experts)
 	{
 		this.experts = experts;
 	}
-
 
 	public List<Reference> getReferences()
 	{
 		return references;
 	}
 
-
 	public void setReferences(List<Reference> references)
 	{
 		this.references = references;
 	}
-
 
 	public List<Specimen> getSpecimens()
 	{
 		return specimens;
 	}
 
-
 	public void setSpecimens(List<Specimen> specimens)
 	{
 		this.specimens = specimens;
 	}
 
+	//	public List<String> getLocalities()
+	//	{
+	//		return localities;
+	//	}
+	//
+	//
+	//	public void setLocalities(List<String> localities)
+	//	{
+	//		this.localities = localities;
+	//	}
 
-//	public List<String> getLocalities()
-//	{
-//		return localities;
-//	}
-//
-//
-//	public void setLocalities(List<String> localities)
-//	{
-//		this.localities = localities;
-//	}
-	
 }

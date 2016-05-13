@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import org.domainobject.util.ConfigObject;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.Registry;
-
 public class RegistryTest {
 
 	@Test

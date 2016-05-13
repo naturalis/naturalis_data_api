@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import org.elasticsearch.client.Client;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.Registry;
+import nl.naturalis.nba.dao.es.Registry;
 
 public class ClientFactoryTest {
 

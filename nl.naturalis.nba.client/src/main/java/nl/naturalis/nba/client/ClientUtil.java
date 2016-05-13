@@ -5,14 +5,16 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 class ClientUtil {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(ClientUtil.class);
 	private static final ObjectMapper objectMapper = NBAObjectMapperFactory.getObjectMapper();
-
 
 	public static String getString(byte[] response)
 	{
@@ -24,7 +26,6 @@ class ClientUtil {
 		}
 	}
 
-
 	public static int getInt(byte[] response)
 	{
 		try {
@@ -34,7 +35,6 @@ class ClientUtil {
 			throw new ClientException(e);
 		}
 	}
-
 
 	public static boolean getBoolean(byte[] response)
 	{
@@ -46,7 +46,6 @@ class ClientUtil {
 		}
 	}
 
-
 	public static <T> T getObject(byte[] response, Class<T> type)
 	{
 		try {
@@ -56,6 +55,32 @@ class ClientUtil {
 			return objectMapper.readValue(response, type);
 		}
 		catch (IOException e) {
+			throw new ClientException(e);
+		}
+	}
+
+	public static void printTerse(Object obj)
+	{
+		ObjectMapper om = NBAObjectMapperFactory.getObjectMapper();
+		om.setSerializationInclusion(Include.NON_NULL);
+		try {
+			String s = om.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+			System.out.println(s);
+		}
+		catch (JsonProcessingException e) {
+			throw new ClientException(e);
+		}
+	}
+
+	public static void printFull(Object obj)
+	{
+		ObjectMapper om = NBAObjectMapperFactory.getObjectMapper();
+		om.setSerializationInclusion(Include.ALWAYS);
+		try {
+			String s = om.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+			System.out.println(s);
+		}
+		catch (JsonProcessingException e) {
 			throw new ClientException(e);
 		}
 	}

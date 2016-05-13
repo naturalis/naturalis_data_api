@@ -22,6 +22,7 @@ import org.elasticsearch.index.IndexNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;

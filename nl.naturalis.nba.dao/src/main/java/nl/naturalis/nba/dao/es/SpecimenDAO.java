@@ -31,8 +31,6 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.ESClientFactory;
-import nl.naturalis.nba.dao.Registry;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
 import nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory;

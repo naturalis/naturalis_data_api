@@ -1,10 +1,10 @@
 package nl.naturalis.nba.client;
 
-import nl.naturalis.nba.api.model.Agent;
-import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.fasterxml.jackson.databind.SerializationFeature.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 
 /**
  * Factory for producing Jackson {@code ObjectMapper} instances specialized in
@@ -20,25 +20,24 @@ class NBAObjectMapperFactory {
 
 	private static NBAObjectMapperFactory instance;
 
-
 	public static ObjectMapper getObjectMapper()
 	{
 		if (instance == null) {
 			instance = new NBAObjectMapperFactory();
 		}
-		return instance.objectMapper;
+		return instance.om;
 	}
 
-	private final ObjectMapper objectMapper;
-
+	private final ObjectMapper om;
 
 	private NBAObjectMapperFactory()
 	{
 		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Agent.class, new AgentDeserializer());
-		module.addDeserializer(GatheringSiteCoordinates.class, new GatheringSiteCoordinatesDeserializer());
-		objectMapper = new ObjectMapper();
-		objectMapper.registerModule(module);
+		GatheringSiteCoordinatesDeserializer gscd = new GatheringSiteCoordinatesDeserializer();
+		module.addDeserializer(GatheringSiteCoordinates.class, gscd);
+		om = new ObjectMapper();
+		om.registerModule(module);
+		om.enable(WRITE_ENUMS_USING_TO_STRING);
 	}
 
 }

@@ -1,23 +1,23 @@
 package nl.naturalis.nba.client;
 
-public class NBAClientBuilder {
+public class ClientConfigurator {
 
 	private final ClientConfig cfg;
 
-	public NBAClientBuilder()
+	public ClientConfigurator()
 	{
 		this.cfg = new ClientConfig();
 	}
 
-	public NBAClientBuilder setBaseUrl(String baseUrl)
+	public ClientConfigurator setBaseUrl(String baseUrl)
 	{
 		cfg.setBaseUrl(baseUrl);
 		return this;
 	}
 
-	public NBAClient build()
+	public NBA create()
 	{
-		return new NBAClient(cfg);
+		return new NBA(cfg);
 	}
 
 }

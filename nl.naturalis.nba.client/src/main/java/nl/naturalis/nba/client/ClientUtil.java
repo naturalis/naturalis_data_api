@@ -2,15 +2,15 @@ package nl.naturalis.nba.client;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 class ClientUtil {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(ClientUtil.class);
+	private static final Logger logger = LogManager.getLogger(ClientUtil.class);
 	private static final ObjectMapper objectMapper = NBAObjectMapperFactory.getObjectMapper();
 
 

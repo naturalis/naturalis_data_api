@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * {@code ObjectMapper} is creates are singleton instances.
  * 
  * @author Ayco Holleman
- * @created Jul 14, 2015
  *
  */
 class NBAObjectMapperFactory {

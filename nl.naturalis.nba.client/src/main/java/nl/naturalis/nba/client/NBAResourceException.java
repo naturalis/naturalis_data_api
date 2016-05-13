@@ -1,16 +1,16 @@
 package nl.naturalis.nba.client;
 
+import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NO_CONTENT;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.StringUtil;
 import org.domainobject.util.debug.BeanPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NO_CONTENT;
 
 /**
  * An {@code NBAResourceException} is the client-side mirror of a
@@ -27,7 +27,7 @@ import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NO_CONTENT;
 public class NBAResourceException extends RuntimeException {
 
 	private static final long serialVersionUID = -8246486578070786218L;
-	private static final Logger logger = LoggerFactory.getLogger(NBAResourceException.class);
+	private static final Logger logger = LogManager.getLogger(NBAResourceException.class);
 
 	@SuppressWarnings("unchecked")
 	static NBAResourceException createFromResponse(int status, byte[] response)

@@ -3,8 +3,8 @@ package nl.naturalis.nba.client;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -13,7 +13,7 @@ import nl.naturalis.nba.api.model.Specimen;
 class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(SpecimenClient.class);
+	private static final Logger logger = LogManager.getLogger(SpecimenClient.class);
 
 	SpecimenClient(ClientConfig cfg)
 	{
@@ -28,7 +28,7 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
 		return ClientUtil.getBoolean(request.getResponseBody());
 	}
-	
+
 	public Specimen find(String unitID) throws NBAResourceException
 	{
 		setPath("specimen/find/" + unitID);
@@ -60,12 +60,11 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
-		setPath("specimen/find/" + unitID);
-		int status = request.execute().getStatus();
-		if (status == HTTP_NOT_FOUND)
-			return null;
-		if (status != HTTP_OK)
+		setPath("specimen/findByUnitID/" + unitID);
+		int status = sendGETRequest().getStatus();
+		if (status != HTTP_OK) {
 			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+		}
 		return ClientUtil.getObject(request.getResponseBody(), Specimen[].class);
 	}
 }

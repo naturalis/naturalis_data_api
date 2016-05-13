@@ -57,7 +57,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	}
 
 	@Override
-	public Specimen findById(String id)
+	public Specimen find(String id)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("findById(\"{}\")", id);

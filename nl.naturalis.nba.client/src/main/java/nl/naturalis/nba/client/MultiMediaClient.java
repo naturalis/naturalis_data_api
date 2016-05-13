@@ -14,18 +14,18 @@ class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
 	}
 
 
-	public boolean exists(String unitID) throws NBAResourceException
+	public boolean exists(String unitID) throws ServerException
 	{
 		setPath("multimedia/exists/" + unitID);
 		int status = request.execute().getStatus();
 		if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
 		return ClientUtil.getBoolean(request.getResponseBody());
 	}
 
 
-	public MultiMediaObject find(String unitID) throws NBAResourceException
+	public MultiMediaObject find(String unitID) throws ServerException
 	{
 		setPath("multimedia/find/" + unitID);
 		int status = request.execute().getStatus();
@@ -33,7 +33,7 @@ class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
 			return null;
 		}
 		else if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
 		else {
 			return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject.class);

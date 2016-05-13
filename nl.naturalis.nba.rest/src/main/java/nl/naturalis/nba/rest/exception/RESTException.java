@@ -24,8 +24,6 @@ import nl.naturalis.nba.api.search.QueryParams;
  */
 public class RESTException extends RuntimeException {
 
-	private static final long serialVersionUID = 9030540045749394408L;
-
 	private final Status status;
 	private final UriInfo request;
 	private final MultivaluedMap<String, String> formParams;

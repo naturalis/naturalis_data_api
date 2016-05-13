@@ -93,7 +93,7 @@ public class SpecimenDAOTest {
 		saveObject(id, specimen01);
 		refreshIndex(ESSpecimen.class);
 		SpecimenDAO dao = new SpecimenDAO();
-		Specimen out = dao.findById(id);
+		Specimen out = dao.find(id);
 		assertNotNull("01", out);
 	}
 

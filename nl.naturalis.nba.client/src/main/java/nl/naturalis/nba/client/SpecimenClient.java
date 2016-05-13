@@ -20,41 +20,34 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		super(cfg);
 	}
 
-	public boolean exists(String unitID) throws NBAResourceException
+	public boolean exists(String unitID) throws ServerException
 	{
 		setPath("specimen/exists/" + unitID);
 		int status = request.execute().getStatus();
 		if (status != HTTP_OK)
-			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, request.getResponseBody());
 		return ClientUtil.getBoolean(request.getResponseBody());
 	}
 
-	public Specimen find(String unitID) throws NBAResourceException
-	{
-		setPath("specimen/find/" + unitID);
-		int status = request.execute().getStatus();
-		if (status == HTTP_NOT_FOUND)
-			return null;
-		if (status != HTTP_OK)
-			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
-		return ClientUtil.getObject(request.getResponseBody(), Specimen.class);
-	}
-
-	public MultiMediaObject[] getMultiMedia(String unitID) throws NBAResourceException
+	public MultiMediaObject[] getMultiMedia(String unitID) throws ServerException
 	{
 		setPath("specimen/get-multimedia/" + unitID);
 		int status = request.execute().getStatus();
 		if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);
 	}
 
 	@Override
-	public Specimen findById(String id)
+	public Specimen find(String id)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		setPath("specimen/find/" + id);
+		int status = sendGETRequest().getStatus();
+		if (status != HTTP_OK) {
+			throw ServerException.createFromResponse(status, request.getResponseBody());
+		}
+		return ClientUtil.getObject(request.getResponseBody(), Specimen.class);
 	}
 
 	@Override
@@ -63,7 +56,7 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		setPath("specimen/findByUnitID/" + unitID);
 		int status = sendGETRequest().getStatus();
 		if (status != HTTP_OK) {
-			throw NBAResourceException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), Specimen[].class);
 	}

@@ -25,11 +25,7 @@ public class ResourceUtil {
 		if (throwable instanceof RESTException) {
 			return (RESTException) throwable;
 		}
-		boolean showAsJson = false;
-		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
-		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
-			showAsJson = true;
-		}
+		boolean showAsJson = showErrorInResponseBody(request);
 		if (showAsJson) {
 			return new HTTP200Exception(request, throwable, status);
 		}
@@ -48,12 +44,7 @@ public class ResourceUtil {
 		if (throwable instanceof RESTException) {
 			return (RESTException) throwable;
 		}
-		boolean showAsJson = false;
-		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
-		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
-			showAsJson = true;
-		}
-		if (showAsJson) {
+		if (showErrorInResponseBody(request)) {
 			return new HTTP200Exception(request, form, throwable);
 		}
 		return new RESTException(request, form, throwable);
@@ -62,12 +53,7 @@ public class ResourceUtil {
 
 	public static RESTException handleError(UriInfo request, Status status)
 	{
-		boolean showAsJson = false;
-		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
-		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
-			showAsJson = true;
-		}
-		if (showAsJson) {
+		if (showErrorInResponseBody(request)) {
 			return new HTTP200Exception(request, status);
 		}
 		return new RESTException(request, status);
@@ -134,5 +120,16 @@ public class ResourceUtil {
 			result.addLink("_nextPage", nextLinkUriBuilder.build().toString());
 		}
 	}
+
+	private static boolean showErrorInResponseBody(UriInfo request)
+	{
+		boolean showAsJson = false;
+		String s = request.getQueryParameters().getFirst(PARAM_SHOW_AS_JSON);
+		if ((s != null) && (s.length() == 0 || s.equals("1") || s.toUpperCase().equals("TRUE"))) {
+			showAsJson = true;
+		}
+		return showAsJson;
+	}
+
 
 }

@@ -24,24 +24,24 @@ import org.domainobject.util.debug.BeanPrinter;
  * @author Ayco Holleman
  *
  */
-public class NBAResourceException extends RuntimeException {
+public class ServerException extends RuntimeException {
 
-	private static final long serialVersionUID = -8246486578070786218L;
-	private static final Logger logger = LogManager.getLogger(NBAResourceException.class);
+	private static final Logger logger = LogManager.getLogger(ServerException.class);
 
 	@SuppressWarnings("unchecked")
-	static NBAResourceException createFromResponse(int status, byte[] response)
+	static ServerException createFromResponse(int status, byte[] response)
 	{
 		if (status == HTTP_NO_CONTENT) {
 			String msg;
 			if (response == null || response.length == 0) {
-				msg = "The NBA responded with HTTP 204 (No Content), probably because"
-						+ "the method to which the request was dispatched returned null."
-						+ "But neither is allowed to happen. A.k.a. you found a bug";
+				msg = "The NBA responded with HTTP 204 (No Content), probably "
+						+ "because the Java method to which your request was "
+						+ "dispatched returned null. But neither is supposed "
+						+ "to happen. A.k.a. you found a bug";
 			}
 			else {
-				msg = "The NBA responded with HTTP 204 (No Content), but actually did"
-						+ "return content. A big bad bug.";
+				msg = "The NBA responded with HTTP 204 (No Content), but actually "
+						+ "did return content. A.k.a. you found a bug";
 			}
 			throw new ClientException(msg);
 		}
@@ -49,18 +49,32 @@ public class NBAResourceException extends RuntimeException {
 			String fmt = "NBA responded with status code %s, but response body was empty";
 			throw new ClientException(String.format(fmt, status));
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deserializing NBA exception: " + StringUtil.toString(response));
+		String s = StringUtil.toString(response);
+		if (s.startsWith("javax.ws.rs.NotFoundException")) {
+			if (s.indexOf("Could not find resource for full path") != -1) {
+				/*
+				 * Ah, well, this one isn't coming from the bowels of NBA server
+				 * side code. It's Wildfly informing the client it has specified
+				 * a non-existent end point. This should basically count as a
+				 * bug in the Java client.
+				 */
+				throw new NoSuchServiceException();
+			}
 		}
-		LinkedHashMap<String, Object> serverInfo = ClientUtil.getObject(response, LinkedHashMap.class);
-		LinkedHashMap<String, Object> exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Deserializing NBA exception: {}", s);
+		}
+		LinkedHashMap<String, Object> serverInfo;
+		serverInfo = ClientUtil.getObject(response, LinkedHashMap.class);
+		LinkedHashMap<String, Object> exception;
+		exception = (LinkedHashMap<String, Object>) serverInfo.get("exception");
 		String message = (String) exception.get("message");
-		return new NBAResourceException(message, serverInfo);
+		return new ServerException(message, serverInfo);
 	}
 
 	private final Map<String, Object> serverInfo;
 
-	private NBAResourceException(String message, Map<String, Object> serverInfo)
+	private ServerException(String message, Map<String, Object> serverInfo)
 	{
 		super(message);
 		this.serverInfo = serverInfo;

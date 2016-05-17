@@ -7,7 +7,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,7 +38,6 @@ public class SpecimenResource {
 	Registry registry;
 
 	@GET
-	@POST
 	@Path("/find/{id}")
 	@Produces(JSON_CONTENT_TYPE)
 	public Specimen find(@PathParam("id") String id, @Context UriInfo uriInfo)
@@ -58,10 +56,9 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@POST
-	@Path("/findByUnitID/{id}")
+	@Path("/findByUnitID/{unitID}")
 	@Produces(JSON_CONTENT_TYPE)
-	public Specimen[] findByUnitID(@PathParam("id") String unitID, @Context UriInfo uriInfo)
+	public Specimen[] findByUnitID(@PathParam("unitID") String unitID, @Context UriInfo uriInfo)
 	{
 		try {
 			SpecimenDAO dao = new SpecimenDAO();
@@ -73,7 +70,20 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@POST
+	@Path("/exists/{unitID}")
+	@Produces(JSON_CONTENT_TYPE)
+	public boolean exists(@PathParam("unitID") String unitID, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.exists(unitID);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	public Specimen[] query(@Context UriInfo uriInfo)

@@ -1,5 +1,7 @@
 package nl.naturalis.nba.client;
 
+import static nl.naturalis.nba.client.ClientUtil.getBoolean;
+import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,13 +24,15 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		super(cfg);
 	}
 
-	public boolean exists(String unitID) throws ServerException
+	@Override
+	public boolean exists(String unitID)
 	{
 		setPath("specimen/exists/" + unitID);
 		int status = request.execute().getStatus();
-		if (status != HTTP_OK)
+		if (status != HTTP_OK) {
 			throw ServerException.createFromResponse(status, request.getResponseBody());
-		return ClientUtil.getBoolean(request.getResponseBody());
+		}
+		return getBoolean(request.getResponseBody());
 	}
 
 	public MultiMediaObject[] getMultiMedia(String unitID) throws ServerException
@@ -38,7 +42,7 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		if (status != HTTP_OK) {
 			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
-		return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject[].class);
+		return getObject(request.getResponseBody(), MultiMediaObject[].class);
 	}
 
 	@Override
@@ -49,7 +53,7 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		if (status != HTTP_OK) {
 			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
-		return ClientUtil.getObject(request.getResponseBody(), Specimen.class);
+		return getObject(request.getResponseBody(), Specimen.class);
 	}
 
 	@Override
@@ -60,11 +64,12 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		if (status != HTTP_OK) {
 			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
-		return ClientUtil.getObject(request.getResponseBody(), Specimen[].class);
+		return getObject(request.getResponseBody(), Specimen[].class);
 	}
-	
+
 	@Override
-	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException {
+	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException
+	{
 		setPath("specimen/query");
 		request.setContentType(SimpleHttpRequest.MIMETYPE_JSON);
 		request.setObject(querySpec);

@@ -37,6 +37,15 @@ public interface ISpecimenAPI {
 	Specimen[] findByUnitID(String unitID);
 
 	/**
+	 * Returns whether or not the specified string is a valid UnitID
+	 * (i&#46;e&#46; is the UnitID of at least one specimen record).
+	 * 
+	 * @param unitID
+	 * @return
+	 */
+	boolean exists(String unitID);
+
+	/**
 	 * Returns specimens according to the provided query specification.
 	 * 
 	 * @param querySpec

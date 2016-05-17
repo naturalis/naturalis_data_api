@@ -83,6 +83,21 @@ public class SpecimenDAO implements ISpecimenAPI {
 	}
 
 	@Override
+	public boolean exists(String unitID)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("exists(\"{}\")", unitID);
+		}
+		SearchRequestBuilder request = newSearchRequest();
+		TermQueryBuilder tqb = termQuery("unitID", unitID);
+		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
+		request.setQuery(csq);
+		request.setSize(0);
+		SearchResponse response = request.execute().actionGet();
+		return response.getHits().getTotalHits() != 0;
+	}
+
+	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
 		if (logger.isDebugEnabled()) {

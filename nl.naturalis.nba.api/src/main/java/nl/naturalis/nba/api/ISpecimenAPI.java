@@ -1,6 +1,8 @@
 package nl.naturalis.nba.api;
 
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
  * Specifies methods for accessing specimen-related data.
@@ -33,5 +35,13 @@ public interface ISpecimenAPI {
 	 * @return
 	 */
 	Specimen[] findByUnitID(String unitID);
+
+	/**
+	 * Returns specimens according to the provided query specification.
+	 * 
+	 * @param querySpec
+	 * @return
+	 */
+	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
 
 }

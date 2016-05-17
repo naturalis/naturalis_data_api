@@ -60,7 +60,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	public Specimen find(String id)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("findById(\"{}\")", id);
+			logger.debug("find(\"{}\")", id);
 		}
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();

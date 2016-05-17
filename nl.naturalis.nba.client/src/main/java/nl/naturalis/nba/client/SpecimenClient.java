@@ -1,14 +1,16 @@
 package nl.naturalis.nba.client;
 
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.http.SimpleHttpRequest;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QuerySpec;
 
 class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
@@ -59,5 +61,13 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 			throw ServerException.createFromResponse(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), Specimen[].class);
+	}
+	
+	@Override
+	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException {
+		setPath("specimen/query");
+		request.setContentType(SimpleHttpRequest.MIMETYPE_JSON);
+		request.setObject(querySpec);
+		return null;
 	}
 }

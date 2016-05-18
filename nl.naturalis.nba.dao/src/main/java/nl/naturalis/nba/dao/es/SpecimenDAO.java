@@ -27,6 +27,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
@@ -135,7 +136,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
-	private Specimen[] processSearchRequest(SearchRequestBuilder request)
+	private static Specimen[] processSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing query:\n{}", request);
@@ -155,13 +156,12 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return specimens;
 	}
 
-	private Specimen createSpecimen(String id, Map<String, Object> data)
+	private static Specimen createSpecimen(String id, Map<String, Object> data)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating Specimen instance with id {}", id);
 		}
-		ObjectMapper om = registry.getObjectMapper(ESSpecimen.class);
-		ESSpecimen esSpecimen = om.convertValue(data, ESSpecimen.class);
+		ESSpecimen esSpecimen = JsonUtil.convert(data, ESSpecimen.class);
 		return SpecimenTransfer.transfer(esSpecimen, id);
 	}
 

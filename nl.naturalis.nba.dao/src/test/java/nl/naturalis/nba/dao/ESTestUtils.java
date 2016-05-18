@@ -19,9 +19,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
@@ -102,19 +100,14 @@ public class ESTestUtils {
 	{
 		String index = registry.getIndex(obj.getClass());
 		String type = registry.getType(obj.getClass());
-		String source;
-		try {
-			ObjectMapper om = registry.getObjectMapper(obj.getClass());
-			source = om.writeValueAsString(obj);
-		}
-		catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
+		String source = JsonUtil.toJson(obj);
 		IndexRequestBuilder irb = client().prepareIndex(index, type);
-		if (id != null)
+		if (id != null) {
 			irb.setId(id);
-		if (parentId != null)
+		}
+		if (parentId != null) {
 			irb.setParent(parentId);
+		}
 		irb.setSource(source);
 		irb.execute().actionGet();
 	}
@@ -124,19 +117,6 @@ public class ESTestUtils {
 		String index = registry.getIndex(cls);
 		RefreshRequestBuilder request = indices().prepareRefresh(index);
 		request.execute().actionGet();
-	}
-
-	/**
-	 * Sleep long enough for the index to have refreshed after a CRUD operation.
-	 */
-	public static void sleep()
-	{
-		try {
-			Thread.sleep(3000);
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private static IndicesAdminClient indices()

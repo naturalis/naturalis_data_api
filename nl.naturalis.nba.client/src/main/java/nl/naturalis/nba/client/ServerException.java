@@ -29,7 +29,7 @@ public class ServerException extends RuntimeException {
 	private static final Logger logger = LogManager.getLogger(ServerException.class);
 
 	@SuppressWarnings("unchecked")
-	static ServerException createFromResponse(int status, byte[] response)
+	static ServerException newServerException(int status, byte[] response)
 	{
 		if (status == HTTP_NO_CONTENT) {
 			String msg;

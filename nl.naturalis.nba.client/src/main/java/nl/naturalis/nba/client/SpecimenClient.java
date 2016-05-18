@@ -2,18 +2,18 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ServerException.newServerException;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.http.SimpleHttpGet;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
-import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.common.json.ObjectMapperLocator;
 
 class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
@@ -28,55 +28,45 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 	@Override
 	public boolean exists(String unitID)
 	{
-		GET.setPath("specimen/exists/" + unitID);
-		int status = GET.execute().getStatus();
+		SimpleHttpGet request = httpGet("specimen/exists/" + unitID);
+		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
+			throw newServerException(status, request.getResponseBody());
 		}
-		return getBoolean(GET.getResponseBody());
+		return getBoolean(request.getResponseBody());
 	}
 
 	@Override
 	public Specimen find(String id)
 	{
-		GET.setPath("specimen/find/" + id);
-		int status = sendGETRequest().getStatus();
+		SimpleHttpGet request = httpGet("specimen/find/" + id);
+		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
+			throw newServerException(status, request.getResponseBody());
 		}
-		return getObject(GET.getResponseBody(), Specimen.class);
+		return getObject(request.getResponseBody(), Specimen.class);
 	}
 
 	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
-		GET.setPath("specimen/findByUnitID/" + unitID);
-		int status = sendGETRequest().getStatus();
+		SimpleHttpGet request = httpGet("specimen/findByUnitID/" + unitID);
+		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
+			throw newServerException(status, request.getResponseBody());
 		}
-		return getObject(GET.getResponseBody(), Specimen[].class);
+		return getObject(request.getResponseBody(), Specimen[].class);
 	}
 
 	@Override
 	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		GET.setPath("specimen/query/" + JsonUtil.toJson(querySpec));
-		int status = sendGETRequest().getStatus();
+		SimpleHttpGet request = httpGet("specimen/query/" + JsonUtil.toJson(querySpec));
+		int status = request.getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
+			throw newServerException(status, request.getResponseBody());
 		}
-		return getObject(GET.getResponseBody(), Specimen[].class);
-	}
-
-	public MultiMediaObject[] getMultiMedia(String unitID) throws ServerException
-	{
-		GET.setPath("specimen/get-multimedia/" + unitID);
-		int status = GET.execute().getStatus();
-		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
-		}
-		return getObject(GET.getResponseBody(), MultiMediaObject[].class);
+		return getObject(request.getResponseBody(), Specimen[].class);
 	}
 
 }

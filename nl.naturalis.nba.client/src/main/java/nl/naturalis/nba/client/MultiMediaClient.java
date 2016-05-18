@@ -14,30 +14,30 @@ class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
 	}
 
 
-	public boolean exists(String unitID) throws ServerException
-	{
-		GET.setPath("multimedia/exists/" + unitID);
-		int status = GET.execute().getStatus();
-		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
-		}
-		return ClientUtil.getBoolean(GET.getResponseBody());
-	}
-
-
-	public MultiMediaObject find(String unitID) throws ServerException
-	{
-		GET.setPath("multimedia/find/" + unitID);
-		int status = GET.execute().getStatus();
-		if (status == HTTP_NOT_FOUND) {
-			return null;
-		}
-		else if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, GET.getResponseBody());
-		}
-		else {
-			return ClientUtil.getObject(GET.getResponseBody(), MultiMediaObject.class);
-		}
-	}
+//	public boolean exists(String unitID) throws ServerException
+//	{
+//		httpGet.setPath("multimedia/exists/" + unitID);
+//		int status = httpGet.execute().getStatus();
+//		if (status != HTTP_OK) {
+//			throw ServerException.newServerException(status, httpGet.getResponseBody());
+//		}
+//		return ClientUtil.getBoolean(httpGet.getResponseBody());
+//	}
+//
+//
+//	public MultiMediaObject find(String unitID) throws ServerException
+//	{
+//		httpGet.setPath("multimedia/find/" + unitID);
+//		int status = httpGet.execute().getStatus();
+//		if (status == HTTP_NOT_FOUND) {
+//			return null;
+//		}
+//		else if (status != HTTP_OK) {
+//			throw ServerException.newServerException(status, httpGet.getResponseBody());
+//		}
+//		else {
+//			return ClientUtil.getObject(httpGet.getResponseBody(), MultiMediaObject.class);
+//		}
+//	}
 
 }

@@ -6,13 +6,14 @@ import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.http.SimpleHttpRequest;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.common.json.ObjectMapperLocator;
 
 class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
@@ -27,52 +28,55 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 	@Override
 	public boolean exists(String unitID)
 	{
-		setPath("specimen/exists/" + unitID);
-		int status = request.execute().getStatus();
+		GET.setPath("specimen/exists/" + unitID);
+		int status = GET.execute().getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
 		}
-		return getBoolean(request.getResponseBody());
-	}
-
-	public MultiMediaObject[] getMultiMedia(String unitID) throws ServerException
-	{
-		setPath("specimen/get-multimedia/" + unitID);
-		int status = request.execute().getStatus();
-		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, request.getResponseBody());
-		}
-		return getObject(request.getResponseBody(), MultiMediaObject[].class);
+		return getBoolean(GET.getResponseBody());
 	}
 
 	@Override
 	public Specimen find(String id)
 	{
-		setPath("specimen/find/" + id);
+		GET.setPath("specimen/find/" + id);
 		int status = sendGETRequest().getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
 		}
-		return getObject(request.getResponseBody(), Specimen.class);
+		return getObject(GET.getResponseBody(), Specimen.class);
 	}
 
 	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
-		setPath("specimen/findByUnitID/" + unitID);
+		GET.setPath("specimen/findByUnitID/" + unitID);
 		int status = sendGETRequest().getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
 		}
-		return getObject(request.getResponseBody(), Specimen[].class);
+		return getObject(GET.getResponseBody(), Specimen[].class);
 	}
 
 	@Override
 	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		setPath("specimen/query");
-		request.setContentType(SimpleHttpRequest.MIMETYPE_JSON);
-		request.setObject(querySpec);
-		return null;
+		GET.setPath("specimen/query/" + JsonUtil.toJson(querySpec));
+		int status = sendGETRequest().getStatus();
+		if (status != HTTP_OK) {
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
+		}
+		return getObject(GET.getResponseBody(), Specimen[].class);
 	}
+
+	public MultiMediaObject[] getMultiMedia(String unitID) throws ServerException
+	{
+		GET.setPath("specimen/get-multimedia/" + unitID);
+		int status = GET.execute().getStatus();
+		if (status != HTTP_OK) {
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
+		}
+		return getObject(GET.getResponseBody(), MultiMediaObject[].class);
+	}
+
 }

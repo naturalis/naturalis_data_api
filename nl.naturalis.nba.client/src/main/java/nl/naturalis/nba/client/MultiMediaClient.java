@@ -16,27 +16,27 @@ class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
 
 	public boolean exists(String unitID) throws ServerException
 	{
-		setPath("multimedia/exists/" + unitID);
-		int status = request.execute().getStatus();
+		GET.setPath("multimedia/exists/" + unitID);
+		int status = GET.execute().getStatus();
 		if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
 		}
-		return ClientUtil.getBoolean(request.getResponseBody());
+		return ClientUtil.getBoolean(GET.getResponseBody());
 	}
 
 
 	public MultiMediaObject find(String unitID) throws ServerException
 	{
-		setPath("multimedia/find/" + unitID);
-		int status = request.execute().getStatus();
+		GET.setPath("multimedia/find/" + unitID);
+		int status = GET.execute().getStatus();
 		if (status == HTTP_NOT_FOUND) {
 			return null;
 		}
 		else if (status != HTTP_OK) {
-			throw ServerException.createFromResponse(status, request.getResponseBody());
+			throw ServerException.createFromResponse(status, GET.getResponseBody());
 		}
 		else {
-			return ClientUtil.getObject(request.getResponseBody(), MultiMediaObject.class);
+			return ClientUtil.getObject(GET.getResponseBody(), MultiMediaObject.class);
 		}
 	}
 

@@ -18,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.ObjectType;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.SpecimenDAO;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.ejb.service.SpecimenService;
@@ -84,11 +86,18 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/query")
+	@Path("/query/{querySpec}")
 	@Produces(JSON_CONTENT_TYPE)
-	public Specimen[] query(@Context UriInfo uriInfo)
+	public Specimen[] query(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
 	{
-		return null;
+		try {
+			QuerySpec qs = JsonUtil.fromJson(json, QuerySpec.class);
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
 	}
 
 }

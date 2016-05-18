@@ -18,12 +18,12 @@ public enum Operator
 
 	public static Operator parse(String s)
 	{
-		for (Operator co : values()) {
-			if (co.symbol != null && s.equals(co.symbol)) {
-				return co;
+		for (Operator op : values()) {
+			if (op.symbol != null && s.equals(op.symbol)) {
+				return op;
 			}
-			if (s.equalsIgnoreCase(co.name())) {
-				return co;
+			if (s.equalsIgnoreCase(op.name())) {
+				return op;
 			}
 		}
 		return null;
@@ -39,11 +39,6 @@ public enum Operator
 	private Operator(String symbol)
 	{
 		this.symbol = symbol;
-	}
-
-	public String toString()
-	{
-		return symbol;
 	}
 
 }

@@ -18,19 +18,16 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
 import nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory;
@@ -182,7 +179,8 @@ public class SpecimenDAO implements ISpecimenAPI {
 
 	static String dump(Object obj)
 	{
-		ObjectMapper om = new ObjectMapper();
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
+		ObjectMapper om = oml.getObjectMapper(obj.getClass());
 		ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
 		try {
 			return ow.writeValueAsString(obj);
@@ -192,19 +190,4 @@ public class SpecimenDAO implements ISpecimenAPI {
 		}
 	}
 
-	static String dump(QuerySpec obj)
-	{
-		ObjectMapper om = new ObjectMapper();
-		om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		om.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
-		om.setSerializationInclusion(Include.NON_NULL);
-		om.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-		ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
-		try {
-			return ow.writeValueAsString(obj);
-		}
-		catch (JsonProcessingException e) {
-			throw new DaoException(e);
-		}
-	}
 }

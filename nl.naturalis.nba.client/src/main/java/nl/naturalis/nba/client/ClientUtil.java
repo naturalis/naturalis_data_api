@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.common.json.ObjectMapperLocator;
+
 class ClientUtil {
 
 	@SuppressWarnings("unused")
@@ -60,7 +62,8 @@ class ClientUtil {
 
 	public static void printTerse(Object obj)
 	{
-		ObjectMapper om = NBAObjectMapperFactory.getObjectMapper();
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();	
+		ObjectMapper om = oml.getObjectMapper(obj.getClass());
 		om.setSerializationInclusion(Include.NON_NULL);
 		try {
 			String s = om.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
@@ -73,7 +76,8 @@ class ClientUtil {
 
 	public static void printFull(Object obj)
 	{
-		ObjectMapper om = NBAObjectMapperFactory.getObjectMapper();
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();	
+		ObjectMapper om = oml.getObjectMapper(obj.getClass());
 		om.setSerializationInclusion(Include.ALWAYS);
 		try {
 			String s = om.writerWithDefaultPrettyPrinter().writeValueAsString(obj);

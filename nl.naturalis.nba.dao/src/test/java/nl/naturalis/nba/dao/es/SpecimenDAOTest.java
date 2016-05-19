@@ -1,11 +1,11 @@
 package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.api.query.Operator.*;
-import static nl.naturalis.nba.dao.ESTestUtils.createIndex;
-import static nl.naturalis.nba.dao.ESTestUtils.createType;
-import static nl.naturalis.nba.dao.ESTestUtils.dropIndex;
-import static nl.naturalis.nba.dao.ESTestUtils.refreshIndex;
-import static nl.naturalis.nba.dao.ESTestUtils.saveObject;
+import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
+import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
+import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
+import static nl.naturalis.nba.dao.es.ESTestUtils.refreshIndex;
+import static nl.naturalis.nba.dao.es.ESTestUtils.saveObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

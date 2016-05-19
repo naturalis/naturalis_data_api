@@ -167,13 +167,14 @@ public class SpecimenDAO implements ISpecimenAPI {
 
 	private SearchRequestBuilder newSearchRequest()
 	{
+		String type = registry.getType(ESSpecimen.class);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Initializing search request");
+			logger.debug("New search request (type={};index={})", type, esIndex);
 		}
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
 		SearchRequestBuilder request = client.prepareSearch(esIndex);
-		request.setTypes(registry.getType(ESSpecimen.class));
+		request.setTypes(type);
 		return request;
 	}
 

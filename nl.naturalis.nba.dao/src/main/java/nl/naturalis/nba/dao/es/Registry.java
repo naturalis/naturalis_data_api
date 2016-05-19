@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 
+import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.InitializationException;
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
@@ -36,6 +37,13 @@ public class Registry {
 	 * "nba.v2.conf.dir". This directory must at least contain nba.properties.
 	 */
 	public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
+	/**
+	 * Name of the system property pointing to the configuration directory for
+	 * integration tests: "nba-test.v2.conf.dir". This directory must at least
+	 * contain nba.properties. If this property is present it takes precedence
+	 * of {@link #SYSPROP_CONFIG_DIR}.
+	 */
+	public static final String SYSPROP_CONFIG_DIR_TEST = "nba-test.v2.conf.dir";
 
 	protected static Registry instance;
 
@@ -154,22 +162,27 @@ public class Registry {
 			return "Taxon";
 		if (type == ESMultiMediaObject.class)
 			return "MultiMediaObject";
-		assert (false);
-		return null;
+		String fmt = "There is no Elasticsearch document type corresponding to %s";
+		String msg = String.format(fmt, type.getName());
+		throw new DaoException(msg);
 	}
 
 	private void setConfDir()
 	{
-		String path = System.getProperty(SYSPROP_CONFIG_DIR);
+		String usedProperty = SYSPROP_CONFIG_DIR_TEST;
+		String path = System.getProperty(usedProperty);
 		if (path == null) {
-			String msg = String.format("Missing system property \"%s\"", SYSPROP_CONFIG_DIR);
-			throw new InitializationException(msg);
+			usedProperty = SYSPROP_CONFIG_DIR;
+			path = System.getProperty(usedProperty);
+			if (path == null) {
+				String msg = String.format("Missing system property \"%s\"", usedProperty);
+				throw new InitializationException(msg);
+			}
 		}
 		File dir = new File(path);
 		if (!dir.isDirectory()) {
-			String msg = String.format(
-					"Invalid value for system property \"%s\": \"%s\" (no such directory)",
-					SYSPROP_CONFIG_DIR, path);
+			String fmt = "Invalid value for system property \"%s\": \"%s\" (no such directory)";
+			String msg = String.format(fmt, usedProperty, path);
 			throw new InitializationException(msg);
 		}
 		try {

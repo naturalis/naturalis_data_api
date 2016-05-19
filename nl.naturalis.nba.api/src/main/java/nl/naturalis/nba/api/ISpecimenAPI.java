@@ -52,5 +52,6 @@ public interface ISpecimenAPI {
 	 * @return
 	 */
 	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
+	
 
 }

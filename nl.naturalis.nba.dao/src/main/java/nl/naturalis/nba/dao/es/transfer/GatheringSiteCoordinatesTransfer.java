@@ -18,31 +18,54 @@ public class GatheringSiteCoordinatesTransfer {
 	 * Static method to transfer the {@link ESGatheringSiteCoordinates} to a
 	 * {@link GatheringSiteCoordinates} object
 	 *
-	 * @param esSiteCoordinates
+	 * @param in
 	 *            the object to transfer
 	 * @return the newly created {@link GatheringSiteCoordinates}
 	 */
-	public static List<GatheringSiteCoordinates> transfer(
-			List<ESGatheringSiteCoordinates> esSiteCoordinates)
+	public static List<GatheringSiteCoordinates> load(List<ESGatheringSiteCoordinates> in)
 	{
-		if (esSiteCoordinates == null) {
+		if (in == null) {
 			return null;
 		}
-
-		List<GatheringSiteCoordinates> result = new ArrayList<>();
-
-		for (ESGatheringSiteCoordinates es : esSiteCoordinates) {
-			GatheringSiteCoordinates gsc = new GatheringSiteCoordinates();
-			gsc.setGridCellCode(es.getGridCellCode());
-			gsc.setGridCellSystem(es.getGridCellSystem());
-			gsc.setGridLatitudeDecimal(es.getGridLatitudeDecimal());
-			gsc.setGridLongitudeDecimal(es.getGridLongitudeDecimal());
-			gsc.setGridQualifier(es.getGridQualifier());
-			gsc.setLatitudeDecimal(es.getLatitudeDecimal());
-			gsc.setLongitudeDecimal(es.getLongitudeDecimal());
-			result.add(gsc);
+		List<GatheringSiteCoordinates> out = new ArrayList<>(in.size());
+		for (ESGatheringSiteCoordinates esCoords : in) {
+			GatheringSiteCoordinates coords = new GatheringSiteCoordinates();
+			coords.setGridCellCode(esCoords.getGridCellCode());
+			coords.setGridCellSystem(esCoords.getGridCellSystem());
+			coords.setGridLatitudeDecimal(esCoords.getGridLatitudeDecimal());
+			coords.setGridLongitudeDecimal(esCoords.getGridLongitudeDecimal());
+			coords.setGridQualifier(esCoords.getGridQualifier());
+			coords.setLatitudeDecimal(esCoords.getLatitudeDecimal());
+			coords.setLongitudeDecimal(esCoords.getLongitudeDecimal());
+			out.add(coords);
 		}
+		return out;
+	}
 
-		return result;
+	/**
+	 * Static method to transfer the {@link GatheringSiteCoordinates} to an
+	 * {@link ESGatheringSiteCoordinates} object
+	 * 
+	 * @param in
+	 * @return
+	 */
+	public static List<ESGatheringSiteCoordinates> save(List<GatheringSiteCoordinates> in)
+	{
+		if (in == null) {
+			return null;
+		}
+		List<ESGatheringSiteCoordinates> out = new ArrayList<>(in.size());
+		for (GatheringSiteCoordinates coords : in) {
+			ESGatheringSiteCoordinates esCoords = new ESGatheringSiteCoordinates();
+			esCoords.setGridCellCode(coords.getGridCellCode());
+			esCoords.setGridCellSystem(coords.getGridCellSystem());
+			esCoords.setGridLatitudeDecimal(coords.getGridLatitudeDecimal());
+			esCoords.setGridLongitudeDecimal(coords.getGridLongitudeDecimal());
+			esCoords.setGridQualifier(coords.getGridQualifier());
+			esCoords.setLatitudeDecimal(coords.getLatitudeDecimal());
+			esCoords.setLongitudeDecimal(coords.getLongitudeDecimal());
+			out.add(esCoords);
+		}
+		return out;
 	}
 }

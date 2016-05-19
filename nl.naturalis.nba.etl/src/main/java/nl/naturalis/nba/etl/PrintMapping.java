@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl;
 
 import org.domainobject.util.ClassUtil;
 
-import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;

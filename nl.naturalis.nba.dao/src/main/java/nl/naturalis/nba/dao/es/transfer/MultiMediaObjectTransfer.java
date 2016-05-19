@@ -16,7 +16,6 @@ public class MultiMediaObjectTransfer {
 		// Only static method in transfer objects
 	}
 
-
 	public static MultiMediaObject transfer(ESMultiMediaObject esMmo)
 	{
 		MultiMediaObject mmo = new MultiMediaObject();
@@ -43,7 +42,8 @@ public class MultiMediaObjectTransfer {
 		if (esGatheringEvents != null) {
 			List<MultiMediaGatheringEvent> gatheringEvents = new ArrayList<>();
 			for (ESGatheringEvent gatheringEvent : esGatheringEvents) {
-				gatheringEvents.add(GatheringEventTransfer.transferToMultiMedia(gatheringEvent));
+				gatheringEvents
+						.add(GatheringEventTransfer.loadMultiMediaGatheringEvent(gatheringEvent));
 			}
 			mmo.setGatheringEvents(gatheringEvents);
 		}

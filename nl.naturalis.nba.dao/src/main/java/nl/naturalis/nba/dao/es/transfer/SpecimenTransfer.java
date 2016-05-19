@@ -10,43 +10,75 @@ public class SpecimenTransfer {
 
 	private SpecimenTransfer()
 	{
-		// Only static method in transfer objects
 	}
 
-	public static Specimen transfer(ESSpecimen esSpecimen, String elasticsearchId)
+	public static Specimen load(ESSpecimen in, String elasticsearchId)
 	{
-		Specimen specimen = new Specimen();
-		specimen.setId(elasticsearchId);
-		specimen.setCollectorsFieldNumber(esSpecimen.getCollectorsFieldNumber());
-		specimen.setSourceSystem(esSpecimen.getSourceSystem());
-		specimen.setSourceSystemId(esSpecimen.getSourceSystemId());
-		specimen.setUnitID(esSpecimen.getUnitID());
-		specimen.setUnitGUID(esSpecimen.getUnitGUID());
-		specimen.setAssemblageID(esSpecimen.getAssemblageID());
-		specimen.setSourceInstitutionID(esSpecimen.getSourceInstitutionID());
-		specimen.setSourceID(esSpecimen.getSourceID());
-		specimen.setOwner(esSpecimen.getOwner());
+		Specimen out = new Specimen();
+		out.setId(elasticsearchId);
+		out.setCollectorsFieldNumber(in.getCollectorsFieldNumber());
+		out.setSourceSystem(in.getSourceSystem());
+		out.setSourceSystemId(in.getSourceSystemId());
+		out.setUnitID(in.getUnitID());
+		out.setUnitGUID(in.getUnitGUID());
+		out.setAssemblageID(in.getAssemblageID());
+		out.setSourceInstitutionID(in.getSourceInstitutionID());
+		out.setSourceID(in.getSourceID());
+		out.setOwner(in.getOwner());
 		// TODO: Change licenceType to licenseType in ESSpecimen and ES mapping!!
-		specimen.setLicenseType(esSpecimen.getLicenceType());
+		out.setLicenseType(in.getLicenceType());
 		// TODO: Change licence to license in ESSpecimen and ES mapping!!
-		specimen.setLicense(esSpecimen.getLicence());
-		specimen.setRecordBasis(esSpecimen.getRecordBasis());
-		specimen.setKindOfUnit(esSpecimen.getKindOfUnit());
-		specimen.setCollectionType(esSpecimen.getCollectionType());
-		specimen.setSex(Sex.parse(esSpecimen.getSex()));
-		specimen.setPhaseOrStage(PhaseOrStage.parse(esSpecimen.getPhaseOrStage()));
-		specimen.setTitle(esSpecimen.getTitle());
-		specimen.setNotes(esSpecimen.getNotes());
-		specimen.setPreparationType(esSpecimen.getPreparationType());
-		specimen.setTypeStatus(SpecimenTypeStatus.forName(esSpecimen.getTypeStatus()));
-		specimen.setNumberOfSpecimen(esSpecimen.getNumberOfSpecimen());
-		specimen.setFromCaptivity(esSpecimen.isFromCaptivity());
-		specimen.setObjectPublic(esSpecimen.isObjectPublic());
-		specimen.setMultiMediaPublic(esSpecimen.isMultiMediaPublic());
-		specimen.setAcquiredFrom(esSpecimen.getAcquiredFrom());
-		specimen.setIdentifications(esSpecimen.getIdentifications());
-		specimen.setGatheringEvent(GatheringEventTransfer.transfer(esSpecimen.getGatheringEvent()));
-		return specimen;
+		out.setLicense(in.getLicence());
+		out.setRecordBasis(in.getRecordBasis());
+		out.setKindOfUnit(in.getKindOfUnit());
+		out.setCollectionType(in.getCollectionType());
+		out.setSex(Sex.parse(in.getSex()));
+		out.setPhaseOrStage(PhaseOrStage.parse(in.getPhaseOrStage()));
+		out.setTitle(in.getTitle());
+		out.setNotes(in.getNotes());
+		out.setPreparationType(in.getPreparationType());
+		out.setTypeStatus(SpecimenTypeStatus.forName(in.getTypeStatus()));
+		out.setNumberOfSpecimen(in.getNumberOfSpecimen());
+		out.setFromCaptivity(in.isFromCaptivity());
+		out.setObjectPublic(in.isObjectPublic());
+		out.setMultiMediaPublic(in.isMultiMediaPublic());
+		out.setAcquiredFrom(in.getAcquiredFrom());
+		out.setIdentifications(in.getIdentifications());
+		out.setGatheringEvent(GatheringEventTransfer.load(in.getGatheringEvent()));
+		return out;
 	}
-	
+
+	public static ESSpecimen save(Specimen in)
+	{
+		ESSpecimen out = new ESSpecimen();
+		out.setCollectorsFieldNumber(in.getCollectorsFieldNumber());
+		out.setSourceSystem(in.getSourceSystem());
+		out.setSourceSystemId(in.getSourceSystemId());
+		out.setUnitID(in.getUnitID());
+		out.setUnitGUID(in.getUnitGUID());
+		out.setAssemblageID(in.getAssemblageID());
+		out.setSourceInstitutionID(in.getSourceInstitutionID());
+		out.setSourceID(in.getSourceID());
+		out.setOwner(in.getOwner());
+		out.setLicenceType(in.getLicenseType());
+		out.setLicence(in.getLicense());
+		out.setRecordBasis(in.getRecordBasis());
+		out.setKindOfUnit(in.getKindOfUnit());
+		out.setCollectionType(in.getCollectionType());
+		out.setSex(in.getSex().toString());
+		out.setPhaseOrStage(in.getPhaseOrStage().toString());
+		out.setTitle(in.getTitle());
+		out.setNotes(in.getNotes());
+		out.setPreparationType(in.getPreparationType());
+		out.setTypeStatus(in.getTypeStatus().toString());
+		out.setNumberOfSpecimen(in.getNumberOfSpecimen());
+		out.setFromCaptivity(in.isFromCaptivity());
+		out.setObjectPublic(in.isObjectPublic());
+		out.setMultiMediaPublic(in.isMultiMediaPublic());
+		out.setAcquiredFrom(in.getAcquiredFrom());
+		out.setIdentifications(in.getIdentifications());
+		out.setGatheringEvent(GatheringEventTransfer.save(in.getGatheringEvent()));
+		return out;
+	}
+
 }

@@ -1,7 +1,14 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
+
 public class Person extends Agent {
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String fullName;
 	private Organization organization;
 

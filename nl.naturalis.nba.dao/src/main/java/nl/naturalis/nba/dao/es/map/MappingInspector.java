@@ -11,6 +11,7 @@ import java.util.Map;
 import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
 
+import nl.naturalis.nba.api.query.Operator;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -151,6 +152,20 @@ public class MappingInspector {
 			}
 		}
 		return null;
+	}
+
+	public boolean isOperatorAllowed(DocumentField field, Operator operator)
+	{
+		switch (operator) {
+			case EQUALS:
+			case NOT_EQUALS:
+				return true;
+			case LIKE:
+			case NOT_LIKE:
+				return field.hasMultiField("like");
+			default:
+				return false;
+		}
 	}
 
 	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map)

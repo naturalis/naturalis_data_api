@@ -13,7 +13,10 @@ import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.Operator;
+import nl.naturalis.nba.dao.es.map.DocumentField;
+import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
+import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -69,6 +72,24 @@ public abstract class ConditionTranslator {
 	public QueryBuilder translate() throws InvalidConditionException
 	{
 		return translate(false);
+	}
+
+	protected DocumentField getDocumentField(String path) throws InvalidConditionException
+	{
+		ESField f;
+		try {
+			f = inspector.getField(field());
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidConditionException(e.getMessage());
+		}
+		if (!(f instanceof DocumentField)) {
+			String fmt = "Path %s specifies a nested structure. Only simple, "
+					+ "single-value field are allowed";
+			String msg = String.format(fmt, path);
+			throw new InvalidConditionException(msg);
+		}
+		return (DocumentField) f;
 	}
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException

@@ -13,5 +13,4 @@ public class InvalidQueryException extends Exception {
 		super(cause);
 	}
 
-
 }

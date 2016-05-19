@@ -1,18 +1,12 @@
 package nl.naturalis.nba.api.query;
 
+import static java.lang.String.format;
 
-public class IllegalOperatorException extends InvalidQueryException {
+public class IllegalOperatorException extends InvalidConditionException {
 
-	public IllegalOperatorException(String message)
+	public IllegalOperatorException(String field, Operator operator)
 	{
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
-
-	public IllegalOperatorException(Throwable cause)
-	{
-		super(cause);
-		// TODO Auto-generated constructor stub
+		super(format("Operator %s not allowed for field %s", operator, field));
 	}
 
 }

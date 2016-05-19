@@ -38,7 +38,7 @@ public class ConditionTranslatorFactory {
 				break;
 			case LIKE:
 			case NOT_LIKE:
-				break;
+				return new LikeConditionTranslator(condition, inspector);
 			default:
 				break;
 		}

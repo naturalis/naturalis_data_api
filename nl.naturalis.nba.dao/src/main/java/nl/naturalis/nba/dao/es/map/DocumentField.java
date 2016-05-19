@@ -24,4 +24,9 @@ public class DocumentField extends IndexableField {
 		fields.put(name, field);
 	}
 
+	public boolean hasMultiField(String name)
+	{
+		return fields != null && fields.containsKey(name);
+	}
+
 }

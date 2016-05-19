@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.es;
 
-import static nl.naturalis.nba.api.query.Operator.EQUALS;
+import static nl.naturalis.nba.api.query.Operator.*;
 import static nl.naturalis.nba.dao.ESTestUtils.createIndex;
 import static nl.naturalis.nba.dao.ESTestUtils.createType;
 import static nl.naturalis.nba.dao.ESTestUtils.dropIndex;
@@ -263,5 +263,24 @@ public class SpecimenDAOTest {
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
 	}
+	
+	/*
+	 *****************************************************
+	 * Test query method with LIKE and NOT_LIKE operator *
+	 *****************************************************
+	 */
 
+	@Test
+	public void testQuery__QuerySpec__07() throws InvalidQueryException
+	{
+		saveObject(specimen01);
+		refreshIndex(ESSpecimen.class);
+		String collector = "gatheringEvent.gatheringPersons.fullName";
+		Condition condition = new Condition(collector, LIKE, "allich");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
+	}
 }

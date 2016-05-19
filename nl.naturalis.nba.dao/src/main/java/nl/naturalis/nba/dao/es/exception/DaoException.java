@@ -1,11 +1,6 @@
 package nl.naturalis.nba.dao.es.exception;
 
-@SuppressWarnings("serial")
 public class DaoException extends RuntimeException {
-
-	public DaoException()
-	{
-	}
 
 	public DaoException(String message)
 	{
@@ -21,10 +16,5 @@ public class DaoException extends RuntimeException {
 	{
 		super(message, cause);
 	}
-
-	public DaoException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace)
-	{
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+	
 }

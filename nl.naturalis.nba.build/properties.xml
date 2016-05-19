@@ -38,6 +38,10 @@
 	<property name="api.module.location" location="${home}/${api.module.name}" />
 	<property name="api.module.artifact" value="${api.module.name}.jar" />
 
+	<property name="common.module.name" value="nl.naturalis.nba.common" />
+	<property name="common.module.location" location="${home}/${common.module.name}" />
+	<property name="common.module.artifact" value="${common.module.name}.jar" />
+
 	<property name="client.module.name" value="nl.naturalis.nba.client" />
 	<property name="client.module.location" location="${home}/${client.module.name}" />
 	<property name="client.module.artifact" value="${client.module.name}.jar" />

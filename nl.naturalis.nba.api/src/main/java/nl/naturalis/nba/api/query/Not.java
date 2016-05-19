@@ -1,5 +1,12 @@
 package nl.naturalis.nba.api.query;
 
+/**
+ * Symbolic constant used in a {@link Condition query condition} indicating that
+ * the condition is to be negated.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public enum Not
 {
 	NOT;

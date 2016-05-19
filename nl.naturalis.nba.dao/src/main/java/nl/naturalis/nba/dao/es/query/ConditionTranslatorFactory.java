@@ -22,7 +22,7 @@ public class ConditionTranslatorFactory {
 			case EQUALS:
 			case NOT_EQUALS:
 				return new EqualsConditionTranslator(condition, inspector);
-			case EQUALS_CI:
+			case EQUALS_IC:
 			case NOT_EQUALS_CI:
 				break;
 			case GT:

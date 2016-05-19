@@ -15,12 +15,13 @@ class ClientUtil {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(ClientUtil.class);
-	private static final ObjectMapper objectMapper = NBAObjectMapperFactory.getObjectMapper();
+	private static final ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
 
 	public static String getString(byte[] response)
 	{
 		try {
-			return objectMapper.readValue(response, String.class);
+			ObjectMapper om = oml.getObjectMapper(String.class);
+			return om.readValue(response, String.class);
 		}
 		catch (IOException e) {
 			throw new ClientException(e);
@@ -30,7 +31,8 @@ class ClientUtil {
 	public static int getInt(byte[] response)
 	{
 		try {
-			return objectMapper.readValue(response, int.class);
+			ObjectMapper om = oml.getObjectMapper(int.class);
+			return om.readValue(response, int.class);
 		}
 		catch (IOException e) {
 			throw new ClientException(e);
@@ -40,7 +42,8 @@ class ClientUtil {
 	public static boolean getBoolean(byte[] response)
 	{
 		try {
-			return objectMapper.readValue(response, boolean.class);
+			ObjectMapper om = oml.getObjectMapper(boolean.class);
+			return om.readValue(response, boolean.class);
 		}
 		catch (IOException e) {
 			throw new ClientException(e);
@@ -50,10 +53,8 @@ class ClientUtil {
 	public static <T> T getObject(byte[] response, Class<T> type)
 	{
 		try {
-			if (response == null || response.length == 0) {
-				return null;
-			}
-			return objectMapper.readValue(response, type);
+			ObjectMapper om = oml.getObjectMapper(type);
+			return om.readValue(response, type);
 		}
 		catch (IOException e) {
 			throw new ClientException(e);
@@ -62,7 +63,7 @@ class ClientUtil {
 
 	public static void printTerse(Object obj)
 	{
-		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();	
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
 		ObjectMapper om = oml.getObjectMapper(obj.getClass());
 		om.setSerializationInclusion(Include.NON_NULL);
 		try {
@@ -76,7 +77,7 @@ class ClientUtil {
 
 	public static void printFull(Object obj)
 	{
-		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();	
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
 		ObjectMapper om = oml.getObjectMapper(obj.getClass());
 		om.setSerializationInclusion(Include.ALWAYS);
 		try {

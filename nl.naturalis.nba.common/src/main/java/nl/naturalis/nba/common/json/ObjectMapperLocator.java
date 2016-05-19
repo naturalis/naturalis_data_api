@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 
 public class ObjectMapperLocator {
 
@@ -44,6 +47,10 @@ public class ObjectMapperLocator {
 		om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		om.setSerializationInclusion(Include.NON_NULL);
 		om.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+		SimpleModule module = new SimpleModule();
+		GatheringSiteCoordinatesDeserializer gscd = new GatheringSiteCoordinatesDeserializer();
+		module.addDeserializer(GatheringSiteCoordinates.class, gscd);
+		om.registerModule(module);
 		return om;
 	}
 

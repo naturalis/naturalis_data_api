@@ -212,22 +212,4 @@ public class ConditionTranslatorTest {
 		ct.translate();
 	}
 
-//	/**
-//	 * Test with nested queries.
-//	 * 
-//	 * @throws InvalidConditionException
-//	 */
-//	@Test()
-//	public void testTranslate_09() throws InvalidConditionException
-//	{
-//		Condition condition = new Condition("person.firstName", EQUALS, "John");
-//		condition.and("person.address.street", EQUALS, "Main st.");
-//		ConditionTranslator ct = new ConditionTranslator(condition, ESSpecimen.class);
-//		QueryBuilder query = ct.translate();
-//		assertTrue("01", query instanceof BoolQueryBuilder);
-//		System.out.println(query.toString());
-//		String file = "ConditionTranslatorTest__testTranslate_09.json";
-//		String expected = FileUtil.getContents(getClass().getResourceAsStream(file));
-//		assertEquals("02", expected, query.toString());
-//	}
 }

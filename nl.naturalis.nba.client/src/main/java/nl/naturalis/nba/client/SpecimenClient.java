@@ -2,6 +2,7 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
+import static nl.naturalis.nba.client.ClientUtil.getString;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
@@ -67,6 +68,30 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), Specimen[].class);
+	}
+
+	@Override
+	public String save(Specimen specimen, boolean immediate)
+	{
+		String json = JsonUtil.toJson(specimen);
+		SimpleHttpGet request;
+		if (immediate) {
+			request = httpGet("specimen/save/immediate/" + json);
+		}
+		else {
+			request = httpGet("specimen/save/" + json);
+		}
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getString(request.getResponseBody());
+	}
+	
+	@Override
+	public boolean delete(String id, boolean immediate)
+	{
+		return false;
 	}
 
 }

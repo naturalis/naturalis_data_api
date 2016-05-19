@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -129,6 +131,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
+	@Override
 	public Specimen[] query(QuerySpec spec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
@@ -144,6 +147,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
+	@Override
 	public String save(Specimen specimen, boolean immediate)
 	{
 		String id = specimen.getId();
@@ -163,7 +167,17 @@ public class SpecimenDAO implements ISpecimenAPI {
 			RefreshRequestBuilder rrb = iac.prepareRefresh(spIndex);
 			rrb.execute().actionGet();
 		}
+		specimen.setId(response.getId());
 		return response.getId();
+	}
+
+	public boolean delete(String id, boolean immediate)
+	{
+		ESClientFactory factory = registry.getESClientFactory();
+		Client client = factory.getClient();
+		DeleteRequestBuilder request = client.prepareDelete(spIndex, spType, id);
+		DeleteResponse response = request.execute().actionGet();
+		return response.isFound();
 	}
 
 	private static Specimen[] processSearchRequest(SearchRequestBuilder request)

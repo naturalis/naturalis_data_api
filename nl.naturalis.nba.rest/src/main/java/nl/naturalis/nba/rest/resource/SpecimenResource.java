@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.SpecimenDAO;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
+import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @Path("/specimen")
@@ -86,6 +88,22 @@ public class SpecimenResource {
 	}
 
 	@GET
+	@Path("/save/specimen")
+	@Produces(JSON_CONTENT_TYPE)
+	public String save(@PathParam("specimen") String json, @Context UriInfo uriInfo)
+	{
+		return save(json, uriInfo, false);
+	}
+
+	@GET
+	@Path("/save/specimen/immediate")
+	@Produces(JSON_CONTENT_TYPE)
+	public String saveImmediate(@PathParam("specimen") String json, @Context UriInfo uriInfo)
+	{
+		return save(json, uriInfo, true);
+	}
+
+	@GET
 	@Path("/query/{querySpec}")
 	@Produces(JSON_CONTENT_TYPE)
 	public Specimen[] query(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
@@ -100,4 +118,20 @@ public class SpecimenResource {
 		}
 	}
 
+	private static String save(String json, UriInfo uriInfo, boolean immediate)
+	{
+		try {
+			String host = uriInfo.getBaseUri().getHost();
+			if (!host.equals("localhost") && !host.equals("127.0.0.1")) {
+				String msg = "Method not allowed for remote clients";
+				throw new RESTException(uriInfo, Status.FORBIDDEN, msg);
+			}
+			Specimen specimen = JsonUtil.fromJson(json, Specimen.class);
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.save(specimen, immediate);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 }

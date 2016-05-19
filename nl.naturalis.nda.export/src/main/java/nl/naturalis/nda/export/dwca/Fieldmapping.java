@@ -23,7 +23,7 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
  * @author Reinier.Kartowikromo
  * @since 01-07-2015
  * 
- * */
+ */
 public class Fieldmapping {
 
 	static final Logger logger = LoggerFactory.getLogger(DwCAExporter.class);
@@ -42,16 +42,18 @@ public class Fieldmapping {
 	private static String order = "";
 	private static String dateiden = "";
 	private static String authorVerbatim = "";
-	private static String subGenusName = ""; 
-	
+	private static String subGenusName = "";
+
 	private static int identification = 0;
 	private static List<String> allFalseList = new ArrayList<>();
 
-	public static String toString(boolean value) {
+	public static String toString(boolean value)
+	{
 		return value ? "true" : "false";
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -66,14 +68,16 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setDummyValue(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setDummyValue(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * 00_Dummy0 is ID
 		 */
 		if (specimen.getSourceSystemId() != null) {
 			dataRow.add(specimen.getSourceSystemId());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -88,11 +92,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setBasisOfRecord(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setBasisOfRecord(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getRecordBasis() != null) {
 			dataRow.add(specimen.getRecordBasis());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -107,24 +113,24 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setBasisOfRecord_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setBasisOfRecord_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getRecordBasis() != null
-				&& specimen.getRecordBasis().contains(
-						"photo(copy) of herbarium sheet")
+				&& specimen.getRecordBasis().contains("photo(copy) of herbarium sheet")
 				&& specimen.getRecordBasis().contains("Illustration")
 				&& specimen.getRecordBasis().contains("Photographs, negatives")
 				&& specimen.getRecordBasis().contains("DNA sample from sheet")
 				&& specimen.getRecordBasis().contains("Slides")
 				&& specimen.getRecordBasis().contains("Observation")) {
-			System.out.println("Not included in Brahms CSV: "
-					+ specimen.getRecordBasis());
-			logger.info("Not included in Brahms CSV: "
-					+ specimen.getRecordBasis());
+			System.out.println("Not included in Brahms CSV: " + specimen.getRecordBasis());
+			logger.info("Not included in Brahms CSV: " + specimen.getRecordBasis());
 			return;
-		} else if (specimen.getRecordBasis() != null) {
+		}
+		else if (specimen.getRecordBasis() != null) {
 			dataRow.add("PreservedSpecimen");
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -139,11 +145,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setCatalogNumber(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCatalogNumber(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getSourceSystemId() != null) {
 			dataRow.add(specimen.getSourceSystemId());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -158,8 +166,9 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setClassName(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setClassName(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		/*
 		 * if (getIdentificationsPreferred(specimen)) { if(className != null) {
@@ -170,14 +179,13 @@ public class Fieldmapping {
 		String classNameValue = "";
 		for (int cnt = 0; cnt < size; cnt++) {
 			if (specimen.getIdentifications().get(cnt).isPreferred()) {
-				if (specimen.getIdentifications().get(cnt)
-						.getDefaultClassification() != null) {
+				if (specimen.getIdentifications().get(cnt).getDefaultClassification() != null) {
 					classNameValue = specimen.getIdentifications().get(cnt)
 							.getDefaultClassification().getClassName();
 				}
-			} else {
-				if (specimen.getIdentifications().get(cnt)
-						.getDefaultClassification() != null) {
+			}
+			else {
+				if (specimen.getIdentifications().get(cnt).getDefaultClassification() != null) {
 					classNameValue = specimen.getIdentifications().get(cnt)
 							.getDefaultClassification().getClassName();
 				}
@@ -186,7 +194,8 @@ public class Fieldmapping {
 
 		if (classNameValue != null) {
 			dataRow.add(classNameValue);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -194,12 +203,17 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get Classname for BRAHMS
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
-	public static void setClassName_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setClassName_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * 03_DummyDefault class
 		 */
@@ -216,11 +230,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setCollectionType(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCollectionType(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getCollectionType() != null) {
 			dataRow.add(specimen.getCollectionType());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -228,12 +244,17 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get CollectionCode value for Brahms
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
-	public static void setCollectionCode_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCollectionCode_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		dataRow.add("Botany");
 	}
 
@@ -247,11 +268,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setContinent(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setContinent(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getWorldRegion() != null) {
 			dataRow.add(specimen.getGatheringEvent().getWorldRegion());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -266,11 +289,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setCountry(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCountry(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getCountry() != null) {
 			dataRow.add(specimen.getGatheringEvent().getCountry());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -285,11 +310,12 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setCounty(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setCounty(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getGatheringEvent().getCity() != null) {
 			dataRow.add(specimen.getGatheringEvent().getCity());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -305,32 +331,31 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	@SuppressWarnings("null")
-	public static void setDateIndentified(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setDateIndentified(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 		Date datumidentified = new Date();
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
 				/*
 				 * dateiden = dateidentified.format(specimen
 				 * .getIdentifications().get(i).getDateIdentified());
 				 */
-				datumidentified = specimen.getIdentifications().get(i)
-						.getDateIdentified();
+				datumidentified = specimen.getIdentifications().get(i).getDateIdentified();
 				if (datumidentified == null && list.contains("true")) {
 					datumidentified = null;
-				} else if (datumidentified != null && list.contains("true")) {
-					datumidentified = specimen.getIdentifications().get(i)
-							.getDateIdentified();
 				}
-			} else {
+				else if (datumidentified != null && list.contains("true")) {
+					datumidentified = specimen.getIdentifications().get(i).getDateIdentified();
+				}
+			}
+			else {
 				if (datumidentified != null && list.isEmpty()) {
-					datumidentified = specimen.getIdentifications().get(i)
-							.getDateIdentified();
+					datumidentified = specimen.getIdentifications().get(i).getDateIdentified();
 				}
 				if (datumidentified == null && list.isEmpty()) {
 					datumidentified = null;
@@ -340,7 +365,8 @@ public class Fieldmapping {
 
 		if (datumidentified != null) {
 			dataRow.add(dateidentified.format(datumidentified));
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -369,15 +395,16 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setDateIndentified_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setDateIndentified_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getDateIdentified() != null) {
 			SimpleDateFormat dateidentified = new SimpleDateFormat("yyyy-MM-dd");
 			String dateiden = dateidentified
-					.format(specimen.getIdentifications().iterator().next()
-							.getDateIdentified());
+					.format(specimen.getIdentifications().iterator().next().getDateIdentified());
 			dataRow.add(dateiden);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -392,18 +419,20 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setLatitudeDecimal(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setLatitudeDecimal(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
-			if (specimen.getGatheringEvent().getSiteCoordinates().iterator()
-					.next().getLatitudeDecimal() != null) {
-				dataRow.add(String.format("%s", specimen.getGatheringEvent()
-						.getSiteCoordinates().iterator().next()
-						.getLatitudeDecimal()));
-			} else {
+			if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
+					.getLatitudeDecimal() != null) {
+				dataRow.add(String.format("%s", specimen.getGatheringEvent().getSiteCoordinates()
+						.iterator().next().getLatitudeDecimal()));
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -418,18 +447,20 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setLongitudeDecimal(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setLongitudeDecimal(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
-			if (specimen.getGatheringEvent().getSiteCoordinates().iterator()
-					.next().getLongitudeDecimal() != null) {
-				dataRow.add(String.format("%s", specimen.getGatheringEvent()
-						.getSiteCoordinates().iterator().next()
-						.getLongitudeDecimal()));
-			} else {
+			if (specimen.getGatheringEvent().getSiteCoordinates().iterator().next()
+					.getLongitudeDecimal() != null) {
+				dataRow.add(String.format("%s", specimen.getGatheringEvent().getSiteCoordinates()
+						.iterator().next().getLongitudeDecimal()));
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -444,8 +475,9 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setEvendate(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setEvendate(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
 		 * value of the BeginDate and EndDate
@@ -454,10 +486,9 @@ public class Fieldmapping {
 				&& specimen.getGatheringEvent().getDateTimeEnd() != null
 				&& !specimen.getGatheringEvent().getDateTimeBegin()
 						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
-			String dateEnd = datetimenend.format(specimen.getGatheringEvent()
-					.getDateTimeEnd());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
+			String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 			dataRow.add(dateBegin + " | " + dateEnd);
 		}
 		/*
@@ -465,11 +496,12 @@ public class Fieldmapping {
 		 */
 		if (specimen.getGatheringEvent().getDateTimeBegin() == null) {
 			dataRow.add(EMPTY_STRING);
-		} else if (specimen.getGatheringEvent().getDateTimeBegin()
+		}
+		else if (specimen.getGatheringEvent().getDateTimeBegin()
 				.equals(specimen.getGatheringEvent().getDateTimeEnd())
 				&& specimen.getGatheringEvent().getDateTimeBegin() != null) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -477,8 +509,8 @@ public class Fieldmapping {
 		 */
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeEnd() == null) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -502,8 +534,9 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setEvendate_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setEvendate_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
 		 * value of the BeginDate and EndDate
@@ -519,10 +552,9 @@ public class Fieldmapping {
 			 * logger.debug("Enddate: " +
 			 * specimen.getGatheringEvent().getDateTimeBegin());
 			 */
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
-			String dateEnd = datetimenend.format(specimen.getGatheringEvent()
-					.getDateTimeEnd());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
+			String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 			dataRow.add(dateBegin + " | " + dateEnd);
 		}
 
@@ -531,7 +563,8 @@ public class Fieldmapping {
 		 */
 		if (specimen.getGatheringEvent().getDateTimeBegin() == null) {
 			dataRow.add(EMPTY_STRING);
-		} else if (specimen.getGatheringEvent().getDateTimeBegin()
+		}
+		else if (specimen.getGatheringEvent().getDateTimeBegin()
 				.equals(specimen.getGatheringEvent().getDateTimeEnd())
 				&& specimen.getGatheringEvent().getDateTimeBegin() != null) {
 			/*
@@ -542,8 +575,8 @@ public class Fieldmapping {
 			 * logger.debug("Enddate: " +
 			 * specimen.getGatheringEvent().getDateTimeBegin());
 			 */
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 
@@ -560,8 +593,8 @@ public class Fieldmapping {
 			 * logger.debug("Enddate: " +
 			 * specimen.getGatheringEvent().getDateTimeBegin());
 			 */
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -593,38 +626,39 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setFamily(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setFamily(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				family = specimen.getIdentifications().get(i)
-						.getDefaultClassification().getFamily();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				family = specimen.getIdentifications().get(i).getDefaultClassification()
+						.getFamily();
 				if (family != null && list.contains("true")) {
-					family = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getFamily();
-				} else if (family == null && list.contains("true")) {
-					family = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getFamily();
+					family = specimen.getIdentifications().get(i).getDefaultClassification()
+							.getFamily();
 				}
-			} else {
-				if (specimen.getIdentifications().get(i)
-						.getDefaultClassification().getFamily() != null
-						&& list.isEmpty()) {
-					family = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getFamily();
+				else if (family == null && list.contains("true")) {
+					family = specimen.getIdentifications().get(i).getDefaultClassification()
+							.getFamily();
+				}
+			}
+			else {
+				if (specimen.getIdentifications().get(i).getDefaultClassification()
+						.getFamily() != null && list.isEmpty()) {
+					family = specimen.getIdentifications().get(i).getDefaultClassification()
+							.getFamily();
 				}
 			}
 		}
 
 		if (family != null) {
 			dataRow.add(family);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -650,13 +684,15 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setFamily_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getIdentifications().iterator().next()
-				.getDefaultClassification().getFamily() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getDefaultClassification().getFamily());
-		} else {
+	public static void setFamily_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
+		if (specimen.getIdentifications().iterator().next().getDefaultClassification()
+				.getFamily() != null) {
+			dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+					.getFamily());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -671,38 +707,39 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setGenus(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setGenus(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				genusName = specimen.getIdentifications().get(i)
-						.getScientificName().getGenusOrMonomial();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				genusName = specimen.getIdentifications().get(i).getScientificName()
+						.getGenusOrMonomial();
 				if (genusName != null && list.contains("true")) {
-					genusName = specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial();
-				} else if (genusName == null && list.contains("true")) {
-					genusName = specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial();
+					genusName = specimen.getIdentifications().get(i).getScientificName()
+							.getGenusOrMonomial();
 				}
-			} else {
+				else if (genusName == null && list.contains("true")) {
+					genusName = specimen.getIdentifications().get(i).getScientificName()
+							.getGenusOrMonomial();
+				}
+			}
+			else {
 				if (specimen.getIdentifications().get(i).getScientificName()
-						.getGenusOrMonomial() != null
-						&& list.isEmpty()) {
-					genusName = specimen.getIdentifications().get(i)
-							.getScientificName().getGenusOrMonomial();
+						.getGenusOrMonomial() != null && list.isEmpty()) {
+					genusName = specimen.getIdentifications().get(i).getScientificName()
+							.getGenusOrMonomial();
 				}
 			}
 		}
 
 		if (genusName != null) {
 			dataRow.add(genusName);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -755,17 +792,19 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setGenus_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setGenus_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * if (ExportDwCAUtilities.isEnabled(MAPPING_FILE_NAME,
 		 * "13_GenusOrMonomial")) {
 		 */
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getGenusOrMonomial() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getScientificName().getGenusOrMonomial());
-		} else {
+			dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+					.getGenusOrMonomial());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -773,36 +812,51 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get Geodeticdatum value
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
-	public static void setGeodeticDatum(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setGeodeticDatum(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
 	@SuppressWarnings("unused")
 	/**
 	 * Get Habitat value
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
-	public static void setHabitat(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setHabitat(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
 	@SuppressWarnings("unused")
 	/**
 	 * Get HigherClassification value for Zoology and Geology
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
-	public static void setHigherClassification(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setHigherClassification(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
@@ -817,9 +871,9 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setHigherClassification_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getIdentifications().iterator().next()
-				.getDefaultClassification() != null) {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
+		if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null) {
 			String kingdom = specimen.getIdentifications().iterator().next()
 					.getDefaultClassification().getKingdom();
 			String classname = specimen.getIdentifications().iterator().next()
@@ -828,20 +882,23 @@ public class Fieldmapping {
 					.getDefaultClassification().getOrder();
 			String family = specimen.getIdentifications().iterator().next()
 					.getDefaultClassification().getFamily();
-			if (kingdom != null && classname != null && order != null
-					&& family != null) {
-				dataRow.add(kingdom + "|" + classname + "|" + order + "|"
-						+ family);
-			} else if (kingdom == null) {
+			if (kingdom != null && classname != null && order != null && family != null) {
+				dataRow.add(kingdom + "|" + classname + "|" + order + "|" + family);
+			}
+			else if (kingdom == null) {
 				dataRow.add(classname + "|" + order + "|" + family);
-			} else if (classname == null) {
+			}
+			else if (classname == null) {
 				dataRow.add(kingdom + "|" + order + "|" + family);
-			} else if (order == null) {
+			}
+			else if (order == null) {
 				dataRow.add(kingdom + "|" + classname + "|" + family);
-			} else if (family == null) {
+			}
+			else if (family == null) {
 				dataRow.add(kingdom + "|" + classname + "|" + order);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -856,13 +913,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setIdentifiersFullName(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setIdentifiersFullName(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		List<String> listAgentFullname = new ArrayList<>();
 		if (specimen.getIdentifications().iterator().next().getIdentifiers() != null) {
-			Iterator<Agent> identifiedByIterator = specimen
-					.getIdentifications().iterator().next().getIdentifiers()
-					.iterator();
+			Iterator<Agent> identifiedByIterator = specimen.getIdentifications().iterator().next()
+					.getIdentifiers().iterator();
 			while (identifiedByIterator.hasNext()) {
 				Agent ag = identifiedByIterator.next();
 				if (ag instanceof Person) {
@@ -877,15 +934,16 @@ public class Fieldmapping {
 			}
 
 			if (listAgentFullname.size() > 0) {
-				String resultAgentFullName = listAgentFullname.toString()
-						.replace(",", " ").replace("[", " ").replace("]", " ")
-						.trim();
+				String resultAgentFullName = listAgentFullname.toString().replace(",", " ")
+						.replace("[", " ").replace("]", " ").trim();
 				dataRow.add(resultAgentFullName);
 				/* NDA-303/372 */
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -901,12 +959,12 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setIdentifiersFullName_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getIdentifiers() != null) {
 			List<String> listAgentFullname = new ArrayList<>();
-			Iterator<Agent> identifiedByIterator = specimen
-					.getIdentifications().iterator().next().getIdentifiers()
-					.iterator();
+			Iterator<Agent> identifiedByIterator = specimen.getIdentifications().iterator().next()
+					.getIdentifiers().iterator();
 			while (identifiedByIterator.hasNext()) {
 				Agent ag = identifiedByIterator.next();
 				if (ag instanceof Person) {
@@ -920,14 +978,15 @@ public class Fieldmapping {
 			}
 
 			if (listAgentFullname.size() > 0) {
-				String resultAgentFullName = listAgentFullname.toString()
-						.replace(",", " ").replace("[", " ").replace("]", " ")
-						.trim();
+				String resultAgentFullName = listAgentFullname.toString().replace(",", " ")
+						.replace("[", " ").replace("]", " ").trim();
 				dataRow.add(resultAgentFullName);
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -942,12 +1001,14 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setNumberOfSpecimen(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setNumberOfSpecimen(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (Integer.toString(specimen.getNumberOfSpecimen()) != null
 				&& specimen.getNumberOfSpecimen() > 0) {
 			dataRow.add(Integer.toString(specimen.getNumberOfSpecimen()));
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -955,12 +1016,17 @@ public class Fieldmapping {
 	@SuppressWarnings("unused")
 	/**
 	 * Get InformationWithHeld value for Zoology and Geology
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
-	public static void setInformationWithHeld(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setInformationWithHeld(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
@@ -974,37 +1040,37 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setInfraspecificEpithet(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setInfraspecificEpithet(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				infraSpecificEpithet = specimen.getIdentifications().get(i)
-						.getScientificName().getInfraspecificEpithet();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				infraSpecificEpithet = specimen.getIdentifications().get(i).getScientificName()
+						.getInfraspecificEpithet();
 				if ((infraSpecificEpithet != null && list.contains("true"))
-						|| (infraSpecificEpithet == null && list
-								.contains("true"))) {
-					infraSpecificEpithet = specimen.getIdentifications().get(i)
-							.getScientificName().getInfraspecificEpithet();
+						|| (infraSpecificEpithet == null && list.contains("true"))) {
+					infraSpecificEpithet = specimen.getIdentifications().get(i).getScientificName()
+							.getInfraspecificEpithet();
 				}
-			} else {
+			}
+			else {
 				if (specimen.getIdentifications().get(i).getScientificName()
-						.getInfraspecificEpithet() != null
-						&& list.isEmpty()) {
-					infraSpecificEpithet = specimen.getIdentifications().get(i)
-							.getScientificName().getInfraspecificEpithet();
+						.getInfraspecificEpithet() != null && list.isEmpty()) {
+					infraSpecificEpithet = specimen.getIdentifications().get(i).getScientificName()
+							.getInfraspecificEpithet();
 				}
 			}
 		}
 
 		if (infraSpecificEpithet != null) {
 			dataRow.add(infraSpecificEpithet);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -1073,12 +1139,14 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setInfraspecificEpithet_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getInfraspecificEpithet() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getScientificName().getInfraspecificEpithet());
-		} else {
+			dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+					.getInfraspecificEpithet());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1093,11 +1161,12 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setIsland(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setIsland(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getGatheringEvent().getIsland() != null) {
 			dataRow.add(specimen.getGatheringEvent().getIsland());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1112,13 +1181,16 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setInstitudeCode(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setInstitudeCode(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getSourceInstitutionID().contains("Naturalis")) {
 			dataRow.add(specimen.getSourceInstitutionID().substring(0, 9));
-		} else if (specimen.getSourceInstitutionID() != null) {
+		}
+		else if (specimen.getSourceInstitutionID() != null) {
 			dataRow.add(specimen.getSourceInstitutionID());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1133,8 +1205,9 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setKingdom(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setKingdom(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		/*
 		 * List<String> list = new ArrayList<>(); int size =
@@ -1164,13 +1237,12 @@ public class Fieldmapping {
 		 * 
 		 * list.clear();
 		 */
-		if (specimen.getIdentifications().iterator().next()
-				.getDefaultClassification() != null
-				&& specimen.getIdentifications().iterator().next()
-						.isPreferred()) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getDefaultClassification().getKingdom());
-		} else {
+		if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null
+				&& specimen.getIdentifications().iterator().next().isPreferred()) {
+			dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+					.getKingdom());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -1186,22 +1258,25 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setKingdom_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getIdentifications().iterator().next()
-				.getDefaultClassification() != null) {
+	public static void setKingdom_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
+		if (specimen.getIdentifications().iterator().next().getDefaultClassification() != null) {
 			String family = specimen.getIdentifications().iterator().next()
 					.getDefaultClassification().getFamily();
 			if (family != null) {
 				if (family.contains("Fungi")) {
 					dataRow.add("fungi");
-				} else {
+				}
+				else {
 					dataRow.add("Plantae");
 				}
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1216,11 +1291,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setPhaseOrStage(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setPhaseOrStage(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getPhaseOrStage() != null) {
-			dataRow.add(specimen.getPhaseOrStage());
-		} else {
+			dataRow.add(specimen.getPhaseOrStage().toString());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1235,76 +1312,103 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setLocality(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setLocality(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getLocality() != null) {
-			String localityResult = specimen.getGatheringEvent().getLocality()
-					.replace('"', ' ').replace(' ', ' ').replace('\t', ' ')
-					.replace("\r", "").replace("\n", "").trim();
+			String localityResult = specimen.getGatheringEvent().getLocality().replace('"', ' ')
+					.replace(' ', ' ').replace('\t', ' ').replace("\r", "").replace("\n", "")
+					.trim();
 			dataRow.add(localityResult);
 			/* NDA-303/372 */
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
 
 	@SuppressWarnings("unused")
 	/**
-	 * Get MaximumElevationInMeters value 
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * Get MaximumElevationInMeters value
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
 	public static void setMaximumElevationInMeters(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
 	@SuppressWarnings("unused")
 	/**
 	 * Get MinimumElevationInMeters value
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
 	public static void setMinimumElevationInMeters(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
 	@SuppressWarnings("unused")
 	/**
-	 * Get NomenclaturalCode value for Zoology 
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * Get NomenclaturalCode value for Zoology
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
 	public static void setNomenclaturalCode_Zoology(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		dataRow.add("ICZN");
 	}
 
 	@SuppressWarnings("unused")
 	/**
 	 * Get NomenclaturalCode value Geology
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen class
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen class
 	 */
 	public static void setNomenclaturalCode_Geology(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		dataRow.add(EMPTY_STRING);
 	}
 
 	@SuppressWarnings("unused")
 	/**
 	 * Get NomenclaturalCode value for Brahms
-	 * @param specimen ESspecimen class
-	 * @param dataRow  CsvRow dataRow 
-	 * @throws Exception problem occurred in specimen classn
+	 * 
+	 * @param specimen
+	 *            ESspecimen class
+	 * @param dataRow
+	 *            CsvRow dataRow
+	 * @throws Exception
+	 *             problem occurred in specimen classn
 	 */
 	public static void setNomenclaturalCode_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		dataRow.add("ICN");
 	}
 
@@ -1318,14 +1422,16 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setOccurrenceID(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setOccurrenceID(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * NDA 407 only unitGuid
 		 */
 		if (specimen.getUnitGUID() != null) {
 			dataRow.add(specimen.getUnitGUID());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1340,37 +1446,36 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setOrder(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setOrder(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				order = specimen.getIdentifications().get(i)
-						.getDefaultClassification().getOrder();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				order = specimen.getIdentifications().get(i).getDefaultClassification().getOrder();
 
 				if ((order != null && list.contains("true"))
 						|| (order == null && list.contains("true"))) {
-					order = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getOrder();
+					order = specimen.getIdentifications().get(i).getDefaultClassification()
+							.getOrder();
 				}
-			} else {
-				if (specimen.getIdentifications().get(i)
-						.getDefaultClassification().getOrder() != null
-						&& list.isEmpty()) {
-					order = specimen.getIdentifications().get(i)
-							.getDefaultClassification().getOrder();
+			}
+			else {
+				if (specimen.getIdentifications().get(i).getDefaultClassification()
+						.getOrder() != null && list.isEmpty()) {
+					order = specimen.getIdentifications().get(i).getDefaultClassification()
+							.getOrder();
 				}
 			}
 		}
 
 		if (order != null) {
 			dataRow.add(order);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -1396,13 +1501,15 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setOrder_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getIdentifications().iterator().next()
-				.getDefaultClassification().getOrder() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getDefaultClassification().getOrder());
-		} else {
+	public static void setOrder_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
+		if (specimen.getIdentifications().iterator().next().getDefaultClassification()
+				.getOrder() != null) {
+			dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+					.getOrder());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1417,13 +1524,14 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setPhylum(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
-		if (specimen.getIdentifications().iterator().next()
-				.getDefaultClassification().getPhylum() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getDefaultClassification().getPhylum());
-		} else {
+	public static void setPhylum(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
+		if (specimen.getIdentifications().iterator().next().getDefaultClassification()
+				.getPhylum() != null) {
+			dataRow.add(specimen.getIdentifications().iterator().next().getDefaultClassification()
+					.getPhylum());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1438,11 +1546,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setPreparationType(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setPreparationType(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getPreparationType() != null) {
 			dataRow.add(specimen.getPreparationType());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1458,11 +1568,12 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setGatheringAgents_FullName(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		List<String> listFullname = new ArrayList<>();
 		if (specimen.getGatheringEvent().getGatheringPersons() != null) {
-			Iterator<Person> fullnameIterator = specimen.getGatheringEvent()
-					.getGatheringPersons().iterator();
+			Iterator<Person> fullnameIterator = specimen.getGatheringEvent().getGatheringPersons()
+					.iterator();
 			while (fullnameIterator.hasNext()) {
 				listFullname.add(fullnameIterator.next().getFullName());
 
@@ -1472,14 +1583,15 @@ public class Fieldmapping {
 			}
 
 			if (listFullname.size() > 0) {
-				String resultFullName = listFullname.toString()
-						.replace(",", " ").replace("[", " ").replace("]", " ")
-						.trim();
+				String resultFullName = listFullname.toString().replace(",", " ").replace("[", " ")
+						.replace("]", " ").trim();
 				dataRow.add(resultFullName);
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1494,36 +1606,37 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setFullScientificName(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setFullScientificName(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				fullScientificName = specimen.getIdentifications().get(i)
-						.getScientificName().getFullScientificName();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				fullScientificName = specimen.getIdentifications().get(i).getScientificName()
+						.getFullScientificName();
 				if ((fullScientificName != null && list.contains("true"))
 						|| (fullScientificName == null && list.contains("true"))) {
-					fullScientificName = specimen.getIdentifications().get(i)
-							.getScientificName().getFullScientificName();
+					fullScientificName = specimen.getIdentifications().get(i).getScientificName()
+							.getFullScientificName();
 				}
-			} else {
+			}
+			else {
 				if (specimen.getIdentifications().get(i).getScientificName()
-						.getFullScientificName() != null
-						&& list.isEmpty()) {
-					fullScientificName = specimen.getIdentifications().get(i)
-							.getScientificName().getFullScientificName();
+						.getFullScientificName() != null && list.isEmpty()) {
+					fullScientificName = specimen.getIdentifications().get(i).getScientificName()
+							.getFullScientificName();
 				}
 			}
 		}
 
 		if (fullScientificName != null) {
 			dataRow.add(fullScientificName);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -1590,12 +1703,14 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setFullScientificName_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getFullScientificName() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getScientificName().getFullScientificName());
-		} else {
+			dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+					.getFullScientificName());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1610,38 +1725,40 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setAuthorshipVerbatim(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setAuthorshipVerbatim(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				authorVerbatim = specimen.getIdentifications().get(i)
-						.getScientificName().getAuthorshipVerbatim();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				authorVerbatim = specimen.getIdentifications().get(i).getScientificName()
+						.getAuthorshipVerbatim();
 				if (authorVerbatim != null && list.contains("true")) {
-					authorVerbatim = specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim();
-				} else if (authorVerbatim == null && list.contains("true")) {
-					authorVerbatim = specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim();
+					authorVerbatim = specimen.getIdentifications().get(i).getScientificName()
+							.getAuthorshipVerbatim();
 				}
-			} else {
+				else if (authorVerbatim == null && list.contains("true")) {
+					authorVerbatim = specimen.getIdentifications().get(i).getScientificName()
+							.getAuthorshipVerbatim();
+				}
+			}
+			else {
 				if (specimen.getIdentifications().get(i).getScientificName()
-						.getAuthorshipVerbatim() != null
-						&& list.isEmpty()) {
-					authorVerbatim = specimen.getIdentifications().get(i)
-							.getScientificName().getAuthorshipVerbatim();
+						.getAuthorshipVerbatim() != null && list.isEmpty()) {
+					authorVerbatim = specimen.getIdentifications().get(i).getScientificName()
+							.getAuthorshipVerbatim();
 				}
 			}
 		}
 
 		if (authorVerbatim != null) {
 			dataRow.add(authorVerbatim);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -1707,12 +1824,14 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setAuthorshipVerbatim_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getAuthorshipVerbatim() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getScientificName().getAuthorshipVerbatim());
-		} else {
+			dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+					.getAuthorshipVerbatim());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1727,11 +1846,12 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setSex(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
-			throws Exception {
+	public static void setSex(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getSex() != null) {
-			dataRow.add(specimen.getSex());
-		} else {
+			dataRow.add(specimen.getSex().toString());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -1744,12 +1864,12 @@ public class Fieldmapping {
 	 * return false; }
 	 */
 
-	public static boolean getPreferredFalse(ESSpecimen specimen) {
+	public static boolean getPreferredFalse(ESSpecimen specimen)
+	{
 		int cnt = specimen.getIdentifications().size();
 		for (int i = 0; i < cnt; i++) {
 			if (!specimen.getIdentifications().get(i).isPreferred()) {
-				allFalseList.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
+				allFalseList.add(toString(specimen.getIdentifications().get(i).isPreferred()));
 			}
 			if (allFalseList.contains("false")) {
 				return true;
@@ -1904,42 +2024,40 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setSpecificEpithet(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setSpecificEpithet(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				specificEpithet = specimen.getIdentifications().get(i)
-						.getScientificName().getSpecificEpithet();
-				if (specificEpithet != null
-						&& list.contains("true")) {
-					specificEpithet = specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				specificEpithet = specimen.getIdentifications().get(i).getScientificName()
+						.getSpecificEpithet();
+				if (specificEpithet != null && list.contains("true")) {
+					specificEpithet = specimen.getIdentifications().get(i).getScientificName()
+							.getSpecificEpithet();
 				}
-				else if (specificEpithet == null
-						&& list.contains("true"))
-				{
-					specificEpithet = specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet();
+				else if (specificEpithet == null && list.contains("true")) {
+					specificEpithet = specimen.getIdentifications().get(i).getScientificName()
+							.getSpecificEpithet();
 				}
-			} else {
+			}
+			else {
 				if (specimen.getIdentifications().get(i).getScientificName()
-						.getSpecificEpithet() != null
-						&& list.isEmpty()) {
-					specificEpithet = specimen.getIdentifications().get(i)
-							.getScientificName().getSpecificEpithet();
+						.getSpecificEpithet() != null && list.isEmpty()) {
+					specificEpithet = specimen.getIdentifications().get(i).getScientificName()
+							.getSpecificEpithet();
 				}
 			}
 		}
 
 		if (specificEpithet != null) {
 			dataRow.add(specificEpithet);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -1994,13 +2112,15 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setSpecificEpithet_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setSpecificEpithet_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getSpecificEpithet() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getScientificName().getSpecificEpithet());
-		} else {
+			dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+					.getSpecificEpithet());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2015,14 +2135,15 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setProvinceState(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setProvinceState(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getProvinceState() != null
-				&& !specimen.getGatheringEvent().getProvinceState()
-						.contains("0")) {
+				&& !specimen.getGatheringEvent().getProvinceState().contains("0")) {
 			/* NDA-303/372 */
 			dataRow.add(specimen.getGatheringEvent().getProvinceState());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2037,40 +2158,40 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setSubGenus(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setSubGenus(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				subGenusName = specimen.getIdentifications().get(i)
-						.getScientificName().getSubgenus();
-				if (subGenusName != null
-						&& list.contains("true")) {
-					subGenusName = specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus();
-				}else if (subGenusName == null
-						&& list.contains("true")) {
-					subGenusName = specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				subGenusName = specimen.getIdentifications().get(i).getScientificName()
+						.getSubgenus();
+				if (subGenusName != null && list.contains("true")) {
+					subGenusName = specimen.getIdentifications().get(i).getScientificName()
+							.getSubgenus();
 				}
-			} else {
-				if (specimen.getIdentifications().get(i).getScientificName()
-						.getSubgenus() != null
+				else if (subGenusName == null && list.contains("true")) {
+					subGenusName = specimen.getIdentifications().get(i).getScientificName()
+							.getSubgenus();
+				}
+			}
+			else {
+				if (specimen.getIdentifications().get(i).getScientificName().getSubgenus() != null
 						&& list.isEmpty()) {
-					subGenusName = specimen.getIdentifications().get(i)
-							.getScientificName().getSubgenus();
+					subGenusName = specimen.getIdentifications().get(i).getScientificName()
+							.getSubgenus();
 				}
 			}
 		}
 
 		if (subGenusName != null) {
 			dataRow.add(subGenusName);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -2133,9 +2254,8 @@ public class Fieldmapping {
 		 * 
 		 * } }
 		 *//*
-			 * if
-			 * (specimen.getIdentifications().iterator().next().getScientificName
-			 * () .getSubgenus() != null &&
+			 * if (specimen.getIdentifications().iterator().next().
+			 * getScientificName () .getSubgenus() != null &&
 			 * specimen.getIdentifications().iterator().next() .isPreferred() ==
 			 * true) {
 			 * dataRow.add(specimen.getIdentifications().iterator().next()
@@ -2154,13 +2274,15 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setSubGenus_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setSubGenus_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getScientificName()
 				.getSubgenus() != null) {
-			dataRow.add(specimen.getIdentifications().iterator().next()
-					.getScientificName().getSubgenus());
-		} else {
+			dataRow.add(specimen.getIdentifications().iterator().next().getScientificName()
+					.getSubgenus());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2175,41 +2297,36 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setTaxonrank(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setTaxonrank(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
-		
+
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				taxonRank = specimen.getIdentifications().get(i)
-						.getTaxonRank();
-				if (taxonRank != null
-						&& list.contains("true")) {
-					taxonRank = specimen.getIdentifications().get(i)
-							.getTaxonRank();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
+				if (taxonRank != null && list.contains("true")) {
+					taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
 				}
-				else if (taxonRank == null
-						&& list.contains("true")) {
-					taxonRank = specimen.getIdentifications().get(i)
-							.getTaxonRank();
+				else if (taxonRank == null && list.contains("true")) {
+					taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
 				}
-			} else {
-				if (specimen.getIdentifications().iterator().next()
-						.getTaxonRank() != null
+			}
+			else {
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null
 						&& list.isEmpty()) {
-					taxonRank = specimen.getIdentifications().get(i)
-							.getTaxonRank();
+					taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
 				}
 			}
 		}
 
 		if (taxonRank != null) {
 			dataRow.add(taxonRank);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 
@@ -2234,32 +2351,35 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setTaxonrank_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setTaxonrank_Brahms(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getIdentifications().iterator().next().getTaxonRank() != null) {
-			if (specimen.getIdentifications().iterator().next().getTaxonRank()
-					.contains("subsp.")) {
+			if (specimen.getIdentifications().iterator().next().getTaxonRank().contains("subsp.")) {
 				dataRow.add("subspecies");
-			} else if (specimen.getIdentifications().iterator().next()
-					.getTaxonRank().contains("var.")) {
+			}
+			else if (specimen.getIdentifications().iterator().next().getTaxonRank()
+					.contains("var.")) {
 				dataRow.add("variety");
-			} else if (specimen.getIdentifications().iterator().next()
-					.getTaxonRank().contains("f.")) {
+			}
+			else if (specimen.getIdentifications().iterator().next().getTaxonRank()
+					.contains("f.")) {
 				dataRow.add("form");
-			} else if (specimen.getIdentifications().iterator().next()
-					.getTaxonRank() != null
-					&& !specimen.getIdentifications().iterator().next()
-							.getTaxonRank().contains("f.")
-					&& !specimen.getIdentifications().iterator().next()
-							.getTaxonRank().contains("var.")
-					&& !specimen.getIdentifications().iterator().next()
-							.getTaxonRank().contains("subsp.")) {
-				dataRow.add(specimen.getIdentifications().iterator().next()
-						.getTaxonRank());
-			} else {
+			}
+			else if (specimen.getIdentifications().iterator().next().getTaxonRank() != null
+					&& !specimen.getIdentifications().iterator().next().getTaxonRank()
+							.contains("f.")
+					&& !specimen.getIdentifications().iterator().next().getTaxonRank()
+							.contains("var.")
+					&& !specimen.getIdentifications().iterator().next().getTaxonRank()
+							.contains("subsp.")) {
+				dataRow.add(specimen.getIdentifications().iterator().next().getTaxonRank());
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2274,30 +2394,31 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setTaxonRemarks(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setTaxonRemarks(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getIdentifications() != null) {
 			List<String> listFullname = new ArrayList<>();
-			Iterator<SpecimenIdentification> identIterator = specimen
-					.getIdentifications().iterator();
+			Iterator<SpecimenIdentification> identIterator = specimen.getIdentifications()
+					.iterator();
 			while (identIterator.hasNext()) {
-				listFullname.add(identIterator.next().getScientificName()
-						.getFullScientificName());
+				listFullname.add(identIterator.next().getScientificName().getFullScientificName());
 				if (specimen.getIdentifications().size() > 1) {
 					listFullname.add(" | ");
 				}
 			}
 
 			if (listFullname.size() > 1) {
-				String resultFullName = listFullname.toString()
-						.replace(",", "").replace("[", "").replace("]", "")
-						.trim();
+				String resultFullName = listFullname.toString().replace(",", "").replace("[", "")
+						.replace("]", "").trim();
 				dataRow.add(resultFullName);
 				listFullname.clear();
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2312,14 +2433,16 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setTypeStatus(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setTypeStatus(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 
 		identification = specimen.getIdentifications().size();
 
 		if (specimen.getTypeStatus() != null && identification > 0) {
-			dataRow.add(specimen.getTypeStatus());
-		} else {
+			dataRow.add(specimen.getTypeStatus().toString());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2342,40 +2465,37 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setVerbatimCoordinates(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setVerbatimCoordinates(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
 			if (specimen.getGatheringEvent().getSiteCoordinates().size() > 1) {
-				Iterator<ESGatheringSiteCoordinates> iterator = specimen
-						.getGatheringEvent().getSiteCoordinates().iterator();
+				Iterator<ESGatheringSiteCoordinates> iterator = specimen.getGatheringEvent()
+						.getSiteCoordinates().iterator();
 
 				while (iterator.hasNext()) {
 					count++;
 					if (count == record1) {
-						latitudeDecimal1 = Double.toString(iterator.next()
-								.getLatitudeDecimal());
-						longitudeDecimal1 = Double.toString(iterator.next()
-								.getLongitudeDecimal());
+						latitudeDecimal1 = Double.toString(iterator.next().getLatitudeDecimal());
+						longitudeDecimal1 = Double.toString(iterator.next().getLongitudeDecimal());
 					}
 
 					if (count == record2) {
-						latitudeDecimal2 = Double.toString(iterator.next()
-								.getLatitudeDecimal());
-						longitudeDecimal2 = Double.toString(iterator.next()
-								.getLongitudeDecimal());
+						latitudeDecimal2 = Double.toString(iterator.next().getLatitudeDecimal());
+						longitudeDecimal2 = Double.toString(iterator.next().getLongitudeDecimal());
 					}
 				}
 				if (latitudeDecimal1 != null && longitudeDecimal1 != null
-						&& latitudeDecimal2 != null
-						&& longitudeDecimal2 != null) {
-					dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2
-							+ " | " + longitudeDecimal1 + ", "
-							+ longitudeDecimal2);
+						&& latitudeDecimal2 != null && longitudeDecimal2 != null) {
+					dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | "
+							+ longitudeDecimal1 + ", " + longitudeDecimal2);
 				}
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2391,40 +2511,37 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setVerbatimCoordinates_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getGatheringEvent().getSiteCoordinates() != null) {
 			if (specimen.getGatheringEvent().getSiteCoordinates().size() > 1) {
-				Iterator<ESGatheringSiteCoordinates> iterator = specimen
-						.getGatheringEvent().getSiteCoordinates().iterator();
+				Iterator<ESGatheringSiteCoordinates> iterator = specimen.getGatheringEvent()
+						.getSiteCoordinates().iterator();
 
 				while (iterator.hasNext()) {
 					count++;
 					if (count == record1) {
-						latitudeDecimal1 = Double.toString(iterator.next()
-								.getLatitudeDecimal());
-						longitudeDecimal1 = Double.toString(iterator.next()
-								.getLongitudeDecimal());
+						latitudeDecimal1 = Double.toString(iterator.next().getLatitudeDecimal());
+						longitudeDecimal1 = Double.toString(iterator.next().getLongitudeDecimal());
 					}
 
 					if (count == record2) {
-						latitudeDecimal2 = Double.toString(iterator.next()
-								.getLatitudeDecimal());
-						longitudeDecimal2 = Double.toString(iterator.next()
-								.getLongitudeDecimal());
+						latitudeDecimal2 = Double.toString(iterator.next().getLatitudeDecimal());
+						longitudeDecimal2 = Double.toString(iterator.next().getLongitudeDecimal());
 					}
 					if (latitudeDecimal1 != null && longitudeDecimal1 != null
-							&& latitudeDecimal2 != null
-							&& longitudeDecimal2 != null) {
-						dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2
-								+ " | " + longitudeDecimal1 + ", "
-								+ longitudeDecimal2);
+							&& latitudeDecimal2 != null && longitudeDecimal2 != null) {
+						dataRow.add(latitudeDecimal1 + ", " + latitudeDecimal2 + " | "
+								+ longitudeDecimal1 + ", " + longitudeDecimal2);
 					}
 				}
 
-			} else {
+			}
+			else {
 				dataRow.add(EMPTY_STRING);
 			}
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2439,11 +2556,13 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setVerbatimDepth(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setVerbatimDepth(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		if (specimen.getGatheringEvent().getDepth() != null) {
 			dataRow.add(specimen.getGatheringEvent().getDepth());
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2459,11 +2578,12 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setAltitudeUnifOfMeasurement(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		if (specimen.getGatheringEvent().getAltitudeUnifOfMeasurement() != null) {
-			dataRow.add(specimen.getGatheringEvent()
-					.getAltitudeUnifOfMeasurement());
-		} else {
+			dataRow.add(specimen.getGatheringEvent().getAltitudeUnifOfMeasurement());
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 	}
@@ -2478,8 +2598,9 @@ public class Fieldmapping {
 	 * @throws Exception
 	 *             problem occurred in specimen class
 	 */
-	public static void setVerbatimEventDate(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+	public static void setVerbatimEventDate(ESSpecimen specimen, CsvFileWriter.CsvRow dataRow)
+			throws Exception
+	{
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
 		 * value of the BeginDate and EndDate
@@ -2488,10 +2609,9 @@ public class Fieldmapping {
 				&& specimen.getGatheringEvent().getDateTimeEnd() != null
 				&& !specimen.getGatheringEvent().getDateTimeBegin()
 						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
-			String dateEnd = datetimenend.format(specimen.getGatheringEvent()
-					.getDateTimeEnd());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
+			String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 			dataRow.add(dateBegin + " | " + dateEnd);
 		}
 
@@ -2504,8 +2624,8 @@ public class Fieldmapping {
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeBegin()
 						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -2513,8 +2633,8 @@ public class Fieldmapping {
 		 */
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeEnd() == null) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -2539,7 +2659,8 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setVerbatimEventDate_Brahms(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 		/*
 		 * if BeginDate and EndDate both has values and not equal then get the
 		 * value of the BeginDate and EndDate
@@ -2548,10 +2669,9 @@ public class Fieldmapping {
 				&& specimen.getGatheringEvent().getDateTimeEnd() != null
 				&& !specimen.getGatheringEvent().getDateTimeBegin()
 						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
-			String dateEnd = datetimenend.format(specimen.getGatheringEvent()
-					.getDateTimeEnd());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
+			String dateEnd = datetimenend.format(specimen.getGatheringEvent().getDateTimeEnd());
 			dataRow.add(dateBegin + " | " + dateEnd);
 		}
 		/*
@@ -2564,8 +2684,8 @@ public class Fieldmapping {
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeBegin()
 						.equals(specimen.getGatheringEvent().getDateTimeEnd())) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -2573,8 +2693,8 @@ public class Fieldmapping {
 		 */
 		else if (specimen.getGatheringEvent().getDateTimeBegin() != null
 				&& specimen.getGatheringEvent().getDateTimeEnd() == null) {
-			String dateBegin = datetimebegin.format(specimen
-					.getGatheringEvent().getDateTimeBegin());
+			String dateBegin = datetimebegin
+					.format(specimen.getGatheringEvent().getDateTimeBegin());
 			dataRow.add(dateBegin);
 		}
 		/*
@@ -2599,39 +2719,37 @@ public class Fieldmapping {
 	 *             problem occurred in specimen class
 	 */
 	public static void setTaxonRank_Is_VerbatimTaxonRank(ESSpecimen specimen,
-			CsvFileWriter.CsvRow dataRow) throws Exception {
+			CsvFileWriter.CsvRow dataRow) throws Exception
+	{
 
 		List<String> list = new ArrayList<>();
 		int size = specimen.getIdentifications().size();
 
 		for (int i = 0; i < size; i++) {
 			if (specimen.getIdentifications().get(i).isPreferred()) {
-				list.add(toString(specimen.getIdentifications().get(i)
-						.isPreferred()));
-				taxonRank = specimen.getIdentifications().get(i)
-						.getTaxonRank();
+				list.add(toString(specimen.getIdentifications().get(i).isPreferred()));
+				taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
 				if (specimen.getIdentifications().get(i).getTaxonRank() != null
 						&& list.contains("true")) {
-					taxonRank = specimen.getIdentifications().get(i)
-							.getTaxonRank();
-				} else if (specimen.getIdentifications().get(i).getTaxonRank() == null
-						&& list.contains("true")) {
-					taxonRank = specimen.getIdentifications().get(i)
-							.getTaxonRank();
+					taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
 				}
-			} else {
-				if (specimen.getIdentifications().iterator().next()
-						.getTaxonRank() != null
+				else if (specimen.getIdentifications().get(i).getTaxonRank() == null
+						&& list.contains("true")) {
+					taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
+				}
+			}
+			else {
+				if (specimen.getIdentifications().iterator().next().getTaxonRank() != null
 						&& list.isEmpty()) {
-					taxonRank = specimen.getIdentifications().get(i)
-							.getTaxonRank();
+					taxonRank = specimen.getIdentifications().get(i).getTaxonRank();
 				}
 			}
 		}
 
 		if (taxonRank != null) {
 			dataRow.add(taxonRank);
-		} else {
+		}
+		else {
 			dataRow.add(EMPTY_STRING);
 		}
 

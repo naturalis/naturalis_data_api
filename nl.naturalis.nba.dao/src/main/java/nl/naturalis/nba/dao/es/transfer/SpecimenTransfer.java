@@ -1,9 +1,6 @@
 package nl.naturalis.nba.dao.es.transfer;
 
-import nl.naturalis.nba.api.model.PhaseOrStage;
-import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class SpecimenTransfer {
@@ -32,12 +29,12 @@ public class SpecimenTransfer {
 		out.setRecordBasis(in.getRecordBasis());
 		out.setKindOfUnit(in.getKindOfUnit());
 		out.setCollectionType(in.getCollectionType());
-		out.setSex(Sex.parse(in.getSex()));
-		out.setPhaseOrStage(PhaseOrStage.parse(in.getPhaseOrStage()));
+		out.setSex(in.getSex());
+		out.setPhaseOrStage(in.getPhaseOrStage());
 		out.setTitle(in.getTitle());
 		out.setNotes(in.getNotes());
 		out.setPreparationType(in.getPreparationType());
-		out.setTypeStatus(SpecimenTypeStatus.forName(in.getTypeStatus()));
+		out.setTypeStatus(in.getTypeStatus());
 		out.setNumberOfSpecimen(in.getNumberOfSpecimen());
 		out.setFromCaptivity(in.isFromCaptivity());
 		out.setObjectPublic(in.isObjectPublic());
@@ -65,12 +62,12 @@ public class SpecimenTransfer {
 		out.setRecordBasis(in.getRecordBasis());
 		out.setKindOfUnit(in.getKindOfUnit());
 		out.setCollectionType(in.getCollectionType());
-		out.setSex(in.getSex().toString());
-		out.setPhaseOrStage(in.getPhaseOrStage().toString());
+		out.setSex(in.getSex());
+		out.setPhaseOrStage(in.getPhaseOrStage());
 		out.setTitle(in.getTitle());
 		out.setNotes(in.getNotes());
 		out.setPreparationType(in.getPreparationType());
-		out.setTypeStatus(in.getTypeStatus().toString());
+		out.setTypeStatus(in.getTypeStatus());
 		out.setNumberOfSpecimen(in.getNumberOfSpecimen());
 		out.setFromCaptivity(in.isFromCaptivity());
 		out.setObjectPublic(in.isObjectPublic());

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -123,9 +124,9 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 		return ES_ID_PREFIX_BRAHMS + f.intValue();
 	}
 
-	private String getTypeStatus()
+	private SpecimenTypeStatus getTypeStatus()
 	{
-		return typeStatusNormalizer.normalize(input.get(TYPE));
+		return typeStatusNormalizer.getEnumConstant(input.get(TYPE));
 	}
 
 }

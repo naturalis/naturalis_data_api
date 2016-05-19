@@ -27,6 +27,7 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
@@ -38,7 +39,7 @@ public class SpecimenDAOTest {
 	@BeforeClass
 	public static void setup()
 	{
-		
+
 		/* ****************************** */
 		/* ******** 1st SPECIMEN ******** */
 		/* ****************************** */
@@ -50,7 +51,7 @@ public class SpecimenDAOTest {
 		DefaultClassification defaultClassification = new DefaultClassification();
 		defaultClassification.setGenus("Parus");
 		defaultClassification.setSpecificEpithet("major");
-		
+
 		List<Monomial> systemClassification = new ArrayList<>();
 		systemClassification.add(new Monomial("kingdom", "Animalia"));
 		systemClassification.add(new Monomial("phylum", "Chordata"));
@@ -64,7 +65,6 @@ public class SpecimenDAOTest {
 		specimen01.setGatheringEvent(gathering);
 		specimen01.setIdentifications(Arrays.asList(identification));
 
-		
 		/* ****************************** */
 		/* ******** 2nd SPECIMEN ******** */
 		/* ****************************** */
@@ -263,7 +263,7 @@ public class SpecimenDAOTest {
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
 	}
-	
+
 	/*
 	 *****************************************************
 	 * Test query method with LIKE and NOT_LIKE operator *
@@ -283,4 +283,18 @@ public class SpecimenDAOTest {
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
+
+	@Test
+	public void testSave__Specimen__01()
+	{
+		Specimen toBeSaved = SpecimenTransfer.load(specimen01, null);
+		SpecimenDAO dao = new SpecimenDAO();
+		String id = dao.save(toBeSaved, true);
+		//System.out.println(id);
+		assertNotNull("01", id);
+		Specimen retrieved = dao.find(id);
+		assertNotNull("02", retrieved);
+		assertEquals("03", specimen01.getUnitID(), retrieved.getUnitID());
+	}
+
 }

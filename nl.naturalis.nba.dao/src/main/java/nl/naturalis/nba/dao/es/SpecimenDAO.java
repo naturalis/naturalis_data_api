@@ -144,23 +144,20 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
-	public String save(String id, Specimen specimen, boolean immediate)
+	public String save(Specimen specimen, boolean immediate)
 	{
+		String id = specimen.getId();
 		if (logger.isDebugEnabled()) {
 			String pattern = "New save request (index={};type={};id={})";
 			logger.debug(pattern, spIndex, spType, id);
 		}
 		ESClientFactory factory = registry.getESClientFactory();
 		Client client = factory.getClient();
-		IndexRequestBuilder request = client.prepareIndex(spIndex, spType);
-		if (id != null) {
-			request.setId(id);
-		}
+		IndexRequestBuilder request = client.prepareIndex(spIndex, spType, id);
 		ESSpecimen esSpecimen = SpecimenTransfer.save(specimen);
 		byte[] source = JsonUtil.serialize(esSpecimen);
 		request.setSource(source);
 		IndexResponse response = request.execute().actionGet();
-		id = response.getId();
 		if (immediate) {
 			IndicesAdminClient iac = client.admin().indices();
 			RefreshRequestBuilder rrb = iac.prepareRefresh(spIndex);

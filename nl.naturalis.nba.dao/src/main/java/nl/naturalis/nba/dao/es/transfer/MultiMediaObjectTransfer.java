@@ -62,7 +62,7 @@ public class MultiMediaObjectTransfer {
 
 		mmo.setPhasesOrStages(esMmo.getPhasesOrStages());
 		mmo.setSexes(esMmo.getSexes());
-		mmo.setSpecimenTypeStatus(SpecimenTypeStatus.forName(esMmo.getSpecimenTypeStatus()));
+		mmo.setSpecimenTypeStatus(SpecimenTypeStatus.parse(esMmo.getSpecimenTypeStatus()));
 		mmo.setSubjectOrientations(esMmo.getSubjectOrientations());
 		mmo.setSubjectParts(esMmo.getSubjectParts());
 		mmo.setTaxonCount(esMmo.getTaxonCount());

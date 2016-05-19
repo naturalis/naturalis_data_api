@@ -3,7 +3,6 @@ package nl.naturalis.nba.etl.crs;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
 import static org.domainobject.util.StringUtil.rpad;
 
 import java.util.ArrayList;
@@ -12,6 +11,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import org.domainobject.util.DOMUtil;
+import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.model.*;
 import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
@@ -26,9 +28,6 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
-import org.domainobject.util.DOMUtil;
-import org.w3c.dom.Element;
 
 /**
  * The transformer component for the CRS specimen import.
@@ -120,9 +119,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
-				if(o1.isPreferred())
+				if (o1.isPreferred())
 					return -1;
-				if(o2.isPreferred())
+				if (o2.isPreferred())
 					return 1;
 				return 0;
 			}
@@ -245,7 +244,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 				if (sn.getAuthorshipVerbatim().charAt(0) != '(')
 					sb.append('(');
 				sb.append(sn.getAuthorshipVerbatim());
-				if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')')
+				if (sn.getAuthorshipVerbatim()
+						.charAt(sn.getAuthorshipVerbatim().length() - 1) != ')')
 					sb.append(')');
 			}
 			if (sb.length() != 0)
@@ -444,46 +444,34 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return hdr.getAttribute("status").equals("deleted");
 	}
 
-	private String getPhaseOrStage()
+	private PhaseOrStage getPhaseOrStage()
 	{
 		String raw = val(input.getRecord(), "abcd:PhaseOrStage");
-		if (raw == null)
-			return null;
-		String result = posNormalizer.normalize(raw);
-		if (result == NOT_MAPPED) {
-			if (!suppressErrors)
-				warn("Ignoring rogue value for PhaseOrStage: " + raw);
-			return null;
+		PhaseOrStage pos = posNormalizer.getEnumConstant(raw);
+		if (pos == null && !suppressErrors) {
+			warn("Ignoring rogue value for PhaseOrStage: " + raw);
 		}
-		return result;
+		return pos;
 	}
 
-	private String getTypeStatus()
+	private SpecimenTypeStatus getTypeStatus()
 	{
 		String raw = val(input.getRecord(), "abcd:NomenclaturalTypeText");
-		if (raw == null)
-			return null;
-		String result = tsNormalizer.normalize(raw);
-		if (result == NOT_MAPPED) {
-			if (!suppressErrors)
-				warn("Ignoring rogue value for TypeStatus: " + raw);
-			return null;
+		SpecimenTypeStatus sts = tsNormalizer.getEnumConstant(raw);
+		if (sts == null && !suppressErrors) {
+			warn("Ignoring rogue value for TypeStatus: " + raw);
 		}
-		return result;
+		return sts;
 	}
 
-	private String getSex()
+	private Sex getSex()
 	{
 		String raw = val(input.getRecord(), "abcd:Sex");
-		if (raw == null)
-			return null;
-		String result = sexNormalizer.normalize(raw);
-		if (result == NOT_MAPPED) {
-			if (!suppressErrors)
-				warn("Ignoring rogue value for Sex: " + raw);
-			return null;
+		Sex sex = sexNormalizer.getEnumConstant(raw);
+		if (sex == null && !suppressErrors) {
+			warn("Ignoring rogue value for Sex: " + raw);
 		}
-		return result;
+		return sex;
 	}
 
 	private Date date(Element e, String tag)

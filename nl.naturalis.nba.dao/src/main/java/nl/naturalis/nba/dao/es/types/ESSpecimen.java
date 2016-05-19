@@ -7,7 +7,10 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.NBATraceableObject;
+import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 
 public class ESSpecimen extends NBATraceableObject implements ESType {
 
@@ -23,9 +26,9 @@ public class ESSpecimen extends NBATraceableObject implements ESType {
 	private String recordBasis;
 	private String kindOfUnit;
 	private String collectionType;
-	private String typeStatus;
-	private String sex;
-	private String phaseOrStage;
+	private SpecimenTypeStatus typeStatus;
+	private Sex sex;
+	private PhaseOrStage phaseOrStage;
 	private String title;
 	private String notes;
 	private String preparationType;
@@ -180,32 +183,32 @@ public class ESSpecimen extends NBATraceableObject implements ESType {
 		this.collectionType = collectionType;
 	}
 
-	public String getTypeStatus()
+	public SpecimenTypeStatus getTypeStatus()
 	{
 		return typeStatus;
 	}
 
-	public void setTypeStatus(String typeStatus)
+	public void setTypeStatus(SpecimenTypeStatus typeStatus)
 	{
 		this.typeStatus = typeStatus;
 	}
 
-	public String getSex()
+	public Sex getSex()
 	{
 		return sex;
 	}
 
-	public void setSex(String sex)
+	public void setSex(Sex sex)
 	{
 		this.sex = sex;
 	}
 
-	public String getPhaseOrStage()
+	public PhaseOrStage getPhaseOrStage()
 	{
 		return phaseOrStage;
 	}
 
-	public void setPhaseOrStage(String phaseOrStage)
+	public void setPhaseOrStage(PhaseOrStage phaseOrStage)
 	{
 		this.phaseOrStage = phaseOrStage;
 	}
@@ -308,9 +311,9 @@ public class ESSpecimen extends NBATraceableObject implements ESType {
 	public void setIdentifications(List<SpecimenIdentification> identifications)
 	{
 		this.identifications = identifications;
-//		this.identifyingEpithets = new ArrayList<>();
-//		if (identifications != null) {
-//			for (SpecimenIdentification identification : identifications) {
+		//		this.identifyingEpithets = new ArrayList<>();
+		//		if (identifications != null) {
+		//			for (SpecimenIdentification identification : identifications) {
 //				//@formatter:off
 //                String identifier =
 //                        identification.getScientificName().getGenusOrMonomial() +
@@ -321,9 +324,9 @@ public class ESSpecimen extends NBATraceableObject implements ESType {
 //                                IDENTIFYING_EPITHETS_DELIMITER +
 //                                identification.getScientificName().getInfraspecificEpithet();
 //                //@formatter:on
-//				identifyingEpithets.add(identifier);
-//			}
-//		}
+		//				identifyingEpithets.add(identifier);
+		//			}
+		//		}
 	}
 
 	public List<String> getIdentifyingEpithets()

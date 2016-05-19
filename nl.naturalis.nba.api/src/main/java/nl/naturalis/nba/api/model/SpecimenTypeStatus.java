@@ -24,7 +24,7 @@ public enum SpecimenTypeStatus
 	 */
 	TYPE("type");
 
-	public static SpecimenTypeStatus forName(String name)
+	public static SpecimenTypeStatus parse(String name)
 	{
 		if (name != null) {
 			for (SpecimenTypeStatus s : SpecimenTypeStatus.values()) {

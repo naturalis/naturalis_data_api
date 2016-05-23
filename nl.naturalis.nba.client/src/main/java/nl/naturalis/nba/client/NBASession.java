@@ -1,25 +1,25 @@
 package nl.naturalis.nba.client;
 
-public class NBA {
+public class NBASession {
 
 	private final ClientConfig cfg;
 
-	NBA(ClientConfig cfg)
+	NBASession(ClientConfig cfg)
 	{
 		this.cfg = cfg;
 	}
 
-	public SpecimenClient getSpecimenAPI()
+	public SpecimenClient getSpecimenClient()
 	{
 		return new SpecimenClient(cfg);
 	}
 
-	public MultiMediaClient getMultiMediaObjectAPI()
+	public MultiMediaClient getMultiMediaObjectClient()
 	{
 		return new MultiMediaClient(cfg);
 	}
 
-	public TaxonClient getTaxonAPI()
+	public TaxonClient getTaxonClient()
 	{
 		return new TaxonClient(cfg);
 	}

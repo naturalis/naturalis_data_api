@@ -13,8 +13,8 @@ public class Test {
 	public static void main(String[] args)
 	{
 		String baseUrl = "http://localhost:8080/v2";
-		NBA nba = new ClientConfigurator().setBaseUrl(baseUrl).create();
-		ISpecimenAPI api = nba.getSpecimenAPI();
+		NBASession session = new NBASessionConfigurator().setBaseUrl(baseUrl).create();
+		ISpecimenAPI api = session.getSpecimenClient();
 //		Specimen[] result = api.findByUnitID("ZMA.MAM.12345");
 //		ClientUtil.printTerse(result);
 		String genus = "identifications.defaultClassification.genus";

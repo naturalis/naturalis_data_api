@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.query.Operator;
 
 public class ObjectMapperLocator {
 
@@ -48,8 +51,11 @@ public class ObjectMapperLocator {
 		om.setSerializationInclusion(Include.NON_NULL);
 		om.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
 		SimpleModule module = new SimpleModule();
-		GatheringSiteCoordinatesDeserializer gscd = new GatheringSiteCoordinatesDeserializer();
-		module.addDeserializer(GatheringSiteCoordinates.class, gscd);
+		module.addDeserializer(GatheringSiteCoordinates.class,
+				new GatheringSiteCoordinatesDeserializer());
+		module.addDeserializer(PhaseOrStage.class, new PhaseOrStageDeserializer());
+		module.addDeserializer(Sex.class, new SexDeserializer());
+		module.addDeserializer(Operator.class, new OperatorDeserializer());
 		om.registerModule(module);
 		return om;
 	}

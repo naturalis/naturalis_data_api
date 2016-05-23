@@ -80,12 +80,14 @@ public enum Operator
 	 */
 	public static Operator parse(String s)
 	{
-		for (Operator op : values()) {
-			if (op.symbol != null && s.equals(op.symbol)) {
-				return op;
-			}
-			if (s.equalsIgnoreCase(op.name())) {
-				return op;
+		if (s != null) {
+			for (Operator op : values()) {
+				if (op.symbol != null && s.equals(op.symbol)) {
+					return op;
+				}
+				if (s.equalsIgnoreCase(op.name())) {
+					return op;
+				}
 			}
 		}
 		return null;

@@ -44,6 +44,13 @@ public class Condition {
 	{
 	}
 
+	public Condition(String field, String operator, Object value)
+	{
+		this.field = field;
+		this.operator = Operator.parse(operator);
+		this.value = value;
+	}
+
 	public Condition(String field, Operator operator, Object value)
 	{
 		this.field = field;

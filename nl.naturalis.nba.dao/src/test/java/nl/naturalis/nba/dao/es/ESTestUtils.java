@@ -24,6 +24,7 @@ import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
+import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 public class ESTestUtils {
@@ -86,17 +87,31 @@ public class ESTestUtils {
 		logger.info("Created type {}", type);
 	}
 
-	public static void saveObject(ESType object)
+	public static void saveSpecimens(ESSpecimen... specimens)
 	{
-		saveObject(null, null, object);
+		for (ESSpecimen specimen : specimens) {
+			saveSpecimen(specimen, false);
+		}
+		refreshIndex(ESSpecimen.class);
 	}
 
-	public static void saveObject(String id, ESType object)
+	public static void saveSpecimen(ESSpecimen specimen, boolean refreshIndex)
 	{
-		saveObject(id, null, object);
+		String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
+		saveObject(id, null, specimen, refreshIndex);
 	}
 
-	public static void saveObject(String id, String parentId, ESType obj)
+	public static void saveObject(ESType object, boolean refreshIndex)
+	{
+		saveObject(null, null, object, refreshIndex);
+	}
+
+	public static void saveObject(String id, ESType object, boolean refreshIndex)
+	{
+		saveObject(id, null, object, refreshIndex);
+	}
+
+	public static void saveObject(String id, String parentId, ESType obj, boolean refreshIndex)
 	{
 		String index = registry.getIndex(obj.getClass());
 		String type = registry.getType(obj.getClass());
@@ -110,6 +125,9 @@ public class ESTestUtils {
 		}
 		irb.setSource(source);
 		irb.execute().actionGet();
+		if (refreshIndex) {
+			refreshIndex(obj.getClass());
+		}
 	}
 
 	public static void refreshIndex(Class<? extends ESType> cls)

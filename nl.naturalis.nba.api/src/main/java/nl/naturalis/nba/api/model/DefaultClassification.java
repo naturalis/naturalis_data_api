@@ -31,7 +31,7 @@ public class DefaultClassification extends NBADomainObject {
 		}
 		DefaultClassification dc = null;
 		for (Monomial monomial : systemClassification) {
-			TaxonomicRank rank = TaxonomicRank.forName(monomial.getRank());
+			TaxonomicRank rank = TaxonomicRank.parse(monomial.getRank());
 			if (rank != null) {
 				if (dc == null) {
 					dc = new DefaultClassification();
@@ -58,7 +58,7 @@ public class DefaultClassification extends NBADomainObject {
 	/**
 	 * Sets the rank corresponding to the specified monomial's rank <i>iff</i>
 	 * the monomial's rank can be mapped to a predefined {@link TaxonomicRank}
-	 * (using {@link TaxonomicRank#forName(String)}). If not, this method does
+	 * (using {@link TaxonomicRank#parse(String)}). If not, this method does
 	 * nothing (it will not throw an exception if the monomial's rank is not one
 	 * of the predefined taxonomic ranks).
 	 * 
@@ -66,7 +66,7 @@ public class DefaultClassification extends NBADomainObject {
 	 */
 	public void set(Monomial monomial)
 	{
-		TaxonomicRank rank = TaxonomicRank.forName(monomial.getRank());
+		TaxonomicRank rank = TaxonomicRank.parse(monomial.getRank());
 		if (rank != null) {
 			set(rank, monomial.getName());
 		}

@@ -45,7 +45,7 @@ public enum TaxonomicRank
 		return englishName;
 	}
 
-	public static TaxonomicRank forName(String name)
+	public static TaxonomicRank parse(String name)
 	{
 		if (name == null) {
 			return null;

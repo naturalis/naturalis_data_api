@@ -14,14 +14,14 @@ public enum TaxonomicStatus
     PROVISIONALLY_ACCEPTED("provisionally accepted name");
 	//@formatter:on
 
-	public static TaxonomicStatus forName(String name)
+	public static TaxonomicStatus parse(String name)
 	{
 		if (name == null) {
 			return null;
 		}
-		for (TaxonomicStatus taxonomicStatus : TaxonomicStatus.values()) {
-			if (taxonomicStatus.name.equals(name)) {
-				return taxonomicStatus;
+		for (TaxonomicStatus status : TaxonomicStatus.values()) {
+			if (status.name.equalsIgnoreCase(name)) {
+				return status;
 			}
 		}
 		return null;
@@ -29,18 +29,15 @@ public enum TaxonomicStatus
 
 	private final String name;
 
-
 	private TaxonomicStatus(String name)
 	{
 		this.name = name;
 	}
 
-
 	private TaxonomicStatus()
 	{
 		this.name = name().toLowerCase();
 	}
-
 
 	public String toString()
 	{

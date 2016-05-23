@@ -22,6 +22,23 @@ public class Monomial extends NBADomainObject {
 
 	}
 
+	/**
+	 * Creates a monomial with an unspecified rank.
+	 * 
+	 * @param name
+	 */
+	public Monomial(String name)
+	{
+		this.rank = null;
+		this.name = name;
+	}
+
+	/**
+	 * Creates a monomial with the specified rank and name.
+	 * 
+	 * @param rank
+	 * @param name
+	 */
 	public Monomial(String rank, String name)
 	{
 		this.rank = rank;

@@ -54,6 +54,16 @@ public interface ISpecimenAPI {
 	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
+	 * Returns the ids of all specimens belonging to a named collection. These
+	 * collections are otherwise known as "special collections" or "thematic
+	 * collections".
+	 * 
+	 * @param collectionName
+	 * @return
+	 */
+	String[] getIdsInCollection(String collectionName);
+
+	/**
 	 * Saves the specified specimen to the NBA data store. N.B. although this
 	 * method is part of the API, NBA clients will get an HTTP 403 (FORBIDDEN)
 	 * error when calling it unless they reside on the same server as the NBA

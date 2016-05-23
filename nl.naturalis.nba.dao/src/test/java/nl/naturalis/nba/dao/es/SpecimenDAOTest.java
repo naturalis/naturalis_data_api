@@ -2,7 +2,9 @@ package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.api.query.Not.NOT;
 import static nl.naturalis.nba.api.query.Operator.EQUALS;
-import static nl.naturalis.nba.api.query.Operator.*;
+import static nl.naturalis.nba.api.query.Operator.EQUALS_IC;
+import static nl.naturalis.nba.api.query.Operator.LIKE;
+import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
 import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
@@ -364,6 +366,32 @@ public class SpecimenDAOTest {
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
+	}
+
+	/*
+	 * Test getIdsInCollection for the one and only (BRAHMS) document belonging
+	 * to the "Strange Plants" theme.
+	 */
+	@Test
+	public void testGetIdsInCollection__String__01()
+	{
+		String theme = "Strange plants";
+		SpecimenDAO dao = new SpecimenDAO();
+		String[] ids = dao.getIdsInCollection(theme);
+		assertEquals("01", 1, ids.length);
+	}
+
+	/*
+	 * Test getIdsInCollection for the documents belonging to the "Living Dinos"
+	 * theme.
+	 */
+	@Test
+	public void testGetIdsInCollection__String__02()
+	{
+		String theme = "Living Dinos";
+		SpecimenDAO dao = new SpecimenDAO();
+		String[] ids = dao.getIdsInCollection(theme);
+		assertEquals("01", 3, ids.length);
 	}
 
 	/*

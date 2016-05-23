@@ -7,6 +7,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -129,6 +130,32 @@ public class SpecimenDAO implements ISpecimenAPI {
 		SearchRequestBuilder request = newSearchRequest();
 		request.setQuery(csq);
 		return processSearchRequest(request);
+	}
+
+	@Override
+	public String[] getIdsInCollection(String collectionName)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("getUnitIDsInCollection(\"{}\")", collectionName);
+		}
+		TermQueryBuilder tq = termQuery("theme", collectionName);
+		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
+		SearchRequestBuilder request = newSearchRequest();
+		request.setQuery(csq);
+		request.setNoFields();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query:\n{}", request);
+		}
+		SearchResponse response = request.execute().actionGet();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Processing response:\n{}", response);
+		}
+		SearchHit[] hits = response.getHits().getHits();
+		String[] ids = new String[hits.length];
+		for (int i = 0; i < hits.length; ++i) {
+			ids[i] = hits[i].getId();
+		}
+		return ids;
 	}
 
 	@Override

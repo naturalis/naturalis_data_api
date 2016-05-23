@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.api.model.PhaseOrStage.ADULT;
-import static nl.naturalis.nba.api.model.PhaseOrStage.JUVENILE;
+import static nl.naturalis.nba.api.model.PhaseOrStage.*;
 import static nl.naturalis.nba.api.model.Sex.FEMALE;
 import static nl.naturalis.nba.api.model.Sex.MALE;
 import static nl.naturalis.nba.api.model.SourceSystem.*;
@@ -86,7 +86,54 @@ class TestSpecimens {
 		gathering.setLocalityText("In de duinen, nabij Uitgeest");
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
-		Person collector = new Person("Alternburg, R.");
+		Person collector = new Person("Altenburg, R.");
+		gathering.setGatheringPersons(Arrays.asList(collector));
+	
+		DefaultClassification classification = new DefaultClassification();
+		classification.setKingdom("Animalia");
+		classification.setPhylum("Chordata");
+		classification.setClassName("Aves");
+		classification.setOrder("Charadriiformes");
+		classification.setFamily("Laridae");
+		classification.setGenus("Larus");
+		classification.setSpecificEpithet("fuscus");
+		classification.setInfraspecificEpithet("fuscus");
+	
+		List<Monomial> systemClassification = new ArrayList<>();
+		systemClassification.add(new Monomial("kingdom", "Animalia"));
+		systemClassification.add(new Monomial("phylum", "Chordata"));
+		systemClassification.add(new Monomial("class", "Aves"));
+		systemClassification.add(new Monomial("order", "Charadriiformes"));
+		systemClassification.add(new Monomial("family", "Laridae"));
+		systemClassification.add(new Monomial("genus", "Larus"));
+		systemClassification.add(new Monomial("species", "fuscus"));
+		systemClassification.add(new Monomial("subspecies", "fuscus"));
+		
+		ScientificName scientificName = new ScientificName();
+		scientificName.setFullScientificName("Larus f. fuscus");
+		scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
+	
+		SpecimenIdentification identification = new SpecimenIdentification();
+		identification.setDefaultClassification(classification);
+		identification.setSystemClassification(systemClassification);
+		identification.setScientificName(scientificName);
+	
+		specimen.setGatheringEvent(gathering);
+		specimen.setIdentifications(Arrays.asList(identification));
+		
+		return specimen;
+	}
+	
+	static ESSpecimen larusFuscusSpecimen02()
+	{
+		ESSpecimen specimen = new ESSpecimen();
+		specimen.setUnitID("309801857");
+		specimen.setSourceSystem(NDFF);
+		specimen.setPhaseOrStage(EGG);
+		ESGatheringEvent gathering = new ESGatheringEvent();
+		gathering.setCountry("Netherlands");
+		gathering.setCity("Hiversum");
+		Person collector = new Person("Altenburg, R.");
 		gathering.setGatheringPersons(Arrays.asList(collector));
 	
 		DefaultClassification classification = new DefaultClassification();
@@ -180,7 +227,7 @@ class TestSpecimens {
 		specimen.setSourceSystem(BRAHMS);
 		specimen.setPhaseOrStage(ADULT);
 		specimen.setSex(FEMALE);
-		specimen.setRecordBasis("Preserved specimen");
+		specimen.setRecordBasis("Herbarium sheet");
 		ESGatheringEvent gathering = new ESGatheringEvent();
 		gathering.setLocalityText("Dorchester, U.K.");
 		gathering.setCountry("United Kingdom");

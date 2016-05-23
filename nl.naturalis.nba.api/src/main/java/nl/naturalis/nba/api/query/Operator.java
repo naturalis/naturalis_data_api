@@ -31,7 +31,7 @@ public enum Operator
 	 * NOT EQUALS IGNORE CASE. Operator to be used when checking for in-equality
 	 * while ignoring case. Can only be used for string fields.
 	 */
-	NOT_EQUALS_CI,
+	NOT_EQUALS_IC,
 	/**
 	 * Operator to be used for checking if the search term is a substring of the
 	 * field value. Can only be used for string fields. This is akin to the SQL

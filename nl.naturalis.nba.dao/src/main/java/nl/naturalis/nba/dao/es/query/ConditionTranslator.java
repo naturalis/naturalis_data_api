@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.es.query;
 
 import static nl.naturalis.nba.api.query.Operator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS;
+import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS_IC;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
 import java.util.EnumSet;
@@ -38,7 +39,7 @@ public abstract class ConditionTranslator {
 	private static final EnumSet<Operator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_BETWEEN);
+		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN);
 	}
 
 	final Condition condition;

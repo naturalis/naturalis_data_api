@@ -4,7 +4,7 @@
 		<Console name="STDOUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</Console>
-		<File name="nba" fileName="${sys:nba.v2.conf.dir}/../log/log4j.log">
+		<File name="nba" fileName="/home/ayco/projects/nba/v2/log/log4j.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</File>
 	</Appenders>

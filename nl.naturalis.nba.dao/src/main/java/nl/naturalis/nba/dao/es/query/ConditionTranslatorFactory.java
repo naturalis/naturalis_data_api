@@ -23,8 +23,8 @@ public class ConditionTranslatorFactory {
 			case NOT_EQUALS:
 				return new EqualsConditionTranslator(condition, inspector);
 			case EQUALS_IC:
-			case NOT_EQUALS_CI:
-				break;
+			case NOT_EQUALS_IC:
+				return new EqualsIgnoreCaseConditionTranslator(condition, inspector);
 			case GT:
 				break;
 			case GTE:

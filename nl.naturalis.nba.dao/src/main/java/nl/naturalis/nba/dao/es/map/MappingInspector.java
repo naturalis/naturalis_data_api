@@ -160,6 +160,9 @@ public class MappingInspector {
 			case EQUALS:
 			case NOT_EQUALS:
 				return true;
+			case EQUALS_IC:
+			case NOT_EQUALS_IC:
+				return field.hasMultiField("ci");
 			case LIKE:
 			case NOT_LIKE:
 				return field.hasMultiField("like");

@@ -1,12 +1,11 @@
 package nl.naturalis.nba.dao.es;
 
+import static nl.naturalis.nba.api.query.Not.NOT;
 import static nl.naturalis.nba.api.query.Operator.EQUALS;
-import static nl.naturalis.nba.api.query.Operator.LIKE;
+import static nl.naturalis.nba.api.query.Operator.*;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
 import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
-import static nl.naturalis.nba.dao.es.ESTestUtils.refreshIndex;
-import static nl.naturalis.nba.dao.es.ESTestUtils.saveObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -258,9 +257,110 @@ public class SpecimenDAOTest {
 	public void testQuery__QuerySpec__07() throws InvalidQueryException
 	{
 		String collector = "gatheringEvent.gatheringPersons.fullName";
-		Condition condition = new Condition(collector, LIKE, "altenburg");
+		Condition condition = new Condition(collector, LIKE, "altenbu");
 		QuerySpec qs = new QuerySpec();
 		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 2, result.length);
+	}
+
+	/*
+	 * Tests query method with using NOT
+	 */
+	@Test
+	public void testQuery__QuerySpec__08() throws InvalidQueryException
+	{
+		String genus = "identifications.defaultClassification.genus";
+		Condition condition = new Condition(NOT, genus, EQUALS, "Parus");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 3, result.length);
+	}
+
+	/*
+	 * Tests query method with using AND NOT
+	 */
+	@Test
+	public void testQuery__QuerySpec__09() throws InvalidQueryException
+	{
+		String genus = "identifications.defaultClassification.genus";
+		String collector = "gatheringEvent.gatheringPersons.fullName";
+		String sourceSystem = "sourceSystem.code";
+		Condition condition = new Condition(genus, EQUALS, "Larus");
+		condition.and(collector, LIKE, "altenburg");
+		condition.andNot(sourceSystem, EQUALS, "NDFF");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
+	}
+
+	/*
+	 * Tests query method with illegal combination of AND and OR
+	 */
+	@Test(expected = InvalidQueryException.class)
+	public void testQuery__QuerySpec__10() throws InvalidQueryException
+	{
+		String genus = "identifications.defaultClassification.genus";
+		String sourceSystem = "sourceSystem.code";
+		Condition condition = new Condition(genus, EQUALS, "Larus");
+		condition.and(sourceSystem, EQUALS, "BRAHMS");
+		condition.or(sourceSystem, EQUALS, "NDFF");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
+	}
+
+	/*
+	 * Tests query method with operator EQUALS_IC
+	 */
+	@Test
+	public void testQuery__QuerySpec__11() throws InvalidQueryException
+	{
+		Condition condition = new Condition("recordBasis", EQUALS_IC, "preserved specimen");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 3, result.length);
+	}
+
+	/*
+	 * Tests query method with operator NOT_EQUALS_IC
+	 */
+	@Test
+	public void testQuery__QuerySpec__12() throws InvalidQueryException
+	{
+		Condition condition = new Condition("recordBasis", NOT_EQUALS_IC, "preserved specimen");
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		assertEquals("01", 1, result.length);
+	}
+
+	/*
+	 * Tests query method with combination of AND and OR
+	 */
+	//@Test
+	public void testQuery__QuerySpec__13() throws InvalidQueryException
+	{
+		String system = "sourceSystem.code";
+		String country = "gatheringEvent.country";
+		String city = "gatheringEvent.city";
+		Condition condition1, condition2, condition3;
+		condition1 = new Condition("sex", EQUALS, "FEMALE");
+		condition2 = new Condition(system, "=", "BRAHMS").or(system, "=", "CRS");
+		condition3 = new Condition(country, "=", "Netherlands");
+		condition3.and(new Condition(city, "=", "Uitgeest").or(city, "=", "Amsterdam"));
+		QuerySpec qs = new QuerySpec();
+		qs.setCondition(condition1.and(condition2).and(condition3));
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);

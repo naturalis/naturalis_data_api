@@ -58,12 +58,25 @@ public class Condition {
 		this.value = value;
 	}
 
+	public Condition(Not not, String field, String operator, Object value)
+	{
+		this.not = not;
+		this.field = field;
+		this.operator = Operator.parse(operator);
+		this.value = value;
+	}
+
 	public Condition(Not not, String field, Operator operator, Object value)
 	{
 		this.not = not;
 		this.field = field;
 		this.operator = operator;
 		this.value = value;
+	}
+
+	public Condition and(String field, String operator, Object value)
+	{
+		return and(new Condition(field, operator, value));
 	}
 
 	public Condition and(String field, Operator operator, Object value)
@@ -80,6 +93,11 @@ public class Condition {
 		return this;
 	}
 
+	public Condition andNot(String field, String operator, Object value)
+	{
+		return andNot(new Condition(field, operator, value));
+	}
+
 	public Condition andNot(String field, Operator operator, Object value)
 	{
 		return andNot(new Condition(field, operator, value));
@@ -94,6 +112,11 @@ public class Condition {
 		return this;
 	}
 
+	public Condition or(String field, String operator, Object value)
+	{
+		return or(new Condition(field, operator, value));
+	}
+
 	public Condition or(String field, Operator operator, Object value)
 	{
 		return or(new Condition(field, operator, value));
@@ -106,6 +129,11 @@ public class Condition {
 		}
 		or.add(sibling);
 		return this;
+	}
+
+	public Condition orNot(String field, String operator, Object value)
+	{
+		return orNot(new Condition(field, operator, value));
 	}
 
 	public Condition orNot(String field, Operator operator, Object value)

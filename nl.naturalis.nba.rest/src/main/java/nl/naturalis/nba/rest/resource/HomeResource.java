@@ -63,18 +63,11 @@ public class HomeResource {
 	}
 
 	@GET
-	@Path("/json")
+	@Path("/ping")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Properties json(@Context UriInfo uriInfo)
+	public String ping(@Context UriInfo uriInfo)
 	{
-		try {
-			Properties props = new Properties();
-			props.load(getClass().getResourceAsStream("/version.properties"));
-			return props;
-		}
-		catch (Throwable t) {
-			throw ResourceUtil.handleError(uriInfo, t);
-		}
+		return "Hello NBA client!";
 	}
 
 }

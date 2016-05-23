@@ -14,23 +14,8 @@ public class Test {
 	{
 		String baseUrl = "http://localhost:8080/v2";
 		NBASession session = new NBASessionConfigurator().setBaseUrl(baseUrl).create();
-		ISpecimenAPI api = session.getSpecimenClient();
-//		Specimen[] result = api.findByUnitID("ZMA.MAM.12345");
-//		ClientUtil.printTerse(result);
-		String genus = "identifications.defaultClassification.genus";
-		String specificEpithet = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition("unitID", EQUALS, "ZMA.MAM.12345");
-		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
-		ClientUtil.printTerse(qs);
-		try {
-			Specimen[] result = api.query(qs);
-			ClientUtil.printTerse(result);
-		}
-		catch (InvalidQueryException e) {
-			// TODO Auto-generated catch block
-			e.getMessage();
-		}
+		String answer = session.ping();
+		System.out.println(answer);
 	}
 
 }

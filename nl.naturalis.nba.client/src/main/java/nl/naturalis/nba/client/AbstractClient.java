@@ -15,7 +15,27 @@ abstract class AbstractClient {
 
 	private static final Logger logger = LogManager.getLogger(AbstractClient.class);
 
+	static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
+	{
+		URI uri = getURI(request);
+		logger.info("Sending {} request: {}", request.getMethod(), uri);
+		try {
+			request.execute();
+		}
+		catch (Throwable t) {
+			if (t instanceof SimpleHttpException) {
+				if (t.getMessage().indexOf("Connection refused") != -1) {
+					String fmt = "NBA server down or invalid base URL: %s";
+					String msg = String.format(fmt, request.getBaseUrl());
+					throw new ClientException(msg);
+				}
+			}
+		}
+		return request;
+	}
+
 	protected final ClientConfig config;
+
 	AbstractClient(ClientConfig config)
 	{
 		this.config = config;
@@ -34,25 +54,6 @@ abstract class AbstractClient {
 		SimpleHttpGet request = newGETRequest();
 		request.setPath(path);
 		return (SimpleHttpGet) sendRequest(request);
-	}
-
-	private static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
-	{
-		URI uri = getURI(request);
-		logger.info("Sending {} request: {}", request.getMethod(), uri);
-		try {
-			request.execute();
-		}
-		catch (Throwable t) {
-			if (t instanceof SimpleHttpException) {
-				if (t.getMessage().indexOf("Connection refused") != -1) {
-					String fmt = "NBA server down or invalid base URL: %s";
-					String msg = String.format(fmt, request.getBaseUrl());
-					throw new ClientException(msg);
-				}
-			}
-		}
-		return request;
 	}
 
 	private static URI getURI(SimpleHttpRequest request)

@@ -16,7 +16,14 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
-class SpecimenClient extends AbstractClient implements ISpecimenAPI {
+/**
+ * A client-side implementation of the {@link ISpecimenAPI specimen API} defined
+ * by the NBA.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenClient.class);

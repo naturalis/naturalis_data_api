@@ -2,6 +2,14 @@ package nl.naturalis.nba.api.query;
 
 import java.util.List;
 
+/**
+ * Models a query specification. All information required by the various
+ * {@code query} methods in the API take there input from a {@link QuerySpec}
+ * instance.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class QuerySpec {
 
 	private Condition condition;

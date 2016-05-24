@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 
-class ClientUtil {
+public class ClientUtil {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(ClientUtil.class);

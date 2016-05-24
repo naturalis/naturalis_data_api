@@ -24,7 +24,7 @@ public interface ISpecimenAPI {
 
 	/**
 	 * Returns the {@link Specimen}s with the specified system ids, or a
-	 * zero-length array if there is no specimens were found.
+	 * zero-length array no specimens were found.
 	 * 
 	 * @param id
 	 *            The NBA system IDs of the requested specimens
@@ -86,8 +86,9 @@ public interface ISpecimenAPI {
 	 * error when calling it unless they reside on the same server as the NBA
 	 * itself. If you specify an ID for the specimen (using
 	 * {@link Specimen#setId(String) Specimen.setId()}), that ID will used as
-	 * the Elasticsearch document ID. Otherwise the Elasticsearch-generated ID
-	 * will be set on the provided specimen instance.
+	 * the Elasticsearch document ID. Otherwise an Elasticsearch-generated ID
+	 * will be used <i>and</i> set (using {@link Specimen#setId(String)
+	 * Specimen.setId()}) on the provided specimen instance.
 	 * 
 	 * @param specimen
 	 *            The specimen to save
@@ -99,10 +100,10 @@ public interface ISpecimenAPI {
 	String save(Specimen specimen, boolean immediate);
 
 	/**
-	 * Deletes the specimen with the specified ID (as can be retrieved using
-	 * {@link Specimen#getId()}). N.B. although this method is part of the API,
-	 * NBA clients will get an HTTP 403 (FORBIDDEN) error when calling it unless
-	 * they reside on the same server as the NBA itself.
+	 * Deletes the specimen with the specified system ID (as can be retrieved
+	 * using {@link Specimen#getId()}). N.B. although this method is part of the
+	 * API, NBA clients will get an HTTP 403 (FORBIDDEN) error when calling it
+	 * unless they reside on the same server as the NBA itself.
 	 * 
 	 * @param id
 	 *            The ID of the specimen

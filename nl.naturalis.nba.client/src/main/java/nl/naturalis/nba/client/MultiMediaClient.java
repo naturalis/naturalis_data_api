@@ -6,7 +6,7 @@ import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 import nl.naturalis.nba.api.IMultiMediaObjectAPI;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 
-class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
+public class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAPI {
 
 	MultiMediaClient(ClientConfig cfg)
 	{

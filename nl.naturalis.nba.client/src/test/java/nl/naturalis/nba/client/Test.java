@@ -16,6 +16,10 @@ public class Test {
 		NBASession session = new NBASessionConfigurator().setBaseUrl(baseUrl).create();
 		String answer = session.ping();
 		System.out.println(answer);
+		SpecimenClient client = session.getSpecimenClient();
+		String[] ids = client.getIdsInCollection("Living Dinos");
+		Specimen[] specimens = client.find(ids);
+		ClientUtil.printTerse(specimens);
 	}
 
 }

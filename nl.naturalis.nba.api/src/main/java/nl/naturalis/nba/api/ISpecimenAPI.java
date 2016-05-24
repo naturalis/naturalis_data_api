@@ -23,6 +23,16 @@ public interface ISpecimenAPI {
 	Specimen find(String id);
 
 	/**
+	 * Returns the {@link Specimen}s with the specified system ids, or a
+	 * zero-length array if there is no specimens were found.
+	 * 
+	 * @param id
+	 *            The NBA system IDs of the requested specimens
+	 * @return
+	 */
+	Specimen[] find(String[] ids);
+
+	/**
 	 * Retrieves a {@link Specimen} by its UnitID. Since the UnitID is not
 	 * strictly specified to be unique across all of the NBA's data sources, a
 	 * theoretical chance exists that multiple specimens are retrieved for a
@@ -54,9 +64,16 @@ public interface ISpecimenAPI {
 	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
-	 * Returns the ids of all specimens belonging to a named collection. These
-	 * collections are otherwise known as "special collections" or "thematic
-	 * collections".
+	 * Returns all &#34;special collections&#34; defined within the specimen
+	 * dataset. These can be collections from a particular collector or
+	 * collections revolving around a theme (e.g. Extinct Birds).
+	 * 
+	 * @return
+	 */
+	String[] getNamedCollections();
+
+	/**
+	 * Returns the ids of all specimens belonging to a named collection.
 	 * 
 	 * @param collectionName
 	 * @return

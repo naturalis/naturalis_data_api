@@ -49,6 +49,18 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 	}
 
 	@Override
+	public Specimen[] find(String[] ids)
+	{
+		String json = JsonUtil.toJson(ids);
+		SimpleHttpGet request = httpGet("specimen/findByIds/" + json);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(), Specimen[].class);
+	}
+
+	@Override
 	public Specimen[] findByUnitID(String unitID)
 	{
 		SimpleHttpGet request = httpGet("specimen/findByUnitID/" + unitID);
@@ -60,9 +72,33 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 	}
 
 	@Override
+	public String[] getNamedCollections()
+	{
+		SimpleHttpGet request = httpGet("specimen/getNamedCollections");
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(), String[].class);
+	}
+
+	@Override
+	public String[] getIdsInCollection(String collectionName)
+	{
+		String url = "specimen/getIdsInCollection/" + collectionName;
+		SimpleHttpGet request = httpGet(url);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(), String[].class);
+	}
+
+	@Override
 	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		SimpleHttpGet request = httpGet("specimen/query/" + JsonUtil.toJson(querySpec));
+		String json = JsonUtil.toJson(querySpec);
+		SimpleHttpGet request = httpGet("specimen/query/" + json);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -87,7 +123,7 @@ class SpecimenClient extends AbstractClient implements ISpecimenAPI {
 		}
 		return getString(request.getResponseBody());
 	}
-	
+
 	@Override
 	public boolean delete(String id, boolean immediate)
 	{

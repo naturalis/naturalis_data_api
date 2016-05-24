@@ -60,6 +60,21 @@ public class SpecimenResource {
 	}
 
 	@GET
+	@Path("/findByIds/{ids}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Specimen[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
+	{
+		try {
+			String[] idArray = JsonUtil.fromJson(ids, String[].class);
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.find(idArray);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
 	@Path("/findByUnitID/{unitID}")
 	@Produces(JSON_CONTENT_TYPE)
 	public Specimen[] findByUnitID(@PathParam("unitID") String unitID, @Context UriInfo uriInfo)
@@ -112,6 +127,34 @@ public class SpecimenResource {
 			QuerySpec qs = JsonUtil.fromJson(json, QuerySpec.class);
 			SpecimenDAO dao = new SpecimenDAO();
 			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getNamedCollections")
+	@Produces(JSON_CONTENT_TYPE)
+	public String[] getNamedCollections(@Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.getNamedCollections();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getIdsInCollection/{name}")
+	@Produces(JSON_CONTENT_TYPE)
+	public String[] getIdsInCollection(@PathParam("name") String name, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDAO dao = new SpecimenDAO();
+			return dao.getIdsInCollection(name);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

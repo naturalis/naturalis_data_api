@@ -20,8 +20,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
@@ -92,6 +94,19 @@ public class SpecimenDAO implements ISpecimenAPI {
 	}
 
 	@Override
+	public Specimen[] find(String[] ids)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("find({})", write(ids));
+		}
+		SearchRequestBuilder request = newSearchRequest();
+		IdsQueryBuilder query = QueryBuilders.idsQuery(spType);
+		query.ids(ids);
+		request.setQuery(query);
+		return processSearchRequest(request);
+	}
+
+	@Override
 	public boolean exists(String unitID)
 	{
 		if (logger.isDebugEnabled()) {
@@ -130,6 +145,12 @@ public class SpecimenDAO implements ISpecimenAPI {
 		SearchRequestBuilder request = newSearchRequest();
 		request.setQuery(csq);
 		return processSearchRequest(request);
+	}
+
+	@Override
+	public String[] getNamedCollections()
+	{
+		return new String[] { "Living Dinos", "Strange Plants" };
 	}
 
 	@Override
@@ -249,11 +270,21 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return request;
 	}
 
-	static String dump(Object obj)
+	private static String dump(Object obj)
 	{
 		ObjectWriter ow = spObjMapper.writerWithDefaultPrettyPrinter();
 		try {
 			return ow.writeValueAsString(obj);
+		}
+		catch (JsonProcessingException e) {
+			throw new DaoException(e);
+		}
+	}
+
+	private static String write(Object obj)
+	{
+		try {
+			return spObjMapper.writeValueAsString(obj);
 		}
 		catch (JsonProcessingException e) {
 			throw new DaoException(e);

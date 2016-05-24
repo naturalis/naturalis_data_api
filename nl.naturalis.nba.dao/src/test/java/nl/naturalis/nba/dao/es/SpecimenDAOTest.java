@@ -391,7 +391,7 @@ public class SpecimenDAOTest {
 	@Test
 	public void testGetIdsInCollection__String__01()
 	{
-		String theme = "Strange plants";
+		String theme = "Strange Plants";
 		SpecimenDAO dao = new SpecimenDAO();
 		String[] ids = dao.getIdsInCollection(theme);
 		assertEquals("01", 1, ids.length);

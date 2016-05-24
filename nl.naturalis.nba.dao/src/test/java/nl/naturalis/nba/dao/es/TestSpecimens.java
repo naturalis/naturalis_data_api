@@ -225,7 +225,7 @@ class TestSpecimens {
 		ESSpecimen specimen = new ESSpecimen();
 		specimen.setUnitID("L   100");
 		specimen.setSourceSystem(BRAHMS);
-		String[] collections = new String[] { "Strange plants" };
+		String[] collections = new String[] { "Strange Plants" };
 		specimen.setTheme(Arrays.asList(collections));
 		specimen.setPhaseOrStage(ADULT);
 		specimen.setSex(FEMALE);

@@ -20,11 +20,12 @@ import java.util.List;
  * </p>
  * <h3>Combining AND and OR siblings</h3>
  * <p>
- * If a condition has both AND siblings and OR siblings, the condition itself
- * and its AND siblings make up one boolean expression, which is then joined
- * with the OR siblings. For example, if you have a condition C with AND
- * siblings A1, A2, A3, and with OR siblings O1, O2, O3, then the resulting
- * expression would be {@code (C AND A1 AND A2 AND A3) OR O1 OR O2 OR O3}.
+ * Following common precedence rules, if a condition has both AND siblings and
+ * OR siblings, the condition itself and its AND siblings make up one boolean
+ * expression, which is then joined with the OR siblings. For example, if you
+ * have a condition C with AND siblings A1, A2, A3, and with OR siblings O1, O2,
+ * O3, then the resulting expression would be
+ * {@code ((C AND A1 AND A2 AND A3) OR O1 OR O2 OR O3)}.
  * </p>
  * <h3>Negating a condition</h3>
  * <p>
@@ -32,11 +33,20 @@ import java.util.List;
  * NOT}. This means that the <b>entire</b> expression that the condition
  * evaluates to is negated. Thus when you negate the above condition, the
  * resulting expression will <b>not</b> be:
- * {@code ((NOT C) AND A1 AND A2 AND A3) OR O1 OR 02 OR O3}. It will be:
- * {@code NOT((C AND A1 AND A2 AND A3) OR O1 OR 02 OR O3)}. This can quickly
- * become confusing if the siblings themselves are also negated. For example,
- * the following code will probably not evaluate as you might as first glance
- * expect:
+ * </p>
+ * <code>
+ * (((NOT C) AND A1 AND A2 AND A3) OR O1 OR 02 OR O3)
+ * </code>
+ * <p>
+ * It will be:
+ * </p>
+ * <code>
+ * NOT((C AND A1 AND A2 AND A3) OR O1 OR 02 OR O3)
+ * </code>
+ * <p>
+ * This can become confusing if the siblings themselves are also negated. For
+ * example, the following code will probably not evaluate as you might as first
+ * glance expect:
  * </p>
  * <code>
  * Condition condition = new Condition(NOT, genus, EQUALS, "Larus");<br>
@@ -63,8 +73,8 @@ import java.util.List;
  * condition.andNot(sourceSystem, EQUALS, "CRS");
  * </code>
  * <p>
- * Alternatively, simply add the negatively expressed conditions one by one to
- * the {@link QuerySpec} object without nesting one within the other:
+ * Alternatively, add negatively expressed conditions one by one to the
+ * {@link QuerySpec} object without nesting one within the other:
  * </p>
  * <code>
  * QuerySpec querySpec = new QuerySpec();<br>

@@ -1,0 +1,33 @@
+{
+  "bool" : {
+    "should" : [ {
+      "term" : {
+        "city" : "Amsterdam"
+      }
+    }, {
+      "term" : {
+        "city" : "Rotterdam"
+      }
+    }, {
+      "term" : {
+        "city" : "Leiden"
+      }
+    }, {
+      "bool" : {
+        "must" : [ {
+          "term" : {
+            "firstName" : "John"
+          }
+        }, {
+          "term" : {
+            "lastName" : "Smith"
+          }
+        }, {
+          "term" : {
+            "favouriteFood" : "Chinese"
+          }
+        } ]
+      }
+    } ]
+  }
+}

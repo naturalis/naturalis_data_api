@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.es.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
@@ -25,17 +27,28 @@ public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 		super(condition, inspector);
 	}
 
-	protected QueryBuilder translateCondition() throws InvalidConditionException
+	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		DocumentField f = getDocumentField(field());
 		if (!inspector.isOperatorAllowed(f, EQUALS_IC)) {
 			throw new IllegalOperatorException(f.getName(), EQUALS_IC);
 		}
+		if (value() == null) {
+			throw searchTermMustNotBeNull();
+		}
+		if (value().getClass() != String.class) {
+			throw searchTermHasWrongType();
+		}
 		String nestedPath = inspector.getNestedPath(f);
-		// TODO: soft-code lookup operator => multifield name.
 		String multiField = field() + ".ci";
 		if (nestedPath == null) {
+			if (value() == null) {
+				return boolQuery().mustNot(existsQuery(field()));
+			}
 			return termQuery(multiField, value());
+		}
+		if (value() == null) {
+			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(field())));
 		}
 		return nestedQuery(nestedPath, termQuery(multiField, value()));
 	}

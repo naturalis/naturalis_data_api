@@ -1,0 +1,57 @@
+{
+  "bool" : {
+    "must" : [ {
+      "term" : {
+        "firstName" : "John"
+      }
+    }, {
+      "term" : {
+        "lastName" : "Smith"
+      }
+    }, {
+      "bool" : {
+        "should" : [ {
+          "bool" : {
+            "must" : [ {
+              "term" : {
+                "country" : "Germany"
+              }
+            }, {
+              "bool" : {
+                "should" : [ {
+                  "term" : {
+                    "city" : "Berlin"
+                  }
+                }, {
+                  "term" : {
+                    "city" : "Hanover"
+                  }
+                } ]
+              }
+            } ]
+          }
+        }, {
+          "bool" : {
+            "must" : [ {
+              "term" : {
+                "country" : "Netherlands"
+              }
+            }, {
+              "bool" : {
+                "should" : [ {
+                  "term" : {
+                    "city" : "Amsterdam"
+                  }
+                }, {
+                  "term" : {
+                    "city" : "Rotterdam"
+                  }
+                } ]
+              }
+            } ]
+          }
+        } ]
+      }
+    } ]
+  }
+}

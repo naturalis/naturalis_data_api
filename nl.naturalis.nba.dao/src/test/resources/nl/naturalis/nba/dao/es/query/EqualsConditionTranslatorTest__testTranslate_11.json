@@ -6,7 +6,11 @@
       }
     }, {
       "term" : {
-        "lastName" : "Smith"
+        "firstName" : "Peter"
+      }
+    }, {
+      "term" : {
+        "firstName" : "Mark"
       }
     } ]
   }

@@ -32,17 +32,17 @@ public class LikeConditionTranslator extends ConditionTranslator {
 			throw new IllegalOperatorException(f.getName(), LIKE);
 		}
 		if (value() == null) {
-			throw error(f, "Search term must not be null with operator %s", LIKE);
+			throw searchTermMustNotBeNull();
 		}
 		if (value().getClass() != String.class) {
-			throw error(f, "Search term must have type java.lang.String with operator %s", LIKE);
+			throw searchTermHasWrongType();
 		}
 		String value = (String) value();
 		if (value.length() < 3) {
-			throw error(f, "Search term must contain at least 3 characters with operator %s", LIKE);
+			throw error("Search term must contain at least 3 characters with operator %s", LIKE);
 		}
 		if (value.length() > 10) {
-			throw error(f, "Search term must contain at most 10 characters with operator %s", LIKE);
+			throw error("Search term must contain at most 10 characters with operator %s", LIKE);
 		}
 		String nestedPath = inspector.getNestedPath(f);
 		String multiField = field() + ".like";

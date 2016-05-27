@@ -1,0 +1,21 @@
+{
+  "bool" : {
+    "must_not" : {
+      "bool" : {
+        "must" : [ {
+          "term" : {
+            "firstName" : "John"
+          }
+        }, {
+          "term" : {
+            "lastName" : "Smith"
+          }
+        }, {
+          "term" : {
+            "age" : 40
+          }
+        } ]
+      }
+    }
+  }
+}

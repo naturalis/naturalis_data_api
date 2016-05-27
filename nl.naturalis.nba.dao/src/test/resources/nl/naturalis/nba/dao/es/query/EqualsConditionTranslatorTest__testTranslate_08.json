@@ -11,11 +11,11 @@
     } ],
     "must_not" : [ {
       "term" : {
-        "hasChildren" : true
+        "married" : true
       }
     }, {
       "term" : {
-        "favoritePet" : "dog"
+        "favouritePet" : "dog"
       }
     } ]
   }

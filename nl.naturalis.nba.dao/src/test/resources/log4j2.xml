@@ -9,7 +9,7 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="nl.naturalis" level="ERROR" additivity="true">
+		<Logger name="nl.naturalis" level="INFO" additivity="true">
 			<AppenderRef ref="nba" />
 		</Logger>
 		<Root level="ERROR">

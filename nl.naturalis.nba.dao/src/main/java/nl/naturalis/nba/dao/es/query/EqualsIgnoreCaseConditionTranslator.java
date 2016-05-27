@@ -30,8 +30,8 @@ public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		DocumentField f = getDocumentField(field());
-		if (!inspector.isOperatorAllowed(f, EQUALS_IC)) {
-			throw new IllegalOperatorException(f.getName(), EQUALS_IC);
+		if (!inspector.isOperatorAllowed(f, operator())) {
+			throw new IllegalOperatorException(f.getName(), operator());
 		}
 		if (value() == null) {
 			throw searchTermMustNotBeNull();

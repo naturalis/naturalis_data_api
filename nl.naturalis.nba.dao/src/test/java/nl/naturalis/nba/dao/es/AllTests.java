@@ -16,6 +16,7 @@ import nl.naturalis.nba.elasticsearch.map.MappingInspectorTest;
 	EqualsConditionTranslatorTest.class,
 	LikeConditionTranslatorTest.class ,
 	SpecimenDAOTest.class,
+	SpecimenDAOEqualsQueryTest.class,
 	MappingInspectorTest.class,
 	RegistryTest.class
 })

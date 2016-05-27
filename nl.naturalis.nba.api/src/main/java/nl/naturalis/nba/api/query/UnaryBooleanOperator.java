@@ -1,24 +1,25 @@
 package nl.naturalis.nba.api.query;
 
 /**
- * Defines just one symbolic constant that can be used in a {@link Condition
- * query condition} to indicate that the condition is to be negated.
+ * Defines a single constant representing the unary boolean operator NOT. This
+ * constant that can be used in a {@link Condition query condition} to indicate
+ * that the condition is to be negated.
  * 
  * @author Ayco Holleman
  *
  */
-public enum Not
+public enum UnaryBooleanOperator
 {
 	NOT;
 
-	public static Not parse(String value)
+	public static UnaryBooleanOperator parse(String s)
 	{
-		if (value == null || value.isEmpty()) {
+		if (s == null || s.isEmpty()) {
 			return null;
 		}
-		if (value.equalsIgnoreCase("NOT")) {
+		if (s.equalsIgnoreCase("NOT") || s.equals("!")) {
 			return NOT;
 		}
-		throw new IllegalArgumentException(value);
+		throw new IllegalArgumentException("No such unary boolean operator: " + s);
 	}
 }

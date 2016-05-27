@@ -1,5 +1,8 @@
 package nl.naturalis.nba.api.query;
 
+import static nl.naturalis.nba.api.query.LogicalOperator.AND;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,21 +15,40 @@ import java.util.List;
  */
 public class QuerySpec {
 
-	private Condition condition;
+	private List<Condition> conditions;
+	private LogicalOperator logicalOperator;
 	private List<String> sortBy;
 
 	public QuerySpec()
 	{
 	}
 
-	public Condition getCondition()
+	public void addCondition(Condition condition)
 	{
-		return condition;
+		if (conditions == null) {
+			conditions = new ArrayList<>(5);
+		}
+		conditions.add(condition);
 	}
 
-	public void setCondition(Condition condition)
+	public List<Condition> getConditions()
 	{
-		this.condition = condition;
+		return conditions;
+	}
+
+	public void setConditions(List<Condition> conditions)
+	{
+		this.conditions = conditions;
+	}
+
+	public LogicalOperator getLogicalOperator()
+	{
+		return logicalOperator == null ? AND : logicalOperator;
+	}
+
+	public void setLogicalOperator(LogicalOperator operator)
+	{
+		this.logicalOperator = operator;
 	}
 
 	public List<String> getSortBy()

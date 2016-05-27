@@ -18,6 +18,12 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
+/**
+ * Generates 5 Specimen objects used for testing the SpecimenDAO.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class TestSpecimens {
 
 	static ESSpecimen parusMajorSpecimen01()

@@ -1,49 +1,56 @@
 package nl.naturalis.nba.api.query;
 
 /**
- * Specifies all operators that can be used in a {@link Condition query
- * condition}.
+ * Provides symbolic constants for the operators that can be used in a
+ * {@link Condition query condition}.
  * 
  * @author Ayco Holleman
  *
  */
-public enum Operator
+public enum ComparisonOperator
 {
 
 	/**
-	 * Operator to be used when checking for strict equality between search term
-	 * and field value. For alpha-numeric fields the search term and field value
-	 * are compared in a <i>case sensitive</i> way.
+	 * Operator used to establish that search term and field value are equal.
+	 * For alpha-numeric fields the search term and field value are compared in
+	 * a <i>case sensitive</i> way. The search term may be null when using the
+	 * EQUALS operator. This is equivalent to using the IS NULL operator in SQL.
 	 */
 	EQUALS("="),
 	/**
-	 * Operator to be used when checking for strict in-equality between search
-	 * term and field value. For alpha-numeric fields the search term and field
-	 * value are compared in a <i>case sensitive</i> way.
+	 * Operator used to establish that search term and field value are not
+	 * equal. For alpha-numeric fields the search term and field value are
+	 * compared in a <i>case sensitive</i> way. The search term may be null when
+	 * using the EQUALS operator. This is equivalent to using the IS NOT NULL
+	 * operator in SQL.
 	 */
 	NOT_EQUALS("!="),
 	/**
-	 * EQUALS IGNORE CASE. Operator to be used when checking for equality while
-	 * ignoring case. Can only be used for string fields.
+	 * Operator used to establish that search term and field value are equal
+	 * ignoring case. Can only be used for alpha-numeric fields. The search term
+	 * may be null when using the EQUALS operator. This is equivalent to using
+	 * the IS NULL operator in SQL.
 	 */
 	EQUALS_IC,
 	/**
-	 * NOT EQUALS IGNORE CASE. Operator to be used when checking for in-equality
-	 * while ignoring case. Can only be used for string fields.
+	 * Operator used to establish that search term and field value are not
+	 * equal, even when ignoring case. Can only be used for alpha-numeric
+	 * fields. The search term may be null when using the EQUALS operator. This
+	 * is equivalent to using the IS NOT NULL operator in SQL.
 	 */
 	NOT_EQUALS_IC,
 	/**
-	 * Operator to be used for checking if the search term is a substring of the
-	 * field value. Can only be used for string fields. This is akin to the SQL
-	 * LIKE operator, but you don't use the percentage sign (%) in the search
-	 * term.
+	 * Operator used to establish that the search term is a substring of the
+	 * field value. Can only be used for alpha-numeric fields. Search term and
+	 * field value are compared in a case insensitive way. The search term must
+	 * not be null.
 	 */
 	LIKE,
 	/**
-	 * Operator to be used for checking if the search term is not a substring of
-	 * the field value. Can only be used for string fields. This is akin to the
-	 * SQL LIKE operator, but you don't use the percentage sign (%) in the
-	 * search term.
+	 * Operator used to establish that the search term is not a substring of the
+	 * field value. Can only be used for alpha-numeric fields. Search term and
+	 * field value are compared in a case insensitive way. The search term must
+	 * not be null.
 	 */
 	NOT_LIKE,
 	/**
@@ -73,15 +80,16 @@ public enum Operator
 	NOT_BETWEEN;
 
 	/**
-	 * Returns the {@link Operator} corresponding to the specified string.
+	 * Returns the {@link ComparisonOperator} corresponding to the specified
+	 * string.
 	 * 
 	 * @param s
 	 * @return
 	 */
-	public static Operator parse(String s)
+	public static ComparisonOperator parse(String s)
 	{
 		if (s != null) {
-			for (Operator op : values()) {
+			for (ComparisonOperator op : values()) {
 				if (op.symbol != null && s.equals(op.symbol)) {
 					return op;
 				}
@@ -95,12 +103,12 @@ public enum Operator
 
 	private final String symbol;
 
-	private Operator()
+	private ComparisonOperator()
 	{
 		this.symbol = null;
 	}
 
-	private Operator(String symbol)
+	private ComparisonOperator(String symbol)
 	{
 		this.symbol = symbol;
 	}

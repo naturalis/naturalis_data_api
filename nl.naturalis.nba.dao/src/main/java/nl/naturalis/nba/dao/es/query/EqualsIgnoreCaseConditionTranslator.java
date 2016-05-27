@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.es.query;
 
-import static nl.naturalis.nba.api.query.Operator.*;
+import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 

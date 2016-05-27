@@ -7,14 +7,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import nl.naturalis.nba.api.query.Operator;
+import nl.naturalis.nba.api.query.ComparisonOperator;
 
-public class OperatorDeserializer extends JsonDeserializer<Operator> {
+public class OperatorDeserializer extends JsonDeserializer<ComparisonOperator> {
 
-	public Operator deserialize(JsonParser jp, DeserializationContext ctx)
+	public ComparisonOperator deserialize(JsonParser jp, DeserializationContext ctx)
 			throws IOException, JsonProcessingException
 	{
-		return Operator.parse(jp.getText());
+		return ComparisonOperator.parse(jp.getText());
 	}
 
 }

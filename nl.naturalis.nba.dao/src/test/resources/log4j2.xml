@@ -9,10 +9,10 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="nl.naturalis" level="DEBUG" additivity="true">
+		<Logger name="nl.naturalis" level="ERROR" additivity="true">
 			<AppenderRef ref="nba" />
 		</Logger>
-		<Root level="ALL">
+		<Root level="ERROR">
 			<AppenderRef ref="STDOUT" />
 		</Root>
 	</Loggers>

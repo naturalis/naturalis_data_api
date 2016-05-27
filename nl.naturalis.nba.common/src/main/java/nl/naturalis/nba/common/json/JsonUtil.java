@@ -4,16 +4,23 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import static com.fasterxml.jackson.core.util.DefaultIndenter.*;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtil {
 
 	private static final ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
+	private static final PrettyPrinter printer = getPrettyPrinter();
 
 	public static byte[] serialize(Object obj)
 	{
 		ObjectMapper om = oml.getObjectMapper(obj.getClass());
+		om.setSerializationInclusion(Include.NON_NULL);
 		try {
 			return om.writeValueAsBytes(obj);
 		}
@@ -43,6 +50,28 @@ public class JsonUtil {
 		}
 	}
 
+	public static String toPrettyJson(Object obj)
+	{
+		return toPrettyJson(obj, true);
+	}
+
+	public static String toPrettyJson(Object obj, boolean terse)
+	{
+		ObjectMapper om = oml.getObjectMapper(obj.getClass());
+		if (terse) {
+			om.setSerializationInclusion(Include.NON_NULL);
+		}
+		else {
+			om.setSerializationInclusion(Include.ALWAYS);
+		}
+		try {
+			return om.writer(printer).writeValueAsString(obj);
+		}
+		catch (JsonProcessingException e) {
+			throw new JsonSerializationException(e);
+		}
+	}
+
 	public static <T> T fromJson(String json, Class<T> type)
 	{
 		try {
@@ -61,6 +90,15 @@ public class JsonUtil {
 
 	private JsonUtil()
 	{
+	}
+
+	private static DefaultPrettyPrinter getPrettyPrinter()
+	{
+		DefaultPrettyPrinter.Indenter indenter = new DefaultIndenter("    ", SYS_LF);
+		DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
+		printer.indentObjectsWith(indenter);
+		printer.indentArraysWith(indenter);
+		return printer;
 	}
 
 }

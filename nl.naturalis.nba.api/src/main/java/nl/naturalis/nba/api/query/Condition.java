@@ -1,41 +1,85 @@
 package nl.naturalis.nba.api.query;
 
+import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.naturalis.nba.api.query.Not.*;
-
 /**
  * <p>
- * Class modeling a query condition. A condition basically consists of a field
- * name, an operator and a value. For example: "name", EQUALS, "John". A
- * condition can optionally have a list of sibling conditions joined together by
- * the AND operator or by the OR operator. A condition and its siblings are
- * strongly bound together, as though surrounded by parentheses:
- * {@code (condition AND sibling0 AND
- * sibling1)}. Because each sibling may itself have a list of sibling
- * confitions, this allows you to construct queries like
- * {@code (A AND (B OR C OR D) AND E)}. Finally, a condition may be negated.
- * This means that the condition and its siblings are negated <i>as a whole</i>,
- * e.g. like {@code NOT(A AND (B OR C OR D) AND E)}.
+ * Class modeling a query condition. A condition consists of a field name, a
+ * {@link ComparisonOperator comparison operator} and a value. For example:
+ * "name", EQUALS, "John". A condition can optionally have a list of sibling
+ * conditions. These are joined to the containing condition using the AND or OR
+ * operator. A condition and its siblings are strongly bound together, as though
+ * surrounded by parentheses: {@code (condition AND sibling0 AND
+ * sibling1)}. Because each sibling may itself also have a list of sibling
+ * conditions, this allows you to nest logical expressions like
+ * {@code (A AND (B OR C OR (D AND E)) AND F)} or
+ * {@code (A OR (B AND C AND (D OR E)) OR F)}.
  * </p>
+ * <h3>Combining AND and OR siblings</h3>
  * <p>
- * You should not provide both {@link #setAnd(List) AND-joined siblings} and
- * {@link #setOr(List) OR-joined siblings} for one and the same
- * {@code Condition} instance. The API allows this because it makes for elegant
- * code. However, when the condition is validated, a
- * {@link InvalidConditionException} is thrown it contains both AND-joined
- * siblings and OR-joined siblings.
+ * If a condition has both AND siblings and OR siblings, the condition itself
+ * and its AND siblings make up one boolean expression, which is then joined
+ * with the OR siblings. For example, if you have a condition C with AND
+ * siblings A1, A2, A3, and with OR siblings O1, O2, O3, then the resulting
+ * expression would be {@code (C AND A1 AND A2 AND A3) OR O1 OR O2 OR O3}.
  * </p>
+ * <h3>Negating a condition</h3>
+ * <p>
+ * A condition may be negated using operator {@link UnaryBooleanOperator#NOT
+ * NOT}. This means that the <b>entire</b> expression that the condition
+ * evaluates to is negated. Thus when you negate the above condition, the
+ * resulting expression will <b>not</b> be:
+ * {@code ((NOT C) AND A1 AND A2 AND A3) OR O1 OR 02 OR O3}. It will be:
+ * {@code NOT((C AND A1 AND A2 AND A3) OR O1 OR 02 OR O3)}. This can quickly
+ * become confusing if the siblings themselves are also negated. For example,
+ * the following code will probably not evaluate as you might as first glance
+ * expect:
+ * </p>
+ * <code>
+ * Condition condition = new Condition(NOT, genus, EQUALS, "Larus");<br>
+ * condition.andNot(sourceSystem, EQUALS, "CRS");
+ * </code>
+ * <p>
+ * This condition will evaluate to:
+ * </p>
+ * <code>
+ * NOT(genus="Larus" AND NOT sourceSystem="CRS")
+ * </code>
+ * <p>
+ * Which is equivalent to:
+ * </p>
+ * <code>
+ * genus!="Larus" OR sourceSystem="CRS"
+ * </code>
+ * <p>
+ * To avoid this confusion, avoid using the NOT operator in a condition that
+ * also has siblings. For example:
+ * </p>
+ * <code>
+ * Condition condition = new Condition(genus, NOT_EQUALS, "Larus");<br>
+ * condition.andNot(sourceSystem, EQUALS, "CRS");
+ * </code>
+ * <p>
+ * Alternatively, simply add the negatively expressed conditions one by one to
+ * the {@link QuerySpec} object without nesting one within the other:
+ * </p>
+ * <code>
+ * QuerySpec querySpec = new QuerySpec();<br>
+ * querySpec.addCondition(new Condition(NOT, genus, EQUALS, "Larus"));<br>
+ * querySpec.addCondition(new Condition(NOT, sourceSystem, EQUALS, "CRS"));
+ * </code>
  * 
  * @author Ayco Holleman
  *
  */
 public class Condition {
 
-	private Not not;
+	private UnaryBooleanOperator not;
 	private String field;
-	private Operator operator;
+	private ComparisonOperator operator;
 	private Object value;
 	private List<Condition> and;
 	private List<Condition> or;
@@ -47,26 +91,27 @@ public class Condition {
 	public Condition(String field, String operator, Object value)
 	{
 		this.field = field;
-		this.operator = Operator.parse(operator);
+		this.operator = ComparisonOperator.parse(operator);
 		this.value = value;
 	}
 
-	public Condition(String field, Operator operator, Object value)
+	public Condition(String field, ComparisonOperator operator, Object value)
 	{
 		this.field = field;
 		this.operator = operator;
 		this.value = value;
 	}
 
-	public Condition(Not not, String field, String operator, Object value)
+	public Condition(UnaryBooleanOperator not, String field, String operator, Object value)
 	{
 		this.not = not;
 		this.field = field;
-		this.operator = Operator.parse(operator);
+		this.operator = ComparisonOperator.parse(operator);
 		this.value = value;
 	}
 
-	public Condition(Not not, String field, Operator operator, Object value)
+	public Condition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
+			Object value)
 	{
 		this.not = not;
 		this.field = field;
@@ -79,7 +124,7 @@ public class Condition {
 		return and(new Condition(field, operator, value));
 	}
 
-	public Condition and(String field, Operator operator, Object value)
+	public Condition and(String field, ComparisonOperator operator, Object value)
 	{
 		return and(new Condition(field, operator, value));
 	}
@@ -98,7 +143,7 @@ public class Condition {
 		return andNot(new Condition(field, operator, value));
 	}
 
-	public Condition andNot(String field, Operator operator, Object value)
+	public Condition andNot(String field, ComparisonOperator operator, Object value)
 	{
 		return andNot(new Condition(field, operator, value));
 	}
@@ -117,7 +162,7 @@ public class Condition {
 		return or(new Condition(field, operator, value));
 	}
 
-	public Condition or(String field, Operator operator, Object value)
+	public Condition or(String field, ComparisonOperator operator, Object value)
 	{
 		return or(new Condition(field, operator, value));
 	}
@@ -136,7 +181,7 @@ public class Condition {
 		return orNot(new Condition(field, operator, value));
 	}
 
-	public Condition orNot(String field, Operator operator, Object value)
+	public Condition orNot(String field, ComparisonOperator operator, Object value)
 	{
 		return orNot(new Condition(field, operator, value));
 	}
@@ -150,23 +195,35 @@ public class Condition {
 		return this;
 	}
 
+	/**
+	 * Negates the condition. That is, if it already was a negated condition, it
+	 * becomes a non-negated condition again; otherwise it becomes a negated
+	 * condition.
+	 * 
+	 * @return
+	 */
 	public Condition negate()
 	{
 		not = (not == null ? NOT : null);
 		return this;
 	}
 
+	/**
+	 * Whether or not this is a negated condition.
+	 * 
+	 * @return
+	 */
 	public boolean isNegated()
 	{
 		return not == NOT;
 	}
 
-	public Not getNot()
+	public UnaryBooleanOperator getNot()
 	{
 		return not;
 	}
 
-	public void setNot(Not not)
+	public void setNot(UnaryBooleanOperator not)
 	{
 		this.not = not;
 	}
@@ -181,12 +238,12 @@ public class Condition {
 		this.field = field;
 	}
 
-	public Operator getOperator()
+	public ComparisonOperator getOperator()
 	{
 		return operator;
 	}
 
-	public void setOperator(Operator operator)
+	public void setOperator(ComparisonOperator operator)
 	{
 		this.operator = operator;
 	}

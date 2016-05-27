@@ -1,5 +1,9 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static nl.naturalis.nba.dao.es.map.ESDataType.NESTED;
+import static nl.naturalis.nba.dao.es.map.ESDataType.OBJECT;
+import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,10 +12,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
 
-import nl.naturalis.nba.api.query.Operator;
+import nl.naturalis.nba.api.query.ComparisonOperator;
+import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -23,7 +29,14 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public class MappingInspector {
 
-	private static final HashMap<Class<? extends ESType>, MappingInspector> cache = new HashMap<>();
+	@SuppressWarnings("unused")
+	private static final Logger logger;
+	private static final HashMap<Class<? extends ESType>, MappingInspector> cache;
+
+	static {
+		logger = Registry.getInstance().getLogger(MappingInspector.class);
+		cache = new HashMap<>();
+	}
 
 	/**
 	 * Returns a {@link MappingInspector} for the specified Elasticsearch type.
@@ -77,7 +90,7 @@ public class MappingInspector {
 	public ESDataType getType(String path)
 	{
 		ESField f = getField(path);
-		return f.getType() == null ? ESDataType.OBJECT : f.getType();
+		return f.getType() == null ? OBJECT : f.getType();
 	}
 
 	/**
@@ -139,7 +152,7 @@ public class MappingInspector {
 		List<Document> out;
 		for (int i = 0; i < in.size(); ++i) {
 			Document d = in.get(i);
-			if (d.getType() == ESDataType.NESTED) {
+			if (d.getType() == NESTED) {
 				out = in.subList(i, in.size());
 				Collections.reverse(out);
 				return CollectionUtil.implode(out, ".", new Stringifier<Document>() {
@@ -154,7 +167,7 @@ public class MappingInspector {
 		return null;
 	}
 
-	public boolean isOperatorAllowed(DocumentField field, Operator operator)
+	public boolean isOperatorAllowed(DocumentField field, ComparisonOperator operator)
 	{
 		switch (operator) {
 			case EQUALS:
@@ -162,10 +175,10 @@ public class MappingInspector {
 				return true;
 			case EQUALS_IC:
 			case NOT_EQUALS_IC:
-				return field.hasMultiField("ci");
+				return field.getType() == STRING && field.hasMultiField("ci");
 			case LIKE:
 			case NOT_LIKE:
-				return field.hasMultiField("like");
+				return field.getType() == STRING && field.hasMultiField("like");
 			default:
 				return false;
 		}

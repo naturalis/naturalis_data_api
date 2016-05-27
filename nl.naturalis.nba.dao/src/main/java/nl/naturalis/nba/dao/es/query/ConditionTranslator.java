@@ -1,8 +1,8 @@
 package nl.naturalis.nba.dao.es.query;
 
-import static nl.naturalis.nba.api.query.Operator.NOT_BETWEEN;
-import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
 import java.util.EnumSet;
@@ -10,15 +10,19 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 
+import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.api.query.Operator;
+import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.types.ESType;
+
+import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 
 /**
  * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
@@ -29,14 +33,45 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public abstract class ConditionTranslator {
 
+	/**
+	 * Translates the conditions in the provided {@link QuerySpec} instance.
+	 * 
+	 * @param qs
+	 * @param type
+	 * @return
+	 * @throws InvalidConditionException
+	 */
+	public static QueryBuilder translate(QuerySpec qs, Class<? extends ESType> type)
+			throws InvalidConditionException
+	{
+		List<Condition> conditions = qs.getConditions();
+		if (conditions == null || conditions.size() == 0) {
+			return QueryBuilders.matchAllQuery();
+		}
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		if (conditions.size() == 1) {
+			return ctf.getTranslator(conditions.get(0), type).translate();
+		}
+		BoolQueryBuilder result = QueryBuilders.boolQuery();
+		if (qs.getLogicalOperator() == AND) {
+			for (Condition c : conditions) {
+				result.must(ctf.getTranslator(c, type).translate());
+			}
+		}
+		else {
+			for (Condition c : conditions) {
+				result.should(ctf.getTranslator(c, type).translate());
+			}
+		}
+		return result;
+	}
+
 	/*
 	 * Negating operators are operators that are translated by replacing them
-	 * with their opposite (e.g. EQUALS in stead of NOT_EQUALS) and then
-	 * negating the entire condition that they are part of. For example
-	 * ("firstName", NOT_EQUALS, "John") becomes (not("firstName", EQUALS,
-	 * "John")).
+	 * with their opposite (e&#46;g&#46; NOT_EQUALS with EQUALS) and then
+	 * wrapping them with BoolQuery.mustNot().
 	 */
-	private static final EnumSet<Operator> negatingOperators;
+	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
 		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN);
@@ -75,7 +110,9 @@ public abstract class ConditionTranslator {
 		return translate(false);
 	}
 
-	protected DocumentField getDocumentField(String path) throws InvalidConditionException
+	abstract QueryBuilder translateCondition() throws InvalidConditionException;
+
+	DocumentField getDocumentField(String path) throws InvalidConditionException
 	{
 		ESField f;
 		try {
@@ -85,42 +122,54 @@ public abstract class ConditionTranslator {
 			throw new InvalidConditionException(e.getMessage());
 		}
 		if (!(f instanceof DocumentField)) {
-			String fmt = "Path %s specifies a nested structure. Only simple, "
-					+ "single-value field are allowed";
+			String fmt = "Cannot query on objects (%s)";
 			String msg = String.format(fmt, path);
 			throw new InvalidConditionException(msg);
 		}
 		return (DocumentField) f;
 	}
 
+	InvalidConditionException error(DocumentField f, String msg, Object... msgArgs)
+	{
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("Invalid query condition for field ");
+		sb.append(f.getName());
+		sb.append(". ");
+		sb.append(String.format(msg, msgArgs));
+		return new InvalidConditionException(sb.toString());
+	}
+
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
 		QueryBuilder result;
 		if (and() == null && or() == null) {
-			if (!nested && isNegatingOperator()) {
+			if (!nested && withNegatingOperator()) {
 				result = not(translateCondition());
 			}
 			else {
 				result = translateCondition();
 			}
 		}
-		else if (and() != null && or() == null) {
-			result = translateWithAndSiblings();
-		}
-		else if (or() != null && and() == null) {
-			result = translateWithOrSiblings();
+		else if (or() != null) {
+			if (and() == null) {
+				result = translateWithOrSiblings();
+			}
+			else {
+				result = translateOrSiblings();
+				BoolQueryBuilder extra = translateWithAndSiblings();
+				((BoolQueryBuilder) result).should(extra);
+			}
 		}
 		else {
-			String msg = "A query condition cannot have both AND and OR siblings";
-			throw new InvalidConditionException(msg);
+			result = translateWithAndSiblings();
 		}
 		return condition.isNegated() ? not(result) : result;
 	}
 
-	private QueryBuilder translateWithAndSiblings() throws InvalidConditionException
+	private BoolQueryBuilder translateWithAndSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		if (isNegatingOperator()) {
+		if (withNegatingOperator()) {
 			boolQuery.mustNot(translateCondition());
 		}
 		else {
@@ -129,7 +178,7 @@ public abstract class ConditionTranslator {
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : and()) {
 			ConditionTranslator translator = ctf.getTranslator(sibling, inspector);
-			if (translator.isNegatingOperator()) {
+			if (translator.withNegatingOperator()) {
 				boolQuery.mustNot(translator.translate(true));
 			}
 			else {
@@ -139,10 +188,10 @@ public abstract class ConditionTranslator {
 		return boolQuery;
 	}
 
-	private QueryBuilder translateWithOrSiblings() throws InvalidConditionException
+	private BoolQueryBuilder translateWithOrSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		if (isNegatingOperator()) {
+		if (withNegatingOperator()) {
 			boolQuery.should(not(translateCondition()));
 		}
 		else {
@@ -151,7 +200,7 @@ public abstract class ConditionTranslator {
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : or()) {
 			ConditionTranslator translator = ctf.getTranslator(sibling, inspector);
-			if (translator.isNegatingOperator()) {
+			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
 			else {
@@ -161,16 +210,34 @@ public abstract class ConditionTranslator {
 		return boolQuery;
 	}
 
-	protected abstract QueryBuilder translateCondition() throws InvalidConditionException;
+	private BoolQueryBuilder translateOrSiblings() throws InvalidConditionException
+	{
+		BoolQueryBuilder boolQuery = boolQuery();
+		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
+		for (Condition sibling : or()) {
+			ConditionTranslator translator = ctf.getTranslator(sibling, inspector);
+			if (translator.withNegatingOperator()) {
+				boolQuery.should(not(translator.translate(true)));
+			}
+			else {
+				boolQuery.should(translator.translate(true));
+			}
+		}
+		return boolQuery;
+	}
 
 	private static QueryBuilder not(QueryBuilder qb)
 	{
 		return boolQuery().mustNot(qb);
 	}
 
-	private boolean isNegatingOperator()
+	/*
+	 * Whether or not the condition translated by this translator instance uses
+	 * a negating operator.
+	 */
+	private boolean withNegatingOperator()
 	{
-		Operator op = operator();
+		ComparisonOperator op = operator();
 		return negatingOperators.contains(op);
 	}
 
@@ -179,7 +246,7 @@ public abstract class ConditionTranslator {
 		return condition.getField();
 	}
 
-	Operator operator()
+	ComparisonOperator operator()
 	{
 		return condition.getOperator();
 	}

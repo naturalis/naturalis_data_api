@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static java.lang.Character.isUpperCase;
+import static java.lang.Character.toLowerCase;
 import static nl.naturalis.nba.dao.es.map.MultiField.CI_ANALYZED;
 import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_ANALYZED;
 import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_ANALYZED;
@@ -17,13 +19,15 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.MappedProperty;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
-//import nl.naturalis.nba.api.model.Specimen;
-//import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -34,27 +38,41 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public class MappingFactory {
 
-	//private static final Package apiModelPackage = Specimen.class.getPackage();
-	//private static final Package esModelPackage = ESSpecimen.class.getPackage();
-	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
+	private static final DataTypeMap dataTypeMap;
+	private static final Logger logger;
+	private static final HashMap<Class<? extends ESType>, Mapping> cache;
 
-	private static final HashMap<Class<? extends ESType>, Mapping> cache = new HashMap<>();
+	static {
+		dataTypeMap = DataTypeMap.getInstance();
+		logger = Registry.getInstance().getLogger(MappingFactory.class);
+		cache = new HashMap<>();
+	}
 
 	public MappingFactory()
 	{
 	}
 
+	/**
+	 * Builds an Elasticsearch {@link Mapping} object for the specified class.
+	 * 
+	 * @param forClass
+	 * @return
+	 */
 	public Mapping getMapping(Class<? extends ESType> forClass)
 	{
 		Mapping mapping = cache.get(forClass);
 		if (mapping == null) {
 			mapping = new Mapping();
 			addFieldsToDocument(mapping, forClass);
+			if (logger.isDebugEnabled()) {
+				String json = JsonUtil.toPrettyJson(mapping);
+				logger.debug("Generated mapping for type {}:\n{}", forClass, json);
+			}
 			cache.put(forClass, mapping);
 		}
 		return mapping;
 	}
-	
+
 	private static void addFieldsToDocument(Document document, Class<?> forClass)
 	{
 		for (Field f : getFields(forClass)) {
@@ -67,10 +85,10 @@ public class MappingFactory {
 			String methodName = m.getName();
 			String fieldName;
 			if (methodName.startsWith("get")) {
-				fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+				fieldName = toLowerCase(methodName.charAt(3)) + methodName.substring(4);
 			}
 			else {
-				fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+				fieldName = toLowerCase(methodName.charAt(2)) + methodName.substring(3);
 			}
 			ESField esField = createESField(m);
 			esField.setName(fieldName);
@@ -78,7 +96,7 @@ public class MappingFactory {
 			document.addField(fieldName, esField);
 		}
 	}
-	
+
 	private static ESField createESField(Field field)
 	{
 		Class<?> realType = field.getType();
@@ -159,11 +177,8 @@ public class MappingFactory {
 	}
 
 	private static void checkClass(Class<?> cls)
-	{		
-//		Package pkg = cls.getPackage();
-//		if (!apiModelPackage.equals(pkg) && !esModelPackage.equals(pkg)) {
-//			throw new MappingException("Class not allowed/supported: " + cls.getName());
-//		}
+	{
+		// 
 	}
 
 	/*
@@ -182,7 +197,7 @@ public class MappingFactory {
 
 	/*
 	 * Returns false if the Java field does not contain the @Analyzers
-	 * annotation, or if its value was NONE. Otherwise it returns true.
+	 * annotation. Otherwise it returns true.
 	 */
 	private static boolean addAnalyzedFields(DocumentField df, AnnotatedElement fm)
 	{
@@ -192,25 +207,21 @@ public class MappingFactory {
 			df.addMultiField("ci", CI_ANALYZED);
 			return false;
 		}
+		if (annotation.value().length == 0) {
+			return true;
+		}
 		List<Analyzer> value = Arrays.asList(annotation.value());
 		EnumSet<Analyzer> analyzers = EnumSet.copyOf(value);
-		if (analyzers.contains(Analyzer.NONE)) {
-			if (analyzers.size() != 1) {
-				String msg = "Analyzer NONE cannot be combined with other Analyzers";
-				throw new MappingException(msg);
-			}
-			return false;
-		}
 		for (Analyzer a : analyzers) {
 			switch (a) {
 				case CASE_INSENSITIVE:
-					df.addMultiField("like", LIKE_ANALYZED);
+					df.addMultiField("ci", CI_ANALYZED);
 					break;
 				case DEFAULT:
 					df.addMultiField("analyzed", DEFAULT_ANALYZED);
 					break;
 				case LIKE:
-					df.addMultiField("ci", CI_ANALYZED);
+					df.addMultiField("like", LIKE_ANALYZED);
 					break;
 				default:
 					break;
@@ -223,19 +234,23 @@ public class MappingFactory {
 	 * Maps a class to the class that must be used in its place. For example,
 	 * when mapping arrays, it's not the array that is mapped but the class of
 	 * its elements, because fields are intrinsically multi-valued in
-	 * Elasticsearch; no array type exists or is required in Elasticsearch.
+	 * Elasticsearch. No array type exists or is required in Elasticsearch.
 	 */
 	private static Class<?> mapType(Class<?> realType, Type typeArg)
 	{
 		if (realType.isArray())
 			return realType.getComponentType();
-		if (isA(realType, Enum.class))
-			return String.class;
 		if (isA(realType, Collection.class))
 			return getClassForTypeArgument(typeArg);
+		if (isA(realType, Enum.class))
+			return String.class;
 		return realType;
 	}
 
+	/*
+	 * Returns the type argument for a generic type (e.g. Person for
+	 * List<Person>)
+	 */
 	private static Class<?> getClassForTypeArgument(Type t)
 	{
 		String s = t.toString();
@@ -245,8 +260,7 @@ public class MappingFactory {
 			return Class.forName(s);
 		}
 		catch (ClassNotFoundException e) {
-			assert (false);
-			return null;
+			throw new MappingException(e);
 		}
 	}
 
@@ -300,12 +314,10 @@ public class MappingFactory {
 		if (returnType == void.class)
 			return false;
 		String name = m.getName();
-		if (name.startsWith("get")
-				&& (name.charAt(3) == '_' || Character.isUpperCase(name.charAt(3)))) {
+		if (name.startsWith("get") && (name.charAt(3) == '_' || isUpperCase(name.charAt(3)))) {
 			return null != m.getAnnotation(MappedProperty.class);
 		}
-		if (name.startsWith("is")
-				&& (name.charAt(2) == '_' || Character.isUpperCase(name.charAt(2)))) {
+		if (name.startsWith("is") && (name.charAt(2) == '_' || isUpperCase(name.charAt(2)))) {
 			if (returnType == boolean.class || returnType == Boolean.class) {
 				return null != m.getAnnotation(MappedProperty.class);
 			}

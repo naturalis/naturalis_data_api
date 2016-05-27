@@ -8,7 +8,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import static nl.naturalis.nba.api.query.Operator.*;
+import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 
 public class Test {
 
@@ -30,9 +30,12 @@ public class Test {
 			}
 			System.out.println();
 		}
-		Condition condition1 = new Condition("gatheringEvent.gatheringPersons.fullName", LIKE, "burg");
+		Condition condition1 = new Condition("gatheringEvent.gatheringPersons.fullName", EQUALS_IC, "burg");
+		condition1.and("unitID","=", "ZMA.MAM.100").and("sex","=","male");
+		Condition condition2 =new Condition("phaseOrStage","=","EGG");
+		condition2.or(condition1);
 		QuerySpec query = new QuerySpec();
-		query.setCondition(condition1);
+		query.addCondition(condition1);
 		Specimen[] result=null;
 		try {
 			result = client.query(query);

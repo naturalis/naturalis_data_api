@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
-import nl.naturalis.nba.api.query.Operator;
+import nl.naturalis.nba.api.query.ComparisonOperator;
 
 public class ObjectMapperLocator {
 
@@ -55,7 +55,7 @@ public class ObjectMapperLocator {
 				new GatheringSiteCoordinatesDeserializer());
 		module.addDeserializer(PhaseOrStage.class, new PhaseOrStageDeserializer());
 		module.addDeserializer(Sex.class, new SexDeserializer());
-		module.addDeserializer(Operator.class, new OperatorDeserializer());
+		module.addDeserializer(ComparisonOperator.class, new OperatorDeserializer());
 		om.registerModule(module);
 		return om;
 	}

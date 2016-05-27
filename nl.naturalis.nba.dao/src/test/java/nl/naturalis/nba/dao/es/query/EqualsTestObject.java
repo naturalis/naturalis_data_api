@@ -2,13 +2,13 @@ package nl.naturalis.nba.dao.es.query;
 
 import nl.naturalis.nba.dao.es.types.ESType;
 
-class Dummy02 implements ESType {
+class EqualsTestObject implements ESType {
 
+	private String firstName;
+	private String lastName;
 	private String pet;
 	private String color;
 	private boolean talks;
-	private String firstName;
-	private String lastName;
 
 	public String getPet()
 	{

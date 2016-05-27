@@ -1,10 +1,11 @@
 package nl.naturalis.nba.dao.es;
 
-import static nl.naturalis.nba.api.query.Not.NOT;
-import static nl.naturalis.nba.api.query.Operator.EQUALS;
-import static nl.naturalis.nba.api.query.Operator.EQUALS_IC;
-import static nl.naturalis.nba.api.query.Operator.LIKE;
-import static nl.naturalis.nba.api.query.Operator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
 import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
@@ -13,7 +14,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Agent;
@@ -28,16 +28,10 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
 public class SpecimenDAOTest {
 
 	static ESSpecimen pMajor;
-	static ESSpecimen lFuscus;
+	static ESSpecimen lFuscus1;
+	static ESSpecimen lFuscus2;
 	static ESSpecimen tRex;
 	static ESSpecimen mSylvestris;
-
-	@BeforeClass
-	public static void setup()
-	{
-		pMajor = TestSpecimens.parusMajorSpecimen01();
-		lFuscus = TestSpecimens.tRexSpecimen01();
-	}
 
 	@Before
 	public void before()
@@ -45,11 +39,15 @@ public class SpecimenDAOTest {
 		dropIndex(ESSpecimen.class);
 		createIndex(ESSpecimen.class);
 		createType(ESSpecimen.class);
+		/*
+		 * Insert 5 test specimens.
+		 */
 		pMajor = TestSpecimens.parusMajorSpecimen01();
-		lFuscus = TestSpecimens.larusFuscusSpecimen01();
+		lFuscus1 = TestSpecimens.larusFuscusSpecimen01();
+		lFuscus2 = TestSpecimens.larusFuscusSpecimen02();
 		tRex = TestSpecimens.tRexSpecimen01();
 		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
-		ESTestUtils.saveSpecimens(pMajor, lFuscus, tRex, mSylvestris);
+		ESTestUtils.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 
 	@After
@@ -81,13 +79,13 @@ public class SpecimenDAOTest {
 	public void testFindByIds_01()
 	{
 		String id1 = pMajor.getUnitID() + "@" + pMajor.getSourceSystem().getCode();
-		String id2 = lFuscus.getUnitID() + "@" + lFuscus.getSourceSystem().getCode();
+		String id2 = lFuscus1.getUnitID() + "@" + lFuscus1.getSourceSystem().getCode();
 		String id3 = "BLA DI BLA";
 		String[] ids = new String[] { id1, id2, id3 };
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] specimens = dao.find(ids);
 		assertNotNull("01", specimens);
-		assertEquals("02", 2,specimens.length);
+		assertEquals("02", 2, specimens.length);
 	}
 
 	/*
@@ -118,7 +116,7 @@ public class SpecimenDAOTest {
 	@Test
 	public void testFindByUnitID_02()
 	{
-		String unitID0 = lFuscus.getUnitID();
+		String unitID0 = lFuscus1.getUnitID();
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.findByUnitID(unitID0);
 		assertNotNull("01", result);
@@ -174,7 +172,7 @@ public class SpecimenDAOTest {
 		String unitID = pMajor.getUnitID();
 		Condition condition = new Condition("unitID", EQUALS, unitID);
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
@@ -192,7 +190,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(genus, "=", "Parus");
 		condition.and(species, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
@@ -210,7 +208,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(genus, EQUALS, "Parus");
 		condition.and(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
@@ -227,7 +225,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(genus, EQUALS, "Parus");
 		condition.or(species, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
@@ -244,7 +242,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(genus, EQUALS, "Parus");
 		condition.or(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
@@ -262,7 +260,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(genus, EQUALS, "BLA DI BLA");
 		condition.or(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
@@ -277,10 +275,10 @@ public class SpecimenDAOTest {
 		String collector = "gatheringEvent.gatheringPersons.fullName";
 		Condition condition = new Condition(collector, LIKE, "altenbu");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 2, result.length);
+		assertEquals("01", 3, result.length);
 	}
 
 	/*
@@ -290,12 +288,13 @@ public class SpecimenDAOTest {
 	public void testQuery__QuerySpec__08() throws InvalidQueryException
 	{
 		String genus = "identifications.defaultClassification.genus";
+		// This excludes pMajorSpecimen01 (so 4 remaining)
 		Condition condition = new Condition(NOT, genus, EQUALS, "Parus");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 3, result.length);
+		assertEquals("01", 4, result.length);
 	}
 
 	/*
@@ -311,25 +310,29 @@ public class SpecimenDAOTest {
 		condition.and(collector, LIKE, "altenburg");
 		condition.andNot(sourceSystem, EQUALS, "NDFF");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
 
 	/*
-	 * Tests query method with illegal combination of AND and OR
+	 * Tests query method using negated conditions
 	 */
-	@Test(expected = InvalidQueryException.class)
+	@Test
 	public void testQuery__QuerySpec__10() throws InvalidQueryException
 	{
 		String genus = "identifications.defaultClassification.genus";
 		String sourceSystem = "sourceSystem.code";
-		Condition condition = new Condition(genus, EQUALS, "Larus");
-		condition.and(sourceSystem, EQUALS, "BRAHMS");
-		condition.or(sourceSystem, EQUALS, "NDFF");
+		// This excludes larusFuscusSpecimen01 and larusFuscusSpecimen02
+		Condition condition = new Condition(genus, NOT_EQUALS, "Larus");
+		// This excludes parusMajorSpecimen01 and tRexSpecimen01
+		condition.andNot(sourceSystem, EQUALS, "CRS");
+		// This excludes (again) larusFuscusSpecimen02
+		condition.andNot(sourceSystem, EQUALS, "NDFF");
+		// Remains: malusSylvestrisSpecimen01
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
@@ -343,7 +346,7 @@ public class SpecimenDAOTest {
 	{
 		Condition condition = new Condition("recordBasis", EQUALS_IC, "preserved specimen");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 3, result.length);
@@ -355,38 +358,49 @@ public class SpecimenDAOTest {
 	@Test
 	public void testQuery__QuerySpec__12() throws InvalidQueryException
 	{
+		// This excludes pMajorSpecimen01, tRexSpecimen01 and
+		// larusFuscusSpecimen01 (2 remaining).
 		Condition condition = new Condition("recordBasis", NOT_EQUALS_IC, "preserved specimen");
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition);
+		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 1, result.length);
+		assertEquals("01", 2, result.length);
 	}
 
 	/*
-	 * Tests query method with combination of AND and OR
+	 * Tests query method with a combination of deeply nested AND and OR
+	 * conditions.
 	 */
-	//@Test
+	@Test
 	public void testQuery__QuerySpec__13() throws InvalidQueryException
 	{
 		String system = "sourceSystem.code";
 		String country = "gatheringEvent.country";
-		String city = "gatheringEvent.city";
-		Condition condition1, condition2, condition3;
-		condition1 = new Condition("sex", EQUALS, "FEMALE");
+		String locality = "gatheringEvent.localityText";
+		Condition condition1, condition2, condition3, condition4;
+		// This leaves 2 specimens (tRexSpecimen01 and malusSylvestrisSpecimen01)
+		condition1 = new Condition("sex", EQUALS, "female");
+		// This still leaves tRexSpecimen01 and malusSylvestrisSpecimen01		
 		condition2 = new Condition(system, "=", "BRAHMS").or(system, "=", "CRS");
-		condition3 = new Condition(country, "=", "Netherlands");
-		condition3.and(new Condition(city, "=", "Uitgeest").or(city, "=", "Amsterdam"));
+		// This exludes malusSylvestrisSpecimen01 (collected in United Kingdom)	
+		condition3 = new Condition(country, "=", "United States");
+		condition3.and(locality, LIKE, "Montana");
+		// This exludes tRexSpecimen01 (collected in United States)	
+		condition4 = new Condition(country, "=", "United Kingdom");
+		condition4.and(locality, LIKE, "Dorchester");
+		// But this will include them both again: condition3.or(condition4);
+		condition1.and(condition2).and(condition3.or(condition4));
 		QuerySpec qs = new QuerySpec();
-		qs.setCondition(condition1.and(condition2).and(condition3));
+		qs.addCondition(condition1);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 1, result.length);
+		assertEquals("01", 2, result.length);
 	}
 
 	/*
-	 * Test getIdsInCollection for the one and only (BRAHMS) document belonging
-	 * to the "Strange Plants" theme.
+	 * Tests getIdsInCollection for the one and only document belonging to the
+	 * "Strange Plants" theme.
 	 */
 	@Test
 	public void testGetIdsInCollection__String__01()
@@ -398,8 +412,8 @@ public class SpecimenDAOTest {
 	}
 
 	/*
-	 * Test getIdsInCollection for the documents belonging to the "Living Dinos"
-	 * theme.
+	 * Tests getIdsInCollection for the documents belonging to the
+	 * "Living Dinos" theme.
 	 */
 	@Test
 	public void testGetIdsInCollection__String__02()
@@ -411,7 +425,7 @@ public class SpecimenDAOTest {
 	}
 
 	/*
-	 * Test save method
+	 * Tests save method.
 	 */
 	@Test
 	public void testSave__Specimen__01()

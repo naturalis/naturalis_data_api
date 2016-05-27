@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es;
 
+import static nl.naturalis.nba.common.json.JsonUtil.toJson;
+import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -7,7 +9,6 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.debug.BeanPrinter;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -27,20 +28,15 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
-import nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
@@ -97,7 +93,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	public Specimen[] find(String[] ids)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("find({})", write(ids));
+			logger.debug("find({})", toJson(ids));
 		}
 		SearchRequestBuilder request = newSearchRequest();
 		IdsQueryBuilder query = QueryBuilders.idsQuery(spType);
@@ -183,12 +179,9 @@ public class SpecimenDAO implements ISpecimenAPI {
 	public Specimen[] query(QuerySpec spec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Query using QuerySpec:\n{}", dump(spec));
+			logger.debug("Query using QuerySpec:\n{}", toPrettyJson(spec));
 		}
-		Condition condition = spec.getCondition();
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, ESSpecimen.class);
-		QueryBuilder query = ct.translate();
+		QueryBuilder query = ConditionTranslator.translate(spec, ESSpecimen.class);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();
 		request.setQuery(csq);
@@ -270,25 +263,5 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return request;
 	}
 
-	private static String dump(Object obj)
-	{
-		ObjectWriter ow = spObjMapper.writerWithDefaultPrettyPrinter();
-		try {
-			return ow.writeValueAsString(obj);
-		}
-		catch (JsonProcessingException e) {
-			throw new DaoException(e);
-		}
-	}
-
-	private static String write(Object obj)
-	{
-		try {
-			return spObjMapper.writeValueAsString(obj);
-		}
-		catch (JsonProcessingException e) {
-			throw new DaoException(e);
-		}
-	}
 
 }

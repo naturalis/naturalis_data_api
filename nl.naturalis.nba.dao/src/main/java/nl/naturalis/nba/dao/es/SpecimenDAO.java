@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
+import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -35,28 +36,17 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.util.DocumentType;
 
 public class SpecimenDAO implements ISpecimenAPI {
 
 	private static final Logger logger;
 
-	private static final Registry registry;
-	private static final ObjectMapperLocator objMapperLocator;
-	private static final ObjectMapper spObjMapper;
-	private static final String spIndex;
-	private static final String spType;
-
 	static {
 		logger = Registry.getInstance().getLogger(SpecimenDAO.class);
-		registry = Registry.getInstance();
-		objMapperLocator = ObjectMapperLocator.getInstance();
-		spObjMapper = objMapperLocator.getObjectMapper(ESSpecimen.class);
-		spIndex = registry.getIndex(ESSpecimen.class);
-		spType = registry.getType(ESSpecimen.class);
 	}
 
 	public SpecimenDAO()
@@ -69,11 +59,11 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("find(\"{}\")", id);
 		}
-		ESClientFactory factory = registry.getESClientFactory();
-		Client client = factory.getClient();
-		GetRequestBuilder request = client.prepareGet();
-		request.setIndex(spIndex);
-		request.setType(spType);
+		GetRequestBuilder request =  getESClient().prepareGet();
+		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
+		String type = DocumentType.SPECIMEN.getName();
+		request.setIndex(index);
+		request.setType(type);
 		request.setId(id);
 		GetResponse response = request.execute().actionGet();
 		if (!response.isExists()) {
@@ -95,8 +85,9 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("find({})", toJson(ids));
 		}
+		String type = DocumentType.SPECIMEN.getName();
 		SearchRequestBuilder request = newSearchRequest();
-		IdsQueryBuilder query = QueryBuilders.idsQuery(spType);
+		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
 		query.ids(ids);
 		request.setQuery(query);
 		return processSearchRequest(request);
@@ -192,20 +183,21 @@ public class SpecimenDAO implements ISpecimenAPI {
 	public String save(Specimen specimen, boolean immediate)
 	{
 		String id = specimen.getId();
+		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
+		String type = DocumentType.SPECIMEN.getName();
 		if (logger.isDebugEnabled()) {
 			String pattern = "New save request (index={};type={};id={})";
-			logger.debug(pattern, spIndex, spType, id);
+			logger.debug(pattern, index, type, id);
 		}
-		ESClientFactory factory = registry.getESClientFactory();
-		Client client = factory.getClient();
-		IndexRequestBuilder request = client.prepareIndex(spIndex, spType, id);
+		Client client = getESClient();
+		IndexRequestBuilder request = client.prepareIndex(index, type, id);
 		ESSpecimen esSpecimen = SpecimenTransfer.save(specimen);
 		byte[] source = JsonUtil.serialize(esSpecimen);
 		request.setSource(source);
 		IndexResponse response = request.execute().actionGet();
 		if (immediate) {
 			IndicesAdminClient iac = client.admin().indices();
-			RefreshRequestBuilder rrb = iac.prepareRefresh(spIndex);
+			RefreshRequestBuilder rrb = iac.prepareRefresh(index);
 			rrb.execute().actionGet();
 		}
 		specimen.setId(response.getId());
@@ -214,9 +206,9 @@ public class SpecimenDAO implements ISpecimenAPI {
 
 	public boolean delete(String id, boolean immediate)
 	{
-		ESClientFactory factory = registry.getESClientFactory();
-		Client client = factory.getClient();
-		DeleteRequestBuilder request = client.prepareDelete(spIndex, spType, id);
+		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
+		String type = DocumentType.SPECIMEN.getName();
+		DeleteRequestBuilder request = getESClient().prepareDelete(index, type, id);
 		DeleteResponse response = request.execute().actionGet();
 		return response.isFound();
 	}
@@ -246,22 +238,30 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating Specimen instance with id {}", id);
 		}
-		ESSpecimen esSpecimen = spObjMapper.convertValue(data, ESSpecimen.class);
+		ObjectMapper om = SPECIMEN.getObjectMapper();
+		ESSpecimen esSpecimen = om.convertValue(data, ESSpecimen.class);
 		return SpecimenTransfer.load(esSpecimen, id);
 	}
 
 	private static SearchRequestBuilder newSearchRequest()
 	{
+		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
+		String type = DocumentType.SPECIMEN.getName();
 		if (logger.isDebugEnabled()) {
 			String pattern = "New search request (index={};type={})";
-			logger.debug(pattern, spIndex, spType);
+			logger.debug(pattern, index, type);
 		}
-		ESClientFactory factory = registry.getESClientFactory();
-		Client client = factory.getClient();
-		SearchRequestBuilder request = client.prepareSearch(spIndex);
-		request.setTypes(spType);
+		SearchRequestBuilder request = getESClient().prepareSearch(index);
+		request.setTypes(type);
 		return request;
 	}
 
+	private static Client getESClient()
+	{
+		Registry registry = Registry.getInstance();
+		ESClientFactory factory = registry.getESClientFactory();
+		Client client = factory.getClient();
+		return client;
+	}
 
 }

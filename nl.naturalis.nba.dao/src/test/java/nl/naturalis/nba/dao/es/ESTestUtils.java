@@ -1,9 +1,8 @@
 package nl.naturalis.nba.dao.es;
 
-import java.io.File;
+import java.io.InputStream;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
@@ -20,12 +19,14 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
 
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESType;
+import nl.naturalis.nba.dao.es.util.DocumentType;
+import nl.naturalis.nba.dao.es.util.ESUtil;
+import nl.naturalis.nba.dao.es.util.IndexInfo;
 
 public class ESTestUtils {
 
@@ -39,14 +40,18 @@ public class ESTestUtils {
 
 	public static void createIndex(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndex(cls);
+		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
+		String index = indexInfo.getName();
 		logger.info("Creating index {}", index);
-		CreateIndexRequestBuilder request = indices().prepareCreate(index);
+		// First load non-user-configurable settings
+		String resource = "/es-settings.json";
+		InputStream is = Registry.class.getResourceAsStream(resource);
 		Builder builder = Settings.settingsBuilder();
-		File settingsFile = registry.getFile("es-settings.json");
-		logger.info("Reading Elasticsearch settings from " + settingsFile.getAbsolutePath());
-		String settings = FileUtil.getContents(settingsFile);
-		builder.loadFromSource(settings);
+		builder.loadFromStream(resource, is);
+		// Then add user-configurable settings
+		builder.put("index.number_of_shards", indexInfo.getNumShards());
+		builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
+		CreateIndexRequestBuilder request = indices().prepareCreate(index);
 		request.setSettings(builder.build());
 		CreateIndexResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
@@ -57,7 +62,8 @@ public class ESTestUtils {
 
 	public static void dropIndex(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndex(cls);
+		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
+		String index = indexInfo.getName();
 		logger.info("Deleting index {}", index);
 		DeleteIndexRequestBuilder request = indices().prepareDelete(index);
 		try {
@@ -74,8 +80,9 @@ public class ESTestUtils {
 
 	public static void createType(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndex(cls);
-		String type = registry.getType(cls);
+		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
+		String index = indexInfo.getName();
+		String type = ESUtil.getDocumentTypeName(cls);
 		logger.info("Creating type {}", type);
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
 		request.setSource(getMapping(cls));
@@ -113,8 +120,9 @@ public class ESTestUtils {
 
 	public static void saveObject(String id, String parentId, ESType obj, boolean refreshIndex)
 	{
-		String index = registry.getIndex(obj.getClass());
-		String type = registry.getType(obj.getClass());
+		IndexInfo indexInfo = DocumentType.forClass(obj.getClass()).getIndexInfo();
+		String index = indexInfo.getName();
+		String type = ESUtil.getDocumentTypeName(obj.getClass());
 		String source = JsonUtil.toJson(obj);
 		IndexRequestBuilder irb = client().prepareIndex(index, type);
 		if (id != null) {
@@ -132,7 +140,8 @@ public class ESTestUtils {
 
 	public static void refreshIndex(Class<? extends ESType> cls)
 	{
-		String index = registry.getIndex(cls);
+		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
+		String index = indexInfo.getName();
 		RefreshRequestBuilder request = indices().prepareRefresh(index);
 		request.execute().actionGet();
 	}

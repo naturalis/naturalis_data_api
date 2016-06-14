@@ -2,9 +2,9 @@ package nl.naturalis.nba.dao.es.map;
 
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
-import static nl.naturalis.nba.dao.es.map.MultiField.CI_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_ANALYZED;
+import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
+import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
+import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;
@@ -33,7 +33,7 @@ import nl.naturalis.nba.dao.es.types.ESType;
 /**
  * Generates Elasticsearch mappings from {@link Class} objects.
  * 
- * @author ayco
+ * @author Ayco Holleman
  *
  */
 public class MappingFactory {
@@ -104,9 +104,9 @@ public class MappingFactory {
 		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
 			/*
-			 * The Java type does not map to a simple Elasticsearch type like
-			 * "string" or "boolean". The Elastichsearch type must be "object"
-			 * or "nested".
+			 * Then the Java type does not map to a simple Elasticsearch type
+			 * like "string" or "boolean". The Elastichsearch type must be
+			 * "object" or "nested".
 			 */
 			return createDocument(field, mapToType);
 		}
@@ -178,7 +178,7 @@ public class MappingFactory {
 
 	private static void checkClass(Class<?> cls)
 	{
-		// 
+		//
 	}
 
 	/*
@@ -203,8 +203,8 @@ public class MappingFactory {
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
-			df.addMultiField("analyzed", DEFAULT_ANALYZED);
-			df.addMultiField("ci", CI_ANALYZED);
+			df.addMultiField("analyzed", DEFAULT_MULTIFIELD);
+			df.addMultiField("ci", IGNORE_CASE_MULTIFIELD);
 			return false;
 		}
 		if (annotation.value().length == 0) {
@@ -215,13 +215,13 @@ public class MappingFactory {
 		for (Analyzer a : analyzers) {
 			switch (a) {
 				case CASE_INSENSITIVE:
-					df.addMultiField("ci", CI_ANALYZED);
+					df.addMultiField("ci", IGNORE_CASE_MULTIFIELD);
 					break;
 				case DEFAULT:
-					df.addMultiField("analyzed", DEFAULT_ANALYZED);
+					df.addMultiField("analyzed", DEFAULT_MULTIFIELD);
 					break;
 				case LIKE:
-					df.addMultiField("like", LIKE_ANALYZED);
+					df.addMultiField("like", LIKE_MULTIFIELD);
 					break;
 				default:
 					break;

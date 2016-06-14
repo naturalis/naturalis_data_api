@@ -11,7 +11,7 @@ public class RegistryTest {
 	public void testGetConfig()
 	{
 		Registry registry = Registry.getInstance();
-		ConfigObject config = registry.getConfig();
+		ConfigObject config = registry.getConfiguration();
 		assertNotNull("01", config.get("elasticsearch.cluster.name"));
 		assertNotNull("02", config.get("elasticsearch.transportaddress.host"));
 		assertNotNull("03", config.get("elasticsearch.transportaddress.port"));

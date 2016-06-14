@@ -16,20 +16,23 @@ public class MultiField extends IndexableField {
 	/**
 	 * A string field analyzed using the default analyzer.
 	 */
-	static final MultiField DEFAULT_ANALYZED;
+	static final MultiField DEFAULT_MULTIFIELD;
 	/**
 	 * A string field for case-insensitive comparisons.
 	 */
-	static final MultiField CI_ANALYZED;
+	static final MultiField IGNORE_CASE_MULTIFIELD;
 	/**
 	 * A string field for case-insensitive comparisons.
 	 */
-	static final MultiField LIKE_ANALYZED;
+	static final MultiField LIKE_MULTIFIELD;
 
 	static {
-		DEFAULT_ANALYZED = new MultiField(STRING, ANALYZED, null);
-		CI_ANALYZED = new MultiField(STRING, null, "case_insensitive_analyzer");
-		LIKE_ANALYZED = new MultiField(STRING, null, "like_analyzer");
+		DEFAULT_MULTIFIELD = new MultiField(STRING, ANALYZED, null);
+		DEFAULT_MULTIFIELD.setName("analyzed");
+		IGNORE_CASE_MULTIFIELD = new MultiField(STRING, null, "case_insensitive_analyzer");
+		IGNORE_CASE_MULTIFIELD.setName("ignoreCase");
+		LIKE_MULTIFIELD = new MultiField(STRING, null, "like_analyzer");
+		LIKE_MULTIFIELD.setName("like");
 	}
 
 	protected MultiField(ESDataType type, Index index, String analyzer)

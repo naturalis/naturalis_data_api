@@ -111,7 +111,6 @@ public class NBAImportAll {
 			logger.warn(String.format(fmt, String.valueOf(i)));
 			logger.warn("The mime type cache is out-of-date!");
 		}
-
 	}
 
 	/**

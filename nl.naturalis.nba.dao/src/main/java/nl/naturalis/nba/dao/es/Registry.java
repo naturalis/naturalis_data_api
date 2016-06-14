@@ -8,12 +8,9 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 
-import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.InitializationException;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.dao.es.types.ESType;
+import nl.naturalis.nba.dao.es.util.IndexInfo;
 
 /**
  * Class providing centralized access to core services such as logging and
@@ -41,7 +38,7 @@ public class Registry {
 	 * Name of the system property pointing to the configuration directory for
 	 * integration tests: "nba-test.v2.conf.dir". This directory must at least
 	 * contain nba.properties. If this property is present it takes precedence
-	 * of {@link #SYSPROP_CONFIG_DIR}.
+	 * over {@link #SYSPROP_CONFIG_DIR}.
 	 */
 	public static final String SYSPROP_CONFIG_DIR_TEST = "nba-test.v2.conf.dir";
 
@@ -75,12 +72,12 @@ public class Registry {
 	}
 
 	/**
-	 * Get a {@link ConfigObject} for the main configuration file
+	 * Returns a {@link ConfigObject} for the main configuration file
 	 * (nba.properties).
 	 * 
 	 * @return
 	 */
-	public ConfigObject getConfig()
+	public ConfigObject getConfiguration()
 	{
 		return config;
 	}
@@ -133,38 +130,6 @@ public class Registry {
 			clientFactory = ESClientFactory.getInstance(config);
 		}
 		return clientFactory;
-	}
-
-	/**
-	 * Returns the names of the Elasticsearch index storing the specified type.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public String getIndex(Class<? extends ESType> type)
-	{
-		return config.get("elasticsearch.index.default");
-	}
-
-	/**
-	 * Returns the name of the Elasticsearch type corresponding to the specified
-	 * Java type.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public String getType(Class<? extends ESType> type)
-	{
-		// TODO: soft code
-		if (type == ESSpecimen.class)
-			return "Specimen";
-		if (type == ESTaxon.class)
-			return "Taxon";
-		if (type == ESMultiMediaObject.class)
-			return "MultiMediaObject";
-		String fmt = "There is no Elasticsearch document type corresponding to %s";
-		String msg = String.format(fmt, type.getName());
-		throw new DaoException(msg);
 	}
 
 	private void setConfDir()

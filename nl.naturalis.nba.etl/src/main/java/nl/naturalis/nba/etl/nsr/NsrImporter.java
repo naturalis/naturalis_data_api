@@ -16,7 +16,7 @@ import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 
 import org.apache.logging.log4j.Logger;
@@ -51,7 +51,7 @@ public class NsrImporter {
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(NsrImporter.class);
+		logger = ETLRegistry.getInstance().getLogger(NsrImporter.class);
 	}
 
 	private final boolean suppressErrors;

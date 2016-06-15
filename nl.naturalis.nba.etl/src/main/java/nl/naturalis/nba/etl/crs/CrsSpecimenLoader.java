@@ -6,7 +6,7 @@ import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_SPECIMEN;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ElasticSearchLoader;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
@@ -19,7 +19,7 @@ class CrsSpecimenLoader extends ElasticSearchLoader<ESSpecimen> {
 
 	private static IndexManagerNative indexManager()
 	{
-		return Registry.getInstance().getNbaIndexManager();
+		return ETLRegistry.getInstance().getNbaIndexManager();
 	}
 
 	CrsSpecimenLoader(ETLStatistics stats, int treshold)

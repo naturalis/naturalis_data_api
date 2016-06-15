@@ -12,7 +12,7 @@ import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.etl.ETLRuntimeException;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 import org.apache.logging.log4j.Logger;
 
@@ -115,7 +115,7 @@ public class Normalizer<T extends Enum<T>> {
 	 */
 	public Normalizer(Class<T> enumClass)
 	{
-		logger = Registry.getInstance().getLogger(getClass());
+		logger = ETLRegistry.getInstance().getLogger(getClass());
 		logger.info("Creating normalizer for " + enumClass.getSimpleName());
 		enumConstants = enumClass.getEnumConstants();
 		mappings = new HashMap<>();

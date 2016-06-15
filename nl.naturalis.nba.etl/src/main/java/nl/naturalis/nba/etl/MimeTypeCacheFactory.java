@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 public class MimeTypeCacheFactory {
 
 	private static final String CACHE_FILE_NAME = "mimetypes.cache";
-	private static final Logger logger = Registry.getInstance().getLogger(MimeTypeCacheFactory.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(MimeTypeCacheFactory.class);
 
 	private static MimeTypeCacheFactory instance;
 

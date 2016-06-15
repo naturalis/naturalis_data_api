@@ -3,18 +3,19 @@ package nl.naturalis.nba.etl.col;
 import java.io.File;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
-
-import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 /**
  * Enriches CoL taxa with vernacular name information.
@@ -27,11 +28,12 @@ public class CoLVernacularNameImporter {
 	public static void main(String[] args) throws Exception
 	{
 		CoLVernacularNameImporter importer = new CoLVernacularNameImporter();
-		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
+		String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
 		importer.importCsv(dwcaDir + "/vernacular.txt");
 	}
 
-	static final Logger logger = Registry.getInstance().getLogger(CoLVernacularNameImporter.class);
+	static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(CoLVernacularNameImporter.class);
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
@@ -45,7 +47,8 @@ public class CoLVernacularNameImporter {
 	}
 
 	/**
-	 * Processes the reference.txt file to enrich CoL taxa with vernacular names.
+	 * Processes the reference.txt file to enrich CoL taxa with vernacular
+	 * names.
 	 * 
 	 * @param path
 	 */
@@ -85,7 +88,6 @@ public class CoLVernacularNameImporter {
 		stats.logStatistics(logger);
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
-
 
 	private CSVExtractor<CoLVernacularNameCsvField> createExtractor(ETLStatistics stats, File f)
 	{

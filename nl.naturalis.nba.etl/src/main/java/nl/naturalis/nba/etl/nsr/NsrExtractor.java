@@ -11,7 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 
 import org.apache.logging.log4j.Logger;
@@ -26,7 +26,7 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 	private static final Iterator<XMLRecordInfo> zeroRecordsIterator;
 
 	static {
-		logger = Registry.getInstance().getLogger(NsrExtractor.class);
+		logger = ETLRegistry.getInstance().getLogger(NsrExtractor.class);
 		zeroRecordsIterator = new Iterator<XMLRecordInfo>() {
 
 			public XMLRecordInfo next()

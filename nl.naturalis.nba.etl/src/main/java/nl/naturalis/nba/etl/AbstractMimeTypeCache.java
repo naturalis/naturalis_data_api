@@ -10,6 +10,8 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.http.SimpleHttpHead;
 
+import nl.naturalis.nba.dao.es.Registry;
+
 /**
  * Abstract base class for mimetype caches. Provides the public interface of a
  * mimetype cache, while delegating the heavy lifting of building the cache to
@@ -40,7 +42,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected static final String JPEG = "image/jpeg";
 
-	private static final Logger logger = Registry.getInstance().getLogger(
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(
 			AbstractMimeTypeCache.class);
 
 	private final SimpleHttpHead httpHead = new SimpleHttpHead();
@@ -56,7 +58,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	AbstractMimeTypeCache(String cacheFileName)
 	{
-		File dir = Registry.getInstance().getConfDir();
+		File dir = Registry.getInstance().getConfigurationDirectory();
 		cacheFile = FileUtil.newFile(dir, cacheFileName);
 		if (!cacheFile.isFile()) {
 			String fmt = "Missing cache file (%s). You should put it in %s.";

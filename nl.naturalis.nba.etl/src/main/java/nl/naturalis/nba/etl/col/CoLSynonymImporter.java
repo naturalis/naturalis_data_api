@@ -3,18 +3,19 @@ package nl.naturalis.nba.etl.col;
 import java.io.File;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
-
-import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 /**
  * Enriches CoL taxon documents with synonyms sourced from the taxa&#46;txt
@@ -28,11 +29,11 @@ public class CoLSynonymImporter {
 	public static void main(String[] args) throws Exception
 	{
 		CoLSynonymImporter importer = new CoLSynonymImporter();
-		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
+		String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
 		importer.importCsv(dwcaDir + "/taxa.txt");
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(CoLSynonymImporter.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLSynonymImporter.class);
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;

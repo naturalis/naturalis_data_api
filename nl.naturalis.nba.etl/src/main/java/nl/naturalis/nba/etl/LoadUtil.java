@@ -5,11 +5,12 @@ import static org.domainobject.util.StringUtil.zpad;
 
 import java.net.URISyntaxException;
 
-import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
+
+import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.util.DocumentType;
 
 /**
  * Utility class providing common functionality used throughout this library.
@@ -32,7 +33,7 @@ public final class LoadUtil {
 		String value = null;
 		try {
 			String property = "purl.baseurl";
-			value = Registry.getInstance().getConfig().get(property, PURL_SERVER_BASE_URL);
+			value = Registry.getInstance().getConfiguration().get(property, PURL_SERVER_BASE_URL);
 			return new URIBuilder(value);
 		}
 		catch (URISyntaxException e) {
@@ -62,15 +63,22 @@ public final class LoadUtil {
 
 	/**
 	 * Deletes all documents of the specified type and the specified source
-	 * system.
+	 * system. As of NBA version 2 this method is deprecated, because this
+	 * version runs on Elasticsearch version 2, which has dropped support for
+	 * deleting individual types from an index. Therefore this method now is a
+	 * no-op. However, we keep the method and all calls to it, because having to
+	 * delete an entire index just to re-import a single source system isn't
+	 * ideal either. Therefore, if we find an acceptable way of getting rid of
+	 * just those data we want to re-import, this method may get un-deprecated
+	 * again.
 	 * 
-	 * @param luceneType
+	 * @param documentType
 	 * @param sourceSystem
 	 */
-	public static void truncate(String luceneType, SourceSystem sourceSystem)
+	@Deprecated
+	public static void truncate(DocumentType documentType, SourceSystem sourceSystem)
 	{
-		IndexManagerNative idxMgr = Registry.getInstance().getNbaIndexManager();
-		idxMgr.deleteWhere(luceneType, "sourceSystem.code", sourceSystem.getCode());
+		// ...
 	}
 
 	/**

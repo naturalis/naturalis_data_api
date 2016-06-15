@@ -11,7 +11,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.NBAImportAll;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
@@ -40,14 +40,14 @@ public class CrsSpecimenImportOffline {
 			importer.importSpecimens();
 		}
 		finally {
-			Registry.getInstance().closeESClient();
+			ETLRegistry.getInstance().closeESClient();
 		}
 	}
 
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsSpecimenImportOffline.class);
+		logger = ETLRegistry.getInstance().getLogger(CrsSpecimenImportOffline.class);
 	}
 
 	private final boolean suppressErrors;
@@ -124,7 +124,7 @@ public class CrsSpecimenImportOffline {
 
 	private static File[] getXmlFiles()
 	{
-		ConfigObject config = Registry.getInstance().getConfig();
+		ConfigObject config = ETLRegistry.getInstance().getConfig();
 		String path = config.required("crs.data.dir");
 		logger.info("Data directory for CRS specimen import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {

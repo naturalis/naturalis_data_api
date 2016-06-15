@@ -10,7 +10,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.NBAImportAll;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 
@@ -36,14 +36,14 @@ public class CrsSpecimenImport {
 			importer.importSpecimens();
 		}
 		finally {
-			Registry.getInstance().closeESClient();
+			ETLRegistry.getInstance().closeESClient();
 		}
 	}
 
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsSpecimenImport.class);
+		logger = ETLRegistry.getInstance().getLogger(CrsSpecimenImport.class);
 	}
 
 	private final boolean suppressErrors;

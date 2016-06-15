@@ -1,7 +1,6 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.etl.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.LoadConstants.*;
 import static nl.naturalis.nba.etl.LoadUtil.getSpecimenPurl;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
@@ -13,6 +12,8 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getFloat;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getGatheringEvent;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSpecimenIdentification;
 
+import static nl.naturalis.nba.dao.es.util.DocumentType.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
@@ -116,12 +118,20 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 		specimen.setCollectionType(BRAHMS_ABCD_COLLECTION_TYPE);
 	}
 
+	/*
+	 * Returns the id of the "botanical" record, which in Brahms is the
+	 * relational parent of the specimen record. Multiple specimens (twigs,
+	 * leaves, etc.) can belong to the same botanical record. Because we need to
+	 * make sure this id is not just unique within Brahms but NBA-wide, we
+	 * append the Brahm system code to it.
+	 */
 	private String getAssemblageID()
 	{
 		Float f = getFloat(input, BrahmsCsvField.BRAHMS);
-		if (f == null)
+		if (f == null) {
 			return null;
-		return ES_ID_PREFIX_BRAHMS + f.intValue();
+		}
+		return ESUtil.getElasticsearchId(SourceSystem.BRAHMS, f.intValue());
 	}
 
 	private SpecimenTypeStatus getTypeStatus()

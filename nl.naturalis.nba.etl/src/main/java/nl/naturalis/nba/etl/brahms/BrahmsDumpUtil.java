@@ -10,14 +10,15 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.Registry;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
  * Utility class for determining file encoding of Brahms dumps, and for
@@ -34,7 +35,7 @@ public class BrahmsDumpUtil {
 	public static void main(String[] args) throws Exception
 	{
 		convertFiles();
-		//detectEncoding();
+		// detectEncoding();
 	}
 
 	// Presumed extension for the original Brahms dump file
@@ -52,8 +53,7 @@ public class BrahmsDumpUtil {
 	// appended to FILE_EXT_IMPORTABLE:
 	static final String FILE_EXT_IMPORTED = ".imported";
 
-	private static final Logger logger = Registry.getInstance().getLogger(BrahmsDumpUtil.class);
-
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsDumpUtil.class);
 
 	/**
 	 * Utility method to detect character set in Brahms dumps. Not part of the
@@ -67,8 +67,10 @@ public class BrahmsDumpUtil {
 	 */
 	public static void detectEncoding() throws IOException
 	{
-		//String fileName = "C:\\test\\nda-import\\data\\brahms.orig\\LEIDEN1.CSV";
-		//String fileName = "C:\\test\\nda-import\\data\\brahms.orig\\LEIDEN2.CSV";
+		// String fileName =
+		// "C:\\test\\nda-import\\data\\brahms.orig\\LEIDEN1.CSV";
+		// String fileName =
+		// "C:\\test\\nda-import\\data\\brahms.orig\\LEIDEN2.CSV";
 		String fileName = "C:\\test\\nda-import\\data\\brahms.orig\\WAG.CSV";
 
 		// Let's see what JUniversalCharDet thinks
@@ -102,28 +104,30 @@ public class BrahmsDumpUtil {
 				System.out.println("ICU4J could not reliably detect a character set");
 			}
 			for (CharsetMatch match : matches) {
-				System.out.println("Character set detected by ICU4J: " + match.getName() + " (confidence: " + match.getConfidence() + ")");
+				System.out.println("Character set detected by ICU4J: " + match.getName()
+						+ " (confidence: " + match.getConfidence() + ")");
 			}
 		}
 	}
 
-
 	public static void convertFiles() throws Exception
 	{
 		logger.info("Checking file encoding for Brahms CSV files");
-		String csvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
+		String csvDir = Registry.getInstance().getConfiguration().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
 		}
 		logger.info("Brahms data directory: " + file.getCanonicalPath());
 		File[] newFiles = file.listFiles(new FilenameFilter() {
+
 			@Override
 			public boolean accept(File dir, String name)
 			{
 				name = name.toLowerCase();
 
-				return !name.endsWith(FILE_EXT_IMPORTABLE) && !name.endsWith(FILE_EXT_IMPORTED) && name.endsWith(FILE_EXT_ORIGINAL);
+				return !name.endsWith(FILE_EXT_IMPORTABLE) && !name.endsWith(FILE_EXT_IMPORTED)
+						&& name.endsWith(FILE_EXT_ORIGINAL);
 			}
 		});
 		if (newFiles.length == 0) {
@@ -138,16 +142,19 @@ public class BrahmsDumpUtil {
 
 			File bakFile = new File(basename + "." + now + FILE_EXT_BAK);
 			if (bakFile.isFile()) {
-				throw new Exception("Error creating bak file (file already exists): " + bakFile.getAbsolutePath());
+				throw new Exception("Error creating bak file (file already exists): "
+						+ bakFile.getAbsolutePath());
 			}
 
 			if (!newFile.renameTo(bakFile)) {
-				throw new Exception(String.format("Error creating bak file for \"%s\"", newFile.getAbsolutePath()));
+				throw new Exception(String.format("Error creating bak file for \"%s\"",
+						newFile.getAbsolutePath()));
 			}
 
 			File processableFile = new File(basename + "." + now + FILE_EXT_IMPORTABLE);
 			if (processableFile.isFile()) {
-				throw new Exception("Error converting file (file already exists): " + processableFile.getAbsolutePath());
+				throw new Exception("Error converting file (file already exists): "
+						+ processableFile.getAbsolutePath());
 			}
 
 			logger.info("Converting to UTF-8: " + newFile.getAbsolutePath());
@@ -157,7 +164,6 @@ public class BrahmsDumpUtil {
 		logger.info("File encoding conversion complete");
 	}
 
-
 	public static void backup()
 	{
 		logger.info("Creating backups of imported files");
@@ -165,7 +171,8 @@ public class BrahmsDumpUtil {
 			for (File f : getImportableFiles()) {
 				Path source = f.toPath();
 				Path target = new File(f.getCanonicalPath() + FILE_EXT_IMPORTED).toPath();
-				logger.info(String.format("Renaming %s => %s", source.getFileName().toString(), target.getFileName().toString()));
+				logger.info(String.format("Renaming %s => %s", source.getFileName().toString(),
+						target.getFileName().toString()));
 				Files.move(source, target);
 			}
 		}
@@ -174,15 +181,15 @@ public class BrahmsDumpUtil {
 		}
 	}
 
-
 	public static File[] getImportableFiles()
 	{
-		String csvDir = Registry.getInstance().getConfig().required("brahms.csv_dir");
+		String csvDir = Registry.getInstance().getConfiguration().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new RuntimeException(String.format("No such directory: \"%s\"", csvDir));
 		}
 		File[] files = file.listFiles(new FilenameFilter() {
+
 			@Override
 			public boolean accept(File dir, String name)
 			{

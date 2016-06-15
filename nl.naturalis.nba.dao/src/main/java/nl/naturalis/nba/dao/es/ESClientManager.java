@@ -3,7 +3,6 @@ package nl.naturalis.nba.dao.es;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
@@ -21,39 +20,31 @@ import nl.naturalis.nba.dao.es.exception.ConnectionFailureException;
 
 /**
  * A factory for Elasticsearch {@link Client} instances. You can get hold of an
- * {@code ESClientFactory} via {@link Registry#getESClientFactory()}.
+ * {@code ESClientFactory} via {@link Registry#getESClientManager()}.
  * 
  * @author Ayco Holleman
  *
  */
-public class ESClientFactory {
+public class ESClientManager {
 
-	private static final Logger logger;
-	
-	static {
-		logger = Registry.getInstance().getLogger(ESClientFactory.class);
-	}
+	private static final Logger logger = Registry.getInstance().getLogger(ESClientManager.class);
 
-	private static HashMap<ConfigObject, ESClientFactory> factories;
+	private static ESClientManager instance;
 
-	static ESClientFactory getInstance(ConfigObject config)
+	public static ESClientManager getInstance()
 	{
-		if (factories == null) {
-			factories = new HashMap<>(4);
+		if (instance == null) {
+			ConfigObject cfg = Registry.getInstance().getConfiguration();
+			instance = new ESClientManager(cfg);
 		}
-		ESClientFactory factory = factories.get(config);
-		if (factory == null) {
-			factory = new ESClientFactory(config);
-			factories.put(config, factory);
-		}
-		return factory;
+		return instance;
 	}
 
 	private final ConfigObject config;
 
 	private Client client;
 
-	private ESClientFactory(ConfigObject config)
+	private ESClientManager(ConfigObject config)
 	{
 		this.config = config;
 	}
@@ -81,6 +72,18 @@ public class ESClientFactory {
 			ping();
 		}
 		return client;
+	}
+
+	public void closeClient()
+	{
+		if (client != null) {
+			try {
+				client.close();
+			}
+			finally {
+				client = null;
+			}
+		}
 	}
 
 	private Client createClient()

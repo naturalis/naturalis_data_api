@@ -47,7 +47,7 @@ public class CSVExtractor<T extends Enum<T>> implements Iterator<CSVRecordInfo<T
 		}
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(CSVExtractor.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(CSVExtractor.class);
 
 	private final File csvFile;
 	private final ETLStatistics stats;

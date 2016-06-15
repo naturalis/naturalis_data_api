@@ -5,14 +5,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+
+import nl.naturalis.nba.dao.es.util.DocumentType;
 import nl.naturalis.nba.etl.col.CoLReferenceImporter;
 import nl.naturalis.nba.etl.col.CoLSynonymImporter;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
 import nl.naturalis.nba.etl.col.CoLVernacularNameImporter;
 import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-
-import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -86,10 +87,9 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		String getParentId(T obj);
 	}
 
-	private final Logger logger = Registry.getInstance().getLogger(getClass());
+	private final Logger logger = ETLRegistry.getInstance().getLogger(getClass());
 
-	private final IndexManagerNative idxMgr;
-	private final String type;
+	private final DocumentType documentType;
 	private final int treshold;
 	private final ETLStatistics stats;
 
@@ -101,20 +101,18 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	private boolean suppressErrors;
 
 	/**
-	 * Create a loader that uses the specified index manager for bulk-indexing
+	 * Creates a loader that uses the specified index manager for indexing
 	 * documents of the specified document type. Indexing is triggered every
-	 * time the number of objects added to the loader via the
-	 * {@link #load(List)} operations exceeds the specified treshold.
+	 * time the number of objects added to the loader exceeds the specified
+	 * treshold.
 	 * 
-	 * @param indexManager
 	 * @param documentType
 	 * @param treshold
+	 * @param stats
 	 */
-	public ElasticSearchLoader(IndexManagerNative indexManager, String documentType, int treshold,
-			ETLStatistics stats)
+	public ElasticSearchLoader(DocumentType documentType, int treshold, ETLStatistics stats)
 	{
-		this.idxMgr = indexManager;
-		this.type = documentType;
+		this.documentType = documentType;
 		this.treshold = treshold;
 		this.stats = stats;
 		/*
@@ -190,10 +188,6 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 		return null;
 	}
 
-	/**
-	 * Just calls {@link #flush()} so that a try-with-resources instantiation of
-	 * this writer is guaranteed to flush the object buffer for you.
-	 */
 	@Override
 	public void close() throws IOException
 	{
@@ -213,6 +207,9 @@ public abstract class ElasticSearchLoader<T> implements Closeable {
 	public void flush()
 	{
 		if (!objs.isEmpty()) {
+			ETLRegistry reg = ETLRegistry.getInstance();
+			IndexManagerNative idxMgr = reg.getNbaIndexManager(documentType);
+			String type = documentType.getName();
 			try {
 				idxMgr.saveObjects(type, objs, ids, parIds);
 				stats.documentsIndexed += objs.size();

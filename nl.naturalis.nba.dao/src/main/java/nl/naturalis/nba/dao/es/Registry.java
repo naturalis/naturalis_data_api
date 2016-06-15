@@ -46,7 +46,7 @@ public class Registry {
 	private File cfgDir;
 	private File cfgFile;
 	private ConfigObject config;
-	private ESClientFactory clientFactory;
+	private ESClientManager clientFactory;
 
 	@SuppressWarnings("unused")
 	private Logger logger = getLogger(getClass());
@@ -130,19 +130,6 @@ public class Registry {
 	public Logger getLogger(Class<?> cls)
 	{
 		return LogManager.getLogger(cls);
-	}
-
-	/**
-	 * Returns a factory for Elasticsearch clients.
-	 * 
-	 * @return
-	 */
-	public ESClientFactory getESClientFactory()
-	{
-		if (clientFactory == null) {
-			clientFactory = ESClientFactory.getInstance(config);
-		}
-		return clientFactory;
 	}
 
 	private void setConfDir()

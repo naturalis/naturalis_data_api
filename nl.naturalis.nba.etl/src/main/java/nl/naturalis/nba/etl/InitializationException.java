@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl;
 
 /**
- * Thrown during the instantion of the central {@link Registry} object if anything goes
+ * Thrown during the instantion of the central {@link ETLRegistry} object if anything goes
  * wrong while configuring the services it provides.
  * 
  * @author Ayco Holleman

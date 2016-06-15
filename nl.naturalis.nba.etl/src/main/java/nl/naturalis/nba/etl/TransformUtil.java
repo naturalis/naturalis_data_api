@@ -33,7 +33,7 @@ import org.domainobject.util.StringUtil;
  */
 public class TransformUtil {
 	
-	private static final Logger logger = Registry.getInstance().getLogger(TransformUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(TransformUtil.class);
 
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyy/MM/dd");

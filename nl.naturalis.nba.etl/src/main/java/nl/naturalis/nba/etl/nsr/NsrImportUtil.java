@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.DOMUtil;
@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
  */
 class NsrImportUtil {
 
-	private static final Logger logger = Registry.getInstance().getLogger(NsrImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(NsrImportUtil.class);
 
 	private NsrImportUtil()
 	{
@@ -125,7 +125,7 @@ class NsrImportUtil {
 
 	private static File getDataDir()
 	{
-		return Registry.getInstance().getConfig().getDirectory("nsr.data.dir");
+		return ETLRegistry.getInstance().getConfig().getDirectory("nsr.data.dir");
 	}
 
 }

@@ -154,7 +154,7 @@ public class ESTestUtils {
 
 	private static Client client()
 	{
-		return registry.getESClientFactory().getClient();
+		return registry.getESClientManager().getClient();
 	}
 
 }

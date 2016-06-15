@@ -19,8 +19,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import nl.naturalis.nba.etl.Registry;
-
+import org.domainobject.util.ConfigObject;
 import org.domainobject.util.DOMUtil;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormat;
@@ -28,8 +27,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import nl.naturalis.nba.dao.es.Registry;
+
 /**
  * Utility class for searching the locally stored XML files for a value.
+ * 
  * @author Ayco Holleman
  *
  */
@@ -86,8 +88,8 @@ public class CrsFindInSource {
 	private boolean countOnly = false;
 	private boolean noDots = false;
 
-
-	public CrsFindInSource(String type, String xmlElement, String value) throws ParserConfigurationException, TransformerConfigurationException
+	public CrsFindInSource(String type, String xmlElement, String value)
+			throws ParserConfigurationException, TransformerConfigurationException
 	{
 		this.type = type;
 		this.xmlElement = xmlElement;
@@ -101,11 +103,11 @@ public class CrsFindInSource {
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 	}
 
-
 	public void findOaiRecords() throws SAXException, IOException, TransformerException
 	{
 		long start = System.currentTimeMillis();
-		System.out.print("Searching " + Registry.getInstance().getConfig().required("crs.data_dir") + " ");
+		ConfigObject cfg = Registry.getInstance().getConfiguration();
+		System.out.print("Searching " + cfg.required("crs.data_dir") + " ");
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
 		String valueUpperCase = value.toUpperCase();
@@ -116,7 +118,8 @@ public class CrsFindInSource {
 				System.out.print('.');
 			}
 			Document doc = builder.parse(f);
-			List<Element> recordElements = DOMUtil.getDescendants(doc.getDocumentElement(), "record");
+			List<Element> recordElements = DOMUtil.getDescendants(doc.getDocumentElement(),
+					"record");
 			if (recordElements == null) {
 				continue;
 			}
@@ -133,7 +136,8 @@ public class CrsFindInSource {
 								}
 							}
 							else {
-								if (e.getTextContent().toUpperCase().indexOf(valueUpperCase) != -1) {
+								if (e.getTextContent().toUpperCase()
+										.indexOf(valueUpperCase) != -1) {
 									match = true;
 								}
 							}
@@ -151,7 +155,8 @@ public class CrsFindInSource {
 							if (!countOnly) {
 								System.out.println();
 								System.out.println();
-								System.out.println("********** [ " + f.getAbsolutePath() + " ] [ Record " + (i + 1) + " ] **********");
+								System.out.println("********** [ " + f.getAbsolutePath()
+										+ " ] [ Record " + (i + 1) + " ] **********");
 								recordElement.setAttribute("xmlns:xsi", XSI_NAMESPACE);
 								DOMSource source = new DOMSource(recordElement);
 								StreamResult result = new StreamResult(System.out);
@@ -168,13 +173,14 @@ public class CrsFindInSource {
 			}
 		}
 		System.out.println();
-		System.out.println("Search completed in " + PeriodFormat.getDefault().print(new Duration(System.currentTimeMillis() - start).toPeriod()));
+		System.out.println("Search completed in " + PeriodFormat.getDefault()
+				.print(new Duration(System.currentTimeMillis() - start).toPeriod()));
 		System.out.println(String.format("Number of matches for value \"%s\": %s", value, matches));
 		System.out.println();
 	}
 
-
-	private static boolean getBooleanOption(String optionName, ArrayList<String> args, boolean dfault) throws Exception
+	private static boolean getBooleanOption(String optionName, ArrayList<String> args,
+			boolean dfault) throws Exception
 	{
 		for (String arg : args) {
 			if (arg.startsWith(optionName)) {
@@ -185,7 +191,9 @@ public class CrsFindInSource {
 				}
 				int i = arg.indexOf('=');
 				if (i == -1) {
-					throw new Exception(String.format("Option %1$s must be specified as %1$s (%2$s) or %1$s=true|false", optionName, dfault));
+					throw new Exception(String.format(
+							"Option %1$s must be specified as %1$s (%2$s) or %1$s=true|false",
+							optionName, dfault));
 				}
 				if (i == arg.length() - 1) {
 					return true;
@@ -196,8 +204,8 @@ public class CrsFindInSource {
 		return dfault;
 	}
 
-
-	private static int getIntOption(String optionName, ArrayList<String> args, int dfault) throws Exception
+	private static int getIntOption(String optionName, ArrayList<String> args, int dfault)
+			throws Exception
 	{
 		for (String arg : args) {
 			if (arg.startsWith(optionName)) {
@@ -208,7 +216,8 @@ public class CrsFindInSource {
 				}
 				int i = arg.indexOf('=');
 				if (i == -1) {
-					throw new Exception(String.format("Option %1$s must be specified as %1$s=<integer>", optionName, dfault));
+					throw new Exception(String.format(
+							"Option %1$s must be specified as %1$s=<integer>", optionName, dfault));
 				}
 				if (i == arg.length() - 1) {
 					return dfault;
@@ -219,10 +228,9 @@ public class CrsFindInSource {
 		return dfault;
 	}
 
-
 	private static Iterator<File> getFileIterator(final String type)
 	{
-		String path = Registry.getInstance().getConfig().required("crs.data_dir");
+		String path = Registry.getInstance().getConfiguration().required("crs.data_dir");
 		if (type == null) {
 			return Arrays.asList(new File(path).listFiles()).iterator();
 		}
@@ -242,34 +250,48 @@ public class CrsFindInSource {
 		})).iterator();
 	}
 
-
 	private static void usage() throws Exception
 	{
 		String shellScript = System.getProperty("shellScript");
 		if (shellScript == null) {
 			throw new Exception("Missing system property: \"shellScript\"");
 		}
-		System.out.println("USAGE: " + shellScript + " specimens|multimedia <xml-element> <value> [option ...]");
+		System.out.println("USAGE: " + shellScript
+				+ " specimens|multimedia <xml-element> <value> [option ...]");
 		System.out.println();
 		System.out.println("OPTIONS: ");
-		System.out.println("--case-sensitive      Whether or not to do a case sensitive search. Default true.");
-		System.out.println("--max-records         Maximum number of records to find. Default 1. Zero (0) means: find all.");
-		System.out.println("--exact-match         Whether or not the value argument must be matched exactly. Default true.");
-		System.out.println("--count-only          Only print number of matches. Especially useful with --max-records=0. Default false.");
-		System.out.println("--no-dots             Suppress printing dots while searching. Default false.");
+		System.out.println(
+				"--case-sensitive      Whether or not to do a case sensitive search. Default true.");
+		System.out.println(
+				"--max-records         Maximum number of records to find. Default 1. Zero (0) means: find all.");
+		System.out.println(
+				"--exact-match         Whether or not the value argument must be matched exactly. Default true.");
+		System.out.println(
+				"--count-only          Only print number of matches. Especially useful with --max-records=0. Default false.");
+		System.out.println(
+				"--no-dots             Suppress printing dots while searching. Default false.");
 		System.out.println();
 		System.out.println("Example 1: find specimen record with UnitID \"RMNH.MAM.45522.A\":");
 		System.out.println("           " + shellScript + " specimens abcd:UnitID RMNH.MAM.45522.A");
-		System.out.println("Example 2: find ALL specimen records with RecordBasis \"Preserved Specimen\":");
-		System.out.println("           " + shellScript + " specimens abcd:RecordBasis \"Preserved Specimen\" --max-records=0");
-		System.out.println("Example 3: find at most 5 multimedia records with associatedSpecimenReference \"RGM.1101811\":");
-		System.out.println("           " + shellScript + " multimedia ac:associatedSpecimenReference RGM.1101811 --max-records=5");
-		System.out.println("Example 4: find, ignoring case, a multimedia record with CollectionType \"mineralogy and petrology\":");
-		System.out.println("           " + shellScript + " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-sensitive=false");
+		System.out.println(
+				"Example 2: find ALL specimen records with RecordBasis \"Preserved Specimen\":");
+		System.out.println("           " + shellScript
+				+ " specimens abcd:RecordBasis \"Preserved Specimen\" --max-records=0");
+		System.out.println(
+				"Example 3: find at most 5 multimedia records with associatedSpecimenReference \"RGM.1101811\":");
+		System.out.println("           " + shellScript
+				+ " multimedia ac:associatedSpecimenReference RGM.1101811 --max-records=5");
+		System.out.println(
+				"Example 4: find, ignoring case, a multimedia record with CollectionType \"mineralogy and petrology\":");
+		System.out.println("           " + shellScript
+				+ " multimedia abcd:CollectionType \"mineralogy and petrology\" --case-sensitive=false");
 		System.out.println("Example 5: find all specimen records with \"MAM\" in their UnitID:");
-		System.out.println("           " + shellScript + " multimedia abcd:UnitID MAM --exact-match=false");
-		System.out.println("Example 6: get number of specimens belonging to collection type \"Hymenoptera\":");
-		System.out.println("           " + shellScript + " specimens abcd:CollectionType Hymenoptera --max-records=0 --count-only --no-dots");
+		System.out.println(
+				"           " + shellScript + " multimedia abcd:UnitID MAM --exact-match=false");
+		System.out.println(
+				"Example 6: get number of specimens belonging to collection type \"Hymenoptera\":");
+		System.out.println("           " + shellScript
+				+ " specimens abcd:CollectionType Hymenoptera --max-records=0 --count-only --no-dots");
 		System.out.println();
 	}
 }

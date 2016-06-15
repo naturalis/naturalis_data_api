@@ -259,7 +259,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	private static Client getESClient()
 	{
 		Registry registry = Registry.getInstance();
-		ESClientFactory factory = registry.getESClientFactory();
+		ESClientManager factory = registry.getESClientManager();
 		Client client = factory.getClient();
 		return client;
 	}

@@ -1,26 +1,27 @@
 package nl.naturalis.nba.etl.crs;
 
+import static nl.naturalis.nba.api.model.SourceSystem.CRS;
+import static nl.naturalis.nba.dao.es.util.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.crs.CrsImportUtil.callMultimediaService;
 
 import java.util.List;
-
-import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.NBAImportAll;
-import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nba.etl.ThemeCache;
-import nl.naturalis.nba.etl.XMLRecordInfo;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
+import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.LoadConstants;
+import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ThemeCache;
+import nl.naturalis.nba.etl.XMLRecordInfo;
+
 /**
- * Class that manages the import of CRS multimedia, sourced through "live"
- * calls to the CRS OAI service.
+ * Class that manages the import of CRS multimedia, sourced through "live" calls
+ * to the CRS OAI service.
  * 
  * @author Ayco Holleman
  * 
@@ -36,14 +37,14 @@ public class CrsMultiMediaImport {
 			importer.importMultimedia();
 		}
 		finally {
-			Registry.getInstance().closeESClient();
+			ESClientManager.getInstance().closeClient();
 		}
 	}
 
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsMultiMediaImport.class);
+		logger = ETLRegistry.getInstance().getLogger(CrsMultiMediaImport.class);
 	}
 
 	private final boolean suppressErrors;
@@ -67,7 +68,7 @@ public class CrsMultiMediaImport {
 	public void importMultimedia()
 	{
 		long start = System.currentTimeMillis();
-		LoadUtil.truncate(NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.CRS);
+		LoadUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);

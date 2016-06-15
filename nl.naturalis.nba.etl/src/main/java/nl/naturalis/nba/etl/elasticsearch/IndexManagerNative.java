@@ -39,7 +39,7 @@ import org.elasticsearch.index.IndexNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
  * An implementation of {@link IndexManager} that uses ElasticSearch's Native
@@ -51,7 +51,7 @@ import nl.naturalis.nba.etl.Registry;
  */
 public class IndexManagerNative implements IndexManager {
 
-	private static final Logger logger = Registry.getInstance().getLogger(IndexManagerNative.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(IndexManagerNative.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	private final Client esClient;

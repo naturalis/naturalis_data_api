@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 public class CSVImportUtil {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Registry.getInstance().getLogger(CSVImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(CSVImportUtil.class);
 
 	private CSVImportUtil()
 	{

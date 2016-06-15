@@ -1,17 +1,11 @@
 package nl.naturalis.nba.etl;
 
-import java.io.File;
 import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
 
-import nl.naturalis.nba.dao.es.map.Mapping;
-import nl.naturalis.nba.dao.es.map.MappingFactory;
-import nl.naturalis.nba.dao.es.map.MappingSerializer;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
@@ -33,13 +27,12 @@ public class NBAImportAll {
 	{
 		IndexManagerNative index = null;
 		try {
-			index = Registry.getInstance().getNbaIndexManager();
-			NBAImportAll indexManager = new NBAImportAll(index);
+			NBAImportAll nbaImportAll = new NBAImportAll();
 			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
-				indexManager.bootstrap();
+				nbaImportAll.bootstrap();
 			}
 			if (args.length == 0 || Arrays.asList(args).contains("import")) {
-				indexManager.importAll();
+				nbaImportAll.importAll();
 			}
 		}
 		catch (Throwable t) {
@@ -52,18 +45,7 @@ public class NBAImportAll {
 		}
 	}
 
-	public static final String LUCENE_TYPE_TAXON = "Taxon";
-	public static final String LUCENE_TYPE_SPECIMEN = "Specimen";
-	public static final String LUCENE_TYPE_MULTIMEDIA_OBJECT = "MultiMediaObject";
-
-	private static final Logger logger = Registry.getInstance().getLogger(NBAImportAll.class);
-
-	private final IndexManagerNative index;
-
-	public NBAImportAll(IndexManagerNative index)
-	{
-		this.index = index;
-	}
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(NBAImportAll.class);
 
 	/**
 	 * Runs all individual import programs in the following order: NSR, Brahms,
@@ -102,7 +84,7 @@ public class NBAImportAll {
 		}
 		finally {
 			LoadUtil.logDuration(logger, getClass(), start);
-			Registry.getInstance().closeESClient();
+			ESClientManager.getInstance().closeClient();
 		}
 
 		int i = MimeTypeCacheFactory.getInstance().getCache().getMisses();
@@ -114,48 +96,51 @@ public class NBAImportAll {
 	}
 
 	/**
-	 * Creates the NDA schema from scratch. Will delete the entire index
-	 * (mappings and documents) and then re-create it. !!! WATCH OUT !!!
+	 * Creates the NBA indices from scratch. Will delete any pre-existing
+	 * indices used by the NBA and then re-create them. All data will be lost.
+	 * WATCH OUT!
 	 */
 	public void bootstrap()
 	{
-		index.delete();
-		Registry registry = Registry.getInstance();
-		File settingsFile = registry.getFile("es-settings.json");
-		String settings = FileUtil.getContents(settingsFile);
-		logger.debug("Creating index using\n" + settings);
-		index.create(settings);
-		MappingFactory mappingFactory = new MappingFactory();
-		MappingSerializer serializer = MappingSerializer.getInstance();
-		if (logger.isDebugEnabled()) {
-			serializer.setPretty(true);
-		}
-
-		Mapping mapping = mappingFactory.getMapping(ESSpecimen.class);
-		String json = serializer.serialize(mapping);
-		if (logger.isDebugEnabled()) {
-			logger.debug("*********************************************");
-			logger.debug("Mapping for type Specimen:\n" + json);
-			logger.debug("*********************************************");
-		}
-		index.addType(LUCENE_TYPE_SPECIMEN, json);
-
-		mapping = mappingFactory.getMapping(ESMultiMediaObject.class);
-		json = serializer.serialize(mapping);
-		if (logger.isDebugEnabled()) {
-			logger.debug("*********************************************");
-			logger.debug("Mapping for type MultiMediaObject:\n" + json);
-			logger.debug("*********************************************");
-		}
-		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, json);
-
-		mapping = mappingFactory.getMapping(ESTaxon.class);
-		json = serializer.serialize(mapping);
-		if (logger.isDebugEnabled()) {
-			logger.debug("*********************************************");
-			logger.debug("Mapping for type Taxon:\n" + json);
-			logger.debug("*********************************************");
-		}
-		index.addType(LUCENE_TYPE_TAXON, json);
+		ESUtil.deleteAllIndices();
+		ESUtil.createAllIndices();
+//		index.delete();
+//		Registry registry = Registry.getInstance();
+//		File settingsFile = registry.getFile("es-settings.json");
+//		String settings = FileUtil.getContents(settingsFile);
+//		logger.debug("Creating index using\n" + settings);
+//		index.create(settings);
+//		MappingFactory mappingFactory = new MappingFactory();
+//		MappingSerializer serializer = MappingSerializer.getInstance();
+//		if (logger.isDebugEnabled()) {
+//			serializer.setPretty(true);
+//		}
+//
+//		Mapping mapping = mappingFactory.getMapping(ESSpecimen.class);
+//		String json = serializer.serialize(mapping);
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("*********************************************");
+//			logger.debug("Mapping for type Specimen:\n" + json);
+//			logger.debug("*********************************************");
+//		}
+//		index.addType(LUCENE_TYPE_SPECIMEN, json);
+//
+//		mapping = mappingFactory.getMapping(ESMultiMediaObject.class);
+//		json = serializer.serialize(mapping);
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("*********************************************");
+//			logger.debug("Mapping for type MultiMediaObject:\n" + json);
+//			logger.debug("*********************************************");
+//		}
+//		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, json);
+//
+//		mapping = mappingFactory.getMapping(ESTaxon.class);
+//		json = serializer.serialize(mapping);
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("*********************************************");
+//			logger.debug("Mapping for type Taxon:\n" + json);
+//			logger.debug("*********************************************");
+//		}
+//		index.addType(LUCENE_TYPE_TAXON, json);
 	}
 }

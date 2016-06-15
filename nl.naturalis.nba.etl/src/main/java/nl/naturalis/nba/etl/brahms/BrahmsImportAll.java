@@ -1,7 +1,5 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_SPECIMEN;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
@@ -9,18 +7,19 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension
 import java.io.File;
 import java.nio.charset.Charset;
 
-import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.etl.CSVExtractor;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nba.etl.ThemeCache;
-import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.util.DocumentType;
+import nl.naturalis.nba.etl.CSVExtractor;
+import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ThemeCache;
+import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 
 /**
  * Manages the import of Brahms specimens and multimedia. Since specimens and
@@ -49,7 +48,7 @@ public class BrahmsImportAll {
 			logger.error("Invalid argument: " + args[0]);
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportAll.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportAll.class);
 
 	private final boolean backup;
 	private final boolean parallel;
@@ -111,8 +110,8 @@ public class BrahmsImportAll {
 		ETLStatistics mStats = new ETLStatistics();
 		mStats.setOneToMany(true);
 		try {
-			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, SourceSystem.BRAHMS);
-			LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, SourceSystem.BRAHMS);
+			LoadUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
+			LoadUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, sStats, mStats);
 			}

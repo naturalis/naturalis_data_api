@@ -1,11 +1,13 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
+import static nl.naturalis.nba.dao.es.util.ESUtil.*;
+import static nl.naturalis.nba.api.model.SourceSystem.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -32,7 +34,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
-		this.index = Registry.getInstance().getNbaIndexManager();
+		this.index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
 		this.loader = loader;
 	}
 
@@ -49,12 +51,12 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
 		try {
-			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			String id = getElasticsearchId(COL, objectID);
 			boolean isNew = false;
-			ESTaxon taxon = loader.findInQueue(elasticID);
+			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
 				isNew = true;
-				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
 			}
 			if (taxon == null) {
 				stats.objectsRejected++;
@@ -108,10 +110,10 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
 		try {
-			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
-			ESTaxon taxon = loader.findInQueue(elasticID);
+			String id = getElasticsearchId(COL, objectID);
+			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
 				if (taxon != null && taxon.getReferences() != null) {
 					stats.objectsAccepted++;
 					taxon.setReferences(null);

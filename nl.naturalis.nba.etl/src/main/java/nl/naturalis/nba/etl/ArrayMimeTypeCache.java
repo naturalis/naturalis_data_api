@@ -30,7 +30,7 @@ import org.domainobject.util.IOUtil;
  */
 public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 
-	private static final Logger logger = Registry.getInstance().getLogger(ArrayMimeTypeCache.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(ArrayMimeTypeCache.class);
 	private static final int DEFAULT_MAX_ENTRIES = 10000000;
 	private static final String SYSPROP_PACK = "mimetypecache.pack";
 

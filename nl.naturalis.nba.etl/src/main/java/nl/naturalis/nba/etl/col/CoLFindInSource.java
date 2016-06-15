@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.dao.es.Registry;
 
 /**
  * Utility class for finding values in the CoL data sources (taxa.txt,
@@ -22,12 +22,11 @@ public class CoLFindInSource {
 	{
 		try {
 			CoLFindInSource colfindinsource = new CoLFindInSource();
-			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
+			String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
 			colfindinsource.ReadValueFromCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {
 		}
-
 	}
 
 	public class Vernacular {

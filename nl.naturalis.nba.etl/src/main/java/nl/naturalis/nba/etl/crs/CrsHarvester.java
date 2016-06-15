@@ -10,12 +10,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.ETLRuntimeException;
-import nl.naturalis.nba.etl.Registry;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
+
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 
 /**
  * Harvests the CRS OAI service and saves its output to files on the local file
@@ -78,7 +79,7 @@ public class CrsHarvester {
 	private static final String usage;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsHarvester.class);
+		logger = ETLRegistry.getInstance().getLogger(CrsHarvester.class);
 		oaiDateFormat = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 		fileNameDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -161,7 +162,7 @@ public class CrsHarvester {
 	private static File getLocalPath(String type, Date fromDate, int callNum)
 	{
 		StringBuilder sb = new StringBuilder(100);
-		ConfigObject cfg = Registry.getInstance().getConfig();
+		ConfigObject cfg = Registry.getInstance().getConfiguration();
 		String dir = cfg.getDirectory("crs.data_dir").getAbsolutePath();
 		sb.append(dir).append('/').append(type).append('.');
 		if (fromDate == null)
@@ -197,7 +198,7 @@ public class CrsHarvester {
 
 	private static File getAdminFile(String type)
 	{
-		File dir = Registry.getInstance().getConfDir();
+		File dir = Registry.getInstance().getConfigurationDirectory();
 		return FileUtil.newFile(dir, ".crs-" + type + ".oai");
 	}
 

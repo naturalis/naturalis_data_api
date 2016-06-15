@@ -9,30 +9,10 @@ package nl.naturalis.nba.etl;
 public interface LoadConstants {
 
 	/**
-	 * Optional system property specifying the number of documents to be indexed
-	 * at once.
+	 * Optional system property that can be used to fine-tune bulk indexing (the
+	 * number of documents indexed at once).
 	 */
 	String SYSPROP_ES_BULK_REQUEST_SIZE = "es.bulk.request.size";
-	/**
-	 * ElastichSearch {@code _id} prefix for Brahms documents.
-	 */
-	String ES_ID_PREFIX_BRAHMS = "BRAHMS-";
-	/**
-	 * ElastichSearch {@code _id} prefix for CoL documents.
-	 */
-	String ES_ID_PREFIX_COL = "COL-";
-	/**
-	 * ElastichSearch {@code _id} prefix for NSR documents.
-	 */
-	String ES_ID_PREFIX_NSR = "NSR-";
-	/**
-	 * ElastichSearch {@code _id} prefix for CRS documents.
-	 */
-	String ES_ID_PREFIX_CRS = "CRS-";
-	/**
-	 * ElastichSearch {@code _id} prefix for NDFF documents.
-	 */
-	String ES_ID_PREFIX_NDFF = "NDFF-";
 	/**
 	 * Naturalis Biodiversity Center
 	 */

@@ -28,7 +28,7 @@ import org.domainobject.util.IOUtil;
  */
 public class MapMimeTypeCache extends AbstractMimeTypeCache {
 
-	private static final Logger logger = Registry.getInstance().getLogger(MapMimeTypeCache.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(MapMimeTypeCache.class);
 
 	private TreeMap<String, String> cache;
 

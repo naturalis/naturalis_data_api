@@ -1,7 +1,6 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.etl.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -18,19 +17,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.domainobject.util.ConfigObject;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
+import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
-import org.domainobject.util.ConfigObject;
+import static nl.naturalis.nba.dao.es.util.DocumentType.*;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.

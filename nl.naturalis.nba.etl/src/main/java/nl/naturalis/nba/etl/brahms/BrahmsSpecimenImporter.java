@@ -1,23 +1,23 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_SPECIMEN;
+import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
 
-import nl.naturalis.nba.etl.CSVExtractor;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nba.etl.ThemeCache;
-import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.etl.CSVExtractor;
+import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ThemeCache;
+import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 
 /**
  * Manages the import of Brahms specimens.
@@ -33,7 +33,7 @@ public class BrahmsSpecimenImporter {
 		importer.importCsvFiles();
 	}
 
-	static Logger logger = Registry.getInstance().getLogger(BrahmsSpecimenImporter.class);
+	static Logger logger = ETLRegistry.getInstance().getLogger(BrahmsSpecimenImporter.class);
 
 	private final boolean suppressErrors;
 
@@ -58,7 +58,7 @@ public class BrahmsSpecimenImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, BRAHMS);
+			LoadUtil.truncate(SPECIMEN, BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}

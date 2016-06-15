@@ -1,23 +1,24 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
 
 import java.io.File;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.IOUtil;
+
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.Registry;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
-
-import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 /**
  * Imports taxa from the taxa.txt file. This is the only import program for the
@@ -33,11 +34,12 @@ public class CoLTaxonImporter {
 	public static void main(String[] args) throws Exception
 	{
 		CoLTaxonImporter importer = new CoLTaxonImporter();
-		String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
+		String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
 		importer.importCsv(dwcaDir + "/taxa.txt");
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonImporter.class);
+	private static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(CoLTaxonImporter.class);
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
@@ -49,7 +51,7 @@ public class CoLTaxonImporter {
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
-		colYear = Registry.getInstance().getConfig().required("col.year");
+		colYear = Registry.getInstance().getConfiguration().required("col.year");
 	}
 
 	/**
@@ -68,7 +70,7 @@ public class CoLTaxonImporter {
 			File f = new File(path);
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
-			LoadUtil.truncate(LUCENE_TYPE_TAXON, SourceSystem.COL);
+			LoadUtil.truncate(TAXON, SourceSystem.COL);
 			stats = new ETLStatistics();
 			extractor = createExtractor(stats, f);
 			transformer = new CoLTaxonTransformer(stats);
@@ -97,7 +99,6 @@ public class CoLTaxonImporter {
 		logger.info("(NB skipped records are synonyms or higher taxa)");
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
-
 
 	private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)
 	{

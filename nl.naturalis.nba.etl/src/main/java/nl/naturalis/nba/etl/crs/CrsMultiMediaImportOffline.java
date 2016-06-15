@@ -34,14 +34,14 @@ public class CrsMultiMediaImportOffline {
 			importer.importMultimedia();
 		}
 		finally {
-			Registry.getInstance().closeESClient();
+			ETLRegistry.getInstance().closeESClient();
 		}
 	}
 
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsMultiMediaImportOffline.class);
+		logger = ETLRegistry.getInstance().getLogger(CrsMultiMediaImportOffline.class);
 	}
 
 	private final boolean suppressErrors;
@@ -127,7 +127,7 @@ public class CrsMultiMediaImportOffline {
 
 	private static File[] getXmlFiles()
 	{
-		ConfigObject config = Registry.getInstance().getConfig();
+		ConfigObject config = ETLRegistry.getInstance().getConfig();
 		String path = config.required("crs.data.dir");
 		logger.info("Data directory for CRS multimedia import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {

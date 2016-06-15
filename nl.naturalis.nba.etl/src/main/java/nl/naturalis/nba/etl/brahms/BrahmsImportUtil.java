@@ -10,17 +10,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nba.api.model.*;
-import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nba.etl.TransformUtil;
-
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.joda.time.LocalDate;
+
+import nl.naturalis.nba.api.model.*;
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.TransformUtil;
 
 /**
  * Provides common functionality related to the Brahms ETL cycle.
@@ -30,7 +31,7 @@ import org.joda.time.LocalDate;
  */
 class BrahmsImportUtil {
 
-	private static final Logger logger = Registry.getInstance().getLogger(BrahmsImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 
@@ -477,7 +478,7 @@ class BrahmsImportUtil {
 
 	private static File getDataDir()
 	{
-		return Registry.getInstance().getConfig().getDirectory("brahms.data.dir");
+		return Registry.getInstance().getConfiguration().getDirectory("brahms.data.dir");
 	}
 
 }

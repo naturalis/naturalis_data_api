@@ -1,13 +1,12 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.etl.LoadConstants.*;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nba.api.model.SourceSystem.COL;
+import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ElasticSearchLoader;
-import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
  * The loader component for the CoL import. Loads Taxon documents into
@@ -22,24 +21,20 @@ import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
  */
 public class CoLTaxonLoader extends ElasticSearchLoader<ESTaxon> {
 
-	private static IndexManagerNative indexManager()
-	{
-		return Registry.getInstance().getNbaIndexManager();
-	}
-
 	public CoLTaxonLoader(ETLStatistics stats, int treshold)
 	{
-		super(indexManager(), LUCENE_TYPE_TAXON, treshold, stats);
+		super(TAXON, treshold, stats);
 	}
 
 	@Override
 	protected IdGenerator<ESTaxon> getIdGenerator()
 	{
 		return new IdGenerator<ESTaxon>() {
+
 			@Override
 			public String getId(ESTaxon obj)
 			{
-				return ES_ID_PREFIX_COL + obj.getSourceSystemId();
+				return getElasticsearchId(COL, obj.getSourceSystemId());
 			}
 		};
 	}

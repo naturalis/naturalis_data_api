@@ -12,7 +12,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
@@ -27,14 +27,14 @@ public class NdffSpecimenImporter {
 			importer.importSpecimens();
 		}
 		finally {
-			Registry.getInstance().closeESClient();
+			ETLRegistry.getInstance().closeESClient();
 		}
 	}
 
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(NdffSpecimenImporter.class);
+		logger = ETLRegistry.getInstance().getLogger(NdffSpecimenImporter.class);
 	}
 
 	private final boolean suppressErrors;

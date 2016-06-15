@@ -1,9 +1,9 @@
 package nl.naturalis.nba.etl.crs;
 
-import nl.naturalis.nba.etl.Registry;
-
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
  * Class that manages the import of CRS specimens and multimedia. Currently,
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class CrsImportAll {
-	
+
 	public static void main(String[] args) throws Exception
 	{
 		try {
@@ -25,12 +25,12 @@ public class CrsImportAll {
 			crsImportAll.importAll();
 		}
 		finally {
-			Registry.getInstance().closeESClient();
+			ESClientManager.getInstance().closeClient();
 		}
 	}
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Registry.getInstance().getLogger(CrsImportAll.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(CrsImportAll.class);
 
 	/**
 	 * Import CRS specimens and multimedia.

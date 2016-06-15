@@ -3,12 +3,13 @@ package nl.naturalis.nba.etl.crs;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.Registry;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
+
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
  * Class providing common functionality for CRS imports.
@@ -24,8 +25,8 @@ class CrsImportUtil {
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(CrsImportUtil.class);
-		config = Registry.getInstance().getConfig();
+		logger = ETLRegistry.getInstance().getLogger(CrsImportUtil.class);
+		config = Registry.getInstance().getConfiguration();
 		oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 	}
 

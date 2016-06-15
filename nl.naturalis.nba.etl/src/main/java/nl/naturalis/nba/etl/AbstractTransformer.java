@@ -53,7 +53,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	public AbstractTransformer(ETLStatistics stats)
 	{
 		this.stats = stats;
-		this.logger = Registry.getInstance().getLogger(getClass());
+		this.logger = ETLRegistry.getInstance().getLogger(getClass());
 	}
 
 	/**

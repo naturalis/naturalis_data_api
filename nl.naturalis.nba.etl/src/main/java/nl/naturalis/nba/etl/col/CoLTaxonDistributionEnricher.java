@@ -1,22 +1,24 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
-import nl.naturalis.nba.dao.es.types.ESTaxon;
-import nl.naturalis.nba.etl.Registry;
-import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
-import nl.naturalis.nba.etl.elasticsearch.IndexManager;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
+
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
+import nl.naturalis.nba.etl.elasticsearch.IndexManager;
+import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
+
 
 /**
  * 
@@ -29,9 +31,9 @@ public class CoLTaxonDistributionEnricher {
 	{
 		IndexManagerNative index = null;
 		try {
-			index = Registry.getInstance().getNbaIndexManager();
+			index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
-			String dwcaDir = Registry.getInstance().getConfig().required("col.csv_dir");
+			String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/distribution.txt");
 		}
 		finally {
@@ -41,7 +43,7 @@ public class CoLTaxonDistributionEnricher {
 		}
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(CoLTaxonDistributionEnricher.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLTaxonDistributionEnricher.class);
 
 	private final IndexManager index;
 	private final int bulkRequestSize;
@@ -101,7 +103,7 @@ public class CoLTaxonDistributionEnricher {
 
 					taxon = findTaxonInBatch(taxonId, objects);
 					if (taxon == null) {
-						taxon = index.get(LUCENE_TYPE_TAXON, esId, ESTaxon.class);
+						taxon = index.get(TAXON.getName(), esId, ESTaxon.class);
 					}
 					if (taxon == null) {
 						logger.debug("Distribution locality: " + loc);
@@ -112,7 +114,7 @@ public class CoLTaxonDistributionEnricher {
 						ids.add(esId);
 						if (objects.size() >= bulkRequestSize) {
 							try {
-								index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+								index.saveObjects(TAXON.getName(), objects, ids);
 								indexed += objects.size();
 							}
 							finally {
@@ -138,7 +140,7 @@ public class CoLTaxonDistributionEnricher {
 			}
 			if (!objects.isEmpty()) {
 				try {
-					index.saveObjects(LUCENE_TYPE_TAXON, objects, ids);
+					index.saveObjects(TAXON.getName(), objects, ids);
 				}
 				catch (BulkIndexException e) {
 					throw new RuntimeException(e);

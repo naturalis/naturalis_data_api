@@ -1,6 +1,8 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
+import static nl.naturalis.nba.api.model.SourceSystem.COL;
+import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.*;
 
 import java.util.Arrays;
@@ -12,9 +14,8 @@ import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.Registry;
 import nl.naturalis.nba.etl.Transformer;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
@@ -36,7 +37,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	CoLSynonymTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		this.index = Registry.getInstance().getNbaIndexManager();
+		this.index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
 		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
 
@@ -68,9 +69,9 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			String id = getElasticsearchId(COL, objectID);
 			String synonym = input.get(scientificName);
-			ESTaxon taxon = loader.findInQueue(elasticID);
+			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
 				/*
 				 * Taxon has already been queued for indexing because of a
@@ -98,7 +99,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 			/*
 			 * OK, taxon not queued yet. Look it up in the document store.
 			 */
-			taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+			taxon = index.get(TAXON.getName(), id, ESTaxon.class);
 			if (taxon != null) {
 				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
@@ -146,10 +147,10 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
 		try {
-			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
-			ESTaxon taxon = loader.findInQueue(elasticID);
+			String id = getElasticsearchId(COL, objectID);
+			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
 				if (taxon != null && taxon.getSynonyms() != null) {
 					stats.objectsAccepted++;
 					taxon.setSynonyms(null);

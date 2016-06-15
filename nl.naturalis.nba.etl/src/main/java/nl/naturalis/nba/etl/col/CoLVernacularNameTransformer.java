@@ -1,6 +1,5 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
@@ -15,12 +14,15 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.Transformer;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 import org.apache.logging.log4j.Logger;
 
+import static nl.naturalis.nba.api.model.SourceSystem.COL;
+import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 /**
  * A subclass of {@link CSVTransformer} that transforms CSV records into
@@ -29,10 +31,10 @@ import org.apache.logging.log4j.Logger;
  * @author Ayco Holleman
  *
  */
-class CoLVernacularNameTransformer extends
-		AbstractCSVTransformer<CoLVernacularNameCsvField, ESTaxon> {
+class CoLVernacularNameTransformer
+		extends AbstractCSVTransformer<CoLVernacularNameCsvField, ESTaxon> {
 
-	static Logger logger = Registry.getInstance().getLogger(CoLVernacularNameTransformer.class);
+	static Logger logger = ETLRegistry.getInstance().getLogger(CoLVernacularNameTransformer.class);
 
 	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
@@ -40,7 +42,7 @@ class CoLVernacularNameTransformer extends
 	CoLVernacularNameTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
-		this.index = Registry.getInstance().getNbaIndexManager();
+		this.index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
 		this.loader = loader;
 	}
 
@@ -57,12 +59,12 @@ class CoLVernacularNameTransformer extends
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
 		try {
-			String docID = LoadConstants.ES_ID_PREFIX_COL + objectID;
+			String id = getElasticsearchId(COL, objectID);
 			boolean isNew = false;
-			ESTaxon taxon = loader.findInQueue(docID);
+			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
 				isNew = true;
-				taxon = index.get(LUCENE_TYPE_TAXON, docID, ESTaxon.class);
+				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
 			}
 			if (taxon == null) {
 				stats.objectsRejected++;
@@ -72,7 +74,8 @@ class CoLVernacularNameTransformer extends
 			}
 			else {
 				VernacularName vn = createVernacularName();
-				if (taxon.getVernacularNames() == null || !taxon.getVernacularNames().contains(vn)) {
+				if (taxon.getVernacularNames() == null
+						|| !taxon.getVernacularNames().contains(vn)) {
 					stats.objectsAccepted++;
 					taxon.addVernacularName(vn);
 					if (isNew) {
@@ -116,10 +119,10 @@ class CoLVernacularNameTransformer extends
 		stats.objectsProcessed++;
 		List<ESTaxon> result = null;
 		try {
-			String elasticID = LoadConstants.ES_ID_PREFIX_COL + objectID;
-			ESTaxon taxon = loader.findInQueue(elasticID);
+			String id = getElasticsearchId(COL, objectID);
+			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(LUCENE_TYPE_TAXON, elasticID, ESTaxon.class);
+				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
 				if (taxon != null && taxon.getVernacularNames() != null) {
 					stats.objectsAccepted++;
 					taxon.setVernacularNames(null);

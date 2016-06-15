@@ -13,7 +13,7 @@ public class ClientFactoryTest {
 	public void testGetClient()
 	{
 		Registry registry = Registry.getInstance();
-		Client client = registry.getESClientFactory().getClient();
+		Client client = registry.getESClientManager().getClient();
 		assertNotNull("01", client);
 	}
 

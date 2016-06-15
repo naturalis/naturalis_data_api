@@ -6,7 +6,7 @@ import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
 import java.util.Collection;
 import java.util.List;
 
-import nl.naturalis.nba.etl.Registry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ExceptionUtil;
@@ -32,7 +32,7 @@ public class IndexManagerREST implements IndexManager {
 	 */
 	public static final String LOCAL_CLUSTER = "http://localhost:9200/";
 
-	private static final Logger logger = Registry.getInstance().getLogger(IndexManagerREST.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(IndexManagerREST.class);
 
 	private final SimpleHttpGet httpGet = new SimpleHttpGet();
 	private final SimpleHttpPut httpPut = new SimpleHttpPut();

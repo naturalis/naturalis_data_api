@@ -9,10 +9,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import nl.naturalis.nba.api.model.SourceSystem;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
+
+import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.util.DocumentType;
 
 /**
  * A cache that maps UnitIDs to "themes". Themes are predefined categories of
@@ -36,7 +38,7 @@ public class ThemeCache {
 		int matches = 0;
 	}
 
-	private static final Logger logger = Registry.getInstance().getLogger(ThemeCache.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(ThemeCache.class);
 	private static ThemeCache instance;
 
 	private final ArrayList<Theme> themes = new ArrayList<>();
@@ -246,7 +248,7 @@ public class ThemeCache {
 
 	private static File getThematicSearchDir()
 	{
-		File f = Registry.getInstance().getConfDir();
+		File f = Registry.getInstance().getConfigurationDirectory();
 		return FileUtil.newFile(f, "thematic-search");
 	}
 

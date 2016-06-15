@@ -1,20 +1,37 @@
 package nl.naturalis.nba.dao.es.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
+
+import nl.naturalis.nba.dao.es.Registry;
 
 public class IndexInfo {
 
-	private final String id;
+	private static final Logger logger = Registry.getInstance().getLogger(IndexInfo.class);
+
 	private final String name;
 	private final int numShards;
 	private final int numReplicas;
+	private final List<DocumentType> types;
 
-	public IndexInfo(ConfigObject cfg)
+	IndexInfo(ConfigObject cfg)
 	{
-		id = cfg.getSectionName();
 		name = cfg.required("name");
+		logger.info("Retrieving info for index {}", name);
 		numShards = cfg.required("shards", int.class);
 		numReplicas = cfg.required("replicas", int.class);
+		String[] typeNames = cfg.required("types").split(",");
+		types = new ArrayList<>(typeNames.length);
+		for (String typeName : typeNames) {
+			typeName = typeName.trim();
+			DocumentType type = DocumentType.forName(typeName);
+			type.indexInfo = this;
+			types.add(type);
+			logger.info("Document type {} linked to index {}", typeName, name);
+		}
 	}
 
 	public String getName()
@@ -32,22 +49,14 @@ public class IndexInfo {
 		return numReplicas;
 	}
 
-	@Override
-	public boolean equals(Object obj)
+	public List<DocumentType> getTypes()
 	{
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		return id.equals(((IndexInfo) obj).id);
+		return types;
 	}
 
-	@Override
-	public int hashCode()
+	void addType(DocumentType type)
 	{
-		return id.hashCode();
+		types.add(type);
 	}
 
 }

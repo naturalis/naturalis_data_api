@@ -19,13 +19,10 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
 
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.map.Mapping;
-import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESType;
 import nl.naturalis.nba.dao.es.util.DocumentType;
-import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.dao.es.util.IndexInfo;
 
 public class ESTestUtils {
@@ -38,19 +35,18 @@ public class ESTestUtils {
 		logger = registry.getLogger(ESTestUtils.class);
 	}
 
-	public static void createIndex(Class<? extends ESType> cls)
+	public static void createIndex(DocumentType dt)
 	{
-		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
-		String index = indexInfo.getName();
+		String index = dt.getIndexInfo().getName();
 		logger.info("Creating index {}", index);
 		// First load non-user-configurable settings
 		String resource = "/es-settings.json";
-		InputStream is = Registry.class.getResourceAsStream(resource);
+		InputStream is = AbstractDao.class.getResourceAsStream(resource);
 		Builder builder = Settings.settingsBuilder();
 		builder.loadFromStream(resource, is);
 		// Then add user-configurable settings
-		builder.put("index.number_of_shards", indexInfo.getNumShards());
-		builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
+		builder.put("index.number_of_shards", dt.getIndexInfo().getNumShards());
+		builder.put("index.number_of_replicas", dt.getIndexInfo().getNumReplicas());
 		CreateIndexRequestBuilder request = indices().prepareCreate(index);
 		request.setSettings(builder.build());
 		CreateIndexResponse response = request.execute().actionGet();
@@ -60,10 +56,9 @@ public class ESTestUtils {
 		logger.info("Created index {}", index);
 	}
 
-	public static void dropIndex(Class<? extends ESType> cls)
+	public static void dropIndex(DocumentType dt)
 	{
-		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
-		String index = indexInfo.getName();
+		String index = dt.getIndexInfo().getName();
 		logger.info("Deleting index {}", index);
 		DeleteIndexRequestBuilder request = indices().prepareDelete(index);
 		try {
@@ -78,14 +73,15 @@ public class ESTestUtils {
 		}
 	}
 
-	public static void createType(Class<? extends ESType> cls)
+	public static void createType(DocumentType dt)
 	{
-		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
-		String index = indexInfo.getName();
-		String type = ESUtil.getDocumentTypeName(cls);
+		String index = dt.getIndexInfo().getName();
+		String type = dt.getName();
 		logger.info("Creating type {}", type);
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
-		request.setSource(getMapping(cls));
+		MappingSerializer serializer = MappingSerializer.getInstance();
+		String source = serializer.serialize(dt.getMapping());
+		request.setSource(source);
 		request.setType(type);
 		PutMappingResponse response = request.execute().actionGet();
 		if (!response.isAcknowledged()) {
@@ -120,9 +116,9 @@ public class ESTestUtils {
 
 	public static void saveObject(String id, String parentId, ESType obj, boolean refreshIndex)
 	{
-		IndexInfo indexInfo = DocumentType.forClass(obj.getClass()).getIndexInfo();
-		String index = indexInfo.getName();
-		String type = ESUtil.getDocumentTypeName(obj.getClass());
+		DocumentType dt = DocumentType.forClass(obj.getClass());
+		String index = dt.getIndexInfo().getName();
+		String type = dt.getName();
 		String source = JsonUtil.toJson(obj);
 		IndexRequestBuilder irb = client().prepareIndex(index, type);
 		if (id != null) {
@@ -159,14 +155,6 @@ public class ESTestUtils {
 	private static Client client()
 	{
 		return registry.getESClientFactory().getClient();
-	}
-
-	private static String getMapping(Class<? extends ESType> cls)
-	{
-		MappingFactory factory = new MappingFactory();
-		Mapping mapping = factory.getMapping(cls);
-		MappingSerializer serializer = MappingSerializer.getInstance();
-		return serializer.serialize(mapping);
 	}
 
 }

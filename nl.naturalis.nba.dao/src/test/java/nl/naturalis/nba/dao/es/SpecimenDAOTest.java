@@ -24,6 +24,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.es.util.DocumentType;
 
 public class SpecimenDAOTest {
 
@@ -36,9 +37,9 @@ public class SpecimenDAOTest {
 	@Before
 	public void before()
 	{
-		dropIndex(ESSpecimen.class);
-		createIndex(ESSpecimen.class);
-		createType(ESSpecimen.class);
+		dropIndex(DocumentType.SPECIMEN);
+		createIndex(DocumentType.SPECIMEN);
+		createType(DocumentType.SPECIMEN);
 		/*
 		 * Insert 5 test specimens.
 		 */

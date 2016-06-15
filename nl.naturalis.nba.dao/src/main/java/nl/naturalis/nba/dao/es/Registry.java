@@ -9,8 +9,6 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.dao.es.exception.InitializationException;
-import nl.naturalis.nba.dao.es.types.ESType;
-import nl.naturalis.nba.dao.es.util.IndexInfo;
 
 /**
  * Class providing centralized access to core services such as logging and
@@ -26,25 +24,27 @@ import nl.naturalis.nba.dao.es.util.IndexInfo;
 public class Registry {
 
 	/**
-	 * Name of the main configuration file: "nba.properties".
+	 * Name of the main configuration file: &#34;nba.properties&#34;.
 	 */
 	public static final String CONFIG_FILE_NAME = "nba.properties";
 	/**
 	 * Name of the system property pointing to the configuration directory:
-	 * "nba.v2.conf.dir". This directory must at least contain nba.properties.
+	 * &#34;nba.v2.conf.dir&#34;. This directory must at least contain
+	 * nba.properties.
 	 */
 	public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
 	/**
 	 * Name of the system property pointing to the configuration directory for
-	 * integration tests: "nba-test.v2.conf.dir". This directory must at least
-	 * contain nba.properties. If this property is present it takes precedence
-	 * over {@link #SYSPROP_CONFIG_DIR}.
+	 * integration tests: &#34;nba-test.v2.conf.dir&#34;. This directory must at
+	 * least contain nba.properties. If this property is present it takes
+	 * precedence over {@link #SYSPROP_CONFIG_DIR}.
 	 */
 	public static final String SYSPROP_CONFIG_DIR_TEST = "nba-test.v2.conf.dir";
 
 	protected static Registry instance;
 
-	private File confDir;
+	private File cfgDir;
+	private File cfgFile;
 	private ConfigObject config;
 	private ESClientFactory clientFactory;
 
@@ -83,17 +83,30 @@ public class Registry {
 	}
 
 	/**
-	 * Get the directory designated to contain the application's configuration
-	 * files. This directory must be specified by a system property named
-	 * "nba.v2.conf.dir". This directory must contain at least nba.properties,
-	 * and may contain additional files that the application expects to be
-	 * there.
+	 * Returns the directory designated to contain the application's
+	 * configuration files. This directory must be specified by a system
+	 * property named "nba.v2.conf.dir". This directory must contain at least
+	 * nba.properties, and may contain additional files that the application
+	 * expects to be there.
 	 * 
 	 * @return
 	 */
-	public File getConfDir()
+	public File getConfigurationDirectory()
 	{
-		return confDir;
+		return cfgDir;
+	}
+
+	/**
+	 * Returns a {@link File} instance for the main configuration file
+	 * (nba.properties). If this method is called from within a unit test, this
+	 * file will be in {@link #SYSPROP_CONFIG_DIR_TEST}, otherwise the file be
+	 * in {@link #SYSPROP_CONFIG_DIR}.
+	 * 
+	 * @return
+	 */
+	public File getConfigurationFile()
+	{
+		return cfgFile;
 	}
 
 	/**
@@ -105,7 +118,7 @@ public class Registry {
 	 */
 	public File getFile(String relativePath)
 	{
-		return FileUtil.newFile(confDir, relativePath);
+		return FileUtil.newFile(cfgDir, relativePath);
 	}
 
 	/**
@@ -151,7 +164,7 @@ public class Registry {
 			throw new InitializationException(msg);
 		}
 		try {
-			confDir = dir.getCanonicalFile();
+			cfgDir = dir.getCanonicalFile();
 		}
 		catch (IOException e) {
 			throw new InitializationException(e);
@@ -169,12 +182,12 @@ public class Registry {
 
 	private void loadConfig()
 	{
-		File file = FileUtil.newFile(confDir, CONFIG_FILE_NAME);
-		if (!file.isFile()) {
-			String msg = String.format("Configuration file missing: %s", file.getPath());
+		cfgFile = FileUtil.newFile(cfgDir, CONFIG_FILE_NAME);
+		if (!cfgFile.isFile()) {
+			String msg = String.format("Configuration file missing: %s", cfgFile.getPath());
 			throw new InitializationException(msg);
 		}
-		this.config = new ConfigObject(file);
+		this.config = new ConfigObject(cfgFile);
 	}
 
 }

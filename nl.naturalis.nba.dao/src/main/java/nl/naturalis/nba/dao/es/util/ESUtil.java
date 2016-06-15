@@ -1,20 +1,30 @@
 package nl.naturalis.nba.dao.es.util;
 
+import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.compress.utils.Charsets;
-import org.domainobject.util.ConfigObject;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.client.AdminClient;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.Settings.Builder;
 
+import nl.naturalis.nba.dao.es.AbstractDao;
 import nl.naturalis.nba.dao.es.Registry;
-import nl.naturalis.nba.dao.es.exception.DaoException;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 public class ESUtil {
+
+	private static final Logger logger = Registry.getInstance().getLogger(ESUtil.class);
 
 	private ESUtil()
 	{
@@ -36,81 +46,65 @@ public class ESUtil {
 		return result;
 	}
 
-	/**
-	 * Returns the name of the Elasticsearch document type corresponding to the
-	 * specified Java type.
-	 * 
-	 * @param cls
-	 * @return
-	 */
-	public static String getDocumentTypeName(Class<? extends ESType> cls)
+	public static void createIndices()
 	{
-		if (cls == ESSpecimen.class) {
-			return "Specimen";
+		Set<IndexInfo> indices = getDistinctIndices();
+		for (IndexInfo index : indices) {
+			createIndex(index);
 		}
-		if (cls == ESTaxon.class) {
-			return "Taxon";
-		}
-		if (cls == ESMultiMediaObject.class) {
-			return "MultiMediaObject";
-		}
-		String fmt = "There is no Elasticsearch document type corresponding to class %s";
-		String msg = String.format(fmt, cls.getName());
-		throw new DaoException(msg);
 	}
 
-	/**
-	 * Returns an Elasticsearch {@link IndexInfo} instance for the specified
-	 * class.
-	 * 
-	 * @param cls
-	 * @return
-	 */
-	public static IndexInfo getIndexInfoForClass(Class<? extends ESType> cls)
+	private static void createIndex(IndexInfo indexInfo)
 	{
-		String esName = getDocumentTypeName(cls);
-		return getIndexInfoForDocumentType(esName);
+		String index = indexInfo.getName();
+		logger.info("Creating index {}", index);
+		// First load non-user-configurable settings
+		String resource = "/es-settings.json";
+		InputStream is = AbstractDao.class.getResourceAsStream(resource);
+		Builder builder = Settings.settingsBuilder();
+		builder.loadFromStream(resource, is);
+		// Then add user-configurable settings
+		builder.put("index.number_of_shards", indexInfo.getNumShards());
+		builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
+		CreateIndexRequestBuilder request = indices().prepareCreate(index);
+		request.setSettings(builder.build());
+		CreateIndexResponse response = request.execute().actionGet();
+		if (!response.isAcknowledged()) {
+			throw new RuntimeException("Failed to create index " + index);
+		}
+		logger.info("Created index {}", index);
 	}
 
-	/**
-	 * Returns an Elasticsearch {@link IndexInfo} instance for the specified
-	 * document type.
-	 * 
-	 * @param documentType
-	 * @return
-	 */
-	public static IndexInfo getIndexInfoForDocumentType(String documentType)
+	private static void createType(DocumentType documentType)
 	{
-		String section = "elasticsearch.index." + documentType;
-		ConfigObject cfg = Registry.getInstance().getConfiguration().getSection(section);
-		if (cfg == null) {
-			section = "elasticsearch.index.default";
-			cfg = Registry.getInstance().getConfiguration().getSection(section);
+		String index = documentType.getIndexInfo().getName();
+		String type = documentType.getName();
+		logger.info("Creating type {}", type);
+		PutMappingRequestBuilder request = indices().preparePutMapping(index);
+		MappingSerializer serializer = MappingSerializer.getInstance();
+		String source = serializer.serialize(documentType.getMapping());
+		request.setSource(source);
+		request.setType(type);
+		PutMappingResponse response = request.execute().actionGet();
+		if (!response.isAcknowledged()) {
+			throw new RuntimeException("Failed to create type " + type);
 		}
-		return new IndexInfo(cfg);
+		logger.info("Created type {}", type);
 	}
 
-	/**
-	 * Returns the class corresponding to the specified Elasticsearch document
-	 * type.
-	 * 
-	 * @param esType
-	 * @return
-	 */
-	public static Class<? extends ESType> getClassForDocumentType(String esType)
+	private static IndicesAdminClient indices()
 	{
-		switch (esType) {
-			case "Specimen":
-				return ESSpecimen.class;
-			case "Taxon":
-				return ESTaxon.class;
-			case "MultiMediaObject":
-				return ESMultiMediaObject.class;
-			default:
-				String fmt = "There is no Elasticsearch document type named \"%s\"";
-				String msg = String.format(fmt, esType);
-				throw new DaoException(msg);
-		}
+		return admin().indices();
+	}
+
+	private static AdminClient admin()
+	{
+		return client().admin();
+	}
+
+	private static Client client()
+	{
+		return Registry.getInstance().getESClientFactory().getClient();
 	}
 
 }

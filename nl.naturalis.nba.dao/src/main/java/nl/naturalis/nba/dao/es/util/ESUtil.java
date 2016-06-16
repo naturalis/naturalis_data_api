@@ -21,13 +21,13 @@ import org.elasticsearch.index.IndexNotFoundException;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.AbstractDao;
 import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
 
 public class ESUtil {
 
-	private static final Logger logger = Registry.getInstance().getLogger(ESUtil.class);
+	private static final Logger logger = DAORegistry.getInstance().getLogger(ESUtil.class);
 
 	private ESUtil()
 	{

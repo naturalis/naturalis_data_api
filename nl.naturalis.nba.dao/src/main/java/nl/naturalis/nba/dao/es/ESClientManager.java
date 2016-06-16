@@ -20,21 +20,21 @@ import nl.naturalis.nba.dao.es.exception.ConnectionFailureException;
 
 /**
  * A factory for Elasticsearch {@link Client} instances. You can get hold of an
- * {@code ESClientFactory} via {@link Registry#getESClientManager()}.
+ * {@code ESClientFactory} via {@link DAORegistry#getESClientManager()}.
  * 
  * @author Ayco Holleman
  *
  */
 public class ESClientManager {
 
-	private static final Logger logger = Registry.getInstance().getLogger(ESClientManager.class);
+	private static final Logger logger = DAORegistry.getInstance().getLogger(ESClientManager.class);
 
 	private static ESClientManager instance;
 
 	public static ESClientManager getInstance()
 	{
 		if (instance == null) {
-			ConfigObject cfg = Registry.getInstance().getConfiguration();
+			ConfigObject cfg = DAORegistry.getInstance().getConfiguration();
 			instance = new ESClientManager(cfg);
 		}
 		return instance;

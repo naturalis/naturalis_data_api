@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl.crs;
 
+import static nl.naturalis.nba.api.model.SourceSystem.CRS;
+import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -20,7 +22,6 @@ import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
-import nl.naturalis.nba.etl.DocumentType;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.ThemeCache;
@@ -129,11 +130,11 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 
 		try {
 			String tmp;
-			specimen.setSourceSystem(SourceSystem.CRS);
+			specimen.setSourceSystem(CRS);
 			specimen.setUnitID(objectID);
 			specimen.setSourceSystemId(specimen.getUnitID());
 			ThemeCache tsc = ThemeCache.getInstance();
-			List<String> themes = tsc.lookup(objectID, DocumentType.SPECIMEN, SourceSystem.CRS);
+			List<String> themes = tsc.lookup(objectID, SPECIMEN, CRS);
 			specimen.setTheme(themes);
 			specimen.setUnitGUID(LoadUtil.getSpecimenPurl(objectID));
 			specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));

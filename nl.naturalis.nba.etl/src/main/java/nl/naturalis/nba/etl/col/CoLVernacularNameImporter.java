@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -28,7 +28,7 @@ public class CoLVernacularNameImporter {
 	public static void main(String[] args) throws Exception
 	{
 		CoLVernacularNameImporter importer = new CoLVernacularNameImporter();
-		String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
+		String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
 		importer.importCsv(dwcaDir + "/vernacular.txt");
 	}
 

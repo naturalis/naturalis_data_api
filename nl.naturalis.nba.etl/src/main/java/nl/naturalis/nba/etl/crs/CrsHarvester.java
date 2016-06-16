@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 
@@ -162,7 +162,7 @@ public class CrsHarvester {
 	private static File getLocalPath(String type, Date fromDate, int callNum)
 	{
 		StringBuilder sb = new StringBuilder(100);
-		ConfigObject cfg = Registry.getInstance().getConfiguration();
+		ConfigObject cfg = DAORegistry.getInstance().getConfiguration();
 		String dir = cfg.getDirectory("crs.data_dir").getAbsolutePath();
 		sb.append(dir).append('/').append(type).append('.');
 		if (fromDate == null)
@@ -198,7 +198,7 @@ public class CrsHarvester {
 
 	private static File getAdminFile(String type)
 	{
-		File dir = Registry.getInstance().getConfigurationDirectory();
+		File dir = DAORegistry.getInstance().getConfigurationDirectory();
 		return FileUtil.newFile(dir, ".crs-" + type + ".oai");
 	}
 

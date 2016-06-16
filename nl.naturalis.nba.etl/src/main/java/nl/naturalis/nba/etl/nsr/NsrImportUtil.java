@@ -5,11 +5,12 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.ETLRegistry;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
+
+import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
  * Class providing common functionality for NSR imports.
@@ -125,7 +126,7 @@ class NsrImportUtil {
 
 	private static File getDataDir()
 	{
-		return ETLRegistry.getInstance().getConfig().getDirectory("nsr.data.dir");
+		return DAORegistry.getInstance().getConfiguration().getDirectory("nsr.data.dir");
 	}
 
 }

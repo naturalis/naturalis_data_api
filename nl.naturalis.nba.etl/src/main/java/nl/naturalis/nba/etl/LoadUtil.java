@@ -9,7 +9,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.util.DocumentType;
 
 /**
@@ -33,7 +33,7 @@ public final class LoadUtil {
 		String value = null;
 		try {
 			String property = "purl.baseurl";
-			value = Registry.getInstance().getConfiguration().get(property, PURL_SERVER_BASE_URL);
+			value = DAORegistry.getInstance().getConfiguration().get(property, PURL_SERVER_BASE_URL);
 			return new URIBuilder(value);
 		}
 		catch (URISyntaxException e) {

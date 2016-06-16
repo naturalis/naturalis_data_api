@@ -9,7 +9,7 @@ import org.domainobject.util.ConfigObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.InitializationException;
 import nl.naturalis.nba.dao.es.map.Mapping;
@@ -23,7 +23,7 @@ public class DocumentType {
 
 	// Must be defined BEFORE the DocumentType constants, because DocumentType
 	// constructor does some logging.
-	private static final Logger logger = Registry.getInstance().getLogger(DocumentType.class);
+	private static final Logger logger = DAORegistry.getInstance().getLogger(DocumentType.class);
 
 	public static final DocumentType SPECIMEN = new DocumentType("Specimen");
 	public static final DocumentType TAXON = new DocumentType("Taxon");
@@ -135,9 +135,9 @@ public class DocumentType {
 
 	private static List<ConfigObject> getIndexSections()
 	{
-		ConfigObject cfg = Registry.getInstance().getConfiguration();
+		ConfigObject cfg = DAORegistry.getInstance().getConfiguration();
 		List<ConfigObject> sections = new ArrayList<>();
-		String cfgFile = Registry.getInstance().getConfigurationFile().getAbsolutePath();
+		String cfgFile = DAORegistry.getInstance().getConfigurationFile().getAbsolutePath();
 		for (int i = 0;; i++) {
 			String prefix = "elasticsearch.index." + i;
 			ConfigObject section = cfg.getSection(prefix);

@@ -1,12 +1,12 @@
 package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_TAXON;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFile;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
+import static nl.naturalis.nba.dao.es.util.DocumentType.*;
+
 
 import java.io.File;
 import java.util.List;
@@ -77,8 +77,8 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		LoadUtil.truncate(LUCENE_TYPE_TAXON, NSR);
-		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
+		LoadUtil.truncate(TAXON, NSR);
+		LoadUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
 		mediaStats.setOneToMany(true);
@@ -128,7 +128,7 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		LoadUtil.truncate(LUCENE_TYPE_TAXON, NSR);
+		LoadUtil.truncate(TAXON, NSR);
 		ETLStatistics stats = new ETLStatistics();
 		NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
@@ -165,7 +165,7 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		LoadUtil.truncate(LUCENE_TYPE_MULTIMEDIA_OBJECT, NSR);
+		LoadUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);

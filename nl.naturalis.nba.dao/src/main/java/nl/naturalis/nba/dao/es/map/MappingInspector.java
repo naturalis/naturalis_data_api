@@ -17,7 +17,7 @@ import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -34,7 +34,7 @@ public class MappingInspector {
 	private static final HashMap<Class<? extends ESType>, MappingInspector> cache;
 
 	static {
-		logger = Registry.getInstance().getLogger(MappingInspector.class);
+		logger = DAORegistry.getInstance().getLogger(MappingInspector.class);
 		cache = new HashMap<>();
 	}
 

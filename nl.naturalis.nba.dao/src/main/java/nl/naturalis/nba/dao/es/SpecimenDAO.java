@@ -46,7 +46,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	private static final Logger logger;
 
 	static {
-		logger = Registry.getInstance().getLogger(SpecimenDAO.class);
+		logger = DAORegistry.getInstance().getLogger(SpecimenDAO.class);
 	}
 
 	public SpecimenDAO()
@@ -59,7 +59,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("find(\"{}\")", id);
 		}
-		GetRequestBuilder request =  getESClient().prepareGet();
+		GetRequestBuilder request =  client().prepareGet();
 		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
 		String type = DocumentType.SPECIMEN.getName();
 		request.setIndex(index);
@@ -189,14 +189,13 @@ public class SpecimenDAO implements ISpecimenAPI {
 			String pattern = "New save request (index={};type={};id={})";
 			logger.debug(pattern, index, type, id);
 		}
-		Client client = getESClient();
-		IndexRequestBuilder request = client.prepareIndex(index, type, id);
+		IndexRequestBuilder request = client().prepareIndex(index, type, id);
 		ESSpecimen esSpecimen = SpecimenTransfer.save(specimen);
 		byte[] source = JsonUtil.serialize(esSpecimen);
 		request.setSource(source);
 		IndexResponse response = request.execute().actionGet();
 		if (immediate) {
-			IndicesAdminClient iac = client.admin().indices();
+			IndicesAdminClient iac = client().admin().indices();
 			RefreshRequestBuilder rrb = iac.prepareRefresh(index);
 			rrb.execute().actionGet();
 		}
@@ -208,7 +207,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	{
 		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
 		String type = DocumentType.SPECIMEN.getName();
-		DeleteRequestBuilder request = getESClient().prepareDelete(index, type, id);
+		DeleteRequestBuilder request = client().prepareDelete(index, type, id);
 		DeleteResponse response = request.execute().actionGet();
 		return response.isFound();
 	}
@@ -251,17 +250,14 @@ public class SpecimenDAO implements ISpecimenAPI {
 			String pattern = "New search request (index={};type={})";
 			logger.debug(pattern, index, type);
 		}
-		SearchRequestBuilder request = getESClient().prepareSearch(index);
+		SearchRequestBuilder request = client().prepareSearch(index);
 		request.setTypes(type);
 		return request;
 	}
 
-	private static Client getESClient()
+	private static Client client()
 	{
-		Registry registry = Registry.getInstance();
-		ESClientManager factory = registry.getESClientManager();
-		Client client = factory.getClient();
-		return client;
+		return ESClientManager.getInstance().getClient();
 	}
 
 }

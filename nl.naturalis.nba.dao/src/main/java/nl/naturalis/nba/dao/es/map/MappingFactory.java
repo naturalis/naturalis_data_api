@@ -27,7 +27,7 @@ import nl.naturalis.nba.api.annotations.MappedProperty;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -44,7 +44,7 @@ public class MappingFactory {
 
 	static {
 		dataTypeMap = DataTypeMap.getInstance();
-		logger = Registry.getInstance().getLogger(MappingFactory.class);
+		logger = DAORegistry.getInstance().getLogger(MappingFactory.class);
 		cache = new HashMap<>();
 	}
 

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.col;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 
 /**
  * Manages the import of CoL taxa, synonyms, vernacular names and literature
@@ -27,7 +27,7 @@ public class CoLImportAll {
 	 */
 	public void importAll()
 	{
-		String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
+		String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
 		new CoLTaxonImporter().importCsv(dwcaDir + "/taxa.txt");
 		new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
 		new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");

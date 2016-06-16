@@ -10,7 +10,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.http.SimpleHttpHead;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 
 /**
  * Abstract base class for mimetype caches. Provides the public interface of a
@@ -58,7 +58,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	AbstractMimeTypeCache(String cacheFileName)
 	{
-		File dir = Registry.getInstance().getConfigurationDirectory();
+		File dir = DAORegistry.getInstance().getConfigurationDirectory();
 		cacheFile = FileUtil.newFile(dir, cacheFileName);
 		if (!cacheFile.isFile()) {
 			String fmt = "Missing cache file (%s). You should put it in %s.";

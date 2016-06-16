@@ -1,22 +1,23 @@
 package nl.naturalis.nba.etl.ndff;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_SPECIMEN;
+import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ndff.NdffImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
 
-import nl.naturalis.nba.etl.CSVExtractor;
-import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.ETLRegistry;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.etl.CSVExtractor;
+import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.LoadConstants;
+import nl.naturalis.nba.etl.LoadUtil;
 
 public class NdffSpecimenImporter {
 
@@ -27,7 +28,7 @@ public class NdffSpecimenImporter {
 			importer.importSpecimens();
 		}
 		finally {
-			ETLRegistry.getInstance().closeESClient();
+			ESClientManager.getInstance().closeClient();
 		}
 	}
 
@@ -61,7 +62,7 @@ public class NdffSpecimenImporter {
 		}
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			LoadUtil.truncate(LUCENE_TYPE_SPECIMEN, NDFF);
+			LoadUtil.truncate(SPECIMEN, NDFF);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}

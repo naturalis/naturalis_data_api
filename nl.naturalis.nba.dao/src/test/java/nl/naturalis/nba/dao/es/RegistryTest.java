@@ -10,7 +10,7 @@ public class RegistryTest {
 	@Test
 	public void testGetConfig()
 	{
-		Registry registry = Registry.getInstance();
+		DAORegistry registry = DAORegistry.getInstance();
 		ConfigObject config = registry.getConfiguration();
 		assertNotNull("01", config.get("elasticsearch.cluster.name"));
 		assertNotNull("02", config.get("elasticsearch.transportaddress.host"));

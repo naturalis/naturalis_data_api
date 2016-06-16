@@ -1,27 +1,30 @@
 package nl.naturalis.nba.etl.crs;
 
+import static nl.naturalis.nba.api.model.SourceSystem.CRS;
+import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nba.api.model.SourceSystem;
+import org.apache.logging.log4j.Logger;
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.IOUtil;
+import org.xml.sax.SAXException;
+
+import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.etl.NBAImportAll;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
-import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
-import org.xml.sax.SAXException;
 
 /**
  * Class that manages the import of CRS specimens, sourced from files on the
@@ -40,7 +43,7 @@ public class CrsSpecimenImportOffline {
 			importer.importSpecimens();
 		}
 		finally {
-			ETLRegistry.getInstance().closeESClient();
+			ESClientManager.getInstance().closeClient();
 		}
 	}
 
@@ -77,7 +80,7 @@ public class CrsSpecimenImportOffline {
 			logger.error("No specimen oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		LoadUtil.truncate(NBAImportAll.LUCENE_TYPE_SPECIMEN, SourceSystem.CRS);
+		LoadUtil.truncate(SPECIMEN, CRS);
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
@@ -124,10 +127,11 @@ public class CrsSpecimenImportOffline {
 
 	private static File[] getXmlFiles()
 	{
-		ConfigObject config = ETLRegistry.getInstance().getConfig();
+		ConfigObject config = DAORegistry.getInstance().getConfiguration();
 		String path = config.required("crs.data.dir");
 		logger.info("Data directory for CRS specimen import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {
+
 			public boolean accept(File dir, String name)
 			{
 				if (!name.startsWith("specimens.")) {

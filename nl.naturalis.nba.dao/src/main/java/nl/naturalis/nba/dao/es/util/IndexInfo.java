@@ -6,11 +6,11 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 
 public class IndexInfo {
 
-	private static final Logger logger = Registry.getInstance().getLogger(IndexInfo.class);
+	private static final Logger logger = DAORegistry.getInstance().getLogger(IndexInfo.class);
 
 	private final String name;
 	private final int numShards;

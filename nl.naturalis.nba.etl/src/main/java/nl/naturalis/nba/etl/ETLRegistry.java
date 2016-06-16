@@ -10,7 +10,7 @@ import org.domainobject.util.FileUtil;
 import org.elasticsearch.client.Client;
 
 import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.util.DocumentType;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
@@ -84,7 +84,7 @@ public class ETLRegistry {
 	{
 		System.setProperty(SYSPROP_ETL_LOGFILE, getLogFileName());
 		if (System.getProperty("log4j.configurationFile") == null) {
-			File f = Registry.getInstance().getFile("log4j2.xml");
+			File f = DAORegistry.getInstance().getFile("log4j2.xml");
 			if (f.exists()) {
 				System.setProperty("log4j.configurationFile", f.getAbsolutePath());
 			}
@@ -100,7 +100,7 @@ public class ETLRegistry {
 
 	private static String getLogFileName()
 	{
-		File confDir = Registry.getInstance().getConfigurationDirectory();
+		File confDir = DAORegistry.getInstance().getConfigurationDirectory();
 		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
 		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 		String command = System.getProperty("sun.java.command");

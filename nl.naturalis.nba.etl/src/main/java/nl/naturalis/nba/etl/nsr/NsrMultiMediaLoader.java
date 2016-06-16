@@ -1,13 +1,12 @@
 package nl.naturalis.nba.etl.nsr;
 
-import static nl.naturalis.nba.etl.LoadConstants.ES_ID_PREFIX_NSR;
-import static nl.naturalis.nba.etl.NBAImportAll.LUCENE_TYPE_MULTIMEDIA_OBJECT;
+import static nl.naturalis.nba.api.model.SourceSystem.NSR;
+import static nl.naturalis.nba.dao.es.util.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ElasticSearchLoader;
-import nl.naturalis.nba.etl.ETLRegistry;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
  * The loader component for the NSR multimedia import.
@@ -17,24 +16,20 @@ import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
  */
 public class NsrMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
 
-	private static IndexManagerNative indexManager()
-	{
-		return ETLRegistry.getInstance().getNbaIndexManager();
-	}
-
 	public NsrMultiMediaLoader(int treshold, ETLStatistics stats)
 	{
-		super(indexManager(), LUCENE_TYPE_MULTIMEDIA_OBJECT, treshold, stats);
+		super(MULTI_MEDIA_OBJECT, treshold, stats);
 	}
 
 	@Override
 	protected IdGenerator<ESMultiMediaObject> getIdGenerator()
 	{
 		return new IdGenerator<ESMultiMediaObject>() {
+
 			@Override
 			public String getId(ESMultiMediaObject obj)
 			{
-				return ES_ID_PREFIX_NSR + obj.getSourceSystemId();
+				return getElasticsearchId(NSR, obj.getSourceSystemId());
 			}
 		};
 	}

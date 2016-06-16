@@ -12,7 +12,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
@@ -33,7 +33,7 @@ public class CoLTaxonDistributionEnricher {
 		try {
 			index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
-			String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
+			String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/distribution.txt");
 		}
 		finally {

@@ -27,11 +27,11 @@ import nl.naturalis.nba.dao.es.util.IndexInfo;
 
 public class ESTestUtils {
 
-	private static final Registry registry;
+	private static final DAORegistry registry;
 	private static final Logger logger;
 
 	static {
-		registry = Registry.getInstance();
+		registry = DAORegistry.getInstance();
 		logger = registry.getLogger(ESTestUtils.class);
 	}
 
@@ -41,7 +41,7 @@ public class ESTestUtils {
 		logger.info("Creating index {}", index);
 		// First load non-user-configurable settings
 		String resource = "/es-settings.json";
-		InputStream is = AbstractDao.class.getResourceAsStream(resource);
+		InputStream is = DAORegistry.class.getResourceAsStream(resource);
 		Builder builder = Settings.settingsBuilder();
 		builder.loadFromStream(resource, is);
 		// Then add user-configurable settings
@@ -154,7 +154,7 @@ public class ESTestUtils {
 
 	private static Client client()
 	{
-		return registry.getESClientManager().getClient();
+		return ESClientManager.getInstance().getClient();
 	}
 
 }

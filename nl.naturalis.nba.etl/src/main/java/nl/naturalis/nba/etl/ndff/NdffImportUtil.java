@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 
 class NdffImportUtil {
 
@@ -72,6 +72,6 @@ class NdffImportUtil {
 
 	private static File getDataDir()
 	{
-		return ETLRegistry.getInstance().getConfig().getDirectory("ndff.csv_dir");
+		return DAORegistry.getInstance().getConfiguration().getDirectory("ndff.csv_dir");
 	}
 }

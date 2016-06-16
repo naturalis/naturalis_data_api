@@ -10,7 +10,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -34,7 +34,7 @@ public class CoLTaxonImporter {
 	public static void main(String[] args) throws Exception
 	{
 		CoLTaxonImporter importer = new CoLTaxonImporter();
-		String dwcaDir = Registry.getInstance().getConfiguration().required("col.csv_dir");
+		String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
 		importer.importCsv(dwcaDir + "/taxa.txt");
 	}
 
@@ -51,7 +51,7 @@ public class CoLTaxonImporter {
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
-		colYear = Registry.getInstance().getConfiguration().required("col.year");
+		colYear = DAORegistry.getInstance().getConfiguration().required("col.year");
 	}
 
 	/**

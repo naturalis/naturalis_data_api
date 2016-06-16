@@ -16,7 +16,7 @@ import org.domainobject.util.ConfigObject;
 import org.joda.time.LocalDate;
 
 import nl.naturalis.nba.api.model.*;
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -478,7 +478,7 @@ class BrahmsImportUtil {
 
 	private static File getDataDir()
 	{
-		return Registry.getInstance().getConfiguration().getDirectory("brahms.data.dir");
+		return DAORegistry.getInstance().getConfiguration().getDirectory("brahms.data.dir");
 	}
 
 }

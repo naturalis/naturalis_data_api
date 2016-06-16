@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import nl.naturalis.nba.dao.es.Registry;
+import nl.naturalis.nba.dao.es.DAORegistry;
 
 /**
  * Utility class for finding values in Brahms export files.
@@ -26,7 +26,7 @@ public class BrahmsFindInSource {
 	public static void main(String[] args) throws Exception
 	{
 		BrahmsFindInSource brahms = new BrahmsFindInSource();
-		String brahmsCsvDir = Registry.getInstance().getConfiguration().required("brahms.csv_dir");
+		String brahmsCsvDir = DAORegistry.getInstance().getConfiguration().required("brahms.csv_dir");
 
 		File file = new File(brahmsCsvDir);
 		if (!file.isDirectory()) {

@@ -23,8 +23,13 @@ elasticsearch.transportaddress.port=9300
 elasticsearch.index.name=nda
 
 # ElasticSearch configuration (ETL module only)
-elasticsearch.index.numshards=1
-elasticsearch.index.numreplicas=0
+# Ant build only allows for one index containing all types
+# (Specimen, MultiMediaObject, Taxon). You can manually
+# alter nba.properties to distribute types among multiple
+# indices.
+elasticsearch.index.0.name=nba
+elasticsearch.index.0.shards=1
+elasticsearch.index.0.replicas=0
 
 
 

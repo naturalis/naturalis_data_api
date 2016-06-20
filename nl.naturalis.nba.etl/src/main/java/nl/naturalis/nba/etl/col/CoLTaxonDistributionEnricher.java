@@ -31,7 +31,7 @@ public class CoLTaxonDistributionEnricher {
 	{
 		IndexManagerNative index = null;
 		try {
-			index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
+			index = ETLRegistry.getInstance().getIndexManager(TAXON);
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
 			String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
 			enricher.importCsv(dwcaDir + "/distribution.txt");

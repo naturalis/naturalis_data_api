@@ -3,10 +3,11 @@
          xmlns:if="ant:if"
          xmlns:unless="ant:unless"
          basedir="."
-         name="nl.naturalis.nba.build"
-         default="help">
+         name="nl.naturalis.nba.build">
 
+	<import file="./properties.xml" />
 	<import file="./common.xml" />
+	<import file="./modules.xml" />
 
 	<tstamp>
 		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
@@ -37,7 +38,7 @@
 		<echo message="You got clearance" />
 	</target>
 
-	<target name="git-show-info"
+	<target name="show-git-info"
 	        depends="-verify,git-info"
 	        description="Show info about the Git branch for this build">
 		<echo message="" />
@@ -61,15 +62,15 @@
 		<echo message="You got 3 seconds before the build continues ..." />
 		<sleep seconds="3" />
 	</target>
-	
-	
-	
+
 	<target name="install-service" depends="-verify" />
 
-	<target name="help" description="Show help text">
-		<echo message="Show all build targets ...............................: ant -p" />
-		<echo message="More help is on the way" />
+	<target name="install-etl-module" depends="-verify">
+		<ant antfile="${sh.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritAll="false"
+		     inheritRefs="false"
+		     target="install-etl-module" />
 	</target>
-
 
 </project>

@@ -34,7 +34,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
-		this.index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
+		this.index = ETLRegistry.getInstance().getIndexManager(TAXON);
 		this.loader = loader;
 	}
 

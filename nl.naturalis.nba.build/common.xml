@@ -147,24 +147,32 @@
 		</javac>
 	</target>
 
+	<path id="test.class.path">
+		<fileset dir="build/classpath">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="build/test-classpath">
+			<include name="**/*.jar" />
+		</fileset>
+		<dirset dir="build/main" />
+		<dirset dir="build/test" />
+	</path>
+
+	<target name="-echo-test-classpath" description="Echo test path">
+		<pathconvert targetos="unix" property="test.path.unix" refid="test.class.path" />
+		<echo message="Test path: ${test.path.unix}" />
+	</target>
+
 	<target name="test" depends="compile-test">
 		<echo level="info">==== ${ant.project.name} (test) ====</echo>
 		<mkdir dir="${build.module.location}/log/test-reports" />
 		<junit printsummary="yes" haltonfailure="yes">
-			<sysproperty key="nba.v2.import.conf.dir"
-			             value="${nba.import.install.dir}/conf" />
+			<sysproperty key="nba.v2.conf.dir" value="${nba.v2.conf.dir.test}" />
 			<assertions>
 				<enable />
 			</assertions>
 			<classpath>
-				<fileset dir="build/classpath">
-					<include name="**/*.jar" />
-				</fileset>
-				<fileset dir="build/test-classpath">
-					<include name="**/*.jar" />
-				</fileset>
-				<dirset dir="build/main" />
-				<dirset dir="build/test" />
+				<path refid="test.class.path" />
 			</classpath>
 			<formatter type="plain" />
 			<batchtest todir="${build.module.location}/log/test-reports">

@@ -4,6 +4,8 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
 
+import static nl.naturalis.nba.dao.es.util.DocumentType.*;
+
 import java.io.File;
 import java.nio.charset.Charset;
 
@@ -12,6 +14,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.util.DocumentType;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -19,6 +22,7 @@ import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.ThemeCache;
+import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 
 /**
@@ -38,14 +42,31 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args)
 	{
-		if (args.length == 0)
-			new BrahmsImportAll().importPerFile();
-		else if (args[0].equalsIgnoreCase("backup"))
+		
+		if (args.length == 0) {
+			ETLRegistry reg = ETLRegistry.getInstance();
+			IndexManagerNative idxMgr0 = reg.getIndexManager(SPECIMEN);
+			IndexManagerNative idxMgr1 = reg.getIndexManager(MULTI_MEDIA_OBJECT);
+			String idx0RefreshInrerval = idxMgr0.disableAutoRefresh();
+			String idx1RefreshInrerval = idxMgr1.disableAutoRefresh();
+			try {
+				new BrahmsImportAll().importAll();
+			}
+			finally {
+				idxMgr0.setRefreshInterval(idx0RefreshInrerval);
+				idxMgr1.setRefreshInterval(idx1RefreshInrerval);
+				ESClientManager.getInstance().closeClient();
+			}
+		}
+		else if (args[0].equalsIgnoreCase("backup")) {
 			new BrahmsImportAll().backupSourceFiles();
-		else if (args[0].equalsIgnoreCase("reset"))
+		}
+		else if (args[0].equalsIgnoreCase("reset")) {
 			new BrahmsImportAll().reset();
-		else
+		}
+		else {
 			logger.error("Invalid argument: " + args[0]);
+		}
 	}
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportAll.class);

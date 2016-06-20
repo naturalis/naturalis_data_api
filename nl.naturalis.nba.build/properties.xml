@@ -58,4 +58,6 @@
 	<property name="export.module.location" location="${home}/${export.module.name}" />
 	<property name="export.module.artifact" value="${export.module.name}.jar" />
 
+	<property name="sh.module.name" value="nl.naturalis.nba.sh" />
+	<property name="sh.module.location" location="${home}/${sh.module.name}" />
 </project>

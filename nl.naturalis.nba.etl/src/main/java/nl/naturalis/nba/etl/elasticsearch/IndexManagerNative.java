@@ -20,6 +20,10 @@ import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
@@ -51,12 +55,15 @@ import nl.naturalis.nba.etl.ETLRegistry;
  */
 public class IndexManagerNative implements IndexManager {
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(IndexManagerNative.class);
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(IndexManagerNative.class);
+	private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper();
 
 	private final Client esClient;
 	private final IndicesAdminClient admin;
 	private final String indexName;
+
+	private ObjectMapper objectMapper;
 
 	/**
 	 * Create an instance manipulating the specified index using the specified
@@ -72,7 +79,13 @@ public class IndexManagerNative implements IndexManager {
 	{
 		this.indexName = indexName;
 		this.esClient = client;
-		admin = esClient.admin().indices();
+		this.admin = esClient.admin().indices();
+		this.objectMapper = DEFAULT_OBJECT_MAPPER;
+	}
+
+	public void setObjectMapper(ObjectMapper objectMapper)
+	{
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -190,6 +203,55 @@ public class IndexManagerNative implements IndexManager {
 		}
 	}
 
+	public String disableAutoRefresh()
+	{
+		logger.info("Disabling auto-refresh for index " + indexName);
+		String origValue = getRefreshInterval();
+		UpdateSettingsRequest request = new UpdateSettingsRequest(indexName);
+		Builder builder = Settings.settingsBuilder();
+		builder.put("index.refresh_interval", -1);
+		request.settings(builder.build());
+		UpdateSettingsResponse response = admin.updateSettings(request).actionGet();
+		if (!response.isAcknowledged()) {
+			String msg = "Failed to disable auto-refresh for index " + indexName;
+			throw new IndexManagerException(msg);
+		}
+		return origValue;
+	}
+
+	public String getRefreshInterval()
+	{
+		GetSettingsRequest request = new GetSettingsRequest();
+		GetSettingsResponse response = admin.getSettings(request).actionGet();
+		try {
+			return response.getSetting(indexName, "index.refresh_interval");
+		}
+		// Hack to work around a bug in Elasticsearch (2.3.3). You get a nasty
+		// NullPointerException if the index does not exist, or if no settings
+		// have been explicitly set for it.
+		catch (NullPointerException e) {
+			return null;
+		}
+	}
+
+	public void setRefreshInterval(String interval)
+	{
+		if (interval == null) {
+			logger.warn("Setting the index refresh interval to null has no effect");
+			return;
+		}
+		logger.info("Enabling auto-refresh for index " + indexName);
+		UpdateSettingsRequest request = new UpdateSettingsRequest(indexName);
+		Builder builder = Settings.settingsBuilder();
+		builder.put("index.refresh_interval", interval);
+		request.settings(builder.build());
+		UpdateSettingsResponse response = admin.updateSettings(request).actionGet();
+		if (!response.isAcknowledged()) {
+			String msg = "Failed to enable auto-refresh for index " + indexName;
+			throw new IndexManagerException(msg);
+		}
+	}
+
 	@Override
 	public void addType(String name, String mapping)
 	{
@@ -206,22 +268,25 @@ public class IndexManagerNative implements IndexManager {
 	@Override
 	public boolean deleteType(String name)
 	{
-//		logger.info(String.format("Deleting type \"%s\"", name));
-//		DeleteMappingRequestBuilder request = esClient.admin().indices().prepareDeleteMapping();
-//		request.setIndices(indexName);
-//		request.setType(name);
-//		try {
-//			DeleteMappingResponse response = request.execute().actionGet();
-//			if (!response.isAcknowledged()) {
-//				throw new IndexManagerException(String.format("Failed to delete type \"%s\"", name));
-//			}
-//			logger.info("Type deleted");
-//			return true;
-//		}
-//		catch (TypeMissingException e) {
-//			logger.info(String.format("No such type \"%s\" (nothing deleted)", name));
-//			return false;
-//		}
+		// logger.info(String.format("Deleting type \"%s\"", name));
+		// DeleteMappingRequestBuilder request =
+		// esClient.admin().indices().prepareDeleteMapping();
+		// request.setIndices(indexName);
+		// request.setType(name);
+		// try {
+		// DeleteMappingResponse response = request.execute().actionGet();
+		// if (!response.isAcknowledged()) {
+		// throw new IndexManagerException(String.format("Failed to delete type
+		// \"%s\"", name));
+		// }
+		// logger.info("Type deleted");
+		// return true;
+		// }
+		// catch (TypeMissingException e) {
+		// logger.info(String.format("No such type \"%s\" (nothing deleted)",
+		// name));
+		// return false;
+		// }
 		return true;
 	}
 
@@ -284,13 +349,16 @@ public class IndexManagerNative implements IndexManager {
 	@Override
 	public void deleteWhere(String type, String field, String value)
 	{
-//		logger.info(String.format("Deleting %s documents where %s equals \"%s\"", type, field, value));
-//		DeleteByQueryRequestBuilder request = esClient.prepareDeleteByQuery();
-//		request.setTypes(type);
-//		TermFilterBuilder filter = FilterBuilders.termFilter(field, value);
-//		FilteredQueryBuilder query = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
-//		request.setQuery(query);
-//		request.execute().actionGet();
+		// logger.info(String.format("Deleting %s documents where %s equals
+		// \"%s\"", type, field, value));
+		// DeleteByQueryRequestBuilder request =
+		// esClient.prepareDeleteByQuery();
+		// request.setTypes(type);
+		// TermFilterBuilder filter = FilterBuilders.termFilter(field, value);
+		// FilteredQueryBuilder query =
+		// QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter);
+		// request.setQuery(query);
+		// request.execute().actionGet();
 	}
 
 	@Override
@@ -341,7 +409,8 @@ public class IndexManagerNative implements IndexManager {
 	}
 
 	@Override
-	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds) throws BulkIndexException
+	public void saveObjects(String type, List<?> objs, List<String> ids, List<String> parentIds)
+			throws BulkIndexException
 	{
 		BulkRequestBuilder brb = esClient.prepareBulk();
 		for (int i = 0; i < objs.size(); ++i) {

@@ -117,6 +117,12 @@ public class DocumentType {
 		return objectMapper;
 	}
 
+	@Override
+	public String toString()
+	{
+		return name;
+	}
+
 	private static Class<? extends ESType> getClassForDocumentType(String type)
 	{
 		switch (type) {

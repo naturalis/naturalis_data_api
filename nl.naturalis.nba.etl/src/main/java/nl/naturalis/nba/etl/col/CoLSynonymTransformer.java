@@ -37,7 +37,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	CoLSynonymTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		this.index = ETLRegistry.getInstance().getNbaIndexManager(TAXON);
+		this.index = ETLRegistry.getInstance().getIndexManager(TAXON);
 		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
 

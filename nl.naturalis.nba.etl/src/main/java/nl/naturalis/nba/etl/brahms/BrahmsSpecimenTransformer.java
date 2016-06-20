@@ -1,7 +1,12 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.etl.LoadConstants.*;
+import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_COLLECTION_TYPE;
+import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_SOURCE_ID;
+import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
+import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
+import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.LoadUtil.getSpecimenPurl;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CATEGORY;
@@ -12,13 +17,12 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getFloat;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getGatheringEvent;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSpecimenIdentification;
 
-import static nl.naturalis.nba.dao.es.util.DocumentType.*;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import nl.naturalis.nba.api.model.SourceSystem;
+import org.domainobject.util.ConfigObject;
+
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.util.ESUtil;
@@ -26,8 +30,6 @@ import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
-import org.domainobject.util.ConfigObject;
 
 /**
  * The transformer component in the Brahms ETL cycle for specimens.
@@ -39,7 +41,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
-	private static final String UNIT_ID_REGEX = "([a-zA-Z0-9_1.-]){3,}";
+	private static final String UNIT_ID_REGEX = "([a-zA-Z0-9_.-]){3,}";
 	private static final Pattern unitIDPattern;
 
 	static {
@@ -109,7 +111,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 
 	private static void setConstants(ESSpecimen specimen)
 	{
-		specimen.setSourceSystem(SourceSystem.BRAHMS);
+		specimen.setSourceSystem(BRAHMS);
 		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		specimen.setOwner(SOURCE_INSTITUTION_ID);
 		specimen.setSourceID(BRAHMS_ABCD_SOURCE_ID);
@@ -131,7 +133,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 		if (f == null) {
 			return null;
 		}
-		return ESUtil.getElasticsearchId(SourceSystem.BRAHMS, f.intValue());
+		return ESUtil.getElasticsearchId(BRAHMS, f.intValue());
 	}
 
 	private SpecimenTypeStatus getTypeStatus()

@@ -6,7 +6,7 @@ import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ElasticSearchLoader;
+import nl.naturalis.nba.etl.Loader;
 
 /**
  * The loader component for the NSR multimedia import.
@@ -14,7 +14,7 @@ import nl.naturalis.nba.etl.ElasticSearchLoader;
  * @author Ayco Holleman
  *
  */
-public class NsrMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
+public class NsrMultiMediaLoader extends Loader<ESMultiMediaObject> {
 
 	public NsrMultiMediaLoader(int treshold, ETLStatistics stats)
 	{

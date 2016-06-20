@@ -6,7 +6,7 @@ import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ElasticSearchLoader;
+import nl.naturalis.nba.etl.Loader;
 
 /**
  * The loader component in the ETL cycle for Brahms multimedia.
@@ -14,7 +14,16 @@ import nl.naturalis.nba.etl.ElasticSearchLoader;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
+class BrahmsMultiMediaLoader extends Loader<ESMultiMediaObject> {
+
+	private static final IdGenerator<ESMultiMediaObject> ID_GENERATOR = new IdGenerator<ESMultiMediaObject>() {
+
+		@Override
+		public String getId(ESMultiMediaObject obj)
+		{
+			return getElasticsearchId(BRAHMS, obj.getUnitID());
+		}
+	};
 
 	public BrahmsMultiMediaLoader(ETLStatistics stats)
 	{
@@ -24,14 +33,7 @@ class BrahmsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
 	@Override
 	protected IdGenerator<ESMultiMediaObject> getIdGenerator()
 	{
-		return new IdGenerator<ESMultiMediaObject>() {
-
-			@Override
-			public String getId(ESMultiMediaObject obj)
-			{
-				return getElasticsearchId(BRAHMS, obj.getUnitID());
-			}
-		};
+		return ID_GENERATOR;
 	}
 
 }

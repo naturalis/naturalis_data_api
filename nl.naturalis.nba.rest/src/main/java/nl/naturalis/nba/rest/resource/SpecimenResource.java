@@ -11,17 +11,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.ObjectType;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.SpecimenDAO;
+import nl.naturalis.nba.dao.es.util.DocumentType;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nda.ejb.service.SpecimenService;
@@ -50,7 +50,7 @@ public class SpecimenResource {
 			SpecimenDAO dao = new SpecimenDAO();
 			Specimen result = dao.find(id);
 			if (result == null) {
-				throw new HTTP404Exception(uriInfo, ObjectType.SPECIMEN, id);
+				throw new HTTP404Exception(uriInfo, DocumentType.SPECIMEN, id);
 			}
 			return result;
 		}

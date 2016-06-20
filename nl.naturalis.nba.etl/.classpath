@@ -15,5 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.dao"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.common"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

@@ -6,7 +6,7 @@ import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ElasticSearchLoader;
+import nl.naturalis.nba.etl.Loader;
 
 /**
  * The loader component for the CRS specimen import.
@@ -14,7 +14,7 @@ import nl.naturalis.nba.etl.ElasticSearchLoader;
  * @author Ayco Holleman
  *
  */
-class CrsSpecimenLoader extends ElasticSearchLoader<ESSpecimen> {
+class CrsSpecimenLoader extends Loader<ESSpecimen> {
 
 	CrsSpecimenLoader(ETLStatistics stats, int treshold)
 	{

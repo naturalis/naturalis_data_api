@@ -6,7 +6,7 @@ import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ElasticSearchLoader;
+import nl.naturalis.nba.etl.Loader;
 
 
 /**
@@ -15,7 +15,7 @@ import nl.naturalis.nba.etl.ElasticSearchLoader;
  * @author Ayco Holleman
  *
  */
-class CrsMultiMediaLoader extends ElasticSearchLoader<ESMultiMediaObject> {
+class CrsMultiMediaLoader extends Loader<ESMultiMediaObject> {
 
 	CrsMultiMediaLoader(ETLStatistics stats, int treshold)
 	{

@@ -6,7 +6,7 @@ import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ElasticSearchLoader;
+import nl.naturalis.nba.etl.Loader;
 
 /**
  * The loader component for the NSR taxon import.
@@ -14,7 +14,7 @@ import nl.naturalis.nba.etl.ElasticSearchLoader;
  * @author Ayco Holleman
  *
  */
-public class NsrTaxonLoader extends ElasticSearchLoader<ESTaxon> {
+public class NsrTaxonLoader extends Loader<ESTaxon> {
 
 	public NsrTaxonLoader(int treshold, ETLStatistics stats)
 	{

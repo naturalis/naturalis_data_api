@@ -24,7 +24,7 @@ public class ObjectMapperLocator {
 		return instance;
 	}
 
-	private ObjectMapper dfault;
+	private final ObjectMapper dfault;
 
 	private ObjectMapperLocator()
 	{
@@ -37,9 +37,6 @@ public class ObjectMapperLocator {
 		 * Currently we always serve up the same ObjectMapper instance, whatever
 		 * the class of the object to serialize.
 		 */
-		if (dfault == null) {
-			dfault = createDefaultObjectMapper();
-		}
 		return dfault;
 	}
 

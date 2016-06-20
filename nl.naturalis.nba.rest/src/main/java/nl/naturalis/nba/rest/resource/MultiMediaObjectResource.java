@@ -16,7 +16,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.model.ObjectType;
 import nl.naturalis.nba.api.search.QueryParams;
 import nl.naturalis.nba.api.search.SearchResultSet;
 import nl.naturalis.nba.dao.es.BioportalMultiMediaObjectDao;

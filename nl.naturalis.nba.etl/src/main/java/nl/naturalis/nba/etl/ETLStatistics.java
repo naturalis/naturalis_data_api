@@ -138,12 +138,12 @@ public class ETLStatistics {
 
 	/**
 	 * The number of objects that could not be indexed by ElasticSearch. This
-	 * counter is maintained by {@link ElasticSearchLoader loader} objects.
+	 * counter is maintained by {@link Loader loader} objects.
 	 */
 	public int documentsRejected;
 	/**
 	 * The number of documents indexed by ElasticSearch. This counter is
-	 * maintained by {@link ElasticSearchLoader loader} objects.
+	 * maintained by {@link Loader loader} objects.
 	 */
 	public int documentsIndexed;
 

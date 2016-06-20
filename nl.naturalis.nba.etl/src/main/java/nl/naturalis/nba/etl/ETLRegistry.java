@@ -9,8 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 import org.elasticsearch.client.Client;
 
-import nl.naturalis.nba.dao.es.ESClientManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.util.DocumentType;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
@@ -73,10 +76,14 @@ public class ETLRegistry {
 	 * 
 	 * @return
 	 */
-	public IndexManagerNative getNbaIndexManager(DocumentType documentType)
+	public IndexManagerNative getIndexManager(DocumentType documentType)
 	{
 		Client client = ESClientManager.getInstance().getClient();
 		String index = documentType.getIndexInfo().getName();
+		IndexManagerNative idxMgr = new IndexManagerNative(client, index);
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
+		ObjectMapper om = oml.getObjectMapper(documentType.getESType());
+		idxMgr.setObjectMapper(om);
 		return new IndexManagerNative(client, index);
 	}
 

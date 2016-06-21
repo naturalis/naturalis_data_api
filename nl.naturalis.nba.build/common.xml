@@ -123,7 +123,7 @@
 		</javac>
 	</target>
 
-	<target name="compile-test" depends="-copy-test-resources,compile">
+	<target name="compile-tests" depends="-copy-test-resources,compile">
 		<copy todir="build/test-classpath">
 			<fileset dir="${build.module.location}/lib">
 				<include name="**/junit*.jar" />
@@ -147,23 +147,50 @@
 		</javac>
 	</target>
 
-	<path id="test.class.path">
-		<fileset dir="build/classpath">
-			<include name="**/*.jar" />
-		</fileset>
-		<fileset dir="build/test-classpath">
-			<include name="**/*.jar" />
-		</fileset>
-		<dirset dir="build/main" />
-		<dirset dir="build/test" />
-	</path>
-
-	<target name="-echo-test-classpath" description="Echo test path">
-		<pathconvert targetos="unix" property="test.path.unix" refid="test.class.path" />
-		<echo message="Test path: ${test.path.unix}" />
+	<!--
+		This is a work-around for regular unit testing using
+		the junit task. If a module needs to go through a test
+		phase, it must define a property "junit.suite.classname"
+		The property must point to a junit suite class that
+		lists all individual test classes in the module
+	-->
+	<target name="run-tests" depends="compile-tests">
+		<antcall if:set="junit.suite.classname" target="-do-run-tests" />
 	</target>
 
-	<target name="test" depends="compile-test">
+	<target name="-do-run-tests">
+		<echo level="info">==== ${ant.project.name} (test) ====</echo>
+		<java classname="org.junit.runner.JUnitCore"
+		      fork="true"
+		      resultproperty="junit.result"
+		      output="${build.module.location}/log/test-reports/TEST-${junit.suite.classname}.txt"
+		      error="${build.module.location}/log/test-reports/TEST-${junit.suite.classname}.txt">
+			<arg value="${junit.suite.classname}" />
+			<sysproperty key="nba.v2.conf.dir" value="${nba.v2.conf.dir.test}" />
+			<classpath>
+				<fileset dir="build/classpath">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="build/test-classpath">
+					<include name="**/*.jar" />
+				</fileset>
+				<dirset dir="build/main" />
+				<dirset dir="build/test" />
+			</classpath>
+		</java>
+		<condition property="junit.ok">
+			<equals arg1="${junit.result}" arg2="0" />
+		</condition>
+		<fail unless:set="junit.ok"
+		      message="At least one test failed! See ${build.module.location}/log/test-reports/TEST-${junit.suite.classname}.txt" />
+	</target>
+
+	<!--
+		Regular testing using junit task no longer works
+		because of a mysterious ClassNotFoundException
+		(org.elasticsearch.Version).
+	-->
+	<target name="test" depends="compile-tests">
 		<echo level="info">==== ${ant.project.name} (test) ====</echo>
 		<mkdir dir="${build.module.location}/log/test-reports" />
 		<junit printsummary="yes" haltonfailure="yes">
@@ -172,7 +199,14 @@
 				<enable />
 			</assertions>
 			<classpath>
-				<path refid="test.class.path" />
+				<fileset dir="build/classpath">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="build/test-classpath">
+					<include name="**/*.jar" />
+				</fileset>
+				<dirset dir="build/main" />
+				<dirset dir="build/test" />
 			</classpath>
 			<formatter type="plain" />
 			<batchtest todir="${build.module.location}/log/test-reports">
@@ -183,7 +217,7 @@
 		</junit>
 	</target>
 
-	<target name="package" depends="test">
+	<target name="package" depends="run-tests">
 		<echo level="info">==== ${ant.project.name} (package) ====</echo>
 		<jar destfile="build/${ant.project.name}.jar"
 		     basedir="build/main"

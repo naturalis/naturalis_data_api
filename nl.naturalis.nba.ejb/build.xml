@@ -13,6 +13,9 @@
 		</filelist>
 	</path>
 
+	<property name="junit.suite.classname"
+	          value="nl.naturalis.nda.ejb.service.AllTests" />
+
 	<target name="build" depends="build-dao-module,clean,package" />
 
 </project>

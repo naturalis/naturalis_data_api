@@ -12,6 +12,8 @@
 		</filelist>
 	</path>
 
+	<property name="junit.suite.classname" value="nl.naturalis.nba.common.AllTests" />
+
 	<target name="build" depends="build-api-module,clean,package" />
 
 </project>

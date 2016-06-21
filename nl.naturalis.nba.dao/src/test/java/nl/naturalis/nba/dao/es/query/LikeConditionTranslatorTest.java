@@ -86,7 +86,6 @@ public class LikeConditionTranslatorTest {
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
 		QueryBuilder query = ct.translate();
-		System.out.println(query);
 	}
 
 }

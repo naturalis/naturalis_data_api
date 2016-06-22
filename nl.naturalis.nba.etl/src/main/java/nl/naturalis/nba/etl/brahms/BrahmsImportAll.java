@@ -1,10 +1,9 @@
 package nl.naturalis.nba.etl.brahms;
 
+import static nl.naturalis.nba.dao.es.DocumentType.*;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
-
-import static nl.naturalis.nba.dao.es.util.DocumentType.*;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -14,8 +13,8 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.util.DocumentType;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;

@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.util;
+package nl.naturalis.nba.dao.es;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,6 @@ import org.domainobject.util.ConfigObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.InitializationException;
 import nl.naturalis.nba.dao.es.map.Mapping;
@@ -19,22 +18,19 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.dao.es.types.ESType;
 
-public class DocumentType {
+public enum DocumentType
+{
 
-	// Must be defined BEFORE the DocumentType constants, because DocumentType
-	// constructor does some logging.
-	private static final Logger logger = DAORegistry.getInstance().getLogger(DocumentType.class);
-
-	public static final DocumentType SPECIMEN = new DocumentType("Specimen");
-	public static final DocumentType TAXON = new DocumentType("Taxon");
-	public static final DocumentType MULTI_MEDIA_OBJECT = new DocumentType("MultiMediaObject");
+	SPECIMEN("Specimen"), TAXON("Taxon"), MULTI_MEDIA_OBJECT("MultiMediaObject");
 
 	static {
 		try {
 			for (ConfigObject cfg : getIndexSections()) {
-				// This will set the new IndexInfo instance on the applicable
-				// DocumentType instances defined above, and add the applicable
-				// DocumentType instances to the new IndexInfo instance.
+				/*
+				 * This will set the new IndexInfo instance on the applicable
+				 * DocumentType instances defined above, and add the applicable
+				 * DocumentType instances to the new IndexInfo instance.
+				 */
 				new IndexInfo(cfg);
 			}
 		}
@@ -43,9 +39,24 @@ public class DocumentType {
 			 * No point in going on. We log the error and allow the exception to
 			 * cause an ExceptionInInitializerError.
 			 */
+			Logger logger = DAORegistry.getInstance().getLogger(DocumentType.class);
 			logger.fatal("Error while retrieving index info", t);
 			throw t;
 		}
+	}
+
+	public static DocumentType forName(String name)
+	{
+		if (SPECIMEN.name.equals(name)) {
+			return SPECIMEN;
+		}
+		if (TAXON.name.equals(name)) {
+			return TAXON;
+		}
+		if (MULTI_MEDIA_OBJECT.name.equals(name)) {
+			return MULTI_MEDIA_OBJECT;
+		}
+		throw new DaoException("There is no document type with name \"" + name + '"');
 	}
 
 	public static DocumentType forClass(Class<? extends ESType> cls)
@@ -62,34 +73,22 @@ public class DocumentType {
 		throw new DaoException("There is no document type corresponding to " + cls);
 	}
 
-	public static DocumentType forName(String name)
-	{
-		if (SPECIMEN.name.equals(name)) {
-			return SPECIMEN;
-		}
-		if (TAXON.name.equals(name)) {
-			return TAXON;
-		}
-		if (MULTI_MEDIA_OBJECT.name.equals(name)) {
-			return MULTI_MEDIA_OBJECT;
-		}
-		throw new DaoException("No document type exists with name \"" + name + '"');
-	}
-
 	IndexInfo indexInfo;
 
+	private final Logger logger;
 	private final String name;
 	private final Class<? extends ESType> esType;
+	private final ObjectMapper objMapper;
 	private final Mapping mapping;
-	private final ObjectMapper objectMapper;
 
 	private DocumentType(String name)
 	{
+		logger = DAORegistry.getInstance().getLogger(DocumentType.class);
 		logger.info("Retrieving info for document type {}", name);
 		this.name = name;
 		this.esType = getClassForDocumentType(name);
 		this.mapping = new MappingFactory().getMapping(esType);
-		this.objectMapper = ObjectMapperLocator.getInstance().getObjectMapper(esType);
+		this.objMapper = ObjectMapperLocator.getInstance().getObjectMapper(esType);
 	}
 
 	public String getName()
@@ -114,7 +113,7 @@ public class DocumentType {
 
 	public ObjectMapper getObjectMapper()
 	{
-		return objectMapper;
+		return objMapper;
 	}
 
 	@Override
@@ -123,33 +122,35 @@ public class DocumentType {
 		return name;
 	}
 
-	private static Class<? extends ESType> getClassForDocumentType(String type)
+	private static Class<? extends ESType> getClassForDocumentType(String name)
 	{
-		switch (type) {
-			case "Specimen":
-				return ESSpecimen.class;
-			case "Taxon":
-				return ESTaxon.class;
-			case "MultiMediaObject":
-				return ESMultiMediaObject.class;
-			default:
-				String fmt = "No such document type: \"%s\"";
-				String msg = String.format(fmt, type);
-				throw new InitializationException(msg);
+		if ("Specimen".equals(name)) {
+			return ESSpecimen.class;
 		}
+		if ("Taxon".equals(name)) {
+			return ESTaxon.class;
+		}
+		if ("MultiMediaObject".equals(name)) {
+			return ESMultiMediaObject.class;
+		}
+		String fmt = "No such document type: \"%s\"";
+		String msg = String.format(fmt, name);
+		throw new InitializationException(msg);
 	}
 
 	private static List<ConfigObject> getIndexSections()
 	{
-		ConfigObject cfg = DAORegistry.getInstance().getConfiguration();
+		DAORegistry registry = DAORegistry.getInstance();
+		ConfigObject cfg = registry.getConfiguration();
 		List<ConfigObject> sections = new ArrayList<>();
-		String cfgFile = DAORegistry.getInstance().getConfigurationFile().getAbsolutePath();
 		for (int i = 0;; i++) {
 			String prefix = "elasticsearch.index." + i;
 			ConfigObject section = cfg.getSection(prefix);
 			if (section == null) {
 				break;
 			}
+			Logger logger = DAORegistry.getInstance().getLogger(DocumentType.class);
+			String cfgFile = registry.getConfigurationFile().getAbsolutePath();
 			logger.info("Processing section {} of {}", prefix, cfgFile);
 			sections.add(section);
 		}

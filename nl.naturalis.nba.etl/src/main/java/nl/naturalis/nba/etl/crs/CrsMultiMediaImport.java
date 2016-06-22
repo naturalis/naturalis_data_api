@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
-import static nl.naturalis.nba.dao.es.util.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.es.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.crs.CrsImportUtil.callMultimediaService;
 
 import java.util.List;

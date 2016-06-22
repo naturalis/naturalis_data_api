@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
-import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.dao.es.types.ESTaxon;

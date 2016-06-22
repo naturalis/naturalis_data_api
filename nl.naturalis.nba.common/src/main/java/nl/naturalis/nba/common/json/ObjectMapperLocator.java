@@ -1,10 +1,13 @@
 package nl.naturalis.nba.common.json;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.ALL;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
@@ -14,13 +17,10 @@ import nl.naturalis.nba.api.query.ComparisonOperator;
 
 public class ObjectMapperLocator {
 
-	private static ObjectMapperLocator instance;
+	private static final ObjectMapperLocator instance = new ObjectMapperLocator();
 
 	public static ObjectMapperLocator getInstance()
 	{
-		if (instance == null) {
-			instance = new ObjectMapperLocator();
-		}
 		return instance;
 	}
 
@@ -35,7 +35,7 @@ public class ObjectMapperLocator {
 	{
 		/*
 		 * Currently we always serve up the same ObjectMapper instance, whatever
-		 * the class of the object to serialize.
+		 * the class of the object to serialize or deserialize.
 		 */
 		return dfault;
 	}
@@ -43,10 +43,10 @@ public class ObjectMapperLocator {
 	private static ObjectMapper createDefaultObjectMapper()
 	{
 		ObjectMapper om = new ObjectMapper();
-		om.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-		om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		om.setSerializationInclusion(Include.NON_NULL);
-		om.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+		om.setVisibility(ALL, NONE);
+		om.setVisibility(FIELD, ANY);
+		om.setSerializationInclusion(NON_NULL);
+		om.enable(WRITE_ENUMS_USING_TO_STRING);
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(GatheringSiteCoordinates.class,
 				new GatheringSiteCoordinatesDeserializer());

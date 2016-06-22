@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
-import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -39,7 +39,6 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.util.DocumentType;
 
 public class SpecimenDAO implements ISpecimenAPI {
 
@@ -59,9 +58,9 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("find(\"{}\")", id);
 		}
-		GetRequestBuilder request =  client().prepareGet();
-		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
-		String type = DocumentType.SPECIMEN.getName();
+		GetRequestBuilder request = client().prepareGet();
+		String index = SPECIMEN.getIndexInfo().getName();
+		String type = SPECIMEN.getName();
 		request.setIndex(index);
 		request.setType(type);
 		request.setId(id);
@@ -85,7 +84,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("find({})", toJson(ids));
 		}
-		String type = DocumentType.SPECIMEN.getName();
+		String type = SPECIMEN.getName();
 		SearchRequestBuilder request = newSearchRequest();
 		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
 		query.ids(ids);
@@ -172,7 +171,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Query using QuerySpec:\n{}", toPrettyJson(spec));
 		}
-		QueryBuilder query = ConditionTranslator.translate(spec, ESSpecimen.class);
+		QueryBuilder query = ConditionTranslator.translate(spec, SPECIMEN);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();
 		request.setQuery(csq);
@@ -183,8 +182,8 @@ public class SpecimenDAO implements ISpecimenAPI {
 	public String save(Specimen specimen, boolean immediate)
 	{
 		String id = specimen.getId();
-		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
-		String type = DocumentType.SPECIMEN.getName();
+		String index = SPECIMEN.getIndexInfo().getName();
+		String type = SPECIMEN.getName();
 		if (logger.isDebugEnabled()) {
 			String pattern = "New save request (index={};type={};id={})";
 			logger.debug(pattern, index, type, id);
@@ -205,8 +204,8 @@ public class SpecimenDAO implements ISpecimenAPI {
 
 	public boolean delete(String id, boolean immediate)
 	{
-		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
-		String type = DocumentType.SPECIMEN.getName();
+		String index = SPECIMEN.getIndexInfo().getName();
+		String type = SPECIMEN.getName();
 		DeleteRequestBuilder request = client().prepareDelete(index, type, id);
 		DeleteResponse response = request.execute().actionGet();
 		return response.isFound();
@@ -244,8 +243,8 @@ public class SpecimenDAO implements ISpecimenAPI {
 
 	private static SearchRequestBuilder newSearchRequest()
 	{
-		String index = DocumentType.SPECIMEN.getIndexInfo().getName();
-		String type = DocumentType.SPECIMEN.getName();
+		String index = SPECIMEN.getIndexInfo().getName();
+		String type = SPECIMEN.getName();
 		if (logger.isDebugEnabled()) {
 			String pattern = "New search request (index={};type={})";
 			logger.debug(pattern, index, type);

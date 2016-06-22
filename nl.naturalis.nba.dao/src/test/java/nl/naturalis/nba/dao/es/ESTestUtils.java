@@ -22,8 +22,6 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESType;
-import nl.naturalis.nba.dao.es.util.DocumentType;
-import nl.naturalis.nba.dao.es.util.IndexInfo;
 
 public class ESTestUtils {
 

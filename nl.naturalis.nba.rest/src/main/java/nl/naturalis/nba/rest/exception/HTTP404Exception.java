@@ -1,9 +1,10 @@
 package nl.naturalis.nba.rest.exception;
 
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nba.dao.es.util.DocumentType;
+import nl.naturalis.nba.dao.es.DocumentType;
+
+import javax.ws.rs.core.UriInfo;
 
 /**
  * @author Ayco Holleman

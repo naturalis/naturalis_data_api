@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.es.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
@@ -16,14 +15,13 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
-import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
  * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
@@ -42,7 +40,7 @@ public abstract class ConditionTranslator {
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static QueryBuilder translate(QuerySpec qs, Class<? extends ESType> type)
+	public static QueryBuilder translate(QuerySpec qs, DocumentType type)
 			throws InvalidConditionException
 	{
 		List<Condition> conditions = qs.getConditions();
@@ -80,22 +78,14 @@ public abstract class ConditionTranslator {
 
 	final Condition condition;
 	final MappingInspector inspector;
-
-	/**
-	 * Creates a translator for the specified condition.
-	 * 
-	 * @param condition
-	 */
-	ConditionTranslator(Condition condition, Class<? extends ESType> forType)
-	{
-		this.condition = condition;
-		this.inspector = MappingInspector.forType(forType);
-	}
+	final DocumentField field;
 
 	ConditionTranslator(Condition condition, MappingInspector inspector)
+			throws InvalidConditionException
 	{
 		this.condition = condition;
 		this.inspector = inspector;
+		this.field = getDocumentField();
 	}
 
 	/**
@@ -113,23 +103,6 @@ public abstract class ConditionTranslator {
 
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
-	DocumentField getDocumentField(String path) throws InvalidConditionException
-	{
-		ESField f;
-		try {
-			f = inspector.getField(field());
-		}
-		catch (NoSuchFieldException e) {
-			throw new InvalidConditionException(e.getMessage());
-		}
-		if (!(f instanceof DocumentField)) {
-			String fmt = "Cannot query on objects (%s)";
-			String msg = String.format(fmt, path);
-			throw new InvalidConditionException(msg);
-		}
-		return (DocumentField) f;
-	}
-
 	InvalidConditionException error(String msg, Object... msgArgs)
 	{
 		StringBuilder sb = new StringBuilder(100);
@@ -142,7 +115,7 @@ public abstract class ConditionTranslator {
 
 	InvalidConditionException searchTermMustNotBeNull()
 	{
-		return error("Search term must not be null with operator %s", condition.getOperator());
+		return error("Search term must not be null when using operator %s", operator());
 	}
 
 	InvalidConditionException searchTermHasWrongType()
@@ -150,6 +123,31 @@ public abstract class ConditionTranslator {
 		ComparisonOperator op = condition.getOperator();
 		Class<?> type = value().getClass();
 		return error("Search term has wrong type for operator %s: %s", op, type);
+	}
+
+	String field()
+	{
+		return condition.getField();
+	}
+
+	ComparisonOperator operator()
+	{
+		return condition.getOperator();
+	}
+
+	Object value()
+	{
+		return condition.getValue();
+	}
+
+	List<Condition> and()
+	{
+		return condition.getAnd();
+	}
+
+	List<Condition> or()
+	{
+		return condition.getOr();
 	}
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
@@ -250,33 +248,24 @@ public abstract class ConditionTranslator {
 	 */
 	private boolean withNegatingOperator()
 	{
-		ComparisonOperator op = operator();
-		return negatingOperators.contains(op);
+		return negatingOperators.contains(operator());
 	}
 
-	String field()
+	private DocumentField getDocumentField() throws InvalidConditionException
 	{
-		return condition.getField();
-	}
-
-	ComparisonOperator operator()
-	{
-		return condition.getOperator();
-	}
-
-	Object value()
-	{
-		return condition.getValue();
-	}
-
-	List<Condition> and()
-	{
-		return condition.getAnd();
-	}
-
-	List<Condition> or()
-	{
-		return condition.getOr();
+		ESField f;
+		try {
+			f = inspector.getField(field());
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidConditionException(e.getMessage());
+		}
+		if (!(f instanceof DocumentField)) {
+			String fmt = "Field %s cannot be queried";
+			String msg = String.format(fmt, field());
+			throw new InvalidConditionException(msg);
+		}
+		return (DocumentField) f;
 	}
 
 }

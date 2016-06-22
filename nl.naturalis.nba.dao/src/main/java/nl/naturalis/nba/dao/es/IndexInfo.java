@@ -1,12 +1,10 @@
-package nl.naturalis.nba.dao.es.util;
+package nl.naturalis.nba.dao.es;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
-
-import nl.naturalis.nba.dao.es.DAORegistry;
 
 public class IndexInfo {
 

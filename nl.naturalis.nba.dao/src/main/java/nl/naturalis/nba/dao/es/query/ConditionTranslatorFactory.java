@@ -1,8 +1,9 @@
 package nl.naturalis.nba.dao.es.query;
 
 import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
-import nl.naturalis.nba.dao.es.types.ESType;
 
 public class ConditionTranslatorFactory {
 
@@ -10,13 +11,24 @@ public class ConditionTranslatorFactory {
 	{
 	}
 
-	public ConditionTranslator getTranslator(Condition condition, Class<? extends ESType> type)
+	/**
+	 * Returns a {@link ConditionTranslator} for the specified condition and the
+	 * specified document type.
+	 * 
+	 * @param condition
+	 * @param type
+	 * @return
+	 * @throws InvalidConditionException
+	 */
+	public ConditionTranslator getTranslator(Condition condition, DocumentType type)
+			throws InvalidConditionException
 	{
-		MappingInspector inspector = MappingInspector.forType(type);
+		MappingInspector inspector = new MappingInspector(type.getMapping());
 		return getTranslator(condition, inspector);
 	}
 
 	public ConditionTranslator getTranslator(Condition condition, MappingInspector inspector)
+			throws InvalidConditionException
 	{
 		switch (condition.getOperator()) {
 			case EQUALS:

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.DAORegistry;
-import nl.naturalis.nba.dao.es.util.DocumentType;
+import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
  * Utility class providing common functionality used throughout this library.

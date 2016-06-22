@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
-import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.*;
 

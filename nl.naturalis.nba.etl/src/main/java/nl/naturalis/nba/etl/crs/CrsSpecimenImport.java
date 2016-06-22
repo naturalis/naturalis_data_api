@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
-import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.crs.CrsImportUtil.callSpecimenService;
 
 import java.util.List;

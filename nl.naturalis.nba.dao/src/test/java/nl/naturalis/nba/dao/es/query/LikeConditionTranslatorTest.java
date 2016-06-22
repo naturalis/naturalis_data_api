@@ -2,13 +2,25 @@ package nl.naturalis.nba.dao.es.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
 
-import org.elasticsearch.index.query.QueryBuilder;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.dao.es.map.Mapping;
+import nl.naturalis.nba.dao.es.map.MappingFactory;
+import nl.naturalis.nba.dao.es.map.MappingInspector;
 
 public class LikeConditionTranslatorTest {
+
+	private static MappingInspector inspector;
+
+	@BeforeClass
+	public static void init()
+	{
+		Mapping m = new MappingFactory().getMapping(LikeTestObject.class);
+		inspector = new MappingInspector(m);
+	}
 
 	/*
 	 * Checks that translation fails if the Condition.value is not String.
@@ -18,7 +30,7 @@ public class LikeConditionTranslatorTest {
 	{
 		Condition c = new Condition("firstName", LIKE, new Object());
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
+		ConditionTranslator ct = ctf.getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -31,7 +43,7 @@ public class LikeConditionTranslatorTest {
 	{
 		Condition c = new Condition("age", LIKE, "foo");
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
+		ConditionTranslator ct = ctf.getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -44,7 +56,7 @@ public class LikeConditionTranslatorTest {
 	{
 		Condition c = new Condition("firstName", LIKE, "12");
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
+		ConditionTranslator ct = ctf.getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -57,7 +69,7 @@ public class LikeConditionTranslatorTest {
 	{
 		Condition c = new Condition("firstName", LIKE, "12345678901234567890");
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
+		ConditionTranslator ct = ctf.getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -68,24 +80,11 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_05() throws InvalidConditionException
 	{
+		// address field has no @Analyzers annotation
 		Condition c = new Condition("address", LIKE, "foo");
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
+		ConditionTranslator ct = ctf.getTranslator(c, inspector);
 		ct.translate();
-	}
-
-	/*
-	 * Checks that translation fails if the field is not analyzed using the LIKE
-	 * enabling analyzer.
-	 */
-	@Test
-	public void testTranslate_06() throws InvalidConditionException
-	{
-		// address field has no @Analyzers annotation
-		Condition c = new Condition("firstName", LIKE, "Smith");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, LikeTestObject.class);
-		QueryBuilder query = ct.translate();
 	}
 
 }

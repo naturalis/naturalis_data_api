@@ -7,18 +7,14 @@ import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
 import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
-import nl.naturalis.nba.dao.es.DAORegistry;
-import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
  * A {@code MappingInspector} provides easy, programmatic access to various
@@ -29,36 +25,9 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public class MappingInspector {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger;
-	private static final HashMap<Class<? extends ESType>, MappingInspector> cache;
-
-	static {
-		logger = DAORegistry.getInstance().getLogger(MappingInspector.class);
-		cache = new HashMap<>();
-	}
-
-	/**
-	 * Returns a {@link MappingInspector} for the specified Elasticsearch type.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static MappingInspector forType(Class<? extends ESType> type)
-	{
-		MappingInspector inspector = cache.get(type);
-		if (inspector == null) {
-			MappingFactory mf = new MappingFactory();
-			Mapping mapping = mf.getMapping(type);
-			inspector = new MappingInspector(mapping);
-			cache.put(type, inspector);
-		}
-		return inspector;
-	}
-
 	private final Mapping mapping;
 
-	private MappingInspector(Mapping mapping)
+	public MappingInspector(Mapping mapping)
 	{
 		this.mapping = mapping;
 	}

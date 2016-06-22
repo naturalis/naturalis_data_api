@@ -14,7 +14,7 @@ import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.DAORegistry;
-import nl.naturalis.nba.dao.es.util.DocumentType;
+import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
  * A cache that maps UnitIDs to "themes". Themes are predefined categories of

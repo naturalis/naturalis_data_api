@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.dao.es.util.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_COLLECTION_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_SOURCE_ID;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;

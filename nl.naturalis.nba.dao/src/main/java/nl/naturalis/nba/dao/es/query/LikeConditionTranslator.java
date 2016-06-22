@@ -9,27 +9,19 @@ import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
-import nl.naturalis.nba.dao.es.types.ESType;
 
 public class LikeConditionTranslator extends ConditionTranslator {
 
-	LikeConditionTranslator(Condition condition, Class<? extends ESType> forType)
-	{
-		super(condition, forType);
-	}
-
-	LikeConditionTranslator(Condition condition, MappingInspector inspector)
+	LikeConditionTranslator(Condition condition, MappingInspector inspector) throws InvalidConditionException
 	{
 		super(condition, inspector);
 	}
 
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		DocumentField f = getDocumentField(field());
-		if (!inspector.isOperatorAllowed(f, LIKE)) {
-			throw new IllegalOperatorException(f.getName(), LIKE);
+		if (!inspector.isOperatorAllowed(field, LIKE)) {
+			throw new IllegalOperatorException(field.getName(), LIKE);
 		}
 		if (value() == null) {
 			throw searchTermMustNotBeNull();
@@ -44,7 +36,7 @@ public class LikeConditionTranslator extends ConditionTranslator {
 		if (value.length() > 10) {
 			throw error("Search term must contain at most 10 characters with operator %s", LIKE);
 		}
-		String nestedPath = inspector.getNestedPath(f);
+		String nestedPath = inspector.getNestedPath(field);
 		String multiField = field() + ".like";
 		if (nestedPath == null) {
 			return termQuery(multiField, value.toLowerCase());

@@ -1,12 +1,11 @@
 package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
+import static nl.naturalis.nba.dao.es.DocumentType.*;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFile;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
-import static nl.naturalis.nba.dao.es.util.DocumentType.*;
-
 
 import java.io.File;
 import java.util.List;

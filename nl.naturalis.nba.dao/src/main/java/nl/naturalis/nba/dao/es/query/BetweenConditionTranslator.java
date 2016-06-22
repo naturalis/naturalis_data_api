@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.query;
 
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -7,22 +9,18 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
-import nl.naturalis.nba.dao.es.types.ESType;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 public class BetweenConditionTranslator extends ConditionTranslator {
 
-	private static final String ERROR_0 = "Operator %s requires \"value\" field "
-			+ "to contain a two-element array with exactly two non-null elements";
+	private static final String ERROR_0 = "When using operator %s, the search "
+			+ "term must be a an array with exactly two elements";
 
-	public BetweenConditionTranslator(Condition condition, Class<? extends ESType> forType)
-	{
-		super(condition, forType);
-	}
+	private static final String ERROR_1 = "When using operator %s, at least "
+			+ "one of boundary values must not be null";
 
-	public BetweenConditionTranslator(Condition condition, MappingInspector inspector)
+	BetweenConditionTranslator(Condition condition, MappingInspector inspector)
+			throws InvalidConditionException
 	{
 		super(condition, inspector);
 	}
@@ -30,9 +28,8 @@ public class BetweenConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		DocumentField f = getDocumentField(field());
-		if (!inspector.isOperatorAllowed(f, operator())) {
-			throw new IllegalOperatorException(f.getName(), operator());
+		if (!inspector.isOperatorAllowed(field, operator())) {
+			throw new IllegalOperatorException(field.getName(), operator());
 		}
 		if (value() == null) {
 			throw searchTermMustNotBeNull();
@@ -45,11 +42,12 @@ public class BetweenConditionTranslator extends ConditionTranslator {
 			throw error(ERROR_0, operator());
 		}
 		if (values[0] == null && values[1] == null) {
-			throw error(ERROR_0, operator());
+			throw error(ERROR_1, operator());
 		}
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(field());
-		query.from("TO DO");
-		String nestedPath = inspector.getNestedPath(f);
+		query.from(values[0]);
+		query.to(values[1]);
+		String nestedPath = inspector.getNestedPath(field);
 		if (nestedPath == null) {
 			return query;
 		}

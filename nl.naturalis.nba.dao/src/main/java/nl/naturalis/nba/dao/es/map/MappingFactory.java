@@ -2,8 +2,8 @@ package nl.naturalis.nba.dao.es.map;
 
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
-import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
+import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
 import static org.domainobject.util.ClassUtil.isA;
 
@@ -16,19 +16,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-
-import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.MappedProperty;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
-import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.DAORegistry;
-import nl.naturalis.nba.dao.es.types.ESType;
+import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
  * Generates Elasticsearch mappings from {@link Class} objects.
@@ -38,38 +33,19 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public class MappingFactory {
 
-	private static final DataTypeMap dataTypeMap;
-	private static final Logger logger;
-	private static final HashMap<Class<? extends ESType>, Mapping> cache;
-
-	static {
-		dataTypeMap = DataTypeMap.getInstance();
-		logger = DAORegistry.getInstance().getLogger(MappingFactory.class);
-		cache = new HashMap<>();
-	}
-
-	public MappingFactory()
-	{
-	}
-
 	/**
 	 * Builds an Elasticsearch {@link Mapping} object for the specified class.
+	 * This is a rather heavy-weight operation. In principle you should always
+	 * retrieve {@link Mapping} instances through
+	 * {@link DocumentType#getMapping() DocumentType.getMapping()}.
 	 * 
 	 * @param forClass
 	 * @return
 	 */
-	public Mapping getMapping(Class<? extends ESType> forClass)
+	public Mapping getMapping(Class<?> type)
 	{
-		Mapping mapping = cache.get(forClass);
-		if (mapping == null) {
-			mapping = new Mapping();
-			addFieldsToDocument(mapping, forClass);
-			if (logger.isDebugEnabled()) {
-				String json = JsonUtil.toPrettyJson(mapping);
-				logger.debug("Generated mapping for type {}:\n{}", forClass, json);
-			}
-			cache.put(forClass, mapping);
-		}
+		Mapping mapping = new Mapping();
+		addFieldsToDocument(mapping, type);
 		return mapping;
 	}
 
@@ -101,7 +77,7 @@ public class MappingFactory {
 	{
 		Class<?> realType = field.getType();
 		Class<?> mapToType = mapType(realType, field.getGenericType());
-		ESDataType esType = dataTypeMap.getESType(mapToType);
+		ESDataType esType = DataTypeMap.getInstance().getESType(mapToType);
 		if (esType == null) {
 			/*
 			 * Then the Java type does not map to a simple Elasticsearch type
@@ -117,7 +93,7 @@ public class MappingFactory {
 	{
 		Class<?> realType = method.getReturnType();
 		Class<?> mapToType = mapType(realType, method.getGenericReturnType());
-		ESDataType esType = dataTypeMap.getESType(mapToType);
+		ESDataType esType = DataTypeMap.getInstance().getESType(mapToType);
 		if (esType == null) {
 			return createDocument(method, mapToType);
 		}

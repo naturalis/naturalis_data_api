@@ -9,13 +9,13 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.map.Document;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESDataType;
 import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 public class MappingInspectorTest {
 
@@ -24,7 +24,7 @@ public class MappingInspectorTest {
 	@BeforeClass
 	public static void setup()
 	{
-		inspector = MappingInspector.forType(ESSpecimen.class);
+		inspector = new MappingInspector(DocumentType.SPECIMEN.getMapping());
 	}
 
 	@Test(expected = NoSuchFieldException.class)

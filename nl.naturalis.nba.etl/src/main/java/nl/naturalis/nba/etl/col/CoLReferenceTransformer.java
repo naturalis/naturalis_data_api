@@ -1,11 +1,11 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.dao.es.util.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.es.util.ESUtil.*;
 import static nl.naturalis.nba.api.model.SourceSystem.*;
 

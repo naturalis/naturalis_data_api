@@ -21,7 +21,9 @@ import nl.naturalis.nba.dao.es.types.ESType;
 public enum DocumentType
 {
 
-	SPECIMEN("Specimen"), TAXON("Taxon"), MULTI_MEDIA_OBJECT("MultiMediaObject");
+	SPECIMEN("Specimen", ESSpecimen.class),
+	TAXON("Taxon", ESTaxon.class),
+	MULTI_MEDIA_OBJECT("MultiMediaObject", ESMultiMediaObject.class);
 
 	static {
 		try {
@@ -81,12 +83,12 @@ public enum DocumentType
 	private final ObjectMapper objMapper;
 	private final Mapping mapping;
 
-	private DocumentType(String name)
+	private DocumentType(String name, Class<? extends ESType> esType)
 	{
 		logger = DAORegistry.getInstance().getLogger(DocumentType.class);
 		logger.info("Retrieving info for document type {}", name);
 		this.name = name;
-		this.esType = getClassForDocumentType(name);
+		this.esType = esType;
 		this.mapping = new MappingFactory().getMapping(esType);
 		this.objMapper = ObjectMapperLocator.getInstance().getObjectMapper(esType);
 	}
@@ -120,22 +122,6 @@ public enum DocumentType
 	public String toString()
 	{
 		return name;
-	}
-
-	private static Class<? extends ESType> getClassForDocumentType(String name)
-	{
-		if ("Specimen".equals(name)) {
-			return ESSpecimen.class;
-		}
-		if ("Taxon".equals(name)) {
-			return ESTaxon.class;
-		}
-		if ("MultiMediaObject".equals(name)) {
-			return ESMultiMediaObject.class;
-		}
-		String fmt = "No such document type: \"%s\"";
-		String msg = String.format(fmt, name);
-		throw new InitializationException(msg);
 	}
 
 	private static List<ConfigObject> getIndexSections()

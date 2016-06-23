@@ -3,31 +3,21 @@ package nl.naturalis.nba.dao.es.map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Abstract base class for any kind of node in a mapping. A {@link Mapping}, a
- * {@link Document}, a {@link DocumentField} and any {@link IndexableField}
- * within a {@link DocumentField} are all instances of an {@link ESField}.
+ * Abstract base class for all nodes within a mapping. The {@link Mapping}
+ * object itself, any nested {@link Document documents} within it, all
+ * {@link DocumentField fields} and all {@link MultiField multi-fields}
+ * underneath a field are instances of an {@link ESField}.
  * 
  * @author Ayco Holleman
  *
  */
 public abstract class ESField {
 
-	protected final ESDataType type;
-
 	@JsonIgnore
-	private String name;
+	protected String name;
+	protected ESDataType type;
 	@JsonIgnore
-	private ESField parent;
-
-	public ESField(ESDataType type)
-	{
-		this.type = type;
-	}
-
-	public ESDataType getType()
-	{
-		return type;
-	}
+	protected ESField parent;
 
 	public String getName()
 	{
@@ -37,6 +27,16 @@ public abstract class ESField {
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public ESDataType getType()
+	{
+		return type;
+	}
+
+	public void setType(ESDataType type)
+	{
+		this.type = type;
 	}
 
 	public ESField getParent()

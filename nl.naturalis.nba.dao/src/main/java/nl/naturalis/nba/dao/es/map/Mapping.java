@@ -10,13 +10,8 @@ package nl.naturalis.nba.dao.es.map;
  */
 public class Mapping extends Document {
 
-	// NBA types are always strictly typed.
+	/* NBA types are always strictly typed. */
 	private final String dynamic = "strict";
-
-	public Mapping()
-	{
-		super(null);
-	}
 
 	public String getDynamic()
 	{

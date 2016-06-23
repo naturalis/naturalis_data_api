@@ -1,0 +1,26 @@
+package nl.naturalis.nba.dao.es.map;
+
+import static org.junit.Assert.assertEquals;
+
+import org.domainobject.util.FileUtil;
+import org.junit.Test;
+
+import nl.naturalis.nba.dao.es.test.Person;
+
+public class MappingFactoryTest {
+
+	@Test
+	public void testGetMapping()
+	{
+		Mapping mapping = new MappingFactory().getMapping(Person.class);
+		MappingSerializer serializer = new MappingSerializer(true);
+		String json = serializer.serialize(mapping);
+		String file = "MappingFactoryTest__testGetMapping.json";
+		assertEquals("01", getContents(file), json);
+	}
+
+	private String getContents(String file)
+	{
+		return FileUtil.getContents(getClass().getResourceAsStream(file));
+	}
+}

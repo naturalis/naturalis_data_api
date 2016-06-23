@@ -22,7 +22,7 @@ public class Document extends ESField {
 
 	public Document(ESDataType type)
 	{
-		super(type);
+		this.type = type;
 		properties = new LinkedHashMap<>();
 	}
 

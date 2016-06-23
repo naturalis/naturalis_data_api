@@ -1,12 +1,9 @@
 package nl.naturalis.nba.etl;
 
-import org.domainobject.util.ClassUtil;
-
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
  * Prints the Elasticsearch mapping for the provided type.
@@ -24,32 +21,24 @@ public class PrintMapping {
 			System.err.println("Please specify type");
 			System.exit(1);
 		}
-		Class<?> c = null;
-		String cn = esModelPackage + "." + args[0];
+		Class<?> type = null;
+		String className = esModelPackage + "." + args[0];
 		try {
-			c = Class.forName(cn);
+			type = Class.forName(className);
 		}
 		catch (ClassNotFoundException e) {
-			cn = esModelPackage + ".ES" + args[0];
+			className = esModelPackage + ".ES" + args[0];
 			try {
-				c = Class.forName(cn);
+				type = Class.forName(className);
 			}
 			catch (ClassNotFoundException e1) {
-				System.err.println("No such type: " + args[0]);
+				System.err.println("Cannot generate mapping for " + args[0]);
 				System.exit(1);
 			}
 		}
-		if (!ClassUtil.isA(c, ESType.class)) {
-			System.err.println("Not an Elasticsearch type: " + args[0]);
-			System.exit(1);
-		}
-		@SuppressWarnings("unchecked")
-		Class<? extends ESType> c2 = (Class<? extends ESType>) c;
-		MappingFactory mf = new MappingFactory();
-		Mapping mapping = mf.getMapping(c2);
-		MappingSerializer ms = MappingSerializer.getInstance();
-		ms.setPretty(true);
-		System.out.println(ms.serialize(mapping));
+		Mapping mapping = new MappingFactory().getMapping(type);
+		MappingSerializer serializer = new MappingSerializer(true);
+		serializer.serialize(System.out, mapping);
 	}
 
 }

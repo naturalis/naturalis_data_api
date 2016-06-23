@@ -77,8 +77,9 @@ public class ESTestUtils {
 		String type = dt.getName();
 		logger.info("Creating type {}", type);
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
-		MappingSerializer serializer = MappingSerializer.getInstance();
+		MappingSerializer serializer = new MappingSerializer(true);
 		String source = serializer.serialize(dt.getMapping());
+		logger.info("Mapping:\n" + source);
 		request.setSource(source);
 		request.setType(type);
 		PutMappingResponse response = request.execute().actionGet();

@@ -149,14 +149,14 @@ public class ESUtil {
 		}
 	}
 
-	private static void createType(DocumentType documentType)
+	private static void createType(DocumentType dt)
 	{
-		String index = documentType.getIndexInfo().getName();
-		String type = documentType.getName();
+		String index = dt.getIndexInfo().getName();
+		String type = dt.getName();
 		logger.info("Creating type {}", type);
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
-		MappingSerializer serializer = MappingSerializer.getInstance();
-		String source = serializer.serialize(documentType.getMapping());
+		MappingSerializer serializer = new MappingSerializer();
+		String source = serializer.serialize(dt.getMapping());
 		request.setSource(source);
 		request.setType(type);
 		PutMappingResponse response = request.execute().actionGet();

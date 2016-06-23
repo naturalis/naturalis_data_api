@@ -1,0 +1,165 @@
+{
+  "properties" : {
+    "firstName" : {
+      "type" : "string",
+      "index" : "not_analyzed",
+      "fields" : {
+        "analyzed" : {
+          "type" : "string"
+        },
+        "ignoreCase" : {
+          "type" : "string",
+          "analyzer" : "case_insensitive_analyzer"
+        }
+      }
+    },
+    "lastName" : {
+      "type" : "string",
+      "index" : "not_analyzed",
+      "fields" : {
+        "analyzed" : {
+          "type" : "string"
+        },
+        "ignoreCase" : {
+          "type" : "string",
+          "analyzer" : "case_insensitive_analyzer"
+        }
+      }
+    },
+    "birthDate" : {
+      "type" : "date"
+    },
+    "numKids" : {
+      "type" : "integer"
+    },
+    "address" : {
+      "properties" : {
+        "addressLine1" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            }
+          }
+        },
+        "addressLine2" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            }
+          }
+        },
+        "postalCode" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            }
+          }
+        },
+        "city" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            }
+          }
+        },
+        "country" : {
+          "properties" : {
+            "name" : {
+              "type" : "string",
+              "index" : "not_analyzed",
+              "fields" : {
+                "analyzed" : {
+                  "type" : "string"
+                },
+                "ignoreCase" : {
+                  "type" : "string",
+                  "analyzer" : "case_insensitive_analyzer"
+                }
+              }
+            },
+            "isoCode" : {
+              "type" : "string",
+              "index" : "not_analyzed",
+              "fields" : {
+                "ignoreCase" : {
+                  "type" : "string",
+                  "analyzer" : "case_insensitive_analyzer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "pets" : {
+      "type" : "nested",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            },
+            "like" : {
+              "type" : "string",
+              "analyzer" : "like_analyzer"
+            }
+          }
+        },
+        "species" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            }
+          }
+        },
+        "colors" : {
+          "type" : "string",
+          "index" : "no"
+        }
+      }
+    },
+    "height" : {
+      "type" : "float"
+    },
+    "smoker" : {
+      "type" : "boolean"
+    }
+  },
+  "dynamic" : "strict"
+}

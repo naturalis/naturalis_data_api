@@ -179,8 +179,8 @@ public class MappingFactory {
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
-			df.addMultiField("analyzed", DEFAULT_MULTIFIELD);
-			df.addMultiField("ci", IGNORE_CASE_MULTIFIELD);
+			df.addMultiField(DEFAULT_MULTIFIELD);
+			df.addMultiField(IGNORE_CASE_MULTIFIELD);
 			return false;
 		}
 		if (annotation.value().length == 0) {
@@ -191,13 +191,13 @@ public class MappingFactory {
 		for (Analyzer a : analyzers) {
 			switch (a) {
 				case CASE_INSENSITIVE:
-					df.addMultiField("ci", IGNORE_CASE_MULTIFIELD);
+					df.addMultiField(IGNORE_CASE_MULTIFIELD);
 					break;
 				case DEFAULT:
-					df.addMultiField("analyzed", DEFAULT_MULTIFIELD);
+					df.addMultiField(DEFAULT_MULTIFIELD);
 					break;
 				case LIKE:
-					df.addMultiField("like", LIKE_MULTIFIELD);
+					df.addMultiField(LIKE_MULTIFIELD);
 					break;
 				default:
 					break;

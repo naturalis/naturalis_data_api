@@ -11,6 +11,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.dao.es.map.MappingInspector;
+import static nl.naturalis.nba.dao.es.map.MultiField.*;
 
 public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
@@ -32,7 +33,7 @@ public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 			throw searchTermHasWrongType();
 		}
 		String nestedPath = inspector.getNestedPath(field);
-		String multiField = field() + ".ci";
+		String multiField = field() + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
 			if (value() == null) {
 				return boolQuery().mustNot(existsQuery(field()));

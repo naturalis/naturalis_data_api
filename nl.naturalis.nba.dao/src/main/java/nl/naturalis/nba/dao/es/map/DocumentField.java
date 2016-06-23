@@ -6,9 +6,9 @@ public class DocumentField extends IndexableField {
 
 	private LinkedHashMap<String, MultiField> fields;
 
-	public DocumentField(ESDataType esDataType)
+	public DocumentField(ESDataType type)
 	{
-		super(esDataType);
+		this.type = type;
 	}
 
 	public LinkedHashMap<String, MultiField> getFields()
@@ -16,17 +16,17 @@ public class DocumentField extends IndexableField {
 		return fields;
 	}
 
-	public void addMultiField(String name, MultiField field)
+	public void addMultiField(MultiField field)
 	{
 		if (fields == null) {
 			fields = new LinkedHashMap<>(2);
 		}
-		fields.put(name, field);
+		fields.put(field.name, field);
 	}
 
-	public boolean hasMultiField(String name)
+	public boolean hasMultiField(MultiField mf)
 	{
-		return fields != null && fields.containsKey(name);
+		return fields != null && fields.containsKey(mf.name);
 	}
 
 }

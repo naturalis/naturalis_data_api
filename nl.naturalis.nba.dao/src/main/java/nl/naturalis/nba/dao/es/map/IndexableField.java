@@ -11,20 +11,8 @@ package nl.naturalis.nba.dao.es.map;
  */
 public abstract class IndexableField extends ESField {
 
-	private Index index;
-	private String analyzer;
-
-	public IndexableField(ESDataType esDataType)
-	{
-		super(esDataType);
-	}
-
-	protected IndexableField(ESDataType type, Index index, String analyzer)
-	{
-		super(type);
-		this.index = index;
-		this.analyzer = analyzer;
-	}
+	protected Index index;
+	protected String analyzer;
 
 	public Index getIndex()
 	{

@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao.es.map;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -7,26 +10,31 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+/**
+ * Serializes {@link Mapping} instances to JSON. Used when creating a new
+ * document type within an Elasticsearch index.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class MappingSerializer {
 
-	private static MappingSerializer instance;
+	private final ObjectMapper serializer;
+	private final boolean pretty;
 
-	public static MappingSerializer getInstance()
+	public MappingSerializer()
 	{
-		if (instance == null)
-			instance = new MappingSerializer();
-		return instance;
+		this(false);
 	}
 
-	private final ObjectMapper serializer;
-	private boolean pretty;
-
-	private MappingSerializer()
+	public MappingSerializer(boolean pretty)
 	{
 		serializer = new ObjectMapper();
+		serializer.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
 		serializer.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		serializer.setSerializationInclusion(Include.NON_NULL);
 		serializer.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+		this.pretty = pretty;
 	}
 
 	public String serialize(Mapping mapping)
@@ -42,14 +50,17 @@ public class MappingSerializer {
 		}
 	}
 
-	public boolean isPretty()
+	public void serialize(OutputStream out, Mapping mapping)
 	{
-		return pretty;
-	}
-
-	public void setPretty(boolean pretty)
-	{
-		this.pretty = pretty;
+		try {
+			if (pretty) {
+				serializer.writerWithDefaultPrettyPrinter().writeValue(out, mapping);
+			}
+			serializer.writeValue(out, mapping);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

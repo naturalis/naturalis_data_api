@@ -1,4 +1,4 @@
-package nl.naturalis.nba.elasticsearch.map;
+package nl.naturalis.nba.dao.es.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

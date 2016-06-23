@@ -144,10 +144,10 @@ public class MappingInspector {
 				return true;
 			case EQUALS_IC:
 			case NOT_EQUALS_IC:
-				return field.getType() == STRING && field.hasMultiField("ci");
+				return field.getType() == STRING && field.hasMultiField(MultiField.IGNORE_CASE_MULTIFIELD);
 			case LIKE:
 			case NOT_LIKE:
-				return field.getType() == STRING && field.hasMultiField("like");
+				return field.getType() == STRING && field.hasMultiField(MultiField.LIKE_MULTIFIELD);
 			default:
 				return false;
 		}

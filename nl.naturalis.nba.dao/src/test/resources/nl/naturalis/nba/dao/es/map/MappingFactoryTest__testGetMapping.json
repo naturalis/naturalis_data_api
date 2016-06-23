@@ -110,6 +110,9 @@
                   "analyzer" : "case_insensitive_analyzer"
                 }
               }
+            },
+            "dialNumber" : {
+              "type" : "integer"
             }
           }
         }

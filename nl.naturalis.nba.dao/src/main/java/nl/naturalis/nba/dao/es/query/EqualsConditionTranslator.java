@@ -13,7 +13,7 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 public class EqualsConditionTranslator extends ConditionTranslator {
 
-	EqualsConditionTranslator(Condition condition, MappingInfo inspector) throws InvalidConditionException
+	EqualsConditionTranslator(Condition condition, MappingInfo inspector)
 	{
 		super(condition, inspector);
 	}

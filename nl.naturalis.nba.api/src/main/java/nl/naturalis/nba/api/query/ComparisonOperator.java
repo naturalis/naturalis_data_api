@@ -1,5 +1,8 @@
 package nl.naturalis.nba.api.query;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * Provides symbolic constants for the operators that can be used in a
  * {@link Condition query condition}.
@@ -71,7 +74,15 @@ public enum ComparisonOperator
 	 */
 	GTE(">="),
 	/**
-	 * Can only be used for number fields and date fields.
+	 * Can only be used for number fields and date fields. When using the
+	 * BETWEEN or NOT_BETWEEN operator in a {@link Condition}, the
+	 * {@link Condition#getValue() value} property of the condition must be an
+	 * array or a {@link Collection} object with exactly two elements. The first
+	 * element is used as the "from" value (inclusive). The second element is
+	 * used as the "to" value (inclusive). Although you can choose any
+	 * {@link Collection} implementation you like, you should not choose one
+	 * where you have no control over the order of the elements (like
+	 * {@link HashSet}).
 	 */
 	BETWEEN,
 	/**

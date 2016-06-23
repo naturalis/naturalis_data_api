@@ -12,8 +12,9 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 public class Country {
 
 	private String name;
-	@Analyzers({Analyzer.CASE_INSENSITIVE})
+	@Analyzers({ Analyzer.CASE_INSENSITIVE })
 	private String isoCode;
+	private int dialNumber;
 
 	public String getName()
 	{
@@ -33,5 +34,15 @@ public class Country {
 	public void setIsoCode(String isoCode)
 	{
 		this.isoCode = isoCode;
+	}
+
+	public int getDialNumber()
+	{
+		return dialNumber;
+	}
+
+	public void setDialNumber(int dialNumber)
+	{
+		this.dialNumber = dialNumber;
 	}
 }

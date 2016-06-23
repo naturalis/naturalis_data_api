@@ -2,6 +2,10 @@ package nl.naturalis.nba.dao.es.query;
 
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -10,16 +14,22 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 
-public class BetweenConditionTranslator extends ConditionTranslator {
+/**
+ * Translates conditions with a BETWEEN or NOT_BETWEEN operator.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class BetweenConditionTranslator extends ConditionTranslator {
 
-	private static final String ERROR_0 = "When using operator %s, the search "
-			+ "term must be a an array with exactly two elements";
+	private static final String ERROR_0 = "When using operator %s, the "
+			+ "value field of the condition must be an array or Collection "
+			+ "with exactly two elements";
 
 	private static final String ERROR_1 = "When using operator %s, at least "
 			+ "one of boundary values must not be null";
 
 	BetweenConditionTranslator(Condition condition, MappingInfo inspector)
-			throws InvalidConditionException
 	{
 		super(condition, inspector);
 	}
@@ -30,19 +40,31 @@ public class BetweenConditionTranslator extends ConditionTranslator {
 		if (value() == null) {
 			throw searchTermMustNotBeNull();
 		}
-		if (!value().getClass().isArray()) {
+		Object val0;
+		Object val1;
+		if (value().getClass().isArray()) {
+			if (Array.getLength(value()) != 2)
+				throw error(ERROR_0, operator());
+			val0 = Array.get(value(), 0);
+			val1 = Array.get(value(), 1);
+		}
+		else if (value() instanceof Collection) {
+			Collection<?> collection = (Collection<?>) value();
+			if (collection.size() != 2)
+				throw error(ERROR_0, operator());
+			Iterator<?> iterator = collection.iterator();
+			val0 = iterator.next();
+			val1 = iterator.next();
+		}
+		else {
 			throw error(ERROR_0, operator());
 		}
-		Object[] values = (Object[]) value();
-		if (values.length != 2) {
-			throw error(ERROR_0, operator());
-		}
-		if (values[0] == null && values[1] == null) {
+		if (val0 == null && val1 == null) {
 			throw error(ERROR_1, operator());
 		}
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
-		query.from(values[0]);
-		query.to(values[1]);
+		query.from(val0);
+		query.to(val1);
 		String nestedPath = mappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
 			return query;

@@ -1,0 +1,14 @@
+{
+  "bool" : {
+    "must_not" : {
+      "range" : {
+        "address.country.dialNumber" : {
+          "from" : 30,
+          "to" : 40,
+          "include_lower" : true,
+          "include_upper" : true
+        }
+      }
+    }
+  }
+}

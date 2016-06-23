@@ -14,7 +14,6 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 public class LikeConditionTranslator extends ConditionTranslator {
 
 	LikeConditionTranslator(Condition condition, MappingInfo inspector)
-			throws InvalidConditionException
 	{
 		super(condition, inspector);
 	}

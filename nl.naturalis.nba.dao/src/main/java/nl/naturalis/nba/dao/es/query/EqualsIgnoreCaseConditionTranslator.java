@@ -15,7 +15,6 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
 	EqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo inspector)
-			throws InvalidConditionException
 	{
 		super(condition, inspector);
 	}

@@ -21,22 +21,20 @@ public class ConditionTranslatorFactory {
 	 * @throws InvalidConditionException
 	 */
 	public ConditionTranslator getTranslator(Condition condition, DocumentType type)
-			throws InvalidConditionException
 	{
 		MappingInfo inspector = new MappingInfo(type.getMapping());
 		return getTranslator(condition, inspector);
 	}
 
-	public ConditionTranslator getTranslator(Condition condition, MappingInfo inspector)
-			throws InvalidConditionException
+	public ConditionTranslator getTranslator(Condition condition, MappingInfo mappingInfo)
 	{
 		switch (condition.getOperator()) {
 			case EQUALS:
 			case NOT_EQUALS:
-				return new EqualsConditionTranslator(condition, inspector);
+				return new EqualsConditionTranslator(condition, mappingInfo);
 			case EQUALS_IC:
 			case NOT_EQUALS_IC:
-				return new EqualsIgnoreCaseConditionTranslator(condition, inspector);
+				return new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
 			case GT:
 				break;
 			case GTE:
@@ -47,10 +45,10 @@ public class ConditionTranslatorFactory {
 				break;
 			case BETWEEN:
 			case NOT_BETWEEN:
-				break;
+				return new BetweenConditionTranslator(condition, mappingInfo);
 			case LIKE:
 			case NOT_LIKE:
-				return new LikeConditionTranslator(condition, inspector);
+				return new LikeConditionTranslator(condition, mappingInfo);
 			default:
 				break;
 		}

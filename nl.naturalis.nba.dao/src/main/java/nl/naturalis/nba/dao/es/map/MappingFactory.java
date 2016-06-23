@@ -39,25 +39,25 @@ public class MappingFactory {
 	 * retrieve {@link Mapping} instances through
 	 * {@link DocumentType#getMapping() DocumentType.getMapping()}.
 	 * 
-	 * @param forClass
+	 * @param type
 	 * @return
 	 */
 	public Mapping getMapping(Class<?> type)
 	{
-		Mapping mapping = new Mapping();
+		Mapping mapping = new Mapping(type);
 		addFieldsToDocument(mapping, type);
 		return mapping;
 	}
 
-	private static void addFieldsToDocument(Document document, Class<?> forClass)
+	private static void addFieldsToDocument(Document document, Class<?> type)
 	{
-		for (Field f : getFields(forClass)) {
+		for (Field f : getFields(type)) {
 			ESField esField = createESField(f);
 			esField.setName(f.getName());
 			esField.setParent(document);
 			document.addField(f.getName(), esField);
 		}
-		for (Method m : getMappedProperties(forClass)) {
+		for (Method m : getMappedProperties(type)) {
 			String methodName = m.getName();
 			String fieldName;
 			if (methodName.startsWith("get")) {

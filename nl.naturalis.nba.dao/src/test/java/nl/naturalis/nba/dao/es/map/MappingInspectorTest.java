@@ -14,17 +14,17 @@ import nl.naturalis.nba.dao.es.map.Document;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESDataType;
 import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInspector;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 public class MappingInspectorTest {
 
-	private static MappingInspector inspector;
+	private static MappingInfo inspector;
 
 	@BeforeClass
 	public static void setup()
 	{
-		inspector = new MappingInspector(DocumentType.SPECIMEN.getMapping());
+		inspector = new MappingInfo(DocumentType.SPECIMEN.getMapping());
 	}
 
 	@Test(expected = NoSuchFieldException.class)

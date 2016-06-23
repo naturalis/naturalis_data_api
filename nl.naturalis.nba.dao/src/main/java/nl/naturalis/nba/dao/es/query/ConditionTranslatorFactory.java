@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.es.query;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.map.MappingInspector;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 public class ConditionTranslatorFactory {
 
@@ -23,11 +23,11 @@ public class ConditionTranslatorFactory {
 	public ConditionTranslator getTranslator(Condition condition, DocumentType type)
 			throws InvalidConditionException
 	{
-		MappingInspector inspector = new MappingInspector(type.getMapping());
+		MappingInfo inspector = new MappingInfo(type.getMapping());
 		return getTranslator(condition, inspector);
 	}
 
-	public ConditionTranslator getTranslator(Condition condition, MappingInspector inspector)
+	public ConditionTranslator getTranslator(Condition condition, MappingInfo inspector)
 			throws InvalidConditionException
 	{
 		switch (condition.getOperator()) {

@@ -79,7 +79,7 @@ public class ESTestUtils {
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
 		MappingSerializer serializer = new MappingSerializer(true);
 		String source = serializer.serialize(dt.getMapping());
-		logger.info("Mapping:\n" + source);
+		logger.debug("Mapping:\n" + source);
 		request.setSource(source);
 		request.setType(type);
 		PutMappingResponse response = request.execute().actionGet();

@@ -19,9 +19,7 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInspector;
-import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 /**
  * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
@@ -77,15 +75,12 @@ public abstract class ConditionTranslator {
 	}
 
 	final Condition condition;
-	final MappingInspector inspector;
-	final DocumentField field;
+	final MappingInfo mappingInfo;
 
-	ConditionTranslator(Condition condition, MappingInspector inspector)
-			throws InvalidConditionException
+	ConditionTranslator(Condition condition, MappingInfo mappingInfo)
 	{
 		this.condition = condition;
-		this.inspector = inspector;
-		this.field = getDocumentField();
+		this.mappingInfo = mappingInfo;
 	}
 
 	/**
@@ -125,9 +120,14 @@ public abstract class ConditionTranslator {
 		return error("Search term has wrong type for operator %s: %s", op, type);
 	}
 
-	String field()
+	String path()
 	{
 		return condition.getField();
+	}
+
+	DocumentField field()
+	{
+		return (DocumentField) mappingInfo.getField(path());
 	}
 
 	ComparisonOperator operator()
@@ -152,6 +152,8 @@ public abstract class ConditionTranslator {
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
+		new FieldCheck(condition, mappingInfo).execute();
+		new OperatorCheck(condition, mappingInfo).execute();
 		QueryBuilder result;
 		if (and() == null && or() == null) {
 			if (!nested && withNegatingOperator()) {
@@ -188,7 +190,7 @@ public abstract class ConditionTranslator {
 		}
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : and()) {
-			ConditionTranslator translator = ctf.getTranslator(sibling, inspector);
+			ConditionTranslator translator = ctf.getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.mustNot(translator.translate(true));
 			}
@@ -210,7 +212,7 @@ public abstract class ConditionTranslator {
 		}
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : or()) {
-			ConditionTranslator translator = ctf.getTranslator(sibling, inspector);
+			ConditionTranslator translator = ctf.getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
@@ -226,7 +228,7 @@ public abstract class ConditionTranslator {
 		BoolQueryBuilder boolQuery = boolQuery();
 		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : or()) {
-			ConditionTranslator translator = ctf.getTranslator(sibling, inspector);
+			ConditionTranslator translator = ctf.getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
@@ -249,23 +251,6 @@ public abstract class ConditionTranslator {
 	private boolean withNegatingOperator()
 	{
 		return negatingOperators.contains(operator());
-	}
-
-	private DocumentField getDocumentField() throws InvalidConditionException
-	{
-		ESField f;
-		try {
-			f = inspector.getField(field());
-		}
-		catch (NoSuchFieldException e) {
-			throw new InvalidConditionException(e.getMessage());
-		}
-		if (!(f instanceof DocumentField)) {
-			String fmt = "Field %s cannot be queried";
-			String msg = String.format(fmt, field());
-			throw new InvalidConditionException(msg);
-		}
-		return (DocumentField) f;
 	}
 
 }

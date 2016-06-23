@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,27 +24,39 @@ import nl.naturalis.nba.api.query.ComparisonOperator;
  * @author Ayco Holleman
  *
  */
-public class MappingInspector {
+public class MappingInfo {
+
+	private static final HashMap<Mapping, HashMap<String, ESField>> fieldCache = new HashMap<>(5);
 
 	private final Mapping mapping;
 
-	public MappingInspector(Mapping mapping)
+	public MappingInfo(Mapping mapping)
 	{
 		this.mapping = mapping;
 	}
 
+	public Mapping getMapping()
+	{
+		return mapping;
+	}
+
 	/**
-	 * Returns the {@link ESField} instance corresponding to the path string.
+	 * Returns an {@link ESField} instance corresponding to the path string.
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public ESField getField(String path)
 	{
-		LinkedHashMap<String, ESField> map = mapping.getProperties();
-		String[] chunks = path.split("\\.");
-		List<String> pathElements = Arrays.asList(chunks);
-		return getField(path, pathElements, map);
+		ESField field = getFromCache(path);
+		if (field == null) {
+			LinkedHashMap<String, ESField> map = mapping.getProperties();
+			String[] chunks = path.split("\\.");
+			List<String> pathElements = Arrays.asList(chunks);
+			field = getField(path, pathElements, map);
+			addToCache(path, field);
+		}
+		return field;
 	}
 
 	/**
@@ -144,7 +157,8 @@ public class MappingInspector {
 				return true;
 			case EQUALS_IC:
 			case NOT_EQUALS_IC:
-				return field.getType() == STRING && field.hasMultiField(MultiField.IGNORE_CASE_MULTIFIELD);
+				return field.getType() == STRING
+						&& field.hasMultiField(MultiField.IGNORE_CASE_MULTIFIELD);
 			case LIKE:
 			case NOT_LIKE:
 				return field.getType() == STRING && field.hasMultiField(MultiField.LIKE_MULTIFIELD);
@@ -169,6 +183,25 @@ public class MappingInspector {
 			return getField(origPath, path, map);
 		}
 		throw new NoSuchFieldException(origPath);
+	}
+
+	private ESField getFromCache(String path)
+	{
+		HashMap<String, ESField> myCache = fieldCache.get(mapping);
+		if (myCache == null) {
+			return null;
+		}
+		return myCache.get(path);
+	}
+
+	private void addToCache(String path, ESField field)
+	{
+		HashMap<String, ESField> myCache = fieldCache.get(mapping);
+		if (myCache == null) {
+			myCache = new HashMap<>();
+			fieldCache.put(mapping, myCache);
+		}
+		myCache.put(path, field);
 	}
 
 }

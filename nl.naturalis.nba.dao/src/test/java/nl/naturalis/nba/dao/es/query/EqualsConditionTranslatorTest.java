@@ -17,17 +17,17 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
-import nl.naturalis.nba.dao.es.map.MappingInspector;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 public class EqualsConditionTranslatorTest {
 
-	private static MappingInspector inspector;
+	private static MappingInfo inspector;
 
 	@BeforeClass
 	public static void init()
 	{
 		Mapping m = new MappingFactory().getMapping(EqualsTestObject.class);
-		inspector = new MappingInspector(m);
+		inspector = new MappingInfo(m);
 	}
 
 	/*

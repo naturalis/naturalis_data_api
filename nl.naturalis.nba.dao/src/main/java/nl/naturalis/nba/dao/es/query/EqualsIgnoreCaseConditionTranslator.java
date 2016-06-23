@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.query;
 
+import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -8,14 +9,12 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.MappingInspector;
-import static nl.naturalis.nba.dao.es.map.MultiField.*;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
-	EqualsIgnoreCaseConditionTranslator(Condition condition, MappingInspector inspector)
+	EqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo inspector)
 			throws InvalidConditionException
 	{
 		super(condition, inspector);
@@ -23,25 +22,22 @@ public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		if (!inspector.isOperatorAllowed(field, operator())) {
-			throw new IllegalOperatorException(field.getName(), operator());
-		}
 		if (value() == null) {
 			throw searchTermMustNotBeNull();
 		}
 		if (value().getClass() != String.class) {
 			throw searchTermHasWrongType();
 		}
-		String nestedPath = inspector.getNestedPath(field);
-		String multiField = field() + '.' + IGNORE_CASE_MULTIFIELD.getName();
+		String nestedPath = mappingInfo.getNestedPath(field());
+		String multiField = path() + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
 			if (value() == null) {
-				return boolQuery().mustNot(existsQuery(field()));
+				return boolQuery().mustNot(existsQuery(path()));
 			}
 			return termQuery(multiField, value());
 		}
 		if (value() == null) {
-			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(field())));
+			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(path())));
 		}
 		return nestedQuery(nestedPath, termQuery(multiField, value()));
 	}

@@ -7,9 +7,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.MappingInspector;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 public class BetweenConditionTranslator extends ConditionTranslator {
 
@@ -19,7 +18,7 @@ public class BetweenConditionTranslator extends ConditionTranslator {
 	private static final String ERROR_1 = "When using operator %s, at least "
 			+ "one of boundary values must not be null";
 
-	BetweenConditionTranslator(Condition condition, MappingInspector inspector)
+	BetweenConditionTranslator(Condition condition, MappingInfo inspector)
 			throws InvalidConditionException
 	{
 		super(condition, inspector);
@@ -28,9 +27,6 @@ public class BetweenConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		if (!inspector.isOperatorAllowed(field, operator())) {
-			throw new IllegalOperatorException(field.getName(), operator());
-		}
 		if (value() == null) {
 			throw searchTermMustNotBeNull();
 		}
@@ -44,10 +40,10 @@ public class BetweenConditionTranslator extends ConditionTranslator {
 		if (values[0] == null && values[1] == null) {
 			throw error(ERROR_1, operator());
 		}
-		RangeQueryBuilder query = QueryBuilders.rangeQuery(field());
+		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
 		query.from(values[0]);
 		query.to(values[1]);
-		String nestedPath = inspector.getNestedPath(field);
+		String nestedPath = mappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
 			return query;
 		}

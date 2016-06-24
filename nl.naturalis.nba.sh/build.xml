@@ -13,6 +13,7 @@
 	<target name="install-etl-module" depends="build-etl-module">
 		<mkdir dir="${etl.install.dir}" />
 		<mkdir dir="${etl.install.dir}/conf" />
+		<delete dir="${etl.install.dir}/sh" />
 		<mkdir dir="${etl.install.dir}/sh" />
 		<delete dir="${etl.install.dir}/lib" />
 		<mkdir dir="${etl.install.dir}/lib" />
@@ -35,7 +36,7 @@
 			<fileset dir="${etl.module.location}/build/classpath" />
 			<fileset file="${etl.module.location}/build/${etl.module.artifact}" />
 		</copy>
-		<chmod dir="${etl.install.dir}/sh" perm="ug+rx" includes="**/*.sh" />
+		<chmod dir="${etl.install.dir}/sh" perm="ug+rx" includes="**/*" />
 	</target>
 
 	<!-- ****************************************************** -->

@@ -1,18 +1,12 @@
 package nl.naturalis.nba.etl;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
 import org.elasticsearch.client.Client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
@@ -30,16 +24,7 @@ import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
  */
 public class ETLRegistry {
 
-	/*
-	 * System property that we are going to set and that tells log4j how to name
-	 * the log file.
-	 */
-	private static final String SYSPROP_ETL_LOGFILE = "nba.v2.etl.logfile";
-
 	private static ETLRegistry instance;
-
-	@SuppressWarnings("unused")
-	private Logger logger;
 
 	/**
 	 * Return a {@code Registry} instance. Will call {@link #initialize()}
@@ -57,7 +42,6 @@ public class ETLRegistry {
 
 	private ETLRegistry()
 	{
-		setupLogging();
 	}
 
 	/**
@@ -68,6 +52,14 @@ public class ETLRegistry {
 	 */
 	public Logger getLogger(Class<?> cls)
 	{
+		/*
+		 * We currently do nothing special to set up or hand out loggers. But
+		 * given the constantly recurring configuration hazzles of whatever
+		 * logging library you use, all classes must get their logger through
+		 * this method, in stead of calling LogManager.getLogger directly. This
+		 * way any special logging requirements turning up later, can be coded
+		 * for in one place (here).
+		 */
 		return LogManager.getLogger(cls);
 	}
 
@@ -85,38 +77,6 @@ public class ETLRegistry {
 		ObjectMapper om = oml.getObjectMapper(documentType.getESType());
 		idxMgr.setObjectMapper(om);
 		return new IndexManagerNative(client, index);
-	}
-
-	private void setupLogging()
-	{
-		System.setProperty(SYSPROP_ETL_LOGFILE, getLogFileName());
-		if (System.getProperty("log4j.configurationFile") == null) {
-			File f = DAORegistry.getInstance().getFile("log4j2.xml");
-			if (f.exists()) {
-				System.setProperty("log4j.configurationFile", f.getAbsolutePath());
-			}
-			else {
-				String fmt = "Log4j config file not in default location "
-						+ "(%s) and no system property \"log4j.configurationFile\"";
-				String msg = String.format(fmt, f.getAbsolutePath());
-				throw new InitializationException(msg);
-			}
-		}
-		logger = LogManager.getLogger(getClass());
-	}
-
-	private static String getLogFileName()
-	{
-		File confDir = DAORegistry.getInstance().getConfigurationDirectory();
-		File logDir = FileUtil.newFile(confDir.getParentFile(), "log");
-		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-		String command = System.getProperty("sun.java.command");
-		String[] chunks = command.split("\\.");
-		String mainClass = chunks[chunks.length - 1].split(" ")[0];
-		String logFileName = now + "." + mainClass + ".log";
-		File logFile = FileUtil.newFile(logDir, logFileName);
-		System.out.println("Log file: " + logFile.getAbsolutePath());
-		return logFile.getAbsolutePath();
 	}
 
 }

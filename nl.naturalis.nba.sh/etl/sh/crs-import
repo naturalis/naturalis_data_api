@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . ./include.sh
 
@@ -12,18 +12,16 @@ JAVA_OPTS="$JAVA_OPTS -Des.bulk.request.size=${esBulkrequestSize}"
 
 if [ "x${type}" = x ]
 then
-	java -cp ${classpath} $JAVA_OPTS ${etl_package}.crs.CrsImportAll
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsImportAll
 elif [ "${type}" = specimens ]
 then
-	java -cp ${classpath} $JAVA_OPTS ${etl_package}.crs.CrsSpecimenImportOffline
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsSpecimenImportOffline
 elif [ "${type}" = multimedia ]
 then
-	java -cp ${classpath} $JAVA_OPTS ${etl_package}.crs.CrsMultiMediaImportOffline
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsMultiMediaImportOffline
 else
 	echo "USAGE: ${0} [ specimens | multimedia ]"
 fi
-
-
 
 
 

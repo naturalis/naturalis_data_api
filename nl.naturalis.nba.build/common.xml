@@ -150,7 +150,7 @@
 	<!--
 		This is a work-around for regular unit testing using
 		the junit task. If a module needs to go through a test
-		phase, it must define a property "junit.suite.classname"
+		phase, it must define a property "junit.suite.classname".
 		The property must point to a junit suite class that
 		lists all individual test classes in the module
 	-->

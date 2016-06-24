@@ -7,6 +7,8 @@ import static com.fasterxml.jackson.annotation.PropertyAccessor.ALL;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_USING_TO_STRING;
 
+import java.text.SimpleDateFormat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -35,7 +37,7 @@ public class ObjectMapperLocator {
 	{
 		/*
 		 * Currently we always serve up the same ObjectMapper instance, whatever
-		 * the class of the object to serialize or deserialize.
+		 * type of object to serialize or deserialize.
 		 */
 		return dfault;
 	}
@@ -47,6 +49,7 @@ public class ObjectMapperLocator {
 		om.setVisibility(FIELD, ANY);
 		om.setSerializationInclusion(NON_NULL);
 		om.enable(WRITE_ENUMS_USING_TO_STRING);
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(GatheringSiteCoordinates.class,
 				new GatheringSiteCoordinatesDeserializer());

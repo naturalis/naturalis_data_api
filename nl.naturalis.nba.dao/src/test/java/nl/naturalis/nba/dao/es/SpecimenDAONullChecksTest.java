@@ -18,7 +18,14 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDAOWithEqualsConditionTest {
+/**
+ * Tests the SpecimenDAO class with conditions that either test for null or not
+ * null.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class SpecimenDAONullChecksTest {
 
 	static ESSpecimen pMajor;
 	static ESSpecimen lFuscus1;
@@ -106,6 +113,21 @@ public class SpecimenDAOWithEqualsConditionTest {
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 5, result.length);
+	}
+
+	/*
+	 * Test with a negated condition that tests for not null on a date field.
+	 */
+	@Test
+	public void testQuery__QuerySpec__05() throws InvalidQueryException
+	{
+		Condition condition = new Condition("gatheringEvent.dateTimeBegin", EQUALS, null);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDAO dao = new SpecimenDAO();
+		Specimen[] result = dao.query(qs);
+		// Only for mSylvestris is atheringEvent.dateTimeBegin null.
+		assertEquals("01", 1, result.length);
 	}
 
 }

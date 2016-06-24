@@ -21,7 +21,7 @@ import nl.naturalis.nba.dao.es.util.ESClientManagerTest;
 	EqualsConditionTranslatorTest.class,
 	LikeConditionTranslatorTest.class ,
 	BetweenConditionTranslatorTest.class ,
-	SpecimenDAOWithEqualsConditionTest.class,
+	SpecimenDAONullChecksTest.class,
 	SpecimenDAOWithBetweenConditionTest.class,
 	SpecimenDAOTest.class
 })

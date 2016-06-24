@@ -16,15 +16,17 @@ public enum ComparisonOperator
 	/**
 	 * Operator used to establish that search term and field value are equal.
 	 * For alpha-numeric fields the search term and field value are compared in
-	 * a <i>case sensitive</i> way. The search term may be null when using the
-	 * EQUALS operator. This is equivalent to using the IS NULL operator in SQL.
+	 * a <i>case sensitive</i> way. The EQUALS operator also allows you to
+	 * search for null/empty values, simply by leaving the
+	 * {@link Condition#getValue() value} property of a query {@link Condition
+	 * condition} {@code null}.
 	 */
 	EQUALS("="),
 	/**
 	 * Operator used to establish that search term and field value are not
 	 * equal. For alpha-numeric fields the search term and field value are
 	 * compared in a <i>case sensitive</i> way. The search term may be null when
-	 * using the EQUALS operator. This is equivalent to using the IS NOT NULL
+	 * using the NOT_EQUALS operator. This is equivalent to using the IS NOT NULL
 	 * operator in SQL.
 	 */
 	NOT_EQUALS("!="),

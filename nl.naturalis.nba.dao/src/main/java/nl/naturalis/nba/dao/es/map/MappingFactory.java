@@ -1,18 +1,22 @@
 package nl.naturalis.nba.dao.es.map;
 
-import static java.lang.Character.isUpperCase;
-import static java.lang.Character.toLowerCase;
+import static nl.naturalis.nba.dao.es.map.ESDataType.NESTED;
+import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
+import static nl.naturalis.nba.dao.es.map.Index.NO;
+import static nl.naturalis.nba.dao.es.map.Index.NOT_ANALYZED;
 import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
+import static nl.naturalis.nba.dao.es.map.Util.extractFieldFromGetter;
+import static nl.naturalis.nba.dao.es.map.Util.getClassForTypeArgument;
+import static nl.naturalis.nba.dao.es.map.Util.getFields;
+import static nl.naturalis.nba.dao.es.map.Util.getMappedProperties;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -20,7 +24,6 @@ import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
-import nl.naturalis.nba.api.annotations.MappedProperty;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.dao.es.DocumentType;
@@ -59,13 +62,7 @@ public class MappingFactory {
 		}
 		for (Method m : getMappedProperties(type)) {
 			String methodName = m.getName();
-			String fieldName;
-			if (methodName.startsWith("get")) {
-				fieldName = toLowerCase(methodName.charAt(3)) + methodName.substring(4);
-			}
-			else {
-				fieldName = toLowerCase(methodName.charAt(2)) + methodName.substring(3);
-			}
+			String fieldName = extractFieldFromGetter(methodName);
 			ESField esField = createESField(m);
 			esField.setName(fieldName);
 			esField.setParent(document);
@@ -103,11 +100,17 @@ public class MappingFactory {
 	private static DocumentField createSimpleField(AnnotatedElement fm, ESDataType esType)
 	{
 		DocumentField df = new DocumentField(esType);
-		if (esType == ESDataType.STRING) {
-			df.setIndex(Index.NOT_ANALYZED);
-			if (checkIndexed(df, fm)) {
+		NotIndexed annotation = fm.getAnnotation(NotIndexed.class);
+		if (esType == STRING) {
+			df.setIndex(NOT_ANALYZED);
+		}
+		if (annotation == null) {
+			if (esType == STRING) {
 				addAnalyzedFields(df, fm);
 			}
+		}
+		else {
+			df.setIndex(NO);
 		}
 		return df;
 	}
@@ -119,7 +122,7 @@ public class MappingFactory {
 		Document document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
 			if (field.getAnnotation(NotNested.class) == null) {
-				document = new Document(ESDataType.NESTED);
+				document = new Document(NESTED);
 			}
 			else {
 				document = new Document();
@@ -139,7 +142,7 @@ public class MappingFactory {
 		Document document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
 			if (method.getAnnotation(NotNested.class) == null) {
-				document = new Document(ESDataType.NESTED);
+				document = new Document(NESTED);
 			}
 			else {
 				document = new Document();
@@ -155,20 +158,6 @@ public class MappingFactory {
 	private static void checkClass(Class<?> cls)
 	{
 		//
-	}
-
-	/*
-	 * Check whether or not the field is indexed and, if not, set the "index"
-	 * property of the field to "no".
-	 */
-	private static boolean checkIndexed(DocumentField df, AnnotatedElement fm)
-	{
-		NotIndexed annotation = fm.getAnnotation(NotIndexed.class);
-		if (annotation == null) {
-			return true;
-		}
-		df.setIndex(Index.NO);
-		return false;
 	}
 
 	/*
@@ -207,98 +196,21 @@ public class MappingFactory {
 	}
 
 	/*
-	 * Maps a class to the class that must be used in its place. For example,
-	 * when mapping arrays, it's not the array that is mapped but the class of
-	 * its elements, because fields are intrinsically multi-valued in
+	 * Maps a Java class to another Java class that must be used in its place.
+	 * The latter class is then mapped to an Elasticsearch data type. For
+	 * example, when mapping arrays, it's not the array that is mapped but the
+	 * class of its elements, because fields are intrinsically multi-valued in
 	 * Elasticsearch. No array type exists or is required in Elasticsearch.
 	 */
-	private static Class<?> mapType(Class<?> realType, Type typeArg)
+	private static Class<?> mapType(Class<?> type, Type typeArg)
 	{
-		if (realType.isArray())
-			return realType.getComponentType();
-		if (isA(realType, Collection.class))
+		if (type.isArray())
+			return type.getComponentType();
+		if (isA(type, Collection.class))
 			return getClassForTypeArgument(typeArg);
-		if (isA(realType, Enum.class))
+		if (isA(type, Enum.class))
 			return String.class;
-		return realType;
-	}
-
-	/*
-	 * Returns the type argument for a generic type (e.g. Person for
-	 * List<Person>)
-	 */
-	private static Class<?> getClassForTypeArgument(Type t)
-	{
-		String s = t.toString();
-		int i = s.indexOf('<');
-		s = s.substring(i + 1, s.length() - 1);
-		try {
-			return Class.forName(s);
-		}
-		catch (ClassNotFoundException e) {
-			throw new MappingException(e);
-		}
-	}
-
-	private static ArrayList<Field> getFields(Class<?> cls)
-	{
-		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
-		do {
-			hierarchy.add(cls);
-			cls = cls.getSuperclass();
-		} while (cls != Object.class);
-		ArrayList<Field> allFields = new ArrayList<>();
-		for (int i = hierarchy.size() - 1; i >= 0; i--) {
-			cls = hierarchy.get(i);
-			Field[] fields = cls.getDeclaredFields();
-			for (Field f : fields) {
-				if (Modifier.isStatic(f.getModifiers()))
-					continue;
-				allFields.add(f);
-			}
-		}
-		return allFields;
-	}
-
-	private static ArrayList<Method> getMappedProperties(Class<?> cls)
-	{
-		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
-		do {
-			hierarchy.add(cls);
-			cls = cls.getSuperclass();
-		} while (cls != Object.class);
-		ArrayList<Method> props = new ArrayList<>(4);
-		for (int i = hierarchy.size() - 1; i >= 0; i--) {
-			cls = hierarchy.get(i);
-			Method[] methods = cls.getDeclaredMethods();
-			for (Method m : methods) {
-				if (isMappedProperty(m)) {
-					props.add(m);
-				}
-			}
-		}
-		return props;
-	}
-
-	private static boolean isMappedProperty(Method m)
-	{
-		if (Modifier.isStatic(m.getModifiers()))
-			return false;
-		if (m.getParameters().length != 0)
-			return false;
-		Class<?> returnType = m.getReturnType();
-		if (returnType == void.class)
-			return false;
-		String name = m.getName();
-		if (name.startsWith("get") && (name.charAt(3) == '_' || isUpperCase(name.charAt(3)))) {
-			return null != m.getAnnotation(MappedProperty.class);
-		}
-		if (name.startsWith("is") && (name.charAt(2) == '_' || isUpperCase(name.charAt(2)))) {
-			if (returnType == boolean.class || returnType == Boolean.class) {
-				return null != m.getAnnotation(MappedProperty.class);
-			}
-		}
-		return false;
+		return type;
 	}
 
 }

@@ -7,8 +7,7 @@ lib_dir=${NBA_ETL_HOME}/lib
 etl_package=nl.naturalis.nba.etl
 
 # Make ${confDir} the first entry on the classpath so
-# that libraries like logback will search here first for
-# configuration files
+# that resource/config files will be found there first.
 classpath="${conf_dir}"
 
 for file in `find ${lib_dir} -type f`
@@ -17,4 +16,4 @@ do
 done
 #echo CLASSPATH: $classpath
 
-JAVA_OPTS="-Xms1536m -Xmx1536m -Dnba.v2.etl.conf.dir=${conf_dir}"
+JAVA_OPTS="-Xms1536m -Xmx1536m -Dnba.v2.conf.dir=${conf_dir}"

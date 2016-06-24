@@ -96,7 +96,7 @@ class TestSpecimens {
 		gathering.setLocalityText("In de duinen, nabij Uitgeest");
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
-		gathering.setDateTimeBegin(datetime("2001/05/29 13:04"));
+		gathering.setDateTimeBegin(datetime("2009/04/03 13:04"));
 		Person collector = new Person("Altenburg, R.");
 		gathering.setGatheringPersons(Arrays.asList(collector));
 
@@ -144,6 +144,7 @@ class TestSpecimens {
 		ESGatheringEvent gathering = new ESGatheringEvent();
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Hiversum");
+		gathering.setDateTimeBegin(datetime("2008/04/03 13:04"));
 		Person collector = new Person("Altenburg, R.");
 		gathering.setGatheringPersons(Arrays.asList(collector));
 
@@ -195,7 +196,7 @@ class TestSpecimens {
 		gathering.setProjectTitle("Project T. Rex");
 		gathering.setLocalityText("Montana, U.S.A.");
 		gathering.setCountry("United States");
-		gathering.setDateTimeBegin(datetime("2014/09/25 09:04"));
+		gathering.setDateTimeBegin(datetime("2007/04/03 13:04"));
 		Person collector = new Person("E. van Huis");
 		gathering.setGatheringPersons(Arrays.asList(collector));
 
@@ -245,7 +246,7 @@ class TestSpecimens {
 		ESGatheringEvent gathering = new ESGatheringEvent();
 		gathering.setLocalityText("Dorchester, U.K.");
 		gathering.setCountry("United Kingdom");
-		gathering.setDateTimeBegin(date("2000/08/23"));
+		gathering.setDateTimeBegin(null);
 		Person collector = new Person("Nathaniel Wallich");
 		gathering.setGatheringPersons(Arrays.asList(collector));
 
@@ -278,16 +279,6 @@ class TestSpecimens {
 		specimen.setGatheringEvent(gathering);
 		specimen.setIdentifications(Arrays.asList(identification));
 		return specimen;
-	}
-
-	private static Date date(String s)
-	{
-		try {
-			return new SimpleDateFormat("yyyy/MM/dd").parse(s);
-		}
-		catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private static Date datetime(String s)

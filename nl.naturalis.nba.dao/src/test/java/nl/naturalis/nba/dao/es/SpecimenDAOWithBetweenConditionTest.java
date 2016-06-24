@@ -1,12 +1,16 @@
 package nl.naturalis.nba.dao.es;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
+import static nl.naturalis.nba.api.query.ComparisonOperator.BETWEEN;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
 import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
 import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
 import static org.junit.Assert.assertEquals;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +22,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDAOEqualsQueryTest {
+public class SpecimenDAOWithBetweenConditionTest {
 
 	static ESSpecimen pMajor;
 	static ESSpecimen lFuscus1;
@@ -49,63 +53,43 @@ public class SpecimenDAOEqualsQueryTest {
 		// dropIndex(ESSpecimen.class);
 	}
 
-	/*
-	 * Test with condition that tests for null.
-	 */
 	@Test
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
 	{
-		// UnitGUID is null in all test specimens, so query should return them
-		// all.
-		Condition condition = new Condition("unitGUID", EQUALS, null);
+		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		Instant instant = gatheringDate.toInstant();
+		ZoneId dfault = ZoneId.systemDefault();
+		OffsetDateTime from = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
+		OffsetDateTime to = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
+		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
+		Condition condition = new Condition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 5, result.length);
+		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
+		// year after the next test specimen, so we can have only one query
+		// result (pMajor).
+		assertEquals("01", 1, result.length);
 	}
 
-	/*
-	 * Test with a negated condition that tests for null.
-	 */
 	@Test
 	public void testQuery__QuerySpec__02() throws InvalidQueryException
 	{
-		// UnitGUID is always null, so query should return 0 specimens.
-		Condition condition = new Condition(NOT, "unitGUID", EQUALS, null);
+		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		Instant instant = gatheringDate.toInstant();
+		ZoneId dfault = ZoneId.systemDefault();
+		OffsetDateTime from = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
+		OffsetDateTime to = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
+		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
+		Condition condition = new Condition("gatheringEvent.dateTimeBegin", NOT_BETWEEN, fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 0, result.length);
-	}
-
-	/*
-	 * Test with a condition that tests for not null.
-	 */
-	@Test
-	public void testQuery__QuerySpec__03() throws InvalidQueryException
-	{
-		Condition condition = new Condition("unitGUID", NOT_EQUALS, null);
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 0, result.length);
-	}
-
-	/*
-	 * Test with a negated condition that tests for not null.
-	 */
-	@Test
-	public void testQuery__QuerySpec__04() throws InvalidQueryException
-	{
-		Condition condition = new Condition(NOT, "unitGUID", NOT_EQUALS, null);
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 5, result.length);
+		// Since we use NOT_BETWEEN, all specimens except pMajor should come
+		// back.
+		assertEquals("01", 4, result.length);
 	}
 
 }

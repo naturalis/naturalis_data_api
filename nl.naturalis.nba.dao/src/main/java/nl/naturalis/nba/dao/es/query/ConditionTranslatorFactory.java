@@ -36,21 +36,19 @@ public class ConditionTranslatorFactory {
 			case NOT_EQUALS_IC:
 				return new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
 			case GT:
-				break;
+				return new GTConditionTranslator(condition, mappingInfo);
 			case GTE:
-				break;
+				return new GTEConditionTranslator(condition, mappingInfo);
 			case LT:
-				break;
+				return new LTConditionTranslator(condition, mappingInfo);
 			case LTE:
-				break;
+				return new LTEConditionTranslator(condition, mappingInfo);
 			case BETWEEN:
 			case NOT_BETWEEN:
 				return new BetweenConditionTranslator(condition, mappingInfo);
 			case LIKE:
 			case NOT_LIKE:
 				return new LikeConditionTranslator(condition, mappingInfo);
-			default:
-				break;
 		}
 		return null;
 	}

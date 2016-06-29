@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.es.query;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
@@ -71,7 +72,7 @@ public abstract class ConditionTranslator {
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN);
+		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN, NOT_LIKE);
 	}
 
 	final Condition condition;

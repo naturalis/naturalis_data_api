@@ -72,12 +72,12 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 			ESSpecimen specimen = new ESSpecimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
-			if (unitIDPattern.matcher(objectID).matches()) {
-				specimen.setUnitGUID(getSpecimenPurl(objectID));
-			}
-			else if (!suppressErrors) {
-				warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
-			}
+//			if (unitIDPattern.matcher(objectID).matches()) {
+//				specimen.setUnitGUID(getSpecimenPurl(objectID));
+//			}
+//			else if (!suppressErrors) {
+//				warn("PURL generation suppressed for problematic UnitID: \"%s\"", objectID);
+//			}
 			setConstants(specimen);
 			List<String> themes = themeCache.lookup(objectID, SPECIMEN, BRAHMS);
 			specimen.setTheme(themes);

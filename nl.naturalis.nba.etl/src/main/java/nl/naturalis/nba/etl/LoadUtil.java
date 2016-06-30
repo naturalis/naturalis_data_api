@@ -8,7 +8,10 @@ import java.net.URISyntaxException;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 
@@ -26,21 +29,6 @@ public final class LoadUtil {
 	static {
 		purlBuilder = getPurlBuilder();
 		purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
-	}
-
-	private static URIBuilder getPurlBuilder()
-	{
-		String value = null;
-		try {
-			String property = "purl.baseurl";
-			value = DAORegistry.getInstance().getConfiguration().get(property, PURL_SERVER_BASE_URL);
-			return new URIBuilder(value);
-		}
-		catch (URISyntaxException e) {
-			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
-			String msg = String.format(fmt, value, e.getMessage());
-			throw new ETLRuntimeException(msg);
-		}
 	}
 
 	private LoadUtil()
@@ -134,6 +122,27 @@ public final class LoadUtil {
 		}
 		catch (URISyntaxException e) {
 			throw new ETLRuntimeException(e);
+		}
+	}
+
+	public static ObjectMapper getObjectMapper(DocumentType type)
+	{
+		return ObjectMapperLocator.getInstance().getObjectMapper(type.getESType());
+	}
+
+	private static URIBuilder getPurlBuilder()
+	{
+		String value = null;
+		try {
+			String property = "purl.baseurl";
+			value = DAORegistry.getInstance().getConfiguration().get(property,
+					PURL_SERVER_BASE_URL);
+			return new URIBuilder(value);
+		}
+		catch (URISyntaxException e) {
+			String fmt = "Could not create URIBuilder for PURL base URL \"%s\": %s";
+			String msg = String.format(fmt, value, e.getMessage());
+			throw new ETLRuntimeException(msg);
 		}
 	}
 

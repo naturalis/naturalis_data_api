@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl;
 
+import static nl.naturalis.nba.etl.LoadUtil.getObjectMapper;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,9 +110,11 @@ public abstract class Loader<T> implements Closeable {
 		this.tresh = treshold;
 		this.stats = stats;
 		this.idxMgr = ETLRegistry.getInstance().getIndexManager(type);
+		this.idxMgr.setObjectMapper(getObjectMapper(type));
 		/*
 		 * Make all lists a bit bigger than the treshold, because the
-		 * treshold-tipping call to load() may actually exceed it.
+		 * treshold-tipping call to load() may actually fill them beyond the
+		 * treshold.
 		 */
 		objs = new ArrayList<>(treshold + 16);
 		if (getIdGenerator() != null) {
@@ -212,8 +216,9 @@ public abstract class Loader<T> implements Closeable {
 			catch (BulkIndexException e) {
 				stats.documentsRejected += e.getFailureCount();
 				stats.documentsIndexed += e.getSuccessCount();
-				if (!suppressErrors)
+				if (!suppressErrors) {
 					logger.warn(e.getMessage());
+				}
 			}
 			finally {
 				objs.clear();

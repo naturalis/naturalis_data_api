@@ -126,7 +126,7 @@ public class SpecimenDAONullChecksTest {
 		qs.addCondition(condition);
 		SpecimenDAO dao = new SpecimenDAO();
 		Specimen[] result = dao.query(qs);
-		// Only for mSylvestris is atheringEvent.dateTimeBegin null.
+		// Only for mSylvestris is gatheringEvent.dateTimeBegin null.
 		assertEquals("01", 1, result.length);
 	}
 

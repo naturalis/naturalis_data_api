@@ -90,7 +90,15 @@ public enum ComparisonOperator
 	/**
 	 * Can only be used for number fields and date fields.
 	 */
-	NOT_BETWEEN;
+	NOT_BETWEEN,
+	/**
+	 * 
+	 */
+	IN,
+	/**
+	 * 
+	 */
+	NOT_IN;
 
 	/**
 	 * Returns the {@link ComparisonOperator} corresponding to the specified

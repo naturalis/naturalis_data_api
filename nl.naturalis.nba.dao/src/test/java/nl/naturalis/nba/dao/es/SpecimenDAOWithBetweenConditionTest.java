@@ -59,9 +59,9 @@ public class SpecimenDAOWithBetweenConditionTest {
 		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
-		OffsetDateTime from = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
-		OffsetDateTime to = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
-		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
+		OffsetDateTime two = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
+		OffsetDateTime t = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
+		OffsetDateTime[] fromTo = new OffsetDateTime[] { two, t };
 		Condition condition = new Condition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

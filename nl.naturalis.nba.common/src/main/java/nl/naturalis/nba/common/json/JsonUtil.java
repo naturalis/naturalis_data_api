@@ -1,5 +1,7 @@
 package nl.naturalis.nba.common.json;
 
+import static com.fasterxml.jackson.core.util.DefaultIndenter.SYS_LF;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -8,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
-import static com.fasterxml.jackson.core.util.DefaultIndenter.*;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

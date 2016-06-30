@@ -1,0 +1,22 @@
+{
+  "nested" : {
+    "query" : {
+      "bool" : {
+        "should" : [ {
+          "terms" : {
+            "pets.name" : [ "Napoleon", "Max" ]
+          }
+        }, {
+          "bool" : {
+            "must_not" : {
+              "exists" : {
+                "field" : "pets.name"
+              }
+            }
+          }
+        } ]
+      }
+    },
+    "path" : "pets"
+  }
+}

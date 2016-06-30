@@ -8,6 +8,8 @@ import nl.naturalis.nba.dao.es.map.MappingFactoryTest;
 import nl.naturalis.nba.dao.es.map.MappingInspectorTest;
 import nl.naturalis.nba.dao.es.query.BetweenConditionTranslatorTest;
 import nl.naturalis.nba.dao.es.query.EqualsConditionTranslatorTest;
+import nl.naturalis.nba.dao.es.query.InConditionTranslatorTest;
+import nl.naturalis.nba.dao.es.query.InValuesBuilderTest;
 import nl.naturalis.nba.dao.es.query.LikeConditionTranslatorTest;
 import nl.naturalis.nba.dao.es.util.ESClientManagerTest;
 
@@ -21,6 +23,8 @@ import nl.naturalis.nba.dao.es.util.ESClientManagerTest;
 	EqualsConditionTranslatorTest.class,
 	LikeConditionTranslatorTest.class ,
 	BetweenConditionTranslatorTest.class ,
+	InValuesBuilderTest.class,
+	InConditionTranslatorTest.class,
 	SpecimenDAONullChecksTest.class,
 	SpecimenDAOWithBetweenConditionTest.class,
 	SpecimenDAOTest.class

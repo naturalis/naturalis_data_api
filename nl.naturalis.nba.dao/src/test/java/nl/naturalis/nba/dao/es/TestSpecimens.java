@@ -1,10 +1,13 @@
 package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.api.model.PhaseOrStage.ADULT;
-import static nl.naturalis.nba.api.model.PhaseOrStage.*;
+import static nl.naturalis.nba.api.model.PhaseOrStage.EGG;
+import static nl.naturalis.nba.api.model.PhaseOrStage.JUVENILE;
 import static nl.naturalis.nba.api.model.Sex.FEMALE;
 import static nl.naturalis.nba.api.model.Sex.MALE;
-import static nl.naturalis.nba.api.model.SourceSystem.*;
+import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
+import static nl.naturalis.nba.api.model.SourceSystem.CRS;
+import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,8 +48,7 @@ class TestSpecimens {
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
 		gathering.setDateTimeBegin(datetime("2010/04/03 13:04"));
-		Person collector = new Person("Altenburg, R.");
-		gathering.setGatheringPersons(Arrays.asList(collector));
+		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -97,8 +99,7 @@ class TestSpecimens {
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");
 		gathering.setDateTimeBegin(datetime("2009/04/03 13:04"));
-		Person collector = new Person("Altenburg, R.");
-		gathering.setGatheringPersons(Arrays.asList(collector));
+		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -145,8 +146,7 @@ class TestSpecimens {
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Hiversum");
 		gathering.setDateTimeBegin(datetime("2008/04/03 13:04"));
-		Person collector = new Person("Altenburg, R.");
-		gathering.setGatheringPersons(Arrays.asList(collector));
+		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -197,8 +197,7 @@ class TestSpecimens {
 		gathering.setLocalityText("Montana, U.S.A.");
 		gathering.setCountry("United States");
 		gathering.setDateTimeBegin(datetime("2007/04/03 13:04"));
-		Person collector = new Person("E. van Huis");
-		gathering.setGatheringPersons(Arrays.asList(collector));
+		gathering.setGatheringPersons(Arrays.asList(edwinVanHuis()));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -247,8 +246,7 @@ class TestSpecimens {
 		gathering.setLocalityText("Dorchester, U.K.");
 		gathering.setCountry("United Kingdom");
 		gathering.setDateTimeBegin(null);
-		Person collector = new Person("Nathaniel Wallich");
-		gathering.setGatheringPersons(Arrays.asList(collector));
+		gathering.setGatheringPersons(Arrays.asList(nathanielWallich()));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Plantae");
@@ -279,6 +277,27 @@ class TestSpecimens {
 		specimen.setGatheringEvent(gathering);
 		specimen.setIdentifications(Arrays.asList(identification));
 		return specimen;
+	}
+
+	private static Person ruudAltenBurg()
+	{
+		Person person = new Person("Altenburg, R.");
+		person.setAgentText("Also likes David Bowie");
+		return person;
+	}
+
+	private static Person edwinVanHuis()
+	{
+		Person person = new Person("E. van Huis");
+		person.setAgentText("Director of NBC Naturalis");
+		return person;
+	}
+
+	private static Person nathanielWallich()
+	{
+		Person person = new Person("Nathaniel Wallich");
+		person.setAgentText(null);
+		return person;
 	}
 
 	private static Date datetime(String s)

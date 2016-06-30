@@ -1,0 +1,10 @@
+{
+  "nested" : {
+    "query" : {
+      "terms" : {
+        "pets.name" : [ "Napoleon", "Max" ]
+      }
+    },
+    "path" : "pets"
+  }
+}

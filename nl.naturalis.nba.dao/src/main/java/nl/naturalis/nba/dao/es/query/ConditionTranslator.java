@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.es.query;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
@@ -66,13 +67,13 @@ public abstract class ConditionTranslator {
 
 	/*
 	 * Negating operators are operators that are translated by replacing them
-	 * with their opposite (e&#46;g&#46; NOT_EQUALS with EQUALS) and then
-	 * wrapping them with BoolQuery.mustNot().
+	 * with their opposite (e.g. NOT_EQUALS with EQUALS) and then wrapping them
+	 * within a BoolQuery.mustNot() query.
 	 */
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN, NOT_LIKE);
+		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN, NOT_LIKE, NOT_IN);
 	}
 
 	final Condition condition;
@@ -121,31 +122,62 @@ public abstract class ConditionTranslator {
 		return error("Search term has wrong type for operator %s: %s", op, type);
 	}
 
+	/**
+	 * Returns the field specified in the condition.
+	 * 
+	 * @return
+	 */
 	String path()
 	{
 		return condition.getField();
 	}
 
+	/**
+	 * Returns a {@link DocumentField} instance corresponding to the field
+	 * specified in the condition.
+	 * 
+	 * @return
+	 */
 	DocumentField field()
 	{
 		return (DocumentField) mappingInfo.getField(path());
 	}
 
+	/**
+	 * Returns the operator specified in the condition.
+	 * 
+	 * @return
+	 */
 	ComparisonOperator operator()
 	{
 		return condition.getOperator();
 	}
 
+	/**
+	 * Returns the value specified in the condition.
+	 * 
+	 * @return
+	 */
 	Object value()
 	{
 		return condition.getValue();
 	}
 
+	/**
+	 * Returns the AND siblings specified in the condition.
+	 * 
+	 * @return
+	 */
 	List<Condition> and()
 	{
 		return condition.getAnd();
 	}
 
+	/**
+	 * Returns the OR siblings specified in the condition.
+	 * 
+	 * @return
+	 */
 	List<Condition> or()
 	{
 		return condition.getOr();

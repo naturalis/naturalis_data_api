@@ -49,6 +49,9 @@ public class ConditionTranslatorFactory {
 			case LIKE:
 			case NOT_LIKE:
 				return new LikeConditionTranslator(condition, mappingInfo);
+			case IN:
+			case NOT_IN:
+				return new InConditionTranslator(condition, mappingInfo);
 		}
 		return null;
 	}

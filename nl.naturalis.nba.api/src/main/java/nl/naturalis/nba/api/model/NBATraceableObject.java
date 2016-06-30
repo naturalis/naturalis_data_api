@@ -5,8 +5,8 @@ import java.net.URI;
 /**
  * Abstract base class for all domain model classes that can be traced back to a
  * single record in one of the NBA's source systems. In other words, instances
- * of these classes do not represent aggregations or compositions from multiple
- * source systems.
+ * of these classes do not represent anonymous child or parent records,
+ * aggregations or compositions from multiple source systems.
  */
 public abstract class NBATraceableObject extends NBADomainObject {
 

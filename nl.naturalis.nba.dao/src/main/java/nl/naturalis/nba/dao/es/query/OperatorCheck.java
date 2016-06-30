@@ -33,6 +33,8 @@ public class OperatorCheck {
 		switch (condition.getOperator()) {
 			case EQUALS:
 			case NOT_EQUALS:
+			case IN:
+			case NOT_IN:
 				return true;
 			case EQUALS_IC:
 			case NOT_EQUALS_IC:

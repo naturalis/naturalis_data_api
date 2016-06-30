@@ -14,6 +14,7 @@ public enum ESDataType
 	LONG("long"),
 	FLOAT("float"),
 	DOUBLE("double"),
+	GEO_POINT("geo_point"),
 	GEO_SHAPE("geo_shape"),
 	OBJECT("object"),
 	NESTED("nested");

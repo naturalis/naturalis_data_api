@@ -2,7 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
-public class Specimen extends NBATraceableObject implements INBARecord {
+public class Specimen extends NBATraceableObject implements IDocumentObject {
 
 	private String id;
 	private String unitID;

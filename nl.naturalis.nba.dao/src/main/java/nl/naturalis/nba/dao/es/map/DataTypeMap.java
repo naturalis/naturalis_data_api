@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static nl.naturalis.nba.dao.es.map.ESDataType.*;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import nl.naturalis.nba.api.model.GeoPoint;
 import nl.naturalis.nba.api.model.GeoShape;
 
 /**
@@ -32,32 +35,33 @@ public class DataTypeMap {
 	private DataTypeMap()
 	{
 		/* Stringy types */
-		java2es.put(String.class, ESDataType.STRING);
-		java2es.put(char.class, ESDataType.STRING);
-		java2es.put(Character.class, ESDataType.STRING);
-		java2es.put(URI.class, ESDataType.STRING);
-		java2es.put(URL.class, ESDataType.STRING);
-		java2es.put(Enum.class, ESDataType.STRING);
+		java2es.put(String.class, STRING);
+		java2es.put(char.class, STRING);
+		java2es.put(Character.class, STRING);
+		java2es.put(URI.class, STRING);
+		java2es.put(URL.class, STRING);
+		java2es.put(Enum.class, STRING);
 		/* Number types */
-		java2es.put(byte.class, ESDataType.BYTE);
-		java2es.put(Byte.class, ESDataType.BYTE);
-		java2es.put(short.class, ESDataType.SHORT);
-		java2es.put(Short.class, ESDataType.BOOLEAN);
-		java2es.put(int.class, ESDataType.INTEGER);
-		java2es.put(Integer.class, ESDataType.INTEGER);
-		java2es.put(long.class, ESDataType.LONG);
-		java2es.put(Long.class, ESDataType.LONG);
-		java2es.put(float.class, ESDataType.FLOAT);
-		java2es.put(Float.class, ESDataType.FLOAT);
-		java2es.put(double.class, ESDataType.DOUBLE);
-		java2es.put(Double.class, ESDataType.DOUBLE);
+		java2es.put(byte.class, BYTE);
+		java2es.put(Byte.class, BYTE);
+		java2es.put(short.class, SHORT);
+		java2es.put(Short.class, BOOLEAN);
+		java2es.put(int.class, INTEGER);
+		java2es.put(Integer.class, INTEGER);
+		java2es.put(long.class, LONG);
+		java2es.put(Long.class, LONG);
+		java2es.put(float.class, FLOAT);
+		java2es.put(Float.class, FLOAT);
+		java2es.put(double.class, DOUBLE);
+		java2es.put(Double.class, DOUBLE);
 		/* Boolean types */
-		java2es.put(boolean.class, ESDataType.BOOLEAN);
-		java2es.put(Boolean.class, ESDataType.BOOLEAN);
+		java2es.put(boolean.class, BOOLEAN);
+		java2es.put(Boolean.class, BOOLEAN);
 		/* Date types */
-		java2es.put(Date.class, ESDataType.DATE);
-		/* Other types */
-		java2es.put(GeoShape.class, ESDataType.GEO_SHAPE);
+		java2es.put(Date.class, DATE);
+		/* GEO types */
+		java2es.put(GeoPoint.class, GEO_POINT);
+		java2es.put(GeoShape.class, GEO_SHAPE);
 
 		/* Create reverse map */
 		for (Map.Entry<Class<?>, ESDataType> entry : java2es.entrySet()) {

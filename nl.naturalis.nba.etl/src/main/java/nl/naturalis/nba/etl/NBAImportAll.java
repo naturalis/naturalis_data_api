@@ -9,7 +9,6 @@ import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.ndff.NdffSpecimenImporter;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
 
@@ -25,7 +24,6 @@ public class NBAImportAll {
 
 	public static void main(String[] args)
 	{
-		IndexManagerNative index = null;
 		try {
 			NBAImportAll nbaImportAll = new NBAImportAll();
 			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
@@ -39,9 +37,7 @@ public class NBAImportAll {
 			logger.error(t.getMessage(), t);
 		}
 		finally {
-			if (index != null) {
-				index.getClient().close();
-			}
+			// ...
 		}
 	}
 

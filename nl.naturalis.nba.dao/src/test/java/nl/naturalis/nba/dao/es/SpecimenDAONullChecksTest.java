@@ -3,9 +3,8 @@ package nl.naturalis.nba.dao.es;
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
-import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
-import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
-import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
+import static nl.naturalis.nba.dao.es.util.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.es.util.ESUtil.*;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -36,7 +35,7 @@ public class SpecimenDAONullChecksTest {
 	@Before
 	public void before()
 	{
-		dropIndex(DocumentType.SPECIMEN);
+		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
 		/*

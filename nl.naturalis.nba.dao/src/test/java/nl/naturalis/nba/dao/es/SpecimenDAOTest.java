@@ -6,9 +6,9 @@ import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
-import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
-import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
-import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
+import static nl.naturalis.nba.dao.es.util.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.es.util.ESUtil.createType;
+import static nl.naturalis.nba.dao.es.util.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -36,7 +36,7 @@ public class SpecimenDAOTest {
 	@Before
 	public void before()
 	{
-		dropIndex(DocumentType.SPECIMEN);
+		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
 		/*
@@ -53,7 +53,7 @@ public class SpecimenDAOTest {
 	@After
 	public void after()
 	{
-		//dropIndex(ESSpecimen.class);
+		// dropIndex(ESSpecimen.class);
 	}
 
 	/*
@@ -379,14 +379,15 @@ public class SpecimenDAOTest {
 		String country = "gatheringEvent.country";
 		String locality = "gatheringEvent.localityText";
 		Condition condition1, condition2, condition3, condition4;
-		// This leaves 2 specimens (tRexSpecimen01 and malusSylvestrisSpecimen01)
+		// This leaves 2 specimens (tRexSpecimen01 and
+		// malusSylvestrisSpecimen01)
 		condition1 = new Condition("sex", EQUALS, "female");
-		// This still leaves tRexSpecimen01 and malusSylvestrisSpecimen01		
+		// This still leaves tRexSpecimen01 and malusSylvestrisSpecimen01
 		condition2 = new Condition(system, "=", "BRAHMS").or(system, "=", "CRS");
-		// This exludes malusSylvestrisSpecimen01 (collected in United Kingdom)	
+		// This exludes malusSylvestrisSpecimen01 (collected in United Kingdom)
 		condition3 = new Condition(country, "=", "United States");
 		condition3.and(locality, LIKE, "Montana");
-		// This exludes tRexSpecimen01 (collected in United States)	
+		// This exludes tRexSpecimen01 (collected in United States)
 		condition4 = new Condition(country, "=", "United Kingdom");
 		condition4.and(locality, LIKE, "Dorchester");
 		// But this will include them both again: condition3.or(condition4);

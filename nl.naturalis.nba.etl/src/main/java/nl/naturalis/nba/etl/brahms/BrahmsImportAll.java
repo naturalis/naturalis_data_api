@@ -1,6 +1,9 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.dao.es.DocumentType.*;
+import static nl.naturalis.nba.dao.es.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.es.util.ESUtil.disableAutoRefresh;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getDistinctIndices;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
@@ -15,13 +18,13 @@ import org.domainobject.util.IOUtil;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.es.IndexInfo;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.ThemeCache;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 
 /**
@@ -41,19 +44,18 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args)
 	{
-		
+		DocumentType[] docTypes = new DocumentType[] { SPECIMEN, MULTI_MEDIA_OBJECT };
 		if (args.length == 0) {
-			ETLRegistry reg = ETLRegistry.getInstance();
-			IndexManagerNative idxMgr0 = reg.getIndexManager(SPECIMEN);
-			IndexManagerNative idxMgr1 = reg.getIndexManager(MULTI_MEDIA_OBJECT);
-			String idx0RefreshInrerval = idxMgr0.disableAutoRefresh();
-			String idx1RefreshInrerval = idxMgr1.disableAutoRefresh();
+			for (IndexInfo idxInfo : getDistinctIndices(docTypes)) {
+				disableAutoRefresh(idxInfo);
+			}
 			try {
 				new BrahmsImportAll().importAll();
 			}
 			finally {
-				idxMgr0.setRefreshInterval(idx0RefreshInrerval);
-				idxMgr1.setRefreshInterval(idx1RefreshInrerval);
+				for (IndexInfo idxInfo : getDistinctIndices(docTypes)) {
+					disableAutoRefresh(idxInfo);
+				}
 				ESClientManager.getInstance().closeClient();
 			}
 		}

@@ -13,19 +13,24 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
 
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.AbstractDao;
-import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.IndexInfo;
 import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.es.IndexInfo;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
+import nl.naturalis.nba.dao.es.types.ESType;
 
 public class ESUtil {
 
@@ -87,6 +92,15 @@ public class ESUtil {
 		return result;
 	}
 
+	public static Set<IndexInfo> getDistinctIndices(DocumentType... documentTypes)
+	{
+		Set<IndexInfo> result = new HashSet<>(3);
+		for (DocumentType dt : documentTypes) {
+			result.add(dt.getIndexInfo());
+		}
+		return result;
+	}
+
 	/**
 	 * Deletes all indices used by the NBA. All data will be lost. WATCH OUT!
 	 */
@@ -108,7 +122,12 @@ public class ESUtil {
 		}
 	}
 
-	private static void deleteIndex(IndexInfo indexInfo)
+	public static void deleteIndex(DocumentType documentType)
+	{
+		deleteIndex(documentType.getIndexInfo());
+	}
+
+	public static void deleteIndex(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
 		logger.info("Deleting index {}", index);
@@ -125,13 +144,18 @@ public class ESUtil {
 		}
 	}
 
-	private static void createIndex(IndexInfo indexInfo)
+	public static void createIndex(DocumentType documentType)
+	{
+		createIndex(documentType.getIndexInfo());
+	}
+
+	public static void createIndex(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
 		logger.info("Creating index {}", index);
 		// First load non-user-configurable settings
 		String resource = "/es-settings.json";
-		InputStream is = AbstractDao.class.getResourceAsStream(resource);
+		InputStream is = ESUtil.class.getResourceAsStream(resource);
 		Builder builder = Settings.settingsBuilder();
 		builder.loadFromStream(resource, is);
 		// Then add user-configurable settings
@@ -149,7 +173,79 @@ public class ESUtil {
 		}
 	}
 
-	private static void createType(DocumentType dt)
+	public static void refreshIndex(DocumentType documentType)
+	{
+		refreshIndex(documentType.getIndexInfo());
+	}
+
+	public static void refreshIndex(Class<? extends ESType> cls)
+	{
+		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
+		refreshIndex(indexInfo);
+	}
+
+	public static void refreshIndex(IndexInfo indexInfo)
+	{
+		String index = indexInfo.getName();
+		RefreshRequestBuilder request = indices().prepareRefresh(index);
+		request.execute().actionGet();
+	}
+
+	public static String getAutoRefreshInterval(IndexInfo indexInfo)
+	{
+		String index = indexInfo.getName();
+		GetSettingsRequest request = new GetSettingsRequest();
+		GetSettingsResponse response = indices().getSettings(request).actionGet();
+		try {
+			return response.getSetting(index, "index.refresh_interval");
+		}
+		/*
+		 * Hack to work around a bug in Elasticsearch (2.3.3). You get a nasty
+		 * NullPointerException if the index does not exist, or if no settings
+		 * have been explicitly set for it.
+		 */
+		catch (NullPointerException e) {
+			return null;
+		}
+	}
+
+	public static String disableAutoRefresh(IndexInfo indexInfo)
+	{
+		String index = indexInfo.getName();
+		logger.info("Disabling auto-refresh for index " + index);
+		String origValue = getAutoRefreshInterval(indexInfo);
+		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+		Builder builder = Settings.settingsBuilder();
+		builder.put("index.refresh_interval", -1);
+		request.settings(builder.build());
+		UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
+		if (!response.isAcknowledged()) {
+			String msg = "Failed to disable auto-refresh for index " + index;
+			throw new DaoException(msg);
+		}
+		return origValue;
+	}
+
+	public static void setAutoRefreshInterval(IndexInfo indexInfo, String interval)
+	{
+		if (interval == null) {
+			logger.warn("Setting the index refresh interval to null has no effect");
+			return;
+		}
+		String index = indexInfo.getName();
+		logger.info("Enabling auto-refresh for index " + index);
+		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+		Builder builder = Settings.settingsBuilder();
+		builder.put("index.refresh_interval", interval);
+		request.settings(builder.build());
+		UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
+		if (!response.isAcknowledged()) {
+			String msg = "Failed to enable auto-refresh for index " + index;
+			throw new DaoException(msg);
+		}
+	}
+
+	public static void createType(DocumentType dt)
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();

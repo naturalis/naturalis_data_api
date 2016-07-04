@@ -3,9 +3,9 @@ package nl.naturalis.nba.dao.es;
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
-import static nl.naturalis.nba.dao.es.ESTestUtils.createIndex;
-import static nl.naturalis.nba.dao.es.ESTestUtils.createType;
-import static nl.naturalis.nba.dao.es.ESTestUtils.dropIndex;
+import static nl.naturalis.nba.dao.es.util.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.es.util.ESUtil.createType;
+import static nl.naturalis.nba.dao.es.util.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import java.time.Instant;
@@ -34,7 +34,7 @@ public class SpecimenDAOWithInConditionTest {
 	@Before
 	public void before()
 	{
-		dropIndex(DocumentType.SPECIMEN);
+		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
 		/*

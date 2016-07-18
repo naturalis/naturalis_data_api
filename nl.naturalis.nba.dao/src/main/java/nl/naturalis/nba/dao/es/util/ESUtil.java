@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashSet;
@@ -18,10 +19,15 @@ import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse;
+import org.elasticsearch.action.get.GetRequestBuilder;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.DAORegistry;
@@ -260,6 +266,27 @@ public class ESUtil {
 			throw new DaoException("Failed to create type " + type);
 		}
 		logger.info("Created type {}", type);
+	}
+
+	public static <T extends ESType> T find(DocumentType dt, String id)
+	{
+		String index = dt.getIndexInfo().getName();
+		String type = dt.getName();
+		@SuppressWarnings("unchecked")
+		Class<T> cls = (Class<T>) dt.getESType();
+		ObjectMapper objectMapper = dt.getObjectMapper();
+		Client client = ESClientManager.getInstance().getClient();
+		GetRequestBuilder grb = client.prepareGet(index, type, id);
+		GetResponse response = grb.execute().actionGet();
+		if (response.isExists()) {
+			try {
+				return objectMapper.readValue(response.getSourceAsBytes(), cls);
+			}
+			catch (IOException e) {
+				throw new DaoException(e);
+			}
+		}
+		return null;
 	}
 
 	private static IndicesAdminClient indices()

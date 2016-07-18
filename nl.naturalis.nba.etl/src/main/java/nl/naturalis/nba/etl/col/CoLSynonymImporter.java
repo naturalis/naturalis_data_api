@@ -8,6 +8,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -18,8 +19,8 @@ import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
 
 /**
- * Enriches CoL taxon documents with synonyms sourced from the taxa&#46;txt
- * file in a CoL DwC archive.
+ * Enriches CoL taxon documents with synonyms sourced from the taxa&#46;txt file
+ * in a CoL DwC archive.
  * 
  * @author Ayco Holleman
  *
@@ -28,12 +29,18 @@ public class CoLSynonymImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		CoLSynonymImporter importer = new CoLSynonymImporter();
-		String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
-		importer.importCsv(dwcaDir + "/taxa.txt");
+		try {
+			CoLSynonymImporter importer = new CoLSynonymImporter();
+			String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.data.dir");
+			importer.importCsv(dwcaDir + "/taxa.txt");
+		}
+		finally {
+			ESClientManager.getInstance().closeClient();
+		}
 	}
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(CoLSynonymImporter.class);
+	private static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(CoLSynonymImporter.class);
 
 	private final boolean suppressErrors;
 	private final int esBulkRequestSize;
@@ -42,7 +49,7 @@ public class CoLSynonymImporter {
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
-		String val = System.getProperty(key, "1000");
+		String val = System.getProperty(key, "5000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
@@ -91,7 +98,6 @@ public class CoLSynonymImporter {
 		LoadUtil.logDuration(logger, getClass(), start);
 
 	}
-
 
 	private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)
 	{

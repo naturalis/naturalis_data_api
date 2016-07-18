@@ -47,9 +47,9 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 	protected boolean skipRecord()
 	{
 		/*
-		 * acceptedNameUsageID field is a foreign key to accepted name record.
-		 * If it is set, the record is itself not an accepted name record, so we
-		 * must skip it.
+		 * The acceptedNameUsageID field is a foreign key to an accepted name
+		 * record in the same CSV file. If the field is empty, it means the
+		 * record is itself an accepted name record, so we must process it.
 		 */
 		return input.get(acceptedNameUsageID) != null;
 	}

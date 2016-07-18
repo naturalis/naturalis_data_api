@@ -1,5 +1,8 @@
 package nl.naturalis.nba.etl.col;
 
+import static nl.naturalis.nba.api.model.SourceSystem.COL;
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
@@ -7,22 +10,17 @@ import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Transformer;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
-
-import org.apache.logging.log4j.Logger;
-
-import static nl.naturalis.nba.api.model.SourceSystem.COL;
-import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
 
 /**
  * A subclass of {@link CSVTransformer} that transforms CSV records into
@@ -36,13 +34,11 @@ class CoLVernacularNameTransformer
 
 	static Logger logger = ETLRegistry.getInstance().getLogger(CoLVernacularNameTransformer.class);
 
-	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
 
 	CoLVernacularNameTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
-		this.index = ETLRegistry.getInstance().getIndexManager(TAXON);
 		this.loader = loader;
 	}
 
@@ -64,7 +60,7 @@ class CoLVernacularNameTransformer
 			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
 				isNew = true;
-				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
+				taxon = ESUtil.find(TAXON, id);
 			}
 			if (taxon == null) {
 				stats.objectsRejected++;
@@ -122,7 +118,7 @@ class CoLVernacularNameTransformer
 			String id = getElasticsearchId(COL, objectID);
 			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
+				taxon = ESUtil.find(TAXON, id);
 				if (taxon != null && taxon.getVernacularNames() != null) {
 					stats.objectsAccepted++;
 					taxon.setVernacularNames(null);

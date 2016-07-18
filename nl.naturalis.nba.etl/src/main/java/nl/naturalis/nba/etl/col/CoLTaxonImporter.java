@@ -11,7 +11,9 @@ import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -33,9 +35,15 @@ public class CoLTaxonImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		CoLTaxonImporter importer = new CoLTaxonImporter();
-		String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.csv_dir");
-		importer.importCsv(dwcaDir + "/taxa.txt");
+		try {
+			CoLTaxonImporter importer = new CoLTaxonImporter();
+			String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.data.dir");
+			importer.importCsv(dwcaDir + "/taxa.txt");
+		}
+		finally {
+			ESUtil.refreshIndex(TAXON);
+			ESClientManager.getInstance().closeClient();
+		}
 	}
 
 	private static final Logger logger = ETLRegistry.getInstance()
@@ -49,7 +57,7 @@ public class CoLTaxonImporter {
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
-		String val = System.getProperty(key, "1000");
+		String val = System.getProperty(key, "5000");
 		esBulkRequestSize = Integer.parseInt(val);
 		colYear = DAORegistry.getInstance().getConfiguration().required("col.year");
 	}

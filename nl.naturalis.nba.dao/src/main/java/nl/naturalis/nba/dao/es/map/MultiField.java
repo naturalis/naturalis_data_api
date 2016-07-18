@@ -1,6 +1,11 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
+
+import nl.naturalis.nba.api.annotations.Analyzer;
 
 /**
  * A {@code MultiField} is a virtual field underneath a {@link DocumentField
@@ -14,7 +19,7 @@ import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
  * @author Ayco Holleman
  *
  */
-public class MultiField extends IndexableField {
+public class MultiField extends ESField {
 
 	/**
 	 * A string field analyzed using the default analyzer.
@@ -30,17 +35,24 @@ public class MultiField extends IndexableField {
 	public static final MultiField LIKE_MULTIFIELD;
 
 	static {
-		DEFAULT_MULTIFIELD = new MultiField("analyzed", STRING, null);
-		IGNORE_CASE_MULTIFIELD = new MultiField("ignoreCase", STRING, "case_insensitive_analyzer");
-		LIKE_MULTIFIELD = new MultiField("like", STRING, "like_analyzer");
+		DEFAULT_MULTIFIELD = new MultiField(STRING, DEFAULT);
+		IGNORE_CASE_MULTIFIELD = new MultiField(STRING, CASE_INSENSITIVE);
+		LIKE_MULTIFIELD = new MultiField(STRING, LIKE);
 	}
 
-	private MultiField(String name, ESDataType type, String analyzer)
+	private String analyzer;
+
+	private MultiField(ESDataType type, Analyzer analyzer)
 	{
 		super();
-		this.name = name;
+		this.name = analyzer.getMultiFieldName();
 		this.type = type;
-		this.analyzer = analyzer;
+		this.analyzer = analyzer.getName();
+	}
+
+	public String getAnalyzer()
+	{
+		return analyzer;
 	}
 
 }

@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.es.map;
 
+import static nl.naturalis.nba.dao.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.dao.es.map.ESDataType.NESTED;
-import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
 import static nl.naturalis.nba.dao.es.map.Index.NO;
 import static nl.naturalis.nba.dao.es.map.Index.NOT_ANALYZED;
 import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
@@ -24,6 +24,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.dao.es.DocumentType;
@@ -72,6 +73,9 @@ public class MappingFactory {
 
 	private static ESField createESField(Field field)
 	{
+		if (field.getAnnotation(GeoShape.class) != null) {
+			return createSimpleField(field, GEO_SHAPE);
+		}
 		Class<?> realType = field.getType();
 		Class<?> mapToType = mapType(realType, field.getGenericType());
 		ESDataType esType = DataTypeMap.getInstance().getESType(mapToType);
@@ -79,7 +83,7 @@ public class MappingFactory {
 			/*
 			 * Then the Java type does not map to a simple Elasticsearch type
 			 * like "string" or "boolean". The Elastichsearch type must be
-			 * "object" or "nested".
+			 * either "object" or "nested".
 			 */
 			return createDocument(field, mapToType);
 		}
@@ -88,6 +92,9 @@ public class MappingFactory {
 
 	private static ESField createESField(Method method)
 	{
+		if (method.getAnnotation(GeoShape.class) != null) {
+			return createSimpleField(method, GEO_SHAPE);
+		}
 		Class<?> realType = method.getReturnType();
 		Class<?> mapToType = mapType(realType, method.getGenericReturnType());
 		ESDataType esType = DataTypeMap.getInstance().getESType(mapToType);
@@ -99,20 +106,26 @@ public class MappingFactory {
 
 	private static DocumentField createSimpleField(AnnotatedElement fm, ESDataType esType)
 	{
-		DocumentField df = new DocumentField(esType);
-		NotIndexed annotation = fm.getAnnotation(NotIndexed.class);
-		if (esType == STRING) {
-			df.setIndex(NOT_ANALYZED);
+		if (esType == GEO_SHAPE) {
+			return new GeoShapeField();
 		}
+		NotIndexed annotation = fm.getAnnotation(NotIndexed.class);
 		if (annotation == null) {
-			if (esType == STRING) {
-				addAnalyzedFields(df, fm);
+			if (esType.isAnalyzable()) {
+				AnalyzableField field = new AnalyzableField(esType);
+				field.setIndex(NOT_ANALYZED);
+				addMultiFields(field, fm);
+				return field;
+			}
+			else {
+				return new DocumentField(esType);
 			}
 		}
 		else {
-			df.setIndex(NO);
+			DocumentField field = new DocumentField(esType);
+			field.setIndex(NO);
+			return field;
 		}
-		return df;
 	}
 
 	private static Document createDocument(Field field, Class<?> mapToType)
@@ -164,12 +177,12 @@ public class MappingFactory {
 	 * Returns false if the Java field does not contain the @Analyzers
 	 * annotation. Otherwise it returns true.
 	 */
-	private static boolean addAnalyzedFields(DocumentField df, AnnotatedElement fm)
+	private static boolean addMultiFields(AnalyzableField af, AnnotatedElement fm)
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
-			df.addMultiField(DEFAULT_MULTIFIELD);
-			df.addMultiField(IGNORE_CASE_MULTIFIELD);
+			af.addMultiField(DEFAULT_MULTIFIELD);
+			af.addMultiField(IGNORE_CASE_MULTIFIELD);
 			return false;
 		}
 		if (annotation.value().length == 0) {
@@ -180,13 +193,13 @@ public class MappingFactory {
 		for (Analyzer a : analyzers) {
 			switch (a) {
 				case CASE_INSENSITIVE:
-					df.addMultiField(IGNORE_CASE_MULTIFIELD);
+					af.addMultiField(IGNORE_CASE_MULTIFIELD);
 					break;
 				case DEFAULT:
-					df.addMultiField(DEFAULT_MULTIFIELD);
+					af.addMultiField(DEFAULT_MULTIFIELD);
 					break;
 				case LIKE:
-					df.addMultiField(LIKE_MULTIFIELD);
+					af.addMultiField(LIKE_MULTIFIELD);
 					break;
 				default:
 					break;

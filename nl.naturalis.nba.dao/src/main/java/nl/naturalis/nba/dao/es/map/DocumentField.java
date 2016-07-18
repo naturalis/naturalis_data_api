@@ -1,32 +1,22 @@
 package nl.naturalis.nba.dao.es.map;
 
-import java.util.LinkedHashMap;
+public class DocumentField extends ESField {
 
-public class DocumentField extends IndexableField {
-
-	private LinkedHashMap<String, MultiField> fields;
+	protected Index index;
 
 	public DocumentField(ESDataType type)
 	{
 		this.type = type;
 	}
 
-	public LinkedHashMap<String, MultiField> getFields()
+	public Index getIndex()
 	{
-		return fields;
+		return index;
 	}
 
-	public void addMultiField(MultiField field)
+	public void setIndex(Index index)
 	{
-		if (fields == null) {
-			fields = new LinkedHashMap<>(2);
-		}
-		fields.put(field.name, field);
-	}
-
-	public boolean hasMultiField(MultiField mf)
-	{
-		return fields != null && fields.containsKey(mf.name);
+		this.index = index;
 	}
 
 }

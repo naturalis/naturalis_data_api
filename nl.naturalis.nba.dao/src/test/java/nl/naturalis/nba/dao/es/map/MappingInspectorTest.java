@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.es.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -10,12 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.map.Document;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.ESDataType;
-import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
-import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 public class MappingInspectorTest {
 
@@ -44,7 +38,7 @@ public class MappingInspectorTest {
 	{
 		ESField f = inspector.getField("gatheringEvent");
 		assertNotNull("01", f);
-		assertEquals("02", Document.class, f.getClass());
+		assertTrue("02", f instanceof Document);
 	}
 
 	@Test
@@ -52,7 +46,7 @@ public class MappingInspectorTest {
 	{
 		ESField f = inspector.getField("unitID");
 		assertNotNull("01", f);
-		assertEquals("02", DocumentField.class, f.getClass());
+		assertTrue("02", f instanceof AnalyzableField);
 	}
 
 	@Test(expected = NoSuchFieldException.class)

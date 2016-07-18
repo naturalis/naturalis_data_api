@@ -2,7 +2,6 @@ package nl.naturalis.nba.dao.es.map;
 
 import static nl.naturalis.nba.dao.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.dao.es.map.ESDataType.OBJECT;
-import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +13,6 @@ import java.util.Map;
 
 import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
-
-import nl.naturalis.nba.api.query.ComparisonOperator;
 
 /**
  * A {@code MappingInspector} provides easy, programmatic access to various
@@ -147,24 +144,6 @@ public class MappingInfo {
 			}
 		}
 		return null;
-	}
-
-	public boolean isOperatorAllowed(DocumentField field, ComparisonOperator operator)
-	{
-		switch (operator) {
-			case EQUALS:
-			case NOT_EQUALS:
-				return true;
-			case EQUALS_IC:
-			case NOT_EQUALS_IC:
-				return field.getType() == STRING
-						&& field.hasMultiField(MultiField.IGNORE_CASE_MULTIFIELD);
-			case LIKE:
-			case NOT_LIKE:
-				return field.getType() == STRING && field.hasMultiField(MultiField.LIKE_MULTIFIELD);
-			default:
-				return false;
-		}
 	}
 
 	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map)

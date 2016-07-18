@@ -1,11 +1,11 @@
 package nl.naturalis.nba.dao.es.query;
 
-import static nl.naturalis.nba.dao.es.map.ESDataType.STRING;
 import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
+import nl.naturalis.nba.dao.es.map.AnalyzableField;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 
@@ -38,9 +38,11 @@ public class OperatorCheck {
 				return true;
 			case EQUALS_IC:
 			case NOT_EQUALS_IC:
-				if (field.getType() != STRING)
-					return false;
-				return field.hasMultiField(IGNORE_CASE_MULTIFIELD);
+				if (field instanceof AnalyzableField) {
+					AnalyzableField af = (AnalyzableField) field;
+					return af.hasMultiField(IGNORE_CASE_MULTIFIELD);
+				}
+				return false;
 			case BETWEEN:
 			case NOT_BETWEEN:
 				switch (field.getType()) {
@@ -57,9 +59,11 @@ public class OperatorCheck {
 				}
 			case LIKE:
 			case NOT_LIKE:
-				if (field.getType() != STRING)
-					return false;
-				return field.hasMultiField(LIKE_MULTIFIELD);
+				if (field instanceof AnalyzableField) {
+					AnalyzableField af = (AnalyzableField) field;
+					return af.hasMultiField(LIKE_MULTIFIELD);
+				}
+				return false;
 			default:
 				return false;
 		}

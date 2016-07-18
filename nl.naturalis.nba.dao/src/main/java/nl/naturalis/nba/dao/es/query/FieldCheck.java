@@ -29,7 +29,7 @@ public class FieldCheck {
 	public boolean ok()
 	{
 		ESField field = mappingInfo.getField(condition.getField());
-		return field.getClass() == DocumentField.class;
+		return field instanceof DocumentField;
 	}
 
 }

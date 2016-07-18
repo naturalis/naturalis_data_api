@@ -4,6 +4,7 @@ import static nl.naturalis.nba.dao.es.map.ESDataType.*;
 
 import java.net.URI;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public class DataTypeMap {
 		java2es.put(boolean.class, BOOLEAN);
 		java2es.put(Boolean.class, BOOLEAN);
 		/* Date types */
+		java2es.put(LocalDateTime.class, DATE);
 		java2es.put(Date.class, DATE);
 		/* GEO types */
 		java2es.put(Point.class, GEO_POINT);

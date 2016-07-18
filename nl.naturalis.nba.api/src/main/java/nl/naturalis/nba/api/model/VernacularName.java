@@ -92,26 +92,22 @@ public class VernacularName extends NBADomainObject {
 		return hash;
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder(64);
-		sb.append("{name: ").append(quote(name));
-		sb.append(", language: ").append(quote(language));
-		sb.append("}");
+		sb.append(name);
+		if (language != null) {
+			sb.append(" (").append(language).append(')');
+		}
 		return sb.toString();
-	}
-
-	private static String quote(Object obj)
-	{
-		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
 	}
 
 	private static boolean eq(Object obj0, Object obj1)
 	{
 		if (obj0 == null) {
-			if (obj1 == null) {
+			if (obj1 == null)
 				return true;
-			}
 			return false;
 		}
 		return obj1 == null ? false : obj0.equals(obj1);

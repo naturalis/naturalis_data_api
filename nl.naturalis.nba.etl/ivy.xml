@@ -19,6 +19,7 @@
 		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.7.4"/>
 		<dependency org="com.ibm.icu" name="icu4j" rev="54.1.1"/>
 		<dependency org="com.googlecode.juniversalchardet" name="juniversalchardet" rev="1.0.3"/>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
 	</dependencies>
 	
 </ivy-module>

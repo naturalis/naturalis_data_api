@@ -95,19 +95,30 @@ public class Reference extends NBADomainObject {
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder(64);
-		sb.append("{titleCitation: ").append(quote(titleCitation));
-		sb.append(", author: ").append(author);
-		sb.append(", citationDetail: ").append(quote(citationDetail));
-		sb.append(", publicationDate: ");
-		sb.append(publicationDate == null ? "null" : quote(publicationDate));
-		sb.append("}");
+		if (titleCitation == null) {
+			sb.append("### Title Not Available ###");
+		}
+		else {
+			sb.append(titleCitation);
+		}
+		sb.append(';');
+		if (citationDetail != null) {
+			sb.append(' ').append(citationDetail);
+		}
+		sb.append(';');
+		if (author != null) {
+			if (author.getFullName() != null)
+				sb.append(' ').append(author.getFullName());
+			else if(author.getAgentText() != null)
+				sb.append(' ').append(author.getAgentText());
+		}
+		sb.append(';');
+		if(publicationDate != null) {
+			sb.append(' ').append(publicationDate);
+		}
 		return sb.toString();
 	}
 
-	private static String quote(Object obj)
-	{
-		return obj == null ? "null" : '"' + String.valueOf(obj) + '"';
-	}
 
 	private static boolean eq(Object obj0, Object obj1)
 	{

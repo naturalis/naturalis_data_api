@@ -14,6 +14,7 @@ public class SourceSystem extends NBADomainObject {
 			"Naturalis - Nederlands Soortenregister");
 	public static final SourceSystem NDFF = new SourceSystem("NDFF",
 			"NDFF - Nationale Databank Flora en Fauna");
+	public static final SourceSystem GEO = new SourceSystem("GEO", "Naturalis - Geo Areas");
 
 	@Analyzers({})
 	private String code;

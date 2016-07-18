@@ -13,6 +13,7 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.InitializationException;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
+import nl.naturalis.nba.dao.es.types.ESGeoArea;
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
@@ -23,7 +24,8 @@ public enum DocumentType
 
 	SPECIMEN("Specimen", ESSpecimen.class),
 	TAXON("Taxon", ESTaxon.class),
-	MULTI_MEDIA_OBJECT("MultiMediaObject", ESMultiMediaObject.class);
+	MULTI_MEDIA_OBJECT("MultiMediaObject", ESMultiMediaObject.class),
+	GEO_AREA("GeoArea", ESGeoArea.class);
 
 	static {
 		try {
@@ -58,6 +60,9 @@ public enum DocumentType
 		if (MULTI_MEDIA_OBJECT.name.equals(name)) {
 			return MULTI_MEDIA_OBJECT;
 		}
+		if (GEO_AREA.name.equals(name)) {
+			return GEO_AREA;
+		}
 		throw new DaoException("There is no document type with name \"" + name + '"');
 	}
 
@@ -71,6 +76,9 @@ public enum DocumentType
 		}
 		if (MULTI_MEDIA_OBJECT.esType == cls) {
 			return MULTI_MEDIA_OBJECT;
+		}
+		if (GEO_AREA.esType == cls) {
+			return GEO_AREA;
 		}
 		throw new DaoException("There is no document type corresponding to " + cls);
 	}

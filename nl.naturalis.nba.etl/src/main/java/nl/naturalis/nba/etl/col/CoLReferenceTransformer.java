@@ -16,6 +16,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.*;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
@@ -49,46 +50,47 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		List<ESTaxon> result = null;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			boolean isNew = false;
 			ESTaxon taxon = loader.findInQueue(id);
-			if (taxon == null) {
-				isNew = true;
-				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
-			}
-			if (taxon == null) {
-				stats.objectsRejected++;
-				if (!suppressErrors) {
-					error("Orphan reference: " + input.get(title));
-				}
-			}
-			else {
-				Reference ref = createReference();
-				if (taxon.getReferences() == null || !taxon.getReferences().contains(ref)) {
+			if (taxon != null) {
+				Reference reference = createReference();
+				if (!taxon.getReferences().contains(reference)) {
 					stats.objectsAccepted++;
-					taxon.addReference(ref);
-					if (isNew) {
-						result = Arrays.asList(taxon);
-					}
-					/*
-					 * else we have added the reference to a taxon that's
-					 * already queued for indexing, so we're fine
-					 */
+					taxon.addReference(reference);
 				}
 				else {
 					stats.objectsRejected++;
 					if (!suppressErrors) {
-						error("Duplicate reference for taxon: " + ref);
+						error("Duplicate reference: " + reference);
 					}
 				}
+				return null;
 			}
+			taxon = ESUtil.find(TAXON, id);
+			Reference reference = createReference();
+			if (taxon != null) {
+				if (taxon.getReferences() == null || !taxon.getReferences().contains(reference)) {
+					stats.objectsAccepted++;
+					taxon.addReference(reference);
+					return Arrays.asList(taxon);
+				}
+				if (!suppressErrors) {
+					error("Duplicate reference: " + reference);
+				}
+			}
+			else {
+				if (!suppressErrors) {
+					error("Orphan reference: " + reference);
+				}
+			}
+			stats.objectsRejected++;
+			return null;
 		}
 		catch (Throwable t) {
 			handleError(t);
+			return null;
 		}
-		return result;
 	}
 
 	/**

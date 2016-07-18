@@ -90,7 +90,7 @@ public class Normalizer<T extends Enum<T>> {
 
 	private final Logger logger;
 	private final HashMap<String, T> mappings;
-	private final T[] enumConstants;
+	private final Class<T> enumClass;
 
 	private boolean skipHeader = false;
 	private boolean autoMapNull = true;
@@ -117,7 +117,7 @@ public class Normalizer<T extends Enum<T>> {
 	{
 		logger = ETLRegistry.getInstance().getLogger(getClass());
 		logger.info("Creating normalizer for " + enumClass.getSimpleName());
-		enumConstants = enumClass.getEnumConstants();
+		this.enumClass = enumClass;
 		mappings = new HashMap<>();
 		badValues = new HashMap<>();
 	}
@@ -132,9 +132,7 @@ public class Normalizer<T extends Enum<T>> {
 	 */
 	public void loadMappings(String translations)
 	{
-		String type = enumConstants[0].getClass().getSimpleName();
-		String msg = String.format("Caching canonicalizations for %s", type);
-		logger.info(msg);
+		logger.info("Caching canonicalizations for {}", enumClass.getSimpleName());
 		try {
 			LineNumberReader lnr = new LineNumberReader(new StringReader(translations));
 			if (skipHeader) {
@@ -165,7 +163,7 @@ public class Normalizer<T extends Enum<T>> {
 						if (constant != self) {
 							String fmt = "\"%s\" is a canonical value and can therefore "
 									+ "not be mapped to another value (\"%s\")";
-							msg = String.format(fmt, constant, self);
+							String msg = String.format(fmt, constant, self);
 							throw new ETLRuntimeException(msg);
 						}
 					}
@@ -216,25 +214,27 @@ public class Normalizer<T extends Enum<T>> {
 	}
 
 	/**
-	 * Maps the specified found-in-the-wild value directly to an enum constant
-	 * of type T.
+	 * Maps the specified found-in-the-wild value to an enum constant of type T.
 	 * 
 	 * @param input
 	 * @return
 	 */
-	public T getEnumConstant(String input)
+	public T map(String input) throws UnmappedValueException
 	{
-		if (input != null)
+		if (input != null) {
 			input = input.toLowerCase();
-		if (!mappings.containsKey(input)) {
-			IntHolder ih = badValues.get(input);
-			if (ih == null)
-				badValues.put(input, new IntHolder());
-			else
-				ih.i++;
-			return null;
 		}
-		return mappings.get(input);
+		if (mappings.containsKey(input)) {
+			return mappings.get(input);
+		}
+		IntHolder ih = badValues.get(input);
+		if (ih == null) {
+			badValues.put(input, new IntHolder());
+		}
+		else {
+			ih.i++;
+		}
+		throw new UnmappedValueException(input, enumClass);
 	}
 
 	/**
@@ -327,12 +327,13 @@ public class Normalizer<T extends Enum<T>> {
 
 	private T find(String val)
 	{
-		for (T constant : enumConstants) {
-			if (constant.toString().equals(val))
+		for (T constant : enumClass.getEnumConstants()) {
+			if (constant.toString().equals(val)) {
 				return constant;
+			}
 		}
 		String fmt = "No constant of type %s has been declared for canonical value \"%s\"";
-		String msg = String.format(fmt, enumConstants[0].getClass().getSimpleName(), val);
+		String msg = String.format(fmt, enumClass.getSimpleName(), val);
 		throw new ETLRuntimeException(msg);
 	}
 

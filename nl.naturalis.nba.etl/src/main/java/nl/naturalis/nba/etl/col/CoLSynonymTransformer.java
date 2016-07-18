@@ -11,14 +11,14 @@ import java.util.List;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Transformer;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * A implementation of {@link CSVTransformer} that enriches {@link ESTaxon}
@@ -29,7 +29,6 @@ import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
  */
 class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTaxon> {
 
-	private final IndexManagerNative index;
 	private final TaxonomicStatusNormalizer statusNormalizer;
 
 	private CoLTaxonLoader loader;
@@ -37,7 +36,6 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	CoLSynonymTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		this.index = ETLRegistry.getInstance().getIndexManager(TAXON);
 		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
 
@@ -50,9 +48,9 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	protected boolean skipRecord()
 	{
 		/*
-		 * acceptedNameUsageID field is a foreign key to accepted name record.
-		 * If it is empty, the record is itself IS an accepted name record, so
-		 * we must skip it.
+		 * The acceptedNameUsageID field is a foreign key to an accepted name
+		 * record in the same CSV file. If the field is empty, it means the
+		 * record is itself an accepted name record, so we must skip it.
 		 */
 		return input.get(acceptedNameUsageID) == null;
 	}
@@ -91,7 +89,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 				else {
 					stats.objectsRejected++;
 					if (!suppressErrors) {
-						warn("Synonym already exists: " + synonym);
+						error("Duplicate synonym: " + synonym);
 					}
 				}
 				return null;
@@ -99,7 +97,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 			/*
 			 * OK, taxon not queued yet. Look it up in the document store.
 			 */
-			taxon = index.get(TAXON.getName(), id, ESTaxon.class);
+			taxon = ESUtil.find(TAXON, id);
 			if (taxon != null) {
 				if (taxon.getSynonyms() == null || !taxon.getSynonyms().contains(synonym)) {
 					stats.objectsAccepted++;
@@ -150,7 +148,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 			String id = getElasticsearchId(COL, objectID);
 			ESTaxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
+				taxon = ESUtil.find(TAXON, id);
 				if (taxon != null && taxon.getSynonyms() != null) {
 					stats.objectsAccepted++;
 					taxon.setSynonyms(null);
@@ -178,7 +176,15 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		sn.setSpecificEpithet(input.get(specificEpithet));
 		sn.setInfraspecificEpithet(input.get(infraspecificEpithet));
 		sn.setAuthorshipVerbatim(input.get(scientificNameAuthorship));
-		TaxonomicStatus status = statusNormalizer.getEnumConstant(input.get(taxonomicStatus));
+		TaxonomicStatus status = null;
+		try {
+			status = statusNormalizer.map(input.get(taxonomicStatus));
+		}
+		catch (UnmappedValueException e) {
+			if (!suppressErrors) {
+				warn(e.getMessage());
+			}
+		}
 		sn.setTaxonomicStatus(status);
 		return sn;
 	}

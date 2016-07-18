@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl.col;
 
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
+
 import java.io.File;
 import java.util.List;
 
@@ -8,7 +10,9 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -18,8 +22,8 @@ import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
 
 /**
- * Utility class that set the {@code synonyms} field in taxon documents to null. Can
- * be called before starting the {@link CoLSynonymImporter} to make sure you
+ * Utility class that set the {@code synonyms} field in taxon documents to null.
+ * Can be called before starting the {@link CoLSynonymImporter} to make sure you
  * start with a clean slate. Note though that kicking off the
  * {@link CoLTaxonImporter} provides the ultimate clean slate, because it starts
  * by removing all taxon documents.
@@ -31,10 +35,17 @@ public class CoLSynonymCleaner {
 
 	public static void main(String[] args)
 	{
-		CoLSynonymCleaner cleaner = new CoLSynonymCleaner();
-		ConfigObject config = DAORegistry.getInstance().getConfiguration();
-		String dwcaDir = config.required("col.csv_dir");
-		cleaner.cleanup(dwcaDir + "/taxa.txt");
+		try {
+			CoLSynonymCleaner cleaner = new CoLSynonymCleaner();
+			ConfigObject config = DAORegistry.getInstance().getConfiguration();
+			String dwcaDir = config.required("col.data.dir");
+			cleaner.cleanup(dwcaDir + "/taxa.txt");
+		}
+		finally {
+			ESUtil.refreshIndex(TAXON);
+			ESClientManager.getInstance().closeClient();
+
+		}
 	}
 
 	static final Logger logger = ETLRegistry.getInstance().getLogger(CoLSynonymCleaner.class);
@@ -46,7 +57,7 @@ public class CoLSynonymCleaner {
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
-		String val = System.getProperty(key, "1000");
+		String val = System.getProperty(key, "5000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
 
@@ -95,7 +106,6 @@ public class CoLSynonymCleaner {
 		stats.logStatistics(logger);
 		LoadUtil.logDuration(logger, getClass(), start);
 	}
-
 
 	private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)
 	{

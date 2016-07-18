@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl.col;
 
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
+
 import java.io.File;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import org.domainobject.util.IOUtil;
 import nl.naturalis.nba.dao.es.DAORegistry;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -35,6 +38,7 @@ public class CoLSynonymImporter {
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
+			ESUtil.refreshIndex(TAXON);
 			ESClientManager.getInstance().closeClient();
 		}
 	}

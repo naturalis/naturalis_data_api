@@ -7,6 +7,8 @@ import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
 import static org.domainobject.util.StringUtil.rpad;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +31,7 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * The transformer component for the CRS specimen import.
@@ -448,38 +451,56 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	private PhaseOrStage getPhaseOrStage()
 	{
 		String raw = val(input.getRecord(), "abcd:PhaseOrStage");
-		PhaseOrStage pos = posNormalizer.getEnumConstant(raw);
-		if (pos == null && !suppressErrors) {
-			warn("Ignoring rogue value for PhaseOrStage: " + raw);
+		try {
+			return posNormalizer.map(raw);
 		}
-		return pos;
+		catch (UnmappedValueException e) {
+			if (!suppressErrors) {
+				warn(e.getMessage());
+			}
+			return null;
+		}
 	}
 
 	private SpecimenTypeStatus getTypeStatus()
 	{
 		String raw = val(input.getRecord(), "abcd:NomenclaturalTypeText");
-		SpecimenTypeStatus sts = tsNormalizer.getEnumConstant(raw);
-		if (sts == null && !suppressErrors) {
-			warn("Ignoring rogue value for TypeStatus: " + raw);
+		try {
+			return tsNormalizer.map(raw);
 		}
-		return sts;
+		catch (UnmappedValueException e) {
+			if (!suppressErrors) {
+				warn(e.getMessage());
+			}
+			return null;
+		}
 	}
 
 	private Sex getSex()
 	{
 		String raw = val(input.getRecord(), "abcd:Sex");
-		Sex sex = sexNormalizer.getEnumConstant(raw);
-		if (sex == null && !suppressErrors) {
-			warn("Ignoring rogue value for Sex: " + raw);
+		try {
+			return sexNormalizer.map(raw);
 		}
-		return sex;
+		catch (UnmappedValueException e) {
+			if (!suppressErrors) {
+				warn(e.getMessage());
+			}
+			return null;
+		}
 	}
+
+	private static final String MSG_BAD_DATE = "Invalid date in element %s: \"%s\"";
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 	private Date date(Element e, String tag)
 	{
 		String s = val(e, tag);
 		if (s == null)
 			return null;
+		/*
+		 * Don't be smart with s.toCharArray()
+		 */
 		char[] chars = new char[8];
 		Arrays.fill(chars, '0');
 		for (int i = 0; i < s.length(); ++i)
@@ -488,7 +509,14 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			chars[5] = '1';
 		if (chars[6] == '0' && chars[7] == '0')
 			chars[7] = '1';
-		return TransformUtil.parseDate(new String(chars));
+		try {
+			return sdf.parse(String.valueOf(chars));
+		}
+		catch (ParseException exc) {
+			if (!suppressErrors)
+				warn(MSG_BAD_DATE, tag, s);
+			return null;
+		}
 	}
 
 	private Double dval(Element e, String tag)

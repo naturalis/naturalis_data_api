@@ -53,47 +53,48 @@ class CoLVernacularNameTransformer
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		List<ESTaxon> result = null;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			boolean isNew = false;
 			ESTaxon taxon = loader.findInQueue(id);
-			if (taxon == null) {
-				isNew = true;
-				taxon = ESUtil.find(TAXON, id);
-			}
-			if (taxon == null) {
-				stats.objectsRejected++;
-				if (!suppressErrors) {
-					error("Orphan vernacular name: " + input.get(vernacularName));
-				}
-			}
-			else {
+			if (taxon != null) {
 				VernacularName vn = createVernacularName();
-				if (taxon.getVernacularNames() == null
-						|| !taxon.getVernacularNames().contains(vn)) {
+				if (!taxon.getVernacularNames().contains(vn)) {
 					stats.objectsAccepted++;
 					taxon.addVernacularName(vn);
-					if (isNew) {
-						result = Arrays.asList(taxon);
-					}
-					/*
-					 * else we have added the vernacular name to a taxon that's
-					 * already queued for indexing, so we're fine
-					 */
 				}
 				else {
 					stats.objectsRejected++;
 					if (!suppressErrors) {
-						error("Duplicate vernacular name for taxon: " + vn);
+						error("Duplicate vernacular name: " + vn);
 					}
 				}
+				return null;
 			}
+			taxon = ESUtil.find(TAXON, id);
+			VernacularName vn = createVernacularName();
+			if (taxon != null) {
+				if (taxon.getVernacularNames() == null
+						|| !taxon.getVernacularNames().contains(vn)) {
+					stats.objectsAccepted++;
+					taxon.addVernacularName(vn);
+					return Arrays.asList(taxon);
+				}
+				if (!suppressErrors) {
+					error("Duplicate vernacular name: " + vn);
+				}
+			}
+			else {
+				if (!suppressErrors) {
+					error("Orphan vernacular name: " + vn);
+				}
+			}
+			stats.objectsRejected++;
+			return null;
 		}
 		catch (Throwable t) {
 			handleError(t);
+			return null;
 		}
-		return result;
 	}
 
 	/**

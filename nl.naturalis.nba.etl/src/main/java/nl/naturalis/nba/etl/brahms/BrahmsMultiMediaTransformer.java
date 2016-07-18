@@ -10,7 +10,6 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDate;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getGatheringEvent;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSystemClassification;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,8 +37,8 @@ import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaTransformer extends
-		AbstractCSVTransformer<BrahmsCsvField, ESMultiMediaObject> {
+class BrahmsMultiMediaTransformer
+		extends AbstractCSVTransformer<BrahmsCsvField, ESMultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
@@ -146,7 +145,7 @@ class BrahmsMultiMediaTransformer extends
 		DefaultClassification dc = getDefaultClassification(input, sn);
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
-		identification.setSystemClassification(getSystemClassification(dc));
+		// identification.setSystemClassification(getSystemClassification(dc));
 		return identification;
 	}
 

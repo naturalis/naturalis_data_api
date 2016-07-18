@@ -31,7 +31,8 @@ import nl.naturalis.nba.etl.TransformUtil;
  */
 class BrahmsImportUtil {
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
 
@@ -237,7 +238,7 @@ class BrahmsImportUtil {
 		identification.setTaxonRank(getTaxonRank(record));
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
-		identification.setSystemClassification(getSystemClassification(dc));
+		// identification.setSystemClassification(getSystemClassification(dc));
 		return identification;
 	}
 
@@ -278,7 +279,8 @@ class BrahmsImportUtil {
 					sb.append('(');
 				}
 				sb.append(sn.getAuthorshipVerbatim());
-				if (sn.getAuthorshipVerbatim().charAt(sn.getAuthorshipVerbatim().length() - 1) != ')') {
+				if (sn.getAuthorshipVerbatim()
+						.charAt(sn.getAuthorshipVerbatim().length() - 1) != ')') {
 					sb.append(')');
 				}
 			}

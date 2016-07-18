@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.dao.es.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.es.util.ESUtil.disableAutoRefresh;
 import static nl.naturalis.nba.dao.es.util.ESUtil.getDistinctIndices;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
@@ -19,6 +18,7 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.IndexInfo;
+import nl.naturalis.nba.dao.es.util.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -44,17 +44,13 @@ public class BrahmsImportAll {
 
 	public static void main(String[] args)
 	{
-		DocumentType[] docTypes = new DocumentType[] { SPECIMEN, MULTI_MEDIA_OBJECT };
 		if (args.length == 0) {
-			for (IndexInfo idxInfo : getDistinctIndices(docTypes)) {
-				disableAutoRefresh(idxInfo);
-			}
 			try {
 				new BrahmsImportAll().importAll();
 			}
 			finally {
-				for (IndexInfo idxInfo : getDistinctIndices(docTypes)) {
-					disableAutoRefresh(idxInfo);
+				for (IndexInfo ii : getDistinctIndices(SPECIMEN, MULTI_MEDIA_OBJECT)) {
+					ESUtil.refreshIndex(ii);
 				}
 				ESClientManager.getInstance().closeClient();
 			}

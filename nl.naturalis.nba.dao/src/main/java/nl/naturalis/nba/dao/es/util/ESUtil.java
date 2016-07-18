@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.compress.utils.Charsets;
@@ -95,12 +96,13 @@ public class ESUtil {
 		result.add(DocumentType.SPECIMEN.getIndexInfo());
 		result.add(DocumentType.TAXON.getIndexInfo());
 		result.add(DocumentType.MULTI_MEDIA_OBJECT.getIndexInfo());
+		result.add(DocumentType.GEO_AREA.getIndexInfo());
 		return result;
 	}
 
 	public static Set<IndexInfo> getDistinctIndices(DocumentType... documentTypes)
 	{
-		Set<IndexInfo> result = new HashSet<>(3);
+		LinkedHashSet<IndexInfo> result = new LinkedHashSet<>(3);
 		for (DocumentType dt : documentTypes) {
 			result.add(dt.getIndexInfo());
 		}

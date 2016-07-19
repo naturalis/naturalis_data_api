@@ -204,5 +204,8 @@ public class MappingInfoTest {
 		assertNull("01", nested);
 	}
 	
-	//public void testIsMultiValued_01
+	@Test
+	public void testIsMultiValued_01() {
+		
+	}
 }

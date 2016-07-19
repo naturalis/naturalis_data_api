@@ -80,7 +80,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("numKids", BETWEEN, new int[] { 0 });
+		Condition condition = new Condition("numChildren", BETWEEN, new int[] { 0 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -106,10 +106,10 @@ public class BetweenConditionTranslatorTest {
 	@Test
 	public void testTranslate_03a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("numKids", BETWEEN, new int[] { 2, 8 });
+		Condition condition = new Condition("numChildren", BETWEEN, new int[] { 2, 8 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		// System.out.println(query);
+		System.out.println(query);
 		assertTrue("01", query instanceof RangeQueryBuilder);
 		String file = "BetweenConditionTranslatorTest__testTranslate_03.json";
 		assertEquals("02", getContents(file), query.toString());
@@ -124,7 +124,7 @@ public class BetweenConditionTranslatorTest {
 	@Test
 	public void testTranslate_03b() throws InvalidConditionException
 	{
-		Condition condition = new Condition("numKids", BETWEEN, Arrays.asList(2, 8));
+		Condition condition = new Condition("numChildren", BETWEEN, Arrays.asList(2, 8));
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);

@@ -2,11 +2,12 @@ package nl.naturalis.nba.dao.es.util;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
-import static nl.naturalis.nba.dao.es.DocumentType.*;
+import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.es.util.ESUtil.*;
-import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
+import java.io.InputStream;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -109,12 +110,16 @@ public class ESUtilTest {
 	public void testGetAutoRefreshInterval()
 	{
 		deleteAllIndices();
-		/* This should the refresh interval in es-settings.json: */
+		/* This picks up the refresh interval from es-settings.json: */
 		createAllIndices();
+		InputStream is = ESUtil.class.getResourceAsStream("/es-settings.json");
+		String setting = String.valueOf(JsonUtil.readField(is, "index.refresh_interval"));
+		logger.info("[testGetAutoRefreshInterval] index.refresh_interval is {}", setting);
 		Set<IndexInfo> indices = getDistinctIndices();
 		IndexInfo first = indices.iterator().next();
 		String interval = getAutoRefreshInterval(first);
 		logger.info("[testGetAutoRefreshInterval] Refresh interval is {}", interval);
+		assertEquals("01", setting, interval);
 	}
 
 	@Test

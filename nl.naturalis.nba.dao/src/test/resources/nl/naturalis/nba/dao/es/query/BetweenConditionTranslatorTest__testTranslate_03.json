@@ -1,6 +1,6 @@
 {
   "range" : {
-    "numKids" : {
+    "numChildren" : {
       "from" : 2,
       "to" : 8,
       "include_lower" : true,

@@ -1,5 +1,9 @@
 package nl.naturalis.nba.dao.es.test;
 
+import nl.naturalis.nba.api.annotations.Analyzer;
+import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotIndexed;
+
 /**
  * A simple class that can be used to create test objects.
  * 
@@ -8,30 +12,34 @@ package nl.naturalis.nba.dao.es.test;
  */
 public class Address {
 
-	private String addressLine1;
-	private String addressLine2;
+	@Analyzers({ Analyzer.CASE_INSENSITIVE, Analyzer.LIKE, Analyzer.DEFAULT })
+	private String street;
+	@NotIndexed
+	private int number;
+	@Analyzers({ Analyzer.CASE_INSENSITIVE })
 	private String postalCode;
+	@Analyzers({ Analyzer.CASE_INSENSITIVE, Analyzer.LIKE, Analyzer.DEFAULT })
 	private String city;
 	private Country country;
 
-	public String getAddressLine1()
+	public String getStreet()
 	{
-		return addressLine1;
+		return street;
 	}
 
-	public void setAddressLine1(String addressLine1)
+	public void setStreet(String street)
 	{
-		this.addressLine1 = addressLine1;
+		this.street = street;
 	}
 
-	public String getAddressLine2()
+	public int getNumber()
 	{
-		return addressLine2;
+		return number;
 	}
 
-	public void setAddressLine2(String addressLine2)
+	public void setNumber(int number)
 	{
-		this.addressLine2 = addressLine2;
+		this.number = number;
 	}
 
 	public String getPostalCode()

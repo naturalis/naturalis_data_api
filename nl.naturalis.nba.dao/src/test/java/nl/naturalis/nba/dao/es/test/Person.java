@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.test;
 
 import java.util.Date;
+import java.util.List;
 
 import nl.naturalis.nba.dao.es.types.ESType;
 
@@ -15,11 +16,14 @@ public class Person implements ESType {
 	private String firstName;
 	private String lastName;
 	private Date birthDate;
-	private int numKids;
-	private Address address;
-	private Pet[] pets;
+	private int numChildren;
 	private float height;
 	private boolean smoker;
+	private Address address;
+	private String[] hobbies;
+	private Pet[] pets;
+	private List<Integer> luckyNumbers;
+	private List<Address> addressBook;
 
 	public String getFirstName()
 	{
@@ -51,34 +55,14 @@ public class Person implements ESType {
 		this.birthDate = birthDate;
 	}
 
-	public int getNumKids()
+	public int getNumChildren()
 	{
-		return numKids;
+		return numChildren;
 	}
 
-	public void setNumKids(int numKids)
+	public void setNumChildren(int numChildren)
 	{
-		this.numKids = numKids;
-	}
-
-	public Address getAddress()
-	{
-		return address;
-	}
-
-	public void setAddress(Address address)
-	{
-		this.address = address;
-	}
-
-	public Pet[] getPets()
-	{
-		return pets;
-	}
-
-	public void setPets(Pet[] pets)
-	{
-		this.pets = pets;
+		this.numChildren = numChildren;
 	}
 
 	public float getHeight()
@@ -99,6 +83,56 @@ public class Person implements ESType {
 	public void setSmoker(boolean smoker)
 	{
 		this.smoker = smoker;
+	}
+
+	public Address getAddress()
+	{
+		return address;
+	}
+
+	public void setAddress(Address address)
+	{
+		this.address = address;
+	}
+
+	public String[] getHobbies()
+	{
+		return hobbies;
+	}
+
+	public void setHobbies(String[] hobbies)
+	{
+		this.hobbies = hobbies;
+	}
+
+	public Pet[] getPets()
+	{
+		return pets;
+	}
+
+	public void setPets(Pet[] pets)
+	{
+		this.pets = pets;
+	}
+
+	public List<Integer> getLuckyNumbers()
+	{
+		return luckyNumbers;
+	}
+
+	public void setLuckyNumbers(List<Integer> luckyNumbers)
+	{
+		this.luckyNumbers = luckyNumbers;
+	}
+
+	public List<Address> getAddressBook()
+	{
+		return addressBook;
+	}
+
+	public void setAddressBook(List<Address> addressBook)
+	{
+		this.addressBook = addressBook;
 	}
 
 }

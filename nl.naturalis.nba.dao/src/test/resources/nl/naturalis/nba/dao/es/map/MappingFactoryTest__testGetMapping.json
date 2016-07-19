@@ -29,12 +29,18 @@
     "birthDate" : {
       "type" : "date"
     },
-    "numKids" : {
+    "numChildren" : {
       "type" : "integer"
+    },
+    "height" : {
+      "type" : "float"
+    },
+    "smoker" : {
+      "type" : "boolean"
     },
     "address" : {
       "properties" : {
-        "addressLine1" : {
+        "street" : {
           "type" : "string",
           "index" : "not_analyzed",
           "fields" : {
@@ -44,29 +50,21 @@
             "ignoreCase" : {
               "type" : "string",
               "analyzer" : "case_insensitive_analyzer"
+            },
+            "like" : {
+              "type" : "string",
+              "analyzer" : "like_analyzer"
             }
           }
         },
-        "addressLine2" : {
-          "type" : "string",
-          "index" : "not_analyzed",
-          "fields" : {
-            "analyzed" : {
-              "type" : "string"
-            },
-            "ignoreCase" : {
-              "type" : "string",
-              "analyzer" : "case_insensitive_analyzer"
-            }
-          }
+        "number" : {
+          "type" : "integer",
+          "index" : "no"
         },
         "postalCode" : {
           "type" : "string",
           "index" : "not_analyzed",
           "fields" : {
-            "analyzed" : {
-              "type" : "string"
-            },
             "ignoreCase" : {
               "type" : "string",
               "analyzer" : "case_insensitive_analyzer"
@@ -83,6 +81,10 @@
             "ignoreCase" : {
               "type" : "string",
               "analyzer" : "case_insensitive_analyzer"
+            },
+            "like" : {
+              "type" : "string",
+              "analyzer" : "like_analyzer"
             }
           }
         },
@@ -115,6 +117,19 @@
               "type" : "integer"
             }
           }
+        }
+      }
+    },
+    "hobbies" : {
+      "type" : "string",
+      "index" : "not_analyzed",
+      "fields" : {
+        "analyzed" : {
+          "type" : "string"
+        },
+        "ignoreCase" : {
+          "type" : "string",
+          "analyzer" : "case_insensitive_analyzer"
         }
       }
     },
@@ -157,11 +172,91 @@
         }
       }
     },
-    "height" : {
-      "type" : "float"
+    "luckyNumbers" : {
+      "type" : "integer"
     },
-    "smoker" : {
-      "type" : "boolean"
+    "addressBook" : {
+      "type" : "nested",
+      "properties" : {
+        "street" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            },
+            "like" : {
+              "type" : "string",
+              "analyzer" : "like_analyzer"
+            }
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "index" : "no"
+        },
+        "postalCode" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            }
+          }
+        },
+        "city" : {
+          "type" : "string",
+          "index" : "not_analyzed",
+          "fields" : {
+            "analyzed" : {
+              "type" : "string"
+            },
+            "ignoreCase" : {
+              "type" : "string",
+              "analyzer" : "case_insensitive_analyzer"
+            },
+            "like" : {
+              "type" : "string",
+              "analyzer" : "like_analyzer"
+            }
+          }
+        },
+        "country" : {
+          "properties" : {
+            "name" : {
+              "type" : "string",
+              "index" : "not_analyzed",
+              "fields" : {
+                "analyzed" : {
+                  "type" : "string"
+                },
+                "ignoreCase" : {
+                  "type" : "string",
+                  "analyzer" : "case_insensitive_analyzer"
+                }
+              }
+            },
+            "isoCode" : {
+              "type" : "string",
+              "index" : "not_analyzed",
+              "fields" : {
+                "ignoreCase" : {
+                  "type" : "string",
+                  "analyzer" : "case_insensitive_analyzer"
+                }
+              }
+            },
+            "dialNumber" : {
+              "type" : "integer"
+            }
+          }
+        }
+      }
     }
   },
   "dynamic" : "strict"

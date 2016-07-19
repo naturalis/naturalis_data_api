@@ -42,7 +42,7 @@ class InConditionTranslator extends ConditionTranslator {
 		else {
 			query = isOneOf(ivb.getValues());
 		}
-		String nestedPath = mappingInfo.getNestedPath(field());
+		String nestedPath = MappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
 			return query;
 		}

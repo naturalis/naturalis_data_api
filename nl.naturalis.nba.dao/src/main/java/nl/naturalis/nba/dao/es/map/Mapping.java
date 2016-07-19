@@ -17,7 +17,7 @@ public class Mapping extends Document {
 	@JsonIgnore
 	private final Class<?> mappedClass;
 
-	public Mapping(Class<?> mappedClass)
+	Mapping(Class<?> mappedClass)
 	{
 		this.mappedClass = mappedClass;
 	}

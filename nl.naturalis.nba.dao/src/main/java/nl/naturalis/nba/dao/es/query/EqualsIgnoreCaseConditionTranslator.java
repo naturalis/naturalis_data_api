@@ -27,7 +27,7 @@ public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 		if (value().getClass() != String.class) {
 			throw searchTermHasWrongType();
 		}
-		String nestedPath = mappingInfo.getNestedPath(field());
+		String nestedPath = MappingInfo.getNestedPath(field());
 		String multiField = path() + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
 			if (value() == null) {

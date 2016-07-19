@@ -6,6 +6,8 @@ import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.search.sort.SortOrder.ASC;
+import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import java.util.Map;
 
@@ -28,6 +30,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortOrder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,7 +38,12 @@ import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.query.SortOption;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.es.map.DocumentField;
+import nl.naturalis.nba.dao.es.map.ESField;
+import nl.naturalis.nba.dao.es.map.MappingInfo;
+import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.query.ConditionTranslator;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
@@ -175,6 +183,28 @@ public class SpecimenDAO implements ISpecimenAPI {
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();
 		request.setQuery(csq);
+		request.setFrom(spec.getFrom());
+		request.setSize(spec.getSize());
+		if (spec.getSort() != null) {
+			MappingInfo mappingInfo = new MappingInfo(SPECIMEN.getMapping());
+			for (SortOption so : spec.getSort()) {
+				try {
+					ESField f = mappingInfo.getField(so.getField());
+					if (!(f instanceof DocumentField)) {
+						throw invalidSortField(so.getField());
+					}
+					if (mappingInfo.getNestedPath(f) != null) {
+
+					}
+				}
+				catch (NoSuchFieldException e) {
+					throw invalidSortField(so.getField());
+				}
+
+				SortOrder order = so.isAscending() ? ASC : DESC;
+				request.addSort(so.getField(), order);
+			}
+		}
 		return processSearchRequest(request);
 	}
 
@@ -257,6 +287,13 @@ public class SpecimenDAO implements ISpecimenAPI {
 	private static Client client()
 	{
 		return ESClientManager.getInstance().getClient();
+	}
+
+	private static InvalidQueryException invalidSortField(String field)
+	{
+		String fmt = "Invalid sort field: \"%s\"";
+		String msg = String.format(fmt, field);
+		return new InvalidQueryException(msg);
 	}
 
 }

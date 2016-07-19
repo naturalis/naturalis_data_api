@@ -20,7 +20,7 @@ public class EqualsConditionTranslator extends ConditionTranslator {
 
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		String nestedPath = mappingInfo.getNestedPath(field());
+		String nestedPath = MappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
 			if (value() == null) {
 				return boolQuery().mustNot(existsQuery(path()));

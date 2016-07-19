@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.map;
 
+import java.util.Collection;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -18,6 +20,8 @@ public abstract class ESField {
 	protected ESDataType type;
 	@JsonIgnore
 	protected ESField parent;
+	@JsonIgnore
+	protected boolean multiValued;
 
 	public String getName()
 	{
@@ -47,6 +51,26 @@ public abstract class ESField {
 	public void setParent(ESField parent)
 	{
 		this.parent = parent;
+	}
+
+	/**
+	 * Whether or not the field is multi-valued. While in Elasticsearch every
+	 * field is potentially multi-valued, we can determine in advance whether it
+	 * can actually ever have more than one value. If the Java field
+	 * corresponding to the document field is an array or a {@link Collection},
+	 * the document field may contain more than one value. Otherwise it
+	 * definitely is single-valued.
+	 * 
+	 * @return
+	 */
+	public boolean isMultiValued()
+	{
+		return multiValued;
+	}
+
+	public void setMultiValued(boolean multiValued)
+	{
+		this.multiValued = multiValued;
 	}
 
 }

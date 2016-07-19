@@ -7,26 +7,34 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 public class ConditionTranslatorFactory {
 
-	public ConditionTranslatorFactory()
+	private ConditionTranslatorFactory()
 	{
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified condition and the
-	 * specified document type.
+	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
+	 * condition} and the specified {@link DocumentType document type}.
 	 * 
 	 * @param condition
 	 * @param type
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public ConditionTranslator getTranslator(Condition condition, DocumentType type)
+	public static ConditionTranslator getTranslator(Condition condition, DocumentType type)
 	{
 		MappingInfo inspector = new MappingInfo(type.getMapping());
 		return getTranslator(condition, inspector);
 	}
 
-	public ConditionTranslator getTranslator(Condition condition, MappingInfo mappingInfo)
+	/**
+	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
+	 * condition} and the specified {@link MappingInfo} object.
+	 * 
+	 * @param condition
+	 * @param mappingInfo
+	 * @return
+	 */
+	public static ConditionTranslator getTranslator(Condition condition, MappingInfo mappingInfo)
 	{
 		switch (condition.getOperator()) {
 			case EQUALS:

@@ -33,7 +33,7 @@ public class LikeConditionTranslator extends ConditionTranslator {
 		if (value.length() > 10) {
 			throw error("Search term must contain at most 10 characters with operator %s", LIKE);
 		}
-		String nestedPath = mappingInfo.getNestedPath(field());
+		String nestedPath = MappingInfo.getNestedPath(field());
 		String multiField = path() + '.' + LIKE_MULTIFIELD.getName();
 		if (nestedPath == null) {
 			return termQuery(multiField, value.toLowerCase());

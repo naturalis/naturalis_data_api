@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 import nl.naturalis.nba.api.annotations.MappedProperty;
 
-class Util {
+class MappingUtil {
 
-	private Util()
+	private MappingUtil()
 	{
 	}
 

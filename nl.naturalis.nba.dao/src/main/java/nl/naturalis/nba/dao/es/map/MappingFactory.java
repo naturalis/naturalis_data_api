@@ -7,10 +7,10 @@ import static nl.naturalis.nba.dao.es.map.Index.NOT_ANALYZED;
 import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
-import static nl.naturalis.nba.dao.es.map.Util.extractFieldFromGetter;
-import static nl.naturalis.nba.dao.es.map.Util.getClassForTypeArgument;
-import static nl.naturalis.nba.dao.es.map.Util.getFields;
-import static nl.naturalis.nba.dao.es.map.Util.getMappedProperties;
+import static nl.naturalis.nba.dao.es.map.MappingUtil.extractFieldFromGetter;
+import static nl.naturalis.nba.dao.es.map.MappingUtil.getClassForTypeArgument;
+import static nl.naturalis.nba.dao.es.map.MappingUtil.getFields;
+import static nl.naturalis.nba.dao.es.map.MappingUtil.getMappedProperties;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;
@@ -30,7 +30,7 @@ import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
- * Generates Elasticsearch mappings from {@link Class} objects.
+ * Generates Elasticsearch type mappings from {@link Class} objects.
  * 
  * @author Ayco Holleman
  *
@@ -46,7 +46,7 @@ public class MappingFactory {
 	 * @param type
 	 * @return
 	 */
-	public Mapping getMapping(Class<?> type)
+	public static Mapping getMapping(Class<?> type)
 	{
 		Mapping mapping = new Mapping(type);
 		addFieldsToDocument(mapping, type);
@@ -55,18 +55,20 @@ public class MappingFactory {
 
 	private static void addFieldsToDocument(Document document, Class<?> type)
 	{
-		for (Field f : getFields(type)) {
-			ESField esField = createESField(f);
-			esField.setName(f.getName());
+		for (Field javaField : getFields(type)) {
+			ESField esField = createESField(javaField);
+			esField.setName(javaField.getName());
 			esField.setParent(document);
-			document.addField(f.getName(), esField);
+			esField.setMultiValued(isMultiValued(javaField));
+			document.addField(javaField.getName(), esField);
 		}
-		for (Method m : getMappedProperties(type)) {
-			String methodName = m.getName();
+		for (Method javaMethod : getMappedProperties(type)) {
+			String methodName = javaMethod.getName();
 			String fieldName = extractFieldFromGetter(methodName);
-			ESField esField = createESField(m);
+			ESField esField = createESField(javaMethod);
 			esField.setName(fieldName);
 			esField.setParent(document);
+			esField.setMultiValued(isMultiValued(javaMethod));
 			document.addField(fieldName, esField);
 		}
 	}
@@ -117,15 +119,11 @@ public class MappingFactory {
 				addMultiFields(field, fm);
 				return field;
 			}
-			else {
-				return new DocumentField(esType);
-			}
+			return new DocumentField(esType);
 		}
-		else {
-			DocumentField field = new DocumentField(esType);
-			field.setIndex(NO);
-			return field;
-		}
+		DocumentField field = new DocumentField(esType);
+		field.setIndex(NO);
+		return field;
 	}
 
 	private static Document createDocument(Field field, Class<?> mapToType)
@@ -170,7 +168,7 @@ public class MappingFactory {
 
 	private static void checkClass(Class<?> cls)
 	{
-		//
+		// ...
 	}
 
 	/*
@@ -224,6 +222,24 @@ public class MappingFactory {
 		if (isA(type, Enum.class))
 			return String.class;
 		return type;
+	}
+
+	private static boolean isMultiValued(Field f)
+	{
+		if (f.getType().isArray())
+			return true;
+		if (isA(f.getType(), Collection.class))
+			return true;
+		return false;
+	}
+
+	private static boolean isMultiValued(Method m)
+	{
+		if (m.getReturnType().isArray())
+			return true;
+		if (isA(m.getReturnType(), Collection.class))
+			return true;
+		return false;
 	}
 
 }

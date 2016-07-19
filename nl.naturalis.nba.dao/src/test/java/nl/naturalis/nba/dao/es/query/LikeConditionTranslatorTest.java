@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory.getTranslator;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 
+@SuppressWarnings("static-method")
 public class LikeConditionTranslatorTest {
 
 	private static MappingInfo inspector;
@@ -18,7 +20,7 @@ public class LikeConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = new MappingFactory().getMapping(LikeTestObject.class);
+		Mapping m = MappingFactory.getMapping(LikeTestObject.class);
 		inspector = new MappingInfo(m);
 	}
 
@@ -29,8 +31,7 @@ public class LikeConditionTranslatorTest {
 	public void testTranslate_01() throws InvalidConditionException
 	{
 		Condition c = new Condition("firstName", LIKE, new Object());
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -42,8 +43,7 @@ public class LikeConditionTranslatorTest {
 	public void testTranslate_02() throws InvalidConditionException
 	{
 		Condition c = new Condition("age", LIKE, "foo");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -55,8 +55,7 @@ public class LikeConditionTranslatorTest {
 	public void testTranslate_03() throws InvalidConditionException
 	{
 		Condition c = new Condition("firstName", LIKE, "12");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -68,8 +67,7 @@ public class LikeConditionTranslatorTest {
 	public void testTranslate_04() throws InvalidConditionException
 	{
 		Condition c = new Condition("firstName", LIKE, "12345678901234567890");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
 
@@ -82,8 +80,7 @@ public class LikeConditionTranslatorTest {
 	{
 		// address field has no @Analyzers annotation
 		Condition c = new Condition("address", LIKE, "foo");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
 

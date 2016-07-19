@@ -65,7 +65,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
 		query.from(val0);
 		query.to(val1);
-		String nestedPath = mappingInfo.getNestedPath(field());
+		String nestedPath = MappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
 			return query;
 		}

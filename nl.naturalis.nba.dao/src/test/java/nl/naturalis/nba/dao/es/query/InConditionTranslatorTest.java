@@ -19,6 +19,8 @@ import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.test.Person;
+import static nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory.getTranslator;
+
 
 public class InConditionTranslatorTest {
 
@@ -27,7 +29,7 @@ public class InConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = new MappingFactory().getMapping(Person.class);
+		Mapping m = MappingFactory.getMapping(Person.class);
 		mappingInfo = new MappingInfo(m);
 	}
 
@@ -37,9 +39,8 @@ public class InConditionTranslatorTest {
 	@Test
 	public void testTranslate_01a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", IN, null);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		Condition condition = new Condition("firstName", IN, null);	
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -53,9 +54,8 @@ public class InConditionTranslatorTest {
 	@Test
 	public void testTranslate_01b() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", IN, new Integer[] { null, null, null });
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		Condition condition = new Condition("firstName", IN, new Integer[] { null, null, null });		
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -69,9 +69,8 @@ public class InConditionTranslatorTest {
 	@Test
 	public void testTranslate_02() throws InvalidConditionException
 	{
-		Condition condition = new Condition("pets.name", IN, new String[] { "Napoleon", "Max" });
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		Condition condition = new Condition("pets.name", IN, new String[] { "Napoleon", "Max" });		
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		String file = "InConditionTranslatorTest__testTranslate_02.json";
@@ -89,9 +88,8 @@ public class InConditionTranslatorTest {
 		values.add("Napoleon");
 		values.add("Max");
 		values.add(null);
-		Condition condition = new Condition("pets.name", IN, values);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		Condition condition = new Condition("pets.name", IN, values);	
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		String file = "InConditionTranslatorTest__testTranslate_03.json";

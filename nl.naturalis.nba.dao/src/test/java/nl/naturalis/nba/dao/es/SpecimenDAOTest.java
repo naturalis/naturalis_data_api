@@ -53,7 +53,6 @@ public class SpecimenDAOTest {
 	@After
 	public void after()
 	{
-		// dropIndex(ESSpecimen.class);
 	}
 
 	/*

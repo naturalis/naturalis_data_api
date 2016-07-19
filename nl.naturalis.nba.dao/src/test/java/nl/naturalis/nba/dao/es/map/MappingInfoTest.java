@@ -11,7 +11,8 @@ import org.junit.Test;
 
 import nl.naturalis.nba.dao.es.DocumentType;
 
-public class MappingInspectorTest {
+@SuppressWarnings("static-method")
+public class MappingInfoTest {
 
 	private static MappingInfo inspector;
 
@@ -202,4 +203,6 @@ public class MappingInspectorTest {
 		String nested = inspector.getNestedPath(path);
 		assertNull("01", nested);
 	}
+	
+	//public void testIsMultiValued_01
 }

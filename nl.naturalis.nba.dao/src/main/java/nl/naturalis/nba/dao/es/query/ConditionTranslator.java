@@ -6,6 +6,7 @@ import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
+import static nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory.getTranslator;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
 import java.util.EnumSet;
@@ -47,19 +48,18 @@ public abstract class ConditionTranslator {
 		if (conditions == null || conditions.size() == 0) {
 			return QueryBuilders.matchAllQuery();
 		}
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		if (conditions.size() == 1) {
-			return ctf.getTranslator(conditions.get(0), type).translate();
+			return getTranslator(conditions.get(0), type).translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		if (qs.getLogicalOperator() == AND) {
 			for (Condition c : conditions) {
-				result.must(ctf.getTranslator(c, type).translate());
+				result.must(getTranslator(c, type).translate());
 			}
 		}
 		else {
 			for (Condition c : conditions) {
-				result.should(ctf.getTranslator(c, type).translate());
+				result.should(getTranslator(c, type).translate());
 			}
 		}
 		return result;
@@ -221,9 +221,8 @@ public abstract class ConditionTranslator {
 		else {
 			boolQuery.must(translateCondition());
 		}
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : and()) {
-			ConditionTranslator translator = ctf.getTranslator(sibling, mappingInfo);
+			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.mustNot(translator.translate(true));
 			}
@@ -243,9 +242,8 @@ public abstract class ConditionTranslator {
 		else {
 			boolQuery.should(translateCondition());
 		}
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : or()) {
-			ConditionTranslator translator = ctf.getTranslator(sibling, mappingInfo);
+			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
@@ -259,9 +257,8 @@ public abstract class ConditionTranslator {
 	private BoolQueryBuilder translateOrSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
 		for (Condition sibling : or()) {
-			ConditionTranslator translator = ctf.getTranslator(sibling, mappingInfo);
+			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}

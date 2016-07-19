@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import nl.naturalis.nba.dao.es.map.MappingFactoryTest;
-import nl.naturalis.nba.dao.es.map.MappingInspectorTest;
+import nl.naturalis.nba.dao.es.map.MappingInfoTest;
 import nl.naturalis.nba.dao.es.query.BetweenConditionTranslatorTest;
 import nl.naturalis.nba.dao.es.query.EqualsConditionTranslatorTest;
 import nl.naturalis.nba.dao.es.query.InConditionTranslatorTest;
@@ -19,7 +19,7 @@ import nl.naturalis.nba.dao.es.util.ESClientManagerTest;
 	RegistryTest.class,
 	ESClientManagerTest.class,
 	MappingFactoryTest.class,
-	MappingInspectorTest.class,
+	MappingInfoTest.class,
 	EqualsConditionTranslatorTest.class,
 	LikeConditionTranslatorTest.class ,
 	BetweenConditionTranslatorTest.class ,

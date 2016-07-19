@@ -15,8 +15,9 @@ import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
 
 /**
- * A {@code MappingInspector} provides easy, programmatic access to various
- * aspects of an Elasticsearch mapping.
+ * A {@code MappingInfo} object provides easy, programmatic access to various
+ * aspects of an Elasticsearch {@link Mapping type mapping}. {@code MappingInfo}
+ * objects are cheap (negligable instantiation costs).
  * 
  * @author Ayco Holleman
  *
@@ -25,6 +26,76 @@ public class MappingInfo {
 
 	private static final HashMap<Mapping, HashMap<String, ESField>> fieldCache = new HashMap<>(5);
 
+	/**
+	 * Determines if the specified field <i>or any of its ancestors</i> is a
+	 * multi-valued field. In Elasticsearch each field in a type mapping is
+	 * potentially multi-valued. However, we can determine in advance whether it
+	 * will actually ever store more than one value. If the field corresponds to
+	 * a Java field that is a {@code Collection} or an array, it could,
+	 * otherwise it cannot.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public static boolean isMultiValued(ESField field)
+	{
+		for (ESField f = field; f != null; f = f.getParent()) {
+			if (f.isMultiValued()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the parent document and the parent document's ancestors of the
+	 * specified field.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public static List<Document> getAncestors(ESField field)
+	{
+		List<Document> ancestors = new ArrayList<>(3);
+		field = field.getParent();
+		while (field.getParent() != null) {
+			ancestors.add((Document) field);
+			field = field.getParent();
+		}
+		return ancestors;
+	}
+
+	/**
+	 * Returns a substring of the specified path up to, and including the
+	 * <i>lowest level</i> object with type "nested" (rather than "object").
+	 * This is the path that must be used for a nested query on the specified
+	 * field. If this method returns {@code null}, it implicitly means no nested
+	 * query is required.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public static String getNestedPath(ESField field)
+	{
+		List<Document> in = getAncestors(field);
+		List<Document> out;
+		for (int i = 0; i < in.size(); ++i) {
+			Document d = in.get(i);
+			if (d.getType() == NESTED) {
+				out = in.subList(i, in.size());
+				Collections.reverse(out);
+				return CollectionUtil.implode(out, ".", new Stringifier<Document>() {
+
+					public String execute(Document doc, Object... args)
+					{
+						return doc.getName();
+					}
+				});
+			}
+		}
+		return null;
+	}
+
 	private final Mapping mapping;
 
 	public MappingInfo(Mapping mapping)
@@ -32,6 +103,11 @@ public class MappingInfo {
 		this.mapping = mapping;
 	}
 
+	/**
+	 * Returns the {@link Mapping} object wrapped by this instance.
+	 * 
+	 * @return
+	 */
 	public Mapping getMapping()
 	{
 		return mapping;
@@ -59,9 +135,9 @@ public class MappingInfo {
 	/**
 	 * Returns the Elasticsearch data type of the specified field. Basically
 	 * equivalent to {@link #getField(String) getField(field).getType()}.
-	 * However, if {@code getType()} returns {@code null}, this method will
-	 * return the appropriate default data type instead ("string" for fields;
-	 * "object" for nested documents).
+	 * However, that method may return {@code null}, meaning that the type of
+	 * the field is "{@link ESDataType#OBJECT object}". This method will never
+	 * return never return {@code null}.
 	 * 
 	 * @param path
 	 * @return
@@ -84,28 +160,11 @@ public class MappingInfo {
 	}
 
 	/**
-	 * Returns the parent document and its ancestors of the specified field.
-	 * 
-	 * @param f
-	 * @return
-	 */
-	public List<Document> getAncestors(ESField f)
-	{
-		List<Document> ancestors = new ArrayList<>(3);
-		f = f.getParent();
-		while (f.getParent() != null) {
-			ancestors.add((Document) f);
-			f = f.getParent();
-		}
-		return ancestors;
-	}
-
-	/**
 	 * Returns a substring of the specified path up to, and including the
 	 * <i>lowest level</i> object with type "nested" (rather than "object").
 	 * This is the path to be used for a nested query on the specified field. If
-	 * this method returns {@code null}, this implicitly means no nested query
-	 * is required.
+	 * this method returns {@code null}, it implicitly means no nested query is
+	 * required.
 	 * 
 	 * @param path
 	 * @return
@@ -113,37 +172,6 @@ public class MappingInfo {
 	public String getNestedPath(String path)
 	{
 		return getNestedPath(getField(path));
-	}
-
-	/**
-	 * Returns a substring of the specified path up to, and including the
-	 * <i>lowest level</i> object with type "nested" (rather than "object").
-	 * This is the path to be used for a nested query on the specified field. If
-	 * this method returns {@code null}, this implicitly means no nested query
-	 * is required.
-	 * 
-	 * @param field
-	 * @return
-	 */
-	public String getNestedPath(ESField field)
-	{
-		List<Document> in = getAncestors(field);
-		List<Document> out;
-		for (int i = 0; i < in.size(); ++i) {
-			Document d = in.get(i);
-			if (d.getType() == NESTED) {
-				out = in.subList(i, in.size());
-				Collections.reverse(out);
-				return CollectionUtil.implode(out, ".", new Stringifier<Document>() {
-
-					public String execute(Document doc, Object... args)
-					{
-						return doc.getName();
-					}
-				});
-			}
-		}
-		return null;
 	}
 
 	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map)

@@ -17,18 +17,46 @@ public class QuerySpec {
 
 	private List<Condition> conditions;
 	private LogicalOperator logicalOperator;
-	private List<String> sortBy;
+	private List<SortOption> sort;
+	private int from;
+	private int size;
 
 	public QuerySpec()
 	{
 	}
 
+	/**
+	 * Adds the specified query condition to this {@code QuerySpec} instance.
+	 * 
+	 * @param condition
+	 */
 	public void addCondition(Condition condition)
 	{
 		if (conditions == null) {
 			conditions = new ArrayList<>(5);
 		}
 		conditions.add(condition);
+	}
+
+	public void sortAcending(String field)
+	{
+		if (sort == null) {
+			sort = new ArrayList<>(2);
+		}
+		SortOption so = new SortOption();
+		so.setField(field);
+		sort.add(so);
+	}
+
+	public void sortDescending(String field)
+	{
+		if (sort == null) {
+			sort = new ArrayList<>(2);
+		}
+		SortOption so = new SortOption();
+		so.setField(field);
+		so.setAscending(false);
+		sort.add(so);
 	}
 
 	public List<Condition> getConditions()
@@ -51,14 +79,34 @@ public class QuerySpec {
 		this.logicalOperator = operator;
 	}
 
-	public List<String> getSortBy()
+	public List<SortOption> getSort()
 	{
-		return sortBy;
+		return sort;
 	}
 
-	public void setSortBy(List<String> sortBy)
+	public void setSort(List<SortOption> sort)
 	{
-		this.sortBy = sortBy;
+		this.sort = sort;
+	}
+
+	public int getFrom()
+	{
+		return from;
+	}
+
+	public void setFrom(int from)
+	{
+		this.from = from;
+	}
+
+	public int getSize()
+	{
+		return size == 0 ? 10 : size;
+	}
+
+	public void setSize(int size)
+	{
+		this.size = size;
 	}
 
 }

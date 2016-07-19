@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.es.query;
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
+import static nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -26,7 +27,7 @@ public class EqualsConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = new MappingFactory().getMapping(EqualsTestObject.class);
+		Mapping m = MappingFactory.getMapping(EqualsTestObject.class);
 		mappingInfo = new MappingInfo(m);
 	}
 
@@ -38,8 +39,7 @@ public class EqualsConditionTranslatorTest {
 	public void testTranslate_01() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", EQUALS, null);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -55,8 +55,7 @@ public class EqualsConditionTranslatorTest {
 	public void testTranslate_02() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", NOT_EQUALS, null);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -72,8 +71,7 @@ public class EqualsConditionTranslatorTest {
 	public void testTranslate_03() throws InvalidConditionException
 	{
 		Condition condition = new Condition(NOT, "firstName", EQUALS, null);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -89,8 +87,7 @@ public class EqualsConditionTranslatorTest {
 	public void testTranslate_04() throws InvalidConditionException
 	{
 		Condition condition = new Condition(NOT, "firstName", NOT_EQUALS, null);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -106,8 +103,7 @@ public class EqualsConditionTranslatorTest {
 	public void testTranslate_05() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", EQUALS, "Smith");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof TermQueryBuilder);
@@ -123,8 +119,7 @@ public class EqualsConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -139,8 +134,7 @@ public class EqualsConditionTranslatorTest {
 	public void testTranslate_07() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", NOT_EQUALS, "John");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -158,8 +152,7 @@ public class EqualsConditionTranslatorTest {
 		condition.and("lastName", EQUALS, "Smith");
 		condition.and("married", NOT_EQUALS, true);
 		condition.and("favouritePet", NOT_EQUALS, "dog");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -177,8 +170,7 @@ public class EqualsConditionTranslatorTest {
 		Condition condition = new Condition(NOT, "firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
 		condition.and("age", EQUALS, 40);
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -203,8 +195,7 @@ public class EqualsConditionTranslatorTest {
 
 		isJohnSmith.and(inNetherlands.or(inGermany));
 
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(isJohnSmith, mappingInfo);
+		ConditionTranslator ct = getTranslator(isJohnSmith, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -220,8 +211,7 @@ public class EqualsConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", "=", "John");
 		condition.or("firstName", "=", "Peter").or("firstName", "=", "Mark");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
@@ -239,8 +229,7 @@ public class EqualsConditionTranslatorTest {
 		condition.and("lastName", "=", "Smith").and("favouriteFood", "=", "Chinese");
 		condition.or("city", "=", "Amsterdam").or("city", "=", "Rotterdam").or("city", "=",
 				"Leiden");
-		ConditionTranslatorFactory ctf = new ConditionTranslatorFactory();
-		ConditionTranslator ct = ctf.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);

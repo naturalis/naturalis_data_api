@@ -266,9 +266,10 @@ public abstract class Loader<T> implements Closeable {
 	}
 
 	/**
-	 * Determines whether to suppress ERROR and WARN messages, while still
-	 * letting through INFO messages. This may be helpful if you expect large
-	 * amounts of well-known ERROR messages that just clog up your log file.
+	 * Determines whether to suppress ERROR and WARN messages while still
+	 * letting through INFO messages. This is sometimes helpful if you expect
+	 * large amounts of well-known errors and warnings that just clog up your
+	 * log file.
 	 * 
 	 * @param suppressErrors
 	 */

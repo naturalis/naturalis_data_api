@@ -36,7 +36,7 @@ public class PrintMapping {
 				System.exit(1);
 			}
 		}
-		Mapping mapping = new MappingFactory().getMapping(type);
+		Mapping mapping = MappingFactory.getMapping(type);
 		MappingSerializer serializer = new MappingSerializer(true);
 		serializer.serialize(System.out, mapping);
 	}

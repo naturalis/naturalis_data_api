@@ -96,6 +96,7 @@ public abstract class AbstractTransformer<INPUT, OUTPUT> implements Transformer<
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("static-method")
 	protected boolean skipRecord()
 	{
 		return false;

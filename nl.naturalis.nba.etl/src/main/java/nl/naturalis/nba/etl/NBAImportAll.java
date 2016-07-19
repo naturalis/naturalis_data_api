@@ -25,11 +25,11 @@ public class NBAImportAll {
 	public static void main(String[] args)
 	{
 		try {
-			NBAImportAll nbaImportAll = new NBAImportAll();
 			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
-				nbaImportAll.bootstrap();
+				bootstrap();
 			}
 			if (args.length == 0 || Arrays.asList(args).contains("import")) {
+				NBAImportAll nbaImportAll = new NBAImportAll();
 				nbaImportAll.importAll();
 			}
 		}
@@ -96,7 +96,7 @@ public class NBAImportAll {
 	 * indices used by the NBA and then re-create them. All data will be lost.
 	 * WATCH OUT!
 	 */
-	public void bootstrap()
+	public static void bootstrap()
 	{
 		ESUtil.deleteAllIndices();
 		ESUtil.createAllIndices();

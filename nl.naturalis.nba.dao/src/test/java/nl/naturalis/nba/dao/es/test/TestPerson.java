@@ -11,7 +11,7 @@ import nl.naturalis.nba.dao.es.types.ESType;
  * @author Ayco Holleman
  *
  */
-public class Person implements ESType {
+public class TestPerson implements ESType {
 
 	private String firstName;
 	private String lastName;

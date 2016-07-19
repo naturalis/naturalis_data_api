@@ -174,6 +174,17 @@ public class MappingInfo {
 		return getNestedPath(getField(path));
 	}
 
+	/**
+	 * See {@link #isMultiValued(ESField)}.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public boolean isMultiValued(String path)
+	{
+		return isMultiValued(getField(path));
+	}
+
 	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map)
 	{
 		ESField f = map.get(path.get(0));

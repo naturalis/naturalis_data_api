@@ -23,7 +23,7 @@ import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.test.Address;
-import nl.naturalis.nba.dao.es.test.Person;
+import nl.naturalis.nba.dao.es.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class BetweenConditionTranslatorTest {
@@ -33,7 +33,7 @@ public class BetweenConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = MappingFactory.getMapping(Person.class);
+		Mapping m = MappingFactory.getMapping(TestPerson.class);
 		mappingInfo = new MappingInfo(m);
 	}
 

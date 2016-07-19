@@ -5,14 +5,14 @@ import static org.junit.Assert.assertEquals;
 import org.domainobject.util.FileUtil;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.test.Person;
+import nl.naturalis.nba.dao.es.test.TestPerson;
 
 public class MappingFactoryTest {
 
 	@Test
 	public void testGetMapping()
 	{
-		Mapping mapping = MappingFactory.getMapping(Person.class);
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
 		MappingSerializer serializer = new MappingSerializer(true);
 		String json = serializer.serialize(mapping);
 		// System.out.println(json);

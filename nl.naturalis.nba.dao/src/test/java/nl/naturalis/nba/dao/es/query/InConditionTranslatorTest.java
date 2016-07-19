@@ -18,7 +18,7 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
-import nl.naturalis.nba.dao.es.test.Person;
+import nl.naturalis.nba.dao.es.test.TestPerson;
 import static nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory.getTranslator;
 
 
@@ -29,7 +29,7 @@ public class InConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = MappingFactory.getMapping(Person.class);
+		Mapping m = MappingFactory.getMapping(TestPerson.class);
 		mappingInfo = new MappingInfo(m);
 	}
 

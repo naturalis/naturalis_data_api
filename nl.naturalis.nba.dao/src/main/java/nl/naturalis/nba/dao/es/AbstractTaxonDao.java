@@ -1,22 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.search.*;
-import nl.naturalis.nba.dao.es.transfer.TaxonTransfer;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
-import nl.naturalis.nba.dao.es.util.FieldMapping;
-
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
-
-import static nl.naturalis.nba.dao.es.util.ESConstants.TAXON_TYPE;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Abstract class for Taxon functionality.
  *

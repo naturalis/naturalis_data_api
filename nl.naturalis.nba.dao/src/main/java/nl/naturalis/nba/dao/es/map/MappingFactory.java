@@ -4,13 +4,13 @@ import static nl.naturalis.nba.dao.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.dao.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.dao.es.map.Index.NO;
 import static nl.naturalis.nba.dao.es.map.Index.NOT_ANALYZED;
-import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
-import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
-import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
 import static nl.naturalis.nba.dao.es.map.MappingUtil.extractFieldFromGetter;
 import static nl.naturalis.nba.dao.es.map.MappingUtil.getClassForTypeArgument;
 import static nl.naturalis.nba.dao.es.map.MappingUtil.getFields;
 import static nl.naturalis.nba.dao.es.map.MappingUtil.getMappedProperties;
+import static nl.naturalis.nba.dao.es.map.MultiField.DEFAULT_MULTIFIELD;
+import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
+import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
 import static org.domainobject.util.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;

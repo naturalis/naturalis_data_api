@@ -1,13 +1,15 @@
 package nl.naturalis.nba.dao.es.transfer;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-
-import java.util.*;
 
 public class MultiMediaObjectTransfer {
 

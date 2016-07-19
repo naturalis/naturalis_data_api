@@ -1,10 +1,10 @@
 package nl.naturalis.nba.dao.es.transfer;
 
-import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
 
 /**
  * Transfer class used for transferring {@link ESGatheringSiteCoordinates} to

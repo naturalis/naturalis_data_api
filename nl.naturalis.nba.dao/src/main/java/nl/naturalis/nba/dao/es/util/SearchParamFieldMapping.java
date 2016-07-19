@@ -1,14 +1,14 @@
 //
 package nl.naturalis.nba.dao.es.util;
 
-import nl.naturalis.nba.api.search.QueryParams;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+
+import nl.naturalis.nba.api.search.QueryParams;
 
 /**
  * Provides functionality to get a mapping for specific field or NBA alias.

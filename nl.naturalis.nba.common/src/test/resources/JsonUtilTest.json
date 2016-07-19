@@ -1,0 +1,20 @@
+{
+	"firstName": "John",
+	"lastName": "Smith",
+	"address": {
+		"street": "Midnight Avenue",
+		"number": 1429,
+		"postalCode": "CA-9900",
+		"country": {
+			"name": "U.S.A",
+			"isoCode": "US"
+		}
+	},
+	"age": 36,
+	"kids": [
+		"Mary",
+		"Lisa",
+		"Junior"
+	],
+	"hobbies": null
+}

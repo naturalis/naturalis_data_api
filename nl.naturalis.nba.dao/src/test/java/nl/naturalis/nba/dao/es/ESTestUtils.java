@@ -64,7 +64,7 @@ public class ESTestUtils {
 		irb.setSource(source);
 		irb.execute().actionGet();
 		if (refreshIndex) {
-			ESUtil.refreshIndex(obj.getClass());
+			ESUtil.refreshIndex(dt);
 		}
 	}
 

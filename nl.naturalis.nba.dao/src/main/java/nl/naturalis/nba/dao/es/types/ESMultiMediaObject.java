@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 import nl.naturalis.nba.api.model.NBATraceableObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 
 public class ESMultiMediaObject extends NBATraceableObject implements ESType {
 

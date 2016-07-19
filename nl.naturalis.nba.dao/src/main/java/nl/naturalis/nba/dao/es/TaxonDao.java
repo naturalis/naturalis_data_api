@@ -1,26 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.search.*;
-import nl.naturalis.nba.dao.es.util.ESConstants;
-import nl.naturalis.nba.dao.es.util.FieldMapping;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-//import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-
-import java.util.*;
-
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.SOURCE_SYSTEM_ID;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.TaxonFields.*;
-//import static org.elasticsearch.index.query.FilterBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-
 public class TaxonDao extends AbstractTaxonDao {
 //
 //    public TaxonDao(Client esClient, String ndaIndexName, String baseUrl) {

@@ -1,21 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import static nl.naturalis.nba.dao.es.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.UNIT_ID;
-//import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.dao.es.transfer.MultiMediaObjectTransfer;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
-//import org.elasticsearch.index.query.TermFilterBuilder;
-import org.elasticsearch.search.SearchHit;
-
 public class MultiMediaObjectDao extends AbstractDao {
 //
 //	public MultiMediaObjectDao(Client esClient, String ndaIndexName, String baseUrl)

@@ -26,6 +26,7 @@ import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
+@SuppressWarnings("static-method")
 @Path("/specimen")
 @Stateless
 @LocalBean
@@ -65,7 +66,7 @@ public class SpecimenResource {
 	public Specimen[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
-			String[] idArray = JsonUtil.fromJson(ids, String[].class);
+			String[] idArray = JsonUtil.deserialize(ids, String[].class);
 			SpecimenDAO dao = new SpecimenDAO();
 			return dao.find(idArray);
 		}
@@ -124,7 +125,7 @@ public class SpecimenResource {
 	public Specimen[] query(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = JsonUtil.fromJson(json, QuerySpec.class);
+			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
 			SpecimenDAO dao = new SpecimenDAO();
 			return dao.query(qs);
 		}
@@ -169,7 +170,7 @@ public class SpecimenResource {
 				String msg = "Method not allowed for remote clients";
 				throw new RESTException(uriInfo, Status.FORBIDDEN, msg);
 			}
-			Specimen specimen = JsonUtil.fromJson(json, Specimen.class);
+			Specimen specimen = JsonUtil.deserialize(json, Specimen.class);
 			SpecimenDAO dao = new SpecimenDAO();
 			return dao.save(specimen, immediate);
 		}

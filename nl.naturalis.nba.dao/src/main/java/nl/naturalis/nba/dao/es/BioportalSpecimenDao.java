@@ -1,32 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.search.*;
-import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.util.FieldMapping;
-import nl.naturalis.nba.dao.es.util.QueryAndHighlightFields;
-
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static nl.naturalis.nba.dao.es.util.ESConstants.SPECIMEN_TYPE;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.*;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.SpecimenFields.*;
-//import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
-//import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-
 public class BioportalSpecimenDao extends AbstractDao {
 //
 //	private static final Logger logger = LoggerFactory.getLogger(BioportalSpecimenDao.class);

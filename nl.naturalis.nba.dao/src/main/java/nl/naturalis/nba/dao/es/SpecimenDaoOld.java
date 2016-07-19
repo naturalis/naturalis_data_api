@@ -1,37 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import static nl.naturalis.nba.dao.es.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
-import static nl.naturalis.nba.dao.es.util.ESConstants.SPECIMEN_TYPE;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.UNIT_ID;
-//import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.search.Link;
-import nl.naturalis.nba.api.search.QueryParams;
-import nl.naturalis.nba.api.search.SearchResult;
-import nl.naturalis.nba.api.search.SearchResultSet;
-import nl.naturalis.nba.dao.es.transfer.MultiMediaObjectTransfer;
-import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
-//import org.elasticsearch.index.query.TermFilterBuilder;
-import org.elasticsearch.search.SearchHit;
-
 public class SpecimenDaoOld extends AbstractDao {
 //
 //	private final TaxonDao taxonDao;

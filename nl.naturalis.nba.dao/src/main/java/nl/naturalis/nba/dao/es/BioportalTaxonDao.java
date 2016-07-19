@@ -1,21 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.search.*;
-import nl.naturalis.nba.dao.es.util.FieldMapping;
-
-import org.elasticsearch.client.Client;
-
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.IDENTIFICATIONS_SCIENTIFIC_NAME_FULL_SCIENTIFIC_NAME;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.TaxonFields.*;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class BioportalTaxonDao extends AbstractTaxonDao {
 //
 //    private static final Set<String> allowedFieldNamesForSearch = new HashSet<>(Arrays.asList(

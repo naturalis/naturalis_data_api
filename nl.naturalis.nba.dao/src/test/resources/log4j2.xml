@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
 	<Appenders>
-		<Console name="STDOUT">
+		<Console name="CONSOLE">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</Console>
-		<File name="nba" fileName="/home/ayco/projects/nba/v2/log/log4j.log">
+		<File name="FILE" fileName="${sys:nba-test.v2.log.dir}/AllTests.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="nl.naturalis" level="INFO" additivity="true">
-			<AppenderRef ref="nba" />
-		</Logger>
-		<Root level="ERROR">
-			<AppenderRef ref="STDOUT" />
+		<Root level="INFO">
+			<AppenderRef ref="FILE" />
+			<AppenderRef ref="CONSOLE" />
 		</Root>
 	</Loggers>
 </Configuration>

@@ -121,13 +121,21 @@ public class DAORegistry {
 	}
 
 	/**
-	 * Get a logger for the specified class.
+	 * Get a logger for the specified class. All classes should use this method
+	 * to get hold of a logger in stead of calling
+	 * {@code LogManager.getLogger()} directly.
 	 * 
 	 * @param cls
 	 * @return
 	 */
+	@SuppressWarnings("static-method")
 	public Logger getLogger(Class<?> cls)
 	{
+		/*
+		 * Currently we just forward the call to the LogManager, but logging
+		 * being the configuration nightmare that it is, that might change in
+		 * the future.
+		 */
 		return LogManager.getLogger(cls);
 	}
 
@@ -157,10 +165,6 @@ public class DAORegistry {
 		}
 	}
 
-	/*
-	 * Currently, nothing special happens here, but this might change in the
-	 * future.
-	 */
 	private void setupLogging()
 	{
 		logger = getLogger(getClass());

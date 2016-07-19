@@ -2,12 +2,10 @@ package nl.naturalis.nba.dao.es.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.compress.utils.Charsets;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -39,19 +37,18 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESType;
 
+/**
+ * Methods for interacting with Elasticsearch.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ESUtil {
 
 	private static final Logger logger = DAORegistry.getInstance().getLogger(ESUtil.class);
 
 	private ESUtil()
 	{
-	}
-
-	public static String base64Encode(String s)
-	{
-		byte[] bytes = s.getBytes(Charsets.UTF_8);
-		bytes = Base64.getEncoder().encode(bytes);
-		return new String(bytes, Charsets.UTF_8);
 	}
 
 	/**
@@ -84,9 +81,9 @@ public class ESUtil {
 	}
 
 	/**
-	 * Returns the indices for all public static final {@link DocumentType}
-	 * instances defined in the {@link DocumentType} class. Document types may
-	 * share an index, but this method only returns unique indices.
+	 * Returns all indices hosting the NBA {@link DocumentType document types}.
+	 * Document types may share an index, but this method only returns unique
+	 * indices.
 	 * 
 	 * @return
 	 */
@@ -100,6 +97,12 @@ public class ESUtil {
 		return result;
 	}
 
+	/**
+	 * Returns the unique indices for the specified document types.
+	 * 
+	 * @param documentTypes
+	 * @return
+	 */
 	public static Set<IndexInfo> getDistinctIndices(DocumentType... documentTypes)
 	{
 		LinkedHashSet<IndexInfo> result = new LinkedHashSet<>(3);
@@ -110,7 +113,8 @@ public class ESUtil {
 	}
 
 	/**
-	 * Deletes all indices used by the NBA. All data will be lost. WATCH OUT!
+	 * Deletes all indices used by the NBA. All NBA data will be lost. WATCH
+	 * OUT!
 	 */
 	public static void deleteAllIndices()
 	{
@@ -120,8 +124,8 @@ public class ESUtil {
 	}
 
 	/**
-	 * Creates all Elasticsearch indices for all public static final
-	 * {@link DocumentType} instances defined in the {@link DocumentType} class.
+	 * Creates the Elasticsearch indices for the NBA {@link DocumentType
+	 * document types}.
 	 */
 	public static void createAllIndices()
 	{
@@ -130,11 +134,22 @@ public class ESUtil {
 		}
 	}
 
+	/**
+	 * Deletes the Elasticsearch index hosting the specified {@link DocumentType
+	 * document type}.
+	 * 
+	 * @param documentType
+	 */
 	public static void deleteIndex(DocumentType documentType)
 	{
 		deleteIndex(documentType.getIndexInfo());
 	}
 
+	/**
+	 * Deletes the specified Elasticsearch index.
+	 * 
+	 * @param indexInfo
+	 */
 	public static void deleteIndex(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
@@ -152,11 +167,22 @@ public class ESUtil {
 		}
 	}
 
+	/**
+	 * Creates an Elasticsearch index for the specified {@link DocumentType
+	 * document type}.
+	 * 
+	 * @param documentType
+	 */
 	public static void createIndex(DocumentType documentType)
 	{
 		createIndex(documentType.getIndexInfo());
 	}
 
+	/**
+	 * Creates the specified index.
+	 * 
+	 * @param indexInfo
+	 */
 	public static void createIndex(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
@@ -181,17 +207,23 @@ public class ESUtil {
 		}
 	}
 
+	/**
+	 * Refreshes the index hosting the specified {@link DocumentType document
+	 * type} (forcing all imported data to become "visible").
+	 * 
+	 * @param documentType
+	 */
 	public static void refreshIndex(DocumentType documentType)
 	{
 		refreshIndex(documentType.getIndexInfo());
 	}
 
-	public static void refreshIndex(Class<? extends ESType> cls)
-	{
-		IndexInfo indexInfo = DocumentType.forClass(cls).getIndexInfo();
-		refreshIndex(indexInfo);
-	}
-
+	/**
+	 * Refreshed the specified index (forcing all imported data to become
+	 * "visible").
+	 * 
+	 * @param indexInfo
+	 */
 	public static void refreshIndex(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
@@ -199,6 +231,12 @@ public class ESUtil {
 		request.execute().actionGet();
 	}
 
+	/**
+	 * Returns the index refresh interval for the specified index.
+	 * 
+	 * @param indexInfo
+	 * @return
+	 */
 	public static String getAutoRefreshInterval(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
@@ -217,6 +255,12 @@ public class ESUtil {
 		}
 	}
 
+	/**
+	 * Sets the index refresh interval for -1 for the specified index.
+	 * 
+	 * @param indexInfo
+	 * @return The original refresh interval
+	 */
 	public static String disableAutoRefresh(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
@@ -234,6 +278,12 @@ public class ESUtil {
 		return origValue;
 	}
 
+	/**
+	 * Sets the index refresh interval for the specified index.
+	 * 
+	 * @param indexInfo
+	 * @param interval
+	 */
 	public static void setAutoRefreshInterval(IndexInfo indexInfo, String interval)
 	{
 		if (interval == null) {
@@ -241,18 +291,24 @@ public class ESUtil {
 			return;
 		}
 		String index = indexInfo.getName();
-		logger.info("Enabling auto-refresh for index " + index);
+		logger.info("Updating index refresh interval for index " + index);
 		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
 		Builder builder = Settings.settingsBuilder();
 		builder.put("index.refresh_interval", interval);
 		request.settings(builder.build());
 		UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
 		if (!response.isAcknowledged()) {
-			String msg = "Failed to enable auto-refresh for index " + index;
+			String msg = "Failed to update index refresh interval for index " + index;
 			throw new DaoException(msg);
 		}
 	}
 
+	/**
+	 * Creates a type mapping for the specified {@link DocumentType document
+	 * type}.
+	 * 
+	 * @param dt
+	 */
 	public static void createType(DocumentType dt)
 	{
 		String index = dt.getIndexInfo().getName();
@@ -270,6 +326,15 @@ public class ESUtil {
 		logger.info("Created type {}", type);
 	}
 
+	/**
+	 * Retrieves the document with the specified {@code _id} and converts it to
+	 * an instance of the class corresponding to the specified
+	 * {@link DocumentType document type}.
+	 * 
+	 * @param dt
+	 * @param id
+	 * @return
+	 */
 	public static <T extends ESType> T find(DocumentType dt, String id)
 	{
 		String index = dt.getIndexInfo().getName();

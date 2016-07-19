@@ -1,28 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import nl.naturalis.nba.api.model.*;
-import nl.naturalis.nba.api.search.Link;
-import nl.naturalis.nba.api.search.QueryParams;
-import nl.naturalis.nba.api.search.SearchResult;
-import nl.naturalis.nba.api.search.SearchResultSet;
-import nl.naturalis.nba.dao.es.transfer.MultiMediaObjectTransfer;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.util.FieldMapping;
-import nl.naturalis.nba.dao.es.util.QueryAndHighlightFields;
-
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static nl.naturalis.nba.dao.es.util.ESConstants.MULTI_MEDIA_OBJECT_TYPE;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.*;
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.MultiMediaObjectFields.*;
-
-import java.util.*;
-
 public class BioportalMultiMediaObjectDao extends AbstractDao {
 //
 //	private static final Logger logger = LoggerFactory

@@ -1,55 +1,5 @@
 package nl.naturalis.nba.dao.es;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vividsolutions.jts.geom.Coordinate;
-
-import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.search.QueryParams;
-import nl.naturalis.nba.api.search.SearchResult;
-import nl.naturalis.nba.api.search.SearchResultSet;
-import nl.naturalis.nba.api.search.StringMatchInfo;
-import nl.naturalis.nba.dao.es.util.FieldMapping;
-import nl.naturalis.nba.dao.es.util.QueryAndHighlightFields;
-import nl.naturalis.nba.dao.es.util.SearchParamFieldMapping;
-
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.grouping.GroupingSearch;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.geo.ShapeRelation;
-import org.elasticsearch.common.geo.builders.BasePolygonBuilder;
-import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
-import org.elasticsearch.common.geo.builders.PolygonBuilder;
-import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.common.text.Text;
-import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.highlight.HighlightBuilder;
-import org.elasticsearch.search.highlight.HighlightField;
-import org.elasticsearch.search.internal.InternalSearchResponse;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
-import org.geojson.GeoJsonObject;
-import org.geojson.LngLatAlt;
-import org.geojson.MultiPolygon;
-import org.geojson.Polygon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.*;
-
-import static nl.naturalis.nba.dao.es.util.ESConstants.Fields.*;
-import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
-import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
-//import static org.elasticsearch.index.query.FilterBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.*;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator;
-import static org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator.*;
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
-
 /**
  * Abstract base class for all ElasticSearch data access objects.
  *

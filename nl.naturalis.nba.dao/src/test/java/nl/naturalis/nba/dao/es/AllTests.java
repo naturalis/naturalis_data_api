@@ -12,12 +12,14 @@ import nl.naturalis.nba.dao.es.query.InConditionTranslatorTest;
 import nl.naturalis.nba.dao.es.query.InValuesBuilderTest;
 import nl.naturalis.nba.dao.es.query.LikeConditionTranslatorTest;
 import nl.naturalis.nba.dao.es.util.ESClientManagerTest;
+import nl.naturalis.nba.dao.es.util.ESUtilTest;
 
 @RunWith(Suite.class)
 //@formatter:off
 @SuiteClasses({
 	RegistryTest.class,
 	ESClientManagerTest.class,
+	ESUtilTest.class,
 	MappingFactoryTest.class,
 	MappingInfoTest.class,
 	EqualsConditionTranslatorTest.class,

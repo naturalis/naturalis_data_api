@@ -19,6 +19,9 @@
 			}
 		}
 	},
+	"index" : {
+		"refresh_interval": -1
+	},
 	"mappings": {
 		"_default_": {
 			"_all": {

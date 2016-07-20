@@ -1,15 +1,11 @@
 package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
-import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-import static org.elasticsearch.search.sort.SortOrder.ASC;
-import static org.elasticsearch.search.sort.SortOrder.DESC;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -27,11 +23,9 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.SortOrder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,13 +33,8 @@ import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.api.query.SortField;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
-import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
-import nl.naturalis.nba.dao.es.query.ConditionTranslator;
+import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
@@ -130,6 +119,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 	}
 
 	// @Override
+	@SuppressWarnings("static-method")
 	public Specimen[] findByCollector(String name)
 	{
 		if (logger.isDebugEnabled()) {
@@ -178,37 +168,8 @@ public class SpecimenDAO implements ISpecimenAPI {
 	@Override
 	public Specimen[] query(QuerySpec spec) throws InvalidQueryException
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Query using QuerySpec:\n{}", toPrettyJson(spec));
-		}
-		QueryBuilder query = ConditionTranslator.translate(spec, SPECIMEN);
-		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
-		SearchRequestBuilder request = newSearchRequest();
-		request.setQuery(csq);
-		request.setFrom(spec.getFrom());
-		request.setSize(spec.getSize());
-		if (spec.getSortFields() != null) {
-			List<SortField> sos = spec.getSortFields();
-			DocumentType dt = SPECIMEN;
-			MappingInfo mappingInfo = new MappingInfo(dt.getMapping());
-			for (SortField so : sos) {
-				try {
-					ESField f = mappingInfo.getField(so.getPath());
-					if (!(f instanceof DocumentField)) {
-						throw invalidSortField(so.getPath());
-					}
-					if (MappingInfo.isMultiValued(f)) {
-						throw sortOnMultiValuedField(so.getPath());
-					}
-				}
-				catch (NoSuchFieldException e) {
-					throw invalidSortField(so.getPath());
-				}
-				SortOrder order = so.isAscending() ? ASC : DESC;
-				request.addSort(so.getPath(), order);
-			}
-		}
-		return processSearchRequest(request);
+		QuerySpecTranslator qst = new QuerySpecTranslator(spec, SPECIMEN);
+		return processSearchRequest(qst.translate());
 	}
 
 	@Override

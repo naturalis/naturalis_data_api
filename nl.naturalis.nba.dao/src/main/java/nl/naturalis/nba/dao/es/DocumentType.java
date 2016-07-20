@@ -97,7 +97,7 @@ public enum DocumentType
 		logger.info("Retrieving info for document type {}", name);
 		this.name = name;
 		this.esType = esType;
-		this.mapping = new MappingFactory().getMapping(esType);
+		this.mapping = MappingFactory.getMapping(esType);
 		this.objMapper = ObjectMapperLocator.getInstance().getObjectMapper(esType);
 	}
 

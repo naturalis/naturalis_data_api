@@ -17,7 +17,7 @@ public class QuerySpec {
 
 	private List<Condition> conditions;
 	private LogicalOperator logicalOperator;
-	private List<SortOption> sort;
+	private List<SortField> sortFields;
 	private int from;
 	private int size;
 
@@ -40,23 +40,23 @@ public class QuerySpec {
 
 	public void sortAcending(String field)
 	{
-		if (sort == null) {
-			sort = new ArrayList<>(2);
+		if (sortFields == null) {
+			sortFields = new ArrayList<>(2);
 		}
-		SortOption so = new SortOption();
-		so.setField(field);
-		sort.add(so);
+		SortField so = new SortField();
+		so.setPath(field);
+		sortFields.add(so);
 	}
 
 	public void sortDescending(String field)
 	{
-		if (sort == null) {
-			sort = new ArrayList<>(2);
+		if (sortFields == null) {
+			sortFields = new ArrayList<>(2);
 		}
-		SortOption so = new SortOption();
-		so.setField(field);
+		SortField so = new SortField();
+		so.setPath(field);
 		so.setAscending(false);
-		sort.add(so);
+		sortFields.add(so);
 	}
 
 	public List<Condition> getConditions()
@@ -79,14 +79,14 @@ public class QuerySpec {
 		this.logicalOperator = operator;
 	}
 
-	public List<SortOption> getSort()
+	public List<SortField> getSortFields()
 	{
-		return sort;
+		return sortFields;
 	}
 
-	public void setSort(List<SortOption> sort)
+	public void setSortFields(List<SortField> sortFields)
 	{
-		this.sort = sort;
+		this.sortFields = sortFields;
 	}
 
 	public int getFrom()

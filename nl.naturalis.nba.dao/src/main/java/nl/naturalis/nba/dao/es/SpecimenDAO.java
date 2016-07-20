@@ -9,6 +9,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -38,7 +39,7 @@ import nl.naturalis.nba.api.ISpecimenAPI;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.api.query.SortOption;
+import nl.naturalis.nba.api.query.SortField;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESField;
@@ -128,6 +129,7 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return processSearchRequest(request);
 	}
 
+	// @Override
 	public Specimen[] findByCollector(String name)
 	{
 		if (logger.isDebugEnabled()) {
@@ -185,24 +187,25 @@ public class SpecimenDAO implements ISpecimenAPI {
 		request.setQuery(csq);
 		request.setFrom(spec.getFrom());
 		request.setSize(spec.getSize());
-		if (spec.getSort() != null) {
-			MappingInfo mappingInfo = new MappingInfo(SPECIMEN.getMapping());
-			for (SortOption so : spec.getSort()) {
+		if (spec.getSortFields() != null) {
+			List<SortField> sos = spec.getSortFields();
+			DocumentType dt = SPECIMEN;
+			MappingInfo mappingInfo = new MappingInfo(dt.getMapping());
+			for (SortField so : sos) {
 				try {
-					ESField f = mappingInfo.getField(so.getField());
+					ESField f = mappingInfo.getField(so.getPath());
 					if (!(f instanceof DocumentField)) {
-						throw invalidSortField(so.getField());
+						throw invalidSortField(so.getPath());
 					}
-					if (mappingInfo.getNestedPath(f) != null) {
-
+					if (MappingInfo.isMultiValued(f)) {
+						throw sortOnMultiValuedField(so.getPath());
 					}
 				}
 				catch (NoSuchFieldException e) {
-					throw invalidSortField(so.getField());
+					throw invalidSortField(so.getPath());
 				}
-
 				SortOrder order = so.isAscending() ? ASC : DESC;
-				request.addSort(so.getField(), order);
+				request.addSort(so.getPath(), order);
 			}
 		}
 		return processSearchRequest(request);
@@ -289,9 +292,17 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return ESClientManager.getInstance().getClient();
 	}
 
-	private static InvalidQueryException invalidSortField(String field)
+	public static InvalidQueryException invalidSortField(String field)
 	{
 		String fmt = "Invalid sort field: \"%s\"";
+		String msg = String.format(fmt, field);
+		return new InvalidQueryException(msg);
+	}
+
+	public static InvalidQueryException sortOnMultiValuedField(String field)
+	{
+		String fmt = "Invalid sort field: \"%s\". The field is multi-valued "
+				+ "or embedded within an object array.";
 		String msg = String.format(fmt, field);
 		return new InvalidQueryException(msg);
 	}

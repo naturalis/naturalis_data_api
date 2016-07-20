@@ -1,18 +1,18 @@
 package nl.naturalis.nba.api.query;
 
-public class SortOption {
+public class SortField {
 
-	private String field;
+	private String path;
 	private boolean ascending = true;
 
-	public String getField()
+	public String getPath()
 	{
-		return field;
+		return path;
 	}
 
-	public void setField(String field)
+	public void setPath(String path)
 	{
-		this.field = field;
+		this.path = path;
 	}
 
 	public boolean isAscending()

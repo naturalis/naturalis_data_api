@@ -49,7 +49,7 @@ public class SpecimenDAOWithSortingSizingPaging {
 	{
 		QuerySpec qs = new QuerySpec();
 		qs.sortAcending("city");
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 5, result.length);
 	}

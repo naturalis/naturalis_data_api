@@ -65,8 +65,92 @@ public class JsonUtilTest {
 	public void testReadField_03()
 	{
 		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
-			List<?> kids= (List<?>) JsonUtil.readField(is, "kids");
+			List<?> kids = (List<?>) JsonUtil.readField(is, "kids");
 			assertEquals("01", 3, kids.size());
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_04()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			String kid = (String) JsonUtil.readField(is, "kids.0");
+			assertEquals("01", "Mary", kid);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_05()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			String kid = (String) JsonUtil.readField(is, "kids.1");
+			assertEquals("01", "Lisa", kid);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_06()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			String kid = (String) JsonUtil.readField(is, "kids.2");
+			assertEquals("01", "Junior", kid);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_07()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			Object value = JsonUtil.readField(is, "kids.3");
+			assertTrue("01", value == JsonUtil.MISSING_VALUE);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_08()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			Object value =  JsonUtil.readField(is, "bla");
+			assertTrue("01", value == JsonUtil.MISSING_VALUE);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_09()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			Object value =  JsonUtil.readField(is, "bla.0");
+			assertTrue("01", value == JsonUtil.MISSING_VALUE);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testReadField_10()
+	{
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+			Object value =  JsonUtil.readField(is, "bla.bla");
+			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);

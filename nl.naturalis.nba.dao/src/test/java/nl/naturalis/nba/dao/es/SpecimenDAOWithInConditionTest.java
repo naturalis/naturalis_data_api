@@ -70,7 +70,7 @@ public class SpecimenDAOWithInConditionTest {
 		Condition condition = new Condition("gatheringEvent.dateTimeBegin", IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 		assertEquals("02", pMajor.getUnitID(), result[0].getUnitID());
@@ -92,7 +92,7 @@ public class SpecimenDAOWithInConditionTest {
 		Condition condition = new Condition("gatheringEvent.dateTimeBegin", NOT_IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 4, result.length);
 	}
@@ -113,7 +113,7 @@ public class SpecimenDAOWithInConditionTest {
 		Condition condition = new Condition(NOT, "gatheringEvent.dateTimeBegin", IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 4, result.length);
 	}
@@ -135,7 +135,7 @@ public class SpecimenDAOWithInConditionTest {
 		Condition condition = new Condition(field, IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 4, result.length);
 	}
@@ -153,7 +153,7 @@ public class SpecimenDAOWithInConditionTest {
 		Condition condition = new Condition(field, NOT_IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}

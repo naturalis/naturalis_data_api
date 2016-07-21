@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -17,6 +19,13 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtil {
+
+	/**
+	 * The value returned by the {@link JsonUtil#readField(String, String)
+	 * readField} methods if the field does not exist in the provided JSON
+	 * source.
+	 */
+	public static final Object MISSING_VALUE = new Object();
 
 	private static final ObjectMapperLocator oml;
 	private static final TypeReference<Map<String, Object>> typeRef;
@@ -77,39 +86,145 @@ public class JsonUtil {
 		}
 	}
 
+	/**
+	 * Returns the value of specified field from the specified JSON source. Use
+	 * the dot notation to access nested fields (e.g.
+	 * {@code sourceSystem.name}). Array elements can be accessed by inserting
+	 * the array index after the field name (e.g.
+	 * {@code identifications.0.defaultClassification.genus}).
+	 * 
+	 * @see #readField(Map, String[])
+	 * 
+	 * @param json
+	 * @param path
+	 * @return
+	 */
 	public static Object readField(byte[] json, String path)
 	{
 		return readField(deserialize(json), path);
 	}
 
+	/**
+	 * Returns the value of specified field from the specified JSON source. Use
+	 * the dot notation to access nested fields (e.g.
+	 * {@code sourceSystem.name}). Array elements can be accessed by inserting
+	 * the array index after the field name (e.g.
+	 * {@code identifications.0.defaultClassification.genus}).
+	 * 
+	 * @see #readField(Map, String[])
+	 * 
+	 * @param json
+	 * @param path
+	 * @return
+	 */
 	public static Object readField(String json, String path)
 	{
 		return readField(deserialize(json), path);
 	}
 
+	/**
+	 * Returns the value of specified field from the specified JSON source. Use
+	 * the dot notation to access nested fields (e.g.
+	 * {@code sourceSystem.name}). Array elements can be accessed by inserting
+	 * the array index after the field name (e.g.
+	 * {@code identifications.0.defaultClassification.genus}).
+	 * 
+	 * @see #readField(Map, String[])
+	 * 
+	 * @param src
+	 * @param path
+	 * @return
+	 */
 	public static Object readField(InputStream src, String path)
 	{
 		return readField(deserialize(src), path);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Returns the value of specified field from the specified map. Use the dot
+	 * notation to access nested fields (e.g. {@code sourceSystem.name}). Array
+	 * elements can be accessed by inserting the array index after the field
+	 * name (e.g. {@code identifications.0.defaultClassification.genus}).
+	 * 
+	 * @see #readField(Map, String[])
+	 * 
+	 * @param map
+	 * @param path
+	 * @return
+	 */
 	public static Object readField(Map<String, Object> map, String path)
 	{
-		String[] chunks = path.split("\\.");
-		for (int i = 0; i < chunks.length; i++) {
-			String key = chunks[i];
-			if (!map.containsKey(key)) {
-				String msg = "No such field: \"" + key + "\"";
-				throw new JsonDeserializationException(msg);
-			}
+		return readField(map, path.split("\\."));
+	}
+
+	/**
+	 * Extracts a value from the specified map using the specified path to
+	 * navigate the map. When Jackson converts JSON to a {@link Map}, it nests
+	 * {@code Map<String, Object>} objects within {@code Map<String, Object>}
+	 * objects. The {@code path} array is supposed to contain field names at
+	 * successively deeper levels. No exception is thrown if a field name does
+	 * not exist, because JSON may be sparsely populated ({@code null} fields
+	 * being omitted). Instead, the special value {@link #MISSING_VALUE} is
+	 * returned. You SHOULD check for this value, and you should do so comparing
+	 * references rather than using the {@link equals()} method.
+	 * <h3>List access</h3><br>
+	 * JSON arrays are converted to {@link ArrayList} instances by Jackson. You
+	 * can access list elements by inserting the index of the desired element
+	 * into the path. For example:<br>
+	 * <code>
+	 * String[] path = new String[] {"identifications", "0", "defaultClassification", "genus"};
+	 * </code><br>
+	 * If the specified index is out of bounds, the special value
+	 * {@link #MISSING_VALUE} is returned. You cannot directly access elements
+	 * in multi-dimensional arrays using this method.
+	 * 
+	 * @param map
+	 * @param path
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Object readField(Map<String, Object> map, String[] path)
+	{
+		for (int i = 0; i < path.length; i++) {
+			String key = path[i];
+			if (!map.containsKey(key))
+				return MISSING_VALUE;
 			Object val = map.get(key);
-			if (i == chunks.length - 1) {
+			if (i == path.length - 1)
 				return val;
+			if (val instanceof List) {
+				try {
+					int idx = Integer.parseInt(path[i + 1]);
+					List<?> list = (List<?>) val;
+					if (idx >= list.size())
+						return MISSING_VALUE;
+					val = list.get(idx);
+					if (++i == path.length - 1)
+						return val;
+				}
+				catch (NumberFormatException e) {}
 			}
 			map = (Map<String, Object>) val;
 		}
-		assert (false);
-		return null;
+		/* Won't get here */ return null;
+	}
+
+	public static Object[] readFields(Map<String, Object> map, String[] paths)
+	{
+		Object[] values = new Object[paths.length];
+		for (int i = 0; i < paths.length; i++) {
+			values[i] = readField(map, paths[i]);
+		}
+		return values;
+	}
+
+	public static Object[] readFields(Map<String, Object> map, String[][] paths)
+	{
+		Object[] values = new Object[paths.length];
+		for (int i = 0; i < paths.length; i++) {
+			values[i] = readField(map, paths[i]);
+		}
+		return values;
 	}
 
 	public static <T> T convert(Map<String, Object> map, Class<T> type)

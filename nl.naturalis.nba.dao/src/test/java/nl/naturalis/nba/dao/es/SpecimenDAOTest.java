@@ -66,7 +66,7 @@ public class SpecimenDAOTest {
 		 * and source system code, like so:
 		 */
 		String id = pMajor.getUnitID() + "@" + pMajor.getSourceSystem().getCode();
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen specimen = dao.find(id);
 		assertNotNull("01", specimen);
 	}
@@ -81,7 +81,7 @@ public class SpecimenDAOTest {
 		String id2 = lFuscus1.getUnitID() + "@" + lFuscus1.getSourceSystem().getCode();
 		String id3 = "BLA DI BLA";
 		String[] ids = new String[] { id1, id2, id3 };
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] specimens = dao.find(ids);
 		assertNotNull("01", specimens);
 		assertEquals("02", 2, specimens.length);
@@ -94,7 +94,7 @@ public class SpecimenDAOTest {
 	public void testFindByUnitID_01()
 	{
 		String unitID = pMajor.getUnitID();
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.findByUnitID(unitID);
 		assertNotNull("01", result);
 		assertEquals("02", 1, result.length);
@@ -116,7 +116,7 @@ public class SpecimenDAOTest {
 	public void testFindByUnitID_02()
 	{
 		String unitID0 = lFuscus1.getUnitID();
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.findByUnitID(unitID0);
 		assertNotNull("01", result);
 		assertEquals("02", 1, result.length);
@@ -135,7 +135,7 @@ public class SpecimenDAOTest {
 	@Test
 	public void testFindByUnitID_03()
 	{
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.findByUnitID("BLA DI BLA");
 		assertNotNull("01", result);
 		assertEquals("02", 0, result.length);
@@ -147,7 +147,7 @@ public class SpecimenDAOTest {
 	@Test
 	public void testFindByCollector_01()
 	{
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Person person = pMajor.getGatheringEvent().getGatheringPersons().get(0);
 		String collector = person.getFullName();
 		Specimen[] result = dao.findByCollector(collector);
@@ -172,7 +172,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition("unitID", EQUALS, unitID);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 		assertEquals("02", pMajor.getUnitID(), result[0].getUnitID());
@@ -190,7 +190,7 @@ public class SpecimenDAOTest {
 		condition.and(species, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
@@ -208,7 +208,7 @@ public class SpecimenDAOTest {
 		condition.and(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
 	}
@@ -225,7 +225,7 @@ public class SpecimenDAOTest {
 		condition.or(species, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
@@ -242,7 +242,7 @@ public class SpecimenDAOTest {
 		condition.or(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
@@ -260,7 +260,7 @@ public class SpecimenDAOTest {
 		condition.or(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
 	}
@@ -275,7 +275,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(collector, LIKE, "altenbu");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 3, result.length);
 	}
@@ -291,7 +291,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition(NOT, genus, EQUALS, "Parus");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 4, result.length);
 	}
@@ -310,7 +310,7 @@ public class SpecimenDAOTest {
 		condition.andNot(sourceSystem, EQUALS, "NDFF");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
@@ -332,7 +332,7 @@ public class SpecimenDAOTest {
 		// Remains: malusSylvestrisSpecimen01
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 1, result.length);
 	}
@@ -346,7 +346,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition("recordBasis", EQUALS_IC, "preserved specimen");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 3, result.length);
 	}
@@ -362,7 +362,7 @@ public class SpecimenDAOTest {
 		Condition condition = new Condition("recordBasis", NOT_EQUALS_IC, "preserved specimen");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 2, result.length);
 	}
@@ -393,7 +393,7 @@ public class SpecimenDAOTest {
 		condition1.and(condition2).and(condition3.or(condition4));
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition1);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 2, result.length);
 	}
@@ -406,7 +406,7 @@ public class SpecimenDAOTest {
 	public void testGetIdsInCollection__String__01()
 	{
 		String theme = "Strange Plants";
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		String[] ids = dao.getIdsInCollection(theme);
 		assertEquals("01", 1, ids.length);
 	}
@@ -419,7 +419,7 @@ public class SpecimenDAOTest {
 	public void testGetIdsInCollection__String__02()
 	{
 		String theme = "Living Dinos";
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		String[] ids = dao.getIdsInCollection(theme);
 		assertEquals("01", 3, ids.length);
 	}
@@ -431,7 +431,7 @@ public class SpecimenDAOTest {
 	public void testSave__Specimen__01()
 	{
 		Specimen toBeSaved = SpecimenTransfer.load(pMajor, null);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		String id = dao.save(toBeSaved, true);
 		assertNotNull("01", id);
 		Specimen retrieved = dao.find(id);

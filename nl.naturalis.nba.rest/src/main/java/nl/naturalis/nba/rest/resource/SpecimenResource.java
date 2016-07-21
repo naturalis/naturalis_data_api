@@ -21,7 +21,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.SpecimenDAO;
+import nl.naturalis.nba.dao.es.SpecimenDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nda.ejb.service.SpecimenService;
@@ -48,7 +48,7 @@ public class SpecimenResource {
 	public Specimen find(@PathParam("id") String id, @Context UriInfo uriInfo)
 	{
 		try {
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			Specimen result = dao.find(id);
 			if (result == null) {
 				throw new HTTP404Exception(uriInfo, DocumentType.SPECIMEN, id);
@@ -67,7 +67,7 @@ public class SpecimenResource {
 	{
 		try {
 			String[] idArray = JsonUtil.deserialize(ids, String[].class);
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.find(idArray);
 		}
 		catch (Throwable t) {
@@ -81,7 +81,7 @@ public class SpecimenResource {
 	public Specimen[] findByUnitID(@PathParam("unitID") String unitID, @Context UriInfo uriInfo)
 	{
 		try {
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.findByUnitID(unitID);
 		}
 		catch (Throwable t) {
@@ -95,7 +95,7 @@ public class SpecimenResource {
 	public boolean exists(@PathParam("unitID") String unitID, @Context UriInfo uriInfo)
 	{
 		try {
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.exists(unitID);
 		}
 		catch (Throwable t) {
@@ -126,7 +126,7 @@ public class SpecimenResource {
 	{
 		try {
 			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -140,7 +140,7 @@ public class SpecimenResource {
 	public String[] getNamedCollections(@Context UriInfo uriInfo)
 	{
 		try {
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.getNamedCollections();
 		}
 		catch (Throwable t) {
@@ -154,7 +154,7 @@ public class SpecimenResource {
 	public String[] getIdsInCollection(@PathParam("name") String name, @Context UriInfo uriInfo)
 	{
 		try {
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.getIdsInCollection(name);
 		}
 		catch (Throwable t) {
@@ -171,7 +171,7 @@ public class SpecimenResource {
 				throw new RESTException(uriInfo, Status.FORBIDDEN, msg);
 			}
 			Specimen specimen = JsonUtil.deserialize(json, Specimen.class);
-			SpecimenDAO dao = new SpecimenDAO();
+			SpecimenDao dao = new SpecimenDao();
 			return dao.save(specimen, immediate);
 		}
 		catch (Throwable t) {

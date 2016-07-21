@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import org.domainobject.util.ConfigObject;
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class RegistryTest {
 
 	@Test

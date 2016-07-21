@@ -38,15 +38,15 @@ import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDAO implements ISpecimenAPI {
+public class SpecimenDao implements ISpecimenAPI {
 
 	private static final Logger logger;
 
 	static {
-		logger = DAORegistry.getInstance().getLogger(SpecimenDAO.class);
+		logger = DAORegistry.getInstance().getLogger(SpecimenDao.class);
 	}
 
-	public SpecimenDAO()
+	public SpecimenDao()
 	{
 	}
 
@@ -253,19 +253,5 @@ public class SpecimenDAO implements ISpecimenAPI {
 		return ESClientManager.getInstance().getClient();
 	}
 
-	public static InvalidQueryException invalidSortField(String field)
-	{
-		String fmt = "Invalid sort field: \"%s\"";
-		String msg = String.format(fmt, field);
-		return new InvalidQueryException(msg);
-	}
-
-	public static InvalidQueryException sortOnMultiValuedField(String field)
-	{
-		String fmt = "Invalid sort field: \"%s\". The field is multi-valued "
-				+ "or embedded within an object array.";
-		String msg = String.format(fmt, field);
-		return new InvalidQueryException(msg);
-	}
 
 }

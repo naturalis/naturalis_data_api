@@ -65,7 +65,7 @@ public class SpecimenDAOWithBetweenConditionTest {
 		Condition condition = new Condition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
 		// year after the next test specimen, so we can have only one query
@@ -85,7 +85,7 @@ public class SpecimenDAOWithBetweenConditionTest {
 		Condition condition = new Condition("gatheringEvent.dateTimeBegin", NOT_BETWEEN, fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		// Since we use NOT_BETWEEN, all specimens except pMajor should come
 		// back.

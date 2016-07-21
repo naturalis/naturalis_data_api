@@ -62,6 +62,7 @@ public class QuerySpecTranslator {
 		}
 		return request;
 	}
+	
 
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{

@@ -51,36 +51,28 @@ public enum DocumentType
 
 	public static DocumentType forName(String name)
 	{
-		if (SPECIMEN.name.equals(name)) {
+		if (SPECIMEN.name.equals(name))
 			return SPECIMEN;
-		}
-		if (TAXON.name.equals(name)) {
+		if (TAXON.name.equals(name))
 			return TAXON;
-		}
-		if (MULTI_MEDIA_OBJECT.name.equals(name)) {
+		if (MULTI_MEDIA_OBJECT.name.equals(name))
 			return MULTI_MEDIA_OBJECT;
-		}
-		if (GEO_AREA.name.equals(name)) {
+		if (GEO_AREA.name.equals(name))
 			return GEO_AREA;
-		}
-		throw new DaoException("There is no document type with name \"" + name + '"');
+		throw new DaoException("No such document type: \"" + name + '"');
 	}
 
 	public static DocumentType forClass(Class<? extends ESType> cls)
 	{
-		if (SPECIMEN.esType == cls) {
+		if (SPECIMEN.esType == cls)
 			return SPECIMEN;
-		}
-		if (TAXON.esType == cls) {
+		if (TAXON.esType == cls)
 			return TAXON;
-		}
-		if (MULTI_MEDIA_OBJECT.esType == cls) {
+		if (MULTI_MEDIA_OBJECT.esType == cls)
 			return MULTI_MEDIA_OBJECT;
-		}
-		if (GEO_AREA.esType == cls) {
+		if (GEO_AREA.esType == cls)
 			return GEO_AREA;
-		}
-		throw new DaoException("There is no document type corresponding to " + cls);
+		throw new DaoException("No document type corresponding to " + cls);
 	}
 
 	IndexInfo indexInfo;

@@ -66,7 +66,7 @@ public class SpecimenDAONullChecksTest {
 		Condition condition = new Condition("unitGUID", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 5, result.length);
 	}
@@ -81,7 +81,7 @@ public class SpecimenDAONullChecksTest {
 		Condition condition = new Condition(NOT, "unitGUID", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
 	}
@@ -95,7 +95,7 @@ public class SpecimenDAONullChecksTest {
 		Condition condition = new Condition("unitGUID", NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 0, result.length);
 	}
@@ -109,7 +109,7 @@ public class SpecimenDAONullChecksTest {
 		Condition condition = new Condition(NOT, "unitGUID", NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 5, result.length);
 	}
@@ -123,7 +123,7 @@ public class SpecimenDAONullChecksTest {
 		Condition condition = new Condition("gatheringEvent.dateTimeBegin", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		SpecimenDAO dao = new SpecimenDAO();
+		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		// Only for mSylvestris is gatheringEvent.dateTimeBegin null.
 		assertEquals("01", 1, result.length);

@@ -163,10 +163,13 @@
 		<java classname="org.junit.runner.JUnitCore"
 		      fork="true"
 		      resultproperty="junit.result"
-		      output="${build.module.location}/log/test-reports/TEST-${junit.suite.classname}.txt"
-		      error="${build.module.location}/log/test-reports/TEST-${junit.suite.classname}.txt">
+		      output="/home/ayco/tmp/TEST-${junit.suite.classname}.txt"
+		      error="/home/ayco/tmp/TEST-${junit.suite.classname}.txt">
 			<arg value="${junit.suite.classname}" />
-			<sysproperty key="nba.v2.conf.dir" value="${nba.v2.conf.dir.test}" />
+			<sysproperty key="nba-test.v2.conf.dir"
+			             value="/home/ayco/projects/nba/v2/test-service" />
+			<sysproperty key="nba-test.v2.log.dir"
+			             value="/home/ayco/projects/nba/v2/test-service/log" />
 			<classpath>
 				<fileset dir="build/classpath">
 					<include name="**/*.jar" />

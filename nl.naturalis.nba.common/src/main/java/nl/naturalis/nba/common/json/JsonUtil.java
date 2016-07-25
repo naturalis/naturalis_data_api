@@ -185,7 +185,7 @@ public class JsonUtil {
 	@SuppressWarnings("unchecked")
 	public static Object readField(Map<String, Object> map, String[] path)
 	{
-		for (int i = 0; i < path.length; i++) {
+		for (int i = 0; i < path.length; ++i) {
 			String key = path[i];
 			if (!map.containsKey(key))
 				return MISSING_VALUE;
@@ -221,7 +221,7 @@ public class JsonUtil {
 	public static Object[] readFields(Map<String, Object> map, String[][] paths)
 	{
 		Object[] values = new Object[paths.length];
-		for (int i = 0; i < paths.length; i++) {
+		for (int i = 0; i < paths.length; ++i) {
 			values[i] = readField(map, paths[i]);
 		}
 		return values;

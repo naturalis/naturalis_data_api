@@ -186,10 +186,9 @@ public class JsonUtil {
 	public static Object readField(Map<String, Object> map, String[] path)
 	{
 		for (int i = 0; i < path.length; ++i) {
-			String key = path[i];
-			if (!map.containsKey(key))
-				return MISSING_VALUE;
-			Object val = map.get(key);
+			Object val = map.get(path[i]);
+			if (val == null)
+				return map.containsKey(path[i]) ? null : MISSING_VALUE;
 			if (i == path.length - 1)
 				return val;
 			if (val instanceof List) {

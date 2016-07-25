@@ -19,7 +19,7 @@ public class SpecimenDwcaDaoTest {
 		SpecimenDwcaDao dao = new SpecimenDwcaDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/dwca.zip");
-		dao.querySpecimens(qs, fos);
+		dao.queryDynamic(qs, fos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();

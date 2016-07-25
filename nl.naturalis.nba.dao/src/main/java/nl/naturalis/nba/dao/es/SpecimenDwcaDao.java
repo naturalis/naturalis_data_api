@@ -29,6 +29,9 @@ import org.elasticsearch.search.sort.SortOrder;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.es.csv.CsvColumnConfigurator;
+import nl.naturalis.nba.dao.es.csv.CsvPrinter;
+import nl.naturalis.nba.dao.es.csv.IColumn;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 
@@ -59,21 +62,7 @@ public class SpecimenDwcaDao {
 		}
 		PrintStream out = new PrintStream(zos);
 		loadHeadersAndPaths();
-		QuerySpecTranslator qst = new QuerySpecTranslator(spec, SPECIMEN);
-		SearchRequestBuilder request = qst.translate();
-		request.addSort(DOC_FIELD_NAME, SortOrder.ASC);
-		request.setScroll(TIME_OUT);
-		request.setSize(1000);
-		/*
-		 * for(String field: fields) { request.addField(field); }
-		 */
-		/*
-		 * Don't do this. You might hope that selecting only the fields you need
-		 * increases performance, but it actually makes data retrieval more than
-		 * twice as slow (measured with approx. 4 million records), at least
-		 * with the number of fields we need for creating a DwCA.
-		 */
-		SearchResponse response = request.execute().actionGet();
+		SearchResponse response = executeQuery(spec);
 		for (int i = 0; i < headers.length; i++) {
 			if (i != 0) {
 				out.print(',');
@@ -84,35 +73,13 @@ public class SpecimenDwcaDao {
 		int processed = 0;
 		while (true) {
 			for (SearchHit hit : response.getHits().getHits()) {
-				if(++processed % 50000 == 0) {
+				if (++processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
+					out.flush();
 				}
 				Map<String, Object> data = hit.getSource();
-				Object[] values = JsonUtil.readFields(data, paths);
-				int j = 0;
-				for (int i = 0; i < headers.length; i++) {
-					if (i != 0) {
-						out.print(',');
-					}
-					if (headers[i][1] != null) {
-						out.print(escapeCsv(headers[i][1]));
-					}
-					else {
-						Object val = values[j++];
-						if (val != null && val != JsonUtil.MISSING_VALUE) {
-							if (val.getClass() == String.class) {
-								String s = escapeCsv((String) val);
-								out.print(s);
-							}
-							else {
-								out.print(String.valueOf(val));
-							}
-						}
-					}
-				}
-				out.println();
+				printCsvRecord(data, out);
 			}
-			out.flush();
 			String scrollId = response.getScrollId();
 			SearchScrollRequestBuilder ssrb = client().prepareSearchScroll(scrollId);
 			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
@@ -120,6 +87,85 @@ public class SpecimenDwcaDao {
 				break;
 			}
 		}
+	}
+
+	@SuppressWarnings("static-method")
+	public void queryDynamic(QuerySpec spec, OutputStream os) throws InvalidQueryException
+	{
+		ZipOutputStream zos = new ZipOutputStream(os);
+		ZipEntry occurenceTxt = new ZipEntry("occurence.txt");
+		try {
+			zos.putNextEntry(occurenceTxt);
+		}
+		catch (IOException e) {
+			throw new DwcaCreationException(e);
+		}
+		CsvPrinter csvPrinter = createCsvPrinter(zos, "generic");
+		SearchResponse response = executeQuery(spec);
+		int processed = 0;
+		while (true) {
+			for (SearchHit hit : response.getHits().getHits()) {
+				if (++processed % 50000 == 0) {
+					logger.info("Records processed: " + processed);
+					csvPrinter.flush();
+				}
+				csvPrinter.printRecord(hit.getSource());
+			}
+			String scrollId = response.getScrollId();
+			SearchScrollRequestBuilder ssrb = client().prepareSearchScroll(scrollId);
+			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
+			if (response.getHits().getHits().length == 0) {
+				break;
+			}
+		}
+	}
+
+	public static CsvPrinter createCsvPrinter(ZipOutputStream zos, String collection)
+	{
+		String relativePath = "dwca/specimen/" + collection;
+		File confDir = DAORegistry.getInstance().getConfigurationDirectory();
+		File dwcaConfDir = FileUtil.newFile(confDir, relativePath);
+		CsvColumnConfigurator ccc = CsvColumnConfigurator.getInstance();
+		IColumn[] columns = ccc.getColumns(dwcaConfDir);
+		CsvPrinter csvPrinter = new CsvPrinter(columns, zos);
+		return csvPrinter;
+	}
+
+	public static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException
+	{
+		QuerySpecTranslator qst = new QuerySpecTranslator(spec, SPECIMEN);
+		SearchRequestBuilder request = qst.translate();
+		request.addSort(DOC_FIELD_NAME, SortOrder.ASC);
+		request.setScroll(TIME_OUT);
+		request.setSize(1000);
+		SearchResponse response = request.execute().actionGet();
+		return response;
+	}
+
+	public void printCsvRecord(Map<String, Object> data, PrintStream out)
+	{
+		Object[] values = JsonUtil.readFields(data, paths);
+		int j = 0;
+		for (int i = 0; i < headers.length; i++) {
+			if (i != 0) {
+				out.print(',');
+			}
+			if (headers[i][1] != null) {
+				out.print(escapeCsv(headers[i][1]));
+			}
+			else {
+				Object val = values[j++];
+				if (val != null && val != JsonUtil.MISSING_VALUE) {
+					if (val.getClass() == String.class) {
+						out.print(escapeCsv((String) val));
+					}
+					else {
+						out.print(String.valueOf(val));
+					}
+				}
+			}
+		}
+		out.println();
 	}
 
 	private void loadHeadersAndPaths()

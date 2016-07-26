@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import nl.naturalis.nba.dao.es.dwca.MetaXmlGeneratorTest;
 import nl.naturalis.nba.dao.es.map.MappingFactoryTest;
 import nl.naturalis.nba.dao.es.map.MappingInfoTest;
 import nl.naturalis.nba.dao.es.query.BetweenConditionTranslatorTest;
@@ -27,6 +28,7 @@ import nl.naturalis.nba.dao.es.util.ESUtilTest;
 	BetweenConditionTranslatorTest.class ,
 	InValuesBuilderTest.class,
 	InConditionTranslatorTest.class,
+	MetaXmlGeneratorTest.class,
 	SpecimenDAONullChecksTest.class,
 	SpecimenDAOWithBetweenConditionTest.class,
 	SpecimenDAOWithInConditionTest.class,

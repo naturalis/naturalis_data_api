@@ -15,7 +15,7 @@ public class SpecimenDwcaDaoTest {
 	public void testQuerySpecimens_01() throws InvalidQueryException, IOException
 	{
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("sourceSystem.code", "=", "CRS"));
+		qs.addCondition(new Condition("sourceSystem.code", "=", "BRAHMS"));
 		SpecimenDwcaDao dao = new SpecimenDwcaDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/dwca.zip");

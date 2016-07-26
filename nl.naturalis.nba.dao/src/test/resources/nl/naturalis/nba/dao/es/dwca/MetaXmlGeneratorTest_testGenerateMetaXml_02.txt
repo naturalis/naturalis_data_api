@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<archive metadata="eml.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://rs.tdwg.org/dwc/text/">
+    <core encoding="UTF-8" fieldsEnclosedBy="" fieldsTerminatedBy="," linesTerminatedBy="&#xA;" ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Occurrence">
+        <files>
+            <location>occurrence.txt</location>
+        </files>
+        <id index="1"/>
+        <field index="0" term="http://rs.tdwg.org/dwc/terms/basisOfRecord"/>
+        <field index="2" term="http://rs.tdwg.org/dwc/terms/catalogNumber"/>
+    </core>
+</archive>

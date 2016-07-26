@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import org.domainobject.util.FileUtil;
 
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.calc.ICalculator;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 

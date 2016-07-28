@@ -1,15 +1,17 @@
-package nl.naturalis.nba.dao.es.csv;
+package nl.naturalis.nba.dao.es.format.csv;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
 
+import nl.naturalis.nba.dao.es.format.IDataSetField;
+
 public class CsvPrinter {
 
-	private IColumn[] columns;
+	private IDataSetField[] columns;
 	private PrintStream ps;
 
-	public CsvPrinter(IColumn[] columns, OutputStream out)
+	public CsvPrinter(IDataSetField[] columns, OutputStream out)
 	{
 		this.columns = columns;
 		if (out instanceof PrintStream) {
@@ -25,7 +27,7 @@ public class CsvPrinter {
 		for (int i = 0; i < columns.length; ++i) {
 			if (i != 0)
 				ps.print(',');
-			ps.print(columns[i].getHeader());
+			ps.print(columns[i].getName());
 		}
 		ps.println();
 	}

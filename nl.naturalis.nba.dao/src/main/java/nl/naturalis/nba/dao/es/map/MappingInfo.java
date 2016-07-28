@@ -28,11 +28,9 @@ public class MappingInfo {
 
 	/**
 	 * Determines if the specified field <i>or any of its ancestors</i> is a
-	 * multi-valued field. In Elasticsearch each field in a type mapping is
-	 * potentially multi-valued. However, we can determine in advance whether it
-	 * will actually ever store more than one value. If the field corresponds to
-	 * a Java field that is a {@code Collection} or an array, it could,
-	 * otherwise it cannot.
+	 * multi-valued field.
+	 * 
+	 * @see ESField#isMultiValued()
 	 * 
 	 * @param field
 	 * @return

@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.dwca;
+package nl.naturalis.nba.dao.es.format.dwca;
 
 import java.util.ArrayList;
 import java.util.List;

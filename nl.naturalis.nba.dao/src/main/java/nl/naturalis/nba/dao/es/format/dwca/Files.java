@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.dwca;
+package nl.naturalis.nba.dao.es.format.dwca;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

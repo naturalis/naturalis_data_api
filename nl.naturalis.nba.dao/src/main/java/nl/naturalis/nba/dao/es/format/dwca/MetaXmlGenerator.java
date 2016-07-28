@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.dwca;
+package nl.naturalis.nba.dao.es.format.dwca;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -8,14 +8,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import nl.naturalis.nba.dao.es.csv.IColumn;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
+import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 public abstract class MetaXmlGenerator {
 
-	private final IColumn[] columns;
+	private final IDataSetField[] columns;
 
-	public MetaXmlGenerator(IColumn[] columns)
+	public MetaXmlGenerator(IDataSetField[] columns)
 	{
 		this.columns = columns;
 	}
@@ -60,7 +60,7 @@ public abstract class MetaXmlGenerator {
 	private int getIndexOfIdField()
 	{
 		for (int i = 0; i < columns.length; i++) {
-			if (columns[i].getHeader().equals("id"))
+			if (columns[i].getName().equals("id"))
 				return i;
 		}
 		return -1;
@@ -71,11 +71,11 @@ public abstract class MetaXmlGenerator {
 		String base = "http://rs.tdwg.org/dwc/terms/";
 		List<Field> fields = new ArrayList<>(columns.length);
 		for (int i = 0; i < columns.length; i++) {
-			if (columns[i].getHeader().equals("id"))
+			if (columns[i].getName().equals("id"))
 				continue;
 			Field field = new Field();
 			field.setIndex(String.valueOf(i));
-			field.setTerm(base + columns[i].getHeader());
+			field.setTerm(base + columns[i].getName());
 			fields.add(field);
 		}
 		return fields;

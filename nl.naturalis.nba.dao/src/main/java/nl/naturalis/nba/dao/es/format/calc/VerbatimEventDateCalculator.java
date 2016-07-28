@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.calc;
+package nl.naturalis.nba.dao.es.format.calc;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;

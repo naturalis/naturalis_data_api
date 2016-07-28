@@ -54,12 +54,13 @@ public abstract class ESField {
 	}
 
 	/**
-	 * Whether or not the field is multi-valued. While in Elasticsearch every
-	 * field is potentially multi-valued, we can determine in advance whether it
-	 * can actually ever have more than one value. If the Java field
-	 * corresponding to the document field is an array or a {@link Collection},
-	 * the document field may contain more than one value. Otherwise it
-	 * definitely is single-valued.
+	 * Whether or not the field is multi-valued. In Elasticsearch every field is
+	 * principally multi-valued. However, because the NBA generates
+	 * Elasticsearch type mappings from Java {@link Class} objects, we can
+	 * determine in advance whether this is actually going to be the case. If
+	 * the Java field corresponding to an Elasticsearch field is an array or a
+	 * {@link Collection}, the Elasticsearch field may contain multiple values.
+	 * Otherwise it definitely is single-valued.
 	 * 
 	 * @return
 	 */

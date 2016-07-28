@@ -1,15 +1,15 @@
-package nl.naturalis.nba.dao.es.csv;
+package nl.naturalis.nba.dao.es.format.csv;
 
 import java.util.Map;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 import nl.naturalis.nba.common.json.JsonUtil;
 
-public class DataColumn extends AbstractColumn {
+class DataField extends AbstractCsvField {
 
 	private String[] path;
 
-	public DataColumn(String name, String[] path)
+	DataField(String name, String[] path)
 	{
 		super(name);
 		this.path = path;

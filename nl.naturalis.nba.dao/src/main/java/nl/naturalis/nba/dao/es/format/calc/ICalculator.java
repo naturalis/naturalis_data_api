@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.calc;
+package nl.naturalis.nba.dao.es.format.calc;
 
 import java.util.Map;
 

@@ -4,7 +4,7 @@ import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 abstract class AbstractCsvField implements IDataSetField {
 
-	private String name;
+	private final String name;
 
 	AbstractCsvField(String name)
 	{

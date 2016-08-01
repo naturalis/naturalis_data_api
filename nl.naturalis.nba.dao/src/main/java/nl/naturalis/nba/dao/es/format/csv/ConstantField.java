@@ -6,7 +6,7 @@ import java.util.Map;
 
 class ConstantField extends AbstractCsvField {
 
-	private String value;
+	private final String value;
 
 	ConstantField(String name, String value)
 	{

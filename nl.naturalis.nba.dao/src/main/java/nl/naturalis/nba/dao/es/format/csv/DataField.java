@@ -1,13 +1,15 @@
 package nl.naturalis.nba.dao.es.format.csv;
 
-import java.util.Map;
-
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
+import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
-import nl.naturalis.nba.common.json.JsonUtil;
+
+import java.util.Map;
 
 class DataField extends AbstractCsvField {
 
-	private String[] path;
+	private final String[] path;
 
 	DataField(String name, String[] path)
 	{
@@ -18,9 +20,9 @@ class DataField extends AbstractCsvField {
 	@Override
 	public String getValue(Map<String, Object> esDocumentAsMap)
 	{
-		Object value = JsonUtil.readField(esDocumentAsMap, path);
-		if (value == null || value == JsonUtil.MISSING_VALUE)
-			return "";
+		Object value = readField(esDocumentAsMap, path);
+		if (value == null || value == MISSING_VALUE)
+			return EMPTY_STRING;
 		return escapeCsv(value.toString());
 	}
 

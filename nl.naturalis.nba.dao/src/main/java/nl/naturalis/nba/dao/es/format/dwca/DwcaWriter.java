@@ -39,7 +39,7 @@ import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 public class DwcaWriter {
 
 	private static final Logger logger = DAORegistry.getInstance().getLogger(DwcaWriter.class);
-	private static final TimeValue TIME_OUT = new TimeValue(200);
+	private static final TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DataSetCollection dsc;
 	private OutputStream out;
@@ -98,12 +98,11 @@ public class DwcaWriter {
 		SearchResponse response = executeQuery(spec);
 		csvPrinter.printHeader();
 		int processed = 0;
-		LOOP: while (true) {
+		while (true) {
 			for (SearchHit hit : response.getHits().getHits()) {
 				if (++processed % 50000 == 0) {
 					logger.info("Records processed: " + processed);
 					csvPrinter.flush();
-					break LOOP;
 				}
 				csvPrinter.printRecord(hit.getSource());
 			}

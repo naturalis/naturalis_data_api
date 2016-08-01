@@ -1,13 +1,15 @@
 package nl.naturalis.nba.dao.es.format.csv;
 
+import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
+
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 class CalculatedField extends AbstractCsvField {
 
-	private ICalculator calculator;
+	private final ICalculator calculator;
 
 	CalculatedField(String name, ICalculator calculator)
 	{
@@ -19,7 +21,7 @@ class CalculatedField extends AbstractCsvField {
 	public String getValue(Map<String, Object> esDocumentAsMap)
 	{
 		Object val = calculator.calculateValue(esDocumentAsMap);
-		return val == null ? "" : escapeCsv(val.toString());
+		return val == null ? EMPTY_STRING : escapeCsv(val.toString());
 	}
 
 }

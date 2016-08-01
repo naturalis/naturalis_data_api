@@ -46,6 +46,11 @@ public class JsonUtil {
 	public static <T> T deserialize(byte[] json, Class<T> type)
 	{
 		ObjectMapper om = oml.getObjectMapper(type);
+		return deserialize(om, json, type);
+	}
+
+	public static <T> T deserialize(ObjectMapper om, byte[] json, Class<T> type)
+	{
 		try {
 			return om.readValue(json, type);
 		}

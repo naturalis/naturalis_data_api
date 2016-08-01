@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.query.ComparisonOperator;
 
@@ -58,6 +59,7 @@ public class ObjectMapperLocator {
 		module.addDeserializer(Sex.class, new SexDeserializer());
 		module.addDeserializer(TaxonomicStatus.class, new TaxonomicStatusDeserializer());
 		module.addDeserializer(ComparisonOperator.class, new ComparisonOperatorDeserializer());
+		module.addDeserializer(SpecimenTypeStatus.class, new TypeStatusDeserializer());
 		om.registerModule(module);
 		return om;
 	}

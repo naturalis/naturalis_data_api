@@ -7,9 +7,9 @@ import java.util.Map;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 /**
- * Prints CSV records using {@link Map} objects as a data source. These
- * {@code Map} objects have supposedly been retrieved from Elasticsearch by
- * calling {@code SearchHit.getSource()}.
+ * Prints CSV records using {@link Map} objects as input. These {@code Map}
+ * objects have supposedly been retrieved from Elasticsearch by calling
+ * {@code SearchHit.getSource()}.
  * 
  * @author Ayco Holleman
  *
@@ -19,9 +19,9 @@ public class CsvPrinter {
 	private IDataSetField[] fields;
 	private PrintStream ps;
 
-	public CsvPrinter(IDataSetField[] columns, OutputStream out)
+	public CsvPrinter(IDataSetField[] fields, OutputStream out)
 	{
-		this.fields = columns;
+		this.fields = fields;
 		if (out instanceof PrintStream) {
 			ps = (PrintStream) out;
 		}

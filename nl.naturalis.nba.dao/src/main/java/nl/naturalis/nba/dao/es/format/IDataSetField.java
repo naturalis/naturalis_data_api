@@ -5,12 +5,20 @@ import java.util.Map;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
- * Defines a field in a data set. A field has a name and a value. The name
- * might, for example, be used to derive a tag name for an XML element or a
- * column header for a CSV file. The value is the value to be <i>written to</i>
- * the XML document, CSV file, etc. The value is always a {@link String},
- * formatted and escaped as appropriate for the output document. Implementations
- * of this interface come in three flavors:<br>
+ * <p>
+ * Defines the capacity to provide a name and a value for a field in a data set.
+ * This capacity is defined in a format-agnostic way: the data set might be
+ * formatted as CSV, XML, JSON, etc. Different formats have different string
+ * escaping rules, so each format will have its own implementation(s) of
+ * {@code IDataSetField}. On the other hand, this interface relies fairly
+ * strongly on the fact that we use Elasticsearch as a data store. The
+ * {@link #getValue(Map) getValue} method, which defines the capacity to provide
+ * a value for a field in a data set, takes a Map&lt;String,Object&gt; instance
+ * as input. This is the type of object you get when you make the Elasticsearch
+ * API call {@code SearchHit.getSource()}.
+ * </p>
+ * <p>
+ * Implementations of this interface come in three flavors:<br>
  * <ol>
  * <li><b>Data fields</b> retrieve the value to be written directly from the
  * Elasticsearch document passed to the {@link #getValue(Map) getValue} method,
@@ -22,6 +30,13 @@ import nl.naturalis.nba.dao.es.format.calc.ICalculator;
  * the Elasticsearch document passed to the {@link #getValue(Map) getValue}
  * method and simply return a string literal.
  * </ol>
+ * However, the manner in which an {@code IDataSetField} implementation
+ * retrieves the value to be written to the output document is an implementation
+ * detail. No sub-interfaces are provided (or needed by XML/CSV/DwCA/JSON
+ * writers) for these three flavors of {@code IDataSetField} flavors.
+ * </p>
+ * 
+ * @see IDataSetFieldFactory
  * 
  * @author Ayco Holleman
  *
@@ -29,8 +44,8 @@ import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 public interface IDataSetField {
 
 	/**
-	 * The name of the field. For CSV files the name is used as the header for
-	 * the CSV column.
+	 * The name of the field. The name can, for example, be used to provide a
+	 * header for a CSV field or a tag name for an XML element.
 	 * 
 	 * @return
 	 */

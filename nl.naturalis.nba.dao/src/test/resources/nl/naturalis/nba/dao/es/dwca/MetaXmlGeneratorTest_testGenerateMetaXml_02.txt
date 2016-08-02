@@ -4,8 +4,9 @@
         <files>
             <location>occurrence.txt</location>
         </files>
-        <id index="1"/>
-        <field index="0" term="http://rs.tdwg.org/dwc/terms/basisOfRecord"/>
-        <field index="2" term="http://rs.tdwg.org/dwc/terms/catalogNumber"/>
+        <id index="2"/>
+        <field index="0" term="http://rs.tdwg.org/dwc/terms/scientificName"/>
+        <field index="1" term="http://rs.tdwg.org/dwc/terms/nomenclaturalCode"/>
+        <field index="3" term="http://rs.tdwg.org/dwc/terms/verbatimEventDate"/>
     </core>
 </archive>

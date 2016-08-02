@@ -13,10 +13,6 @@ import nl.naturalis.nba.dao.es.format.calc.ICalculator;
  */
 public class CsvFieldFactory implements IDataSetFieldFactory {
 
-	/**
-	 * Returns a {@link IDataSetField} that retrieves its value directly from an
-	 * Elasticsearch document.
-	 */
 	@Override
 	public IDataSetField createDataField(String name, String[] path)
 	{

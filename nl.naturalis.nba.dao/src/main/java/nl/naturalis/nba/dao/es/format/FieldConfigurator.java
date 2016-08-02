@@ -1,9 +1,13 @@
 package nl.naturalis.nba.dao.es.format;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.domainobject.util.IOUtil;
@@ -12,9 +16,13 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESField;
+import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
+/**
+ * @author Ayco Holleman
+ */
 public class FieldConfigurator {
 
 	private static class ConfigurationException extends Exception {
@@ -27,22 +35,43 @@ public class FieldConfigurator {
 
 	private static final String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 
-	private DataSetCollection dsc;
-	private IDataSetFieldFactory dsff;
+	private IDataSetFieldFactory fieldFactory;
+	private MappingInfo mappingInfo;
 
-	public FieldConfigurator(DataSetCollection dsc, IDataSetFieldFactory dsff)
+	public FieldConfigurator(Mapping mapping, IDataSetFieldFactory fieldFactory)
 	{
-		this.dsc = dsc;
-		this.dsff = dsff;
+		this.mappingInfo = new MappingInfo(mapping);
+		this.fieldFactory = fieldFactory;
 	}
 
-	@SuppressWarnings("resource")
 	public IDataSetField[] getFields(File confFile)
 	{
-		ArrayList<IDataSetField> fields = new ArrayList<>(60);
-		LineNumberReader lnr = null;
 		try {
-			lnr = new LineNumberReader(new FileReader(confFile));
+			FileReader fr = new FileReader(confFile);
+			LineNumberReader lnr = new LineNumberReader(fr);
+			return getFields(lnr, confFile.getAbsolutePath());
+		}
+		catch (FileNotFoundException e) {
+			throw new DaoException("File not found: " + confFile.getAbsolutePath());
+		}
+	}
+
+	public IDataSetField[] getFields(InputStream is, String source)
+	{
+		try {
+			InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+			LineNumberReader lnr = new LineNumberReader(isr);
+			return getFields(lnr, source);
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new DaoException(e);
+		}
+	}
+
+	public IDataSetField[] getFields(LineNumberReader lnr, String source)
+	{
+		ArrayList<IDataSetField> fields = new ArrayList<>(60);
+		try {
 			for (String line = lnr.readLine(); line != null; line = lnr.readLine()) {
 				line = line.trim();
 				if (line.length() == 0 || line.charAt(0) == '#') {
@@ -56,11 +85,11 @@ public class FieldConfigurator {
 				String val = chunks[1].trim();
 				IDataSetField field;
 				if (val.charAt(0) == '*') {
-					field = dsff.createConstantField(key, val.substring(1));
+					field = fieldFactory.createConstantField(key, val.substring(1));
 				}
 				else if (val.charAt(0) == '%') {
 					ICalculator calculator = getCalculator(val.substring(1).trim());
-					field = dsff.createdCalculatedField(key, calculator);
+					field = fieldFactory.createdCalculatedField(key, calculator);
 				}
 				else {
 					field = createDataField(key, val);
@@ -69,7 +98,7 @@ public class FieldConfigurator {
 			}
 		}
 		catch (ConfigurationException e) {
-			throw error(confFile, lnr, e);
+			throw error(source, lnr, e);
 		}
 		catch (IOException e) {
 			throw new DaoException(e);
@@ -85,12 +114,11 @@ public class FieldConfigurator {
 		String[] path = val.split("\\.");
 		checkPath(path);
 		checkArrayIndices(path);
-		return dsff.createDataField(key, path);
+		return fieldFactory.createDataField(key, path);
 	}
 
 	private void checkPath(String[] path) throws ConfigurationException
 	{
-		MappingInfo mappingInfo = new MappingInfo(dsc.getDocumentType().getMapping());
 		StringBuilder sb = new StringBuilder(50);
 		for (String element : path) {
 			try {
@@ -117,7 +145,6 @@ public class FieldConfigurator {
 
 	private void checkArrayIndices(String[] path) throws ConfigurationException
 	{
-		MappingInfo mappingInfo = new MappingInfo(dsc.getDocumentType().getMapping());
 		StringBuilder sb = new StringBuilder(50);
 		for (String element : path) {
 			try {
@@ -152,12 +179,11 @@ public class FieldConfigurator {
 		}
 	}
 
-	private static DaoException error(File confFile, LineNumberReader lnr, ConfigurationException e)
+	private static DaoException error(String source, LineNumberReader lnr, ConfigurationException e)
 	{
-		int line = lnr.getLineNumber() + 1;
-		String path = confFile.getAbsolutePath();
+		int line = lnr.getLineNumber();
 		String fmt = "%s (%s, line %s)";
-		String msg = String.format(fmt, e.getMessage(), path, line);
+		String msg = String.format(fmt, e.getMessage(), source, line);
 		return new DaoException(msg);
 	}
 

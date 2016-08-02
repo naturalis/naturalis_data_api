@@ -1,25 +1,20 @@
 package nl.naturalis.nba.dao.es.format;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class FormatUtil {
 
 	public static final String EMPTY_STRING = "";
+	public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
 	private FormatUtil()
 	{
 	}
 
-	public static String nvl(Object o)
+	public static String formatDate(Date date)
 	{
-		if (o == null)
-			return EMPTY_STRING;
-		return String.valueOf(o);
-	}
-
-	public static String nvl(String s)
-	{
-		if (s == null)
-			return EMPTY_STRING;
-		return s;
+		return DEFAULT_DATE_FORMAT.format(date);
 	}
 
 }

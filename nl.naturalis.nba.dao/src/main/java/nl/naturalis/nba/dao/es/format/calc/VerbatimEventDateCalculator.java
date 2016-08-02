@@ -2,7 +2,10 @@ package nl.naturalis.nba.dao.es.format.calc;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.common.json.JsonUtil.readField;
+import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
+import java.util.Date;
 import java.util.Map;
 
 public class VerbatimEventDateCalculator implements ICalculator {
@@ -18,13 +21,16 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(Map<String, Object> esDocumentAsMap)
 	{
-		Object date0 = readField(esDocumentAsMap, EVENT_DATE_BEGIN);
-		Object date1 = readField(esDocumentAsMap, EVENT_DATE_END);
-		if (date0 != null && date0 != MISSING_VALUE) {
-			if (date1 == null || date1 == MISSING_VALUE || date0.equals(date1)) {
-				return date0;
+		Object obj0 = readField(esDocumentAsMap, EVENT_DATE_BEGIN);
+		Object obj1 = readField(esDocumentAsMap, EVENT_DATE_END);
+		if (obj0 != null && obj0 != MISSING_VALUE) {
+			Date date0 = (Date) obj0;
+			if (obj1 == null || obj1 == MISSING_VALUE || obj0.equals(obj1)) {
+				return escapeCsv(formatDate(date0));
 			}
-			return date0 + " | " + date1;
+			Date date1 = (Date) obj1;
+			String verbatim = formatDate(date0) + " | " + formatDate(date1);
+			return escapeCsv(verbatim);
 		}
 		return null;
 	}

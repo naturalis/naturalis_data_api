@@ -4,9 +4,9 @@ import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 public class OccurrenceMetaXmlGenerator extends MetaXmlGenerator {
 
-	public OccurrenceMetaXmlGenerator(IDataSetField[] columns)
+	public OccurrenceMetaXmlGenerator(IDataSetField[] fields)
 	{
-		super(columns);
+		super(fields);
 	}
 
 	String getLocation()

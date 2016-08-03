@@ -65,9 +65,9 @@ public class FieldConfiguratorTest {
 			fail("Expected a no-such-field error");
 		}
 		catch (DaoException e) {
-			System.out.println(e.getMessage());
-			//String expected = "No such field: \"this.is.not.a.specimen.field\" (dummy, line 1)";
-			//assertEquals("01", expected, e.getMessage());
+			// System.out.println(e.getMessage());
+			String expected = "Illegal array index (0) following single-valued field: unitID (dummy, line 1)";
+			assertEquals("01", expected, e.getMessage());
 		}
 	}
 

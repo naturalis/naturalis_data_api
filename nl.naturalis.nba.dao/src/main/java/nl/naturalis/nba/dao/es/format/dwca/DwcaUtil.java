@@ -17,7 +17,6 @@ import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
-import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 import nl.naturalis.nba.dao.es.map.Mapping;
 
@@ -52,33 +51,7 @@ public class DwcaUtil {
 	/**
 	 * Returns the fields&#46;config file for the specified collection of data
 	 * sets. This file must be named "fields.config" and it must reside in the
-	 * top directory for the data set collection. This file is parsed as
-	 * follows:
-	 * <ul>
-	 * <li>Lines starting with the hash character (#) are ignored.
-	 * <li>Empty lines are ignored.
-	 * <li>Other lines display key-value pairs with the equals sign (=)
-	 * separating key and value. For example:<br>
-	 * {@code lifeStage = phaseOrStage}.
-	 * <li>Both key and value are whitespace-trimmed before being processed.
-	 * <li>The key is the name (and header) of a field within the CSV file
-	 * within the DwC archive. It is also mapped by a {@link MetaXmlGenerator}
-	 * instance to a DarwinCore term when generating the meta.xml file for the
-	 * archive.
-	 * <li>If the value starts with an asterisk (*), it specifies a constant
-	 * (a.k.a. default) value. Everything <i>following</i> the asterisk is used
-	 * as the default value for the CSV field.
-	 * <li>If the value is the percentage sign (%), it means the field has a
-	 * calculated value. The word following the percentage sign specifies the
-	 * simple class name of an {@link ICalculator} implementation.
-	 * <li>If the value does not start with an asterisk or percentage sign, it
-	 * specifies the full path of the Elasticsearch field containing the value
-	 * to be written to the CSV file. Array access can be achieved by adding the
-	 * array index after the name of the field that represents the array. For
-	 * example:<br>
-	 * {@code kingdom = identifications.0.defaultClassification.kingdom}
-	 * <li>
-	 * </ul>
+	 * top directory for the data set collection.
 	 * 
 	 * @see #getDataSetCollectionDirectory(DataSetCollection)
 	 * 

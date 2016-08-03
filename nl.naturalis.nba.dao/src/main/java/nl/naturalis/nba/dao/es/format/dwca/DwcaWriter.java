@@ -36,6 +36,12 @@ import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 
+/**
+ * Manages the assemblage and creation of DarwinCore archives.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DwcaWriter {
 
 	private static final Logger logger = DAORegistry.getInstance().getLogger(DwcaWriter.class);

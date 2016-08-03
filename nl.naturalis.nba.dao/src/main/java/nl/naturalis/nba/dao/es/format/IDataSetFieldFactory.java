@@ -2,6 +2,16 @@ package nl.naturalis.nba.dao.es.format;
 
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
+/**
+ * A {@code IDataSetFieldFactory} defines a to produces format-specific versions
+ * of data fields, constant fields and calculated fields. For each format (CSV,
+ * XML, etc.) a concrete implementation must be provided that produces
+ * {@link IDataSetField} instances that format and escape values as appropriate
+ * for that format.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public interface IDataSetFieldFactory {
 
 	/**

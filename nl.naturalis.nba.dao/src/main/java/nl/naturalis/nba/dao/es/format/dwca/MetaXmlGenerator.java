@@ -11,15 +11,26 @@ import javax.xml.bind.Marshaller;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 
+/**
+ * Abstract base class for generating the meta&#46;xml file of a DwC archive.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public abstract class MetaXmlGenerator {
 
-	private final IDataSetField[] columns;
+	private IDataSetField[] fields;
 
-	public MetaXmlGenerator(IDataSetField[] columns)
+	public MetaXmlGenerator(IDataSetField[] fields)
 	{
-		this.columns = columns;
+		this.fields = fields;
 	}
 
+	/**
+	 * Writes the XML to the specified output stream.
+	 * 
+	 * @param out
+	 */
 	public void generateMetaXml(OutputStream out)
 	{
 		Files files = new Files();
@@ -59,8 +70,8 @@ public abstract class MetaXmlGenerator {
 
 	private int getIndexOfIdField()
 	{
-		for (int i = 0; i < columns.length; i++) {
-			if (columns[i].getName().equals("id"))
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i].getName().equals("id"))
 				return i;
 		}
 		return -1;
@@ -69,16 +80,16 @@ public abstract class MetaXmlGenerator {
 	private List<Field> getFields()
 	{
 		String base = "http://rs.tdwg.org/dwc/terms/";
-		List<Field> fields = new ArrayList<>(columns.length);
-		for (int i = 0; i < columns.length; i++) {
-			if (columns[i].getName().equals("id"))
+		List<Field> list = new ArrayList<>(fields.length);
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i].getName().equals("id"))
 				continue;
 			Field field = new Field();
 			field.setIndex(String.valueOf(i));
-			field.setTerm(base + columns[i].getName());
-			fields.add(field);
+			field.setTerm(base + fields[i].getName());
+			list.add(field);
 		}
-		return fields;
+		return list;
 	}
 
 }

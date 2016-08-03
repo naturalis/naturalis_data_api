@@ -21,6 +21,34 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 /**
+ * A {@code FieldConfigurator} determines which {@link IDataSetField fields} to
+ * include in a data set. It does so by reading a configuration file (or other
+ * type of resource) that is parsed as follows:
+ * <ul>
+ * <li>Lines starting with the hash character (#) are ignored.
+ * <li>Empty lines are ignored.
+ * <li>Other lines display key-value pairs with the equals sign (=) separating
+ * key and value. For example:<br>
+ * {@code lifeStage = phaseOrStage}.
+ * <li>Both key and value are whitespace-trimmed before being processed.
+ * <li>The key is the name of the field to be included in the data set.
+ * <li>If the value starts with an asterisk (*), it specifies a constant (a.k.a.
+ * default) value. Everything <i>following</i> the asterisk is used as the
+ * default value for the CSV field.
+ * <li>If the value is the percentage sign (%), it means the field has a
+ * calculated value. The word following the percentage sign specifies the simple
+ * class name of an {@link ICalculator} implementation.
+ * <li>If the value does not start with an asterisk or percentage sign, it
+ * specifies the full path of the Elasticsearch field containing the value to be
+ * written to the CSV file. Array access can be achieved by adding the array
+ * index after the name of the field that represents the array. For example:<br>
+ * {@code kingdom = identifications.0.defaultClassification.kingdom}
+ * <li>
+ * </ul>
+ * 
+ * @see IDataSetField
+ * @see IDataSetFieldFactory
+ * 
  * @author Ayco Holleman
  */
 public class FieldConfigurator {
@@ -44,6 +72,13 @@ public class FieldConfigurator {
 		this.fieldFactory = fieldFactory;
 	}
 
+	/**
+	 * Returns the fields to be included in a data set as configured in the
+	 * specified configuration file.
+	 * 
+	 * @param confFile
+	 * @return
+	 */
 	public IDataSetField[] getFields(File confFile)
 	{
 		try {
@@ -56,6 +91,15 @@ public class FieldConfigurator {
 		}
 	}
 
+	/**
+	 * Returns the fields to be included in a data set as configured in the
+	 * specified resource. The {@code source} argument should specify the name
+	 * of the resource and is only used for reporting purposes.
+	 * 
+	 * @param is
+	 * @param source
+	 * @return
+	 */
 	public IDataSetField[] getFields(InputStream is, String source)
 	{
 		try {
@@ -68,6 +112,15 @@ public class FieldConfigurator {
 		}
 	}
 
+	/**
+	 * Returns the fields to be included in a data set as configured in the
+	 * specified resource. The {@code source} argument should specify the name
+	 * of the resource and is only used for reporting purposes.
+	 * 
+	 * @param is
+	 * @param source
+	 * @return
+	 */
 	public IDataSetField[] getFields(LineNumberReader lnr, String source)
 	{
 		ArrayList<IDataSetField> fields = new ArrayList<>(60);

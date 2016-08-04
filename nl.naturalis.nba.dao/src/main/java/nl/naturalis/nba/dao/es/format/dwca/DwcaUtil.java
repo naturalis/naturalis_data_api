@@ -18,7 +18,6 @@ import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
-import nl.naturalis.nba.dao.es.map.Mapping;
 
 /**
  * Utility class for the DwCA generation process.
@@ -42,9 +41,8 @@ public class DwcaUtil {
 	public static IDataSetField[] getFields(DataSetCollection dsc)
 	{
 		File confFile = getFieldsConfigFile(dsc);
-		Mapping mapping = dsc.getDocumentType().getMapping();
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator configurator = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator configurator = new FieldConfigurator(dsc, fieldFactory);
 		return configurator.getFields(confFile);
 	}
 

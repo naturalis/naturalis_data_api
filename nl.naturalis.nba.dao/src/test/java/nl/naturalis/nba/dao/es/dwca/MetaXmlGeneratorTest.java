@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.dwca;
 
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
@@ -9,23 +10,22 @@ import java.io.UnsupportedEncodingException;
 import org.domainobject.util.FileUtil;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 import nl.naturalis.nba.dao.es.format.dwca.MetaXmlGenerator;
 import nl.naturalis.nba.dao.es.format.dwca.OccurrenceMetaXmlGenerator;
-import nl.naturalis.nba.dao.es.map.Mapping;
 
 public class MetaXmlGeneratorTest {
 
 	@Test
 	public void testGenerateMetaXml_01() throws UnsupportedEncodingException
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
+		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
 		String cfg = "MetaXmlGeneratorTest_testGenerateMetaXml_01_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		IDataSetField[] fields = fc.getFields(is, "dummy");
@@ -44,9 +44,9 @@ public class MetaXmlGeneratorTest {
 	@Test
 	public void testGenerateMetaXml_02() throws UnsupportedEncodingException
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
+		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
 		String cfg = "MetaXmlGeneratorTest_testGenerateMetaXml_02_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		IDataSetField[] fields = fc.getFields(is, "dummy");

@@ -50,12 +50,29 @@ public class DwcaWriter {
 	private DataSetCollection dsc;
 	private OutputStream out;
 
+	/**
+	 * Creates a {code DwcaWriter} for the specified data set collection,
+	 * writing to the specified output stream.
+	 * 
+	 * @param dsc
+	 * @param out
+	 */
 	public DwcaWriter(DataSetCollection dsc, OutputStream out)
 	{
 		this.dsc = dsc;
 		this.out = out;
 	}
 
+	/**
+	 * Writes a DarwinCore archive for the specified data set. The Elasticsearch
+	 * query to be executed is specified in a file called "queryspec.json"
+	 * residing in the
+	 * {@link DwcaUtil#getDatasetDirectory(DataSetCollection, String) directory}
+	 * created for the data set.
+	 * 
+	 * @param dataSet
+	 * @throws InvalidQueryException
+	 */
 	public void processPredefinedQuery(String dataSet) throws InvalidQueryException
 	{
 		ZipOutputStream zos = new ZipOutputStream(out);
@@ -67,6 +84,13 @@ public class DwcaWriter {
 		close(zos);
 	}
 
+	/**
+	 * Writes a DarwinCore archive containing the data retrieved using the
+	 * specified {@link QuerySpec}.
+	 * 
+	 * @param querySpec
+	 * @throws InvalidQueryException
+	 */
 	public void processDynamicQuery(QuerySpec querySpec) throws InvalidQueryException
 	{
 		ZipOutputStream zos = new ZipOutputStream(out);
@@ -87,7 +111,7 @@ public class DwcaWriter {
 	private void writeEmlXml(ZipOutputStream zos, String dataSet)
 	{
 		newZipEntry(zos, "eml.xml");
-		File emlFile = getEmlFile(dsc, null);
+		File emlFile = getEmlFile(dsc, dataSet);
 		try (InputStream is = new FileInputStream(emlFile)) {
 			IOUtil.pipe(is, zos, 2048);
 		}

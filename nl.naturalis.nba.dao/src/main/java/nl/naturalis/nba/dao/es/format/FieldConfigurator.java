@@ -53,6 +53,32 @@ import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
  */
 public class FieldConfigurator {
 
+	/**
+	 * Constructs the full path of an Elasticsearch field from the specified
+	 * path elements. Array indices in the specified string array are skipped.
+	 * For example, if you pass {"identifications", "0",
+	 * "defaultClassification", "kingdom"}, then
+	 * "identifications.defaultClassification.kingdom" is returned.
+	 * 
+	 * @param pathElements
+	 * @return
+	 */
+	public static String getPath(String[] pathElements)
+	{
+		StringBuilder sb = new StringBuilder(50);
+		for (String element : pathElements) {
+			try {
+				Integer.parseInt(element);
+			}
+			catch (NumberFormatException e) {
+				if (sb.length() != 0)
+					sb.append('.');
+				sb.append(element);
+			}
+		}
+		return sb.toString();
+	}
+
 	private static class ConfigurationException extends Exception {
 
 		ConfigurationException(String message)
@@ -63,13 +89,13 @@ public class FieldConfigurator {
 
 	private static final String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 
-	private IDataSetFieldFactory fieldFactory;
-	private MappingInfo mappingInfo;
+	private IDataSetFieldFactory factory;
+	private DataSetCollection dsc;
 
-	public FieldConfigurator(Mapping mapping, IDataSetFieldFactory fieldFactory)
+	public FieldConfigurator(DataSetCollection dsc, IDataSetFieldFactory fieldFactory)
 	{
-		this.mappingInfo = new MappingInfo(mapping);
-		this.fieldFactory = fieldFactory;
+		this.dsc = dsc;
+		this.factory = fieldFactory;
 	}
 
 	/**
@@ -134,18 +160,20 @@ public class FieldConfigurator {
 				if (chunks.length != 2) {
 					throw new ConfigurationException("Missing delimiter");
 				}
-				String key = chunks[0].trim();
-				String val = chunks[1].trim();
+				String fieldName = chunks[0].trim();
+				String fieldDef = chunks[1].trim();
 				IDataSetField field;
-				if (val.charAt(0) == '*') {
-					field = fieldFactory.createConstantField(key, val.substring(1));
+				if (fieldDef.charAt(0) == '*') {
+					String constant = fieldDef.substring(1);
+					field = factory.createConstantField(dsc, fieldName, constant);
 				}
-				else if (val.charAt(0) == '%') {
-					ICalculator calculator = getCalculator(val.substring(1).trim());
-					field = fieldFactory.createdCalculatedField(key, calculator);
+				else if (fieldDef.charAt(0) == '%') {
+					String className = fieldDef.substring(1).trim();
+					ICalculator calculator = getCalculator(className);
+					field = factory.createdCalculatedField(dsc, fieldName, calculator);
 				}
 				else {
-					field = createDataField(key, val);
+					field = createDataField(fieldName, fieldDef);
 				}
 				fields.add(field);
 			}
@@ -162,32 +190,25 @@ public class FieldConfigurator {
 		return fields.toArray(new IDataSetField[fields.size()]);
 	}
 
-	private IDataSetField createDataField(String key, String val) throws ConfigurationException
+	private IDataSetField createDataField(String fieldName, String path)
+			throws ConfigurationException
 	{
-		String[] path = val.split("\\.");
-		checkPath(path);
-		checkArrayIndices(path);
-		return fieldFactory.createDataField(key, path);
+		String[] pathElements = path.split("\\.");
+		checkPath(pathElements);
+		checkArrayIndices(pathElements);
+		return factory.createDataField(dsc, fieldName, pathElements);
 	}
 
-	private void checkPath(String[] path) throws ConfigurationException
+	private void checkPath(String[] elements) throws ConfigurationException
 	{
-		StringBuilder sb = new StringBuilder(50);
-		for (String element : path) {
-			try {
-				Integer.parseInt(element);
-			}
-			catch (NumberFormatException e) {
-				if (sb.length() != 0)
-					sb.append('.');
-				sb.append(element);
-			}
-		}
+		Mapping mapping = dsc.getDocumentType().getMapping();
+		MappingInfo mi = new MappingInfo(mapping);
+		String path = getPath(elements);
 		try {
-			ESField esField = mappingInfo.getField(sb.toString());
+			ESField esField = mi.getField(path);
 			if (!(esField instanceof DocumentField)) {
 				String fmt = "Invalid field (type is object/nested): %s";
-				String msg = String.format(fmt, sb.toString());
+				String msg = String.format(fmt, path);
 				throw new ConfigurationException(msg);
 			}
 		}
@@ -198,11 +219,13 @@ public class FieldConfigurator {
 
 	private void checkArrayIndices(String[] path) throws ConfigurationException
 	{
+		Mapping mapping = dsc.getDocumentType().getMapping();
+		MappingInfo mi = new MappingInfo(mapping);
 		StringBuilder sb = new StringBuilder(50);
 		for (String element : path) {
 			try {
 				int index = Integer.parseInt(element);
-				ESField esField = mappingInfo.getField(sb.toString());
+				ESField esField = mi.getField(sb.toString());
 				if (!esField.isMultiValued()) {
 					String fmt = "Illegal array index (%s) following single-valued field: %s";
 					String msg = String.format(fmt, index, sb.toString());

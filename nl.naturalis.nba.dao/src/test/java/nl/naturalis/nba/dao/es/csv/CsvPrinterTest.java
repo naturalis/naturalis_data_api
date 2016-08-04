@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.csv;
 
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
@@ -16,13 +17,12 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
-import nl.naturalis.nba.dao.es.map.Mapping;
 
 public class CsvPrinterTest {
 
@@ -52,9 +52,9 @@ public class CsvPrinterTest {
 	@Test
 	public void testPrintHeader() throws UnsupportedEncodingException
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
+		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
 		InputStream is = getClass().getResourceAsStream("CsvPrinterTest_fields.config");
 		IDataSetField[] fields = fc.getFields(is, "dummy");
 		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
@@ -68,15 +68,15 @@ public class CsvPrinterTest {
 	@Test
 	public void testPrintRecord() throws UnsupportedEncodingException
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
+		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
 		InputStream is = getClass().getResourceAsStream("CsvPrinterTest_fields.config");
 		IDataSetField[] fields = fc.getFields(is, "dummy");
 		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 		CsvPrinter printer = new CsvPrinter(fields, out);
 		printer.printRecord(specimen);
-		// System.out.println(out);
+		System.out.println(out);
 		String expected = "RMNH.MAM.123456,male,ICZN,2012/08/13,species,Larus,fuscus";
 		assertEquals("01", expected, out.toString("UTF-8").trim());
 	}

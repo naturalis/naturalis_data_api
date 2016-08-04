@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.dwca;
 
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -7,22 +8,19 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
+import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
-import nl.naturalis.nba.dao.es.map.Mapping;
 
 public class FieldConfiguratorTest {
 
 	@Test
 	public void testGetFields_01()
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
-		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = getConfigurator();
 		String cfg = "FieldConfiguratorTest_testGetFields_01_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		IDataSetField[] fields = fc.getFields(is, "dummy");
@@ -36,9 +34,7 @@ public class FieldConfiguratorTest {
 	@Test
 	public void testGetFields_02()
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
-		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = getConfigurator();
 		String cfg = "FieldConfiguratorTest_testGetFields_02_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		try {
@@ -55,20 +51,26 @@ public class FieldConfiguratorTest {
 	@Test
 	public void testGetFields_03()
 	{
-		Mapping mapping = DocumentType.SPECIMEN.getMapping();
-		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(mapping, fieldFactory);
+		FieldConfigurator fc = getConfigurator();
 		String cfg = "FieldConfiguratorTest_testGetFields_03_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		try {
 			fc.getFields(is, "dummy");
-			fail("Expected a no-such-field error");
+			fail("Expected a NoSuchFieldException");
 		}
 		catch (DaoException e) {
 			// System.out.println(e.getMessage());
 			String expected = "Illegal array index (0) following single-valued field: unitID (dummy, line 1)";
 			assertEquals("01", expected, e.getMessage());
 		}
+	}
+
+	private static FieldConfigurator getConfigurator()
+	{
+		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
+		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
+		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
+		return fc;
 	}
 
 }

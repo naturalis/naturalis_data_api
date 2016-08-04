@@ -3,7 +3,7 @@ package nl.naturalis.nba.api.model;
 public enum PhaseOrStage
 {
 
-	ADULT, SUBADULT, EGG, EMBRYO, IMMATURE, JUVENILE, LARVA, NYMPH;
+	ADULT, SUBADULT, EGG, EMBRYO, IMMATURE, JUVENILE, LARVA, PUPA, NYMPH;
 
 	public static PhaseOrStage parse(String name)
 	{
@@ -20,18 +20,15 @@ public enum PhaseOrStage
 
 	private final String name;
 
-
 	private PhaseOrStage(String name)
 	{
 		this.name = name;
 	}
 
-
 	private PhaseOrStage()
 	{
 		this.name = name().toLowerCase();
 	}
-
 
 	public String toString()
 	{

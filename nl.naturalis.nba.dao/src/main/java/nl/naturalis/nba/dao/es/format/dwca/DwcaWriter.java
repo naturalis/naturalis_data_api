@@ -28,7 +28,7 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollection;
@@ -44,7 +44,7 @@ import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
  */
 public class DwcaWriter {
 
-	private static final Logger logger = DAORegistry.getInstance().getLogger(DwcaWriter.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(DwcaWriter.class);
 	private static final TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DataSetCollection dsc;

@@ -1,9 +1,9 @@
 package nl.naturalis.nba.dao.es.exception;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 
 /**
- * Thrown during the instantiation of the central {@link DAORegistry} object if
+ * Thrown during the instantiation of the central {@link DaoRegistry} object if
  * anything goes wrong while configuring the services it provides.
  * 
  * @author Ayco Holleman

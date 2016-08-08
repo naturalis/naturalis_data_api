@@ -8,7 +8,7 @@ import org.domainobject.util.ConfigObject;
 
 public class IndexInfo {
 
-	private static final Logger logger = DAORegistry.getInstance().getLogger(IndexInfo.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(IndexInfo.class);
 
 	private final String name;
 	private final int numShards;

@@ -17,7 +17,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
@@ -113,7 +113,7 @@ public class BrahmsDumpUtil {
 	public static void convertFiles() throws Exception
 	{
 		logger.info("Checking file encoding for Brahms CSV files");
-		String csvDir = DAORegistry.getInstance().getConfiguration().required("brahms.csv_dir");
+		String csvDir = DaoRegistry.getInstance().getConfiguration().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new Exception(String.format("No such directory: \"%s\"", csvDir));
@@ -183,7 +183,7 @@ public class BrahmsDumpUtil {
 
 	public static File[] getImportableFiles()
 	{
-		String csvDir = DAORegistry.getInstance().getConfiguration().required("brahms.csv_dir");
+		String csvDir = DaoRegistry.getInstance().getConfiguration().required("brahms.csv_dir");
 		File file = new File(csvDir);
 		if (!file.isDirectory()) {
 			throw new RuntimeException(String.format("No such directory: \"%s\"", csvDir));

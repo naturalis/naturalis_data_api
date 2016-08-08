@@ -10,7 +10,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.dao.es.util.ESUtil;
@@ -37,7 +37,7 @@ public class CoLTaxonImporter {
 	{
 		try {
 			CoLTaxonImporter importer = new CoLTaxonImporter();
-			String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.data.dir");
+			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
 		finally {
@@ -59,7 +59,7 @@ public class CoLTaxonImporter {
 		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
 		String val = System.getProperty(key, "5000");
 		esBulkRequestSize = Integer.parseInt(val);
-		colYear = DAORegistry.getInstance().getConfiguration().required("col.year");
+		colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
 	}
 
 	/**

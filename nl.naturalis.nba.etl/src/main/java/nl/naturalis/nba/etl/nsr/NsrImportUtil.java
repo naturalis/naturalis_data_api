@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
@@ -126,7 +126,7 @@ class NsrImportUtil {
 
 	private static File getDataDir()
 	{
-		return DAORegistry.getInstance().getConfiguration().getDirectory("nsr.data.dir");
+		return DaoRegistry.getInstance().getConfiguration().getDirectory("nsr.data.dir");
 	}
 
 }

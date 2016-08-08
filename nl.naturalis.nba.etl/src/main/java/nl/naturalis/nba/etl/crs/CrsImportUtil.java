@@ -8,7 +8,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
@@ -26,7 +26,7 @@ class CrsImportUtil {
 
 	static {
 		logger = ETLRegistry.getInstance().getLogger(CrsImportUtil.class);
-		config = DAORegistry.getInstance().getConfiguration();
+		config = DaoRegistry.getInstance().getConfiguration();
 		oaiDateFormatter = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'");
 	}
 

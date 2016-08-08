@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.dao.es.util.ESUtil;
@@ -34,7 +34,7 @@ public class CoLReferenceImporter {
 	{
 		try {
 			CoLReferenceImporter importer = new CoLReferenceImporter();
-			String dwcaDir = DAORegistry.getInstance().getConfiguration().required("col.data.dir");
+			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 			importer.importCsv(dwcaDir + "/reference.txt");
 		}
 		finally {

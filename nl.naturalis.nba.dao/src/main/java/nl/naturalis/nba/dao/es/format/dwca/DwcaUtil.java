@@ -11,7 +11,7 @@ import org.domainobject.util.FileUtil;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
@@ -177,7 +177,7 @@ public class DwcaUtil {
 	 */
 	public static File getDataSetCollectionDirectory(DataSetCollection dsc)
 	{
-		File nbaConfDir = DAORegistry.getInstance().getConfigurationDirectory();
+		File nbaConfDir = DaoRegistry.getInstance().getConfigurationDirectory();
 		String docType = dsc.getDocumentType().toString().toLowerCase();
 		Path path = Paths.get(nbaConfDir.getPath(), "dwca", docType, dsc.getName());
 		File f = path.toFile();

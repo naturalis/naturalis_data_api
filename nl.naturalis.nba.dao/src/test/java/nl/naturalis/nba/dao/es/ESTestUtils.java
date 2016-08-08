@@ -13,12 +13,12 @@ import nl.naturalis.nba.dao.es.util.ESUtil;
 
 public class ESTestUtils {
 
-	private static final DAORegistry registry;
+	private static final DaoRegistry registry;
 	@SuppressWarnings("unused")
 	private static final Logger logger;
 
 	static {
-		registry = DAORegistry.getInstance();
+		registry = DaoRegistry.getInstance();
 		logger = registry.getLogger(ESTestUtils.class);
 	}
 

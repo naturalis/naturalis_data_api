@@ -62,7 +62,7 @@ public interface ISpecimenAPI {
 	 * @return
 	 */
 	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
-
+	
 	/**
 	 * Returns all &#34;special collections&#34; defined within the specimen
 	 * dataset. These can be collections from a particular collector or

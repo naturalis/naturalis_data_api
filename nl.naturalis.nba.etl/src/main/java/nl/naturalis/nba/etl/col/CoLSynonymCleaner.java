@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.dao.es.util.ESUtil;
@@ -37,7 +37,7 @@ public class CoLSynonymCleaner {
 	{
 		try {
 			CoLSynonymCleaner cleaner = new CoLSynonymCleaner();
-			ConfigObject config = DAORegistry.getInstance().getConfiguration();
+			ConfigObject config = DaoRegistry.getInstance().getConfiguration();
 			String dwcaDir = config.required("col.data.dir");
 			cleaner.cleanup(dwcaDir + "/taxa.txt");
 		}

@@ -43,7 +43,7 @@ public class SpecimenDao implements ISpecimenAPI {
 	private static final Logger logger;
 
 	static {
-		logger = DAORegistry.getInstance().getLogger(SpecimenDao.class);
+		logger = DaoRegistry.getInstance().getLogger(SpecimenDao.class);
 	}
 
 	public SpecimenDao()

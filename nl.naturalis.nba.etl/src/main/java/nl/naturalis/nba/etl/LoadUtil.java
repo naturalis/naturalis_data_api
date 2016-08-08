@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
@@ -135,7 +135,7 @@ public final class LoadUtil {
 		String value = null;
 		try {
 			String property = "purl.baseurl";
-			value = DAORegistry.getInstance().getConfiguration().get(property,
+			value = DaoRegistry.getInstance().getConfiguration().get(property,
 					PURL_SERVER_BASE_URL);
 			return new URIBuilder(value);
 		}

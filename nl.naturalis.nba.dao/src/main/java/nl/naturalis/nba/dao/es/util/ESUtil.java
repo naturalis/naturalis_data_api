@@ -29,7 +29,7 @@ import org.elasticsearch.index.IndexNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.IndexInfo;
@@ -45,7 +45,7 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public class ESUtil {
 
-	private static final Logger logger = DAORegistry.getInstance().getLogger(ESUtil.class);
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(ESUtil.class);
 
 	private ESUtil()
 	{

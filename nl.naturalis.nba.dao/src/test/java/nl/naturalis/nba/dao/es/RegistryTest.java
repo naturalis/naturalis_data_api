@@ -33,7 +33,7 @@ public class RegistryTest {
 	@Test
 	public void testGetConfig()
 	{
-		DAORegistry registry = DAORegistry.getInstance();
+		DaoRegistry registry = DaoRegistry.getInstance();
 		ConfigObject config = registry.getConfiguration();
 		assertNotNull("01", config.get("elasticsearch.cluster.name"));
 		assertNotNull("02", config.get("elasticsearch.transportaddress.host"));

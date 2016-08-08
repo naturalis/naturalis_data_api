@@ -21,7 +21,7 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.api.query.SortField;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 
@@ -30,7 +30,7 @@ public class QuerySpecTranslator {
 	private static final Logger logger;
 
 	static {
-		logger = DAORegistry.getInstance().getLogger(QuerySpecTranslator.class);
+		logger = DaoRegistry.getInstance().getLogger(QuerySpecTranslator.class);
 	}
 
 	private QuerySpec spec;

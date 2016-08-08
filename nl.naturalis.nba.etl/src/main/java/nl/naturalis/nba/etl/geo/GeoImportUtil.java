@@ -3,7 +3,7 @@ package nl.naturalis.nba.etl.geo;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 
 class GeoImportUtil {
 
@@ -32,6 +32,6 @@ class GeoImportUtil {
 
 	private static File getDataDir()
 	{
-		return DAORegistry.getInstance().getConfiguration().getDirectory("geo.data.dir");
+		return DaoRegistry.getInstance().getConfiguration().getDirectory("geo.data.dir");
 	}
 }

@@ -55,6 +55,7 @@ public class FormatUtil {
 		 * date string. This ceases to be valid if the date formats change!
 		 */
 		// return DEFAULT_DATE_FORMAT.format(ES_DATE_TIME_FORMAT.parse(esDateString));
+		System.out.println("XXXXX: " + esDate);
 		char[] chars = esDate.substring(0, 10).toCharArray();
 		chars[4] = '/';
 		chars[7] = '/';

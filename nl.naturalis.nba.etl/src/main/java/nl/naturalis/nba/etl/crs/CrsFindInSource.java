@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 
 /**
  * Utility class for searching the locally stored XML files for a value.
@@ -106,7 +106,7 @@ public class CrsFindInSource {
 	public void findOaiRecords() throws SAXException, IOException, TransformerException
 	{
 		long start = System.currentTimeMillis();
-		ConfigObject cfg = DAORegistry.getInstance().getConfiguration();
+		ConfigObject cfg = DaoRegistry.getInstance().getConfiguration();
 		System.out.print("Searching " + cfg.required("crs.data_dir") + " ");
 		Iterator<File> iterator = getFileIterator(type);
 		int matches = 0;
@@ -230,7 +230,7 @@ public class CrsFindInSource {
 
 	private static Iterator<File> getFileIterator(final String type)
 	{
-		String path = DAORegistry.getInstance().getConfiguration().required("crs.data_dir");
+		String path = DaoRegistry.getInstance().getConfiguration().required("crs.data_dir");
 		if (type == null) {
 			return Arrays.asList(new File(path).listFiles()).iterator();
 		}

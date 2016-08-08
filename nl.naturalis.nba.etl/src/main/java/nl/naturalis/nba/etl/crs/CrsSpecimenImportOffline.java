@@ -14,7 +14,7 @@ import org.domainobject.util.IOUtil;
 import org.xml.sax.SAXException;
 
 import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -127,7 +127,7 @@ public class CrsSpecimenImportOffline {
 
 	private static File[] getXmlFiles()
 	{
-		ConfigObject config = DAORegistry.getInstance().getConfiguration();
+		ConfigObject config = DaoRegistry.getInstance().getConfiguration();
 		String path = config.required("crs.data.dir");
 		logger.info("Data directory for CRS specimen import: " + path);
 		File[] files = new File(path).listFiles(new FilenameFilter() {

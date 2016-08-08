@@ -43,7 +43,7 @@ public enum DocumentType
 			 * No point in going on. We log the error and allow the exception to
 			 * cause an ExceptionInInitializerError.
 			 */
-			Logger logger = DAORegistry.getInstance().getLogger(DocumentType.class);
+			Logger logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
 			logger.fatal("Error while retrieving index info", t);
 			throw t;
 		}
@@ -85,7 +85,7 @@ public enum DocumentType
 
 	private DocumentType(String name, Class<? extends ESType> esType)
 	{
-		logger = DAORegistry.getInstance().getLogger(DocumentType.class);
+		logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
 		logger.info("Retrieving info for document type {}", name);
 		this.name = name;
 		this.esType = esType;
@@ -126,7 +126,7 @@ public enum DocumentType
 
 	private static List<ConfigObject> getIndexSections()
 	{
-		DAORegistry registry = DAORegistry.getInstance();
+		DaoRegistry registry = DaoRegistry.getInstance();
 		ConfigObject cfg = registry.getConfiguration();
 		List<ConfigObject> sections = new ArrayList<>();
 		for (int i = 0;; i++) {
@@ -135,7 +135,7 @@ public enum DocumentType
 			if (section == null) {
 				break;
 			}
-			Logger logger = DAORegistry.getInstance().getLogger(DocumentType.class);
+			Logger logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
 			String cfgFile = registry.getConfigurationFile().getAbsolutePath();
 			logger.info("Processing section {} of {}", prefix, cfgFile);
 			sections.add(section);

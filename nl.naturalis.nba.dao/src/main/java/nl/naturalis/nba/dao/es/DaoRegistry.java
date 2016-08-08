@@ -21,7 +21,7 @@ import nl.naturalis.nba.dao.es.exception.InitializationException;
  * @author Ayco Holleman
  *
  */
-public class DAORegistry {
+public class DaoRegistry {
 
 	/**
 	 * Name of the main configuration file: &#34;nba.properties&#34;.
@@ -41,7 +41,7 @@ public class DAORegistry {
 	 */
 	public static final String SYSPROP_CONFIG_DIR_TEST = "nba-test.v2.conf.dir";
 
-	protected static DAORegistry instance;
+	protected static DaoRegistry instance;
 
 	private File cfgDir;
 	private File cfgFile;
@@ -55,15 +55,15 @@ public class DAORegistry {
 	 * 
 	 * @return A {@code Registry} instance.
 	 */
-	public static DAORegistry getInstance()
+	public static DaoRegistry getInstance()
 	{
 		if (instance == null) {
-			instance = new DAORegistry();
+			instance = new DaoRegistry();
 		}
 		return instance;
 	}
 
-	protected DAORegistry()
+	protected DaoRegistry()
 	{
 		setConfDir();
 		loadConfig();

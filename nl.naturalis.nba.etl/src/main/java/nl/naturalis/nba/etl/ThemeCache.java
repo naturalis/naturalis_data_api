@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.dao.es.DAORegistry;
+import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
@@ -248,7 +248,7 @@ public class ThemeCache {
 
 	private static File getThematicSearchDir()
 	{
-		File f = DAORegistry.getInstance().getConfigurationDirectory();
+		File f = DaoRegistry.getInstance().getConfigurationDirectory();
 		return FileUtil.newFile(f, "thematic-search");
 	}
 

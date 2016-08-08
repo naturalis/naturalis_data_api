@@ -8,13 +8,6 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
-import nl.naturalis.nba.dao.es.BioportalMultiMediaObjectDao;
-import nl.naturalis.nba.dao.es.BioportalSpecimenDao;
-import nl.naturalis.nba.dao.es.BioportalTaxonDao;
-import nl.naturalis.nba.dao.es.MultiMediaObjectDao;
-import nl.naturalis.nba.dao.es.SpecimenDaoOld;
-import nl.naturalis.nba.dao.es.TaxonDao;
-//import nl.naturalis.nba.rest.util.LogUtil;
 import nl.naturalis.nba.rest.util.NDA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

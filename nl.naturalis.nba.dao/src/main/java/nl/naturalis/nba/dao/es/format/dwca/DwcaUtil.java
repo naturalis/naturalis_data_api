@@ -12,6 +12,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
@@ -29,6 +30,51 @@ public class DwcaUtil {
 
 	private DwcaUtil()
 	{
+	}
+
+	/**
+	 * Returns the {@link DataSetCollection} that contains the specified data
+	 * set. This lookup is possible because data set names <i>must</i> be unique
+	 * across all collections for a particular {@link DocumentType document
+	 * type}. So you could have specimen/zoology/lepidoptera and
+	 * taxon/zoology/lepidoptera, but you cannot then also have
+	 * specimen/paleontology/lepidoptera. Another factor determining the lookup
+	 * mechanism is that you can have collections with just one data set. In
+	 * that case, it is allowed to merge the
+	 * {@link #getDataSetCollectionDirectory(DataSetCollection) collection
+	 * directory} and the {@link #getDatasetDirectory(DataSetCollection, String)
+	 * data set directory}. In other words, collection directory and data set
+	 * directory are one and the same, and this one directory will contain both
+	 * collection-specific artefacts (e.g. fields.config) and dataset-specific
+	 * artefacts (e.g. eml.xml). By being able to look up the collection from
+	 * the data set, we can keep our URLs for predefined data sets simple, e.g.
+	 * http://api.biodiversitydata.nl/specimen/dwca/lepidoptera in stead of
+	 * http://api.biodiversitydata.nl/specimen/dwca/zoology/lepidoptera.
+	 * 
+	 * @param dt
+	 * @param dataSet
+	 * @return
+	 */
+	public static DataSetCollection findDataSetCollection(DocumentType dt, String dataSet)
+	{
+		File dir = getDocumentTypeDirectory(dt);
+		for (File collDir : dir.listFiles()) {
+			if (collDir.isDirectory()) {
+				String collection = collDir.getName();
+				if (collection.equals(dataSet)) {
+					/*
+					 * Then we have a collection with just one data set.
+					 */
+					return new DataSetCollection(dt, dataSet);
+				}
+				for (File setDir : collDir.listFiles()) {
+					if (setDir.isDirectory() && setDir.getName().equals(dataSet)) {
+						return new DataSetCollection(dt, collection);
+					}
+				}
+			}
+		}
+		throw new DwcaCreationException("No such data set: \"" + dataSet + "\"");
 	}
 
 	/**
@@ -148,8 +194,17 @@ public class DwcaUtil {
 	}
 
 	/**
-	 * Returns the directory for the specified data set. This directory is a
-	 * subdirectory of the directory for the specified data set collection.
+	 * Returns the directory containing configuration data for the specified
+	 * data set. This directory ordinarily is a subdirectory of the directory
+	 * for the specified data set collection. However for collections containing
+	 * just one data set, it is allowed to use the collection directory as the
+	 * data set directory. In other words, collection directory and data set
+	 * directory are one and the same and will contain both collection-specific
+	 * artefacts (e.g. fields.config) and dataset-specific artefacts (e.g.
+	 * eml.xml). If you pass {@code null} for the {@code setName} argument, or
+	 * if the {@code setName} argument is the same as the name of the provided
+	 * data set collection, then it is assumed that you want the directory for
+	 * such a one-of-a-kind data set.
 	 * 
 	 * 
 	 * @param dsc
@@ -159,7 +214,7 @@ public class DwcaUtil {
 	public static File getDatasetDirectory(DataSetCollection dsc, String setName)
 	{
 		File dir = getDataSetCollectionDirectory(dsc);
-		if (setName == null)
+		if (setName == null || setName.equals(dsc.getName()))
 			return dir;
 		File f = FileUtil.newFile(dir, setName);
 		if (!f.isDirectory())
@@ -168,18 +223,36 @@ public class DwcaUtil {
 	}
 
 	/**
-	 * Returns the top directory for a collection of data sets sharing the same
-	 * Elasticsearch document type and the same field configuration for the CSV
-	 * payload.
+	 * Returns the top directory for the specified {@link DataSetCollection
+	 * collection of data sets}. Besides subdirectories for the individual data
+	 * sets, this directory must also contain the "fields.config" file that
+	 * configures which fields to include in the data sets (see
+	 * {@link FieldConfigurator}).
 	 * 
 	 * @param dsc
 	 * @return
 	 */
 	public static File getDataSetCollectionDirectory(DataSetCollection dsc)
 	{
+		File dir = getDocumentTypeDirectory(dsc.getDocumentType());
+		File f = FileUtil.newFile(dir, dsc.getName());
+		if (!f.isDirectory())
+			throw directoryNotFound(f);
+		return f;
+	}
+
+	/**
+	 * Returns the top directory for all data sets sourced from the specified
+	 * Elasticsearch {@link DocumentType document type}.
+	 * 
+	 * @param dt
+	 * @return
+	 */
+	public static File getDocumentTypeDirectory(DocumentType dt)
+	{
 		File nbaConfDir = DaoRegistry.getInstance().getConfigurationDirectory();
-		String docType = dsc.getDocumentType().toString().toLowerCase();
-		Path path = Paths.get(nbaConfDir.getPath(), "dwca", docType, dsc.getName());
+		String docType = dt.toString().toLowerCase();
+		Path path = Paths.get(nbaConfDir.getPath(), "dwca", docType);
 		File f = path.toFile();
 		if (!f.isDirectory())
 			throw directoryNotFound(f);

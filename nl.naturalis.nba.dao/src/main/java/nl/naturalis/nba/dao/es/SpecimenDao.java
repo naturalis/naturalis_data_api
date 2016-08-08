@@ -2,13 +2,19 @@ package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.findDataSetCollection;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getDocumentTypeDirectory;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
+import static org.domainobject.util.FileUtil.*;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -29,16 +35,18 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.ISpecimenAPI;
+import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.dwca.DwcaWriter;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDao implements ISpecimenAPI {
+public class SpecimenDao implements ISpecimenAccess {
 
 	private static final Logger logger;
 
@@ -173,6 +181,49 @@ public class SpecimenDao implements ISpecimenAPI {
 	}
 
 	@Override
+	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
+	{
+		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dynamic");
+		DwcaWriter writer = new DwcaWriter(dsc, out);
+		writer.processDynamicQuery(spec);
+	}
+
+	@Override
+	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	{
+		DataSetCollection dsc = findDataSetCollection(SPECIMEN, name);
+		DwcaWriter writer = new DwcaWriter(dsc, out);
+		writer.processPredefinedQuery(name);
+	}
+
+	@Override
+	public String[] dwcaGetDataSetNames()
+	{
+		File dir = getDocumentTypeDirectory(SPECIMEN);
+		ArrayList<String> names = new ArrayList<>(32);
+		for (File subdir : getSubdirectories(dir)) {
+			if (subdir.getName().equals("dynamic"))
+				continue; // Special directory for dynamic DwCA
+			if (!containsFile(subdir, "fields.config"))
+				continue; // Can't be a data set collection dir
+			File[] dataSetDirs = getSubdirectories(subdir);
+			if (dataSetDirs.length == 0) {
+				if (containsFile(subdir, "eml.xml")) {
+					names.add(subdir.getName());
+				}
+			}
+			else {
+				for (File dataSetDir : dataSetDirs) {
+					if (containsFile(dataSetDir, "eml.xml")) {
+						names.add(dataSetDir.getName());
+					}
+				}
+			}
+		}
+		return names.toArray(new String[names.size()]);
+	}
+
+	@Override
 	public String save(Specimen specimen, boolean immediate)
 	{
 		String id = specimen.getId();
@@ -252,6 +303,5 @@ public class SpecimenDao implements ISpecimenAPI {
 	{
 		return ESClientManager.getInstance().getClient();
 	}
-
 
 }

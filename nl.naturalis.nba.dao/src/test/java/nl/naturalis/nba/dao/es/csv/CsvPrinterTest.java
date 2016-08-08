@@ -7,9 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,9 +73,9 @@ public class CsvPrinterTest {
 		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 		CsvPrinter printer = new CsvPrinter(fields, out);
 		printer.printRecord(specimen);
-		System.out.println(out);
-		//String expected = "RMNH.MAM.123456,male,ICZN,2012/08/13,species,Larus,fuscus";
-		//assertEquals("01", expected, out.toString("UTF-8").trim());
+		//System.out.println(out);
+		String expected = "RMNH.MAM.123456,male,ICZN,2012/08/13,species,Larus,fuscus";
+		assertEquals("01", expected, out.toString("UTF-8").trim());
 	}
 
 }

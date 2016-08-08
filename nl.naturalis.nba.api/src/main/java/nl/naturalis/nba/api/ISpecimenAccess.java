@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api;
 
+import java.util.zip.ZipOutputStream;
+
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -10,7 +12,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
  * @author Ayco Holleman
  *
  */
-public interface ISpecimenAPI {
+public interface ISpecimenAccess {
 
 	/**
 	 * Returns the {@link Specimen} with the specified system id, or
@@ -62,7 +64,38 @@ public interface ISpecimenAPI {
 	 * @return
 	 */
 	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
-	
+
+	/**
+	 * Writes a DarwinCore Archive with specimens satisfying the specified query
+	 * specification to the specified output stream.
+	 * 
+	 * @param querySpec
+	 * @param out
+	 * @throws InvalidQueryException
+	 */
+	void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException;
+
+	/**
+	 * Writes a DarwinCore Archive with specimens from a predefined data set to
+	 * the specified output stream. To get the names of all currently defined
+	 * data sets, call {@link #dwcaGetDataSetNames() dwcaGetDataSetNames}.
+	 * 
+	 * @param name
+	 *            The name of the predefined data set
+	 * @param out
+	 *            The output stream to write to
+	 * @throws InvalidQueryException
+	 */
+	void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException;
+
+	/**
+	 * Returns the names of all predefined data sets with specimen/occurrence
+	 * data.
+	 * 
+	 * @return
+	 */
+	String[] dwcaGetDataSetNames();
+
 	/**
 	 * Returns all &#34;special collections&#34; defined within the specimen
 	 * dataset. These can be collections from a particular collector or

@@ -3,6 +3,10 @@ package nl.naturalis.nba.rest.resource;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.ZipOutputStream;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -10,14 +14,19 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
@@ -128,6 +137,81 @@ public class SpecimenResource {
 			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
 			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/dwca/query/{querySpec}")
+	@Produces("application/zip")
+	public Response dwcaQuery(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
+			StreamingOutput stream = new StreamingOutput() {
+
+				@Override
+				public void write(OutputStream out) throws IOException, WebApplicationException
+				{
+					SpecimenDao dao = new SpecimenDao();
+					try {
+						dao.dwcaQuery(qs, new ZipOutputStream(out));
+					}
+					catch (InvalidQueryException e) {
+						throw new WebApplicationException(e);
+					}
+				}
+			};
+			ResponseBuilder response = Response.ok(stream);
+			response.type("application/zip");
+			response.header("Content-Disposition", "attachment; filename=\"dwca.zip\"");
+			return response.build();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/dwca/{dataset}")
+	@Produces("application/zip")
+	public Response dwcaGetDataSet(@PathParam("dataset") String name, @Context UriInfo uriInfo)
+	{
+		try {
+			StreamingOutput stream = new StreamingOutput() {
+
+				@Override
+				public void write(OutputStream out) throws IOException, WebApplicationException
+				{
+					SpecimenDao dao = new SpecimenDao();
+					try {
+						dao.dwcaGetDataSet(name, new ZipOutputStream(out));
+					}
+					catch (InvalidQueryException e) {
+						throw new WebApplicationException(e);
+					}
+				}
+			};
+			ResponseBuilder response = Response.ok(stream);
+			response.type("application/zip");
+			response.header("Content-Disposition", "attachment; filename=\"dwca.zip\"");
+			return response.build();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/dwca/getDataSetNames")
+	@Produces(JSON_CONTENT_TYPE)
+	public String[] dwcaGetDataSetNames(@Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDao dao = new SpecimenDao();
+			return dao.dwcaGetDataSetNames();
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

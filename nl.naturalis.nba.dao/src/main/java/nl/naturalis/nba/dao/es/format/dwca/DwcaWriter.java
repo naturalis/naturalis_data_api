@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -48,7 +47,7 @@ public class DwcaWriter {
 	private static final TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DataSetCollection dsc;
-	private OutputStream out;
+	private ZipOutputStream zos;
 
 	/**
 	 * Creates a {code DwcaWriter} for the specified data set collection,
@@ -57,10 +56,10 @@ public class DwcaWriter {
 	 * @param dsc
 	 * @param out
 	 */
-	public DwcaWriter(DataSetCollection dsc, OutputStream out)
+	public DwcaWriter(DataSetCollection dsc, ZipOutputStream zos)
 	{
 		this.dsc = dsc;
-		this.out = out;
+		this.zos = zos;
 	}
 
 	/**
@@ -75,12 +74,20 @@ public class DwcaWriter {
 	 */
 	public void processPredefinedQuery(String dataSet) throws InvalidQueryException
 	{
-		ZipOutputStream zos = new ZipOutputStream(out);
+		logger.info("Configuring DwCA writer for data set \"{}\"", dataSet);
 		IDataSetField[] fields = getFields(dsc);
+		logger.info("Writing meta.xml");
 		writeMetaXml(zos, fields);
+		logger.info("Writing eml.xml");
 		writeEmlXml(zos, dataSet);
+		logger.info("Loading query specification for data set \"{}\"", dataSet);
 		QuerySpec querySpec = getQuerySpec(dsc, dataSet);
+		logger.info("Writing CSV payload");
 		writeCsv(querySpec, fields, zos);
+		/*
+		 * Maybe we shouldn't close the stream, as it may interfere with
+		 * HTTP/Wildfly output stream handling
+		 */
 		close(zos);
 	}
 
@@ -93,11 +100,18 @@ public class DwcaWriter {
 	 */
 	public void processDynamicQuery(QuerySpec querySpec) throws InvalidQueryException
 	{
-		ZipOutputStream zos = new ZipOutputStream(out);
+		logger.info("Configuring DwCA writer for dynamic query");
 		IDataSetField[] fields = getFields(dsc);
+		logger.info("Writing meta.xml");
 		writeMetaXml(zos, fields);
+		logger.info("Writing eml.xml");
 		writeEmlXml(zos, null);
+		logger.info("Writing CSV payload");
 		writeCsv(querySpec, fields, zos);
+		/*
+		 * Maybe we shouldn't close the stream, as it may interfere with
+		 * HTTP/Wildfly output stream handling
+		 */
 		close(zos);
 	}
 
@@ -144,6 +158,10 @@ public class DwcaWriter {
 				break;
 			}
 		}
+		/*
+		 * Not necessary if we close the stream
+		 */
+		finish(zos);
 	}
 
 	private static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException
@@ -174,6 +192,16 @@ public class DwcaWriter {
 		try {
 			zos.closeEntry();
 			zos.close();
+		}
+		catch (IOException e) {
+			throw new DwcaCreationException(e);
+		}
+	}
+
+	private static void finish(ZipOutputStream zos)
+	{
+		try {
+			zos.finish();
 		}
 		catch (IOException e) {
 			throw new DwcaCreationException(e);

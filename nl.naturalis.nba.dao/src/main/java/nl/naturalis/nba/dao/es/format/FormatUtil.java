@@ -24,7 +24,8 @@ public class FormatUtil {
 	 */
 	public static final SimpleDateFormat ES_DATE_TIME_FORMAT;
 	/**
-	 * The default date format used when writing dates (&#34;yyyy/MM/dd&#34;).
+	 * The default date format used when writing dates (&#34;yyyy/MM/dd&#34;) to
+	 * CSV files, DarwinCore archives, XML files, etc&#46;
 	 */
 	public static final SimpleDateFormat DEFAULT_DATE_FORMAT;
 
@@ -52,10 +53,9 @@ public class FormatUtil {
 		 * context of writing data sets that potentially contain millions of
 		 * records. Parsing/formatting using the SimpleDateFormat turns out to
 		 * be very slow. Therefore we use a bare-knuckle way of reformatting the
-		 * date string. This ceases to be valid if the date formats change!
+		 * date string. This ceases to be valid if the date formats change.
 		 */
 		// return DEFAULT_DATE_FORMAT.format(ES_DATE_TIME_FORMAT.parse(esDateString));
-		System.out.println("XXXXX: " + esDate);
 		char[] chars = esDate.substring(0, 10).toCharArray();
 		chars[4] = '/';
 		chars[7] = '/';

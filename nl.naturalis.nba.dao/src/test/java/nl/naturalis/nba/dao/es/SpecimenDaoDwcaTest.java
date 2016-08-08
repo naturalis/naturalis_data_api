@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.es;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.Test;
 
@@ -10,18 +11,18 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 @SuppressWarnings("static-method")
-public class SpecimenDwcaDaoTest {
+public class SpecimenDaoDwcaTest {
 
-	@Test
+	//@Test
 	public void testDynamic() throws InvalidQueryException, IOException
 	{
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("sourceSystem.code", "=", "BRAHMS").or("sourceSystem.code",
-				"=", "CRS"));
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		qs.addCondition(new Condition("sourceSystem.code", "=", "BRAHMS"));
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca.zip");
-		dao.queryDynamic(qs, fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaQuery(qs, zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -32,10 +33,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testBotanyAll() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
-		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/botany-all.zip");
-		dao.queryStatic("botany", "all", fos);
+		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/botany.zip");
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("botany", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -46,10 +48,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testMicropaleontology() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/micropaleontology.zip");
-		dao.queryStatic("geology", "micropaleontology", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("micropaleontology", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -60,11 +63,12 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testPaleontologyInvertebrates() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream(
 				"/home/ayco/tmp/paleontology-invertebrates.zip");
-		dao.queryStatic("geology", "paleontology-invertebrates", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("paleontology-invertebrates", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -72,13 +76,14 @@ public class SpecimenDwcaDaoTest {
 		System.out.println("paleontology-invertebrates took: " + took + " seconds");
 	}
 
-	//@Test
+	@Test
 	public void testAmphibiaAndReptilia() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/amphibia-and-reptilia.zip");
-		dao.queryStatic("zoology", "amphibia-and-reptilia", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("amphibia-and-reptilia", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -89,10 +94,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testCainozoicMollusca() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/cainozoic-mollusca.zip");
-		dao.queryStatic("zoology", "cainozoic-mollusca", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("cainozoic-mollusca", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -103,10 +109,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testChelicerataAndMyriapoda() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/chelicerata-and-myriapoda.zip");
-		dao.queryStatic("zoology", "chelicerata-and-myriapoda", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("chelicerata-and-myriapoda", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -117,10 +124,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testColeoptera() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/coleoptera.zip");
-		dao.queryStatic("zoology", "coleoptera", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("coleoptera", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -131,10 +139,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testCollembola() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/collembola.zip");
-		dao.queryStatic("zoology", "collembola", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("collembola", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -145,10 +154,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testCrustacea() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/crustacea.zip");
-		dao.queryStatic("zoology", "crustacea", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("crustacea", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -159,10 +169,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testHymenoptera() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/hymenoptera.zip");
-		dao.queryStatic("zoology", "hymenoptera", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("hymenoptera", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -173,10 +184,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testLepidoptera() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/lepidoptera.zip");
-		dao.queryStatic("zoology", "lepidoptera", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("lepidoptera", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -187,10 +199,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testMammalia() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/mammalia.zip");
-		dao.queryStatic("zoology", "mammalia", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("mammalia", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
@@ -201,10 +214,11 @@ public class SpecimenDwcaDaoTest {
 	//@Test
 	public void testMollusca() throws InvalidQueryException, IOException
 	{
-		SpecimenDwcaDao dao = new SpecimenDwcaDao();
+		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/mollusca.zip");
-		dao.queryStatic("zoology", "mollusca", fos);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		dao.dwcaGetDataSet("mollusca", zos);
 		fos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();

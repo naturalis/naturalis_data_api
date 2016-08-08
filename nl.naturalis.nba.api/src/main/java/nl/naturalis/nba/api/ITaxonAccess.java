@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api;
 
 
-public interface ITaxonAPI {
+public interface ITaxonAccess {
 
 }

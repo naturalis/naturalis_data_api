@@ -76,7 +76,7 @@ public class SpecimenDaoDwcaTest {
 		System.out.println("paleontology-invertebrates took: " + took + " seconds");
 	}
 
-	@Test
+	//@Test
 	public void testAmphibiaAndReptilia() throws InvalidQueryException, IOException
 	{
 		SpecimenDao dao = new SpecimenDao();
@@ -121,7 +121,7 @@ public class SpecimenDaoDwcaTest {
 		System.out.println("chelicerata-and-myriapoda took: " + took + " seconds");
 	}
 
-	//@Test
+	@Test
 	public void testColeoptera() throws InvalidQueryException, IOException
 	{
 		SpecimenDao dao = new SpecimenDao();

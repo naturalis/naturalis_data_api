@@ -5,6 +5,8 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
@@ -175,7 +177,7 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/dwca/{dataset}")
+	@Path("/dwca/dataset/{dataset}")
 	@Produces("application/zip")
 	public Response dwcaGetDataSet(@PathParam("dataset") String name, @Context UriInfo uriInfo)
 	{
@@ -196,7 +198,10 @@ public class SpecimenResource {
 			};
 			ResponseBuilder response = Response.ok(stream);
 			response.type("application/zip");
-			response.header("Content-Disposition", "attachment; filename=\"dwca.zip\"");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			String fmt = "attachment; filename=\"%s-%s.zip\"";
+			String hdr = String.format(fmt, name, sdf.format(new Date()));
+			response.header("Content-Disposition", hdr);
 			return response.build();
 		}
 		catch (Throwable t) {

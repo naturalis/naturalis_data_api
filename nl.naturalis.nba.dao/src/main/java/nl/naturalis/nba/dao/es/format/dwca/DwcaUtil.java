@@ -1,11 +1,13 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
+import static org.domainobject.util.FileUtil.getSubdirectories;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -27,6 +29,9 @@ import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
  *
  */
 public class DwcaUtil {
+
+	@SuppressWarnings("unused")
+	private static Logger logger = DaoRegistry.getInstance().getLogger(DwcaUtil.class);
 
 	private DwcaUtil()
 	{
@@ -57,24 +62,22 @@ public class DwcaUtil {
 	 */
 	public static DataSetCollection findDataSetCollection(DocumentType dt, String dataSet)
 	{
-		File dir = getDocumentTypeDirectory(dt);
-		for (File collDir : dir.listFiles()) {
-			if (collDir.isDirectory()) {
-				String collection = collDir.getName();
-				if (collection.equals(dataSet)) {
-					/*
-					 * Then we have a collection with just one data set.
-					 */
-					return new DataSetCollection(dt, dataSet);
-				}
-				for (File setDir : collDir.listFiles()) {
-					if (setDir.isDirectory() && setDir.getName().equals(dataSet)) {
-						return new DataSetCollection(dt, collection);
-					}
+		File docTypeDir = getDocumentTypeDirectory(dt);
+		for (File collDir : getSubdirectories(docTypeDir)) {
+			String collection = collDir.getName();
+			if (collection.equals(dataSet)) {
+				//Then we have a collection with just one data set.			
+				return new DataSetCollection(dt, dataSet);
+			}
+			for (File setDir : getSubdirectories(collDir)) {
+				if (setDir.getName().equals(dataSet)) {
+					return new DataSetCollection(dt, collection);
 				}
 			}
 		}
-		throw new DwcaCreationException("No such data set: \"" + dataSet + "\"");
+		String fmt = "Directory for data set \"%s\" found under %s";
+		String msg = String.format(fmt, dataSet, docTypeDir.getPath());
+		throw new DwcaCreationException(msg);
 	}
 
 	/**

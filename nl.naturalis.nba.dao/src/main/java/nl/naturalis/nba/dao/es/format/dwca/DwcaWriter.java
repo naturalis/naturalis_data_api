@@ -27,6 +27,7 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
@@ -74,21 +75,16 @@ public class DwcaWriter {
 	 */
 	public void processPredefinedQuery(String dataSet) throws InvalidQueryException
 	{
-		logger.info("Configuring DwCA writer for data set \"{}\"", dataSet);
+		logger.debug("Configuring DwCA writer for data set \"{}\"", dataSet);
 		IDataSetField[] fields = getFields(dsc);
-		logger.info("Writing meta.xml");
+		logger.debug("Writing meta.xml");
 		writeMetaXml(zos, fields);
-		logger.info("Writing eml.xml");
+		logger.debug("Writing eml.xml");
 		writeEmlXml(zos, dataSet);
-		logger.info("Loading query specification for data set \"{}\"", dataSet);
+		logger.debug("Loading query specification for data set \"{}\"", dataSet);
 		QuerySpec querySpec = getQuerySpec(dsc, dataSet);
-		logger.info("Writing CSV payload");
+		logger.debug("Writing CSV payload");
 		writeCsv(querySpec, fields, zos);
-		/*
-		 * Maybe we shouldn't close the stream, as it may interfere with
-		 * HTTP/Wildfly output stream handling
-		 */
-		close(zos);
 	}
 
 	/**
@@ -100,19 +96,17 @@ public class DwcaWriter {
 	 */
 	public void processDynamicQuery(QuerySpec querySpec) throws InvalidQueryException
 	{
-		logger.info("Configuring DwCA writer for dynamic query");
+		if (logger.isDebugEnabled()) {
+			String json = JsonUtil.toPrettyJson(querySpec, true);
+			logger.debug("Configuring DwCA writer for query:\n{}", json);
+		}
 		IDataSetField[] fields = getFields(dsc);
-		logger.info("Writing meta.xml");
+		logger.debug("Writing meta.xml");
 		writeMetaXml(zos, fields);
-		logger.info("Writing eml.xml");
+		logger.debug("Writing eml.xml");
 		writeEmlXml(zos, null);
-		logger.info("Writing CSV payload");
+		logger.debug("Writing CSV payload");
 		writeCsv(querySpec, fields, zos);
-		/*
-		 * Maybe we shouldn't close the stream, as it may interfere with
-		 * HTTP/Wildfly output stream handling
-		 */
-		close(zos);
 	}
 
 	private void writeMetaXml(ZipOutputStream zos, IDataSetField[] fields)
@@ -145,7 +139,7 @@ public class DwcaWriter {
 		while (true) {
 			for (SearchHit hit : response.getHits().getHits()) {
 				if (++processed % 50000 == 0) {
-					logger.info("Records processed: " + processed);
+					logger.debug("Records processed: " + processed);
 					csvPrinter.flush();
 				}
 				csvPrinter.printRecord(hit.getSource());
@@ -158,9 +152,6 @@ public class DwcaWriter {
 				break;
 			}
 		}
-		/*
-		 * Not necessary if we close the stream
-		 */
 		finish(zos);
 	}
 
@@ -185,17 +176,6 @@ public class DwcaWriter {
 			throw new DwcaCreationException(e);
 		}
 		return entry;
-	}
-
-	private static void close(ZipOutputStream zos)
-	{
-		try {
-			zos.closeEntry();
-			zos.close();
-		}
-		catch (IOException e) {
-			throw new DwcaCreationException(e);
-		}
 	}
 
 	private static void finish(ZipOutputStream zos)

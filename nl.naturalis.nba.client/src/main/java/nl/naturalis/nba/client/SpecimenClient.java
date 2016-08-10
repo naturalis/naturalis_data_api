@@ -6,6 +6,8 @@ import static nl.naturalis.nba.client.ClientUtil.getString;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
+import java.util.zip.ZipOutputStream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.http.SimpleHttpGet;
@@ -135,6 +137,27 @@ public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
 	public boolean delete(String id, boolean immediate)
 	{
 		return false;
+	}
+
+	@Override
+	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String[] dwcaGetDataSetNames()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,14 +1,17 @@
 package nl.naturalis.nba.dao.es.types;
 
-import static nl.naturalis.nba.dao.es.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.*;
 
-public class ESTaxon extends NBATraceableObject implements ESType
-{
+/**
+ * Model class for the &#34;taxon&#34; document type.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class ESTaxon extends NBATraceableObject implements ESType {
 
 	private String sourceSystemParentId;
 
@@ -28,8 +31,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 
 	public void addSynonym(ScientificName synonym)
 	{
-		if (synonyms == null)
-		{
+		if (synonyms == null) {
 			synonyms = new ArrayList<>();
 		}
 		synonyms.add(synonym);
@@ -37,8 +39,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 
 	public void addMonomial(Monomial monomial)
 	{
-		if (systemClassification == null)
-		{
+		if (systemClassification == null) {
 			systemClassification = new ArrayList<>();
 		}
 		systemClassification.add(monomial);
@@ -46,8 +47,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 
 	public void addVernacularName(VernacularName name)
 	{
-		if (vernacularNames == null)
-		{
+		if (vernacularNames == null) {
 			vernacularNames = new ArrayList<>();
 		}
 		vernacularNames.add(name);
@@ -55,8 +55,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 
 	public void addReference(Reference reference)
 	{
-		if (references == null)
-		{
+		if (references == null) {
 			references = new ArrayList<>();
 		}
 		references.add(reference);
@@ -64,8 +63,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 
 	public void addDescription(TaxonDescription description)
 	{
-		if (descriptions == null)
-		{
+		if (descriptions == null) {
 			descriptions = new ArrayList<>();
 		}
 		descriptions.add(description);
@@ -73,8 +71,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 
 	public void addLocality(String locality)
 	{
-		if (localities == null)
-		{
+		if (localities == null) {
 			localities = new ArrayList<>();
 		}
 		localities.add(locality);
@@ -110,10 +107,11 @@ public class ESTaxon extends NBATraceableObject implements ESType
 		this.acceptedName = acceptedName;
 		// @formatter:off
 		String identifier = acceptedName.getGenusOrMonomial()
-				+ IDENTIFYING_EPITHETS_DELIMITER + acceptedName.getSubgenus()
-				+ IDENTIFYING_EPITHETS_DELIMITER
+				+ "||"
+				+ acceptedName.getSubgenus()
+				+ "||"
 				+ acceptedName.getSpecificEpithet()
-				+ IDENTIFYING_EPITHETS_DELIMITER
+				+ "||"
 				+ acceptedName.getInfraspecificEpithet();
 		// @formatter:on
 		this.identifyingEpithets = identifier;
@@ -129,8 +127,7 @@ public class ESTaxon extends NBATraceableObject implements ESType
 		return defaultClassification;
 	}
 
-	public void setDefaultClassification(
-			DefaultClassification defaultClassification)
+	public void setDefaultClassification(DefaultClassification defaultClassification)
 	{
 		this.defaultClassification = defaultClassification;
 	}

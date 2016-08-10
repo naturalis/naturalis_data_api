@@ -19,8 +19,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import nl.naturalis.nba.dao.es.exception.ConnectionFailureException;
 
 /**
- * A factory for Elasticsearch {@link Client} instances. You can get hold of an
- * {@code ESClientFactory} via {@link DaoRegistry#getESClientManager()}.
+ * A factory for Elasticsearch {@link Client} instances.
  * 
  * @author Ayco Holleman
  *
@@ -31,6 +30,9 @@ public class ESClientManager {
 
 	private static ESClientManager instance;
 
+	/**
+	 * Returns an instance of an {@link ESClientManager}.
+	 */
 	public static ESClientManager getInstance()
 	{
 		if (instance == null) {
@@ -50,7 +52,7 @@ public class ESClientManager {
 	}
 
 	/**
-	 * Get a native Java Elasticsearch {@link Client}.
+	 * Returns an Elasticsearch {@link Client} instance.
 	 * 
 	 * @return
 	 */
@@ -74,6 +76,11 @@ public class ESClientManager {
 		return client;
 	}
 
+	/**
+	 * Closes the Elasticsearch client. If you disconnect from Elasticsearch
+	 * this way, the next call to {@link #getClient()} is guaranteetd to return
+	 * a new Elasticsearch {@link Client} instance.
+	 */
 	public void closeClient()
 	{
 		if (client != null) {

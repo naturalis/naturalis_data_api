@@ -1,37 +1,38 @@
-package nl.naturalis.nba.client;
+package nl.naturalis.nba.dao.es;
 
 import java.util.zip.ZipOutputStream;
+
+import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 
+public class TaxonDao implements ITaxonAccess {
 
-public class TaxonClient extends AbstractClient implements ITaxonAccess {
+	private static final Logger logger;
 
-	public TaxonClient(ClientConfig config)
+	static {
+		logger = DaoRegistry.getInstance().getLogger(TaxonDao.class);
+	}
+
+	public TaxonDao()
 	{
-		super(config);
 	}
 
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 

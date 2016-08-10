@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.es.types;
 
-import static nl.naturalis.nba.dao.es.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -302,11 +300,11 @@ public class ESMultiMediaObject extends NBATraceableObject implements ESType {
 				//@formatter:off
 				String identifier = 
 	        		identification.getScientificName().getGenusOrMonomial() +
-	        		IDENTIFYING_EPITHETS_DELIMITER +
+	        		"||" +
 	        		identification.getScientificName().getSubgenus() +
-	        		IDENTIFYING_EPITHETS_DELIMITER +
+	        		"||" +
 	        		identification.getScientificName().getSpecificEpithet() +
-	        		IDENTIFYING_EPITHETS_DELIMITER +
+	        		"||" +
 	        		identification.getScientificName().getInfraspecificEpithet();
 				//@formatter:on
 				identifyingEpithets.add(identifier);

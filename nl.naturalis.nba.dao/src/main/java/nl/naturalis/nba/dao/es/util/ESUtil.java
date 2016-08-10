@@ -38,7 +38,8 @@ import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
- * Methods for interacting with Elasticsearch.
+ * Methods for interacting with Elasticsearch, mostly meant for unit testing and
+ * for use by the ETL programs.
  * 
  * @author Ayco Holleman
  *

@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.es.types;
 
-import static nl.naturalis.nba.dao.es.util.ESConstants.IDENTIFYING_EPITHETS_DELIMITER;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +10,12 @@ import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 
+/**
+ * Model class for the &#34;specimen&#34; document type.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ESSpecimen extends NBATraceableObject implements ESType {
 
 	private String unitID;
@@ -53,11 +57,11 @@ public class ESSpecimen extends NBATraceableObject implements ESType {
 		//@formatter:off
         String identifier =
                 identification.getScientificName().getGenusOrMonomial() +
-                        IDENTIFYING_EPITHETS_DELIMITER +
+                        "||" +
                         identification.getScientificName().getSubgenus() +
-                        IDENTIFYING_EPITHETS_DELIMITER +
+                        "||" +
                         identification.getScientificName().getSpecificEpithet() +
-                        IDENTIFYING_EPITHETS_DELIMITER +
+                        "||" +
                         identification.getScientificName().getInfraspecificEpithet();
         //@formatter:on
 		identifyingEpithets.add(identifier);

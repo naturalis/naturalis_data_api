@@ -19,6 +19,17 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
 import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.dao.es.types.ESType;
 
+/**
+ * An enumeration of the four document types managed by the NBA. Each
+ * {@code DocumentType} instance functions as a little cache of oft-used,
+ * potentially heavy-weight objects associated with the document type. For
+ * example, although you can easily create {@link Mapping} objects yourself, it
+ * is recommendable to {@link #getMapping() request} them from the appropriate
+ * {@code DocumentType}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public enum DocumentType
 {
 

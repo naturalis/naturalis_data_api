@@ -4,7 +4,13 @@ import nl.naturalis.nba.api.model.NBADomainObject;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
- * Interface
+ * Interface for objects that convert Elasticsearch model objects to API model
+ * objects and vice versa. The API model is the data model as the client sees
+ * it; the Elasticsearch model is the data model used for storing data in
+ * Elasticsearch. For each Elasticsearch document type, as Java class
+ * (implementing {@link ESType}) exists that exactly reflects the structure of
+ * the document type.
+ * 
  * @author Ayco Holleman
  *
  * @param <API_OBJECT>
@@ -12,8 +18,15 @@ import nl.naturalis.nba.dao.es.types.ESType;
  */
 public interface ITransferObject<API_OBJECT extends NBADomainObject, ES_OBJECT extends ESType> {
 
-	API_OBJECT getApiObject(ES_OBJECT esModelObject, String elasticsearchId);
-	
-	ES_OBJECT getEsObject(API_OBJECT apiModelObject);
+	/**
+	 * Converts an Elasticsearch document, deserialzed into the specified
+	 * object, to an API model object.
+	 */
+	API_OBJECT getApiObject(ES_OBJECT esObject, String elasticsearchId);
+
+	/**
+	 * Converts an API model object to an Elasticsearch model object.
+	 */
+	ES_OBJECT getEsObject(API_OBJECT apiObject);
 
 }

@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getDocumentTypeDirect
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static nl.naturalis.nba.dao.es.DaoUtil.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class SpecimenDao implements ISpecimenAccess {
 			logger.debug("find({})", toJson(ids));
 		}
 		String type = SPECIMEN.getName();
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
 		query.ids(ids);
 		request.setQuery(query);
@@ -104,7 +105,7 @@ public class SpecimenDao implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug("exists(\"{}\")", unitID);
 		}
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
 		request.setQuery(csq);
@@ -119,7 +120,7 @@ public class SpecimenDao implements ISpecimenAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug("findByUnitID(\"{}\")", unitID);
 		}
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
 		request.setQuery(csq);
@@ -136,7 +137,7 @@ public class SpecimenDao implements ISpecimenAccess {
 		TermQueryBuilder tq = termQuery("gatheringEvent.gatheringPersons.fullName", name);
 		NestedQueryBuilder nq = nestedQuery("gatheringEvent.gatheringPersons", tq);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(nq);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		request.setQuery(csq);
 		return processSearchRequest(request);
 	}
@@ -155,7 +156,7 @@ public class SpecimenDao implements ISpecimenAccess {
 		}
 		TermQueryBuilder tq = termQuery("theme", collectionName);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		request.setQuery(csq);
 		request.setNoFields();
 		if (logger.isDebugEnabled()) {
@@ -284,19 +285,6 @@ public class SpecimenDao implements ISpecimenAccess {
 		ObjectMapper om = SPECIMEN.getObjectMapper();
 		ESSpecimen esSpecimen = om.convertValue(data, ESSpecimen.class);
 		return SpecimenTransfer.load(esSpecimen, id);
-	}
-
-	private static SearchRequestBuilder newSearchRequest()
-	{
-		String index = SPECIMEN.getIndexInfo().getName();
-		String type = SPECIMEN.getName();
-		if (logger.isDebugEnabled()) {
-			String pattern = "New search request (index={};type={})";
-			logger.debug(pattern, index, type);
-		}
-		SearchRequestBuilder request = client().prepareSearch(index);
-		request.setTypes(type);
-		return request;
 	}
 
 	private static Client client()

@@ -25,7 +25,7 @@ import nl.naturalis.nba.dao.es.types.ESType;
  * potentially heavy-weight objects associated with the document type. For
  * example, although you can easily create {@link Mapping} objects yourself, it
  * is recommendable to {@link #getMapping() request} them from the appropriate
- * {@code DocumentType}.
+ * {@code DocumentType} instance.
  * 
  * @author Ayco Holleman
  *
@@ -101,7 +101,8 @@ public enum DocumentType
 		this.name = name;
 		this.esType = esType;
 		this.mapping = MappingFactory.getMapping(esType);
-		this.objMapper = ObjectMapperLocator.getInstance().getObjectMapper(esType);
+		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
+		this.objMapper = oml.getObjectMapper(esType);
 	}
 
 	public String getName()

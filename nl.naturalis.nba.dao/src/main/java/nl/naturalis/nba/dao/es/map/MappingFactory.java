@@ -210,8 +210,8 @@ public class MappingFactory {
 	 * Maps a Java class to another Java class that must be used in its place.
 	 * The latter class is then mapped to an Elasticsearch data type. For
 	 * example, when mapping arrays, it's not the array that is mapped but the
-	 * class of its elements, because fields are intrinsically multi-valued in
-	 * Elasticsearch. No array type exists or is required in Elasticsearch.
+	 * class of its elements. No array type exists or is required in
+	 * Elasticsearch; fields are intrinsically multi-valued.
 	 */
 	private static Class<?> mapType(Class<?> type, Type typeArg)
 	{

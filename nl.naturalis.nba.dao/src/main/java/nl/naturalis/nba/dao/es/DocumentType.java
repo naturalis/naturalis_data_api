@@ -30,15 +30,20 @@ import nl.naturalis.nba.dao.es.types.ESType;
  * @author Ayco Holleman
  *
  */
-public enum DocumentType
-{
+public class DocumentType<T extends ESType> {
 
-	SPECIMEN("Specimen", ESSpecimen.class),
-	TAXON("Taxon", ESTaxon.class),
-	MULTI_MEDIA_OBJECT("MultiMediaObject", ESMultiMediaObject.class),
-	GEO_AREA("GeoArea", ESGeoArea.class);
+	public static final DocumentType<ESSpecimen> SPECIMEN;
+	public static final DocumentType<ESTaxon> TAXON;
+	public static final DocumentType<ESMultiMediaObject> MULTI_MEDIA_OBJECT;
+	public static final DocumentType<ESGeoArea> GEO_AREA;
 
 	static {
+
+		SPECIMEN = new DocumentType<>(ESSpecimen.class);
+		TAXON = new DocumentType<>(ESTaxon.class);
+		MULTI_MEDIA_OBJECT = new DocumentType<>(ESMultiMediaObject.class);
+		GEO_AREA = new DocumentType<>(ESGeoArea.class);
+
 		try {
 			for (ConfigObject cfg : getIndexSections()) {
 				/*
@@ -60,7 +65,11 @@ public enum DocumentType
 		}
 	}
 
-	public static DocumentType forName(String name)
+	/**
+	 * Returns the {@code DocumentType} instance for the specified document
+	 * type.
+	 */
+	public static DocumentType<?> forName(String name)
 	{
 		if (SPECIMEN.name.equals(name))
 			return SPECIMEN;
@@ -73,7 +82,11 @@ public enum DocumentType
 		throw new DaoException("No such document type: \"" + name + '"');
 	}
 
-	public static DocumentType forClass(Class<? extends ESType> cls)
+	/**
+	 * Returns the {@code DocumentType} instance corresponding to the specified
+	 * Elasticsearch model object,
+	 */
+	public static DocumentType<?> forClass(Class<? extends ESType> cls)
 	{
 		if (SPECIMEN.esType == cls)
 			return SPECIMEN;
@@ -90,11 +103,16 @@ public enum DocumentType
 
 	private final Logger logger;
 	private final String name;
-	private final Class<? extends ESType> esType;
+	private final Class<T> esType;
 	private final ObjectMapper objMapper;
 	private final Mapping mapping;
 
-	private DocumentType(String name, Class<? extends ESType> esType)
+	private DocumentType(Class<T> esType)
+	{
+		this(esType.getSimpleName().substring(2), esType);
+	}
+
+	private DocumentType(String name, Class<T> esType)
 	{
 		logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
 		logger.info("Retrieving info for document type {}", name);
@@ -115,7 +133,7 @@ public enum DocumentType
 		return indexInfo;
 	}
 
-	public Class<? extends ESType> getESType()
+	public Class<T> getESType()
 	{
 		return esType;
 	}

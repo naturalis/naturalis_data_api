@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public abstract class TaxonomicIdentification extends NBADomainObject {
+public abstract class TaxonomicIdentification implements INbaModelObject {
 
 	private String taxonRank;
 	private ScientificName scientificName;

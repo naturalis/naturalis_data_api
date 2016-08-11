@@ -5,10 +5,10 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject.Type;
-import nl.naturalis.nba.api.model.NBATraceableObject;
+import nl.naturalis.nba.api.model.NbaTraceableObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 
-public class ESMultiMediaObject extends NBATraceableObject implements ESType {
+public class ESMultiMediaObject extends NbaTraceableObject implements ESType {
 
 	private String sourceInstitutionID;
 	private String sourceID;

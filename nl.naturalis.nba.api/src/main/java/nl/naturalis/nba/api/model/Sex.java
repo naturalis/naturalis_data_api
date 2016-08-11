@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public enum Sex
+public enum Sex implements INbaModelObject
 {
 
 	MALE, FEMALE, MIXED, HERMAPHRODITE;

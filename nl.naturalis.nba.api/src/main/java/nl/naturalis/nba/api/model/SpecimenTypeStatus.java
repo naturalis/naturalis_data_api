@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public enum SpecimenTypeStatus
+public enum SpecimenTypeStatus implements INbaModelObject
 {
 
 	ALLOTYPE("allotype"),

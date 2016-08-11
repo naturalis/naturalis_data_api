@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public enum TaxonomicRank
+public enum TaxonomicRank implements INbaModelObject
 {
 
 	KINGDOM("kingdom", "regnum"),

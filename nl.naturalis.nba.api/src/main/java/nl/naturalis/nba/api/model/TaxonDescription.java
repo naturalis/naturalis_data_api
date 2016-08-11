@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class TaxonDescription extends NBADomainObject {
+public class TaxonDescription implements INbaModelObject {
 
 	private String category;
 	private String description;

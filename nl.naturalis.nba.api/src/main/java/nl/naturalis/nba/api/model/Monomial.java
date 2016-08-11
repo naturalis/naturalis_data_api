@@ -12,7 +12,7 @@ package nl.naturalis.nba.api.model;
  * @see Taxon#getSystemClassification()
  * @see Taxon#getDefaultClassification()
  */
-public class Monomial extends NBADomainObject {
+public class Monomial implements INbaModelObject {
 
 	private String rank;
 	private String name;

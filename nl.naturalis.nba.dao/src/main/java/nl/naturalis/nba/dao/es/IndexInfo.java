@@ -13,7 +13,7 @@ public class IndexInfo {
 	private final String name;
 	private final int numShards;
 	private final int numReplicas;
-	private final List<DocumentType> types;
+	private final List<DocumentType<?>> types;
 
 	IndexInfo(ConfigObject cfg)
 	{
@@ -25,7 +25,7 @@ public class IndexInfo {
 		types = new ArrayList<>(typeNames.length);
 		for (String typeName : typeNames) {
 			typeName = typeName.trim();
-			DocumentType type = DocumentType.forName(typeName);
+			DocumentType<?> type = DocumentType.forName(typeName);
 			type.indexInfo = this;
 			types.add(type);
 			logger.info("Document type {} linked to index {}", typeName, name);
@@ -47,12 +47,12 @@ public class IndexInfo {
 		return numReplicas;
 	}
 
-	public List<DocumentType> getTypes()
+	public List<DocumentType<?>> getTypes()
 	{
 		return types;
 	}
 
-	void addType(DocumentType type)
+	void addType(DocumentType<?> type)
 	{
 		types.add(type);
 	}

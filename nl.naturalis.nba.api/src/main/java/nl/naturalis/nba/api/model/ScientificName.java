@@ -14,7 +14,7 @@ import nl.naturalis.nba.api.annotations.Analyzers;
  * name components will only be set if they were provided separately by the
  * source system.
  */
-public class ScientificName extends NBADomainObject {
+public class ScientificName implements INbaModelObject {
 
 	private String fullScientificName;
 	private TaxonomicStatus taxonomicStatus;

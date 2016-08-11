@@ -3,10 +3,9 @@ package nl.naturalis.nba.dao.es.types;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import nl.naturalis.nba.api.annotations.MappedProperty;
-import nl.naturalis.nba.api.model.NBADomainObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ESGatheringSiteCoordinates extends NBADomainObject {
+public class ESGatheringSiteCoordinates {
 
 	private Double longitudeDecimal;
 	private Double latitudeDecimal;

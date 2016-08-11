@@ -8,7 +8,7 @@ import java.util.Date;
  * @see http://wiki.tdwg.org/twiki/bin/view/ABCD/AbcdConcept0282
  * 
  */
-public class Reference extends NBADomainObject {
+public class Reference implements INbaModelObject {
 
 	private String titleCitation;
 	private String citationDetail;

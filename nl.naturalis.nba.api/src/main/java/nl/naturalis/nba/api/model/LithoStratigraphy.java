@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class LithoStratigraphy extends NBADomainObject {
+public class LithoStratigraphy implements INbaModelObject {
 
 	private String qualifier;
 	private boolean preferredFlag;

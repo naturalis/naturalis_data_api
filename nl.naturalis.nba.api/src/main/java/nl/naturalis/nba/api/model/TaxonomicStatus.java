@@ -1,18 +1,16 @@
 package nl.naturalis.nba.api.model;
 
-public enum TaxonomicStatus
+public enum TaxonomicStatus implements INbaModelObject
 {
 
-	//@formatter:off	
-    ACCEPTED_NAME("accepted name"),
-    SYNONYM,
-    BASIONYM,
-    HOMONYM,
-    AMBIGUOUS_SYNONYM("ambiguous synonym"),
-    MISAPPLIED_NAME("misapplied name"),
-    MISSPELLED_NAME("misspelled name"),
-    PROVISIONALLY_ACCEPTED("provisionally accepted name");
-	//@formatter:on
+	ACCEPTED_NAME("accepted name"),
+	SYNONYM,
+	BASIONYM,
+	HOMONYM,
+	AMBIGUOUS_SYNONYM("ambiguous synonym"),
+	MISAPPLIED_NAME("misapplied name"),
+	MISSPELLED_NAME("misspelled name"),
+	PROVISIONALLY_ACCEPTED("provisionally accepted name");
 
 	public static TaxonomicStatus parse(String name)
 	{

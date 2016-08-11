@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class GatheringEvent extends NBADomainObject {
+public class GatheringEvent implements INbaModelObject {
 
 	private String projectTitle;
 	private String worldRegion;

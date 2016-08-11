@@ -2,7 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
-public class Synonym extends NBADomainObject {
+public class Synonym implements INbaModelObject {
 
 	private ScientificName scientificName;
 	private List<Taxon> taxa;

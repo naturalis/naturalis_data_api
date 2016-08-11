@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.Agent;
-import nl.naturalis.nba.api.model.NBATraceableObject;
+import nl.naturalis.nba.api.model.NbaTraceableObject;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -16,7 +16,7 @@ import nl.naturalis.nba.api.model.SpecimenTypeStatus;
  * @author Ayco Holleman
  *
  */
-public class ESSpecimen extends NBATraceableObject implements ESType {
+public class ESSpecimen extends NbaTraceableObject implements ESType {
 
 	private String unitID;
 	private String unitGUID;

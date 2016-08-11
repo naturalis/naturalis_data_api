@@ -11,11 +11,11 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.model.BioStratigraphy;
 import nl.naturalis.nba.api.model.ChronoStratigraphy;
 import nl.naturalis.nba.api.model.LithoStratigraphy;
-import nl.naturalis.nba.api.model.NBADomainObject;
+import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 
-public class ESGatheringEvent extends NBADomainObject {
+public class ESGatheringEvent implements INbaModelObject {
 
 	private String projectTitle;
 	private String worldRegion;

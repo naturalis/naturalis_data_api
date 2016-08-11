@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class GeoPoint extends NBADomainObject {
+public class GeoPoint implements INbaModelObject {
 
 	private double[] coordinates;
 

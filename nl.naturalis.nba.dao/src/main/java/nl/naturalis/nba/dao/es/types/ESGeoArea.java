@@ -7,9 +7,8 @@ import org.geojson.Geometry;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
-import nl.naturalis.nba.api.model.NBADomainObject;
 
-public class ESGeoArea extends NBADomainObject implements ESType {
+public class ESGeoArea implements ESType {
 
 	private int areaId;
 	@Analyzers({ CASE_INSENSITIVE })

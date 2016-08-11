@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class BioStratigraphy extends NBADomainObject {
+public class BioStratigraphy implements INbaModelObject {
 
 	private String youngBioDatingQualifier;
 	private String youngBioName;

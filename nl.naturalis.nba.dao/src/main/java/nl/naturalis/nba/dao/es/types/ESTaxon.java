@@ -11,7 +11,7 @@ import nl.naturalis.nba.api.model.*;
  * @author Ayco Holleman
  *
  */
-public class ESTaxon extends NBATraceableObject implements ESType {
+public class ESTaxon extends NbaTraceableObject implements ESType {
 
 	private String sourceSystemParentId;
 

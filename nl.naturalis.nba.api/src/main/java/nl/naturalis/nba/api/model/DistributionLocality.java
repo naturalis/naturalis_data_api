@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class DistributionLocality extends NBADomainObject {
+public class DistributionLocality implements INbaModelObject {
 
 	private String locality;
 

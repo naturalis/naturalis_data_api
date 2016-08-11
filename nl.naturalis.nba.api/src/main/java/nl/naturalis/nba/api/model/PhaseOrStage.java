@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public enum PhaseOrStage
+public enum PhaseOrStage implements INbaModelObject
 {
 
 	ADULT, SUBADULT, EGG, EMBRYO, IMMATURE, JUVENILE, LARVA, PUPA, NYMPH;

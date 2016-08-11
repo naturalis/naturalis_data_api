@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class GatheringSiteCoordinates extends NBADomainObject {
+public class GatheringSiteCoordinates implements INbaModelObject {
 
 	private Double longitudeDecimal;
 	private Double latitudeDecimal;

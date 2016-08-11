@@ -2,7 +2,7 @@ package nl.naturalis.nba.api.model;
 
 import java.net.URI;
 
-public class ServiceAccessPoint extends NBADomainObject {
+public class ServiceAccessPoint implements INbaModelObject {
 
 	public static enum Variant
 	{

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class ChronoStratigraphy extends NBADomainObject {
+public class ChronoStratigraphy implements INbaModelObject {
 
 	private String youngRegionalSubstage;
 	private String youngRegionalStage;

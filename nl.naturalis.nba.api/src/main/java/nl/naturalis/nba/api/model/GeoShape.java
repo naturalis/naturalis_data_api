@@ -1,5 +1,5 @@
 package nl.naturalis.nba.api.model;
 
-public class GeoShape extends NBADomainObject {
+public class GeoShape implements INbaModelObject {
 
 }

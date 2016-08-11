@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.model;
 
-public class Iptc4xmpExt extends NBADomainObject {
+public class Iptc4xmpExt implements INbaModelObject {
 
 	private String locationShown;
 	private String worldRegion;

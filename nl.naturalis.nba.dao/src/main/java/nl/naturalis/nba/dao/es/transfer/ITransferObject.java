@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.es.transfer;
 
-import nl.naturalis.nba.api.model.NBADomainObject;
+import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
@@ -16,7 +16,7 @@ import nl.naturalis.nba.dao.es.types.ESType;
  * @param <API_OBJECT>
  * @param <ES_OBJECT>
  */
-public interface ITransferObject<API_OBJECT extends NBADomainObject, ES_OBJECT extends ESType> {
+public interface ITransferObject<API_OBJECT extends INbaModelObject, ES_OBJECT extends ESType> {
 
 	/**
 	 * Converts an Elasticsearch document, deserialzed into the specified

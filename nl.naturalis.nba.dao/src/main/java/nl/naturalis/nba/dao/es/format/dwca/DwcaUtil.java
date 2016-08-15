@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
+import static nl.naturalis.nba.dao.es.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.domainobject.util.FileUtil.getSubdirectories;
 
@@ -31,7 +32,7 @@ import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 public class DwcaUtil {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = DaoRegistry.getInstance().getLogger(DwcaUtil.class);
+	private static Logger logger = getLogger(DwcaUtil.class);
 
 	private DwcaUtil()
 	{
@@ -60,7 +61,7 @@ public class DwcaUtil {
 	 * @param dataSet
 	 * @return
 	 */
-	public static DataSetCollection findDataSetCollection(DocumentType dt, String dataSet)
+	public static DataSetCollection findDataSetCollection(DocumentType<?> dt, String dataSet)
 	{
 		File docTypeDir = getDocumentTypeDirectory(dt);
 		for (File collDir : getSubdirectories(docTypeDir)) {
@@ -251,7 +252,7 @@ public class DwcaUtil {
 	 * @param dt
 	 * @return
 	 */
-	public static File getDocumentTypeDirectory(DocumentType dt)
+	public static File getDocumentTypeDirectory(DocumentType<?> dt)
 	{
 		File nbaConfDir = DaoRegistry.getInstance().getConfigurationDirectory();
 		String docType = dt.toString().toLowerCase();

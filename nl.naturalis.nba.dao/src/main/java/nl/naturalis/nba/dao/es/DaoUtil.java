@@ -4,19 +4,20 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 
-class DaoUtil {
+public class DaoUtil {
 
-	private static final Logger logger;
-
-	static {
-		logger = DaoRegistry.getInstance().getLogger(DaoUtil.class);
-	}
+	private static Logger logger = getLogger(DaoUtil.class);
 
 	private DaoUtil()
 	{
 	}
 
-	static SearchRequestBuilder newSearchRequest(DocumentType dt)
+	public static Logger getLogger(Class<?> cls)
+	{
+		return DaoRegistry.getInstance().getLogger(cls);
+	}
+
+	static SearchRequestBuilder newSearchRequest(DocumentType<?> dt)
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();

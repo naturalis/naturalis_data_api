@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @since 12-02-2015
  * 
  */
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
 public class Archive {

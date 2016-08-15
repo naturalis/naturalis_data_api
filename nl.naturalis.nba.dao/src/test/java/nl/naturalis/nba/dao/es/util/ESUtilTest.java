@@ -3,7 +3,13 @@ package nl.naturalis.nba.dao.es.util;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.es.util.ESUtil.*;
+import static nl.naturalis.nba.dao.es.util.ESUtil.createAllIndices;
+import static nl.naturalis.nba.dao.es.util.ESUtil.deleteAllIndices;
+import static nl.naturalis.nba.dao.es.util.ESUtil.disableAutoRefresh;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getAutoRefreshInterval;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getDistinctIndices;
+import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.es.util.ESUtil.setAutoRefreshInterval;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -12,7 +18,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.debug.BeanPrinter;
 import org.junit.Test;
 
 import nl.naturalis.nba.common.json.JsonUtil;
@@ -53,7 +58,6 @@ public class ESUtilTest {
 	public void testGetDistinctIndices()
 	{
 		Set<IndexInfo> indices = getDistinctIndices();
-		logger.info("[testGetDistinctIndices]\n{}", BeanPrinter.toString(indices));
 		assertNotEquals("01", 0, indices.size());
 	}
 
@@ -61,8 +65,6 @@ public class ESUtilTest {
 	public void testGetDistinctIndices__DocumentTypeArray()
 	{
 		Set<IndexInfo> indices = getDistinctIndices(TAXON);
-		logger.info("[testGetDistinctIndices__DocumentTypeArray]\n{}",
-				BeanPrinter.toString(indices));
 		assertEquals("01", 1, indices.size());
 	}
 

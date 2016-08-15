@@ -10,16 +10,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * JAXB class modeling the &lt;core&gt; element within the meta&#46;xml file.
+ * JAXB class modeling the &lt;extension&gt; element within the meta&#46;xml file.
  * 
- * @version 1.0
- * @author Reinier.Kartowikromo
- * @since 12-02-2015
- * 
+ * @author Ayco Holleman
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "core")
-public class Core {
+public class Extension {
 
 	@XmlAttribute(name = "encoding")
 	private String encoding;
@@ -46,7 +44,7 @@ public class Core {
 	@XmlElement(name = "field")
 	private List<Field> fields;
 
-	public Core()
+	public Extension()
 	{
 	}
 

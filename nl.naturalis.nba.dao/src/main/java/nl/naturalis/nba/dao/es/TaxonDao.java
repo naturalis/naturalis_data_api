@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es;
 
+import static nl.naturalis.nba.dao.es.DaoUtil.getLogger;
+
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
@@ -10,11 +12,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 
 public class TaxonDao implements ITaxonAccess {
 
-	private static final Logger logger;
-
-	static {
-		logger = DaoRegistry.getInstance().getLogger(TaxonDao.class);
-	}
+	private static Logger logger = getLogger(TaxonDao.class);
 
 	public TaxonDao()
 	{

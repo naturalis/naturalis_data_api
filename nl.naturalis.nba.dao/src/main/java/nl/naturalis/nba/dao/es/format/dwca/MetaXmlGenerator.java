@@ -51,7 +51,7 @@ public abstract class MetaXmlGenerator {
 		archive.setMetadata("eml.xml");
 		archive.setXmlnsxsi("http://www.w3.org/2001/XMLSchema-instance");
 		archive.setXmlnstdwg("http://rs.tdwg.org/dwc/text/");
-		archive.add(core);
+		archive.setCore(core);
 		try {
 			JAXBContext context = JAXBContext.newInstance(Archive.class);
 			Marshaller m = context.createMarshaller();

@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Models de &lt;archive&gt; element of the meta XML file
+ * JAXB class modeling the &lt;archive&gt; (root) element within the
+ * meta&#46;xml file.
  * 
  * @version 1.0
  * @author Reinier.Kartowikromo
@@ -30,114 +31,75 @@ public class Archive {
 	@XmlAttribute(name = "targetNamespace")
 	private String xmltargetNamespace;
 	@XmlElement(name = "core")
-	List<Core> cores;
+	Core core;
+	@XmlElement(name = "extension")
+	List<Extension> extensions;
 
-	/**
-	 * 
-	 * @return metadata
-	 */
+	public void addExtension(Extension extension)
+	{
+		if (extensions == null)
+			extensions = new ArrayList<>(4);
+		extensions.add(extension);
+	}
+
 	public String getMetadata()
 	{
 		return metadata;
 	}
 
-	/**
-	 * 
-	 * @param metadata
-	 *            set value metadata
-	 */
 	public void setMetadata(String metadata)
 	{
 		this.metadata = metadata;
 	}
 
-	/**
-	 * 
-	 * @return xmlnsxsi
-	 */
 	public String getXmlnsxsi()
 	{
 		return xmlnsxsi;
 	}
 
-	/**
-	 * 
-	 * @param xmlnsxsi
-	 *            set value xmlnsxsi
-	 */
 	public void setXmlnsxsi(String xmlnsxsi)
 	{
 		this.xmlnsxsi = xmlnsxsi;
 	}
 
-	/**
-	 * 
-	 * @return result xmlnstdwg
-	 */
 	public String getXmlnstdwg()
 	{
 		return xmlnstdwg;
 	}
 
-	/**
-	 * 
-	 * @param xmlnstdwg
-	 *            set value xmlnstdwg
-	 */
 	public void setXmlnstdwg(String xmlnstdwg)
 	{
 		this.xmlnstdwg = xmlnstdwg;
 	}
 
-	/**
-	 * 
-	 * @return cores
-	 */
-	public List<Core> getCores()
-	{
-		return cores;
-	}
-
-	/**
-	 * 
-	 * @param cores
-	 *            set cores
-	 */
-	public void setCores(List<Core> cores)
-	{
-		this.cores = cores;
-	}
-
-	/**
-	 * 
-	 * @param cores
-	 *            add cores
-	 */
-	public void add(Core cores)
-	{
-		if (this.cores == null) {
-			this.cores = new ArrayList<>();
-		}
-		this.cores.add(cores);
-	}
-
-	/**
-	 * 
-	 * @return xmltargetNamespace
-	 */
 	public String getXmltargetNamespace()
 	{
 		return xmltargetNamespace;
 	}
 
-	/**
-	 * 
-	 * @param xmltargetNamespace
-	 *            set xmltargetNamespace
-	 */
 	public void setXmltargetNamespace(String xmltargetNamespace)
 	{
 		this.xmltargetNamespace = xmltargetNamespace;
+	}
+
+	public Core getCore()
+	{
+		return core;
+	}
+
+	public void setCore(Core core)
+	{
+		this.core = core;
+	}
+
+	public List<Extension> getExtensions()
+	{
+		return extensions;
+	}
+
+	public void setExtensions(List<Extension> extensions)
+	{
+		this.extensions = extensions;
 	}
 
 }

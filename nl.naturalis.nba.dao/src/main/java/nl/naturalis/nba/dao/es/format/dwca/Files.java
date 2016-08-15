@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Models the &lt;files&gt; element of a meta XML file
+ * JAXB class modeling the &lt;files&gt; element within the meta&#46;xml file.
  * 
  * @version 1.0
  * @author Reinier.Kartowikromo

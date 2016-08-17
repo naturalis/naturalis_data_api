@@ -15,7 +15,6 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
@@ -49,9 +48,8 @@ public class CsvPrinterTest {
 	@Test
 	public void testPrintHeader() throws UnsupportedEncodingException
 	{
-		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 		InputStream is = getClass().getResourceAsStream("CsvPrinterTest_fields.config");
 		IDataSetField[] fields = fc.getFields(is, "dummy");
 		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
@@ -65,9 +63,8 @@ public class CsvPrinterTest {
 	@Test
 	public void testPrintRecord() throws UnsupportedEncodingException
 	{
-		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 		InputStream is = getClass().getResourceAsStream("CsvPrinterTest_fields.config");
 		IDataSetField[] fields = fc.getFields(is, "dummy");
 		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
@@ -32,8 +33,8 @@ public interface IDataSetFieldFactory {
 	 * 
 	 * @see FieldConfigurator
 	 * 
-	 * @param dsc
-	 *            The data set collection
+	 * @param dt
+	 *            The document type containing the Elasticsearch field
 	 * @param name
 	 *            The name of the data set field
 	 * @param path
@@ -41,7 +42,7 @@ public interface IDataSetFieldFactory {
 	 *            field
 	 * @return
 	 */
-	IDataSetField createDataField(DataSetCollection dsc, String name, String[] path);
+	IDataSetField createDataField(DocumentType<?> dt, String name, String[] path);
 
 	/**
 	 * Returns an {@link IDataSetField} instance that provides a default value
@@ -52,7 +53,7 @@ public interface IDataSetFieldFactory {
 	 * @param constant
 	 * @return
 	 */
-	IDataSetField createConstantField(DataSetCollection dsc, String name, String constant);
+	IDataSetField createConstantField(DocumentType<?> dt, String name, String constant);
 
 	/**
 	 * Returns an {@link IDataSetField} instance that uses an
@@ -64,7 +65,6 @@ public interface IDataSetFieldFactory {
 	 * @param calculator
 	 * @return
 	 */
-	IDataSetField createdCalculatedField(DataSetCollection dsc, String name,
-			ICalculator calculator);
+	IDataSetField createdCalculatedField(DocumentType<?> dt, String name, ICalculator calculator);
 
 }

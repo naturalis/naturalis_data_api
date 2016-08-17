@@ -8,12 +8,12 @@ import nl.naturalis.nba.dao.es.format.DataSetEntity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "extension")
-public class TaxonReferenceExtension extends Extension {
+public class TaxonVernacularNameExtension extends Extension {
 
-	private static final String ROW_TYPE = "http://rs.gbif.org/terms/1.0/Reference";
-	private static final String LOCATION = "reference.txt";
+	private static final String ROW_TYPE = "http://rs.gbif.org/terms/1.0/TaxonReferenceExtension.java";
+	private static final String LOCATION = "vernacular.txt";
 
-	public TaxonReferenceExtension(DataSetEntity entity)
+	public TaxonVernacularNameExtension(DataSetEntity entity)
 	{
 		super(entity, ROW_TYPE, LOCATION);
 	}

@@ -12,11 +12,11 @@ import java.util.ArrayList;
 
 import org.domainobject.util.IOUtil;
 
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.map.DocumentField;
 import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
@@ -90,11 +90,11 @@ public class FieldConfigurator {
 	private static final String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 
 	private IDataSetFieldFactory factory;
-	private DataSetCollection dsc;
+	private DocumentType<?> dt;
 
-	public FieldConfigurator(DataSetCollection dsc, IDataSetFieldFactory fieldFactory)
+	public FieldConfigurator(DocumentType<?> dt, IDataSetFieldFactory fieldFactory)
 	{
-		this.dsc = dsc;
+		this.dt = dt;
 		this.factory = fieldFactory;
 	}
 
@@ -165,12 +165,12 @@ public class FieldConfigurator {
 				IDataSetField field;
 				if (fieldDef.charAt(0) == '*') {
 					String constant = fieldDef.substring(1);
-					field = factory.createConstantField(dsc, fieldName, constant);
+					field = factory.createConstantField(dt, fieldName, constant);
 				}
 				else if (fieldDef.charAt(0) == '%') {
 					String className = fieldDef.substring(1).trim();
 					ICalculator calculator = getCalculator(className);
-					field = factory.createdCalculatedField(dsc, fieldName, calculator);
+					field = factory.createdCalculatedField(dt, fieldName, calculator);
 				}
 				else {
 					field = createDataField(fieldName, fieldDef);
@@ -196,13 +196,12 @@ public class FieldConfigurator {
 		String[] pathElements = path.split("\\.");
 		checkPath(pathElements);
 		checkArrayIndices(pathElements);
-		return factory.createDataField(dsc, fieldName, pathElements);
+		return factory.createDataField(dt, fieldName, pathElements);
 	}
 
 	private void checkPath(String[] elements) throws ConfigurationException
 	{
-		Mapping mapping = dsc.getDocumentType().getMapping();
-		MappingInfo mi = new MappingInfo(mapping);
+		MappingInfo mi = new MappingInfo(dt.getMapping());
 		String path = getPath(elements);
 		try {
 			ESField esField = mi.getField(path);
@@ -219,8 +218,7 @@ public class FieldConfigurator {
 
 	private void checkArrayIndices(String[] path) throws ConfigurationException
 	{
-		Mapping mapping = dsc.getDocumentType().getMapping();
-		MappingInfo mi = new MappingInfo(mapping);
+		MappingInfo mi = new MappingInfo(dt.getMapping());
 		StringBuilder sb = new StringBuilder(50);
 		for (String element : path) {
 			try {

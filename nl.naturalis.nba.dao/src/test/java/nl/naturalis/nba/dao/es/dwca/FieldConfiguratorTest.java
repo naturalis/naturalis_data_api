@@ -67,9 +67,8 @@ public class FieldConfiguratorTest {
 
 	private static FieldConfigurator getConfigurator()
 	{
-		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 		return fc;
 	}
 

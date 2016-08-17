@@ -1,13 +1,12 @@
 package nl.naturalis.nba.dao.es.format.csv;
 
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.map.ESDataType;
 import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.Mapping;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 /**
@@ -20,10 +19,9 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 public class CsvFieldFactory implements IDataSetFieldFactory {
 
 	@Override
-	public IDataSetField createDataField(DataSetCollection dsc, String name, String[] path)
+	public IDataSetField createDataField(DocumentType<?> dt, String name, String[] path)
 	{
-		Mapping mapping = dsc.getDocumentType().getMapping();
-		MappingInfo mi = new MappingInfo(mapping);
+		MappingInfo mi = new MappingInfo(dt.getMapping());
 		String p = FieldConfigurator.getPath(path);
 		ESField esField = mi.getField(p);
 		if (esField.getType() == ESDataType.DATE)
@@ -32,13 +30,13 @@ public class CsvFieldFactory implements IDataSetFieldFactory {
 	}
 
 	@Override
-	public IDataSetField createConstantField(DataSetCollection dsc, String name, String constant)
+	public IDataSetField createConstantField(DocumentType<?> dt, String name, String constant)
 	{
 		return new ConstantField(name, constant);
 	}
 
 	@Override
-	public IDataSetField createdCalculatedField(DataSetCollection dsc, String name, ICalculator calculator)
+	public IDataSetField createdCalculatedField(DocumentType<?> dt, String name, ICalculator calculator)
 	{
 		return new CalculatedField(name, calculator);
 	}

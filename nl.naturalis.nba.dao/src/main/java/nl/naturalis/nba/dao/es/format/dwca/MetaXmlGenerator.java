@@ -40,12 +40,7 @@ public abstract class MetaXmlGenerator {
 		Core core = new Core();
 		core.setFiles(files);
 		core.setId(id);
-		core.setEncoding("UTF-8");
-		core.setFieldsEnclosedBy("");
-		core.setFieldsTerminatedBy(",");
-		core.setLinesTerminatedBy("\n");
-		core.setIgnoreHeaderLines("1");
-		core.setRowtype(getRowType());
+		core.setRowType(getRowType());
 		core.setField(getFields());
 		Archive archive = new Archive();
 		archive.setMetadata("eml.xml");

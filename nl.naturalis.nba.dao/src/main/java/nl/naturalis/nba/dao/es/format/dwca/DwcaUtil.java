@@ -7,6 +7,8 @@ import static org.domainobject.util.FileUtil.getSubdirectories;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
@@ -18,6 +20,7 @@ import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetEntity;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
@@ -40,9 +43,9 @@ public class DwcaUtil {
 
 	/**
 	 * Returns the {@link DataSetCollection} that contains the specified data
-	 * set. This lookup is possible because data set names <i>must</i> be unique
-	 * across all collections for a particular {@link DocumentType document
-	 * type}. So you could have specimen/zoology/lepidoptera and
+	 * set. This lookup is possible because data set names must be unique across
+	 * all collections for a particular {@link DocumentType document type}. So
+	 * you could have specimen/zoology/lepidoptera and
 	 * taxon/zoology/lepidoptera, but you cannot then also have
 	 * specimen/paleontology/lepidoptera. Another factor determining the lookup
 	 * mechanism is that you can have collections with just one data set. In
@@ -92,7 +95,7 @@ public class DwcaUtil {
 	{
 		File confFile = getFieldsConfigFile(dsc);
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator configurator = new FieldConfigurator(dsc, fieldFactory);
+		FieldConfigurator configurator = new FieldConfigurator(dsc.getDocumentType(), fieldFactory);
 		return configurator.getFields(confFile);
 	}
 
@@ -271,6 +274,21 @@ public class DwcaUtil {
 	private static DwcaCreationException directoryNotFound(File f)
 	{
 		return new DwcaCreationException("Directory not found: " + f.getPath());
+	}
+
+	static List<Field> getMetaXmlFieldElements(DataSetEntity entity)
+	{
+		IDataSetField[] fields = entity.getFields();
+		String base = "http://rs.tdwg.org/dwc/terms/";
+		List<Field> list = new ArrayList<>(fields.length);
+		// First field in CSV record MUST be the id field. SKip it
+		for (int i = 1; i < fields.length; i++) {
+			Field field = new Field();
+			field.setIndex(String.valueOf(i));
+			field.setTerm(base + fields[i].getName());
+			list.add(field);
+		}
+		return list;
 	}
 
 }

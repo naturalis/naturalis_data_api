@@ -1,6 +1,11 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
-import java.util.ArrayList;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.ENCODING;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.FIELDS_ENCLOSED_BY;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.FIELDS_TERMINATED_BY;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.IGNORE_HEADER_LINES;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.LINES_TERMINATED_BY;
+
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -9,150 +14,43 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import nl.naturalis.nba.dao.es.format.DataSetEntity;
+
 /**
- * JAXB class modeling the &lt;extension&gt; element within the meta&#46;xml file.
+ * JAXB class modeling the &lt;extension&gt; element within the meta&#46;xml
+ * file.
  * 
  * @author Ayco Holleman
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "core")
+@XmlRootElement(name = "extension")
 public class Extension {
 
 	@XmlAttribute(name = "encoding")
-	private String encoding;
+	private final String encoding = ENCODING;
 	@XmlAttribute(name = "fieldsEnclosedBy")
-	private String fieldsEnclosedBy;
+	private final String fieldsEnclosedBy = FIELDS_ENCLOSED_BY;
 	@XmlAttribute(name = "fieldsTerminatedBy")
-	private String fieldsTerminatedBy;
+	private final String fieldsTerminatedBy = FIELDS_TERMINATED_BY;
 	@XmlAttribute(name = "linesTerminatedBy")
-	private String linesTerminatedBy;
+	private final String linesTerminatedBy = LINES_TERMINATED_BY;
 	@XmlAttribute(name = "ignoreHeaderLines")
-	private String ignoreHeaderLines;
+	private final String ignoreHeaderLines = IGNORE_HEADER_LINES;
+	@XmlElement(name = "coreid")
+	private final CoreId coreId;
 	@XmlAttribute(name = "rowType")
-	private String rowType;
-
+	private final String rowType;
 	@XmlElement(name = "files")
-	Files files;
-
-	@XmlElement(name = "id")
-	Id id;
-
-	@XmlAttribute(name = "index")
-	private String index;
-
+	private final Files files;
 	@XmlElement(name = "field")
-	private List<Field> fields;
+	private final List<Field> fields;
 
-	public Extension()
+	public Extension(DataSetEntity entity, String rowType, String location)
 	{
-	}
-
-	public Files getFiles()
-	{
-		return files;
-	}
-
-	public void setFiles(Files files)
-	{
-		this.files = files;
-	}
-
-	public String getEncoding()
-	{
-		return encoding;
-	}
-
-	public void setEncoding(String encoding)
-	{
-		this.encoding = encoding;
-	}
-
-	public String getFieldsEnclosedBy()
-	{
-		return fieldsEnclosedBy;
-	}
-
-	public void setFieldsEnclosedBy(String fieldsEnclosedBy)
-	{
-		this.fieldsEnclosedBy = fieldsEnclosedBy;
-	}
-
-	public String getFieldsTerminatedBy()
-	{
-		return fieldsTerminatedBy;
-	}
-
-	public void setFieldsTerminatedBy(String fieldsTerminatedBy)
-	{
-		this.fieldsTerminatedBy = fieldsTerminatedBy;
-	}
-
-	public String getLinesTerminatedBy()
-	{
-		return linesTerminatedBy;
-	}
-
-	public void setLinesTerminatedBy(String linesTerminatedBy)
-	{
-		this.linesTerminatedBy = linesTerminatedBy;
-	}
-
-	public String getIgnoreHeaderLines()
-	{
-		return ignoreHeaderLines;
-	}
-
-	public void setIgnoreHeaderLines(String ignoreHeaderLines)
-	{
-		this.ignoreHeaderLines = ignoreHeaderLines;
-	}
-
-	public String getRowtype()
-	{
-		return rowType;
-	}
-
-	public void setRowtype(String rowType)
-	{
+		this.coreId = new CoreId();
 		this.rowType = rowType;
-	}
-
-	public Id getId()
-	{
-		return id;
-	}
-
-	public void setId(Id id)
-	{
-		this.id = id;
-	}
-
-	public String getIndex()
-	{
-		return index;
-	}
-
-	public void setIndex(String index)
-	{
-		this.index = index;
-	}
-
-	public List<Field> getField()
-	{
-		return fields;
-	}
-
-	public void setField(List<Field> field)
-	{
-		this.fields = field;
-	}
-
-	public void addField(Field field)
-	{
-		if (fields == null) {
-			fields = new ArrayList<>();
-		}
-		fields.add(field);
+		this.files = new Files(location);
+		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
 	}
 }

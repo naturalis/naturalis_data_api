@@ -14,7 +14,6 @@ public class FormatUtil {
 	 * The empty string (&#34;&#34;)
 	 */
 	public static final String EMPTY_STRING = "";
-
 	/**
 	 * The date format used by Elasticsearch when calling
 	 * {@code SearchHit.getSource()} (&#34;yyyy-MM-dd'T'HH:mm:ss.SSSZ&#34;).

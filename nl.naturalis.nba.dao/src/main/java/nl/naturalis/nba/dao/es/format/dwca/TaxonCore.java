@@ -7,13 +7,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import nl.naturalis.nba.dao.es.format.DataSetEntity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "extension")
-public class TaxonReferenceExtension extends Extension {
+@XmlRootElement(name = "core")
+public class TaxonCore extends Core {
 
-	private static final String ROW_TYPE = "http://rs.gbif.org/terms/1.0/Reference";
-	private static final String LOCATION = "reference.txt";
+	private static final String ROW_TYPE = "http://rs.tdwg.org/dwc/terms/Taxon";
+	private static final String LOCATION = "taxa.txt";
 
-	public TaxonReferenceExtension(DataSetEntity entity)
+	public TaxonCore(DataSetEntity entity)
 	{
 		super(entity, ROW_TYPE, LOCATION);
 	}

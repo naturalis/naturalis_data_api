@@ -1,6 +1,9 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
-import java.util.ArrayList;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.METADATA;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS_XSI;
+
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -8,6 +11,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import nl.naturalis.nba.dao.es.format.DataSet;
 
 /**
  * JAXB class modeling the &lt;archive&gt; (root) element within the
@@ -20,86 +25,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
-public class Archive {
+public abstract class Archive {
 
 	@XmlAttribute(name = "metadata")
-	private String metadata;
-	@XmlAttribute(name = "xmlns:xsi")
-	private String xmlnsxsi;
+	private final String metadata = METADATA;
 	@XmlAttribute(name = "xmlns")
-	private String xmlnstdwg;
-	@XmlAttribute(name = "targetNamespace")
-	private String xmltargetNamespace;
+	private final String xmlns = XMLNS;
+	@XmlAttribute(name = "xmlns:xsi")
+	private final String xmlnsxsi = XMLNS_XSI;
 	@XmlElement(name = "core")
-	Core core;
+	private final Core core;
 	@XmlElement(name = "extension")
-	List<Extension> extensions;
+	private final List<Extension> extensions;
 
-	public void addExtension(Extension extension)
+	public Archive(DataSet dataSet)
 	{
-		if (extensions == null)
-			extensions = new ArrayList<>(4);
-		extensions.add(extension);
+		this.core = createCore(dataSet);
+		this.extensions = createExtensions(dataSet);
 	}
 
-	public String getMetadata()
-	{
-		return metadata;
-	}
+	abstract Core createCore(DataSet dataSet);
 
-	public void setMetadata(String metadata)
-	{
-		this.metadata = metadata;
-	}
-
-	public String getXmlnsxsi()
-	{
-		return xmlnsxsi;
-	}
-
-	public void setXmlnsxsi(String xmlnsxsi)
-	{
-		this.xmlnsxsi = xmlnsxsi;
-	}
-
-	public String getXmlnstdwg()
-	{
-		return xmlnstdwg;
-	}
-
-	public void setXmlnstdwg(String xmlnstdwg)
-	{
-		this.xmlnstdwg = xmlnstdwg;
-	}
-
-	public String getXmltargetNamespace()
-	{
-		return xmltargetNamespace;
-	}
-
-	public void setXmltargetNamespace(String xmltargetNamespace)
-	{
-		this.xmltargetNamespace = xmltargetNamespace;
-	}
-
-	public Core getCore()
-	{
-		return core;
-	}
-
-	public void setCore(Core core)
-	{
-		this.core = core;
-	}
-
-	public List<Extension> getExtensions()
-	{
-		return extensions;
-	}
-
-	public void setExtensions(List<Extension> extensions)
-	{
-		this.extensions = extensions;
-	}
+	abstract List<Extension> createExtensions(DataSet dataSet);
 
 }

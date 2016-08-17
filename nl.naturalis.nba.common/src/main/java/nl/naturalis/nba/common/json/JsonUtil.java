@@ -91,6 +91,17 @@ public class JsonUtil {
 		}
 	}
 
+	public static <T> T deserialize(InputStream src, Class<T> type)
+	{
+		ObjectMapper om = oml.getObjectMapper(type);
+		try {
+			return om.readValue(src, type);
+		}
+		catch (IOException e) {
+			throw new JsonDeserializationException(e);
+		}
+	}
+
 	/**
 	 * Returns the value of specified field from the specified JSON source. Use
 	 * the dot notation to access nested fields (e.g.

@@ -10,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import org.domainobject.util.FileUtil;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
@@ -23,9 +22,8 @@ public class MetaXmlGeneratorTest {
 	@Test
 	public void testGenerateMetaXml_01() throws UnsupportedEncodingException
 	{
-		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 		String cfg = "MetaXmlGeneratorTest_testGenerateMetaXml_01_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		IDataSetField[] fields = fc.getFields(is, "dummy");
@@ -44,9 +42,8 @@ public class MetaXmlGeneratorTest {
 	@Test
 	public void testGenerateMetaXml_02() throws UnsupportedEncodingException
 	{
-		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dummy");
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator fc = new FieldConfigurator(dsc, fieldFactory);
+		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 		String cfg = "MetaXmlGeneratorTest_testGenerateMetaXml_02_fields.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		IDataSetField[] fields = fc.getFields(is, "dummy");

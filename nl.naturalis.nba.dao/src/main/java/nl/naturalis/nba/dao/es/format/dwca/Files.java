@@ -25,20 +25,16 @@ public class Files {
 	{
 	}
 
-	/**
-	 * 
-	 * @return value location
-	 */
+	public Files(String location)
+	{
+		this.location = location;
+	}
+
 	public String getLocation()
 	{
 		return location;
 	}
 
-	/**
-	 * 
-	 * @param location
-	 *            set location
-	 */
 	public void setLocation(String location)
 	{
 		this.location = location;

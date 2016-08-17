@@ -42,9 +42,9 @@ import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
  * @author Ayco Holleman
  *
  */
-public class DwcaWriter {
+public class TaxonWriter {
 
-	private static Logger logger = getLogger(DwcaWriter.class);
+	private static Logger logger = getLogger(TaxonWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DataSetCollection dsc;
@@ -57,7 +57,7 @@ public class DwcaWriter {
 	 * @param dsc
 	 * @param out
 	 */
-	public DwcaWriter(DataSetCollection dsc, ZipOutputStream zos)
+	public TaxonWriter(DataSetCollection dsc, ZipOutputStream zos)
 	{
 		this.dsc = dsc;
 		this.zos = zos;

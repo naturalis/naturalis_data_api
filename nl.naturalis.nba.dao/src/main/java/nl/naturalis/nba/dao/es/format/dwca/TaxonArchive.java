@@ -20,10 +20,11 @@ class TaxonArchive extends Archive {
 		super();
 	}
 
-	void setCoreAndExtensions(DataSet dataSet)
+	TaxonArchive forDataSet(DataSet dataSet)
 	{
 		this.core = createCore(dataSet);
 		this.extensions = createExtensions(dataSet);
+		return this;
 	}
 
 	private static Core createCore(DataSet dataSet)

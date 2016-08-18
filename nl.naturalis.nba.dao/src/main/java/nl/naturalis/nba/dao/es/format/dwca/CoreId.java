@@ -16,30 +16,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "coreid")
-public class CoreId {
+class CoreId {
 
 	@XmlAttribute(name = "index")
 	private int index;
 
-	public CoreId()
+	CoreId()
 	{
 	}
 
-	/**
-	 * 
-	 * @return result index
-	 */
-	public int getIndex()
+	int getIndex()
 	{
 		return index;
 	}
 
-	/**
-	 * 
-	 * @param index
-	 *            set value index
-	 */
-	public void setIndex(int index)
+	void setIndex(int index)
 	{
 		this.index = index;
 	}

@@ -40,11 +40,11 @@ abstract class Core {
 	private final Id id = new Id();
 
 	@XmlAttribute(name = "rowType")
-	protected String rowType;
+	String rowType;
 	@XmlElement(name = "files")
-	protected Files files;
+	Files files;
 	@XmlElement(name = "field")
-	protected List<Field> fields;
+	List<Field> fields;
 
 	Core()
 	{

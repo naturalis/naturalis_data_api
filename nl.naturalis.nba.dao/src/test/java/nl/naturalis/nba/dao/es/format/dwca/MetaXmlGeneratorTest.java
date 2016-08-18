@@ -18,7 +18,7 @@ public class MetaXmlGeneratorTest {
 		DwcaDataSetBuilder builder;
 		builder = new DwcaDataSetBuilder(SPECIMEN, "test-data-set-01");
 		DataSet ds = builder.build();
-		SpecimenArchive archive = new SpecimenArchive();
+		SpecimenArchive archive = new SpecimenArchive().forDataSet(ds);
 		MetaXmlGenerator mxg = new MetaXmlGenerator(archive);
 		mxg.generateMetaXml(System.out);
 	}

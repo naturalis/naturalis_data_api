@@ -16,26 +16,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "files")
-public class Files {
+class Files {
 
 	@XmlElement(name = "location")
 	private String location;
 
-	public Files()
+	Files()
 	{
 	}
 
-	public Files(String location)
+	Files(String location)
 	{
 		this.location = location;
 	}
 
-	public String getLocation()
+	String getLocation()
 	{
 		return location;
 	}
 
-	public void setLocation(String location)
+	void setLocation(String location)
 	{
 		this.location = location;
 	}

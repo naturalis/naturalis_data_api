@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
-import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.METADATA;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS_XSI;
@@ -12,8 +11,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import nl.naturalis.nba.dao.es.format.DataSet;
 
 /**
  * JAXB class modeling the &lt;archive&gt; (root) element within the
@@ -36,16 +33,12 @@ abstract class Archive {
 	private final String xmlnsxsi = XMLNS_XSI;
 
 	@XmlElement(name = "core")
-	protected Core core;
+	Core core;
 	@XmlElement(name = "extension")
-	protected List<Extension> extensions;
+	List<Extension> extensions;
 
 	Archive()
 	{
-		DwcaDataSetBuilder builder;
-		builder = new DwcaDataSetBuilder(SPECIMEN, "test-data-set-01");
-		DataSet ds = builder.build();
-		this.core = new SpecimenCore().forDataSet(ds);
 	}
 
 }

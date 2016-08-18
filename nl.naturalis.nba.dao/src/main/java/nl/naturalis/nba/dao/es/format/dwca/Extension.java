@@ -14,8 +14,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import nl.naturalis.nba.dao.es.format.DataSetEntity;
-
 /**
  * JAXB class modeling the &lt;extension&gt; element within the meta&#46;xml
  * file.
@@ -41,11 +39,11 @@ abstract class Extension {
 	private final CoreId coreId = new CoreId();
 	
 	@XmlAttribute(name = "rowType")
-	protected String rowType;
+	String rowType;
 	@XmlElement(name = "files")
-	protected Files files;
+	Files files;
 	@XmlElement(name = "field")
-	protected List<Field> fields;
+	List<Field> fields;
 
 	Extension()
 	{

@@ -15,21 +15,21 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "id")
-public class Id {
+class Id {
 
 	@XmlAttribute(name = "index")
 	private int index;
 
-	public Id()
+	Id()
 	{
 	}
 
-	public int getIndex()
+	int getIndex()
 	{
 		return index;
 	}
 
-	public void setIndex(int index)
+	void setIndex(int index)
 	{
 		this.index = index;
 	}

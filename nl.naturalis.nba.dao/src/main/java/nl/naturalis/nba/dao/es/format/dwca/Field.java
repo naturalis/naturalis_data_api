@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public class Field {
+class Field {
 
 	@XmlAttribute(name = "index")
 	private String index;
@@ -24,32 +24,32 @@ public class Field {
 	@XmlAttribute(name = "term")
 	private String term;
 
-	public Field()
+	Field()
 	{
 	}
 
-	public Field(String index, String Term)
+	Field(String index, String Term)
 	{
 		this.index = index;
 		this.term = Term;
 	}
 
-	public String getIndex()
+	String getIndex()
 	{
 		return index;
 	}
 
-	public void setIndex(String index)
+	void setIndex(String index)
 	{
 		this.index = index;
 	}
 
-	public String getTerm()
+	String getTerm()
 	{
 		return term;
 	}
 
-	public void setTerm(String term)
+	void setTerm(String term)
 	{
 		this.term = term;
 	}

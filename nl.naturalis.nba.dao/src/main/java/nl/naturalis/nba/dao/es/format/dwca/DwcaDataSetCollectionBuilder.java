@@ -1,18 +1,14 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
-import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static org.domainobject.util.FileUtil.getSubdirectories;
 import static org.domainobject.util.FileUtil.newFile;
-import static org.domainobject.util.FileUtil.newFileInputStream;
 import static org.domainobject.util.StringUtil.rchop;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
@@ -20,6 +16,7 @@ import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.DataSetEntity;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
+import nl.naturalis.nba.dao.es.format.NoSuchDataSetException;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
 public class DwcaDataSetCollectionBuilder {
@@ -36,7 +33,7 @@ public class DwcaDataSetCollectionBuilder {
 	public DataSetCollection build()
 	{
 		String collectionName = getName();
-		File home = newFile(getDocumentTypeDirectory(),collectionName);
+		File home = newFile(getDocumentTypeDirectory(), collectionName);
 		DataSetEntity[] entities = getEntities(home);
 		DataSetCollection dsc = new DataSetCollection();
 		dsc.setDocumentType(dt);
@@ -49,39 +46,41 @@ public class DwcaDataSetCollectionBuilder {
 	private String getName()
 	{
 		File docTypeDir = getDocumentTypeDirectory();
+		String name = null;
 		for (File collDir : getSubdirectories(docTypeDir)) {
 			if (collDir.getName().equals(dataSetName)) {
-				//Then we have a collection with just one data set.			
-				return dataSetName;
+				//Then we have a collection with just one data set
+				if (name != null) {
+					throw duplicateDataSet();
+				}
+				name = dataSetName;
 			}
 			for (File setDir : getSubdirectories(collDir)) {
 				if (setDir.getName().equals(dataSetName)) {
-					return collDir.getName();
+					if (name != null) {
+						throw duplicateDataSet();
+					}
+					name = collDir.getName();
 				}
 			}
 		}
-		String fmt = "Directory for data set \"%s\" found under %s";
-		String msg = String.format(fmt, dataSetName, docTypeDir.getPath());
-		throw new DwcaCreationException(msg);
+		if (name == null) {
+			throw noSuchDataSet();
+		}
+		return name;
 	}
 
 	private DataSetEntity[] getEntities(File homeDir)
 	{
-		File[] configs = getFieldConfigFiles(homeDir);
-		DataSetEntity[] entities = new DataSetEntity[configs.length];
-		for (int i = 0; i < configs.length; i++) {
-			File config = configs[i];
-			String entityName = rchop(config.getName(), ".config");
+		File[] mappings = getMappingFiles(homeDir);
+		DataSetEntity[] entities = new DataSetEntity[mappings.length];
+		for (int i = 0; i < mappings.length; i++) {
+			File mapping = mappings[i];
+			String entityName = rchop(mapping.getName(), ".mapping");
 			DataSetEntity entity = new DataSetEntity(entityName);
 			FieldConfigurator fc = new FieldConfigurator(dt, new CsvFieldFactory());
-			IDataSetField[] fields = fc.getFields(config);
+			IDataSetField[] fields = fc.getFields(mapping);
 			entity.setFields(fields);
-			File f = newFile(homeDir, entityName + ".queryspec.json");
-			if (f.isFile()) {
-				InputStream is = newFileInputStream(f);
-				QuerySpec qs = deserialize(is, QuerySpec.class);
-				entity.setQuerySpec(qs);
-			}
 			entities[i] = entity;
 		}
 		return entities;
@@ -98,7 +97,28 @@ public class DwcaDataSetCollectionBuilder {
 		return f;
 	}
 
-	private static File[] getFieldConfigFiles(File dir)
+	private DwcaCreationException duplicateDataSet()
+	{
+		File dir = getDocumentTypeDirectory();
+		String fmt = "Duplicate data set \"%s\" found under %s";
+		String msg = String.format(fmt, dataSetName, dir.getPath());
+		return new DwcaCreationException(msg);
+	}
+
+	private NoSuchDataSetException noSuchDataSet()
+	{
+		File dir = getDocumentTypeDirectory();
+		String fmt = "Directory for data set \"%s\" found under %s";
+		String msg = String.format(fmt, dataSetName, dir.getPath());
+		return new NoSuchDataSetException(msg);
+	}
+
+	private static DwcaCreationException directoryNotFound(File f)
+	{
+		return new DwcaCreationException("Directory not found: " + f.getPath());
+	}
+
+	private static File[] getMappingFiles(File dir)
 	{
 		return dir.listFiles(new FileFilter() {
 
@@ -107,14 +127,9 @@ public class DwcaDataSetCollectionBuilder {
 			{
 				if (!f.isFile())
 					return false;
-				String s = f.getName();
-				return s.endsWith(".config") && !s.equals("fields.config");
+				return f.getName().endsWith(".mapping");
 			}
 		});
 	}
 
-	private static DwcaCreationException directoryNotFound(File f)
-	{
-		return new DwcaCreationException("Directory not found: " + f.getPath());
-	}
 }

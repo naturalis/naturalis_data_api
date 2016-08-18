@@ -25,7 +25,7 @@ import nl.naturalis.nba.dao.es.format.DataSetEntity;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "extension")
-public class Extension {
+abstract class Extension {
 
 	@XmlAttribute(name = "encoding")
 	private final String encoding = ENCODING;
@@ -38,19 +38,16 @@ public class Extension {
 	@XmlAttribute(name = "ignoreHeaderLines")
 	private final String ignoreHeaderLines = IGNORE_HEADER_LINES;
 	@XmlElement(name = "coreid")
-	private final CoreId coreId;
+	private final CoreId coreId = new CoreId();
+	
 	@XmlAttribute(name = "rowType")
-	private final String rowType;
+	protected String rowType;
 	@XmlElement(name = "files")
-	private final Files files;
+	protected Files files;
 	@XmlElement(name = "field")
-	private final List<Field> fields;
+	protected List<Field> fields;
 
-	public Extension(DataSetEntity entity, String rowType, String location)
+	Extension()
 	{
-		this.coreId = new CoreId();
-		this.rowType = rowType;
-		this.files = new Files(location);
-		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
 	}
 }

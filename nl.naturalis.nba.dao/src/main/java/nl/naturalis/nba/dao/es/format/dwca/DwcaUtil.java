@@ -119,23 +119,23 @@ public class DwcaUtil {
 		return f;
 	}
 
-	/**
-	 * Returns the object that will generate the meta&#46;.xml file for the DwC
-	 * archive.
-	 * 
-	 * @param dsc
-	 * @param fields
-	 * @return
-	 */
-	public static MetaXmlGenerator getMetaXmlGenerator(DataSetCollection dsc,
-			IDataSetField[] fields)
-	{
-		if (dsc.getDocumentType() == SPECIMEN)
-			return new OccurrenceMetaXmlGenerator(fields);
-		String fmt = "Cannot generate meta.xml for %s";
-		String msg = String.format(fmt, dsc.getDocumentType());
-		throw new DwcaCreationException(msg);
-	}
+//	/**
+//	 * Returns the object that will generate the meta&#46;.xml file for the DwC
+//	 * archive.
+//	 * 
+//	 * @param dsc
+//	 * @param fields
+//	 * @return
+//	 */
+//	public static MetaXmlGenerator getMetaXmlGenerator(DataSetCollection dsc,
+//			IDataSetField[] fields)
+//	{
+//		if (dsc.getDocumentType() == SPECIMEN)
+//			return new OccurrenceMetaXmlGenerator(fields);
+//		String fmt = "Cannot generate meta.xml for %s";
+//		String msg = String.format(fmt, dsc.getDocumentType());
+//		throw new DwcaCreationException(msg);
+//	}
 
 	/**
 	 * Returns the name of the CSV file contained within the DwC archive. For

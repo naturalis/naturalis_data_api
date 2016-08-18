@@ -149,6 +149,17 @@ public class DocumentType<T extends ESType> {
 	}
 
 	@Override
+	public boolean equals(Object obj)
+	{
+		return this == obj;
+	}
+
+	public int hashCode()
+	{
+		return System.identityHashCode(this);
+	}
+
+	@Override
 	public String toString()
 	{
 		return name;

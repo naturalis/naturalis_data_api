@@ -2,11 +2,14 @@ package nl.naturalis.nba.dao.es.format;
 
 import java.io.File;
 
+import nl.naturalis.nba.api.query.QuerySpec;
+
 public class DataSet {
 
 	private DataSetCollection dsc;
 	private String name;
 	private File home;
+	private QuerySpec querySpec;
 
 	public DataSetCollection getDataSetCollection()
 	{
@@ -38,5 +41,14 @@ public class DataSet {
 		this.home = home;
 	}
 
+	public QuerySpec getQuerySpec()
+	{
+		return querySpec;
+	}
+
+	public void setQuerySpec(QuerySpec querySpec)
+	{
+		this.querySpec = querySpec;
+	}
 
 }

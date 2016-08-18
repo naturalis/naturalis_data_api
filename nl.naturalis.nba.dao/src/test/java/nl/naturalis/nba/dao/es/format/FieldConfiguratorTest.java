@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.dwca;
+package nl.naturalis.nba.dao.es.format;
 
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertEquals;
@@ -9,10 +9,6 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.es.exception.DaoException;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
-import nl.naturalis.nba.dao.es.format.FieldConfigurator;
-import nl.naturalis.nba.dao.es.format.IDataSetField;
-import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
 public class FieldConfiguratorTest {

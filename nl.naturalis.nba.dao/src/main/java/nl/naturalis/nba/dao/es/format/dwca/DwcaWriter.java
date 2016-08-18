@@ -5,7 +5,7 @@ import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getCsvFileName;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getEmlFile;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getFields;
-import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getMetaXmlGenerator;
+//import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getMetaXmlGenerator;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getQuerySpec;
 import static org.elasticsearch.search.sort.SortParseElement.DOC_FIELD_NAME;
 
@@ -111,9 +111,9 @@ public class DwcaWriter {
 
 	private void writeMetaXml(ZipOutputStream zos, IDataSetField[] fields)
 	{
-		newZipEntry(zos, "meta.xml");
-		MetaXmlGenerator metaXmlGenerator = getMetaXmlGenerator(dsc, fields);
-		metaXmlGenerator.generateMetaXml(zos);
+//		newZipEntry(zos, "meta.xml");
+//		MetaXmlGenerator metaXmlGenerator = getMetaXmlGenerator(dsc, fields);
+//		metaXmlGenerator.generateMetaXml(zos);
 	}
 
 	private void writeEmlXml(ZipOutputStream zos, String dataSet)

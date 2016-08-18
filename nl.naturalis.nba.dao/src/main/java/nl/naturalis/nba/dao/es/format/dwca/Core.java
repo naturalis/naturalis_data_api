@@ -14,8 +14,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import nl.naturalis.nba.dao.es.format.DataSetEntity;
-
 /**
  * JAXB class modeling the &lt;core&gt; element within the meta&#46;xml file.
  * 
@@ -26,7 +24,7 @@ import nl.naturalis.nba.dao.es.format.DataSetEntity;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "core")
-public class Core {
+abstract class Core {
 
 	@XmlAttribute(name = "encoding")
 	private final String encoding = ENCODING;
@@ -39,19 +37,17 @@ public class Core {
 	@XmlAttribute(name = "ignoreHeaderLines")
 	private final String ignoreHeaderLines = IGNORE_HEADER_LINES;
 	@XmlElement(name = "coreid")
-	private final Id id;
-	@XmlAttribute(name = "rowType")
-	private final String rowType;
-	@XmlElement(name = "files")
-	private final Files files;
-	@XmlElement(name = "field")
-	private final List<Field> fields;
+	private final Id id = new Id();
 
-	public Core(DataSetEntity entity, String rowType, String location)
+	@XmlAttribute(name = "rowType")
+	protected String rowType;
+	@XmlElement(name = "files")
+	protected Files files;
+	@XmlElement(name = "field")
+	protected List<Field> fields;
+
+	Core()
 	{
-		this.id = new Id();
-		this.rowType = rowType;
-		this.files = new Files(location);
-		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
 	}
+
 }

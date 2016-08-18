@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
+import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.METADATA;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS_XSI;
@@ -25,7 +26,7 @@ import nl.naturalis.nba.dao.es.format.DataSet;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
-public abstract class Archive {
+abstract class Archive {
 
 	@XmlAttribute(name = "metadata")
 	private final String metadata = METADATA;
@@ -33,19 +34,18 @@ public abstract class Archive {
 	private final String xmlns = XMLNS;
 	@XmlAttribute(name = "xmlns:xsi")
 	private final String xmlnsxsi = XMLNS_XSI;
+
 	@XmlElement(name = "core")
-	private final Core core;
+	protected Core core;
 	@XmlElement(name = "extension")
-	private final List<Extension> extensions;
+	protected List<Extension> extensions;
 
-	public Archive(DataSet dataSet)
+	Archive()
 	{
-		this.core = createCore(dataSet);
-		this.extensions = createExtensions(dataSet);
+		DwcaDataSetBuilder builder;
+		builder = new DwcaDataSetBuilder(SPECIMEN, "test-data-set-01");
+		DataSet ds = builder.build();
+		this.core = new SpecimenCore().forDataSet(ds);
 	}
-
-	abstract Core createCore(DataSet dataSet);
-
-	abstract List<Extension> createExtensions(DataSet dataSet);
 
 }

@@ -22,8 +22,8 @@ import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 /**
  * A {@code FieldConfigurator} determines which {@link IDataSetField fields} to
- * include in a data set. It does so by reading a configuration file (or other
- * type of resource) that is parsed as follows:
+ * include in a data set. It does so by reading a configuration file that is
+ * parsed as follows:
  * <ul>
  * <li>Lines starting with the hash character (#) are ignored.
  * <li>Empty lines are ignored.
@@ -158,7 +158,7 @@ public class FieldConfigurator {
 				}
 				String[] chunks = line.split("=");
 				if (chunks.length != 2) {
-					throw new ConfigurationException("Missing delimiter");
+					throw new ConfigurationException("Missing delimiter \"=\"");
 				}
 				String fieldName = chunks[0].trim();
 				String fieldDef = chunks[1].trim();

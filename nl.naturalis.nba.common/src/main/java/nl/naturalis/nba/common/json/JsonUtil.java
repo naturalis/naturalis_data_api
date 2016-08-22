@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.domainobject.util.ArrayUtil;
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.PrettyPrinter;
@@ -217,29 +219,16 @@ public class JsonUtil {
 					if (++i == path.length - 1)
 						return val;
 				}
-				catch (NumberFormatException e) {}
+				catch (NumberFormatException e) {
+					String s = ArrayUtil.implode(path, ".");
+					String fmt = "Missing array index in path %s";
+					String msg = String.format(fmt, s);
+					throw new JsonDeserializationException(msg);
+				}
 			}
 			map = (Map<String, Object>) val;
 		}
 		/* Won't get here */ return null;
-	}
-
-	public static Object[] readFields(Map<String, Object> map, String[] paths)
-	{
-		Object[] values = new Object[paths.length];
-		for (int i = 0; i < paths.length; i++) {
-			values[i] = readField(map, paths[i]);
-		}
-		return values;
-	}
-
-	public static Object[] readFields(Map<String, Object> map, String[][] paths)
-	{
-		Object[] values = new Object[paths.length];
-		for (int i = 0; i < paths.length; ++i) {
-			values[i] = readField(map, paths[i]);
-		}
-		return values;
 	}
 
 	public static <T> T convert(Map<String, Object> map, Class<T> type)

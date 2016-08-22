@@ -43,6 +43,8 @@ public interface IDataSetFieldFactory {
 	 * @return
 	 */
 	IDataSetField createDataField(DocumentType<?> dt, String name, String[] path);
+	
+	IDataSetField createNestedDataField(DocumentType<?> dt, String name, String[] nested, String[] path);
 
 	/**
 	 * Returns an {@link IDataSetField} instance that provides a default value

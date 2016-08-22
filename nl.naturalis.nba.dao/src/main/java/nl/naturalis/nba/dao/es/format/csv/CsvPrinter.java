@@ -2,8 +2,10 @@ package nl.naturalis.nba.dao.es.format.csv;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Map;
 
+import nl.naturalis.nba.dao.es.format.DocumentFlattener;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 /**
@@ -18,10 +20,12 @@ public class CsvPrinter {
 
 	private IDataSetField[] fields;
 	private PrintStream ps;
+	private DocumentFlattener flattener;
 
-	public CsvPrinter(IDataSetField[] fields, OutputStream out)
+	public CsvPrinter(IDataSetField[] fields, DocumentFlattener flattener, OutputStream out)
 	{
 		this.fields = fields;
+		this.flattener = flattener;
 		if (out instanceof PrintStream) {
 			ps = (PrintStream) out;
 		}
@@ -40,14 +44,17 @@ public class CsvPrinter {
 		ps.println();
 	}
 
-	public void printRecord(Map<String, Object> data)
+	public void printRecord(Map<String, Object> document)
 	{
-		for (int i = 0; i < fields.length; ++i) {
-			if (i != 0)
-				ps.print(',');
-			ps.print(fields[i].getValue(data));
+		List<Map<String, Object>> records = flattener.flatten(document);
+		for (Map<String, Object> record : records) {
+			for (int i = 0; i < fields.length; ++i) {
+				if (i != 0)
+					ps.print(',');
+				ps.print(fields[i].getValue(record));
+			}
+			ps.println();
 		}
-		ps.println();
 	}
 
 	public void flush()

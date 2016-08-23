@@ -1,79 +1,86 @@
 package nl.naturalis.nba.dao.es.format;
 
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.common.json.JsonUtil;
-
+/**
+ * A {@code DocumentFlattener} flattens Elasticsearch documents (converted to
+ * instances {@code Map&lt;String,Object&gt;}). The result is a list of nested
+ * documents (not flat records in the classical sense!) specified by a path
+ * within the Elasticsearch document (e.g. gatheringEvent.gatheringPersons).
+ * Here and elsewhere these nested documents are also referred to as entities,
+ * because it is from they are the basic and central entity of the 
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DocumentFlattener {
 
-	public static final String PARENT_DOCUMENT_FIELD_NAME = "@";
+	private String[] pathToEntity;
+	private int entitiesPerDocument;
 
-	private String[] np;
-	private int nr;
-
-	public DocumentFlattener(String[] nestedPath, int numRecords)
+	/**
+	 * Creates a new {@code DocumentFlattener}.
+	 * 
+	 * @param pathToEntity
+	 *            The path to a nested object (within an Elasticsearch document)
+	 *            that functions as the central entity of a flat record. The
+	 *            path is specified as a string array where each element
+	 *            specifies a successively deeper level within the Elasticsearch
+	 *            document.For example: new String[] { "gatheringEvent",
+	 *            "gatheringPersons" }.
+	 * @param entitiesPerDocument
+	 *            An estimate of the average number of entities per document
+	 */
+	public DocumentFlattener(String[] pathToEntity, int entitiesPerDocument)
 	{
-		if (nestedPath != null && nestedPath.length != 0) {
-			this.np = nestedPath;
-			this.nr = numRecords;
-		}
+		this.pathToEntity = pathToEntity;
+		this.entitiesPerDocument = entitiesPerDocument;
 	}
 
-	public List<Map<String, Object>> flatten(Map<String, Object> document)
+	public List<DocumentNode> flatten(Map<String, Object> document)
 	{
-		if (np == null) {
-			return Collections.singletonList(document);
-		}
-		List<Map<String, Object>> records = new ArrayList<>(nr);
-		flatten(np, document, records);
-		return records;
+		List<DocumentNode> entityNodes = new ArrayList<>(entitiesPerDocument);
+		DocumentNode root = new DocumentNode(document, null);
+		flatten(root, pathToEntity, entityNodes);
+		return entityNodes;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void flatten(String[] path, Map<String, Object> in,
-			List<Map<String, Object>> out)
+	private static void flatten(DocumentNode node, String[] pathToEntityNode,
+			List<DocumentNode> entityNodes)
 	{
-		Object obj = JsonUtil.readField(in, new String[] { path[0] });
-		if (obj == null || obj == JsonUtil.MISSING_VALUE)
+		if (pathToEntityNode.length == 0) {
+			entityNodes.add(node);
 			return;
-		attachParentToChild(in, obj);
-		if (path.length == 1) {
-			if (obj instanceof List)
-				out.addAll((List<Map<String, Object>>) obj);
-			else
-				out.add((Map<String, Object>) obj);
 		}
-		else {
-			String[] nestedPath = new String[path.length - 1];
-			System.arraycopy(path, 1, nestedPath, 0, path.length - 1);
-			if (obj instanceof List) {
-				List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-				for (Map<String, Object> nestedObject : list) {
-					flatten(nestedPath, nestedObject, out);
-				}
-			}
-			else {
-				Map<String, Object> nestedObject = (Map<String, Object>) obj;
-				flatten(nestedPath, nestedObject, out);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void attachParentToChild(Map<String, Object> in, Object obj)
-	{
+		Object obj = readField(node.getEntity(), new String[] { pathToEntityNode[0] });
+		if (obj == MISSING_VALUE)
+			return;
+		pathToEntityNode = dive(pathToEntityNode);
 		if (obj instanceof List) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-			for (Map<String, Object> e : list) {
-				e.put(PARENT_DOCUMENT_FIELD_NAME, in);
+			for (Map<String, Object> map : list) {
+				DocumentNode child = new DocumentNode(map, node);
+				flatten(child, pathToEntityNode, entityNodes);
 			}
 		}
 		else {
-			((Map<String, Object>) obj).put(PARENT_DOCUMENT_FIELD_NAME, in);
+			Map<String, Object> map = (Map<String, Object>) obj;
+			DocumentNode child = new DocumentNode(map, node);
+			flatten(child, pathToEntityNode, entityNodes);
 		}
+	}
+
+	private static String[] dive(String[] path)
+	{
+		String[] nestedPath = new String[path.length - 1];
+		System.arraycopy(path, 1, nestedPath, 0, path.length - 1);
+		return nestedPath;
 	}
 
 }

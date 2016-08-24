@@ -15,14 +15,38 @@ import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 public interface IDataSetFieldFactory {
 
 	/**
-	 * Returns an {@link IDataSetField} instance that retrieves its value
-	 * directly a field in an Elasticsearch document. The {@code name} argument
+	 * Returns an {@link IDataSetField} instance that retrieves its value from a
+	 * field in the {@link Entity entity object}. document. The {@code name}
+	 * argument specifies the name of the data set field. The {@code path}
+	 * argument specifies the path of the field <i>relative</i> to the entity
+	 * object. (See also {@link DataSetEntity#getPath()}.) It must be specified
+	 * as an array of path elements, with each element representing a
+	 * successively deeper level in the entity object.
+	 * 
+	 * @see FieldConfigurator
+	 * 
+	 * @param dt
+	 *            The document type containing the Elasticsearch field
+	 * @param name
+	 *            The name of the data set field
+	 * @param path
+	 *            The Elasticsearch field providing the value for the data set
+	 *            field
+	 * @return
+	 */
+	IDataSetField createEntityDataField(DocumentType<?> dt, String name, String[] path);
+
+	/**
+	 * Returns an {@link IDataSetField} instance that retrieves its value from a
+	 * field in an an Elasticsearch document. The {@code name} argument
 	 * specifies the name of the data set field. The {@code path} argument
-	 * specifies the full path of an Elasticsearch field. The path must be
-	 * specified as an array of path elements, with each element representing a
-	 * successively deeper level in the Elasticsearch document. For example the
-	 * Elasticsearch field {@code gatheringEvent.dateTimeBegin} would be passed
-	 * to this method as<br>
+	 * specifies the <i>full</i> path of an Elasticsearch field within the
+	 * Elasticsearch document. It must be specified as an array of path
+	 * elements, with each element representing a successively deeper level in
+	 * the Elasticsearch document. For example the
+	 * {@code gatheringEvent.dateTimeBegin} field of a
+	 * {@link DocumentType#SPECIMEN Specimen document} should be passed to this
+	 * method as:<br>
 	 * <code>
 	 * new String[] {"gatheringEvent", "dateTimeBegin"}
 	 * </code><br>
@@ -42,9 +66,7 @@ public interface IDataSetFieldFactory {
 	 *            field
 	 * @return
 	 */
-	IDataSetField createDataField(DocumentType<?> dt, String name, String[] path);
-	
-	IDataSetField createNestedDataField(DocumentType<?> dt, String name, String[] nested, String[] path);
+	IDataSetField createDocumentDataField(DocumentType<?> dt, String name, String[] path);
 
 	/**
 	 * Returns an {@link IDataSetField} instance that provides a default value

@@ -87,7 +87,7 @@ public class FieldConfigurator {
 		}
 	}
 
-	private static final String CALC_PACKAGE = ICalculator.class.getPackage().getName();
+	private static String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 
 	private IDataSetFieldFactory factory;
 	private DocumentType<?> dt;
@@ -193,10 +193,15 @@ public class FieldConfigurator {
 	private IDataSetField createDataField(String fieldName, String path)
 			throws ConfigurationException
 	{
+		boolean relativePath = false;
+		if (path.charAt(0) == '.') {
+			relativePath = true;
+			path = path.substring(1).trim();
+		}
 		String[] pathElements = path.split("\\.");
 		checkPath(pathElements);
 		checkArrayIndices(pathElements);
-		return factory.createDataField(dt, fieldName, pathElements);
+		return factory.createEntityDataField(dt, fieldName, pathElements);
 	}
 
 	private void checkPath(String[] elements) throws ConfigurationException

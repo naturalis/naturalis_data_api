@@ -6,22 +6,22 @@ import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
-import java.util.Map;
+import nl.naturalis.nba.dao.es.format.Entity;
 
-class DateField extends AbstractCsvField {
+class EntityDateTimeField extends AbstractCsvField {
 
 	private final String[] path;
 
-	DateField(String name, String[] path)
+	EntityDateTimeField(String name, String[] path)
 	{
 		super(name);
 		this.path = path;
 	}
 
 	@Override
-	public String getValue(Map<String, Object> esDocumentAsMap)
+	public String getValue(Entity entity)
 	{
-		Object value = readField(esDocumentAsMap, path);
+		Object value = readField(entity.getData(), path);
 		if (value == MISSING_VALUE)
 			return EMPTY_STRING;
 		return escapeCsv(formatDate(value.toString()));

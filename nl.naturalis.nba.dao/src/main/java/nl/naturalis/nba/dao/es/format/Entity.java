@@ -1,0 +1,51 @@
+package nl.naturalis.nba.dao.es.format;
+
+import java.util.Map;
+
+import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.es.DocumentType;
+
+/**
+ * An {@code Entity} is the object within an Elasticsearch {@link DocumentType
+ * document type} that must be considered as the main entity for a
+ * {@link DataSetEntity file} within a data set. Suppose, for example, that you
+ * wanted to generate a CSV file containing specimen collector information, then
+ * the entity object would be the {@link GatheringEvent#getGatheringPersons()
+ * gatheringPersons} object within the {@link Specimen#getGatheringEvent()
+ * gatheringEvent} object within the {@link DocumentType#SPECIMEN Specimen}
+ * document type. The entity object may possibly be the entire Elasticsearch
+ * document rather than any object nested within it.
+ * 
+ * See also {@link DataSetEntity#getPath()}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class Entity {
+
+	private Map<String, Object> data;
+	private Entity parent;
+
+	Entity(Map<String, Object> data, Entity parent)
+	{
+		this.data = data;
+		this.parent = parent;
+	}
+
+	public Map<String, Object> getDocument()
+	{
+		if (parent == null)
+			return data;
+		Entity dn;
+		for (dn = parent; dn.parent != null; dn = dn.parent)
+			;
+		return dn.data;
+	}
+
+	public Map<String, Object> getData()
+	{
+		return data;
+	}
+
+}

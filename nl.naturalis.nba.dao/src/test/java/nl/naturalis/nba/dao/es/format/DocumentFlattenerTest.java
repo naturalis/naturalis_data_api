@@ -67,32 +67,32 @@ public class DocumentFlattenerTest {
 	public void testFlatten_01()
 	{
 		DocumentFlattener df = new DocumentFlattener(new String[0], 1);
-		List<DocumentNode> records = df.flatten(taxon);
+		List<Entity> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
-		assertTrue("02", records.get(0).getEntity() == taxon);
-		assertTrue("03", records.get(0).getRoot() == taxon);
+		assertTrue("02", records.get(0).getData() == taxon);
+		assertTrue("03", records.get(0).getDocument() == taxon);
 	}
 
 	@Test
 	public void testFlatten_02()
 	{
 		DocumentFlattener df = new DocumentFlattener(new String[] { "vernacularNames" }, 4);
-		List<DocumentNode> records = df.flatten(taxon);
+		List<Entity> records = df.flatten(taxon);
 		assertEquals("01", 2, records.size());
-		assertTrue("02", records.get(0).getEntity() == vernacularName0);
-		assertTrue("03", records.get(1).getEntity() == vernacularName1);
-		assertTrue("04", records.get(0).getRoot() == taxon);
-		assertTrue("05", records.get(1).getRoot() == taxon);
+		assertTrue("02", records.get(0).getData() == vernacularName0);
+		assertTrue("03", records.get(1).getData() == vernacularName1);
+		assertTrue("04", records.get(0).getDocument() == taxon);
+		assertTrue("05", records.get(1).getDocument() == taxon);
 	}
 
 	@Test
 	public void testFlatten_03()
 	{
 		DocumentFlattener df = new DocumentFlattener(new String[] { "acceptedName" }, 1);
-		List<DocumentNode> records = df.flatten(taxon);
+		List<Entity> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
-		assertTrue("02", records.get(0).getEntity() == acceptedName);
-		assertTrue("03", records.get(0).getRoot() == taxon);
+		assertTrue("02", records.get(0).getData() == acceptedName);
+		assertTrue("03", records.get(0).getDocument() == taxon);
 	}
 
 	@Test
@@ -100,16 +100,16 @@ public class DocumentFlattenerTest {
 	{
 		DocumentFlattener df = new DocumentFlattener(
 				new String[] { "vernacularNames", "references" }, 4);
-		List<DocumentNode> records = df.flatten(taxon);
+		List<Entity> records = df.flatten(taxon);
 		assertEquals("01", 4, records.size());
-		assertTrue("02", records.get(0).getEntity() == reference0);
-		assertTrue("03", records.get(1).getEntity() == reference1);
-		assertTrue("04", records.get(2).getEntity() == reference0);
-		assertTrue("05", records.get(3).getEntity() == reference1);
-		assertTrue("06", records.get(0).getRoot() == taxon);
-		assertTrue("07", records.get(1).getRoot() == taxon);
-		assertTrue("06", records.get(2).getRoot() == taxon);
-		assertTrue("07", records.get(3).getRoot() == taxon);
+		assertTrue("02", records.get(0).getData() == reference0);
+		assertTrue("03", records.get(1).getData() == reference1);
+		assertTrue("04", records.get(2).getData() == reference0);
+		assertTrue("05", records.get(3).getData() == reference1);
+		assertTrue("06", records.get(0).getDocument() == taxon);
+		assertTrue("07", records.get(1).getDocument() == taxon);
+		assertTrue("06", records.get(2).getDocument() == taxon);
+		assertTrue("07", records.get(3).getDocument() == taxon);
 	}
 
 }

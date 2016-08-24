@@ -2,11 +2,11 @@ package nl.naturalis.nba.dao.es.format.csv;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
-import java.util.Map;
+import nl.naturalis.nba.dao.es.format.Entity;
 
 class ConstantField extends AbstractCsvField {
 
-	private final String value;
+	private String value;
 
 	ConstantField(String name, String value)
 	{
@@ -15,7 +15,7 @@ class ConstantField extends AbstractCsvField {
 	}
 
 	@Override
-	public String getValue(Map<String, Object> esDocumentAsMap)
+	public String getValue(Entity esDocumentAsMap)
 	{
 		return value;
 	}

@@ -131,28 +131,28 @@ public class DwcaWriter {
 	private void writeCsv(QuerySpec spec, IDataSetField[] fields, ZipOutputStream zos)
 			throws InvalidQueryException
 	{
-		newZipEntry(zos, getCsvFileName(dsc));
-		CsvPrinter csvPrinter = new CsvPrinter(fields, zos);
-		SearchResponse response = executeQuery(spec);
-		csvPrinter.printHeader();
-		int processed = 0;
-		while (true) {
-			for (SearchHit hit : response.getHits().getHits()) {
-				if (++processed % 50000 == 0) {
-					logger.debug("Records processed: " + processed);
-					csvPrinter.flush();
-				}
-				csvPrinter.printRecord(hit.getSource());
-			}
-			String scrollId = response.getScrollId();
-			Client client = ESClientManager.getInstance().getClient();
-			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
-			if (response.getHits().getHits().length == 0) {
-				break;
-			}
-		}
-		finish(zos);
+//		newZipEntry(zos, getCsvFileName(dsc));
+//		CsvPrinter csvPrinter = new CsvPrinter(fields, zos);
+//		SearchResponse response = executeQuery(spec);
+//		csvPrinter.printHeader();
+//		int processed = 0;
+//		while (true) {
+//			for (SearchHit hit : response.getHits().getHits()) {
+//				if (++processed % 50000 == 0) {
+//					logger.debug("Records processed: " + processed);
+//					csvPrinter.flush();
+//				}
+//				csvPrinter.printRecord(hit.getSource());
+//			}
+//			String scrollId = response.getScrollId();
+//			Client client = ESClientManager.getInstance().getClient();
+//			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
+//			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
+//			if (response.getHits().getHits().length == 0) {
+//				break;
+//			}
+//		}
+//		finish(zos);
 	}
 
 	private static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException

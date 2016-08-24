@@ -19,14 +19,25 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 public class CsvFieldFactory implements IDataSetFieldFactory {
 
 	@Override
-	public IDataSetField createDataField(DocumentType<?> dt, String name, String[] path)
+	public IDataSetField createEntityDataField(DocumentType<?> dt, String name, String[] path)
 	{
-		MappingInfo mi = new MappingInfo(dt.getMapping());
+		MappingInfo mappingInfo = new MappingInfo(dt.getMapping());
 		String p = FieldConfigurator.getPath(path);
-		ESField esField = mi.getField(p);
+		ESField esField = mappingInfo.getField(p);
 		if (esField.getType() == ESDataType.DATE)
-			return new DateField(name, path);
-		return new DataField(name, path);
+			return new EntityDateTimeField(name, path);
+		return new EntityDataField(name, path);
+	}
+
+	@Override
+	public IDataSetField createDocumentDataField(DocumentType<?> dt, String name, String[] path)
+	{
+		MappingInfo mappingInfo = new MappingInfo(dt.getMapping());
+		String p = FieldConfigurator.getPath(path);
+		ESField esField = mappingInfo.getField(p);
+		if (esField.getType() == ESDataType.DATE)
+			return new DocumentDateTimeField(name, path);
+		return new DocumentDataField(name, path);
 	}
 
 	@Override
@@ -36,7 +47,8 @@ public class CsvFieldFactory implements IDataSetFieldFactory {
 	}
 
 	@Override
-	public IDataSetField createdCalculatedField(DocumentType<?> dt, String name, ICalculator calculator)
+	public IDataSetField createdCalculatedField(DocumentType<?> dt, String name,
+			ICalculator calculator)
 	{
 		return new CalculatedField(name, calculator);
 	}

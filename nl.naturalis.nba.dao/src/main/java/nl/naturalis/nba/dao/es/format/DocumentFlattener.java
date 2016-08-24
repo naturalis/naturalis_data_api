@@ -42,36 +42,36 @@ public class DocumentFlattener {
 		this.entitiesPerDocument = entitiesPerDocument;
 	}
 
-	public List<DocumentNode> flatten(Map<String, Object> document)
+	public List<Entity> flatten(Map<String, Object> document)
 	{
-		List<DocumentNode> entityNodes = new ArrayList<>(entitiesPerDocument);
-		DocumentNode root = new DocumentNode(document, null);
+		List<Entity> entityNodes = new ArrayList<>(entitiesPerDocument);
+		Entity root = new Entity(document, null);
 		flatten(root, pathToEntity, entityNodes);
 		return entityNodes;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void flatten(DocumentNode node, String[] pathToEntityNode,
-			List<DocumentNode> entityNodes)
+	private static void flatten(Entity node, String[] pathToEntityNode,
+			List<Entity> entityNodes)
 	{
 		if (pathToEntityNode.length == 0) {
 			entityNodes.add(node);
 			return;
 		}
-		Object obj = readField(node.getEntity(), new String[] { pathToEntityNode[0] });
+		Object obj = readField(node.getData(), new String[] { pathToEntityNode[0] });
 		if (obj == MISSING_VALUE)
 			return;
 		pathToEntityNode = dive(pathToEntityNode);
 		if (obj instanceof List) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
 			for (Map<String, Object> map : list) {
-				DocumentNode child = new DocumentNode(map, node);
+				Entity child = new Entity(map, node);
 				flatten(child, pathToEntityNode, entityNodes);
 			}
 		}
 		else {
 			Map<String, Object> map = (Map<String, Object>) obj;
-			DocumentNode child = new DocumentNode(map, node);
+			Entity child = new Entity(map, node);
 			flatten(child, pathToEntityNode, entityNodes);
 		}
 	}

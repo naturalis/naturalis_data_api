@@ -6,18 +6,21 @@ import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 
 /**
- * A {@code DataSetCollection} is a collection of data sets that use the same
- * {@link IDataSetField fields}. For example, all data sets in the DwCA zoology
- * collection have exactly the same fields in their occurrence.txt file, while
- * data sets in the geology collection use a different set of fields. A data set
- * may be comprised of multiple files. For example the DwCA files for taxa
- * includes a taxa.txt file, and may additionally include a references.txt file,
- * a distribution.txt file, etc. These files are represented by the
- * {@link DataSetEntity} class. All data sets in a collection are comprised of
- * the same files. A {@code DataSetCollection} is itself subsumed under a
- * particular Elasticsearch {@link DocumentType document type}. In other words,
- * all data sets in a given collection draw their data from the same document
- * type.
+ * A {@code DataSetCollection} is a collection of {@link DataSet data sets} that
+ * use the same {@link IDataSetField fields}. For example, all data sets in the
+ * DwCA zoology collection have exactly the same fields in their occurrence.txt
+ * file, while data sets in the geology collection use a different set of
+ * fields. A data set may be comprised of multiple files. For example the DwCA
+ * files for taxa includes a taxa.txt file, and may additionally include a
+ * references.txt file, a distribution.txt file, etc. These files are referred
+ * to as entities and are represented by the {@link DataSetEntity} class. All
+ * data sets in a collection are comprised of the same entities. A
+ * {@code DataSetCollection} is itself subsumed under an Elasticsearch
+ * {@link DocumentType document type}. In other words, all data sets in a given
+ * collection draw their data from the same Elasticsearch document type. As with
+ * the {@link DataSet} and {@link DataSetEntity} classes, this class only
+ * provides <i>meta data</i> about a data set collection. It is not concerned
+ * with the data itself.
  * 
  * @author Ayco Holleman
  *
@@ -84,6 +87,10 @@ public class DataSetCollection {
 		this.name = name;
 	}
 
+	/**
+	 * Returns the home directory for this data set collection. This is where
+	 * data set writers will expect to find configuration data for the data set.
+	 */
 	public File getHome()
 	{
 		return home;
@@ -94,6 +101,10 @@ public class DataSetCollection {
 		this.home = home;
 	}
 
+	/**
+	 * Returns the {@link DataSetEntity entities} that all data sets belonging
+	 * to this collection are comprisedof.
+	 */
 	public DataSetEntity[] getEntities()
 	{
 		return entities;

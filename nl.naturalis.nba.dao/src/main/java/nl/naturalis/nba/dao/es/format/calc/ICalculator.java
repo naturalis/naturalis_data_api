@@ -2,6 +2,8 @@ package nl.naturalis.nba.dao.es.format.calc;
 
 import java.util.Map;
 
+import nl.naturalis.nba.dao.es.format.Entity;
+
 /**
  * An {@code ICalculator} is used to determine the value for a calculated field
  * in a data set. This type of field does not obtain its value directly from a
@@ -21,6 +23,6 @@ public interface ICalculator {
 	 * @param esDocumentAsMap
 	 * @return
 	 */
-	Object calculateValue(Map<String, Object> esDocumentAsMap);
+	Object calculateValue(Entity esDocumentAsMap);
 
 }

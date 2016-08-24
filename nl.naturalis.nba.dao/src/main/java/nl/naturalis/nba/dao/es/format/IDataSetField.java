@@ -53,6 +53,6 @@ public interface IDataSetField {
 	 * @param esDocumentAsMap
 	 * @return
 	 */
-	String getValue(Map<String, Object> esDocumentAsMap);
+	String getValue(Entity esDocumentAsMap);
 
 }

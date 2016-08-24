@@ -10,12 +10,13 @@ import nl.naturalis.nba.dao.es.DocumentType;
  * An {@code Entity} is the object within an Elasticsearch {@link DocumentType
  * document type} that must be considered as the main entity for a
  * {@link DataSetEntity file} within a data set. Suppose, for example, that you
- * wanted to generate a CSV file containing specimen collector information, then
- * the entity object would be the {@link GatheringEvent#getGatheringPersons()
- * gatheringPersons} object within the {@link Specimen#getGatheringEvent()
- * gatheringEvent} object within the {@link DocumentType#SPECIMEN Specimen}
- * document type. The entity object may possibly be the entire Elasticsearch
- * document rather than any object nested within it.
+ * want to print out specimen collector information, then the entity object
+ * would be the {@link GatheringEvent#getGatheringPersons() gatheringPersons}
+ * object within the {@link Specimen#getGatheringEvent() gatheringEvent} object
+ * within the {@link DocumentType#SPECIMEN Specimen} document type. Since there
+ * may be multiple collectors associated with a specimen, one specimen document
+ * may yield multiple specimen collector records. The entity object may possibly
+ * be the entire Elasticsearch document rather than any object nested within it.
  * 
  * See also {@link DataSetEntity#getPath()}.
  * 

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.domainobject.util.IOUtil;
 
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
@@ -85,40 +86,6 @@ import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
  */
 public class FieldConfigurator {
 
-	/**
-	 * Constructs the full path of an Elasticsearch field from the specified
-	 * path elements. Array indices in the specified string array are skipped.
-	 * For example, if you pass {"identifications", "0",
-	 * "defaultClassification", "kingdom"}, then
-	 * "identifications.defaultClassification.kingdom" is returned.
-	 * 
-	 * @param pathElements
-	 * @return
-	 */
-	public static String getPath(String[] pathElements)
-	{
-		StringBuilder sb = new StringBuilder(50);
-		for (String element : pathElements) {
-			try {
-				Integer.parseInt(element);
-			}
-			catch (NumberFormatException e) {
-				if (sb.length() != 0)
-					sb.append('.');
-				sb.append(element);
-			}
-		}
-		return sb.toString();
-	}
-
-	private static class ConfigurationException extends Exception {
-
-		ConfigurationException(String message)
-		{
-			super(message);
-		}
-	}
-
 	private static String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 
 	private IDataSetFieldFactory factory;
@@ -191,7 +158,7 @@ public class FieldConfigurator {
 				}
 				String[] chunks = line.split("=");
 				if (chunks.length != 2) {
-					throw new ConfigurationException("Missing delimiter \"=\"");
+					throw new EntityConfigurationException("Missing delimiter \"=\"");
 				}
 				String key = chunks[0].trim();
 				String value = chunks[1].trim();
@@ -218,7 +185,7 @@ public class FieldConfigurator {
 				fields.add(field);
 			}
 		}
-		catch (ConfigurationException e) {
+		catch (EntityConfigurationException e) {
 			throw error(source, lnr, e);
 		}
 		catch (IOException e) {
@@ -231,7 +198,7 @@ public class FieldConfigurator {
 	}
 
 	private IDataSetField createDataField(String fieldName, String path, String entity)
-			throws ConfigurationException
+			throws EntityConfigurationException
 	{
 		boolean isRelativePath;
 		String fullPath;
@@ -241,7 +208,7 @@ public class FieldConfigurator {
 						+ "entity object using the &entity setting (entity object must "
 						+ "be specified before you can specify relative paths)";
 				String msg = String.format(fmt, path);
-				throw new ConfigurationException(msg);
+				throw new EntityConfigurationException(msg);
 			}
 			isRelativePath = true;
 			fullPath = entity + path;
@@ -264,20 +231,20 @@ public class FieldConfigurator {
 	 * Make sure the specified path actually specifies a field within the
 	 * Elasticsearch document.
 	 */
-	private void checkPath(String[] pathElements) throws ConfigurationException
+	private void checkPath(String[] pathElements) throws EntityConfigurationException
 	{
 		MappingInfo mi = new MappingInfo(dt.getMapping());
-		String path = getPath(pathElements);
+		String path = JsonUtil.getPurePath(pathElements);
 		try {
 			ESField esField = mi.getField(path);
 			if (!(esField instanceof DocumentField)) {
 				String fmt = "Invalid field (type is object/nested): %s";
 				String msg = String.format(fmt, path);
-				throw new ConfigurationException(msg);
+				throw new EntityConfigurationException(msg);
 			}
 		}
 		catch (NoSuchFieldException e) {
-			throw new ConfigurationException(e.getMessage());
+			throw new EntityConfigurationException(e.getMessage());
 		}
 	}
 
@@ -285,7 +252,7 @@ public class FieldConfigurator {
 	 * Make sure array indices are used only if the preceding path element
 	 * refers to an array.
 	 */
-	private void checkArrayIndices(String[] path) throws ConfigurationException
+	private void checkArrayIndices(String[] path) throws EntityConfigurationException
 	{
 		MappingInfo mi = new MappingInfo(dt.getMapping());
 		StringBuilder sb = new StringBuilder(50);
@@ -296,7 +263,7 @@ public class FieldConfigurator {
 				if (!esField.isMultiValued()) {
 					String fmt = "Illegal array index (%s) following single-valued field: %s";
 					String msg = String.format(fmt, index, sb.toString());
-					throw new ConfigurationException(msg);
+					throw new EntityConfigurationException(msg);
 				}
 			}
 			catch (NumberFormatException e) {
@@ -307,7 +274,7 @@ public class FieldConfigurator {
 		}
 	}
 
-	private static ICalculator getCalculator(String name) throws ConfigurationException
+	private static ICalculator getCalculator(String name) throws EntityConfigurationException
 	{
 		String className = CALC_PACKAGE + '.' + name;
 		try {
@@ -315,14 +282,14 @@ public class FieldConfigurator {
 			return (ICalculator) cls.newInstance();
 		}
 		catch (ClassNotFoundException e) {
-			throw new ConfigurationException("No such calculator: \"" + name + "\"");
+			throw new EntityConfigurationException("No such calculator: \"" + name + "\"");
 		}
 		catch (InstantiationException | IllegalAccessException e) {
 			throw new DaoException(e);
 		}
 	}
 
-	private static DaoException error(String source, LineNumberReader lnr, ConfigurationException e)
+	private static DaoException error(String source, LineNumberReader lnr, EntityConfigurationException e)
 	{
 		int line = lnr.getLineNumber();
 		String fmt = "%s (%s, line %s)";

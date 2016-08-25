@@ -72,14 +72,14 @@ public class DwcaDataSetCollectionBuilder {
 
 	private DataSetEntity[] getEntities(File homeDir)
 	{
-		File[] mappings = getMappingFiles(homeDir);
-		DataSetEntity[] entities = new DataSetEntity[mappings.length];
-		for (int i = 0; i < mappings.length; i++) {
-			File mapping = mappings[i];
-			String entityName = rchop(mapping.getName(), ".mapping");
+		File[] cfgFiles = getEntityConfigFiles(homeDir);
+		DataSetEntity[] entities = new DataSetEntity[cfgFiles.length];
+		for (int i = 0; i < cfgFiles.length; i++) {
+			File cfgFile = cfgFiles[i];
+			String entityName = rchop(cfgFile.getName(), ".config");
 			DataSetEntity entity = new DataSetEntity(entityName);
 			FieldConfigurator fc = new FieldConfigurator(dt, new CsvFieldFactory());
-			IDataSetField[] fields = fc.getFields(mapping);
+			IDataSetField[] fields = fc.getFields(cfgFile);
 			entity.setFields(fields);
 			entities[i] = entity;
 		}
@@ -118,7 +118,7 @@ public class DwcaDataSetCollectionBuilder {
 		return new DwcaCreationException("Directory not found: " + f.getPath());
 	}
 
-	private static File[] getMappingFiles(File dir)
+	private static File[] getEntityConfigFiles(File dir)
 	{
 		return dir.listFiles(new FileFilter() {
 
@@ -127,7 +127,7 @@ public class DwcaDataSetCollectionBuilder {
 			{
 				if (!f.isFile())
 					return false;
-				return f.getName().endsWith(".mapping");
+				return f.getName().endsWith(".config");
 			}
 		});
 	}

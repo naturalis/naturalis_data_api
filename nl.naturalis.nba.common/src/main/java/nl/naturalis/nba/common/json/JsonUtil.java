@@ -285,6 +285,39 @@ public class JsonUtil {
 		}
 	}
 
+	/**
+	 * Concatenates the specified path elements to a path string without array
+	 * indices. For example, if you pass {"identifications", "0",
+	 * "defaultClassification", "kingdom"}, then
+	 * "identifications.defaultClassification.kingdom" is returned.
+	 * 
+	 * @param pathElements
+	 * @return
+	 */
+	public static String getPurePath(String[] pathElements)
+	{
+		StringBuilder sb = new StringBuilder(50);
+		for (String element : pathElements) {
+			try {
+				Integer.parseInt(element);
+			}
+			catch (NumberFormatException e) {
+				if (sb.length() != 0)
+					sb.append('.');
+				sb.append(element);
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Returns the specified path without any array indices.
+	 */
+	public static String getPurePath(String path)
+	{
+		return getPurePath(path.split("\\."));
+	}
+
 	private JsonUtil()
 	{
 	}

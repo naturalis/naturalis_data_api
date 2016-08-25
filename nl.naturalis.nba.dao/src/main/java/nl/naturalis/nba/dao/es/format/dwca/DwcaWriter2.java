@@ -54,7 +54,7 @@ public class DwcaWriter2 {
 		this.zos = zos;
 	}
 
-	private void writeCsv(QuerySpec spec, IDataSetField[] fields, ZipOutputStream zos)
+	private void writeCsv()
 			throws InvalidQueryException
 	{
 	}

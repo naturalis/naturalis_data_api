@@ -104,10 +104,10 @@ public class ESUtil {
 	 * @param documentTypes
 	 * @return
 	 */
-	public static Set<IndexInfo> getDistinctIndices(DocumentType... documentTypes)
+	public static Set<IndexInfo> getDistinctIndices(DocumentType<?>... documentTypes)
 	{
 		LinkedHashSet<IndexInfo> result = new LinkedHashSet<>(3);
-		for (DocumentType dt : documentTypes) {
+		for (DocumentType<?> dt : documentTypes) {
 			result.add(dt.getIndexInfo());
 		}
 		return result;
@@ -141,7 +141,7 @@ public class ESUtil {
 	 * 
 	 * @param documentType
 	 */
-	public static void deleteIndex(DocumentType documentType)
+	public static void deleteIndex(DocumentType<?> documentType)
 	{
 		deleteIndex(documentType.getIndexInfo());
 	}
@@ -174,7 +174,7 @@ public class ESUtil {
 	 * 
 	 * @param documentType
 	 */
-	public static void createIndex(DocumentType documentType)
+	public static void createIndex(DocumentType<?> documentType)
 	{
 		createIndex(documentType.getIndexInfo());
 	}
@@ -203,7 +203,7 @@ public class ESUtil {
 			throw new DaoException("Failed to create index " + index);
 		}
 		logger.info("Created index {}", index);
-		for (DocumentType dt : indexInfo.getTypes()) {
+		for (DocumentType<?> dt : indexInfo.getTypes()) {
 			createType(dt);
 		}
 	}
@@ -214,7 +214,7 @@ public class ESUtil {
 	 * 
 	 * @param documentType
 	 */
-	public static void refreshIndex(DocumentType documentType)
+	public static void refreshIndex(DocumentType<?> documentType)
 	{
 		refreshIndex(documentType.getIndexInfo());
 	}
@@ -310,7 +310,7 @@ public class ESUtil {
 	 * 
 	 * @param dt
 	 */
-	public static void createType(DocumentType dt)
+	public static void createType(DocumentType<?> dt)
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
@@ -336,7 +336,7 @@ public class ESUtil {
 	 * @param id
 	 * @return
 	 */
-	public static <T extends ESType> T find(DocumentType dt, String id)
+	public static <T extends ESType> T find(DocumentType<?> dt, String id)
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();

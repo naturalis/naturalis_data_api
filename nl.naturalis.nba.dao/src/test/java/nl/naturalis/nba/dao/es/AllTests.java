@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import nl.naturalis.nba.dao.es.csv.CsvPrinterTest;
+import nl.naturalis.nba.dao.es.format.DocumentFlattenerTest;
 import nl.naturalis.nba.dao.es.format.FieldConfiguratorTest;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetBuilderTest;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetCollectionBuilderTest;
@@ -33,6 +34,7 @@ import nl.naturalis.nba.dao.es.util.ESUtilTest;
 	InValuesBuilderTest.class,
 	InConditionTranslatorTest.class,
 	FieldConfiguratorTest.class,
+	DocumentFlattenerTest.class,
 	DwcaDataSetCollectionBuilderTest.class,
 	DwcaDataSetBuilderTest.class,
 	CsvPrinterTest.class,

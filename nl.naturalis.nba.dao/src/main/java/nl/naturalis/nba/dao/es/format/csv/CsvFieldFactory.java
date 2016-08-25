@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.es.format.csv;
 
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
@@ -22,7 +22,7 @@ public class CsvFieldFactory implements IDataSetFieldFactory {
 	public IDataSetField createEntityDataField(DocumentType<?> dt, String name, String[] path)
 	{
 		MappingInfo mappingInfo = new MappingInfo(dt.getMapping());
-		String p = FieldConfigurator.getPath(path);
+		String p = JsonUtil.getPurePath(path);
 		ESField esField = mappingInfo.getField(p);
 		if (esField.getType() == ESDataType.DATE)
 			return new EntityDateTimeField(name, path);
@@ -33,7 +33,7 @@ public class CsvFieldFactory implements IDataSetFieldFactory {
 	public IDataSetField createDocumentDataField(DocumentType<?> dt, String name, String[] path)
 	{
 		MappingInfo mappingInfo = new MappingInfo(dt.getMapping());
-		String p = FieldConfigurator.getPath(path);
+		String p = JsonUtil.getPurePath(path);
 		ESField esField = mappingInfo.getField(p);
 		if (esField.getType() == ESDataType.DATE)
 			return new DocumentDateTimeField(name, path);

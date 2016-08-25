@@ -13,7 +13,7 @@ import java.util.Map;
  * documents (not flat records in the classical sense!) specified by a path
  * within the Elasticsearch document (e.g. gatheringEvent.gatheringPersons).
  * Here and elsewhere these nested documents are also referred to as entities,
- * because it is from they are the basic and central entity of the 
+ * because it is from they are the basic and central entity of the
  * 
  * @author Ayco Holleman
  *
@@ -27,12 +27,8 @@ public class DocumentFlattener {
 	 * Creates a new {@code DocumentFlattener}.
 	 * 
 	 * @param pathToEntity
-	 *            The path to a nested object (within an Elasticsearch document)
-	 *            that functions as the central entity of a flat record. The
-	 *            path is specified as a string array where each element
-	 *            specifies a successively deeper level within the Elasticsearch
-	 *            document.For example: new String[] { "gatheringEvent",
-	 *            "gatheringPersons" }.
+	 *            The path to the {@link Entity entity object} within the
+	 *            document
 	 * @param entitiesPerDocument
 	 *            An estimate of the average number of entities per document
 	 */
@@ -51,32 +47,31 @@ public class DocumentFlattener {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void flatten(Entity node, String[] pathToEntityNode,
-			List<Entity> entityNodes)
+	private static void flatten(Entity node, String[] pathToEntity, List<Entity> entityNodes)
 	{
-		if (pathToEntityNode.length == 0) {
+		if (pathToEntity.length == 0) {
 			entityNodes.add(node);
 			return;
 		}
-		Object obj = readField(node.getData(), new String[] { pathToEntityNode[0] });
+		Object obj = readField(node.getData(), new String[] { pathToEntity[0] });
 		if (obj == MISSING_VALUE)
 			return;
-		pathToEntityNode = dive(pathToEntityNode);
+		pathToEntity = shift(pathToEntity);
 		if (obj instanceof List) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
 			for (Map<String, Object> map : list) {
 				Entity child = new Entity(map, node);
-				flatten(child, pathToEntityNode, entityNodes);
+				flatten(child, pathToEntity, entityNodes);
 			}
 		}
 		else {
 			Map<String, Object> map = (Map<String, Object>) obj;
 			Entity child = new Entity(map, node);
-			flatten(child, pathToEntityNode, entityNodes);
+			flatten(child, pathToEntity, entityNodes);
 		}
 	}
 
-	private static String[] dive(String[] path)
+	private static String[] shift(String[] path)
 	{
 		String[] nestedPath = new String[path.length - 1];
 		System.arraycopy(path, 1, nestedPath, 0, path.length - 1);

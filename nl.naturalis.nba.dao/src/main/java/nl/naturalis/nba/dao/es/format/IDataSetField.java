@@ -47,12 +47,12 @@ public interface IDataSetField {
 	String getName();
 
 	/**
-	 * The value to be output to the data set, using the specified Elasticsearch
-	 * document as input.
+	 * The value to be written to the data set, formatted and escaped as
+	 * appropriate for the type of output.
 	 * 
-	 * @param esDocumentAsMap
+	 * @param entity
 	 * @return
 	 */
-	String getValue(Entity esDocumentAsMap);
+	String getValue(Entity entity);
 
 }

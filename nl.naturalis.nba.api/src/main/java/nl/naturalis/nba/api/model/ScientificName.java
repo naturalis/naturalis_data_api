@@ -9,10 +9,12 @@ import java.util.List;
 import nl.naturalis.nba.api.annotations.Analyzers;
 
 /**
- * This class encapsulates a taxon's full scientific name and the components it
- * is composed of. Only the full scientific name will always be set. Individual
- * name components will only be set if they were provided separately by the
- * source system.
+ * Encapsulates a taxon's full scientific name and the components it is composed
+ * of. Only the full scientific name will always be set. Individual name
+ * components will only be set if they were provided separately by the source
+ * system.
+ * 
+ * @author Ayco Holleman
  */
 public class ScientificName implements INbaModelObject {
 

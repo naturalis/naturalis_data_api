@@ -3,28 +3,18 @@ package nl.naturalis.nba.dao.es.format;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
-import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 /**
- * A {@code FieldConfigurator} determines which {@link IDataSetField fields} to
- * include in a {@link DataSet data set}. It does so by reading a configuration
- * file that is parsed as follows:
+ * Determines which {@link IDataSetField fields} to include in a {@link DataSet
+ * data set}. It does so by reading a configuration file that is parsed as
+ * follows:
  * <ul>
  * <li>Lines starting with the hash character (#) are ignored.
  * <li>Empty lines are ignored.
@@ -35,7 +25,7 @@ import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
  * <li>In general, the key specifies the name of the field as it should appear
  * in the file(s) generated for the data set (e.g. the column header in a CSV
  * file), while the value specifies the full path to a field within an
- * Elasticsearch document (e.g. {@code gatheringEvent.dateTimeBeing}). However,
+ * Elasticsearch document (e.g. {@code gatheringEvent.dateTimeBegin}). However,
  * there are a few exceptions to this rule that will be subsequently be listed.
  * <li>If the key starts with an ampersand (&amp;) it does not specify a field
  * but rather a general configuration setting. For example with the &amp;entity
@@ -57,7 +47,8 @@ import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
  * <li>Otherwise the value specifies the <i>full path</i> of a field within an
  * Elasticsearch document. Array access can be achieved by adding the array
  * index after the name of the field that represents the array. For example:<br>
- * {@code kingdom = identifications.0.defaultClassification.kingdom}
+ * {@code kingdom = identifications.0.defaultClassification.kingdom}. See also
+ * {@link Path}.
  * <li>
  * </ul>
  * <br>
@@ -102,8 +93,8 @@ public class EntityConfigurator {
 		EntityConfiguration cnf = new EntityConfiguration();
 		LineNumberReader lnr = null;
 		try {
-			lnr = getLineNumberReader();
-			new SettingsParser(lnr, dt, cnf).parse();
+			new SettingsParser(getLineNumberReader(), dt, cnf).parse();
+			new FieldsParser(getLineNumberReader(), dt, factory, cnf).parse();
 		}
 		catch (EntityConfigurationException e) {
 			throw error(lnr, e);

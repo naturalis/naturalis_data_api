@@ -10,10 +10,13 @@ import nl.naturalis.nba.dao.es.map.ESField;
 import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
-/*
- * Reads the configuration file (wrapped by a LineNumberReader), extracts
- * the settings from it and sets them on an EntityConfiguration
- * instance.
+/**
+ * Parses those lines in an entity configuration file (wrapped into a
+ * {@link LineNumberReader} that specify general
+ * configuration settings (rather than fields).
+ * 
+ * @author Ayco Holleman
+ *
  */
 class SettingsParser {
 

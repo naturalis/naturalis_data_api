@@ -9,14 +9,16 @@ import java.util.ArrayList;
 
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
-import nl.naturalis.nba.dao.es.format.EntityConfigurator.EntityConfigurationException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
-import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
-import static nl.naturalis.nba.common.json.JsonUtil.*;
 
+/**
+ * Parses those lines in an entity configuration file (wrapped into a
+ * {@link LineNumberReader} that specify fields (rather than general
+ * configuration settings).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class FieldsParser {
 
 	static final char CONSTANT_FIELD_START_CHAR = '*';
@@ -95,47 +97,8 @@ class FieldsParser {
 			String entityPath = implode(conf.getPathToEntity(), ".");
 			path = entityPath + path;
 		}
-		checkArrayIndices(path);
-		// Remove array indices from path
-		path = getPurePath(path);
-		MappingInfo mi = new MappingInfo(documentType.getMapping());
-		try {
-			ESField esField = mi.getField(path);
-			if (!(esField instanceof DocumentField)) {
-				String fmt = "Invalid field (type is object/nested): %s";
-				String msg = String.format(fmt, path);
-				throw new EntityConfigurationException(msg);
-			}
-		}
-		catch (NoSuchFieldException e) {
-			throw new EntityConfigurationException(e.getMessage());
-		}
-	}
-
-	/*
-	 * Make sure array indices are used only if the preceding path element
-	 * refers to a nested array.
-	 */
-	private void checkArrayIndices(String path) throws EntityConfigurationException
-	{
-		MappingInfo mi = new MappingInfo(documentType.getMapping());
-		StringBuilder sb = new StringBuilder(50);
-		for (String element : split(path)) {
-			try {
-				int index = Integer.parseInt(element);
-				ESField esField = mi.getField(sb.toString());
-				if (!esField.isMultiValued()) {
-					String fmt = "Illegal array index (%s) following single-valued field: %s";
-					String msg = String.format(fmt, index, sb.toString());
-					throw new EntityConfigurationException(msg);
-				}
-			}
-			catch (NumberFormatException e) {
-				if (sb.length() != 0)
-					sb.append('.');
-				sb.append(element);
-			}
-		}
+		Path p = new Path(path);
+		p.validate(documentType);
 	}
 
 	private static boolean definesField(String line)

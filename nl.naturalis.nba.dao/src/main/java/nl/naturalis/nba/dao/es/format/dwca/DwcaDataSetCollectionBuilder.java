@@ -14,12 +14,14 @@ import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollection;
 import nl.naturalis.nba.dao.es.format.DataSetEntity;
-import nl.naturalis.nba.dao.es.format.FieldConfigurator;
-import nl.naturalis.nba.dao.es.format.IDataSetField;
+import nl.naturalis.nba.dao.es.format.EntityConfiguration;
+import nl.naturalis.nba.dao.es.format.EntityConfigurationParser;
 import nl.naturalis.nba.dao.es.format.NoSuchDataSetException;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
 public class DwcaDataSetCollectionBuilder {
+
+	private static String ENTITY_CONFIG_EXTENSION = ".entity.config";
 
 	private DocumentType<?> dt;
 	private String dataSetName;
@@ -76,11 +78,12 @@ public class DwcaDataSetCollectionBuilder {
 		DataSetEntity[] entities = new DataSetEntity[cfgFiles.length];
 		for (int i = 0; i < cfgFiles.length; i++) {
 			File cfgFile = cfgFiles[i];
-			String entityName = rchop(cfgFile.getName(), ".config");
+			String entityName = rchop(cfgFile.getName(), ENTITY_CONFIG_EXTENSION);
 			DataSetEntity entity = new DataSetEntity(entityName);
-			FieldConfigurator fc = new FieldConfigurator(dt, new CsvFieldFactory());
-			IDataSetField[] fields = fc.getFields(cfgFile);
-			entity.setFields(fields);
+			EntityConfigurationParser ec = new EntityConfigurationParser(cfgFile, new CsvFieldFactory());
+			EntityConfiguration conf = ec.configure(dt);
+			entity.setPathToEntity(conf.getPathToEntity());
+			entity.setFields(conf.getFields());
 			entities[i] = entity;
 		}
 		return entities;
@@ -127,7 +130,7 @@ public class DwcaDataSetCollectionBuilder {
 			{
 				if (!f.isFile())
 					return false;
-				return f.getName().endsWith(".config");
+				return f.getName().endsWith(ENTITY_CONFIG_EXTENSION);
 			}
 		});
 	}

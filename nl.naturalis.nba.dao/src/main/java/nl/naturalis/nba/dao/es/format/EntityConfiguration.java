@@ -1,11 +1,11 @@
 package nl.naturalis.nba.dao.es.format;
 
-class EntityConfiguration {
+public class EntityConfiguration {
 
 	private String[] pathToEntity;
 	private IDataSetField[] fields;
 
-	String[] getPathToEntity()
+	public String[] getPathToEntity()
 	{
 		return pathToEntity;
 	}
@@ -15,7 +15,7 @@ class EntityConfiguration {
 		this.pathToEntity = pathToEntity;
 	}
 
-	IDataSetField[] getFields()
+	public IDataSetField[] getFields()
 	{
 		return fields;
 	}

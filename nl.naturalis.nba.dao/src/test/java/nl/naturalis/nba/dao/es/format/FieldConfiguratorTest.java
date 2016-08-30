@@ -17,7 +17,7 @@ public class FieldConfiguratorTest {
 	public void testGetFields_01()
 	{
 		FieldConfigurator fc = getConfigurator();
-		String cfg = "FieldConfiguratorTest_testGetFields_01_fields.config";
+		String cfg = "EntityConfiguratorTest_testGetFields_01_fields.entity.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		IDataSetField[] fields = fc.getFields(is, "dummy");
 		assertEquals("01", 4, fields.length);
@@ -31,7 +31,7 @@ public class FieldConfiguratorTest {
 	public void testGetFields_02()
 	{
 		FieldConfigurator fc = getConfigurator();
-		String cfg = "FieldConfiguratorTest_testGetFields_02_fields.config";
+		String cfg = "EntityConfiguratorTest_testGetFields_02_fields.entity.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		try {
 			fc.getFields(is, "dummy");
@@ -48,7 +48,7 @@ public class FieldConfiguratorTest {
 	public void testGetFields_03()
 	{
 		FieldConfigurator fc = getConfigurator();
-		String cfg = "FieldConfiguratorTest_testGetFields_03_fields.config";
+		String cfg = "EntityConfiguratorTest_testGetFields_03_fields.entity.config";
 		InputStream is = getClass().getResourceAsStream(cfg);
 		try {
 			fc.getFields(is, "dummy");

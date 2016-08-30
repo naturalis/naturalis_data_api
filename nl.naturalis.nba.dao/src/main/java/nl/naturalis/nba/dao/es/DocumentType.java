@@ -71,13 +71,13 @@ public class DocumentType<T extends ESType> {
 	 */
 	public static DocumentType<?> forName(String name)
 	{
-		if (SPECIMEN.name.equals(name))
+		if (SPECIMEN.name.equalsIgnoreCase(name))
 			return SPECIMEN;
-		if (TAXON.name.equals(name))
+		if (TAXON.name.equalsIgnoreCase(name))
 			return TAXON;
-		if (MULTI_MEDIA_OBJECT.name.equals(name))
+		if (MULTI_MEDIA_OBJECT.name.equalsIgnoreCase(name))
 			return MULTI_MEDIA_OBJECT;
-		if (GEO_AREA.name.equals(name))
+		if (GEO_AREA.name.equalsIgnoreCase(name))
 			return GEO_AREA;
 		throw new DaoException("No such document type: \"" + name + '"');
 	}

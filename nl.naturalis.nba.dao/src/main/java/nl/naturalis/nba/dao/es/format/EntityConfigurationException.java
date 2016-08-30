@@ -6,4 +6,9 @@ class EntityConfigurationException extends Exception {
 	{
 		super(message);
 	}
+
+	public EntityConfigurationException(Throwable t)
+	{
+		super(t);
+	}
 }

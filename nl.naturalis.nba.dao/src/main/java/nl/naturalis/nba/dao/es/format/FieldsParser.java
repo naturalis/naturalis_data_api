@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
 import static nl.naturalis.nba.dao.es.format.SettingsParser.SETTING_START_CHAR;
-import static org.domainobject.util.ArrayUtil.implode;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -12,35 +11,86 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
- * Parses those lines in an entity configuration file (wrapped into a
- * {@link LineNumberReader} that specify fields (rather than general
- * configuration settings).
+ * Parses an entity configuration file. Determines which {@link IDataSetField fields} to include in a {@link DataSet
+ * data set}. It does so by reading a configuration file that is parsed as
+ * follows:
+ * <ul>
+ * <li>Lines starting with the hash character (#) are ignored.
+ * <li>Empty lines are ignored.
+ * <li>Other lines display key-value pairs with the equals sign (=) separating
+ * key and value. For example:<br>
+ * {@code lifeStage = phaseOrStage}.
+ * <li>Both key and value are whitespace-trimmed before being processed.
+ * <li>In general, the key specifies the name of the field as it should appear
+ * in the file(s) generated for the data set (e.g. the column header in a CSV
+ * file), while the value specifies the full path to a field within an
+ * Elasticsearch document (e.g. {@code gatheringEvent.dateTimeBegin}). However,
+ * there are a few exceptions to this rule that will be subsequently be listed.
+ * <li>If the key starts with an ampersand (&amp;) it does not specify a field
+ * but rather a general configuration setting. For example with the &amp;entity
+ * key is used to specify the {@link Entity entity object}. (Not including the
+ * &amp;entity key or not providing a value for it means the entire
+ * Elasticsearch document is considered to be the entity object.) Currently, the
+ * &amp;entity setting is the only recognized setting.
+ * <li>If the value starts with an asterisk (*), it specifies a constant value.
+ * Everything <i>following</i> the asterisk is used as the value for the field.
+ * <li>If the value starts with the percentage sign (%), it means the field has
+ * a calculated value. The word following the percentage sign specifies the
+ * simple class name of an {@link ICalculator} implementation.
+ * <li>If the value starts with a dot (.), it specifies a field within an
+ * Elasticsearch document <i>relative</i> to the entity object specified by the
+ * &amp;entity setting. For example, if the &amp;entity setting's value is
+ * {@code gatheringEvent.gatheringPersons}, then you would refer to the
+ * collector's full name by specifying {@code .fullName} rather than
+ * {@code gatheringEvent.gatheringPersons.fullName}.
+ * <li>Otherwise the value specifies the <i>full path</i> of a field within an
+ * Elasticsearch document. Array access can be achieved by adding the array
+ * index after the name of the field that represents the array. For example:<br>
+ * {@code kingdom = identifications.0.defaultClassification.kingdom}. See also
+ * {@link Path}.
+ * <li>
+ * </ul>
+ * <br>
+ * <h3>Example configuration</h3><br>
+ * <code>
+ * # Configuration for printing out specimen determination data
+ * &entity = identifications
+ * SpecimenID = unitID
+ * SourceSystem = sourceSystem.name
+ * # A constant field:
+ * NomenclaturalCode = *ICZN
+ * ScientificName = .scientificName.fullScientificName
+ * TaxonRank = .taxonRank
+ * Genus = .defaultClassification.genus
+ * Subgenus = .defaultClassification.subgenus
+ * SpecificEpithet = .defaultClassification.specificEpithet
+ * InfraspecificEpithet = .defaultClassification.infraspecificEpithet
+ * # A calculated field:
+ * DateIdentified = % DateIdentifiedCalculator
+ * </code>
+ * 
+ * @see IDataSetField
+ * @see IDataSetFieldFactory
  * 
  * @author Ayco Holleman
- *
  */
-class FieldsParser {
+public class FieldsParser {
 
 	static final char CONSTANT_FIELD_START_CHAR = '*';
 	static final char CALCULATED_FIELD_START_CHAR = '%';
+	static final char RELATIVE_FIELD_START_CHAR = '.';
 
 	private static String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 
 	private LineNumberReader lnr;
-	private DocumentType<?> documentType;
-	private IDataSetFieldFactory fieldFactory;
-	private EntityConfiguration conf;
 
-	FieldsParser(LineNumberReader lnr, DocumentType<?> documentType,
-			IDataSetFieldFactory fieldFactory, EntityConfiguration conf)
+	FieldsParser(LineNumberReader lnr)
 	{
 		this.lnr = lnr;
-		this.documentType = documentType;
-		this.fieldFactory = fieldFactory;
-		this.conf = conf;
 	}
 
-	void parse() throws EntityConfigurationException
+	IDataSetField[] parse(DataSetEntity dse, DocumentType<?> dt, IDataSetFieldFactory fieldFactory)
+			throws EntityConfigurationException
 	{
 		ArrayList<IDataSetField> fields = new ArrayList<>(60);
 		try {
@@ -57,15 +107,23 @@ class FieldsParser {
 				IDataSetField field;
 				if (val.charAt(0) == CONSTANT_FIELD_START_CHAR) {
 					String constant = val.substring(1);
-					field = fieldFactory.createConstantField(documentType, key, constant);
+					field = fieldFactory.createConstantField(dt, key, constant);
 				}
 				else if (val.charAt(0) == CALCULATED_FIELD_START_CHAR) {
 					String className = val.substring(1).trim();
 					ICalculator calculator = getCalculator(className);
-					field = fieldFactory.createdCalculatedField(documentType, key, calculator);
+					field = fieldFactory.createdCalculatedField(dt, key, calculator);
 				}
 				else {
-					field = createDataField(key, val);
+					if (val.charAt(0) == RELATIVE_FIELD_START_CHAR) {
+						checkRelativePath(dse, dt, val);
+						String path = val.substring(1);
+						field = fieldFactory.createEntityDataField(dt, key, split(path));
+					}
+					else {
+						new Path(val).validate(dt);
+						field = fieldFactory.createDocumentDataField(dt, key, split(val));
+					}
 				}
 				fields.add(field);
 			}
@@ -73,32 +131,20 @@ class FieldsParser {
 		catch (IOException e) {
 			throw new DaoException(e);
 		}
-		conf.setFields(fields.toArray(new IDataSetField[fields.size()]));
+		return fields.toArray(new IDataSetField[fields.size()]);
 	}
 
-	private IDataSetField createDataField(String fieldName, String path)
+	private static void checkRelativePath(DataSetEntity dse, DocumentType<?> dt, String path)
 			throws EntityConfigurationException
 	{
-		checkPath(path);
-		if (path.charAt(0) == '.')
-			return fieldFactory.createEntityDataField(documentType, fieldName, split(path));
-		return fieldFactory.createDocumentDataField(documentType, fieldName, split(path));
-	}
-
-	private void checkPath(String path) throws EntityConfigurationException
-	{
-		if (path.charAt(0) == '.') {
-			if (conf.getPathToEntity() == null) {
-				String fmt = "Relative path (%s) not allowed without specifying "
-						+ "an entity object. Forgot to include %sentity setting?";
-				String msg = String.format(fmt, path, SETTING_START_CHAR);
-				throw new EntityConfigurationException(msg);
-			}
-			String entityPath = implode(conf.getPathToEntity(), ".");
-			path = entityPath + path;
+		if (dse.getPathToEntity() == null) {
+			String fmt = "Relative path (%s) not allowed without specifying "
+					+ "an entity object. Forgot to include the %sentity setting?";
+			String msg = String.format(fmt, path, SETTING_START_CHAR);
+			throw new EntityConfigurationException(msg);
 		}
-		Path p = new Path(path);
-		p.validate(documentType);
+		String entityPath = new Path(dse.getPathToEntity()).getPath();
+		new Path(entityPath + path).validate(dt);
 	}
 
 	private static boolean definesField(String line)

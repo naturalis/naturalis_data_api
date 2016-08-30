@@ -12,7 +12,7 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
- * Determines which {@link IDataSetField fields} to include in a {@link DataSet
+ * Parses an entity configuration file. Determines which {@link IDataSetField fields} to include in a {@link DataSet
  * data set}. It does so by reading a configuration file that is parsed as
  * follows:
  * <ul>
@@ -75,20 +75,18 @@ import nl.naturalis.nba.dao.es.format.calc.ICalculator;
  * 
  * @author Ayco Holleman
  */
-public class EntityConfigurator {
+public class EntityConfigurationParser {
 
-	private DocumentType<?> dt;
 	private IDataSetFieldFactory factory;
 	private File confFile;
 
-	public EntityConfigurator(DocumentType<?> dt, IDataSetFieldFactory fieldFactory, File confFile)
+	public EntityConfigurationParser(File configFile, IDataSetFieldFactory fieldFactory)
 	{
-		this.dt = dt;
+		this.confFile = configFile;
 		this.factory = fieldFactory;
-		this.confFile = confFile;
 	}
 
-	public EntityConfiguration configure()
+	public EntityConfiguration configure(DocumentType<?> dt)
 	{
 		EntityConfiguration cnf = new EntityConfiguration();
 		LineNumberReader lnr = null;

@@ -18,7 +18,7 @@ import nl.naturalis.nba.dao.es.DocumentType;
  * may yield multiple specimen collector records. The entity object may possibly
  * be the entire Elasticsearch document rather than any object nested within it.
  * 
- * See also {@link DataSetEntity#getPath()}.
+ * See also {@link DataSetEntity#getPathToEntity()}.
  * 
  * @author Ayco Holleman
  *

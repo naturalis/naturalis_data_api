@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import nl.naturalis.nba.dao.es.csv.CsvPrinterTest;
 import nl.naturalis.nba.dao.es.format.DocumentFlattenerTest;
 import nl.naturalis.nba.dao.es.format.FieldConfiguratorTest;
+import nl.naturalis.nba.dao.es.format.PathTest;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetBuilderTest;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetCollectionBuilderTest;
 import nl.naturalis.nba.dao.es.format.dwca.MetaXmlGeneratorTest;
@@ -28,6 +29,7 @@ import nl.naturalis.nba.dao.es.util.ESUtilTest;
 	ESUtilTest.class,
 	MappingFactoryTest.class,
 	MappingInfoTest.class,
+	PathTest.class,
 	EqualsConditionTranslatorTest.class,
 	LikeConditionTranslatorTest.class ,
 	BetweenConditionTranslatorTest.class ,

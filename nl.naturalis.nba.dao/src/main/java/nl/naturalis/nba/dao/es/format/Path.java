@@ -50,8 +50,9 @@ public class Path {
 	public String getPath()
 	{
 		if (path == null) {
-			StringBuilder sb = new StringBuilder(elements.length * 10);
-			for (String e : getPathElements()) {
+			String[] elems = getPathElements();
+			StringBuilder sb = new StringBuilder(elems.length * 10);
+			for (String e : elems) {
 				if (sb.length() != 0)
 					sb.append('.');
 				sb.append(e);
@@ -64,12 +65,9 @@ public class Path {
 	public String getPurePath()
 	{
 		String[] elems = getPathElements();
-		StringBuilder sb = new StringBuilder(elements.length * 10);
+		StringBuilder sb = new StringBuilder(elems.length * 10);
 		for (String e : elems) {
-			try {
-				Integer.parseInt(e);
-			}
-			catch (NumberFormatException exc) {
+			if (!isInteger(e)) {
 				if (sb.length() != 0)
 					sb.append('.');
 				sb.append(e);
@@ -90,12 +88,8 @@ public class Path {
 		String[] elems = getPathElements();
 		ArrayList<String> list = new ArrayList<>(elems.length);
 		for (String e : elems) {
-			try {
-				Integer.parseInt(e);
-			}
-			catch (NumberFormatException exc) {
+			if (!isInteger(e))
 				list.add(e);
-			}
 		}
 		return list.toArray(new String[list.size()]);
 	}
@@ -103,12 +97,20 @@ public class Path {
 	public void validate(DocumentType<?> documentType) throws EntityConfigurationException
 	{
 		MappingInfo mi = new MappingInfo(documentType.getMapping());
-		checkArrayIndices(mi);
+		checkPathComplete(mi);
+		checkRequiredArrayIndices(mi);
+		checkIllegalArrayIndices(mi);
+	}
+
+	/*
+	 * Make sure path references is simple, primitive value (not an object).
+	 */
+	private void checkPathComplete(MappingInfo mi) throws EntityConfigurationException
+	{
 		try {
 			ESField esField = mi.getField(getPurePath());
 			if (!(esField instanceof DocumentField)) {
-				String fmt = "Invalid field (type is object/nested): %s";
-				String msg = String.format(fmt, path);
+				String msg = "Incomplete path: %s" + path;
 				throw new EntityConfigurationException(msg);
 			}
 		}
@@ -118,28 +120,65 @@ public class Path {
 	}
 
 	/*
-	 * Make sure array indices are used only if the preceding path element
-	 * refers to a nested array. TODO: we should actually also check that array
-	 * indices are NOT used if the preceding path element is NOT an array.
+	 * Make sure array indices are used if the preceding path element references
+	 * an array.
 	 */
-	private void checkArrayIndices(MappingInfo mi) throws EntityConfigurationException
+	private void checkRequiredArrayIndices(MappingInfo mi) throws EntityConfigurationException
 	{
 		StringBuilder sb = new StringBuilder(50);
-		for (String element : getPathElements()) {
-			try {
-				int index = Integer.parseInt(element);
-				ESField esField = mi.getField(sb.toString());
-				if (!esField.isMultiValued()) {
-					String fmt = "Illegal array index (%s) following single-valued field: %s";
-					String msg = String.format(fmt, index, sb.toString());
+		String[] elems = getPathElements();
+		for (int i = 0; i < elems.length; i++) {
+			String element = elems[i];
+			if (isInteger(element))
+				continue;
+			if (i != 0)
+				sb.append('.');
+			sb.append(element);
+			ESField esField = mi.getField(sb.toString());
+			if (esField.isMultiValued()) {
+				if (i == elems.length - 1 || !isInteger(elems[i + 1])) {
+					String fmt = "Array index required after multi-valued field %s";
+					String msg = String.format(fmt, sb.toString());
 					throw new EntityConfigurationException(msg);
 				}
 			}
-			catch (NumberFormatException e) {
-				if (sb.length() != 0)
-					sb.append('.');
-				sb.append(element);
+		}
+	}
+
+	/*
+	 * Make sure array indices are not used if the preceding path element does
+	 * not reference an array.
+	 */
+	private void checkIllegalArrayIndices(MappingInfo mi) throws EntityConfigurationException
+	{
+		StringBuilder sb = new StringBuilder(50);
+		String[] elems = getPathElements();
+		for (int i = 0; i < elems.length; i++) {
+			String element = elems[i];
+			if (isInteger(element))
+				continue;
+			if (i != 0)
+				sb.append('.');
+			sb.append(element);
+			ESField esField = mi.getField(sb.toString());
+			if (!esField.isMultiValued()) {
+				if (i < elems.length - 1 && isInteger(elems[i + 1])) {
+					String fmt = "Illegal array index following single-valued field: %s";
+					String msg = String.format(fmt, sb.toString());
+					throw new EntityConfigurationException(msg);
+				}
 			}
+		}
+	}
+
+	private static boolean isInteger(String s)
+	{
+		try {
+			Integer.parseInt(s);
+			return true;
+		}
+		catch (NumberFormatException e) {
+			return false;
 		}
 	}
 

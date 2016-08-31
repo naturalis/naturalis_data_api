@@ -22,7 +22,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
@@ -38,7 +38,7 @@ public class DwcaWriter2 {
 	private static Logger logger = getLogger(DwcaWriter2.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
-	private DataSet ds;
+	private DataSetConfiguration ds;
 	private ZipOutputStream zos;
 
 	/**
@@ -48,7 +48,7 @@ public class DwcaWriter2 {
 	 * @param dsc
 	 * @param out
 	 */
-	public DwcaWriter2(DataSet ds, ZipOutputStream zos)
+	public DwcaWriter2(DataSetConfiguration ds, ZipOutputStream zos)
 	{
 		this.ds = ds;
 		this.zos = zos;

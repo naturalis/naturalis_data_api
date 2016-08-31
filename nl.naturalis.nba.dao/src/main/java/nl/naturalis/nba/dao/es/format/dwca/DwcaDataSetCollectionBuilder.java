@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 import nl.naturalis.nba.dao.es.format.DataSetEntity;
 import nl.naturalis.nba.dao.es.format.EntityConfiguration;
 import nl.naturalis.nba.dao.es.format.EntityConfigurationParser;
@@ -32,12 +32,12 @@ public class DwcaDataSetCollectionBuilder {
 		this.dataSetName = dataSetName;
 	}
 
-	public DataSetCollection build()
+	public DataSetCollectionConfiguration build()
 	{
 		String collectionName = getName();
 		File home = newFile(getDocumentTypeDirectory(), collectionName);
 		DataSetEntity[] entities = getEntities(home);
-		DataSetCollection dsc = new DataSetCollection();
+		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration();
 		dsc.setDocumentType(dt);
 		dsc.setName(collectionName);
 		dsc.setHome(home);

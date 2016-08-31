@@ -31,7 +31,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
@@ -47,7 +47,7 @@ public class DwcaWriter {
 	private static Logger logger = getLogger(DwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
-	private DataSetCollection dsc;
+	private DataSetCollectionConfiguration dsc;
 	private ZipOutputStream zos;
 
 	/**
@@ -57,7 +57,7 @@ public class DwcaWriter {
 	 * @param dsc
 	 * @param out
 	 */
-	public DwcaWriter(DataSetCollection dsc, ZipOutputStream zos)
+	public DwcaWriter(DataSetCollectionConfiguration dsc, ZipOutputStream zos)
 	{
 		this.dsc = dsc;
 		this.zos = zos;
@@ -67,7 +67,7 @@ public class DwcaWriter {
 	 * Writes a DarwinCore archive for the specified data set. The Elasticsearch
 	 * query to be executed is specified in a file called "queryspec.json"
 	 * residing in the
-	 * {@link DwcaUtil#getDatasetDirectory(DataSetCollection, String) directory}
+	 * {@link DwcaUtil#getDatasetDirectory(DataSetCollectionConfiguration, String) directory}
 	 * created for the data set.
 	 * 
 	 * @param dataSet

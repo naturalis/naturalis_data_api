@@ -1,8 +1,8 @@
 package nl.naturalis.nba.dao.es.format;
 
-class EntityConfigurationException extends Exception {
+public class EntityConfigurationException extends DataSetConfigurationException {
 
-	EntityConfigurationException(String message)
+	public EntityConfigurationException(String message)
 	{
 		super(message);
 	}

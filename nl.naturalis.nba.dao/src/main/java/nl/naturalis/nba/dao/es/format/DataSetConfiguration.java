@@ -14,9 +14,9 @@ import nl.naturalis.nba.dao.es.DocumentType;
  * @author Ayco Holleman
  *
  */
-public class DataSet {
+public class DataSetConfiguration {
 
-	private DataSetCollection dsc;
+	private DataSetCollectionConfiguration dsc;
 	private String name;
 	private File home;
 	private QuerySpec querySpec;
@@ -24,12 +24,12 @@ public class DataSet {
 	/**
 	 * Returns the data set collection that this data set belongs to.
 	 */
-	public DataSetCollection getDataSetCollection()
+	public DataSetCollectionConfiguration getDataSetCollection()
 	{
 		return dsc;
 	}
 
-	public void setDataSetCollection(DataSetCollection dsc)
+	public void setDataSetCollection(DataSetCollectionConfiguration dsc)
 	{
 		this.dsc = dsc;
 	}

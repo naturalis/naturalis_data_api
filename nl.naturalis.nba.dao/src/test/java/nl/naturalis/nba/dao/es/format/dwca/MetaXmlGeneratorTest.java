@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import org.domainobject.util.FileUtil;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
 
 @SuppressWarnings("static-method")
 public class MetaXmlGeneratorTest {
@@ -17,7 +17,7 @@ public class MetaXmlGeneratorTest {
 	{
 		DwcaDataSetBuilder builder;
 		builder = new DwcaDataSetBuilder(SPECIMEN, "test-data-set-01");
-		DataSet ds = builder.build();
+		DataSetConfiguration ds = builder.build();
 		SpecimenArchive archive = new SpecimenArchive().forDataSet(ds);
 		MetaXmlGenerator mxg = new MetaXmlGenerator(archive);
 		mxg.generateMetaXml(System.out);

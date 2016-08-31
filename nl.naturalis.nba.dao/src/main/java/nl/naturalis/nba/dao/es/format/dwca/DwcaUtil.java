@@ -19,7 +19,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 import nl.naturalis.nba.dao.es.format.DataSetEntity;
 import nl.naturalis.nba.dao.es.format.FieldConfigurator;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
@@ -42,7 +42,7 @@ public class DwcaUtil {
 	}
 
 	/**
-	 * Returns the {@link DataSetCollection} that contains the specified data
+	 * Returns the {@link DataSetCollectionConfiguration} that contains the specified data
 	 * set. This lookup is possible because data set names must be unique across
 	 * all collections for a particular {@link DocumentType document type}. So
 	 * you could have specimen/zoology/lepidoptera and
@@ -50,8 +50,8 @@ public class DwcaUtil {
 	 * specimen/paleontology/lepidoptera. Another factor determining the lookup
 	 * mechanism is that you can have collections with just one data set. In
 	 * that case, it is allowed to merge the
-	 * {@link #getDataSetCollectionDirectory(DataSetCollection) collection
-	 * directory} and the {@link #getDatasetDirectory(DataSetCollection, String)
+	 * {@link #getDataSetCollectionDirectory(DataSetCollectionConfiguration) collection
+	 * directory} and the {@link #getDatasetDirectory(DataSetCollectionConfiguration, String)
 	 * data set directory}. In other words, collection directory and data set
 	 * directory are one and the same, and this one directory will contain both
 	 * collection-specific artefacts (e.g. fields.config) and dataset-specific
@@ -64,18 +64,18 @@ public class DwcaUtil {
 	 * @param dataSet
 	 * @return
 	 */
-	public static DataSetCollection findDataSetCollection(DocumentType<?> dt, String dataSet)
+	public static DataSetCollectionConfiguration findDataSetCollection(DocumentType<?> dt, String dataSet)
 	{
 		File docTypeDir = getDocumentTypeDirectory(dt);
 		for (File collDir : getSubdirectories(docTypeDir)) {
 			String collection = collDir.getName();
 			if (collection.equals(dataSet)) {
 				//Then we have a collection with just one data set.			
-				return new DataSetCollection(dt, dataSet);
+				return new DataSetCollectionConfiguration(dt, dataSet);
 			}
 			for (File setDir : getSubdirectories(collDir)) {
 				if (setDir.getName().equals(dataSet)) {
-					return new DataSetCollection(dt, collection);
+					return new DataSetCollectionConfiguration(dt, collection);
 				}
 			}
 		}
@@ -91,7 +91,7 @@ public class DwcaUtil {
 	 * @param dsc
 	 * @return
 	 */
-	public static IDataSetField[] getFields(DataSetCollection dsc)
+	public static IDataSetField[] getFields(DataSetCollectionConfiguration dsc)
 	{
 		File confFile = getFieldsConfigFile(dsc);
 		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
@@ -104,13 +104,13 @@ public class DwcaUtil {
 	 * sets. This file must be named "fields.config" and it must reside in the
 	 * top directory for the data set collection.
 	 * 
-	 * @see #getDataSetCollectionDirectory(DataSetCollection)
+	 * @see #getDataSetCollectionDirectory(DataSetCollectionConfiguration)
 	 * 
 	 * @param documentType
 	 * @param setType
 	 * @return
 	 */
-	public static File getFieldsConfigFile(DataSetCollection dsc)
+	public static File getFieldsConfigFile(DataSetCollectionConfiguration dsc)
 	{
 		File dir = getDataSetCollectionDirectory(dsc);
 		File f = FileUtil.newFile(dir, "fields.config");
@@ -144,7 +144,7 @@ public class DwcaUtil {
 	 * @param dsc
 	 * @return
 	 */
-	public static String getCsvFileName(DataSetCollection dsc)
+	public static String getCsvFileName(DataSetCollectionConfiguration dsc)
 	{
 		if (dsc.getDocumentType() == SPECIMEN)
 			return "occurrence.txt";
@@ -155,7 +155,7 @@ public class DwcaUtil {
 
 	/**
 	 * Returns the eml.xml file for the specified data set. This file must
-	 * reside in the {@link #getDatasetDirectory(DataSetCollection, String)
+	 * reside in the {@link #getDatasetDirectory(DataSetCollectionConfiguration, String)
 	 * directory} for the specified data set.
 	 * 
 	 * @param documentType
@@ -163,7 +163,7 @@ public class DwcaUtil {
 	 * @param setName
 	 * @return
 	 */
-	public static File getEmlFile(DataSetCollection dsc, String setName)
+	public static File getEmlFile(DataSetCollectionConfiguration dsc, String setName)
 	{
 		File dir = getDatasetDirectory(dsc, setName);
 		File emlFile = FileUtil.newFile(dir, "eml.xml");
@@ -176,7 +176,7 @@ public class DwcaUtil {
 	 * Returns a {@link QuerySpec} instance for the specified data set. This
 	 * instance is created through the deserialization of the contents of a file
 	 * name queryspec.json. This file must reside in the
-	 * {@link #getDatasetDirectory(DataSetCollection, String) directory} for the
+	 * {@link #getDatasetDirectory(DataSetCollectionConfiguration, String) directory} for the
 	 * specified data set.
 	 * 
 	 * @param documentType
@@ -184,7 +184,7 @@ public class DwcaUtil {
 	 * @param setName
 	 * @return
 	 */
-	public static QuerySpec getQuerySpec(DataSetCollection dsc, String setName)
+	public static QuerySpec getQuerySpec(DataSetCollectionConfiguration dsc, String setName)
 	{
 		File dir = getDatasetDirectory(dsc, setName);
 		File f = FileUtil.newFile(dir, "queryspec.json");
@@ -218,7 +218,7 @@ public class DwcaUtil {
 	 * @param setName
 	 * @return
 	 */
-	public static File getDatasetDirectory(DataSetCollection dsc, String setName)
+	public static File getDatasetDirectory(DataSetCollectionConfiguration dsc, String setName)
 	{
 		File dir = getDataSetCollectionDirectory(dsc);
 		if (setName == null || setName.equals(dsc.getName()))
@@ -230,7 +230,7 @@ public class DwcaUtil {
 	}
 
 	/**
-	 * Returns the top directory for the specified {@link DataSetCollection
+	 * Returns the top directory for the specified {@link DataSetCollectionConfiguration
 	 * collection of data sets}. Besides subdirectories for the individual data
 	 * sets, this directory must also contain the "fields.config" file that
 	 * configures which fields to include in the data sets (see
@@ -239,7 +239,7 @@ public class DwcaUtil {
 	 * @param dsc
 	 * @return
 	 */
-	public static File getDataSetCollectionDirectory(DataSetCollection dsc)
+	public static File getDataSetCollectionDirectory(DataSetCollectionConfiguration dsc)
 	{
 		File dir = getDocumentTypeDirectory(dsc.getDocumentType());
 		File f = FileUtil.newFile(dir, dsc.getName());

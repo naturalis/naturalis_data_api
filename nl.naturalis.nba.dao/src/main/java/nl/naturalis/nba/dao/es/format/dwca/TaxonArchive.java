@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
 import nl.naturalis.nba.dao.es.format.DataSetEntity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -20,19 +20,19 @@ class TaxonArchive extends Archive {
 		super();
 	}
 
-	TaxonArchive forDataSet(DataSet dataSet)
+	TaxonArchive forDataSet(DataSetConfiguration dataSet)
 	{
 		this.core = createCore(dataSet);
 		this.extensions = createExtensions(dataSet);
 		return this;
 	}
 
-	private static Core createCore(DataSet dataSet)
+	private static Core createCore(DataSetConfiguration dataSet)
 	{
 		return new TaxonCore().forDataSet(dataSet);
 	}
 
-	private static List<Extension> createExtensions(DataSet ds)
+	private static List<Extension> createExtensions(DataSetConfiguration ds)
 	{
 		DataSetEntity[] entities = ds.getDataSetCollection().getEntities();
 		List<Extension> extensions = new ArrayList<>(entities.length - 1);

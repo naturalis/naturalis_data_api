@@ -6,7 +6,7 @@ import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 
 /**
- * A {@code DataSetCollection} is a collection of {@link DataSet data sets} that
+ * A {@code DataSetCollection} is a collection of {@link DataSetConfiguration data sets} that
  * use the same {@link IDataSetField fields}. For example, all data sets in the
  * DwCA zoology collection have exactly the same fields in their occurrence.txt
  * file, while data sets in the geology collection use a different set of
@@ -18,25 +18,25 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
  * {@code DataSetCollection} is itself subsumed under an Elasticsearch
  * {@link DocumentType document type}. In other words, all data sets in a given
  * collection draw their data from the same Elasticsearch document type. As with
- * the {@link DataSet} and {@link DataSetEntity} classes, this class only
+ * the {@link DataSetConfiguration} and {@link DataSetEntity} classes, this class only
  * provides <i>meta data</i> about a data set collection. It is not concerned
  * with the data itself.
  * 
  * @author Ayco Holleman
  *
  */
-public class DataSetCollection {
+public class DataSetCollectionConfiguration {
 
 	private DocumentType<?> dt;
 	private String name;
 	private File home;
 	private DataSetEntity[] entities;
 
-	public DataSetCollection()
+	public DataSetCollectionConfiguration()
 	{
 	}
 
-	public DataSetCollection(DocumentType<?> dt, String name)
+	public DataSetCollectionConfiguration(DocumentType<?> dt, String name)
 	{
 		this.dt = dt;
 		this.name = name;
@@ -73,7 +73,7 @@ public class DataSetCollection {
 	/**
 	 * Returns the name of this collection of data sets. In practice, the
 	 * returned value is used as (actually inferred from) the name of the parent
-	 * directory of a data set's {@link DataSet#getHome() home directory}.
+	 * directory of a data set's {@link DataSetConfiguration#getHome() home directory}.
 	 * 
 	 * @return
 	 */
@@ -120,9 +120,9 @@ public class DataSetCollection {
 	{
 		if (this == obj)
 			return true;
-		if (obj == null || !(obj instanceof DataSetCollection))
+		if (obj == null || !(obj instanceof DataSetCollectionConfiguration))
 			return false;
-		DataSetCollection other = (DataSetCollection) obj;
+		DataSetCollectionConfiguration other = (DataSetCollectionConfiguration) obj;
 		return name.equals(other.name) && dt == other.dt;
 	}
 

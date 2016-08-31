@@ -4,10 +4,10 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
- * A {@code DataSetEntity} is a file that is part of {@link DataSet data set}.
+ * A {@code DataSetEntity} is a file that is part of {@link DataSetConfiguration data set}.
  * For example, DwC archives may contain multiple CSV files, each containing a
  * different type of data (e.g. taxa, literature references, vernacular names,
- * etc.). As with the {@link DataSet} and {@link DataSetCollection} classes,
+ * etc.). As with the {@link DataSetConfiguration} and {@link DataSetCollectionConfiguration} classes,
  * this class only provides <i>meta data</i> about a data set collection. It is
  * not concerned with the data itself.
  * 
@@ -19,8 +19,8 @@ public class DataSetEntity {
 	private String name;
 	private IDataSetField[] fields;
 	private DocumentType<?> documentType;
-	private QuerySpec querySpec;
 	private String[] pathToEntity;
+	private QuerySpec querySpec;
 
 	public DataSetEntity()
 	{
@@ -65,23 +65,6 @@ public class DataSetEntity {
 	}
 
 	/**
-	 * Returns the Elasticsearch query that provides the data for the file. This
-	 * allows for the possibility that different files within the same data set
-	 * get their data from different Elasticsearch queries. This possibility is
-	 * currently not made use of, however. Elasticsearch queries are specified
-	 * at the {@link DataSet} level.
-	 */
-	public QuerySpec getQuerySpec()
-	{
-		return querySpec;
-	}
-
-	public void setQuerySpec(QuerySpec querySpec)
-	{
-		this.querySpec = querySpec;
-	}
-
-	/**
 	 * Returns the path to the object within an Elasticsearch
 	 * {@link DocumentType} that is the basic unit for this
 	 * {@code DataSetEntity}. When writing CSV files, for example, this is the
@@ -104,6 +87,23 @@ public class DataSetEntity {
 	public void setPathToEntity(String[] path)
 	{
 		this.pathToEntity = path;
+	}
+
+	/**
+	 * Returns the Elasticsearch query that provides the data for the file. This
+	 * allows for the possibility that different files within the same data set
+	 * get their data from different Elasticsearch queries. This possibility is
+	 * currently not made use of, however. Elasticsearch queries are specified
+	 * at the {@link DataSetConfiguration} level.
+	 */
+	public QuerySpec getQuerySpec()
+	{
+		return querySpec;
+	}
+
+	public void setQuerySpec(QuerySpec querySpec)
+	{
+		this.querySpec = querySpec;
 	}
 
 }

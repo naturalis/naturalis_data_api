@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
 
 @SuppressWarnings("static-method")
 public class DwcaDataSetBuilderTest {
@@ -16,7 +16,7 @@ public class DwcaDataSetBuilderTest {
 	{
 		DwcaDataSetBuilder builder;
 		builder = new DwcaDataSetBuilder(SPECIMEN, "test-data-set-01");
-		DataSet ds = builder.build();
+		DataSetConfiguration ds = builder.build();
 		assertEquals("01", "test-data-set-01", ds.getName());
 		assertNotNull("02", ds.getQuerySpec());
 	}

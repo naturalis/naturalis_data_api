@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.NoSuchDataSetException;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetCollectionBuilder;
@@ -19,7 +19,7 @@ public class DwcaDataSetCollectionBuilderTest {
 	{
 		DwcaDataSetCollectionBuilder builder;
 		builder = new DwcaDataSetCollectionBuilder(SPECIMEN, "test-data-set-01");
-		DataSetCollection dsc = builder.build();
+		DataSetCollectionConfiguration dsc = builder.build();
 		assertEquals("01", "test-collection-01", dsc.getName());
 		assertEquals("02", SPECIMEN, dsc.getDocumentType());
 		assertEquals("03", 1, dsc.getEntities().length);

@@ -25,7 +25,7 @@ import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaWriter;
 import nl.naturalis.nba.dao.es.transfer.ITransferObject;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransferObject;
@@ -111,7 +111,7 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	@Override
 	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
 	{
-		DataSetCollection dsc = new DataSetCollection(SPECIMEN, "dynamic");
+		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
 		DwcaWriter writer = new DwcaWriter(dsc, out);
 		writer.processDynamicQuery(spec);
 	}
@@ -119,7 +119,7 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	@Override
 	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
 	{
-		DataSetCollection dsc = findDataSetCollection(SPECIMEN, name);
+		DataSetCollectionConfiguration dsc = findDataSetCollection(SPECIMEN, name);
 		DwcaWriter writer = new DwcaWriter(dsc, out);
 		writer.processPredefinedQuery(name);
 	}

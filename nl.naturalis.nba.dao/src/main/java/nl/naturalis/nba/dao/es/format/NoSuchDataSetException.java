@@ -1,23 +1,15 @@
 package nl.naturalis.nba.dao.es.format;
 
-import nl.naturalis.nba.dao.es.exception.DaoException;
-
-
-public class NoSuchDataSetException extends DaoException {
+public class NoSuchDataSetException extends DataSetConfigurationException {
 
 	public NoSuchDataSetException(String message)
 	{
 		super(message);
 	}
 
-	public NoSuchDataSetException(Throwable cause)
+	public NoSuchDataSetException(Throwable t)
 	{
-		super(cause);
-	}
-
-	public NoSuchDataSetException(String message, Throwable cause)
-	{
-		super(message, cause);
+		super(t);
 	}
 
 }

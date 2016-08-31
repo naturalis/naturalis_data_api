@@ -10,11 +10,11 @@ import java.io.InputStream;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSet;
-import nl.naturalis.nba.dao.es.format.DataSetCollection;
+import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 
 /**
- * A DwCA-specific builder of {@link DataSet} instances.
+ * A DwCA-specific builder of {@link DataSetConfiguration} instances.
  * 
  * @author Ayco Holleman
  *
@@ -30,10 +30,10 @@ public class DwcaDataSetBuilder {
 		this.name = name;
 	}
 
-	public DataSet build()
+	public DataSetConfiguration build()
 	{
-		DataSetCollection dsc = new DwcaDataSetCollectionBuilder(dt, name).build();
-		DataSet dataSet = new DataSet();
+		DataSetCollectionConfiguration dsc = new DwcaDataSetCollectionBuilder(dt, name).build();
+		DataSetConfiguration dataSet = new DataSetConfiguration();
 		dataSet.setDataSetCollection(dsc);
 		dataSet.setName(name);
 		File home = newFile(dsc.getHome(), name);

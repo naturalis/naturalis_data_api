@@ -6,21 +6,15 @@ import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 
 /**
- * A {@code DataSetCollection} is a collection of {@link DataSetConfiguration data sets} that
- * use the same {@link IDataSetField fields}. For example, all data sets in the
- * DwCA zoology collection have exactly the same fields in their occurrence.txt
- * file, while data sets in the geology collection use a different set of
- * fields. A data set may be comprised of multiple files. For example the DwCA
- * files for taxa includes a taxa.txt file, and may additionally include a
- * references.txt file, a distribution.txt file, etc. These files are referred
- * to as entities and are represented by the {@link DataSetEntity} class. All
- * data sets in a collection are comprised of the same entities. A
- * {@code DataSetCollection} is itself subsumed under an Elasticsearch
- * {@link DocumentType document type}. In other words, all data sets in a given
- * collection draw their data from the same Elasticsearch document type. As with
- * the {@link DataSetConfiguration} and {@link DataSetEntity} classes, this class only
- * provides <i>meta data</i> about a data set collection. It is not concerned
- * with the data itself.
+ * A data set collection is a collection of {@link DataSetConfiguration data
+ * sets} that, to a large degree, are configured the same. This class captures a
+ * data set's shared configuration. For example, all data sets in a data set
+ * collection are comprised of the same {@link EntityConfiguration files} and
+ * for all data sets in that collection these files contain the same fields. You
+ * can get hold of a {@code DataSetCollectionConfiguration} instance by using a
+ * {@link DataSetCollectionConfigurationBuilder}. However, the configuration a
+ * data set shares with other data sets (i.e. the collection configuration) is
+ * implicitly retrieved when using a {@link DataSetConfigurationBuilder}.
  * 
  * @author Ayco Holleman
  *
@@ -30,21 +24,24 @@ public class DataSetCollectionConfiguration {
 	private DocumentType<?> dt;
 	private String name;
 	private File home;
-	private DataSetEntity[] entities;
+	private EntityConfiguration[] entities;
 
-	public DataSetCollectionConfiguration()
+	DataSetCollectionConfiguration()
 	{
 	}
 
-	public DataSetCollectionConfiguration(DocumentType<?> dt, String name)
+	DataSetCollectionConfiguration(DocumentType<?> dt, String name)
 	{
 		this.dt = dt;
 		this.name = name;
 	}
 
-	public DataSetEntity getEntity(String entityName)
+	/**
+	 * Returns the configuration for the specified entity.
+	 */
+	public EntityConfiguration getEntityConfiguration(String entityName)
 	{
-		for (DataSetEntity entity : entities) {
+		for (EntityConfiguration entity : entities) {
 			if (entity.getName().equals(entityName)) {
 				return entity;
 			}
@@ -65,7 +62,7 @@ public class DataSetCollectionConfiguration {
 		return dt;
 	}
 
-	public void setDocumentType(DocumentType<?> dt)
+	void setDocumentType(DocumentType<?> dt)
 	{
 		this.dt = dt;
 	}
@@ -73,7 +70,8 @@ public class DataSetCollectionConfiguration {
 	/**
 	 * Returns the name of this collection of data sets. In practice, the
 	 * returned value is used as (actually inferred from) the name of the parent
-	 * directory of a data set's {@link DataSetConfiguration#getHome() home directory}.
+	 * directory of a data set's {@link DataSetConfiguration#getHome() home
+	 * directory}.
 	 * 
 	 * @return
 	 */
@@ -82,7 +80,7 @@ public class DataSetCollectionConfiguration {
 		return name;
 	}
 
-	public void setName(String name)
+	void setName(String name)
 	{
 		this.name = name;
 	}
@@ -96,43 +94,23 @@ public class DataSetCollectionConfiguration {
 		return home;
 	}
 
-	public void setHome(File home)
+	void setHome(File home)
 	{
 		this.home = home;
 	}
 
 	/**
-	 * Returns the {@link DataSetEntity entities} that all data sets belonging
-	 * to this collection are comprisedof.
+	 * Returns the {@link EntityConfiguration entities} that all data sets
+	 * belonging to this collection are comprisedof.
 	 */
-	public DataSetEntity[] getEntities()
+	public EntityConfiguration[] getEntities()
 	{
 		return entities;
 	}
 
-	public void setEntities(DataSetEntity[] entities)
+	void setEntities(EntityConfiguration[] entities)
 	{
 		this.entities = entities;
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-			return true;
-		if (obj == null || !(obj instanceof DataSetCollectionConfiguration))
-			return false;
-		DataSetCollectionConfiguration other = (DataSetCollectionConfiguration) obj;
-		return name.equals(other.name) && dt == other.dt;
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int hash = 17;
-		hash = (hash * 31) + name.hashCode();
-		hash = (hash * 31) + dt.hashCode();
-		return hash;
 	}
 
 }

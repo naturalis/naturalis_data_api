@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
-import nl.naturalis.nba.dao.es.format.DataSetEntity;
+import nl.naturalis.nba.dao.es.format.EntityConfiguration;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "extension")
@@ -23,7 +23,7 @@ class TaxonReferenceExtension extends Extension {
 
 	TaxonReferenceExtension forDataSet(DataSetConfiguration ds)
 	{
-		DataSetEntity entity = ds.getDataSetCollection().getEntity("reference");
+		EntityConfiguration entity = ds.getCollectionConfiguration().getEntityConfiguration("reference");
 		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
 		return this;
 	}

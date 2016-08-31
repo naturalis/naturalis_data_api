@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
-import nl.naturalis.nba.dao.es.format.DataSetEntity;
+import nl.naturalis.nba.dao.es.format.EntityConfiguration;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
@@ -34,9 +34,9 @@ class TaxonArchive extends Archive {
 
 	private static List<Extension> createExtensions(DataSetConfiguration ds)
 	{
-		DataSetEntity[] entities = ds.getDataSetCollection().getEntities();
+		EntityConfiguration[] entities = ds.getCollectionConfiguration().getEntities();
 		List<Extension> extensions = new ArrayList<>(entities.length - 1);
-		LOOP: for (DataSetEntity entity : entities) {
+		LOOP: for (EntityConfiguration entity : entities) {
 			switch (entity.getName()) {
 				case "taxa":
 					continue LOOP;

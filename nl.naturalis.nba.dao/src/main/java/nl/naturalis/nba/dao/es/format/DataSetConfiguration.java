@@ -6,10 +6,10 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
- * A {@code DataSet} defines and specifies a data set. A data set is a file or
- * collection of files containing formatted data (e.g. CSV records). Note that
- * instances of this class provide <i>meta data</i> about a data set. They do
- * not actually store, generate or write data.
+ * Class capturing the information necessary to generate a data set. A data set
+ * is a file or collection of files containing formatted data (e.g. CSV
+ * records). Use a {@link DataSetConfigurationBuilder} to get hold of a
+ * {@code DataSetConfiguration} instance.
  * 
  * @author Ayco Holleman
  *
@@ -22,14 +22,15 @@ public class DataSetConfiguration {
 	private QuerySpec querySpec;
 
 	/**
-	 * Returns the data set collection that this data set belongs to.
+	 * Returns the configuration of the collection to which the data set
+	 * belongs.
 	 */
-	public DataSetCollectionConfiguration getDataSetCollection()
+	public DataSetCollectionConfiguration getCollectionConfiguration()
 	{
 		return dsc;
 	}
 
-	public void setDataSetCollection(DataSetCollectionConfiguration dsc)
+	void setCollectionConfiguration(DataSetCollectionConfiguration dsc)
 	{
 		this.dsc = dsc;
 	}
@@ -45,7 +46,7 @@ public class DataSetConfiguration {
 		return name;
 	}
 
-	public void setName(String name)
+	void setName(String name)
 	{
 		this.name = name;
 	}
@@ -60,7 +61,7 @@ public class DataSetConfiguration {
 		return home;
 	}
 
-	public void setHome(File home)
+	void setHome(File home)
 	{
 		this.home = home;
 	}
@@ -74,7 +75,7 @@ public class DataSetConfiguration {
 		return querySpec;
 	}
 
-	public void setQuerySpec(QuerySpec querySpec)
+	void setQuerySpec(QuerySpec querySpec)
 	{
 		this.querySpec = querySpec;
 	}

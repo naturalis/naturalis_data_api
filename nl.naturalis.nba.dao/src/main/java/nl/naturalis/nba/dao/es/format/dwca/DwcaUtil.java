@@ -20,11 +20,8 @@ import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
-import nl.naturalis.nba.dao.es.format.DataSetEntity;
-import nl.naturalis.nba.dao.es.format.FieldConfigurator;
+import nl.naturalis.nba.dao.es.format.EntityConfiguration;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
-import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
-import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
 /**
  * Utility class for the DwCA generation process.
@@ -39,64 +36,6 @@ public class DwcaUtil {
 
 	private DwcaUtil()
 	{
-	}
-
-	/**
-	 * Returns the {@link DataSetCollectionConfiguration} that contains the specified data
-	 * set. This lookup is possible because data set names must be unique across
-	 * all collections for a particular {@link DocumentType document type}. So
-	 * you could have specimen/zoology/lepidoptera and
-	 * taxon/zoology/lepidoptera, but you cannot then also have
-	 * specimen/paleontology/lepidoptera. Another factor determining the lookup
-	 * mechanism is that you can have collections with just one data set. In
-	 * that case, it is allowed to merge the
-	 * {@link #getDataSetCollectionDirectory(DataSetCollectionConfiguration) collection
-	 * directory} and the {@link #getDatasetDirectory(DataSetCollectionConfiguration, String)
-	 * data set directory}. In other words, collection directory and data set
-	 * directory are one and the same, and this one directory will contain both
-	 * collection-specific artefacts (e.g. fields.config) and dataset-specific
-	 * artefacts (e.g. eml.xml). By being able to look up the collection from
-	 * the data set, we can keep our URLs for predefined data sets simple, e.g.
-	 * http://api.biodiversitydata.nl/specimen/dwca/lepidoptera in stead of
-	 * http://api.biodiversitydata.nl/specimen/dwca/zoology/lepidoptera.
-	 * 
-	 * @param dt
-	 * @param dataSet
-	 * @return
-	 */
-	public static DataSetCollectionConfiguration findDataSetCollection(DocumentType<?> dt, String dataSet)
-	{
-		File docTypeDir = getDocumentTypeDirectory(dt);
-		for (File collDir : getSubdirectories(docTypeDir)) {
-			String collection = collDir.getName();
-			if (collection.equals(dataSet)) {
-				//Then we have a collection with just one data set.			
-				return new DataSetCollectionConfiguration(dt, dataSet);
-			}
-			for (File setDir : getSubdirectories(collDir)) {
-				if (setDir.getName().equals(dataSet)) {
-					return new DataSetCollectionConfiguration(dt, collection);
-				}
-			}
-		}
-		String fmt = "Directory for data set \"%s\" found under %s";
-		String msg = String.format(fmt, dataSet, docTypeDir.getPath());
-		throw new DwcaCreationException(msg);
-	}
-
-	/**
-	 * Returns an array if {@link IDataSetField} instances to be used to write
-	 * the CSV file contained within the DwC archive.
-	 * 
-	 * @param dsc
-	 * @return
-	 */
-	public static IDataSetField[] getFields(DataSetCollectionConfiguration dsc)
-	{
-		File confFile = getFieldsConfigFile(dsc);
-		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
-		FieldConfigurator configurator = new FieldConfigurator(dsc.getDocumentType(), fieldFactory);
-		return configurator.getFields(confFile);
 	}
 
 	/**
@@ -276,7 +215,7 @@ public class DwcaUtil {
 		return new DwcaCreationException("Directory not found: " + f.getPath());
 	}
 
-	static List<Field> getMetaXmlFieldElements(DataSetEntity entity)
+	static List<Field> getMetaXmlFieldElements(EntityConfiguration entity)
 	{
 		IDataSetField[] fields = entity.getFields();
 		String base = "http://rs.tdwg.org/dwc/terms/";

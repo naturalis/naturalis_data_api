@@ -4,17 +4,15 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
- * A {@code DataSetEntity} is a file that is part of {@link DataSetConfiguration data set}.
- * For example, DwC archives may contain multiple CSV files, each containing a
- * different type of data (e.g. taxa, literature references, vernacular names,
- * etc.). As with the {@link DataSetConfiguration} and {@link DataSetCollectionConfiguration} classes,
- * this class only provides <i>meta data</i> about a data set collection. It is
- * not concerned with the data itself.
+ * An {@code EntityConfiguration} specifies how to generate one particular file
+ * in a data set. For example, DwC archives may contain multiple CSV files, each
+ * containing a different type of data (e.g. taxa, literature references,
+ * vernacular names, etc.).
  * 
  * @author Ayco Holleman
  *
  */
-public class DataSetEntity {
+public class EntityConfiguration {
 
 	private String name;
 	private IDataSetField[] fields;
@@ -22,11 +20,11 @@ public class DataSetEntity {
 	private String[] pathToEntity;
 	private QuerySpec querySpec;
 
-	public DataSetEntity()
+	public EntityConfiguration()
 	{
 	}
 
-	public DataSetEntity(String name)
+	public EntityConfiguration(String name)
 	{
 		this.name = name;
 	}

@@ -2,11 +2,7 @@ package nl.naturalis.nba.dao.es.format.dwca;
 
 import static nl.naturalis.nba.dao.es.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getCsvFileName;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getEmlFile;
-import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getFields;
-//import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getMetaXmlGenerator;
-import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getQuerySpec;
 import static org.elasticsearch.search.sort.SortParseElement.DOC_FIELD_NAME;
 
 import java.io.File;
@@ -20,20 +16,14 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.IOUtil;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollRequestBuilder;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
-import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
 
 /**
@@ -75,16 +65,16 @@ public class DwcaWriter {
 	 */
 	public void processPredefinedQuery(String dataSet) throws InvalidQueryException
 	{
-		logger.debug("Configuring DwCA writer for data set \"{}\"", dataSet);
-		IDataSetField[] fields = getFields(dsc);
-		logger.debug("Writing meta.xml");
-		writeMetaXml(zos, fields);
-		logger.debug("Writing eml.xml");
-		writeEmlXml(zos, dataSet);
-		logger.debug("Loading query specification for data set \"{}\"", dataSet);
-		QuerySpec querySpec = getQuerySpec(dsc, dataSet);
-		logger.debug("Writing CSV payload");
-		writeCsv(querySpec, fields, zos);
+//		logger.debug("Configuring DwCA writer for data set \"{}\"", dataSet);
+//		IDataSetField[] fields = getFields(dsc);
+//		logger.debug("Writing meta.xml");
+//		writeMetaXml(zos, fields);
+//		logger.debug("Writing eml.xml");
+//		writeEmlXml(zos, dataSet);
+//		logger.debug("Loading query specification for data set \"{}\"", dataSet);
+//		QuerySpec querySpec = getQuerySpec(dsc, dataSet);
+//		logger.debug("Writing CSV payload");
+//		writeCsv(querySpec, fields, zos);
 	}
 
 	/**
@@ -96,17 +86,17 @@ public class DwcaWriter {
 	 */
 	public void processDynamicQuery(QuerySpec querySpec) throws InvalidQueryException
 	{
-		if (logger.isDebugEnabled()) {
-			String json = JsonUtil.toPrettyJson(querySpec, true);
-			logger.debug("Configuring DwCA writer for query:\n{}", json);
-		}
-		IDataSetField[] fields = getFields(dsc);
-		logger.debug("Writing meta.xml");
-		writeMetaXml(zos, fields);
-		logger.debug("Writing eml.xml");
-		writeEmlXml(zos, null);
-		logger.debug("Writing CSV payload");
-		writeCsv(querySpec, fields, zos);
+//		if (logger.isDebugEnabled()) {
+//			String json = JsonUtil.toPrettyJson(querySpec, true);
+//			logger.debug("Configuring DwCA writer for query:\n{}", json);
+//		}
+//		IDataSetField[] fields = getFields(dsc);
+//		logger.debug("Writing meta.xml");
+//		writeMetaXml(zos, fields);
+//		logger.debug("Writing eml.xml");
+//		writeEmlXml(zos, null);
+//		logger.debug("Writing CSV payload");
+//		writeCsv(querySpec, fields, zos);
 	}
 
 	private void writeMetaXml(ZipOutputStream zos, IDataSetField[] fields)

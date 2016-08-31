@@ -96,7 +96,7 @@ class FieldsParser {
 		this.entityConfigFile = entityConfigFile;
 	}
 
-	void parse(DataSetEntity dse, IDataSetFieldFactory fieldFactory)
+	void parse(EntityConfiguration dse, IDataSetFieldFactory fieldFactory)
 			throws EntityConfigurationException
 	{
 		LineNumberReader lnr = getLineNumberReader();
@@ -158,7 +158,7 @@ class FieldsParser {
 		}
 	}
 
-	private static void checkRelativePath(DataSetEntity dse, DocumentType<?> dt, String path)
+	private static void checkRelativePath(EntityConfiguration dse, DocumentType<?> dt, String path)
 			throws EntityConfigurationException
 	{
 		if (dse.getPathToEntity() == null) {

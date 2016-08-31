@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.findDataSetCollection;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getDocumentTypeDirectory;
 import static org.domainobject.util.FileUtil.containsFile;
 import static org.domainobject.util.FileUtil.getSubdirectories;
@@ -25,8 +24,6 @@ import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
-import nl.naturalis.nba.dao.es.format.dwca.DwcaWriter;
 import nl.naturalis.nba.dao.es.transfer.ITransferObject;
 import nl.naturalis.nba.dao.es.transfer.SpecimenTransferObject;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
@@ -111,17 +108,17 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	@Override
 	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
 	{
-		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
-		DwcaWriter writer = new DwcaWriter(dsc, out);
-		writer.processDynamicQuery(spec);
+//		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
+//		DwcaWriter writer = new DwcaWriter(dsc, out);
+//		writer.processDynamicQuery(spec);
 	}
 
 	@Override
 	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
 	{
-		DataSetCollectionConfiguration dsc = findDataSetCollection(SPECIMEN, name);
-		DwcaWriter writer = new DwcaWriter(dsc, out);
-		writer.processPredefinedQuery(name);
+//		DataSetCollectionConfiguration dsc = findDataSetCollection(SPECIMEN, name);
+//		DwcaWriter writer = new DwcaWriter(dsc, out);
+//		writer.processPredefinedQuery(name);
 	}
 
 	@Override

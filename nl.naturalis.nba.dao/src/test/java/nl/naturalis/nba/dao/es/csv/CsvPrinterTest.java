@@ -1,10 +1,5 @@
 package nl.naturalis.nba.dao.es.csv;
 
-import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
-import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,12 +9,6 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import nl.naturalis.nba.dao.es.format.FieldConfigurator;
-import nl.naturalis.nba.dao.es.format.IDataSetField;
-import nl.naturalis.nba.dao.es.format.IDataSetFieldFactory;
-import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
-import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
 
 public class CsvPrinterTest {
 

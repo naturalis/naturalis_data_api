@@ -36,13 +36,13 @@ class SettingsParser {
 		this.entityConfigFile = entityConfigFile;
 	}
 
-	void parse(DataSetEntity dse) throws EntityConfigurationException
+	void parse(EntityConfiguration dse) throws EntityConfigurationException
 	{
 		setDocumentType(dse);
 		setOtherSettings(dse);
 	}
 
-	private void setDocumentType(DataSetEntity dse) throws EntityConfigurationException
+	private void setDocumentType(EntityConfiguration dse) throws EntityConfigurationException
 	{
 		LineNumberReader lnr = getLineNumberReader();
 		try {
@@ -76,7 +76,7 @@ class SettingsParser {
 		}
 	}
 
-	void setOtherSettings(DataSetEntity dse) throws EntityConfigurationException
+	void setOtherSettings(EntityConfiguration dse) throws EntityConfigurationException
 	{
 		LineNumberReader lnr = getLineNumberReader();
 		try {
@@ -111,7 +111,7 @@ class SettingsParser {
 		}
 	}
 
-	private static void setPathToEntity(DataSetEntity dse, String path) throws EntityConfigurationException
+	private static void setPathToEntity(EntityConfiguration dse, String path) throws EntityConfigurationException
 	{
 		if (path.length() == 0)
 			return;

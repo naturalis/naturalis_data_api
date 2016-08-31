@@ -1,17 +1,28 @@
 package nl.naturalis.nba.dao.es.format;
 
-import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.io.InputStream;
+import java.io.File;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
-public class FieldConfiguratorTest {
+public class FieldsParserTest {
+
+	@Test
+	public void testParse_01() throws EntityConfigurationException {
+		EntityConfiguration conf = new EntityConfiguration();
+		File file = new File("FieldsParserTest_testParse_01.entity.config");
+		FieldsParser parser = new FieldsParser(file);
+		parser.parse(conf, new CsvFieldFactory());
+		IDataSetField[] fields = conf.getFields();
+		assertEquals("01", 4, fields.length);
+		assertEquals("02", "id", fields[0].getName());
+		assertEquals("03", "scientificName", fields[1].getName());
+		assertEquals("04", "nomenclaturalCode", fields[2].getName());
+		assertEquals("05", "verbatimEventDate", fields[3].getName());
+	}
 
 //	@Test
 //	public void testGetFields_01()

@@ -13,8 +13,8 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
  * for all data sets in that collection these files contain the same fields. You
  * can get hold of a {@code DataSetCollectionConfiguration} instance by using a
  * {@link DataSetCollectionConfigurationBuilder}. However, the configuration a
- * data set shares with other data sets (i.e. the collection configuration) is
- * implicitly retrieved when using a {@link DataSetConfigurationBuilder}.
+ * data set shares with other data sets is implicitly retrieved when using a
+ * {@link DataSetConfigurationBuilder}.
  * 
  * @author Ayco Holleman
  *

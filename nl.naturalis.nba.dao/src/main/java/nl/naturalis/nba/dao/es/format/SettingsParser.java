@@ -18,16 +18,14 @@ import nl.naturalis.nba.dao.es.map.MappingInfo;
 import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 /**
- * Parses those lines in an entity configuration file (wrapped into a
- * {@link LineNumberReader} that specify general configuration settings (rather
- * than fields).
+ * Parses an entity configuration file and extracts the general settings from
+ * it.
  * 
  * @author Ayco Holleman
- *
  */
 class SettingsParser {
 
-	static final char SETTING_START_CHAR = '&';
+	static final char SETTING_START_CHAR = '@';
 
 	private File entityConfigFile;
 
@@ -111,7 +109,8 @@ class SettingsParser {
 		}
 	}
 
-	private static void setPathToEntity(EntityConfiguration dse, String path) throws EntityConfigurationException
+	private static void setPathToEntity(EntityConfiguration dse, String path)
+			throws EntityConfigurationException
 	{
 		if (path.length() == 0)
 			return;

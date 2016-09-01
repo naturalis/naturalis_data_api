@@ -1,1 +1,0 @@
-xjc -d ../../java -p nl.naturalis.jaxb.dwca http://rs.tdwg.org/dwc/text/tdwg_dwc_text.xsd 

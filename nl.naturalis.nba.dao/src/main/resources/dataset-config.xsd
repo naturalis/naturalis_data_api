@@ -1,0 +1,90 @@
+<xs:schema targetNamespace="http://data.naturalis.nl/nba-dataset-config"
+	elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:self="http://data.naturalis.nl/nba-dataset-config" version="1.0"
+>
+
+	<xs:element name="dataset-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="source" type="xs:string" minOccurs="0" />
+				<xs:element name="entity" type="xs:string" maxOccurs="unbounded" />
+				<xs:element name="dataset" type="xs:string" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="DataSet">
+		<xs:sequence>
+			<xs:element name="query-spec" type="self:XMLQuerySpec" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="Entity">
+		<xs:sequence>
+			<xs:element name="document" type="xs:string" minOccurs="0" />
+			<xs:element name="entity-object" type="xs:string" minOccurs="0" />
+			<xs:element name="query-spec" type="self:XMLQuerySpec" minOccurs="0" />
+			<xs:element name="field" type="self:Field" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="Field">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+			<xs:choice>
+				<xs:element name="path" type="self:Path" />
+				<xs:element name="constant" type="xs:string" />
+				<xs:element name="calculator" type="self:Calculator" />
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Path">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="relative" type="xs:boolean" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="Calculator">
+		<xs:sequence>
+			<xs:element name="java-class" type="xs:string" />
+			<xs:element name="arg" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="XMLQuerySpec">
+		<xs:sequence>
+			<xs:element name="conditions" type="self:Condition" maxOccurs="unbounded" />
+			<xs:element name="sort-fields" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="from" type="xs:integer" minOccurs="0" />
+			<xs:element name="size" type="xs:integer" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Conditions">
+		<xs:sequence>
+			<xs:element name="condition" type="self:Condition" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="operator" type="self:LogicalOperator" />
+	</xs:complexType>
+
+	<xs:simpleType name="LogicalOperator" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AND" />
+			<xs:enumeration value="OR" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="Condition">
+		<xs:sequence>
+			<xs:element name="field" type="xs:string" />
+			<xs:element name="operator" type="xs:string" />
+			<xs:element name="value" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

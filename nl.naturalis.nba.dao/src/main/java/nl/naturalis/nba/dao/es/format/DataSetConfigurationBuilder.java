@@ -1,16 +1,21 @@
 package nl.naturalis.nba.dao.es.format;
 
-import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
-import static org.domainobject.util.FileUtil.newFile;
-import static org.domainobject.util.FileUtil.newFileInputStream;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.dao.es.format.config.DataSetCollectionConfig;
+import nl.naturalis.nba.dao.es.format.config.DataSetConfig;
 
 /**
  * A builder for {@link DataSetConfiguration} instances.
@@ -23,76 +28,61 @@ public class DataSetConfigurationBuilder {
 	private static Logger logger = LogManager.getLogger(DataSetConfigurationBuilder.class);
 
 	private String name;
-	private File root;
+	private File configFile;
 	private IDataSetFieldFactory fieldFactory;
 
 	/**
 	 * Sets the name of the data set.
 	 */
-	public DataSetConfigurationBuilder dataSetName(String name)
+	public DataSetConfigurationBuilder(String name, File configFile,
+			IDataSetFieldFactory fieldFactory)
 	{
 		this.name = name;
-		return this;
-	}
-
-	/**
-	 * Sets the root directory for the directory for the data set. This usually
-	 * is the "grandparent" directory of the data set's
-	 * {@link DataSetConfiguration#getHome() home directory}, but it could be
-	 * the parent directory. See
-	 * {@link DataSetCollectionConfigurationBuilder#forDataSet(String, File)
-	 * here} for a detailed explanation.
-	 */
-	public DataSetConfigurationBuilder rootDirectory(File rootDir)
-	{
-		this.root = rootDir;
-		return this;
-	}
-
-	/**
-	 * Sets an {@link IDataSetFieldFactory} implementation to use when
-	 * configuring the data set's {@link EntityConfiguration entities}.
-	 */
-	public DataSetConfigurationBuilder fieldFactory(IDataSetFieldFactory fieldFactory)
-	{
+		this.configFile = configFile;
 		this.fieldFactory = fieldFactory;
-		return this;
 	}
 
-	public DataSetConfiguration build() throws DataSetConfigurationException
+	public void build() throws DataSetConfigurationException
 	{
-		// TODO: check instance vars not null
-		DataSetCollectionConfigurationBuilder dsccfb;
-		dsccfb = DataSetCollectionConfigurationBuilder.forDataSet(name, root);
-		DataSetCollectionConfiguration dscc;
-		dscc = dsccfb.build(fieldFactory);
-		DataSetConfiguration dataSetConfig = new DataSetConfiguration();
-		dataSetConfig.setCollectionConfiguration(dscc);
-		File home;
-		if (dscc.getName().equals(name)) {
-			/* Then we have a collection with just one data set */
-			home = dscc.getHome();
+		if (!configFile.isFile()) {
+			String msg = "Missing configuration file " + configFile.getPath();
+			throw new DataSetConfigurationException(msg);
 		}
-		else {
-			/*
-			 * The data set's home directory is a subdirectory of the
-			 * collection's home directory
-			 */
-			home = newFile(dscc.getHome(), name);
+		JAXBContext ctx;
+		try {
+			ctx = JAXBContext.newInstance(DataSetCollectionConfig.class);
+			Unmarshaller unmarshaller = ctx.createUnmarshaller();
+			DataSetCollectionConfig xmlConfig;
+			xmlConfig = (DataSetCollectionConfig) unmarshaller.unmarshal(configFile);
+			DataSetConfig xmlDataSet = null;
+			for (DataSetConfig dsc : xmlConfig.getDataset()) {
+				if (dsc.getName().equals(name)) {
+					if (xmlDataSet != null)
+						throw duplicateDataSet();
+					xmlDataSet = dsc;
+					break;
+				}
+			}
+			if (xmlDataSet == null)
+				throw noSuchDataSet();
+			
 		}
-		dataSetConfig.setHome(home);
-		dataSetConfig.setQuerySpec(getQuerySpec(home));
-		return dataSetConfig;
+		catch (JAXBException e) {
+			throw new DataSetConfigurationException(e);
+		}
 	}
 
-	private QuerySpec getQuerySpec(File home)
+	private DataSetConfigurationException duplicateDataSet()
 	{
-		File f = newFile(home, "queryspec.json");
-		if (!f.isFile()) {
-			logger.warn("Missing query specification (queryspec.json) for data set {}", name);
-			return null;
-		}
-		InputStream is = newFileInputStream(f);
-		return deserialize(is, QuerySpec.class);
+		String fmt = "Duplicate data set \"%s\" found in %s";
+		String msg = String.format(fmt, name, configFile.getPath());
+		return new DataSetConfigurationException(msg);
+	}
+
+	private NoSuchDataSetException noSuchDataSet()
+	{
+		String fmt = "Missing configuration for data set \"%s\" in %s";
+		String msg = String.format(fmt, name, configFile.getPath());
+		return new NoSuchDataSetException(msg);
 	}
 }

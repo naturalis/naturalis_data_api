@@ -3,45 +3,46 @@
 	xmlns:self="http://data.naturalis.nl/nba-dataset-config" version="1.0"
 >
 
-	<xs:element name="dataset-config">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="source" type="xs:string" minOccurs="0" />
-				<xs:element name="entity" type="xs:string" maxOccurs="unbounded" />
-				<xs:element name="dataset" type="xs:string" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<!-- All types have a "Config" suffix to avoid name clashes. -->
 
-	<xs:complexType name="DataSet">
+	<!-- Annotate JAB class with @XmlRootElement(name = "dataset-config") !!! -->
+	<xs:complexType name="DataSetCollectionConfig">
 		<xs:sequence>
-			<xs:element name="query-spec" type="self:XMLQuerySpec" minOccurs="0" />
+			<xs:element name="source" type="xs:string" minOccurs="0" />
+			<xs:element name="entity" type="self:EntityConfig" maxOccurs="unbounded" />
+			<xs:element name="dataset" type="self:DataSetConfig" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="DataSetConfig">
+		<xs:sequence>
+			<xs:element name="query-spec" type="self:QuerySpecConfig" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="Entity">
+	<xs:complexType name="EntityConfig">
 		<xs:sequence>
 			<xs:element name="document" type="xs:string" minOccurs="0" />
 			<xs:element name="entity-object" type="xs:string" minOccurs="0" />
-			<xs:element name="query-spec" type="self:XMLQuerySpec" minOccurs="0" />
-			<xs:element name="field" type="self:Field" minOccurs="1" maxOccurs="unbounded" />
+			<xs:element name="query-spec" type="self:QuerySpecConfig" minOccurs="0" />
+			<xs:element name="field" type="self:FieldConfig" minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="Field">
+	<xs:complexType name="FieldConfig">
 		<xs:sequence>
 			<xs:element name="name" type="xs:string" />
 			<xs:choice>
-				<xs:element name="path" type="self:Path" />
+				<xs:element name="path" type="self:PathConfig" />
 				<xs:element name="constant" type="xs:string" />
-				<xs:element name="calculator" type="self:Calculator" />
+				<xs:element name="calculator" type="self:CalculatorConfig" />
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="Path">
+	<xs:complexType name="PathConfig">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="relative" type="xs:boolean" />
@@ -49,37 +50,37 @@
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:complexType name="Calculator">
+	<xs:complexType name="CalculatorConfig">
 		<xs:sequence>
 			<xs:element name="java-class" type="xs:string" />
 			<xs:element name="arg" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="XMLQuerySpec">
+	<xs:complexType name="QuerySpecConfig">
 		<xs:sequence>
-			<xs:element name="conditions" type="self:Condition" maxOccurs="unbounded" />
+			<xs:element name="conditions" type="self:ConditionsConfig" maxOccurs="unbounded" />
 			<xs:element name="sort-fields" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="from" type="xs:integer" minOccurs="0" />
 			<xs:element name="size" type="xs:integer" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="Conditions">
+	<xs:complexType name="ConditionsConfig">
 		<xs:sequence>
-			<xs:element name="condition" type="self:Condition" maxOccurs="unbounded" />
+			<xs:element name="condition" type="self:ConditionConfig" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute name="operator" type="self:LogicalOperator" />
+		<xs:attribute name="operator" type="self:LogicalOperatorConfig" />
 	</xs:complexType>
 
-	<xs:simpleType name="LogicalOperator" final="restriction">
+	<xs:simpleType name="LogicalOperatorConfig" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="AND" />
 			<xs:enumeration value="OR" />
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="Condition">
+	<xs:complexType name="ConditionConfig">
 		<xs:sequence>
 			<xs:element name="field" type="xs:string" />
 			<xs:element name="operator" type="xs:string" />

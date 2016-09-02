@@ -14,7 +14,7 @@ import nl.naturalis.nba.dao.es.format.config.SortFieldXmlConfig;
 
 class QuerySpecBuilder {
 
-	private static String ERR_NOT_AN_INTEGER = "<%s> element must contain an integer";
+	private static String ERR_NOT_AN_INTEGER = "Element <%s> must contain an integer";
 
 	private QuerySpecXmlConfig config;
 
@@ -26,28 +26,38 @@ class QuerySpecBuilder {
 	QuerySpec build() throws DataSetConfigurationException
 	{
 		QuerySpec querySpec = new QuerySpec();
+		querySpec.setFrom(getFrom());
+		querySpec.setSize(getSize());
+		querySpec.setConditions(getConditions());
+		querySpec.setLogicalOperator(getLogicalOperator());
+		querySpec.setSortFields(getSortFields());
+		return querySpec;
+	}
+
+	private int getFrom() throws DataSetConfigurationException
+	{
+		if (config.getFrom() == null)
+			return 0;
 		try {
-			querySpec.setFrom(config.getFrom());
+			return Integer.parseInt(config.getFrom());
 		}
 		catch (NumberFormatException e) {
 			String msg = String.format(ERR_NOT_AN_INTEGER, "from");
 			throw new DataSetConfigurationException(msg);
 		}
+	}
+
+	private int getSize() throws DataSetConfigurationException
+	{
+		if (config.getSize() == null)
+			return 0;
 		try {
-			querySpec.setSize(config.getSize());
+			return Integer.parseInt(config.getSize());
 		}
 		catch (NumberFormatException e) {
 			String msg = String.format(ERR_NOT_AN_INTEGER, "size");
 			throw new DataSetConfigurationException(msg);
 		}
-		ConditionsXmlConfig cxcs = config.getConditions();
-		if (cxcs.getOperator() != null) {
-			String name = cxcs.getOperator().name();
-			querySpec.setLogicalOperator(LogicalOperator.parse(name));
-		}
-		querySpec.setConditions(getConditions());
-		querySpec.setSortFields(getSortFields());
-		return querySpec;
 	}
 
 	private List<Condition> getConditions() throws DataSetConfigurationException
@@ -60,9 +70,18 @@ class QuerySpecBuilder {
 		return conditions;
 	}
 
+	private LogicalOperator getLogicalOperator()
+	{
+		ConditionsXmlConfig cxcs = config.getConditions();
+		if (cxcs.getOperator() == null)
+			return null;
+		String name = cxcs.getOperator().name();
+		return LogicalOperator.parse(name);
+	}
+
 	private List<SortField> getSortFields()
 	{
-		if (config.getSortFields().size() == 0)
+		if (config.getSortFields().isEmpty())
 			return null;
 		List<SortField> sortFields = new ArrayList<>(config.getSortFields().size());
 		for (SortFieldXmlConfig sfxc : config.getSortFields()) {

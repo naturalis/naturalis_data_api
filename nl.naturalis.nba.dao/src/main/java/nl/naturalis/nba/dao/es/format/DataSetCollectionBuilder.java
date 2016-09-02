@@ -24,28 +24,22 @@ public class DataSetCollectionBuilder {
 
 	public DataSetCollection build() throws DataSetConfigurationException
 	{
-		if (!configFile.isFile()) {
-			String msg = "Missing configuration file " + configFile.getPath();
-			throw new DataSetConfigurationException(msg);
-		}
 		DataSetsXmlConfig root = parseConfigFile();
 		DataSetCollection collection = new DataSetCollection();
 		collection.setDocumentType(getDocumentType(root));
 		for (DataSetXmlConfig dsxc : root.getDatasets()) {
-			DataSetBuilder dsb = new DataSetBuilder(dsxc);
-			DataSet ds = dsb.build();
-			//collection.
+			collection.addDataSet(new DataSetBuilder(dsxc).build());
 		}
 		return collection;
 	}
 
-	private DocumentType<?> getDocumentType(DataSetsXmlConfig root) throws DataSetConfigurationException
+	private static DocumentType<?> getDocumentType(DataSetsXmlConfig root)
+			throws DataSetConfigurationException
 	{
 		if (root.getSource() == null)
 			return null;
 		try {
 			return DocumentType.forName(root.getSource());
-
 		}
 		catch (DaoException e) {
 			String msg = "Invalid value in <source> element. Please specify "
@@ -56,6 +50,10 @@ public class DataSetCollectionBuilder {
 
 	private DataSetsXmlConfig parseConfigFile() throws DataSetConfigurationException
 	{
+		if (!configFile.isFile()) {
+			String msg = "Missing configuration file " + configFile.getPath();
+			throw new DataSetConfigurationException(msg);
+		}
 		try {
 			JAXBContext ctx = JAXBContext.newInstance(DataSetsXmlConfig.class);
 			Unmarshaller unmarshaller = ctx.createUnmarshaller();

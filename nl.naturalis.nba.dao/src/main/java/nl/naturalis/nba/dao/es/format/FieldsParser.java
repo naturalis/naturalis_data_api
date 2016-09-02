@@ -99,13 +99,13 @@ class FieldsParser {
 	private static void checkRelativePath(Entity dse, DocumentType<?> dt, String path)
 			throws EntityConfigurationException
 	{
-		if (dse.getPathToEntity() == null) {
+		if (dse.getPath() == null) {
 			String fmt = "Relative path (%s) not allowed without specifying "
 					+ "an entity object. Forgot to include the %sentity setting?";
 			String msg = String.format(fmt, path, SETTING_START_CHAR);
 			throw new EntityConfigurationException(msg);
 		}
-		String entityPath = new Path(dse.getPathToEntity()).getPath();
+		String entityPath = new Path(dse.getPath()).getPath();
 		new Path(entityPath + path).validate(dt);
 	}
 

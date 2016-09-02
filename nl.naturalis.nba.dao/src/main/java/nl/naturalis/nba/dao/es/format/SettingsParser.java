@@ -115,7 +115,7 @@ class SettingsParser {
 		if (path.length() == 0)
 			return;
 		String[] pathElements = path.split("\\.");
-		dse.setPathToEntity(pathElements);
+		dse.setPath(pathElements);
 		if (dse.getDocumentType() != null) {
 			Mapping mapping = dse.getDocumentType().getMapping();
 			MappingInfo mappingInfo = new MappingInfo(mapping);

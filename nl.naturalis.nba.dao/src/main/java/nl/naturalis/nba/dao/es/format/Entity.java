@@ -8,6 +8,7 @@ import nl.naturalis.nba.dao.es.DocumentType;
  * in a data set. For example, DwC archives may contain multiple CSV files, each
  * containing a different type of data (e.g. taxa, literature references,
  * vernacular names, etc.). These files are referred to as entities.
+ * 
  * @author Ayco Holleman
  *
  */
@@ -16,16 +17,11 @@ public class Entity {
 	private String name;
 	private IDataSetField[] fields;
 	private DocumentType<?> documentType;
-	private String[] pathToEntity;
+	private String[] path;
 	private QuerySpec querySpec;
 
 	Entity()
 	{
-	}
-
-	Entity(String name)
-	{
-		this.name = name;
 	}
 
 	public String getName()
@@ -76,14 +72,14 @@ public class Entity {
 	 * 
 	 * @see EntityObject
 	 */
-	public String[] getPathToEntity()
+	public String[] getPath()
 	{
-		return pathToEntity;
+		return path;
 	}
 
-	void setPathToEntity(String[] path)
+	void setPath(String[] path)
 	{
-		this.pathToEntity = path;
+		this.path = path;
 	}
 
 	/**

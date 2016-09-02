@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.es.format;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.map.DocumentField;
@@ -79,7 +81,7 @@ public class Path {
 	public String[] getPathElements()
 	{
 		if (elements == null)
-			elements = path.split("\\.");
+			elements = split(path);
 		return elements;
 	}
 
@@ -92,6 +94,21 @@ public class Path {
 				list.add(e);
 		}
 		return list.toArray(new String[list.size()]);
+	}
+
+	public void appendPath(String path)
+	{
+		appendElements(split(path));
+	}
+
+	public void appendElements(String... elements)
+	{
+		int size = getPathElements().length + elements.length;
+		List<String> elems = new ArrayList<>(size);
+		elems.addAll(Arrays.asList(getPathElements()));
+		elems.addAll(Arrays.asList(elements));
+		path = null;
+		elements = elems.toArray(new String[elems.size()]);
 	}
 
 	public void validate(DocumentType<?> documentType) throws EntityConfigurationException
@@ -180,6 +197,11 @@ public class Path {
 		catch (NumberFormatException e) {
 			return false;
 		}
+	}
+
+	private static String[] split(String path)
+	{
+		return path.split("\\.");
 	}
 
 }

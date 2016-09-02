@@ -6,7 +6,7 @@ import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
-import nl.naturalis.nba.dao.es.format.Entity;
+import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class DocumentDateTimeField extends AbstractCsvField {
 
@@ -19,7 +19,7 @@ class DocumentDateTimeField extends AbstractCsvField {
 	}
 
 	@Override
-	public String getValue(Entity entity)
+	public String getValue(EntityObject entity)
 	{
 		Object value = readField(entity.getDocument(), path);
 		if (value == MISSING_VALUE)

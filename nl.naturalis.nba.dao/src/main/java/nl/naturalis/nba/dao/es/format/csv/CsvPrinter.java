@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
-import nl.naturalis.nba.dao.es.format.Entity;
+import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 /**
@@ -47,8 +47,8 @@ public class CsvPrinter {
 
 	public void printRecord(Map<String, Object> document)
 	{
-		List<Entity> records = flattener.flatten(document);
-		for (Entity record : records) {
+		List<EntityObject> records = flattener.flatten(document);
+		for (EntityObject record : records) {
 			for (int i = 0; i < fields.length; ++i) {
 				if (i != 0)
 					ps.print(',');

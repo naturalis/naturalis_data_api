@@ -18,7 +18,7 @@ import nl.naturalis.nba.dao.es.format.config.DataSetCollectionConfig;
 import nl.naturalis.nba.dao.es.format.config.DataSetConfig;
 
 /**
- * A builder for {@link DataSetConfiguration} instances.
+ * A builder for {@link DataSet} instances.
  * 
  * @author Ayco Holleman
  *
@@ -54,8 +54,8 @@ public class DataSetConfigurationBuilder {
 			Unmarshaller unmarshaller = ctx.createUnmarshaller();
 			DataSetCollectionConfig xmlConfig;
 			xmlConfig = (DataSetCollectionConfig) unmarshaller.unmarshal(configFile);
-			DataSetConfig xmlDataSet = null;
-			for (DataSetConfig dsc : xmlConfig.getDataset()) {
+			DataSet xmlDataSet = null;
+			for (DataSet dsc : xmlConfig.getDataset()) {
 				if (dsc.getName().equals(name)) {
 					if (xmlDataSet != null)
 						throw duplicateDataSet();

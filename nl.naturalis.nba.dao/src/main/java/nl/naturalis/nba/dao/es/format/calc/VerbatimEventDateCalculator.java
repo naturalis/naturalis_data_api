@@ -5,7 +5,7 @@ import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 
-import nl.naturalis.nba.dao.es.format.Entity;
+import nl.naturalis.nba.dao.es.format.EntityObject;
 
 /**
  * Generates a value for the &#46;verbatimEventDate&#46; field.
@@ -24,7 +24,7 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	}
 
 	@Override
-	public Object calculateValue(Entity entity)
+	public Object calculateValue(EntityObject entity)
 	{
 		Object obj0 = readField(entity.getData(), EVENT_DATE_BEGIN);
 		if (obj0 == MISSING_VALUE)

@@ -4,8 +4,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
-import nl.naturalis.nba.dao.es.format.EntityConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "core")
@@ -21,9 +21,9 @@ class TaxonCore extends Core {
 		this.files = new Files(LOCATION);
 	}
 
-	TaxonCore forDataSet(DataSetConfiguration ds)
+	TaxonCore forDataSet(DataSet ds)
 	{
-		EntityConfiguration entity = ds.getCollectionConfiguration().getEntityConfiguration("taxa");
+		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("taxa");
 		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
 		return this;
 	}

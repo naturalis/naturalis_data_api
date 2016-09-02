@@ -27,7 +27,7 @@ public class DocumentFlattener {
 	 * Creates a new {@code DocumentFlattener}.
 	 * 
 	 * @param pathToEntity
-	 *            The path to the {@link Entity entity object} within the
+	 *            The path to the {@link EntityObject entity object} within the
 	 *            document
 	 * @param entitiesPerDocument
 	 *            An estimate of the average number of entities per document
@@ -38,16 +38,16 @@ public class DocumentFlattener {
 		this.entitiesPerDocument = entitiesPerDocument;
 	}
 
-	public List<Entity> flatten(Map<String, Object> document)
+	public List<EntityObject> flatten(Map<String, Object> document)
 	{
-		List<Entity> entityNodes = new ArrayList<>(entitiesPerDocument);
-		Entity root = new Entity(document, null);
+		List<EntityObject> entityNodes = new ArrayList<>(entitiesPerDocument);
+		EntityObject root = new EntityObject(document, null);
 		flatten(root, pathToEntity, entityNodes);
 		return entityNodes;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void flatten(Entity node, String[] pathToEntity, List<Entity> entityNodes)
+	private static void flatten(EntityObject node, String[] pathToEntity, List<EntityObject> entityNodes)
 	{
 		if (pathToEntity.length == 0) {
 			entityNodes.add(node);
@@ -60,13 +60,13 @@ public class DocumentFlattener {
 		if (obj instanceof List) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
 			for (Map<String, Object> map : list) {
-				Entity child = new Entity(map, node);
+				EntityObject child = new EntityObject(map, node);
 				flatten(child, pathToEntity, entityNodes);
 			}
 		}
 		else {
 			Map<String, Object> map = (Map<String, Object>) obj;
-			Entity child = new Entity(map, node);
+			EntityObject child = new EntityObject(map, node);
 			flatten(child, pathToEntity, entityNodes);
 		}
 	}

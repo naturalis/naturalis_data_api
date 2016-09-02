@@ -4,8 +4,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
-import nl.naturalis.nba.dao.es.format.EntityConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "extension")
@@ -21,9 +21,9 @@ class TaxonVernacularNameExtension extends Extension {
 		this.files = new Files(LOCATION);
 	}
 
-	TaxonVernacularNameExtension forDataSet(DataSetConfiguration ds)
+	TaxonVernacularNameExtension forDataSet(DataSet ds)
 	{
-		EntityConfiguration entity = ds.getCollectionConfiguration().getEntityConfiguration("vernacular");
+		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("vernacular");
 		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
 		return this;
 	}

@@ -22,7 +22,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 import nl.naturalis.nba.dao.es.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
@@ -38,7 +38,7 @@ public class SpecimenArchiveWriter {
 	private static Logger logger = getLogger(SpecimenArchiveWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
-	private DataSetConfiguration ds;
+	private DataSet ds;
 	private ZipOutputStream zos;
 
 	/**
@@ -48,7 +48,7 @@ public class SpecimenArchiveWriter {
 	 * @param dsc
 	 * @param out
 	 */
-	public SpecimenArchiveWriter(DataSetConfiguration ds, ZipOutputStream zos)
+	public SpecimenArchiveWriter(DataSet ds, ZipOutputStream zos)
 	{
 		this.ds = ds;
 		this.zos = zos;

@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.es.format.calc;
 
 import java.util.Map;
 
-import nl.naturalis.nba.dao.es.format.Entity;
+import nl.naturalis.nba.dao.es.format.EntityObject;
 
 /**
  * An {@code ICalculator} is used to determine the value for a calculated field
@@ -23,6 +23,6 @@ public interface ICalculator {
 	 * @param esDocumentAsMap
 	 * @return
 	 */
-	Object calculateValue(Entity esDocumentAsMap);
+	Object calculateValue(EntityObject esDocumentAsMap);
 
 }

@@ -1,9 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
-import java.io.File;
-
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
  * Class capturing the information necessary to generate a data set. A data set
@@ -14,9 +11,29 @@ import nl.naturalis.nba.dao.es.DocumentType;
  * @author Ayco Holleman
  *
  */
-public class DataSetConfiguration {
+public class DataSet {
 
 	private String name;
 	private QuerySpec querySpec;
+
+	public String getName()
+	{
+		return name;
+	}
+
+	void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public QuerySpec getQuerySpec()
+	{
+		return querySpec;
+	}
+
+	void setQuerySpec(QuerySpec querySpec)
+	{
+		this.querySpec = querySpec;
+	}
 
 }

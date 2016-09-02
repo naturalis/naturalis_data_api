@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.es.format.csv;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
-import nl.naturalis.nba.dao.es.format.Entity;
+import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 class CalculatedField extends AbstractCsvField {
@@ -16,7 +16,7 @@ class CalculatedField extends AbstractCsvField {
 	}
 
 	@Override
-	public String getValue(Entity esDocumentAsMap)
+	public String getValue(EntityObject esDocumentAsMap)
 	{
 		Object val = calculator.calculateValue(esDocumentAsMap);
 		return escapeCsv(val.toString());

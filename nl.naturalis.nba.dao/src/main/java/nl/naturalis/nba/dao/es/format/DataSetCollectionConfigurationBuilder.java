@@ -111,11 +111,11 @@ public class DataSetCollectionConfigurationBuilder {
 			IDataSetFieldFactory fieldFactory) throws EntityConfigurationException
 	{
 		File[] configFiles = getEntityConfigFiles();
-		EntityConfiguration[] entities = new EntityConfiguration[configFiles.length];
+		Entity[] entities = new Entity[configFiles.length];
 		for (int i = 0; i < configFiles.length; i++) {
 			File file = configFiles[i];
 			String entityName = rchop(file.getName(), ENTITY_CONFIG_EXTENSION);
-			EntityConfiguration entity = new EntityConfiguration(entityName);
+			Entity entity = new Entity(entityName);
 			SettingsParser sp = new SettingsParser(file);
 			sp.parse(entity);
 			FieldsParser fp = new FieldsParser(file);

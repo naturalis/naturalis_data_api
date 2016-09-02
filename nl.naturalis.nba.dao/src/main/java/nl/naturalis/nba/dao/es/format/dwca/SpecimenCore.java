@@ -4,8 +4,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
-import nl.naturalis.nba.dao.es.format.EntityConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "core")
@@ -21,7 +21,7 @@ class SpecimenCore extends Core {
 		this.files = new Files(LOCATION);
 	}
 
-	SpecimenCore forDataSet(DataSetConfiguration ds)
+	SpecimenCore forDataSet(DataSet ds)
 	{
 //		EntityConfiguration entity = ds.getCollectionConfiguration().getEntity("occurrence");
 //		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);

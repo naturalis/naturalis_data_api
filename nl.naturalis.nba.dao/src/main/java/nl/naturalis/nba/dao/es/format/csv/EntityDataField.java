@@ -5,7 +5,7 @@ import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
-import nl.naturalis.nba.dao.es.format.Entity;
+import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class EntityDataField extends AbstractCsvField {
 
@@ -18,7 +18,7 @@ class EntityDataField extends AbstractCsvField {
 	}
 
 	@Override
-	public String getValue(Entity entity)
+	public String getValue(EntityObject entity)
 	{
 		Object value = readField(entity.getData(), path);
 		if (value == MISSING_VALUE)

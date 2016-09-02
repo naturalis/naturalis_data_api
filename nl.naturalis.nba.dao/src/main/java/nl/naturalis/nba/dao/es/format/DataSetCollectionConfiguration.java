@@ -6,10 +6,10 @@ import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 
 /**
- * A data set collection is a collection of {@link DataSetConfiguration data
+ * A data set collection is a collection of {@link DataSet data
  * sets} that, to a large degree, are configured the same. This class captures a
  * data set's shared configuration. For example, all data sets in a data set
- * collection are comprised of the same {@link EntityConfiguration files} and
+ * collection are comprised of the same {@link Entity files} and
  * for all data sets in that collection these files contain the same fields. You
  * can get hold of a {@code DataSetCollectionConfiguration} instance by using a
  * {@link DataSetCollectionConfigurationBuilder}. However, the configuration a
@@ -24,7 +24,7 @@ public class DataSetCollectionConfiguration {
 	private DocumentType<?> dt;
 	private String name;
 	private File home;
-	private EntityConfiguration[] entities;
+	private Entity[] entities;
 
 	DataSetCollectionConfiguration()
 	{
@@ -39,9 +39,9 @@ public class DataSetCollectionConfiguration {
 	/**
 	 * Returns the configuration for the specified entity.
 	 */
-	public EntityConfiguration getEntityConfiguration(String entityName)
+	public Entity getEntityConfiguration(String entityName)
 	{
-		for (EntityConfiguration entity : entities) {
+		for (Entity entity : entities) {
 			if (entity.getName().equals(entityName)) {
 				return entity;
 			}
@@ -70,7 +70,7 @@ public class DataSetCollectionConfiguration {
 	/**
 	 * Returns the name of this collection of data sets. In practice, the
 	 * returned value is used as (actually inferred from) the name of the parent
-	 * directory of a data set's {@link DataSetConfiguration#getHome() home
+	 * directory of a data set's {@link DataSet#getHome() home
 	 * directory}.
 	 * 
 	 * @return
@@ -100,15 +100,15 @@ public class DataSetCollectionConfiguration {
 	}
 
 	/**
-	 * Returns the {@link EntityConfiguration entities} that all data sets
+	 * Returns the {@link Entity entities} that all data sets
 	 * belonging to this collection are comprisedof.
 	 */
-	public EntityConfiguration[] getEntities()
+	public Entity[] getEntities()
 	{
 		return entities;
 	}
 
-	void setEntities(EntityConfiguration[] entities)
+	void setEntities(Entity[] entities)
 	{
 		this.entities = entities;
 	}

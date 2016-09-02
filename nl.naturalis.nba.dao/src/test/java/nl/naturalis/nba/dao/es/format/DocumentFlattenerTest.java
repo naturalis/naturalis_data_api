@@ -67,7 +67,7 @@ public class DocumentFlattenerTest {
 	public void testFlatten_01()
 	{
 		DocumentFlattener df = new DocumentFlattener(new String[0], 1);
-		List<Entity> records = df.flatten(taxon);
+		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
 		assertTrue("02", records.get(0).getData() == taxon);
 		assertTrue("03", records.get(0).getDocument() == taxon);
@@ -77,7 +77,7 @@ public class DocumentFlattenerTest {
 	public void testFlatten_02()
 	{
 		DocumentFlattener df = new DocumentFlattener(new String[] { "vernacularNames" }, 4);
-		List<Entity> records = df.flatten(taxon);
+		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 2, records.size());
 		assertTrue("02", records.get(0).getData() == vernacularName0);
 		assertTrue("03", records.get(1).getData() == vernacularName1);
@@ -89,7 +89,7 @@ public class DocumentFlattenerTest {
 	public void testFlatten_03()
 	{
 		DocumentFlattener df = new DocumentFlattener(new String[] { "acceptedName" }, 1);
-		List<Entity> records = df.flatten(taxon);
+		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
 		assertTrue("02", records.get(0).getData() == acceptedName);
 		assertTrue("03", records.get(0).getDocument() == taxon);
@@ -100,7 +100,7 @@ public class DocumentFlattenerTest {
 	{
 		DocumentFlattener df = new DocumentFlattener(
 				new String[] { "vernacularNames", "references" }, 4);
-		List<Entity> records = df.flatten(taxon);
+		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 4, records.size());
 		assertTrue("02", records.get(0).getData() == reference0);
 		assertTrue("03", records.get(1).getData() == reference1);

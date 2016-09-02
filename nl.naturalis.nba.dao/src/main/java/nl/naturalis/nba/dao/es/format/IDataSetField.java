@@ -53,6 +53,6 @@ public interface IDataSetField {
 	 * @param entity
 	 * @return
 	 */
-	String getValue(Entity entity);
+	String getValue(EntityObject entity);
 
 }

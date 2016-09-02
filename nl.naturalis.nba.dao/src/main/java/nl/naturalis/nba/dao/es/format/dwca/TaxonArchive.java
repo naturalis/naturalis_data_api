@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
-import nl.naturalis.nba.dao.es.format.EntityConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
@@ -20,23 +20,23 @@ class TaxonArchive extends Archive {
 		super();
 	}
 
-	TaxonArchive forDataSet(DataSetConfiguration dataSet)
+	TaxonArchive forDataSet(DataSet dataSet)
 	{
 		this.core = createCore(dataSet);
 		this.extensions = createExtensions(dataSet);
 		return this;
 	}
 
-	private static Core createCore(DataSetConfiguration dataSet)
+	private static Core createCore(DataSet dataSet)
 	{
 		return new TaxonCore().forDataSet(dataSet);
 	}
 
-	private static List<Extension> createExtensions(DataSetConfiguration ds)
+	private static List<Extension> createExtensions(DataSet ds)
 	{
-		EntityConfiguration[] entities = ds.getCollectionConfiguration().getEntities();
+		Entity[] entities = ds.getCollectionConfiguration().getEntities();
 		List<Extension> extensions = new ArrayList<>(entities.length - 1);
-		LOOP: for (EntityConfiguration entity : entities) {
+		LOOP: for (Entity entity : entities) {
 			switch (entity.getName()) {
 				case "taxa":
 					continue LOOP;

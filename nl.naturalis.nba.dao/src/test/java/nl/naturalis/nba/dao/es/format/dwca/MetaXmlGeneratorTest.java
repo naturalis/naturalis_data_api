@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import org.domainobject.util.FileUtil;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
 
 @SuppressWarnings("static-method")
 public class MetaXmlGeneratorTest {

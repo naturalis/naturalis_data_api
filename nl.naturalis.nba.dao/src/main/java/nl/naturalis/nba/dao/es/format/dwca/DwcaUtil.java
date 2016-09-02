@@ -20,7 +20,7 @@ import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetCollectionConfiguration;
-import nl.naturalis.nba.dao.es.format.EntityConfiguration;
+import nl.naturalis.nba.dao.es.format.Entity;
 import nl.naturalis.nba.dao.es.format.IDataSetField;
 
 /**
@@ -215,7 +215,7 @@ public class DwcaUtil {
 		return new DwcaCreationException("Directory not found: " + f.getPath());
 	}
 
-	static List<Field> getMetaXmlFieldElements(EntityConfiguration entity)
+	static List<Field> getMetaXmlFieldElements(Entity entity)
 	{
 		IDataSetField[] fields = entity.getFields();
 		String base = "http://rs.tdwg.org/dwc/terms/";

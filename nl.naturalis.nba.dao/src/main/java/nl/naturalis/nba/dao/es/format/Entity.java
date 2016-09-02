@@ -1,66 +1,106 @@
 package nl.naturalis.nba.dao.es.format;
 
-import java.util.Map;
-
-import nl.naturalis.nba.api.model.GatheringEvent;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
- * An entity object is the object within an Elasticsearch {@link DocumentType
- * document} that functions as the main entity for a {@link EntityConfiguration
- * file} within a data set. Suppose, for example, that you want to print out
- * specimen collector information, then the entity object would be the
- * {@link GatheringEvent#getGatheringPersons() gatheringPersons} object within
- * the {@link Specimen#getGatheringEvent() gatheringEvent} object within the
- * {@link DocumentType#SPECIMEN Specimen} document type. Since there may be
- * multiple collectors associated with a specimen, one specimen document may
- * yield multiple specimen collector records. The entity object may possibly be
- * the entire Elasticsearch document rather than any object nested within it
- * (e.g. if you wanted to print out specimen information).
- * 
- * See also {@link EntityConfiguration#getPathToEntity()}.
- * 
+ * An {@code EntityConfiguration} specifies how to generate one particular file
+ * in a data set. For example, DwC archives may contain multiple CSV files, each
+ * containing a different type of data (e.g. taxa, literature references,
+ * vernacular names, etc.). These files are referred to as entities.
  * @author Ayco Holleman
  *
  */
 public class Entity {
 
-	private Map<String, Object> data;
-	private Entity parent;
+	private String name;
+	private IDataSetField[] fields;
+	private DocumentType<?> documentType;
+	private String[] pathToEntity;
+	private QuerySpec querySpec;
 
-	Entity(Map<String, Object> data, Entity parent)
+	Entity()
 	{
-		this.data = data;
-		this.parent = parent;
+	}
+
+	Entity(String name)
+	{
+		this.name = name;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	void setName(String name)
+	{
+		this.name = name;
 	}
 
 	/**
-	 * Returns the entire document of which this entity object was part of. Even
-	 * though the records you write to a data set will mostly contain data from
-	 * the entity object, some data may need to come from the parent or
-	 * ancestors of the entity object. Hence this method.
+	 * Returns the fields to be included in the file.
 	 */
-	public Map<String, Object> getDocument()
+	public IDataSetField[] getFields()
 	{
-		if (parent == null)
-			return data;
-		Entity dn;
-		for (dn = parent; dn.parent != null; dn = dn.parent)
-			;
-		return dn.data;
+		return fields;
+	}
+
+	void setFields(IDataSetField[] fields)
+	{
+		this.fields = fields;
+	}
+
+	public DocumentType<?> getDocumentType()
+	{
+		return documentType;
+	}
+
+	void setDocumentType(DocumentType<?> documentType)
+	{
+		this.documentType = documentType;
 	}
 
 	/**
-	 * Returns the raw data of the entity object. The Map&lt;String, Object&gt;
-	 * that you get back (ordinarily) is the data source for a single record of
-	 * the data set. It can be queried using
-	 * {@link JsonUtil#readField(Map, String[])}.
+	 * Returns the path to the object within an Elasticsearch
+	 * {@link DocumentType} that is the basic unit for this
+	 * {@code DataSetEntity}. When writing CSV files, for example, this is the
+	 * object that gets turned into a CSV record. If the Elasticsearch document
+	 * contains an array of these objects, each one of them becomes a separate
+	 * CSV record. This object is referred to as the {@link EntityObject entity
+	 * object}. Data from the parent object must be regarded as enrichments, and
+	 * data from child objects must somehow be flattened to end up in the CSV
+	 * record. The entity object may possibly be the entire Elasticsearch
+	 * document rather than any object nested within it. In this case this
+	 * method will return {@code null}.
+	 * 
+	 * @see EntityObject
 	 */
-	public Map<String, Object> getData()
+	public String[] getPathToEntity()
 	{
-		return data;
+		return pathToEntity;
+	}
+
+	void setPathToEntity(String[] path)
+	{
+		this.pathToEntity = path;
+	}
+
+	/**
+	 * Returns the Elasticsearch query that provides the data for the file. This
+	 * allows for the possibility that different files within the same data set
+	 * get their data from different Elasticsearch queries. This possibility is
+	 * currently not made use of, however. Elasticsearch queries are specified
+	 * at the {@link DataSet} level.
+	 */
+	public QuerySpec getQuerySpec()
+	{
+		return querySpec;
+	}
+
+	void setQuerySpec(QuerySpec querySpec)
+	{
+		this.querySpec = querySpec;
 	}
 
 }

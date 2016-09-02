@@ -12,7 +12,7 @@ public class FieldsParserTest {
 
 	@Test
 	public void testParse_01() throws EntityConfigurationException {
-		EntityConfiguration conf = new EntityConfiguration();
+		Entity conf = new Entity();
 		File file = new File("FieldsParserTest_testParse_01.entity.config");
 		FieldsParser parser = new FieldsParser(file);
 		parser.parse(conf, new CsvFieldFactory());

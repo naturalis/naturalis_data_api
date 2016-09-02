@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import nl.naturalis.nba.dao.es.format.DataSetConfiguration;
+import nl.naturalis.nba.dao.es.format.DataSet;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
@@ -17,19 +17,19 @@ class SpecimenArchive extends Archive {
 		super();
 	}
 
-	SpecimenArchive forDataSet(DataSetConfiguration dataSet)
+	SpecimenArchive forDataSet(DataSet dataSet)
 	{
 		this.core = createCore(dataSet);
 		this.extensions = createExtensions(dataSet);
 		return this;
 	}
 
-	private static Core createCore(DataSetConfiguration dataSet)
+	private static Core createCore(DataSet dataSet)
 	{
 		return new SpecimenCore().forDataSet(dataSet);
 	}
 
-	private static List<Extension> createExtensions(DataSetConfiguration dataSet)
+	private static List<Extension> createExtensions(DataSet dataSet)
 	{
 		return null;
 	}

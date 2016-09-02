@@ -16,10 +16,10 @@ public interface IDataSetFieldFactory {
 
 	/**
 	 * Returns an {@link IDataSetField} instance that retrieves its value from a
-	 * field in the {@link Entity entity object}. document. The {@code name}
+	 * field in the {@link EntityObject entity object}. document. The {@code name}
 	 * argument specifies the name of the data set field. The {@code path}
 	 * argument specifies the path of the field <i>relative</i> to the entity
-	 * object. (See also {@link EntityConfiguration#getPathToEntity()}.) It must be specified
+	 * object. (See also {@link Entity#getPathToEntity()}.) It must be specified
 	 * as an array of path elements, with each element representing a
 	 * successively deeper level in the entity object.
 	 * 

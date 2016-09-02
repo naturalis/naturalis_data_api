@@ -3,46 +3,45 @@
 	xmlns:self="http://data.naturalis.nl/nba-dataset-config" version="1.0"
 >
 
-	<!-- All types have a "Config" suffix to avoid name clashes. -->
+	<!-- ANNOTATE XJC-GENERATED JAXB CLASS WITH @XmlRootElement(name = "dataset-config") !!! -->
+	<xs:complexType name="DataSetsXmlConfig">
+		<xs:sequence>
+			<!-- The default Elasticsearch document type to source the data for the data sets from -->
+			<xs:element name="source" type="xs:string" minOccurs="0" />
+			<xs:element name="entities" type="self:EntityXmlConfig" maxOccurs="unbounded" />
+			<xs:element name="datasets" type="self:DataSetXmlConfig" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
 
-	<!-- Annotate JAB class with @XmlRootElement(name = "dataset-config") !!! -->
-	<xs:complexType name="DataSetCollectionConfig">
+	<xs:complexType name="DataSetXmlConfig">
+		<xs:sequence>
+			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="EntityXmlConfig">
 		<xs:sequence>
 			<xs:element name="source" type="xs:string" minOccurs="0" />
-			<xs:element name="entity" type="self:EntityConfig" maxOccurs="unbounded" />
-			<xs:element name="dataset" type="self:DataSetConfig" maxOccurs="unbounded" />
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="DataSetConfig">
-		<xs:sequence>
-			<xs:element name="query-spec" type="self:QuerySpecConfig" minOccurs="0" />
-		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
-	</xs:complexType>
-
-	<xs:complexType name="EntityConfig">
-		<xs:sequence>
-			<xs:element name="document" type="xs:string" minOccurs="0" />
 			<xs:element name="entity-object" type="xs:string" minOccurs="0" />
-			<xs:element name="query-spec" type="self:QuerySpecConfig" minOccurs="0" />
-			<xs:element name="field" type="self:FieldConfig" minOccurs="1" maxOccurs="unbounded" />
+			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
+			<xs:element name="field" type="self:FieldXmlConfig" minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="FieldConfig">
+	<xs:complexType name="FieldXmlConfig">
 		<xs:sequence>
 			<xs:element name="name" type="xs:string" />
 			<xs:choice>
-				<xs:element name="path" type="self:PathConfig" />
+				<xs:element name="path" type="self:PathXmlConfig" />
 				<xs:element name="constant" type="xs:string" />
-				<xs:element name="calculator" type="self:CalculatorConfig" />
+				<xs:element name="calculator" type="self:CalculatorXmlConfig" />
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="PathConfig">
+	<xs:complexType name="PathXmlConfig">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="relative" type="xs:boolean" />
@@ -50,42 +49,66 @@
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:complexType name="CalculatorConfig">
+	<xs:complexType name="CalculatorArgXmlConfig">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="CalculatorXmlConfig">
 		<xs:sequence>
 			<xs:element name="java-class" type="xs:string" />
 			<xs:element name="arg" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="QuerySpecConfig">
+	<xs:complexType name="QuerySpecXmlConfig">
 		<xs:sequence>
-			<xs:element name="conditions" type="self:ConditionsConfig" maxOccurs="unbounded" />
-			<xs:element name="sort-fields" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="from" type="xs:integer" minOccurs="0" />
-			<xs:element name="size" type="xs:integer" minOccurs="0" />
+			<xs:element name="conditions" type="self:ConditionsXmlConfig" />
+			<xs:element name="sort-fields" type="self:SortFieldXmlConfig" minOccurs="0"
+				maxOccurs="unbounded" />
+			<!-- from and size are actually integers, but we don't want things to go wrong already during 
+				JAXB deserialization, because that would produce rather hard-to-trace number format exceptions. -->
+			<xs:element name="from" type="xs:string" minOccurs="0" />
+			<xs:element name="size" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="ConditionsConfig">
-		<xs:sequence>
-			<xs:element name="condition" type="self:ConditionConfig" maxOccurs="unbounded" />
-		</xs:sequence>
-		<xs:attribute name="operator" type="self:LogicalOperatorConfig" />
+	<xs:complexType name="SortFieldXmlConfig">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="ascending" type="xs:boolean" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:simpleType name="LogicalOperatorConfig" final="restriction">
+	<xs:complexType name="ConditionsXmlConfig">
+		<xs:sequence>
+			<xs:element name="condition" type="self:ConditionXmlConfig" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="operator" type="self:LogicalOperatorXmlConfig" />
+	</xs:complexType>
+
+	<xs:simpleType name="LogicalOperatorXmlConfig" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="AND" />
 			<xs:enumeration value="OR" />
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="ConditionConfig">
+	<xs:complexType name="ConditionXmlConfig">
 		<xs:sequence>
 			<xs:element name="field" type="xs:string" />
 			<xs:element name="operator" type="xs:string" />
 			<xs:element name="value" type="xs:string" />
+			<xs:element name="and" type="self:ConditionXmlConfig" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="or" type="self:ConditionXmlConfig" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xs:sequence>
+		<xs:attribute name="negated" type="xs:boolean" />
 	</xs:complexType>
 
 </xs:schema>

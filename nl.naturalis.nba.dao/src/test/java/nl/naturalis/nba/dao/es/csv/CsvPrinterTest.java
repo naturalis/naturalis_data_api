@@ -37,10 +37,10 @@ public class CsvPrinterTest {
 	@Test
 	public void testPrintHeader() throws UnsupportedEncodingException
 	{
-//		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
+//		ITypedFieldFactory fieldFactory = new CsvFieldFactory();
 //		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 //		InputStream is = getClass().getResourceAsStream("CsvPrinterTest_fields.config");
-//		IDataSetField[] fields = fc.getFields(is, "dummy");
+//		IField[] fields = fc.getFields(is, "dummy");
 //		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 //		CsvPrinter printer = new CsvPrinter(fields, out);
 //		printer.printHeader();
@@ -52,10 +52,10 @@ public class CsvPrinterTest {
 	@Test
 	public void testPrintRecord() throws UnsupportedEncodingException
 	{
-//		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
+//		ITypedFieldFactory fieldFactory = new CsvFieldFactory();
 //		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 //		InputStream is = getClass().getResourceAsStream("CsvPrinterTest_fields.config");
-//		IDataSetField[] fields = fc.getFields(is, "dummy");
+//		IField[] fields = fc.getFields(is, "dummy");
 //		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 //		CsvPrinter printer = new CsvPrinter(fields, out);
 //		printer.printRecord(specimen);

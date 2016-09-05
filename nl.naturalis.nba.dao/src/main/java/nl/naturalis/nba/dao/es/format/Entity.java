@@ -15,7 +15,7 @@ import nl.naturalis.nba.dao.es.DocumentType;
 public class Entity {
 
 	private String name;
-	private IDataSetField[] fields;
+	private IField[] fields;
 	private DocumentType<?> documentType;
 	private String[] path;
 	private QuerySpec querySpec;
@@ -37,12 +37,12 @@ public class Entity {
 	/**
 	 * Returns the fields to be included in the file.
 	 */
-	public IDataSetField[] getFields()
+	public IField[] getFields()
 	{
 		return fields;
 	}
 
-	void setFields(IDataSetField[] fields)
+	void setFields(IField[] fields)
 	{
 		this.fields = fields;
 	}

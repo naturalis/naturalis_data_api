@@ -14,9 +14,9 @@ import nl.naturalis.nba.dao.es.format.config.DataSetsXmlConfig;
 public class DataSetCollectionBuilder {
 
 	private File configFile;
-	private IDataSetFieldFactory fieldFactory;
+	private IFieldFactory fieldFactory;
 
-	public DataSetCollectionBuilder(File configFile, IDataSetFieldFactory fieldFactory)
+	public DataSetCollectionBuilder(File configFile, IFieldFactory fieldFactory)
 	{
 		this.configFile = configFile;
 		this.fieldFactory = fieldFactory;

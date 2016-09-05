@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.es.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
-import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
+import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
@@ -9,7 +9,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.MappingInfo;
 
 public class LikeConditionTranslator extends ConditionTranslator {
 

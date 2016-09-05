@@ -21,10 +21,10 @@ class TaxonVernacularNameExtension extends Extension {
 		this.files = new Files(LOCATION);
 	}
 
-	TaxonVernacularNameExtension forDataSet(DataSet ds)
-	{
-		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("vernacular");
-		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
-		return this;
-	}
+//	TaxonVernacularNameExtension forDataSet(DataSet ds)
+//	{
+//		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("vernacular");
+//		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
+//		return this;
+//	}
 }

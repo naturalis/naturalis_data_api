@@ -7,7 +7,7 @@ import java.util.Map;
 
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
 import nl.naturalis.nba.dao.es.format.EntityObject;
-import nl.naturalis.nba.dao.es.format.IDataSetField;
+import nl.naturalis.nba.dao.es.format.IField;
 
 /**
  * Prints CSV records using {@link Map} objects as input. These {@code Map}
@@ -19,11 +19,11 @@ import nl.naturalis.nba.dao.es.format.IDataSetField;
  */
 public class CsvPrinter {
 
-	private IDataSetField[] fields;
+	private IField[] fields;
 	private PrintStream ps;
 	private DocumentFlattener flattener;
 
-	public CsvPrinter(IDataSetField[] fields, DocumentFlattener flattener, OutputStream out)
+	public CsvPrinter(IField[] fields, DocumentFlattener flattener, OutputStream out)
 	{
 		this.fields = fields;
 		this.flattener = flattener;

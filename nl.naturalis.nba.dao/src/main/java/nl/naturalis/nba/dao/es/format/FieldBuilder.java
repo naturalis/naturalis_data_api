@@ -11,10 +11,10 @@ class FieldBuilder {
 	private FieldXmlConfig config;
 	private DocumentType<?> dt;
 	private String[] entityPath;
-	private IDataSetFieldFactory fieldFactory;
+	private ITypedFieldFactory fieldFactory;
 
 	FieldBuilder(FieldXmlConfig config, DocumentType<?> dt, String[] entityPath,
-			IDataSetFieldFactory fieldFactory)
+			ITypedFieldFactory fieldFactory)
 	{
 		this.config = config;
 		this.dt = dt;
@@ -22,14 +22,14 @@ class FieldBuilder {
 		this.fieldFactory = fieldFactory;
 	}
 
-	IDataSetField build() throws DataSetConfigurationException
+	IField build() throws DataSetConfigurationException
 	{
 		String name = config.getName();
 		if (name == null || name.trim().isEmpty()) {
 			String msg = "Missing or empty <name> element within <field> element";
 			throw new DataSetConfigurationException(msg);
 		}
-		IDataSetField field = null;
+		IField field = null;
 		if (config.getPath() != null) {
 			field = createDataField();
 		}
@@ -53,7 +53,7 @@ class FieldBuilder {
 		return field;
 	}
 
-	private IDataSetField createDataField() throws DataSetConfigurationException
+	private IField createDataField() throws DataSetConfigurationException
 	{
 		String field = config.getName();
 		String path = config.getPath().getValue();
@@ -69,12 +69,12 @@ class FieldBuilder {
 		return fieldFactory.createDocumentDataField(dt, field, split(path));
 	}
 
-	private IDataSetField createCalculatedField()
+	private IField createCalculatedField()
 	{
 		return null;
 	}
 
-	private IDataSetField createConstantField()
+	private IField createConstantField()
 	{
 		return null;
 	}

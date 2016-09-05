@@ -12,7 +12,7 @@ public class DwcaDataSetCollectionBuilderTest {
 //		assertEquals("01", "test-collection-01", dsc.getName());
 //		assertEquals("02", SPECIMEN, dsc.getDocumentType());
 //		assertEquals("03", 1, dsc.getEntities().length);
-//		IDataSetField[] fields = dsc.getEntities()[0].getFields();
+//		IField[] fields = dsc.getEntities()[0].getFields();
 //		assertEquals("04", 4, fields.length);
 //		assertEquals("05", "id", fields[0].getName());
 //		assertEquals("06", "scientificName", fields[1].getName());

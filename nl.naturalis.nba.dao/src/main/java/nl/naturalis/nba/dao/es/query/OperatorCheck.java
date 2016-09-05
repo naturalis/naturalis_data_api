@@ -1,13 +1,15 @@
 package nl.naturalis.nba.dao.es.query;
 
-import static nl.naturalis.nba.dao.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
-import static nl.naturalis.nba.dao.es.map.MultiField.LIKE_MULTIFIELD;
+import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
+import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
-import nl.naturalis.nba.dao.es.map.AnalyzableField;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
+import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.common.es.map.AnalyzableField;
+import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
 public class OperatorCheck {
 
@@ -20,16 +22,22 @@ public class OperatorCheck {
 		this.mappingInfo = mappingInfo;
 	}
 
-	public void execute() throws IllegalOperatorException
+	public void execute() throws InvalidConditionException
 	{
 		if (!ok()) {
 			throw new IllegalOperatorException(condition);
 		}
 	}
 
-	public boolean ok()
+	public boolean ok() throws InvalidConditionException
 	{
-		DocumentField field = (DocumentField) mappingInfo.getField(condition.getField());
+		DocumentField field;
+		try {
+			field = (DocumentField) mappingInfo.getField(condition.getField());
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidConditionException(e.getMessage());
+		}
 		switch (condition.getOperator()) {
 			case EQUALS:
 			case NOT_EQUALS:

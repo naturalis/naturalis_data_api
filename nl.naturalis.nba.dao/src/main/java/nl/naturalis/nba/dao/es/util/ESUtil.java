@@ -29,12 +29,12 @@ import org.elasticsearch.index.IndexNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.common.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.DaoRegistry;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.IndexInfo;
 import nl.naturalis.nba.dao.es.exception.DaoException;
-import nl.naturalis.nba.dao.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**

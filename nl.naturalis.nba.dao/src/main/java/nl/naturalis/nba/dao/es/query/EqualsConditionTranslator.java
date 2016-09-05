@@ -9,7 +9,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.MappingInfo;
 
 public class EqualsConditionTranslator extends ConditionTranslator {
 

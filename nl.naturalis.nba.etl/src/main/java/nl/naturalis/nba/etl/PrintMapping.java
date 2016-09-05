@@ -1,8 +1,8 @@
 package nl.naturalis.nba.etl;
 
-import nl.naturalis.nba.dao.es.map.Mapping;
-import nl.naturalis.nba.dao.es.map.MappingFactory;
-import nl.naturalis.nba.dao.es.map.MappingSerializer;
+import nl.naturalis.nba.common.es.map.Mapping;
+import nl.naturalis.nba.common.es.map.MappingFactory;
+import nl.naturalis.nba.common.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
 /**

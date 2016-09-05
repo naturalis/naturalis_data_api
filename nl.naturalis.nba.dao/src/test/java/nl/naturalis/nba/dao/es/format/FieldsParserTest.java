@@ -16,7 +16,7 @@ public class FieldsParserTest {
 		File file = new File("FieldsParserTest_testParse_01.entity.config");
 		FieldsParser parser = new FieldsParser(file);
 		parser.parse(conf, new CsvFieldFactory());
-		IDataSetField[] fields = conf.getFields();
+		IField[] fields = conf.getFields();
 		assertEquals("01", 4, fields.length);
 		assertEquals("02", "id", fields[0].getName());
 		assertEquals("03", "scientificName", fields[1].getName());
@@ -30,7 +30,7 @@ public class FieldsParserTest {
 //		FieldConfigurator fc = getConfigurator();
 //		String cfg = "EntityConfiguratorTest_testGetFields_01_fields.entity.config";
 //		InputStream is = getClass().getResourceAsStream(cfg);
-//		IDataSetField[] fields = fc.getFields(is, "dummy");
+//		IField[] fields = fc.getFields(is, "dummy");
 //		assertEquals("01", 4, fields.length);
 //		assertEquals("02", "id", fields[0].getName());
 //		assertEquals("03", "scientificName", fields[1].getName());
@@ -74,7 +74,7 @@ public class FieldsParserTest {
 //
 //	private static FieldConfigurator getConfigurator()
 //	{
-//		IDataSetFieldFactory fieldFactory = new CsvFieldFactory();
+//		ITypedFieldFactory fieldFactory = new CsvFieldFactory();
 //		FieldConfigurator fc = new FieldConfigurator(SPECIMEN, fieldFactory);
 //		return fc;
 //	}

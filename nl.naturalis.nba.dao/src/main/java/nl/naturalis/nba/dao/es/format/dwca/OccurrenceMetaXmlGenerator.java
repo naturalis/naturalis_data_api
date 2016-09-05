@@ -1,10 +1,10 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
-import nl.naturalis.nba.dao.es.format.IDataSetField;
+import nl.naturalis.nba.dao.es.format.IField;
 
 public class OccurrenceMetaXmlGenerator {
 
-//	public OccurrenceMetaXmlGenerator(IDataSetField[] fields)
+//	public OccurrenceMetaXmlGenerator(IField[] fields)
 //	{
 //		super(fields);
 //	}

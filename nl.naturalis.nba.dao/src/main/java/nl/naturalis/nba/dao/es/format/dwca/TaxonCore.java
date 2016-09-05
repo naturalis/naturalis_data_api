@@ -21,11 +21,11 @@ class TaxonCore extends Core {
 		this.files = new Files(LOCATION);
 	}
 
-	TaxonCore forDataSet(DataSet ds)
-	{
-		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("taxa");
-		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
-		return this;
-	}
+//	TaxonCore forDataSet(DataSet ds)
+//	{
+//		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("taxa");
+//		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
+//		return this;
+//	}
 
 }

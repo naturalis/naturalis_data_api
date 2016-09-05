@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.es.types;
 
-import nl.naturalis.nba.dao.es.map.Mapping;
-import nl.naturalis.nba.dao.es.map.MappingFactory;
+import nl.naturalis.nba.common.es.map.Mapping;
+import nl.naturalis.nba.common.es.map.MappingFactory;
 
 /**
  * Marker interface indicating that the implementing class represents an

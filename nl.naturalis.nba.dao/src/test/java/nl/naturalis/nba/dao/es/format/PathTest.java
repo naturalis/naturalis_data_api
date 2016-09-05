@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 @SuppressWarnings("static-method")
@@ -35,7 +36,7 @@ public class PathTest {
 		Path path = new Path("identifications.0.defaultClassification.kingdom");
 		String[] elements = new String[] { "identifications", "0", "defaultClassification",
 				"kingdom" };
-		assertTrue("01", Arrays.deepEquals(path.getPathElements(), elements));
+		assertTrue("01", Arrays.deepEquals(path.getElements(), elements));
 	}
 
 	@Test
@@ -43,7 +44,7 @@ public class PathTest {
 	{
 		Path path = new Path("identifications.defaultClassification.kingdom");
 		String[] elements = new String[] { "identifications", "defaultClassification", "kingdom" };
-		assertTrue("01", Arrays.deepEquals(path.getPurePathElements(), elements));
+		assertTrue("01", Arrays.deepEquals(path.getPureElements(), elements));
 	}
 
 	@Test
@@ -51,7 +52,7 @@ public class PathTest {
 	{
 		Path path = new Path("identifications.0.defaultClassification.kingdom");
 		String[] elements = new String[] { "identifications", "defaultClassification", "kingdom" };
-		assertTrue("01", Arrays.deepEquals(path.getPurePathElements(), elements));
+		assertTrue("01", Arrays.deepEquals(path.getPureElements(), elements));
 	}
 
 	@Test

@@ -1,15 +1,10 @@
 package nl.naturalis.nba.dao.es;
 
 import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.getDocumentTypeDirectory;
-import static org.domainobject.util.FileUtil.containsFile;
-import static org.domainobject.util.FileUtil.getSubdirectories;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
@@ -124,28 +119,29 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		File dir = getDocumentTypeDirectory(SPECIMEN);
-		ArrayList<String> names = new ArrayList<>(32);
-		for (File subdir : getSubdirectories(dir)) {
-			if (subdir.getName().equals("dynamic"))
-				continue; // Special directory for dynamic DwCA
-			if (!containsFile(subdir, "fields.config"))
-				continue; // Can't be a data set collection dir
-			File[] dataSetDirs = getSubdirectories(subdir);
-			if (dataSetDirs.length == 0) {
-				if (containsFile(subdir, "eml.xml")) {
-					names.add(subdir.getName());
-				}
-			}
-			else {
-				for (File dataSetDir : dataSetDirs) {
-					if (containsFile(dataSetDir, "eml.xml")) {
-						names.add(dataSetDir.getName());
-					}
-				}
-			}
-		}
-		return names.toArray(new String[names.size()]);
+		return null;
+//		File dir = getDocumentTypeDirectory(SPECIMEN);
+//		ArrayList<String> names = new ArrayList<>(32);
+//		for (File subdir : getSubdirectories(dir)) {
+//			if (subdir.getName().equals("dynamic"))
+//				continue; // Special directory for dynamic DwCA
+//			if (!containsFile(subdir, "fields.config"))
+//				continue; // Can't be a data set collection dir
+//			File[] dataSetDirs = getSubdirectories(subdir);
+//			if (dataSetDirs.length == 0) {
+//				if (containsFile(subdir, "eml.xml")) {
+//					names.add(subdir.getName());
+//				}
+//			}
+//			else {
+//				for (File dataSetDir : dataSetDirs) {
+//					if (containsFile(dataSetDir, "eml.xml")) {
+//						names.add(dataSetDir.getName());
+//					}
+//				}
+//			}
+//		}
+//		return names.toArray(new String[names.size()]);
 	}
 
 	@Override

@@ -11,10 +11,10 @@ import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
 class EntityBuilder {
 
 	private EntityXmlConfig config;
-	private IDataSetFieldFactory fieldFactory;
+	private ITypedFieldFactory fieldFactory;
 	private DocumentType<?> defaultDocumentType;
 
-	EntityBuilder(EntityXmlConfig config, IDataSetFieldFactory fieldFactory,
+	EntityBuilder(EntityXmlConfig config, ITypedFieldFactory fieldFactory,
 			DocumentType<?> defaultDocumentType)
 	{
 		this.config = config;
@@ -40,18 +40,18 @@ class EntityBuilder {
 		return entity;
 	}
 
-	private IDataSetField[] getFields() throws DataSetConfigurationException
+	private IField[] getFields() throws DataSetConfigurationException
 	{
 		if (config.getField().isEmpty()) {
 			String fmt = "Entity %s: at least one field required";
 			String msg = String.format(fmt, config.getName());
-			throw new EntityConfigurationException(msg);
+			throw new DataSetConfigurationException(msg);
 		}
 		DocumentType<?> documentType = getDocumentType();
 		if (documentType == null) {
 			documentType = defaultDocumentType;
 		}
-		List<IDataSetField> fields = new ArrayList<>(config.getField().size());
+		List<IField> fields = new ArrayList<>(config.getField().size());
 		FieldBuilder fb;
 		for (FieldXmlConfig fxc : config.getField()) {
 			fb = new FieldBuilder(fxc, documentType, getPath(), fieldFactory);

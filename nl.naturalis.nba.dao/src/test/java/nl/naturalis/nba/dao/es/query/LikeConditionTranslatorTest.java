@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.dao.es.map.Mapping;
-import nl.naturalis.nba.dao.es.map.MappingFactory;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.Mapping;
+import nl.naturalis.nba.common.es.map.MappingFactory;
+import nl.naturalis.nba.common.es.map.MappingInfo;
 
 @SuppressWarnings("static-method")
 public class LikeConditionTranslatorTest {

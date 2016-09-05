@@ -21,10 +21,10 @@ class TaxonReferenceExtension extends Extension {
 		this.files = new Files(LOCATION);
 	}
 
-	TaxonReferenceExtension forDataSet(DataSet ds)
-	{
-		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("reference");
-		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
-		return this;
-	}
+//	TaxonReferenceExtension forDataSet(DataSet ds)
+//	{
+//		Entity entity = ds.getCollectionConfiguration().getEntityConfiguration("reference");
+//		this.fields = DwcaUtil.getMetaXmlFieldElements(entity);
+//		return this;
+//	}
 }

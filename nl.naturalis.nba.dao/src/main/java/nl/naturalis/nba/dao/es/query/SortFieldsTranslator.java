@@ -11,11 +11,11 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.SortField;
+import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.ESField;
+import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.ESField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
-import nl.naturalis.nba.dao.es.map.NoSuchFieldException;
 
 public class SortFieldsTranslator {
 

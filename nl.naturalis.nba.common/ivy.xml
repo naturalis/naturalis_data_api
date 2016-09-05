@@ -11,6 +11,7 @@
 		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.5" />
 		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.5" />
 		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.7.4"/>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
 	</dependencies>
 	
 </ivy-module>

@@ -20,9 +20,10 @@ import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.map.DocumentField;
-import nl.naturalis.nba.dao.es.map.MappingInfo;
 
 /**
  * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
@@ -41,7 +42,7 @@ public abstract class ConditionTranslator {
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static QueryBuilder translate(QuerySpec qs, DocumentType type)
+	public static QueryBuilder translate(QuerySpec qs, DocumentType<?> type)
 			throws InvalidConditionException
 	{
 		List<Condition> conditions = qs.getConditions();
@@ -137,10 +138,16 @@ public abstract class ConditionTranslator {
 	 * specified in the condition.
 	 * 
 	 * @return
+	 * @throws InvalidConditionException 
 	 */
-	DocumentField field()
+	DocumentField field() throws InvalidConditionException
 	{
-		return (DocumentField) mappingInfo.getField(path());
+		try {
+			return (DocumentField) mappingInfo.getField(path());
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidConditionException(e.getMessage());
+		}
 	}
 
 	/**

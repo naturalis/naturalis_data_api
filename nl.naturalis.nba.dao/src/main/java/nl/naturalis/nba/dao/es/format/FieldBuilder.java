@@ -62,11 +62,21 @@ class FieldBuilder {
 				String fmt = "Relative path (%s) only allowed in combination "
 						+ "with non-empty <entity-object> element";
 				String msg = String.format(fmt, path);
-				throw new EntityConfigurationException(msg);
+				throw new DataSetConfigurationException(msg);
 			}
 			return fieldFactory.createEntityDataField(dt, field, split(path));
 		}
 		return fieldFactory.createDocumentDataField(dt, field, split(path));
+	}
+
+	private IDataSetField createCalculatedField()
+	{
+		return null;
+	}
+
+	private IDataSetField createConstantField()
+	{
+		return null;
 	}
 
 	private static ICalculator getCalculator(String name) throws DataSetConfigurationException
@@ -92,16 +102,6 @@ class FieldBuilder {
 		catch (InstantiationException | IllegalAccessException e) {
 			throw new DataSetConfigurationException(e);
 		}
-	}
-
-	private IDataSetField createCalculatedField()
-	{
-		return null;
-	}
-
-	private IDataSetField createConstantField()
-	{
-		return null;
 	}
 
 	private static String[] split(String path)

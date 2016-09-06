@@ -19,7 +19,7 @@ public class JsonUtilTest {
 	@Test
 	public void testDeserialize()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			Map<String, Object> map = JsonUtil.deserialize(is);
 			assertEquals("01", map.get("firstName"), "John");
 			assertEquals("02", map.get("lastName"), "Smith");
@@ -40,7 +40,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_01()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			String s = (String) JsonUtil.readField(is, "address.country.name");
 			assertEquals("01", "U.S.A", s);
 		}
@@ -52,7 +52,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_02()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			int i = (int) JsonUtil.readField(is, "address.number");
 			assertEquals("01", 1429, i);
 		}
@@ -64,7 +64,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_03()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			List<?> kids = (List<?>) JsonUtil.readField(is, "kids");
 			assertEquals("01", 3, kids.size());
 		}
@@ -76,7 +76,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_04()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			String kid = (String) JsonUtil.readField(is, "kids.0");
 			assertEquals("01", "Mary", kid);
 		}
@@ -88,7 +88,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_05()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			String kid = (String) JsonUtil.readField(is, "kids.1");
 			assertEquals("01", "Lisa", kid);
 		}
@@ -100,7 +100,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_06()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			String kid = (String) JsonUtil.readField(is, "kids.2");
 			assertEquals("01", "Junior", kid);
 		}
@@ -112,7 +112,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_07()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			Object value = JsonUtil.readField(is, "kids.3");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
@@ -124,7 +124,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_08()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			Object value =  JsonUtil.readField(is, "bla");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
@@ -136,7 +136,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_09()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			Object value =  JsonUtil.readField(is, "bla.0");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
@@ -148,7 +148,7 @@ public class JsonUtilTest {
 	@Test
 	public void testReadField_10()
 	{
-		try (InputStream is = JsonUtilTest.class.getResourceAsStream("/JsonUtilTest.json")) {
+		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
 			Object value =  JsonUtil.readField(is, "bla.bla");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}

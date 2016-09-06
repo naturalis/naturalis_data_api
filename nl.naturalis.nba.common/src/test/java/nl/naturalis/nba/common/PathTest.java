@@ -8,7 +8,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import nl.naturalis.nba.common.es.map.MappingFactory;
-import nl.naturalis.nba.dao.common.test.TestPerson;
+import nl.naturalis.nba.common.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class PathTest {

@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.dao.common.test.TestPerson;
+import nl.naturalis.nba.common.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class MappingInfoTest {

@@ -8,7 +8,7 @@ import org.junit.Test;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingSerializer;
-import nl.naturalis.nba.dao.common.test.TestPerson;
+import nl.naturalis.nba.common.test.TestPerson;
 
 public class MappingFactoryTest {
 

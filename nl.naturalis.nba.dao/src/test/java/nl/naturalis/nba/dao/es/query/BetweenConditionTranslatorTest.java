@@ -22,8 +22,8 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.common.test.Address;
-import nl.naturalis.nba.dao.common.test.TestPerson;
+import nl.naturalis.nba.common.test.Address;
+import nl.naturalis.nba.common.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class BetweenConditionTranslatorTest {

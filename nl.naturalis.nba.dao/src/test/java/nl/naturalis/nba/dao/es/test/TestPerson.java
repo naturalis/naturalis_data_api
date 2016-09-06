@@ -3,8 +3,8 @@ package nl.naturalis.nba.dao.es.test;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nba.dao.common.test.Address;
-import nl.naturalis.nba.dao.common.test.Pet;
+import nl.naturalis.nba.common.test.Address;
+import nl.naturalis.nba.common.test.Pet;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**

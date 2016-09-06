@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.common.test;
+package nl.naturalis.nba.common.test;
 
 import java.util.Date;
 import java.util.List;

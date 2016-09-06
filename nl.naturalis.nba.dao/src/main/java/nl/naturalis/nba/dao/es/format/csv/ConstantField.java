@@ -6,7 +6,7 @@ import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class ConstantField extends AbstractCsvField {
 
-	private String value;
+	private final String value;
 
 	ConstantField(String name, String value)
 	{
@@ -15,7 +15,7 @@ class ConstantField extends AbstractCsvField {
 	}
 
 	@Override
-	public String getValue(EntityObject esDocumentAsMap)
+	public String getValue(EntityObject entity)
 	{
 		return value;
 	}

@@ -6,24 +6,26 @@ import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
+import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class EntityDateTimeField extends AbstractCsvField {
 
 	private final String[] path;
 
-	EntityDateTimeField(String name, String[] path)
+	EntityDateTimeField(String name, Path path)
 	{
 		super(name);
-		this.path = path;
+		this.path = path.getElements();
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
 		Object value = readField(entity.getData(), path);
-		if (value == MISSING_VALUE)
+		if (value == MISSING_VALUE) {
 			return EMPTY_STRING;
+		}
 		return escapeCsv(formatDate(value.toString()));
 	}
 

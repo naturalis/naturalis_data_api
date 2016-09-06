@@ -5,6 +5,7 @@ import java.util.List;
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.dao.common.test.PetSpecies;
 
 public class Pet {
 

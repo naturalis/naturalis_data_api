@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.common.es.map.Mapping;
 
 public class DataSetCollection {
 
-	private DocumentType<?> documentType;
+	private Mapping source;
 	private Map<String, Entity> entities;
 	private Map<String, DataSet> dataSets;
 
@@ -18,14 +18,14 @@ public class DataSetCollection {
 		dataSets = new HashMap<>();
 	}
 
-	public DocumentType<?> getDocumentType()
+	public Mapping getSource()
 	{
-		return documentType;
+		return source;
 	}
 
-	void setDocumentType(DocumentType<?> documentType)
+	void setSource(Mapping source)
 	{
-		this.documentType = documentType;
+		this.source = source;
 	}
 
 	public DataSet[] getDataSets()

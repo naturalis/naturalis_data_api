@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.es.format;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.DocumentType;
 
-public interface ITypelessFieldFactory extends IFieldFactory {
+public interface IGenericFieldFactory extends IFieldFactory {
 
 	/**
 	 * Returns an {@link IField} instance that retrieves its value from a field

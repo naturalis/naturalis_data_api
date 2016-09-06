@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.test;
+package nl.naturalis.nba.dao.common.test;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;

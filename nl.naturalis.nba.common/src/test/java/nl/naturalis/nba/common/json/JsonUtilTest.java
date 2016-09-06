@@ -1,4 +1,4 @@
-package nl.naturalis.nba.common;
+package nl.naturalis.nba.common.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -30,7 +30,7 @@ public class JsonUtilTest {
 			Map<String, Object> address = (Map<String, Object>) map.get("address");
 			assertEquals("06", address.get("number"), 1429);
 			List<?> kids = (List<?>) map.get("kids");
-			assertEquals("06", 3, kids.size());
+			assertEquals("07", 3, kids.size());
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);

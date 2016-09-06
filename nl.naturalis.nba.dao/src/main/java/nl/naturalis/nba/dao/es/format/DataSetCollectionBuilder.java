@@ -6,46 +6,41 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.config.DataSetXmlConfig;
 import nl.naturalis.nba.dao.es.format.config.DataSetsXmlConfig;
+import nl.naturalis.nba.dao.es.format.config.EntityXmlConfig;
 
 public class DataSetCollectionBuilder {
 
 	private File configFile;
-	private IFieldFactory fieldFactory;
 
-	public DataSetCollectionBuilder(File configFile, IFieldFactory fieldFactory)
+	public DataSetCollectionBuilder(File configFile)
 	{
 		this.configFile = configFile;
-		this.fieldFactory = fieldFactory;
 	}
 
-	public DataSetCollection build() throws DataSetConfigurationException
-	{
-		DataSetsXmlConfig root = parseConfigFile();
-		DataSetCollection collection = new DataSetCollection();
-		collection.setDocumentType(getDocumentType(root));
-		for (DataSetXmlConfig dsxc : root.getDatasets()) {
-			collection.addDataSet(new DataSetBuilder(dsxc).build());
-		}
-		return collection;
-	}
-
-	private static DocumentType<?> getDocumentType(DataSetsXmlConfig root)
+	public DataSetCollection build(ITypedFieldFactory fieldFactory)
 			throws DataSetConfigurationException
 	{
-		if (root.getSource() == null)
-			return null;
-		try {
-			return DocumentType.forName(root.getSource());
+		DataSetsXmlConfig root = parseConfigFile();
+		Mapping source = ConfigUtil.getSource(root.getSource());
+		if (source == null) {
+			String msg = "You cannot use an ITypedFieldFactory for a generic data source";
+			// This really is a program error rather than a configuration error
+			throw new DaoException(msg);
 		}
-		catch (DaoException e) {
-			String msg = "Invalid value in <source> element. Please specify "
-					+ "a valid Elasticsearch document type";
-			throw new DataSetConfigurationException(msg);
+		DataSetCollection collection = new DataSetCollection();
+		collection.setSource(source);
+		for (DataSetXmlConfig dataSetConfig : root.getDatasets()) {
+			collection.addDataSet(new DataSetBuilder(dataSetConfig).build());
 		}
+		TypedEntityBuilder entityBuilder = new TypedEntityBuilder(fieldFactory, source);
+		for (EntityXmlConfig entityConfig : root.getEntities()) {
+			collection.addEntity(entityBuilder.build(entityConfig));
+		}
+		return collection;
 	}
 
 	private DataSetsXmlConfig parseConfigFile() throws DataSetConfigurationException

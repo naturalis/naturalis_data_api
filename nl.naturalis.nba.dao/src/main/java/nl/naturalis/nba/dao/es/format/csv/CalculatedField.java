@@ -16,9 +16,9 @@ class CalculatedField extends AbstractCsvField {
 	}
 
 	@Override
-	public String getValue(EntityObject esDocumentAsMap)
+	public String getValue(EntityObject entity)
 	{
-		Object val = calculator.calculateValue(esDocumentAsMap);
+		Object val = calculator.calculateValue(entity);
 		return escapeCsv(val.toString());
 	}
 

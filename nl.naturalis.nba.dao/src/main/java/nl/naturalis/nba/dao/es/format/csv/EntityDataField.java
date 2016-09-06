@@ -5,24 +5,26 @@ import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
+import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class EntityDataField extends AbstractCsvField {
 
-	private String[] path;
+	private final String[] path;
 
-	EntityDataField(String name, String[] path)
+	EntityDataField(String name, Path path)
 	{
 		super(name);
-		this.path = path;
+		this.path = path.getElements();
 	}
 
 	@Override
 	public String getValue(EntityObject entity)
 	{
 		Object value = readField(entity.getData(), path);
-		if (value == MISSING_VALUE)
+		if (value == MISSING_VALUE) {
 			return EMPTY_STRING;
+		}
 		return escapeCsv(value.toString());
 	}
 

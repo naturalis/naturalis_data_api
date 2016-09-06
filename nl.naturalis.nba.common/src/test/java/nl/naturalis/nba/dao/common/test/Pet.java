@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.test;
+package nl.naturalis.nba.dao.common.test;
 
 import java.util.List;
 

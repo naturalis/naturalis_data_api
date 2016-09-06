@@ -1,13 +1,14 @@
-package nl.naturalis.nba.dao.es.format;
+package nl.naturalis.nba.common;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.es.map.MappingFactory;
 
 @SuppressWarnings("static-method")
 public class PathTest {
@@ -31,7 +32,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testGetPathElements()
+	public void testGetElements()
 	{
 		Path path = new Path("identifications.0.defaultClassification.kingdom");
 		String[] elements = new String[] { "identifications", "0", "defaultClassification",
@@ -40,7 +41,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testGetPurePathElements_01()
+	public void testGetPureElements_01()
 	{
 		Path path = new Path("identifications.defaultClassification.kingdom");
 		String[] elements = new String[] { "identifications", "defaultClassification", "kingdom" };
@@ -48,7 +49,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testGetPurePathElements_02()
+	public void testGetPureElements_02()
 	{
 		Path path = new Path("identifications.0.defaultClassification.kingdom");
 		String[] elements = new String[] { "identifications", "defaultClassification", "kingdom" };
@@ -56,31 +57,34 @@ public class PathTest {
 	}
 
 	@Test
-	public void testValidate_01() throws EntityConfigurationException
+	public void testValidate_01() throws InvalidPathException
 	{
+		// Happy flow, no exception shouild be thrown
 		Path path = new Path("identifications.0.defaultClassification.kingdom");
-		path.validate(DocumentType.SPECIMEN);
-		// Should NOT get a EntityConfigurationException
+		path.validate(MappingFactory.getMapping(Specimen.class));
 	}
 
-	@Test(expected = EntityConfigurationException.class)
-	public void testValidate_02() throws EntityConfigurationException
+	@Test(expected = InvalidPathException.class)
+	public void testValidate_02() throws InvalidPathException 
 	{
+		// Missing array indix
 		Path path = new Path("identifications.defaultClassification.kingdom");
-		path.validate(DocumentType.SPECIMEN);
+		path.validate(MappingFactory.getMapping(Specimen.class));
 	}
 
-	@Test(expected = EntityConfigurationException.class)
-	public void testValidate_03() throws EntityConfigurationException
+	@Test(expected = InvalidPathException.class)
+	public void testValidate_03() throws InvalidPathException
 	{
+		// Illegal array index
 		Path path = new Path("identifications.defaultClassification.0.kingdom");
-		path.validate(DocumentType.SPECIMEN);
+		path.validate(MappingFactory.getMapping(Specimen.class));
 	}
 
-	@Test(expected = EntityConfigurationException.class)
-	public void testValidate_04() throws EntityConfigurationException
+	@Test(expected = InvalidPathException.class)
+	public void testValidate_04() throws InvalidPathException
 	{
-		Path path = new Path("identifications.0.defaultClassification.kingdom");
-		path.validate(DocumentType.TAXON);
+		// Happy flow, no exception shouild be thrown
+		Path path = new Path("identifications.0.systemClassification.1.rank");
+		path.validate(MappingFactory.getMapping(Specimen.class));
 	}
 }

@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.map;
+package nl.naturalis.nba.common.es.map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,7 +8,7 @@ import org.junit.Test;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingSerializer;
-import nl.naturalis.nba.dao.es.test.TestPerson;
+import nl.naturalis.nba.dao.common.test.TestPerson;
 
 public class MappingFactoryTest {
 

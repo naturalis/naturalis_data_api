@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.es.format;
 
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
@@ -16,14 +18,17 @@ public class Entity {
 
 	private String name;
 	private IField[] fields;
-	private DocumentType<?> documentType;
-	private String[] path;
+	private Mapping source;
+	private Path path;
 	private QuerySpec querySpec;
 
 	Entity()
 	{
 	}
 
+	/**
+	 * Returns the name of the entity.
+	 */
 	public String getName()
 	{
 		return name;
@@ -47,14 +52,14 @@ public class Entity {
 		this.fields = fields;
 	}
 
-	public DocumentType<?> getDocumentType()
+	public Mapping getSource()
 	{
-		return documentType;
+		return source;
 	}
 
-	void setDocumentType(DocumentType<?> documentType)
+	void setSource(Mapping mapping)
 	{
-		this.documentType = documentType;
+		this.source = mapping;
 	}
 
 	/**
@@ -72,12 +77,12 @@ public class Entity {
 	 * 
 	 * @see EntityObject
 	 */
-	public String[] getPath()
+	public Path getPath()
 	{
 		return path;
 	}
 
-	void setPath(String[] path)
+	void setPath(Path path)
 	{
 		this.path = path;
 	}

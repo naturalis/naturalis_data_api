@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.es.map;
+package nl.naturalis.nba.common.es.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,7 +19,7 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
-import nl.naturalis.nba.dao.es.test.TestPerson;
+import nl.naturalis.nba.dao.common.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class MappingInfoTest {

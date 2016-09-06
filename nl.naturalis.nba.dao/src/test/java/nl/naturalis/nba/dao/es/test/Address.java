@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.es.test;
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.dao.common.test.Country;
 
 /**
  * A simple class that can be used to create test objects.

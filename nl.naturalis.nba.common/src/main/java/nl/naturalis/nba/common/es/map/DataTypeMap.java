@@ -77,6 +77,15 @@ public class DataTypeMap {
 	}
 
 	/**
+	 * Whether or not the specified Java type maps to a primitive Elasticsearch
+	 * type (any type other than &#46;object&#46; and &#46;nested&#46;).
+	 */
+	public boolean isESPrimitive(Class<?> javaType)
+	{
+		return getESType(javaType) == null;
+	}
+
+	/**
 	 * Returns the Elasticsearch data type corresponding to the specified Java
 	 * type. If none is found, the superclass of the specified type is checked
 	 * to see if it corresponds to an Elasticsearch data type, and so on until
@@ -87,13 +96,13 @@ public class DataTypeMap {
 	 */
 	public ESDataType getESType(Class<?> javaType)
 	{
+		ESDataType esDataType = null;
 		while (javaType != Object.class) {
-			ESDataType t = java2es.get(javaType);
-			if (t != null)
-				return t;
+			if ((esDataType = java2es.get(javaType)) != null)
+				break;
 			javaType = javaType.getSuperclass();
 		}
-		return null;
+		return esDataType;
 	}
 
 	/**

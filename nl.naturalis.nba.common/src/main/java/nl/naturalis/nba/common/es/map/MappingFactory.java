@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
@@ -37,7 +38,8 @@ import nl.naturalis.nba.api.annotations.NotNested;
  */
 public class MappingFactory {
 
-	private static HashMap<Class<?>, Mapping> cache = new HashMap<>();
+	private static final HashMap<Class<?>, Mapping> cache = new HashMap<>();
+	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
 	/**
 	 * Builds an Elasticsearch {@link Mapping} object for the specified class.
@@ -51,16 +53,17 @@ public class MappingFactory {
 		Mapping mapping = cache.get(type);
 		if (mapping == null) {
 			mapping = new Mapping(type);
-			addFieldsToDocument(mapping, type);
+			addFieldsToDocument(mapping, type, newTree(new HashSet<>(0), type));
 			cache.put(type, mapping);
 		}
 		return mapping;
 	}
 
-	private static void addFieldsToDocument(Document document, Class<?> type)
+	private static void addFieldsToDocument(Document document, Class<?> type,
+			HashSet<Class<?>> ancestors)
 	{
 		for (Field javaField : getFields(type)) {
-			ESField esField = createESField(javaField);
+			ESField esField = createESField(javaField, ancestors);
 			esField.setName(javaField.getName());
 			esField.setParent(document);
 			esField.setMultiValued(isMultiValued(javaField));
@@ -69,7 +72,7 @@ public class MappingFactory {
 		for (Method javaMethod : getMappedProperties(type)) {
 			String methodName = javaMethod.getName();
 			String fieldName = extractFieldFromGetter(methodName);
-			ESField esField = createESField(javaMethod);
+			ESField esField = createESField(javaMethod, ancestors);
 			esField.setName(fieldName);
 			esField.setParent(document);
 			esField.setMultiValued(isMultiValued(javaMethod));
@@ -77,35 +80,40 @@ public class MappingFactory {
 		}
 	}
 
-	private static ESField createESField(Field field)
+	private static ESField createESField(Field field, HashSet<Class<?>> ancestors)
 	{
 		if (field.getAnnotation(GeoShape.class) != null) {
 			return createSimpleField(field, GEO_SHAPE);
 		}
 		Class<?> realType = field.getType();
 		Class<?> mapToType = mapType(realType, field.getGenericType());
-		ESDataType esType = DataTypeMap.getInstance().getESType(mapToType);
+		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
 			/*
-			 * Then the Java type does not map to a simple Elasticsearch type
-			 * like "string" or "boolean". The Elastichsearch type must be
-			 * either "object" or "nested".
+			 * Then the Java type does not map to a simple Elasticsearch type;
+			 * the Elastichsearch type is either "object" or "nested".
 			 */
-			return createDocument(field, mapToType);
+			if (ancestors.contains(mapToType)) {
+				throw new IllegalRecursionException(field, mapToType);
+			}
+			return createDocument(field, mapToType, newTree(ancestors, mapToType));
 		}
 		return createSimpleField(field, esType);
 	}
 
-	private static ESField createESField(Method method)
+	private static ESField createESField(Method method, HashSet<Class<?>> ancestors)
 	{
 		if (method.getAnnotation(GeoShape.class) != null) {
 			return createSimpleField(method, GEO_SHAPE);
 		}
 		Class<?> realType = method.getReturnType();
 		Class<?> mapToType = mapType(realType, method.getGenericReturnType());
-		ESDataType esType = DataTypeMap.getInstance().getESType(mapToType);
+		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
-			return createDocument(method, mapToType);
+			if (ancestors.contains(mapToType)) {
+				throw new IllegalRecursionException(method, mapToType);
+			}
+			return createDocument(method, mapToType, newTree(ancestors, mapToType));
 		}
 		return createSimpleField(method, esType);
 	}
@@ -130,9 +138,9 @@ public class MappingFactory {
 		return field;
 	}
 
-	private static Document createDocument(Field field, Class<?> mapToType)
+	private static Document createDocument(Field field, Class<?> mapToType,
+			HashSet<Class<?>> ancestors)
 	{
-		checkClass(mapToType);
 		Class<?> realType = field.getType();
 		Document document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
@@ -146,13 +154,13 @@ public class MappingFactory {
 		else {
 			document = new Document();
 		}
-		addFieldsToDocument(document, mapToType);
+		addFieldsToDocument(document, mapToType, ancestors);
 		return document;
 	}
 
-	private static Document createDocument(Method method, Class<?> mapToType)
+	private static Document createDocument(Method method, Class<?> mapToType,
+			HashSet<Class<?>> ancestors)
 	{
-		checkClass(mapToType);
 		Class<?> realType = method.getReturnType();
 		Document document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
@@ -166,13 +174,8 @@ public class MappingFactory {
 		else {
 			document = new Document();
 		}
-		addFieldsToDocument(document, mapToType);
+		addFieldsToDocument(document, mapToType, ancestors);
 		return document;
-	}
-
-	private static void checkClass(Class<?> cls)
-	{
-		// ...
 	}
 
 	/*
@@ -244,6 +247,14 @@ public class MappingFactory {
 		if (isA(m.getReturnType(), Collection.class))
 			return true;
 		return false;
+	}
+
+	private static HashSet<Class<?>> newTree(HashSet<Class<?>> ancestors, Class<?> newType)
+	{
+		HashSet<Class<?>> set = new HashSet<>(6);
+		set.addAll(ancestors);
+		set.add(newType);
+		return set;
 	}
 
 }

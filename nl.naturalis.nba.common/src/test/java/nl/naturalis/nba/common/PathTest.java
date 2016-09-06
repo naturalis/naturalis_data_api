@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.es.map.MappingFactory;
+import nl.naturalis.nba.dao.common.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class PathTest {
@@ -60,31 +60,30 @@ public class PathTest {
 	public void testValidate_01() throws InvalidPathException
 	{
 		// Happy flow, no exception shouild be thrown
-		Path path = new Path("identifications.0.defaultClassification.kingdom");
-		path.validate(MappingFactory.getMapping(Specimen.class));
+		Path path = new Path("pets.0.name");
+		path.validate(MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test(expected = InvalidPathException.class)
-	public void testValidate_02() throws InvalidPathException 
+	public void testValidate_02() throws InvalidPathException
 	{
-		// Missing array indix
-		Path path = new Path("identifications.defaultClassification.kingdom");
-		path.validate(MappingFactory.getMapping(Specimen.class));
+		// Missing array index
+		Path path = new Path("pets.colors.0");
+		path.validate(MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test(expected = InvalidPathException.class)
 	public void testValidate_03() throws InvalidPathException
 	{
 		// Illegal array index
-		Path path = new Path("identifications.defaultClassification.0.kingdom");
-		path.validate(MappingFactory.getMapping(Specimen.class));
+		Path path = new Path("pets.0.name.0");
+		path.validate(MappingFactory.getMapping(TestPerson.class));
 	}
 
-	@Test(expected = InvalidPathException.class)
 	public void testValidate_04() throws InvalidPathException
 	{
 		// Happy flow, no exception shouild be thrown
-		Path path = new Path("identifications.0.systemClassification.1.rank");
-		path.validate(MappingFactory.getMapping(Specimen.class));
+		Path path = new Path("pets.2.colors.3");
+		path.validate(MappingFactory.getMapping(TestPerson.class));
 	}
 }

@@ -10,16 +10,16 @@ import java.lang.reflect.Method;
  * @author Ayco Holleman
  *
  */
-public class IllegalRecursionException extends MappingException {
+public class ClassCircularityException extends MappingException {
 
 	private static String MSG_PATTERN = "Illegal recursive nesting of type %s in %s %s";
 
-	public IllegalRecursionException(Field field, Class<?> type)
+	public ClassCircularityException(Field field, Class<?> type)
 	{
 		super(String.format(MSG_PATTERN, type.getName(), "field", field.getName()));
 	}
 
-	public IllegalRecursionException(Method method, Class<?> type)
+	public ClassCircularityException(Method method, Class<?> type)
 	{
 		super(String.format(MSG_PATTERN, type.getName(), "method", method.getName()));
 	}

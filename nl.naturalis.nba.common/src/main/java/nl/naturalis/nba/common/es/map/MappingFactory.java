@@ -94,7 +94,7 @@ public class MappingFactory {
 			 * the Elastichsearch type is either "object" or "nested".
 			 */
 			if (ancestors.contains(mapToType)) {
-				throw new IllegalRecursionException(field, mapToType);
+				throw new ClassCircularityException(field, mapToType);
 			}
 			return createDocument(field, mapToType, newTree(ancestors, mapToType));
 		}
@@ -111,7 +111,7 @@ public class MappingFactory {
 		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
 			if (ancestors.contains(mapToType)) {
-				throw new IllegalRecursionException(method, mapToType);
+				throw new ClassCircularityException(method, mapToType);
 			}
 			return createDocument(method, mapToType, newTree(ancestors, mapToType));
 		}

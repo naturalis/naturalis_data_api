@@ -3,13 +3,13 @@ package nl.naturalis.nba.dao.es.format.csv;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
-import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.DataSource;
+import nl.naturalis.nba.dao.es.format.FieldConfigurationException;
 import nl.naturalis.nba.dao.es.format.IField;
-import nl.naturalis.nba.dao.es.format.ITypedFieldFactory;
+import nl.naturalis.nba.dao.es.format.IFieldFactory;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
@@ -23,11 +23,13 @@ public class CsvFieldFactory implements IFieldFactory {
 
 	@Override
 	public IField createEntityDataField(String name, Path path, DataSource dataSource)
+			throws FieldConfigurationException
 	{
 		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
+		Path fullPath = dataSource.getPath().append(path);
 		ESField esField;
 		try {
-			esField = mappingInfo.getField(path.getPurePathString());
+			esField = mappingInfo.getField(fullPath);
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because path has already been checked.
@@ -40,12 +42,13 @@ public class CsvFieldFactory implements IFieldFactory {
 	}
 
 	@Override
-	public IField createDocumentDataField(String name, Path path, Mapping mapping)
+	public IField createDocumentDataField(String name, Path path, DataSource dataSource)
+			throws FieldConfigurationException
 	{
-		MappingInfo mappingInfo = new MappingInfo(mapping);
+		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
 		ESField esField;
 		try {
-			esField = mappingInfo.getField(path.getPurePathString());
+			esField = mappingInfo.getField(path);
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because path has already been checked.
@@ -59,12 +62,14 @@ public class CsvFieldFactory implements IFieldFactory {
 
 	@Override
 	public IField createConstantField(String name, String constant)
+			throws FieldConfigurationException
 	{
 		return new ConstantField(name, constant);
 	}
 
 	@Override
 	public IField createdCalculatedField(String name, ICalculator calculator)
+			throws FieldConfigurationException
 	{
 		return new CalculatedField(name, calculator);
 	}

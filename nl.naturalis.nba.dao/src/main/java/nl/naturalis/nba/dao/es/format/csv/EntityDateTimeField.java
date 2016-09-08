@@ -11,12 +11,12 @@ import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class EntityDateTimeField extends AbstractCsvField {
 
-	private final String[] path;
+	private final Path path;
 
 	EntityDateTimeField(String name, Path path)
 	{
 		super(name);
-		this.path = path.getElements();
+		this.path = path;
 	}
 
 	@Override

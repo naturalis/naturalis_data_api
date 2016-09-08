@@ -12,14 +12,15 @@ import org.junit.Test;
 //import nl.naturalis.nba.dao.es.format.config.SourceXmlConfig;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
-public class DataSetCollectionBuilderTest {
+public class DataSetBuilderTest {
 
 	@Test
 	public void testBuild_01() throws DataSetConfigurationException, JAXBException
 	{
 		String config = "DataSetCollectionBuilderTest_testBuild01.xml";
 		DataSetBuilder builder = new DataSetBuilder(config, true);
-		DataSetCollection dsc = builder.build(new CsvFieldFactory());
+		builder.setDefaultFieldFactory(new CsvFieldFactory());
+		DataSet dsc = builder.build();
 //		DataSetsXmlConfig dsxc = new DataSetsXmlConfig();
 //		SourceXmlConfig sxc = new SourceXmlConfig();
 //		sxc.setValue("test");

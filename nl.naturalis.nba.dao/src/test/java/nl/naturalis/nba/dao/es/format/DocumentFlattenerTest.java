@@ -11,6 +11,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import nl.naturalis.nba.common.Path;
+
 public class DocumentFlattenerTest {
 
 	private Map<String, Object> taxon;
@@ -66,7 +68,7 @@ public class DocumentFlattenerTest {
 	@Test
 	public void testFlatten_01()
 	{
-		DocumentFlattener df = new DocumentFlattener(new String[0], 1);
+		DocumentFlattener df = new DocumentFlattener(new Path(new String[0]), 1);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
 		assertTrue("02", records.get(0).getData() == taxon);
@@ -76,7 +78,7 @@ public class DocumentFlattenerTest {
 	@Test
 	public void testFlatten_02()
 	{
-		DocumentFlattener df = new DocumentFlattener(new String[] { "vernacularNames" }, 4);
+		DocumentFlattener df = new DocumentFlattener(new Path("vernacularNames"), 4);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 2, records.size());
 		assertTrue("02", records.get(0).getData() == vernacularName0);
@@ -88,7 +90,7 @@ public class DocumentFlattenerTest {
 	@Test
 	public void testFlatten_03()
 	{
-		DocumentFlattener df = new DocumentFlattener(new String[] { "acceptedName" }, 1);
+		DocumentFlattener df = new DocumentFlattener(new Path("acceptedName"), 1);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 1, records.size());
 		assertTrue("02", records.get(0).getData() == acceptedName);
@@ -98,8 +100,7 @@ public class DocumentFlattenerTest {
 	@Test
 	public void testFlatten_04()
 	{
-		DocumentFlattener df = new DocumentFlattener(
-				new String[] { "vernacularNames", "references" }, 4);
+		DocumentFlattener df = new DocumentFlattener(new Path("vernacularNames.references"), 4);
 		List<EntityObject> records = df.flatten(taxon);
 		assertEquals("01", 4, records.size());
 		assertTrue("02", records.get(0).getData() == reference0);

@@ -4,7 +4,6 @@ import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.common.es.map.ESDataType.OBJECT;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,6 +12,8 @@ import java.util.Map;
 
 import org.domainobject.util.CollectionUtil;
 import org.domainobject.util.convert.Stringifier;
+
+import nl.naturalis.nba.common.Path;
 
 /**
  * A {@code MappingInfo} object provides easy, programmatic access to various
@@ -24,7 +25,7 @@ import org.domainobject.util.convert.Stringifier;
  */
 public class MappingInfo {
 
-	private static final HashMap<Mapping, HashMap<String, ESField>> fieldCache = new HashMap<>(5);
+	private static final HashMap<Mapping, HashMap<Path, ESField>> fieldCache = new HashMap<>(5);
 
 	/**
 	 * Determines if the specified field <i>or any of its ancestors</i> is a
@@ -120,12 +121,23 @@ public class MappingInfo {
 	 */
 	public ESField getField(String path) throws NoSuchFieldException
 	{
+		return getField(new Path(path));
+	}
+
+	/**
+	 * Returns an {@link ESField} instance corresponding to the specified
+	 * {@link Path} object.
+	 * 
+	 * @param path
+	 * @return
+	 * @throws NoSuchFieldException
+	 */
+	public ESField getField(Path path) throws NoSuchFieldException
+	{
 		ESField field = getFromCache(path);
 		if (field == null) {
 			LinkedHashMap<String, ESField> map = mapping.getProperties();
-			String[] chunks = path.split("\\.");
-			List<String> pathElements = Arrays.asList(chunks);
-			field = getField(path, pathElements, map);
+			field = getField(path, map);
 			addToCache(path, field);
 		}
 		return field;
@@ -140,7 +152,7 @@ public class MappingInfo {
 	 * 
 	 * @param path
 	 * @return
-	 * @throws NoSuchFieldException 
+	 * @throws NoSuchFieldException
 	 */
 	public ESDataType getType(String path) throws NoSuchFieldException
 	{
@@ -153,7 +165,7 @@ public class MappingInfo {
 	 * 
 	 * @param path
 	 * @return
-	 * @throws NoSuchFieldException 
+	 * @throws NoSuchFieldException
 	 */
 	public List<Document> getAncestors(String path) throws NoSuchFieldException
 	{
@@ -169,7 +181,7 @@ public class MappingInfo {
 	 * 
 	 * @param path
 	 * @return
-	 * @throws NoSuchFieldException 
+	 * @throws NoSuchFieldException
 	 */
 	public String getNestedPath(String path) throws NoSuchFieldException
 	{
@@ -181,43 +193,43 @@ public class MappingInfo {
 	 * 
 	 * @param path
 	 * @return
-	 * @throws NoSuchFieldException 
+	 * @throws NoSuchFieldException
 	 */
 	public boolean isMultiValued(String path) throws NoSuchFieldException
 	{
 		return isMultiValued(getField(path));
 	}
 
-	private ESField getField(String origPath, List<String> path, Map<String, ? extends ESField> map) throws NoSuchFieldException
+	private ESField getField(Path path, Map<String, ? extends ESField> map)
+			throws NoSuchFieldException
 	{
-		ESField f = map.get(path.get(0));
+		ESField f = map.get(path.getElement(0));
 		if (f == null || f instanceof MultiField) {
 			// Prevent access to MultiField fields
-			throw new NoSuchFieldException(origPath);
+			throw new NoSuchFieldException(path.toString());
 		}
-		if (path.size() == 1) {
+		if (path.countElements() == 1) {
 			return f;
 		}
 		if (f instanceof Document) {
-			path = path.subList(1, path.size());
 			map = ((Document) f).getProperties();
-			return getField(origPath, path, map);
+			return getField(path.shift(), map);
 		}
-		throw new NoSuchFieldException(origPath);
+		throw new NoSuchFieldException(path.toString());
 	}
 
-	private ESField getFromCache(String path)
+	private ESField getFromCache(Path path)
 	{
-		HashMap<String, ESField> myCache = fieldCache.get(mapping);
+		HashMap<Path, ESField> myCache = fieldCache.get(mapping);
 		if (myCache == null) {
 			return null;
 		}
 		return myCache.get(path);
 	}
 
-	private void addToCache(String path, ESField field)
+	private void addToCache(Path path, ESField field)
 	{
-		HashMap<String, ESField> myCache = fieldCache.get(mapping);
+		HashMap<Path, ESField> myCache = fieldCache.get(mapping);
 		if (myCache == null) {
 			myCache = new HashMap<>();
 			fieldCache.put(mapping, myCache);

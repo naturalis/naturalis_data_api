@@ -66,14 +66,19 @@ public final class Path {
 		return sb.toString();
 	}
 
+	public String getElement(int index)
+	{
+		return elems[index];
+	}
+
 	public int countElements()
 	{
 		return elems.length;
 	}
 
-	public String getElement(int index)
+	public Path element(int index)
 	{
-		return elems[index];
+		return new Path(new String[] { elems[index] });
 	}
 
 	public Path getPurePath()

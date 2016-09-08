@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.domainobject.util.ArrayUtil;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.PrettyPrinter;
@@ -222,8 +220,8 @@ public class JsonUtil {
 						return val;
 				}
 				catch (NumberFormatException e) {
-					String fmt = "Missing array index in path %s";
-					String msg = String.format(fmt, path);
+					String fmt = "Missing array index after %s in path %s";
+					String msg = String.format(fmt, path.getElement(i), path);
 					throw new JsonDeserializationException(msg);
 				}
 			}

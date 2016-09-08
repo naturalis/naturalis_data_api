@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
+import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
@@ -56,8 +57,10 @@ class FieldBuilder {
 	{
 		String fieldName = fieldConfig.getName();
 		Path path = getPath(fieldConfig);
-		if (dataSource.getPath() == null)
+		validatePathIfPossible(path, fieldName);
+		if (dataSource.getPath() == null) {
 			return fieldFactory.createDocumentDataField(fieldName, path, dataSource);
+		}
 		return fieldFactory.createEntityDataField(fieldName, path, dataSource);
 	}
 
@@ -74,6 +77,26 @@ class FieldBuilder {
 		String field = fieldConfig.getName();
 		String value = fieldConfig.getConstant();
 		return fieldFactory.createConstantField(field, value);
+	}
+
+	private void validatePathIfPossible(Path path, String fieldName)
+			throws FieldConfigurationException
+	{
+		if (dataSource.getMapping() != null) { // Then it's possible
+			Path fullPath;
+			if (dataSource.getPath() == null) {
+				fullPath = path;
+			}
+			else {
+				fullPath = dataSource.getPath().append(path);
+			}
+			try {
+				fullPath.validate(dataSource.getMapping());
+			}
+			catch (InvalidPathException e) {
+				throw new FieldConfigurationException(fieldName, e.getMessage());
+			}
+		}
 	}
 
 	private Path getPath(FieldXmlConfig fieldConfig) throws FieldConfigurationException

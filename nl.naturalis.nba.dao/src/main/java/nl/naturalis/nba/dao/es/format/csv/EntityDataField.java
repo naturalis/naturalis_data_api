@@ -10,12 +10,12 @@ import nl.naturalis.nba.dao.es.format.EntityObject;
 
 class EntityDataField extends AbstractCsvField {
 
-	private final String[] path;
+	private final Path path;
 
 	EntityDataField(String name, Path path)
 	{
 		super(name);
-		this.path = path.getElements();
+		this.path = path;
 	}
 
 	@Override

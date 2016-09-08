@@ -17,17 +17,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for CalculatorXmlConfig complex type.
+ * <p>Java class for FieldsXmlConfig complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CalculatorXmlConfig">
+ * &lt;complexType name="FieldsXmlConfig">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="java-class" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="arg" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="field" type="{http://data.naturalis.nl/nba-dataset-config}FieldXmlConfig" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -37,67 +36,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CalculatorXmlConfig", propOrder = {
-    "javaClass",
-    "arg"
+@XmlType(name = "FieldsXmlConfig", propOrder = {
+    "field"
 })
-public class CalculatorXmlConfig {
+public class FieldsXmlConfig {
 
-    @XmlElement(name = "java-class", required = true)
-    protected String javaClass;
-    protected List<String> arg;
-
-    /**
-     * Gets the value of the javaClass property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getJavaClass() {
-        return javaClass;
-    }
+    @XmlElement(required = true)
+    protected List<FieldXmlConfig> field;
 
     /**
-     * Sets the value of the javaClass property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setJavaClass(String value) {
-        this.javaClass = value;
-    }
-
-    /**
-     * Gets the value of the arg property.
+     * Gets the value of the field property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the arg property.
+     * This is why there is not a <CODE>set</CODE> method for the field property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getArg().add(newItem);
+     *    getField().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link FieldXmlConfig }
      * 
      * 
      */
-    public List<String> getArg() {
-        if (arg == null) {
-            arg = new ArrayList<String>();
+    public List<FieldXmlConfig> getField() {
+        if (field == null) {
+            field = new ArrayList<FieldXmlConfig>();
         }
-        return this.arg;
+        return this.field;
     }
 
 }

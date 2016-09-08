@@ -20,7 +20,7 @@ import nl.naturalis.nba.dao.es.DocumentType;
  * the entire Elasticsearch document rather than any object nested within it
  * (e.g. if you wanted to print out specimen information).
  * 
- * See also {@link Entity#getPath()}.
+ * See also {@link Entity#getPathString()}.
  * 
  * @author Ayco Holleman
  *

@@ -7,6 +7,7 @@ import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.exception.DaoException;
+import nl.naturalis.nba.dao.es.format.DataSource;
 import nl.naturalis.nba.dao.es.format.IField;
 import nl.naturalis.nba.dao.es.format.ITypedFieldFactory;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
@@ -18,15 +19,15 @@ import nl.naturalis.nba.dao.es.format.calc.ICalculator;
  * @author Ayco Holleman
  *
  */
-public class CsvFieldFactory implements ITypedFieldFactory {
+public class CsvFieldFactory implements IFieldFactory {
 
 	@Override
-	public IField createEntityDataField(String name, Path path, Mapping mapping)
+	public IField createEntityDataField(String name, Path path, DataSource dataSource)
 	{
-		MappingInfo mappingInfo = new MappingInfo(mapping);
+		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
 		ESField esField;
 		try {
-			esField = mappingInfo.getField(path.getPurePath());
+			esField = mappingInfo.getField(path.getPurePathString());
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because path has already been checked.
@@ -44,7 +45,7 @@ public class CsvFieldFactory implements ITypedFieldFactory {
 		MappingInfo mappingInfo = new MappingInfo(mapping);
 		ESField esField;
 		try {
-			esField = mappingInfo.getField(path.getPurePath());
+			esField = mappingInfo.getField(path.getPurePathString());
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because path has already been checked.

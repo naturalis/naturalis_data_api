@@ -1,9 +1,6 @@
 package nl.naturalis.nba.common;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -14,46 +11,20 @@ import nl.naturalis.nba.common.test.TestPerson;
 public class PathTest {
 
 	@Test
-	public void testGetPath()
+	public void testGetPathString()
 	{
 		String[] elements = new String[] { "identifications", "0", "defaultClassification",
 				"kingdom" };
 		Path path = new Path(elements);
-		assertEquals("01", "identifications.0.defaultClassification.kingdom", path.getPath());
+		assertEquals("01", "identifications.0.defaultClassification.kingdom", path.getPathString());
 	}
 
 	@Test
 	public void testGetPurePath()
 	{
-		String[] elements = new String[] { "identifications", "0", "defaultClassification",
-				"kingdom" };
-		Path path = new Path(elements);
-		assertEquals("01", "identifications.defaultClassification.kingdom", path.getPurePath());
-	}
-
-	@Test
-	public void testGetElements()
-	{
 		Path path = new Path("identifications.0.defaultClassification.kingdom");
-		String[] elements = new String[] { "identifications", "0", "defaultClassification",
-				"kingdom" };
-		assertTrue("01", Arrays.deepEquals(path.getElements(), elements));
-	}
-
-	@Test
-	public void testGetPureElements_01()
-	{
-		Path path = new Path("identifications.defaultClassification.kingdom");
-		String[] elements = new String[] { "identifications", "defaultClassification", "kingdom" };
-		assertTrue("01", Arrays.deepEquals(path.getPureElements(), elements));
-	}
-
-	@Test
-	public void testGetPureElements_02()
-	{
-		Path path = new Path("identifications.0.defaultClassification.kingdom");
-		String[] elements = new String[] { "identifications", "defaultClassification", "kingdom" };
-		assertTrue("01", Arrays.deepEquals(path.getPureElements(), elements));
+		assertEquals("01", "identifications.defaultClassification.kingdom",
+				path.getPurePath().toString());
 	}
 
 	@Test

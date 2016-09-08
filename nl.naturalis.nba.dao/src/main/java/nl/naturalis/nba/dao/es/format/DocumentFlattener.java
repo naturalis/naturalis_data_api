@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import nl.naturalis.nba.common.Path;
+
 /**
  * A {@code DocumentFlattener} flattens Elasticsearch documents (converted to
  * instances {@code Map&lt;String,Object&gt;}). The result is a list of nested
@@ -20,7 +22,7 @@ import java.util.Map;
  */
 public class DocumentFlattener {
 
-	private String[] pathToEntity;
+	private Path pathToEntity;
 	private int entitiesPerDocument;
 
 	/**
@@ -32,7 +34,7 @@ public class DocumentFlattener {
 	 * @param entitiesPerDocument
 	 *            An estimate of the average number of entities per document
 	 */
-	public DocumentFlattener(String[] pathToEntity, int entitiesPerDocument)
+	public DocumentFlattener(Path pathToEntity, int entitiesPerDocument)
 	{
 		this.pathToEntity = pathToEntity;
 		this.entitiesPerDocument = entitiesPerDocument;
@@ -47,35 +49,28 @@ public class DocumentFlattener {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void flatten(EntityObject node, String[] pathToEntity, List<EntityObject> entityNodes)
+	private static void flatten(EntityObject node, Path pathToEntity, List<EntityObject> entityNodes)
 	{
-		if (pathToEntity.length == 0) {
+		if (pathToEntity.countElements() == 0) {
 			entityNodes.add(node);
 			return;
 		}
-		Object obj = readField(node.getData(), new String[] { pathToEntity[0] });
+		Object obj = readField(node.getData(), pathToEntity);
 		if (obj == MISSING_VALUE)
 			return;
-		pathToEntity = shift(pathToEntity);
 		if (obj instanceof List) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
 			for (Map<String, Object> map : list) {
 				EntityObject child = new EntityObject(map, node);
-				flatten(child, pathToEntity, entityNodes);
+				flatten(child, pathToEntity.shift(), entityNodes);
 			}
 		}
 		else {
 			Map<String, Object> map = (Map<String, Object>) obj;
 			EntityObject child = new EntityObject(map, node);
-			flatten(child, pathToEntity, entityNodes);
+			flatten(child, pathToEntity.shift(), entityNodes);
 		}
 	}
 
-	private static String[] shift(String[] path)
-	{
-		String[] nestedPath = new String[path.length - 1];
-		System.arraycopy(path, 1, nestedPath, 0, path.length - 1);
-		return nestedPath;
-	}
 
 }

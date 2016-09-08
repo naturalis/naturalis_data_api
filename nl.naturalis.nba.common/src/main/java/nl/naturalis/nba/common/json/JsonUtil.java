@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.common.Path;
+
 public class JsonUtil {
 
 	/**
@@ -172,7 +174,7 @@ public class JsonUtil {
 	 */
 	public static Object readField(Map<String, Object> map, String path)
 	{
-		return readField(map, path.split("\\."));
+		return readField(map, new Path(path));
 	}
 
 	/**
@@ -201,28 +203,27 @@ public class JsonUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static Object readField(Map<String, Object> map, String[] path)
+	public static Object readField(Map<String, Object> map, Path path)
 	{
-		for (int i = 0; i < path.length; ++i) {
-			Object val = map.get(path[i]);
+		for (int i = 0; i < path.countElements(); ++i) {
+			Object val = map.get(path.getElement(i));
 			if (val == null)
-				return map.containsKey(path[i]) ? null : MISSING_VALUE;
-			if (i == path.length - 1)
+				return map.containsKey(path.getElement(i)) ? null : MISSING_VALUE;
+			if (i == path.countElements() - 1)
 				return val;
 			if (val instanceof List) {
 				try {
-					int idx = Integer.parseInt(path[i + 1]);
+					int idx = Integer.parseInt(path.getElement(i + 1));
 					List<?> list = (List<?>) val;
 					if (idx >= list.size())
 						return MISSING_VALUE;
 					val = list.get(idx);
-					if (++i == path.length - 1)
+					if (++i == path.countElements() - 1)
 						return val;
 				}
 				catch (NumberFormatException e) {
-					String s = ArrayUtil.implode(path, ".");
 					String fmt = "Missing array index in path %s";
-					String msg = String.format(fmt, s);
+					String msg = String.format(fmt, path);
 					throw new JsonDeserializationException(msg);
 				}
 			}

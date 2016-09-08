@@ -1,14 +1,15 @@
 package nl.naturalis.nba.common;
 
+import static java.lang.System.arraycopy;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nl.naturalis.nba.common.es.map.DocumentField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Represents a path to a <i>single primitive</i> value in recursively nested
@@ -34,9 +35,9 @@ import static java.lang.System.arraycopy;
  * @author Ayco Holleman
  *
  */
-public class Path {
+public final class Path {
 
-	private String[] elems;
+	private final String[] elems;
 
 	public Path(String path)
 	{
@@ -48,7 +49,13 @@ public class Path {
 		this.elems = elements;
 	}
 
-	public String getPath()
+	public Path(Path other)
+	{
+		this.elems = new String[other.elems.length];
+		arraycopy(other.elems, 0, this.elems, 0, this.elems.length);
+	}
+
+	public String getPathString()
 	{
 		StringBuilder sb = new StringBuilder(elems.length << 4);
 		for (String e : elems) {
@@ -59,25 +66,17 @@ public class Path {
 		return sb.toString();
 	}
 
-	public String getPurePath()
+	public int countElements()
 	{
-		StringBuilder sb = new StringBuilder(elems.length << 4);
-		for (String e : elems) {
-			if (!isInteger(e)) {
-				if (sb.length() != 0)
-					sb.append('.');
-				sb.append(e);
-			}
-		}
-		return sb.toString();
+		return elems.length;
 	}
 
-	public String[] getElements()
+	public String getElement(int index)
 	{
-		return elems;
+		return elems[index];
 	}
 
-	public String[] getPureElements()
+	public Path getPurePath()
 	{
 		ArrayList<String> list = new ArrayList<>(elems.length);
 		for (String e : elems) {
@@ -85,16 +84,23 @@ public class Path {
 				list.add(e);
 			}
 		}
-		return list.toArray(new String[list.size()]);
+		return new Path(list.toArray(new String[list.size()]));
 	}
 
-	public void append(Path path)
+	public Path append(Path other)
 	{
-		int size = elems.length + path.elems.length;
+		int size = elems.length + other.elems.length;
 		String[] concatenated = new String[size];
 		arraycopy(elems, 0, concatenated, 0, elems.length);
-		arraycopy(path.elems, 0, concatenated, elems.length, path.elems.length);
-		elems = concatenated;
+		arraycopy(other.elems, 0, concatenated, elems.length, other.elems.length);
+		return new Path(concatenated);
+	}
+
+	public Path shift()
+	{
+		String[] shifted = new String[elems.length - 1];
+		arraycopy(elems, 1, shifted, 0, elems.length - 1);
+		return new Path(shifted);
 	}
 
 	public void validate(Mapping mapping) throws InvalidPathException
@@ -105,15 +111,37 @@ public class Path {
 		checkIllegalArrayIndices(mappingInfo);
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj.getClass() != Path.class)
+			return false;
+		return Arrays.deepEquals(this.elems, ((Path) obj).elems);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Arrays.deepHashCode(elems);
+	}
+
+	@Override
+	public String toString()
+	{
+		return getPathString();
+	}
+
 	/*
 	 * Make sure path references a simple, primitive value (not an object).
 	 */
 	private void checkPathComplete(MappingInfo mi) throws InvalidPathException
 	{
 		try {
-			ESField esField = mi.getField(getPurePath());
+			ESField esField = mi.getField(getPurePath().getPathString());
 			if (!(esField instanceof DocumentField)) {
-				String msg = "Incomplete path: %s" + getPath();
+				String msg = "Incomplete path: %s" + getPathString();
 				throw new InvalidPathException(msg);
 			}
 		}

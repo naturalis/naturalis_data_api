@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataset-config xmlns="http://data.naturalis.nl/nba-dataset-config">
+	<entity name="taxa">
+		<data-source>
+			<document>Specimen</document>
+			<path>identifications</path>
+			<query-spec>
+				<conditions>
+					<condition>
+						<field>collectionType</field>
+						<operator>EQUALS</operator>
+						<value>Amphibia and Reptilia</value>
+					</condition>
+					<condition>
+						<field>sourceSystem.code</field>
+						<operator>EQUALS</operator>
+						<value>CRS</value>
+					</condition>
+				</conditions>
+			</query-spec>
+		</data-source>
+		<fields>
+			<field name="collector">
+				<path>gatheringEvent.gatheringPersons.0.fullName</path>
+				<calculator></calculator>
+			</field>
+		</fields>
+	</entity>
+</dataset-config>

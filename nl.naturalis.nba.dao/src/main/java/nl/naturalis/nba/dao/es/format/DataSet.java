@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.format;
 
-import nl.naturalis.nba.api.query.QuerySpec;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class capturing the information necessary to generate a data set. A data set
@@ -13,27 +14,18 @@ import nl.naturalis.nba.api.query.QuerySpec;
  */
 public class DataSet {
 
-	private String name;
-	private QuerySpec querySpec;
+	private List<Entity> entities;
 
-	public String getName()
+	public List<Entity> getEntities()
 	{
-		return name;
+		return entities;
 	}
 
-	void setName(String name)
+	void addEntity(Entity entity)
 	{
-		this.name = name;
-	}
-
-	public QuerySpec getQuerySpec()
-	{
-		return querySpec;
-	}
-
-	void setQuerySpec(QuerySpec querySpec)
-	{
-		this.querySpec = querySpec;
+		if (entities == null)
+			entities = new ArrayList<>(5);
+		entities.add(entity);
 	}
 
 }

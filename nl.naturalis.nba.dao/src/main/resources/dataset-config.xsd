@@ -4,56 +4,46 @@
 >
 
 	<!-- ANNOTATE XJC-GENERATED JAXB CLASS WITH @XmlRootElement(name = "dataset-config") !!! -->
-	<xs:complexType name="DataSetsXmlConfig">
-		<xs:sequence>
-			<xs:element name="source" type="self:SourceXmlConfig" minOccurs="0" />
-			<xs:element name="entities" type="self:EntityXmlConfig" maxOccurs="unbounded" />
-			<xs:element name="datasets" type="self:DataSetXmlConfig" maxOccurs="unbounded" />
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="SourceXmlConfig">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="type" type="self:SourceTypeXmlConfig" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-
-	<xs:simpleType name="SourceTypeXmlConfig" final="restriction">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="document" />
-			<xs:enumeration value="java-class" />
-			<xs:enumeration value="generic" />
-		</xs:restriction>
-	</xs:simpleType>
-
 	<xs:complexType name="DataSetXmlConfig">
 		<xs:sequence>
-			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
+			<xs:element name="entity" type="self:EntityXmlConfig" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="EntityXmlConfig">
 		<xs:sequence>
-			<xs:element name="source" type="self:SourceXmlConfig" minOccurs="0" />
-			<xs:element name="entity-object" type="xs:string" minOccurs="0" />
-			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
-			<xs:element name="field" type="self:FieldXmlConfig" minOccurs="1" maxOccurs="unbounded" />
+			<xs:element name="data-source" type="self:DataSourceXmlConfig" />
+			<xs:element name="fields" type="self:FieldsXmlConfig" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="DataSourceXmlConfig">
+		<xs:sequence>
+			<xs:choice minOccurs="0">
+				<xs:element name="document" type="xs:string" />
+				<xs:element name="java-class" type="xs:string" />
+			</xs:choice>
+			<xs:element name="path" type="xs:string" minOccurs="0" />
+			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="FieldsXmlConfig">
+		<xs:sequence>
+			<xs:element name="field" type="self:FieldXmlConfig" maxOccurs="unbounded" />
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="FieldXmlConfig">
 		<xs:sequence>
-			<xs:element name="name" type="xs:string" />
 			<xs:choice>
 				<xs:element name="path" type="self:PathXmlConfig" />
 				<xs:element name="constant" type="xs:string" />
 				<xs:element name="calculator" type="self:CalculatorXmlConfig" />
 			</xs:choice>
 		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
 	</xs:complexType>
 
 	<xs:complexType name="PathXmlConfig">

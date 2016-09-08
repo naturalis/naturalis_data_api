@@ -5,6 +5,9 @@ import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 
+import java.util.Map;
+
+import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 
 /**
@@ -15,12 +18,12 @@ import nl.naturalis.nba.dao.es.format.EntityObject;
  */
 public class VerbatimEventDateCalculator implements ICalculator {
 
-	private static final String[] EVENT_DATE_BEGIN;
-	private static final String[] EVENT_DATE_END;
+	private static final Path EVENT_DATE_BEGIN = new Path("gatheringEvent.dateTimeBegin");
+	private static final Path EVENT_DATE_END = new Path("gatheringEvent.dateTimeEnd");
 
-	static {
-		EVENT_DATE_BEGIN = "gatheringEvent.dateTimeBegin".split("\\.");
-		EVENT_DATE_END = "gatheringEvent.dateTimeEnd".split("\\.");
+	@Override
+	public void initialize(Map<String, String> args)
+	{
 	}
 
 	@Override

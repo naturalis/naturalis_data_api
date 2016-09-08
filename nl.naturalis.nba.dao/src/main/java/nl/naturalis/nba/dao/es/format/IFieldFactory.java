@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
+import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
@@ -21,7 +22,7 @@ public interface IFieldFactory {
 	 * @param constant
 	 * @return
 	 */
-	IField createConstantField(String name, String constant);
+	IField createConstantField(String name, String constant) throws FieldConfigurationException;
 
 	/**
 	 * Returns an {@link IField} instance that uses an {@link ICalculator}
@@ -31,6 +32,34 @@ public interface IFieldFactory {
 	 * @param calculator
 	 * @return
 	 */
-	IField createdCalculatedField(String name, ICalculator calculator);
+	IField createdCalculatedField(String name, ICalculator calculator)
+			throws FieldConfigurationException;
 
+	/**
+	 * Returns an {@link IField} instance that retrieves its value from a field
+	 * in the {@link EntityObject entity object}. The {@code path} argument must
+	 * specify the path of the source field <i>relative</i> to the
+	 * {@link EntityObject entity object}.
+	 * 
+	 * @param
+	 * @param path
+	 * @param dataSource
+	 */
+	IField createEntityDataField(String name, Path path, DataSource dataSource)
+			throws FieldConfigurationException;
+
+	/**
+	 * Returns an {@link IField} instance that retrieves its value from a field
+	 * in the Elasticsearch document that contains the {@link EntityObject
+	 * entity object}. The {@code path} argument must specify the <i>full</i>
+	 * path of the source field. It must be specified as an array of path
+	 * elements, with each element representing a successively deeper level in
+	 * the Elasticsearch document.
+	 * 
+	 * @param
+	 * @param path
+	 * @param dataSource
+	 */
+	IField createDocumentDataField(String name, Path path, DataSource dataSource)
+			throws FieldConfigurationException;
 }

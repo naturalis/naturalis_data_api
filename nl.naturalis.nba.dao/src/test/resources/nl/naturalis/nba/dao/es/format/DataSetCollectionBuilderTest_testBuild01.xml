@@ -20,6 +20,9 @@
 			</query-spec>
 		</data-source>
 		<fields>
+			<field name="id">
+				<path>unitID</path>
+			</field>
 			<field name="collector">
 				<path relative="true">gatheringPersons.0.fullName</path>
 			</field>

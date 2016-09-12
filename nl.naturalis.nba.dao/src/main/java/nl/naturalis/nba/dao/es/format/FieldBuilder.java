@@ -4,7 +4,6 @@ import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
-import nl.naturalis.nba.dao.es.format.config.PathXmlConfig;
 
 class FieldBuilder {
 
@@ -56,12 +55,18 @@ class FieldBuilder {
 	IField createDataField(FieldXmlConfig fieldConfig) throws DataSetConfigurationException
 	{
 		String fieldName = fieldConfig.getName();
-		Path path = getPath(fieldConfig);
-		validatePathIfPossible(path, fieldName);
-		if (dataSource.getPath() == null) {
-			return fieldFactory.createDocumentDataField(fieldName, path, dataSource);
+		Path path = new Path(fieldConfig.getPath().getValue());
+		boolean relative = hasRelativePath(fieldConfig);
+		if (dataSource.getMapping() != null) {
+			validatePath(path, relative, fieldName);
 		}
-		return fieldFactory.createEntityDataField(fieldName, path, dataSource);
+		if (relative) {
+			if (dataSource.getPath() == null) {
+				throw new FieldConfigurationException(fieldName, ERR_RELATIVE_PATH);
+			}
+			return fieldFactory.createEntityDataField(fieldName, path, dataSource);
+		}
+		return fieldFactory.createDocumentDataField(fieldName, path, dataSource);
 	}
 
 	IField createCalculatedField(FieldXmlConfig fieldConfig) throws DataSetConfigurationException
@@ -79,34 +84,27 @@ class FieldBuilder {
 		return fieldFactory.createConstantField(field, value);
 	}
 
-	private void validatePathIfPossible(Path path, String fieldName)
+	private void validatePath(Path path, boolean relative, String fieldName)
 			throws FieldConfigurationException
 	{
-		if (dataSource.getMapping() != null) { // Then it's possible
-			Path fullPath;
-			if (dataSource.getPath() == null) {
-				fullPath = path;
-			}
-			else {
-				fullPath = dataSource.getPath().append(path);
-			}
-			try {
-				fullPath.validate(dataSource.getMapping());
-			}
-			catch (InvalidPathException e) {
-				throw new FieldConfigurationException(fieldName, e.getMessage());
-			}
+		Path fullPath;
+		if (dataSource.getPath() == null || !relative)
+			fullPath = path;
+		else
+			fullPath = dataSource.getPath().append(path);
+		try {
+			fullPath.validate(dataSource.getMapping());
+		}
+		catch (InvalidPathException e) {
+			throw new FieldConfigurationException(fieldName, e.getMessage());
 		}
 	}
 
-	private Path getPath(FieldXmlConfig fieldConfig) throws FieldConfigurationException
+	private static boolean hasRelativePath(FieldXmlConfig fieldConfig)
 	{
-		PathXmlConfig path = fieldConfig.getPath();
-		if (path.isRelative() != null && path.isRelative() && dataSource.getPath() == null) {
-			String fieldName = fieldConfig.getName();
-			throw new FieldConfigurationException(fieldName, ERR_RELATIVE_PATH);
-		}
-		return new Path(path.getValue());
+		if (fieldConfig.getPath().isRelative() == null)
+			return false;
+		return fieldConfig.getPath().isRelative();
 	}
 
 	private static ICalculator getCalculator(String fieldName, String className)

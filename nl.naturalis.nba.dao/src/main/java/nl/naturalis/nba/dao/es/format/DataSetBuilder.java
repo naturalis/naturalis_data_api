@@ -89,6 +89,7 @@ public class DataSetBuilder {
 					entity.addField(fieldBuilder.build(field));
 				}
 				catch (FieldConfigurationException e0) {
+					e0.printStackTrace();
 					String msg = format(ERR_BAD_FIELD, entity.getName(), e0.getField(),
 							e0.getMessage());
 					throw new DataSetConfigurationException(msg);

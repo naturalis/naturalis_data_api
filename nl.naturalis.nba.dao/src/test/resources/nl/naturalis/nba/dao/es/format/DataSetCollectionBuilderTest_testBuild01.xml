@@ -23,8 +23,19 @@
 			<field name="id">
 				<path>unitID</path>
 			</field>
+			<field name="species">
+				<path>identifications.0.scientificName.fullScientificName</path>
+			</field>
 			<field name="collector">
 				<path relative="true">gatheringPersons.0.fullName</path>
+			</field>
+			<field name="foo">
+				<constant>bar</constant>
+			</field>
+			<field name="verbatimEventDate">
+				<calculator>
+					<java-class>VerbatimEventDateCalculator</java-class>
+				</calculator>
 			</field>
 		</fields>
 	</entity>

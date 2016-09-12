@@ -19,11 +19,11 @@ import nl.naturalis.nba.dao.es.format.IField;
  */
 public class CsvPrinter {
 
-	private IField[] fields;
+	private List<IField> fields;
 	private PrintStream ps;
 	private DocumentFlattener flattener;
 
-	public CsvPrinter(IField[] fields, DocumentFlattener flattener, OutputStream out)
+	public CsvPrinter(List<IField> fields, DocumentFlattener flattener, OutputStream out)
 	{
 		this.fields = fields;
 		this.flattener = flattener;
@@ -37,10 +37,10 @@ public class CsvPrinter {
 
 	public void printHeader()
 	{
-		for (int i = 0; i < fields.length; ++i) {
+		for (int i = 0; i < fields.size(); ++i) {
 			if (i != 0)
 				ps.print(',');
-			ps.print(fields[i].getName());
+			ps.print(fields.get(i).getName());
 		}
 		ps.println();
 	}
@@ -49,10 +49,10 @@ public class CsvPrinter {
 	{
 		List<EntityObject> records = flattener.flatten(document);
 		for (EntityObject record : records) {
-			for (int i = 0; i < fields.length; ++i) {
+			for (int i = 0; i < fields.size(); ++i) {
 				if (i != 0)
 					ps.print(',');
-				ps.print(fields[i].getValue(record));
+				ps.print(fields.get(i).getValue(record));
 			}
 			ps.println();
 		}

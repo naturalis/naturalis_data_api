@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.es.format;
 
 import static java.lang.String.format;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
  */
 public class DataSetBuilder {
 
+	private static String ERR_NO_CONFIG = "Missing configuration file: %s";
 	private static String ERR_BAD_ENTITY = "Entity %s: %s";
 	private static String ERR_NO_FIELD_FACTORY = "Entity %s: configuration requires a default or dedicated instance of IFieldFactory";
 	private static String ERR_BAD_FIELD = "Entity %s, field %s: %s";
@@ -40,6 +42,17 @@ public class DataSetBuilder {
 	private IFieldFactory defaultFieldFactory;
 	private HashMap<String, IFieldFactory> entityFieldFactories;
 
+	public DataSetBuilder(File configFile) throws DataSetConfigurationException
+	{
+		try {
+			config = new FileInputStream(configFile);
+		}
+		catch (FileNotFoundException e) {
+			String msg = format(ERR_NO_CONFIG, configFile.getAbsolutePath());
+			throw new DataSetConfigurationException(msg);
+		}
+	}
+
 	public DataSetBuilder(String configFile, boolean isResource)
 			throws DataSetConfigurationException
 	{
@@ -51,7 +64,7 @@ public class DataSetBuilder {
 				config = new FileInputStream(configFile);
 			}
 			catch (FileNotFoundException e) {
-				String msg = "Missing configuration file: " + configFile;
+				String msg = format(ERR_NO_CONFIG, configFile);
 				throw new DataSetConfigurationException(msg);
 			}
 		}

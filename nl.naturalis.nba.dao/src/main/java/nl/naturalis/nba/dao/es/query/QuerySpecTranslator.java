@@ -34,9 +34,9 @@ public class QuerySpecTranslator {
 	}
 
 	private QuerySpec spec;
-	private DocumentType type;
+	private DocumentType<?> type;
 
-	public QuerySpecTranslator(QuerySpec querySpec, DocumentType documentType)
+	public QuerySpecTranslator(QuerySpec querySpec, DocumentType<?> documentType)
 	{
 		this.spec = querySpec;
 		this.type = documentType;

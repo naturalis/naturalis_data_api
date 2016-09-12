@@ -5,6 +5,7 @@ import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
+import java.io.File;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
@@ -111,9 +112,6 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	@Override
 	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
 	{
-//		DataSetCollectionConfiguration dsc = findDataSetCollection(SPECIMEN, name);
-//		DwcaWriter writer = new DwcaWriter(dsc, out);
-//		writer.processPredefinedQuery(name);
 	}
 
 	@Override

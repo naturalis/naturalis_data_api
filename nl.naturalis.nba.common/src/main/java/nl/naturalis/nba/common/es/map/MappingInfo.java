@@ -137,7 +137,7 @@ public class MappingInfo {
 		ESField field = getFromCache(path);
 		if (field == null) {
 			LinkedHashMap<String, ESField> map = mapping.getProperties();
-			field = getField(path, map);
+			field = getField(path, path, map);
 			addToCache(path, field);
 		}
 		return field;
@@ -200,22 +200,22 @@ public class MappingInfo {
 		return isMultiValued(getField(path));
 	}
 
-	private ESField getField(Path path, Map<String, ? extends ESField> map)
+	private ESField getField(Path fullPath, Path path, Map<String, ? extends ESField> map)
 			throws NoSuchFieldException
 	{
 		ESField f = map.get(path.getElement(0));
 		if (f == null || f instanceof MultiField) {
 			// Prevent access to MultiField fields
-			throw new NoSuchFieldException(path.toString());
+			throw new NoSuchFieldException(fullPath, path.getElement(0));
 		}
 		if (path.countElements() == 1) {
 			return f;
 		}
 		if (f instanceof Document) {
 			map = ((Document) f).getProperties();
-			return getField(path.shift(), map);
+			return getField(fullPath, path.shift(), map);
 		}
-		throw new NoSuchFieldException(path.toString());
+		throw new NoSuchFieldException(fullPath, path.getElement(0));
 	}
 
 	private ESField getFromCache(Path path)

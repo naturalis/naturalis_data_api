@@ -72,11 +72,10 @@ class DataSourceBuilder {
 
 	private Path getPath()
 	{
-		String pathString = dataSourceConfig.getPath();
-		if (pathString == null || !pathString.isEmpty()) {
+		String path = dataSourceConfig.getPath();
+		if (path == null)
 			return null;
-		}
-		return new Path(pathString);
+		return new Path(path);
 	}
 
 	private QuerySpec getQuerySpec() throws DataSetConfigurationException

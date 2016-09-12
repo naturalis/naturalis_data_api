@@ -27,7 +27,7 @@ class ConditionBuilder {
 		condition.setField(config.getField());
 		condition.setOperator(ComparisonOperator.parse(config.getOperator()));
 		condition.setValue(config.getValue());
-		if (config.isNegated()) {
+		if (config.isNegated() != null && config.isNegated()) {
 			condition.negate();
 		}
 		if (config.getAnd().size() != 0) {

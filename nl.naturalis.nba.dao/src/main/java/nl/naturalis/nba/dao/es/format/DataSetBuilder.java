@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.format;
 
+import static java.lang.String.format;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -16,6 +18,14 @@ import nl.naturalis.nba.dao.es.format.config.DataSetXmlConfig;
 import nl.naturalis.nba.dao.es.format.config.EntityXmlConfig;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
 
+/*
+ * N.B. All builder classes strongly rely on XML values being whitespace-trimmed
+ * and yielding null if nothing remains (rather than an empty string). This is
+ * guaranteed by the use of StringTrimXmlAdapter class in the config package and
+ * by the &#64;XmlJavaTypeAdapter annotation in the package-info.java file of
+ * the config package. So be careful when regenerating the JAXB classes, which
+ * also end up in that package !!! Use the xjc-dataset-config.sh script.
+ */
 public class DataSetBuilder {
 
 	private static String ERR_BAD_ENTITY = "Entity %s: %s";
@@ -35,7 +45,6 @@ public class DataSetBuilder {
 	{
 		if (isResource) {
 			config = getClass().getResourceAsStream(configFile);
-			System.out.println(config);
 		}
 		else {
 			try {
@@ -80,11 +89,12 @@ public class DataSetBuilder {
 					entity.addField(fieldBuilder.build(field));
 				}
 				catch (FieldConfigurationException e0) {
-					String msg = String.format(ERR_BAD_FIELD, e0.getField(), e0.getMessage());
+					String msg = format(ERR_BAD_FIELD, entity.getName(), e0.getField(),
+							e0.getMessage());
 					throw new DataSetConfigurationException(msg);
 				}
 				catch (DataSetConfigurationException e1) {
-					String msg = String.format(ERR_BAD_ENTITY, e1.getMessage());
+					String msg = format(ERR_BAD_ENTITY, e1.getMessage());
 					throw new DataSetConfigurationException(msg);
 				}
 			}
@@ -92,14 +102,13 @@ public class DataSetBuilder {
 		return dataSet;
 	}
 
-	private IFieldFactory getFieldFactory(String entityName) throws DataSetConfigurationException
+	private IFieldFactory getFieldFactory(String entity) throws DataSetConfigurationException
 	{
-		IFieldFactory ff = entityFieldFactories.get(entityName);
-		if (ff == null) {
+		IFieldFactory ff;
+		if (entityFieldFactories == null || ((ff = entityFieldFactories.get(entity)) == null))
 			ff = defaultFieldFactory;
-		}
 		if (ff == null) {
-			String msg = String.format(ERR_NO_FIELD_FACTORY, entityName);
+			String msg = format(ERR_NO_FIELD_FACTORY, entity);
 			throw new DataSetConfigurationException(msg);
 		}
 		return ff;

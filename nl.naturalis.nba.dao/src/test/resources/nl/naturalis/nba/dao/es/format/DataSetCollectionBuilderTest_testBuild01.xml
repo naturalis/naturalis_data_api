@@ -3,7 +3,7 @@
 	<entity name="taxa">
 		<data-source>
 			<document>Specimen</document>
-			<path>identifications</path>
+			<path>gatheringEvent</path>
 			<query-spec>
 				<conditions>
 					<condition>
@@ -21,8 +21,7 @@
 		</data-source>
 		<fields>
 			<field name="collector">
-				<path>gatheringEvent.gatheringPersons.0.fullName</path>
-				<calculator></calculator>
+				<path relative="true">gatheringPersons.0.fullName</path>
 			</field>
 		</fields>
 	</entity>

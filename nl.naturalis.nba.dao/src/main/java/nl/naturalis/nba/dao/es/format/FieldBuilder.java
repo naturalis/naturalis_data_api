@@ -27,7 +27,7 @@ class FieldBuilder {
 	IField build(FieldXmlConfig fieldConfig) throws DataSetConfigurationException
 	{
 		String fieldName = fieldConfig.getName();
-		if (fieldName == null || fieldName.trim().isEmpty()) {
+		if (fieldName == null) {
 			String msg = "Missing or empty <name> element within <field> element";
 			throw new DataSetConfigurationException(msg);
 		}

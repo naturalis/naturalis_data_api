@@ -12,25 +12,9 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
 /**
- * Represents a path to a <i>single primitive</i> value in recursively nested
- * structures like Elasticsearch documents, Java objects or
- * Map&lt;String,Map&gt; objects. The path is always assumed to extend all the
- * way down to a primitive type (e.g. a string, integer, boolean, etc.); it
- * should not end with a field representing an array or object. Array access is
- * supported by including array indices in the path. For example:<br>
- * <code>
- * identications.0.defaultClassification.kingdom
- * </code><br>
- * The following paths are invalid:<br>
- * <code>
- * identications.defaultClassification.kingdom
- * identications.0.defaultClassification
- * </code><br>
- * The first path is invalid because it is ambiguous. The
- * <code>identifications</code> field within a Specimen document is an array, so
- * the next path element <i>must</i> be an array index. The second path is
- * invalid because the <code>defaultClassification</code> field represents an
- * object rather than a primitive value.
+ * Immutable class representing a path within an Elasticsearch document. Array
+ * access is supported by including array indices in the path. For example:
+ * {@code identications.0.defaultClassification.kingdom}.
  * 
  * @author Ayco Holleman
  *
@@ -92,6 +76,11 @@ public final class Path {
 		return new Path(list.toArray(new String[list.size()]));
 	}
 
+	public Path append(String path)
+	{
+		return append(new Path(path));
+	}
+
 	public Path append(Path other)
 	{
 		int size = elems.length + other.elems.length;
@@ -108,6 +97,21 @@ public final class Path {
 		return new Path(shifted);
 	}
 
+	/**
+	 * Validates that this instance represents a path to a <b>single and
+	 * primitive</b> value within an Elasticsearch document. The following paths
+	 * would fail this test:<br>
+	 * <code>
+	 * identications.defaultClassification.kingdom
+	 * identications.0.defaultClassification
+	 * </code><br>
+	 * The first path is invalid because it is ambiguous. The
+	 * <code>identifications</code> field within a Specimen document is an
+	 * array, so the next path element <i>must</i> be an array index. The second
+	 * path is invalid because the <code>defaultClassification</code> field
+	 * represents an object rather than a primitive value.
+	 * 
+	 */
 	public void validate(Mapping mapping) throws InvalidPathException
 	{
 		MappingInfo mappingInfo = new MappingInfo(mapping);
@@ -144,9 +148,9 @@ public final class Path {
 	private void checkPathComplete(MappingInfo mi) throws InvalidPathException
 	{
 		try {
-			ESField esField = mi.getField(getPurePath().getPathString());
+			ESField esField = mi.getField(getPurePath());
 			if (!(esField instanceof DocumentField)) {
-				String msg = "Incomplete path: %s" + getPathString();
+				String msg = String.format("Incomplete path: %s", this);
 				throw new InvalidPathException(msg);
 			}
 		}

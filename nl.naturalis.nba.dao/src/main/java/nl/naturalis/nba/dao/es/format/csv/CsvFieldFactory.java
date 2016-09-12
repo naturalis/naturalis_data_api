@@ -26,7 +26,7 @@ public class CsvFieldFactory implements IFieldFactory {
 			throws FieldConfigurationException
 	{
 		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
-		Path fullPath = dataSource.getPath().append(path);
+		Path fullPath = dataSource.getPath().append(path.getPurePath());
 		ESField esField;
 		try {
 			esField = mappingInfo.getField(fullPath);
@@ -48,7 +48,7 @@ public class CsvFieldFactory implements IFieldFactory {
 		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
 		ESField esField;
 		try {
-			esField = mappingInfo.getField(path);
+			esField = mappingInfo.getField(path.getPurePath());
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because path has already been checked.

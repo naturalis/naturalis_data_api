@@ -6,4 +6,7 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://data.naturalis.nl/nba-dataset-config", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlJavaTypeAdapter(value = StringTrimXmlAdapter.class, type = String.class)
 package nl.naturalis.nba.dao.es.format.config;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

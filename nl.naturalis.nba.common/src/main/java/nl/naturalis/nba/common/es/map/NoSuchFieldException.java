@@ -1,15 +1,31 @@
 package nl.naturalis.nba.common.es.map;
 
+import nl.naturalis.nba.common.Path;
+import static java.lang.String.*;
+
 public class NoSuchFieldException extends Exception {
 
-	private final String field;
+	private Path path;
+	private String field;
 
-	public NoSuchFieldException(String field)
+	public NoSuchFieldException(Path path, String field)
 	{
-		super("No such field: \"" + field + "\"");
+		super(format("Field \"%s\" in %s", field, path));
+		this.path = path;
 		this.field = field;
 	}
 
+	/**
+	 * Returns the path containing the erroneous field.
+	 */
+	public Path getFullPath()
+	{
+		return path;
+	}
+
+	/**
+	 * Returns the erroneous field.
+	 */
 	public String getField()
 	{
 		return field;

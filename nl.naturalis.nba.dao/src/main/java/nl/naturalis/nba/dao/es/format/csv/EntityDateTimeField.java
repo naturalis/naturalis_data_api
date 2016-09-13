@@ -6,16 +6,19 @@ import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
+import java.net.URI;
+
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.dao.es.format.AbstractField;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 
-class EntityDateTimeField extends AbstractCsvField {
+class EntityDateTimeField extends AbstractField {
 
-	private final Path path;
+	private Path path;
 
-	EntityDateTimeField(String name, Path path)
+	EntityDateTimeField(String name, URI term, Path path)
 	{
-		super(name);
+		super(name, term);
 		this.path = path;
 	}
 

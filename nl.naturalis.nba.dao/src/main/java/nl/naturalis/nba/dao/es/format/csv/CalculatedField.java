@@ -2,16 +2,19 @@ package nl.naturalis.nba.dao.es.format.csv;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
-import nl.naturalis.nba.dao.es.format.EntityObject;
-import nl.naturalis.nba.dao.es.format.calc.ICalculator;
+import java.net.URI;
 
-class CalculatedField extends AbstractCsvField {
+import nl.naturalis.nba.dao.es.format.AbstractField;
+import nl.naturalis.nba.dao.es.format.EntityObject;
+import nl.naturalis.nba.dao.es.format.ICalculator;
+
+class CalculatedField extends AbstractField {
 
 	private final ICalculator calculator;
 
-	CalculatedField(String name, ICalculator calculator)
+	CalculatedField(String name, URI term, ICalculator calculator)
 	{
-		super(name);
+		super(name, term);
 		this.calculator = calculator;
 	}
 

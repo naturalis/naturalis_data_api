@@ -9,6 +9,7 @@ import java.util.Map;
 
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.EntityObject;
+import nl.naturalis.nba.dao.es.format.ICalculator;
 
 /**
  * Generates a value for the &#46;verbatimEventDate&#46; field.

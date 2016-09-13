@@ -1,7 +1,8 @@
 package nl.naturalis.nba.dao.es.format;
 
+import java.net.URI;
+
 import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
  * A {@code ITypedFieldFactory} produces format-specific versions of data set
@@ -19,20 +20,23 @@ public interface IFieldFactory {
 	 * specified field.
 	 * 
 	 * @param name
+	 * @param term
 	 * @param constant
 	 * @return
 	 */
-	IField createConstantField(String name, String constant) throws FieldConfigurationException;
+	IField createConstantField(String name, URI term, String constant)
+			throws FieldConfigurationException;
 
 	/**
 	 * Returns an {@link IField} instance that uses an {@link ICalculator}
 	 * instance to calculate a value for the specified field.
 	 * 
 	 * @param name
+	 * @param term
 	 * @param calculator
 	 * @return
 	 */
-	IField createdCalculatedField(String name, ICalculator calculator)
+	IField createdCalculatedField(String name, URI term, ICalculator calculator)
 			throws FieldConfigurationException;
 
 	/**
@@ -41,11 +45,12 @@ public interface IFieldFactory {
 	 * specify the path of the source field <i>relative</i> to the
 	 * {@link EntityObject entity object}.
 	 * 
-	 * @param
+	 * @param name
+	 * @param term
 	 * @param path
 	 * @param dataSource
 	 */
-	IField createEntityDataField(String name, Path path, DataSource dataSource)
+	IField createEntityDataField(String name, URI term, Path path, DataSource dataSource)
 			throws FieldConfigurationException;
 
 	/**
@@ -56,10 +61,11 @@ public interface IFieldFactory {
 	 * elements, with each element representing a successively deeper level in
 	 * the Elasticsearch document.
 	 * 
-	 * @param
+	 * @param name
+	 * @param term
 	 * @param path
 	 * @param dataSource
 	 */
-	IField createDocumentDataField(String name, Path path, DataSource dataSource)
+	IField createDocumentDataField(String name, URI term, Path path, DataSource dataSource)
 			throws FieldConfigurationException;
 }

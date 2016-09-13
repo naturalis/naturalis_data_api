@@ -1,8 +1,6 @@
-package nl.naturalis.nba.dao.es.format.calc;
+package nl.naturalis.nba.dao.es.format;
 
 import java.util.Map;
-
-import nl.naturalis.nba.dao.es.format.EntityObject;
 
 /**
  * An {@code ICalculator} is used to determine the value for a calculated field
@@ -17,10 +15,9 @@ import nl.naturalis.nba.dao.es.format.EntityObject;
 public interface ICalculator {
 
 	/**
-	 * Initializes the map with the specified values. The keys of the map are
-	 * argument names, the values of the map are argument values. This method is
-	 * called just once on the calculator instance, right after it has been
-	 * instantiated.
+	 * Initializes the calculator with the specified values. The keys of the map
+	 * are parameter names, the values of the map are parameter values. This
+	 * method is called just once, right after instantiation of the calculator.
 	 */
 	void initialize(Map<String, String> args);
 

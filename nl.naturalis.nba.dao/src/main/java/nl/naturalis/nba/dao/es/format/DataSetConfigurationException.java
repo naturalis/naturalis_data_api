@@ -7,8 +7,4 @@ public class DataSetConfigurationException extends Exception {
 		super(message);
 	}
 
-	public DataSetConfigurationException(Throwable t)
-	{
-		super(t);
-	}
 }

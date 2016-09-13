@@ -36,8 +36,23 @@ public class DocumentFlattener {
 	 *            The path to the {@link EntityObject entity object} within the
 	 *            document. You may pass {@code null} if the entire document is
 	 *            the entity object.
+	 */
+	public DocumentFlattener(Path pathToEntity)
+	{
+		this(pathToEntity, 8);
+	}
+
+	/**
+	 * Creates a new {@code DocumentFlattener}.
+	 * 
+	 * @param pathToEntity
+	 *            The path to the {@link EntityObject entity object} within the
+	 *            document. You may pass {@code null} if the entire document is
+	 *            the entity object.
 	 * @param entitiesPerDocument
-	 *            An estimate of the average number of entities per document
+	 *            An estimate of the average number of entities per document.
+	 *            This will be used as the initial list size for the list
+	 *            returned by the {@link #flatten(Map) flatten} method.
 	 */
 	public DocumentFlattener(Path pathToEntity, int entitiesPerDocument)
 	{

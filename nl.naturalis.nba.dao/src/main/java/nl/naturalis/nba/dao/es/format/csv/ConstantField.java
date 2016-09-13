@@ -2,15 +2,18 @@ package nl.naturalis.nba.dao.es.format.csv;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
+import java.net.URI;
+
+import nl.naturalis.nba.dao.es.format.AbstractField;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 
-class ConstantField extends AbstractCsvField {
+class ConstantField extends AbstractField {
 
-	private final String value;
+	private String value;
 
-	ConstantField(String name, String value)
+	ConstantField(String name, URI term, String value)
 	{
-		super(name);
+		super(name, term);
 		this.value = escapeCsv(value);
 	}
 

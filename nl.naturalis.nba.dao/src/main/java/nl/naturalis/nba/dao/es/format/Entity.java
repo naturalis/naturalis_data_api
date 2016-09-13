@@ -16,6 +16,7 @@ public class Entity {
 
 	private String name;
 	private DataSource dataSource;
+	private IEntityFilter filter;
 	private List<IField> fields;
 
 	Entity()
@@ -40,6 +41,16 @@ public class Entity {
 	void setDataSource(DataSource dataSource)
 	{
 		this.dataSource = dataSource;
+	}
+
+	public IEntityFilter getFilter()
+	{
+		return filter;
+	}
+
+	void setFilter(IEntityFilter filter)
+	{
+		this.filter = filter;
 	}
 
 	public List<IField> getFields()

@@ -57,7 +57,7 @@ public class DwcaWriter {
 			newZipEntry(zos, entity.getName() + ".csv");
 			Path path = entity.getDataSource().getPath();
 			QuerySpec query = entity.getDataSource().getQuerySpec();
-			DocumentFlattener flattener = new DocumentFlattener(path, 8);
+			DocumentFlattener flattener = new DocumentFlattener(path);
 			SearchResponse response;
 			try {
 				response = executeQuery(query);

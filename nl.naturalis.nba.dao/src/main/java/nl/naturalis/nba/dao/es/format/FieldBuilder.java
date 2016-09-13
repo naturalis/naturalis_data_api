@@ -1,8 +1,10 @@
 package nl.naturalis.nba.dao.es.format;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
 
 class FieldBuilder {
@@ -13,6 +15,7 @@ class FieldBuilder {
 	private static String ERR_MISSING_ELEMENT = "One of <path>, <constant>, <calculator> required within <field>";
 	private static String ERR_NO_SUCH_CALCULATOR = "No such calculator: \"%s\". Please specify a valid Java class";
 	private static String ERR_NOT_A_CALCULATOR = "Class %s does not implement ICalculator";
+	private static String ERR_BAD_TERM = "Invalid term: %s";
 
 	private IFieldFactory fieldFactory;
 	private DataSource dataSource;
@@ -54,34 +57,37 @@ class FieldBuilder {
 
 	IField createDataField(FieldXmlConfig fieldConfig) throws DataSetConfigurationException
 	{
-		String fieldName = fieldConfig.getName();
+		String name = fieldConfig.getName();
+		URI term = getTerm(fieldConfig);
 		Path path = new Path(fieldConfig.getPath().getValue());
 		boolean relative = hasRelativePath(fieldConfig);
 		if (dataSource.getMapping() != null) {
-			validatePath(path, relative, fieldName);
+			validatePath(path, relative, name);
 		}
 		if (relative) {
 			if (dataSource.getPath() == null) {
-				throw new FieldConfigurationException(fieldName, ERR_RELATIVE_PATH);
+				throw new FieldConfigurationException(name, ERR_RELATIVE_PATH);
 			}
-			return fieldFactory.createEntityDataField(fieldName, path, dataSource);
+			return fieldFactory.createEntityDataField(name, term, path, dataSource);
 		}
-		return fieldFactory.createDocumentDataField(fieldName, path, dataSource);
+		return fieldFactory.createDocumentDataField(name, term, path, dataSource);
 	}
 
 	IField createCalculatedField(FieldXmlConfig fieldConfig) throws DataSetConfigurationException
 	{
-		String fieldName = fieldConfig.getName();
+		String name = fieldConfig.getName();
+		URI term = getTerm(fieldConfig);
 		String className = fieldConfig.getCalculator().getJavaClass();
-		ICalculator calculator = getCalculator(fieldName, className);
-		return fieldFactory.createdCalculatedField(fieldName, calculator);
+		ICalculator calculator = getCalculator(name, className);
+		return fieldFactory.createdCalculatedField(name, term, calculator);
 	}
 
 	IField createConstantField(FieldXmlConfig fieldConfig) throws FieldConfigurationException
 	{
-		String field = fieldConfig.getName();
+		String name = fieldConfig.getName();
+		URI term = getTerm(fieldConfig);
 		String value = fieldConfig.getConstant();
-		return fieldFactory.createConstantField(field, value);
+		return fieldFactory.createConstantField(name, term, value);
 	}
 
 	private void validatePath(Path path, boolean relative, String fieldName)
@@ -116,6 +122,20 @@ class FieldBuilder {
 		}
 		catch (InvalidPathException e) {
 			throw new FieldConfigurationException(fieldName, e.getMessage());
+		}
+	}
+
+	private static URI getTerm(FieldXmlConfig fieldConfig) throws FieldConfigurationException
+	{
+		String term = fieldConfig.getTerm();
+		if (term == null)
+			return null;
+		try {
+			return new URI(term);
+		}
+		catch (URISyntaxException e) {
+			String msg = String.format(ERR_BAD_TERM, term);
+			throw new FieldConfigurationException(fieldConfig.getName(), msg);
 		}
 	}
 

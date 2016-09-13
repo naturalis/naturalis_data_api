@@ -5,16 +5,19 @@ import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
+import java.net.URI;
+
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.dao.es.format.AbstractField;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 
-class DocumentDataField extends AbstractCsvField {
+class DocumentDataField extends AbstractField {
 
-	private final Path path;
+	private Path path;
 
-	DocumentDataField(String name, Path path)
+	DocumentDataField(String name, URI term, Path path)
 	{
-		super(name);
+		super(name, term);
 		this.path = path;
 	}
 

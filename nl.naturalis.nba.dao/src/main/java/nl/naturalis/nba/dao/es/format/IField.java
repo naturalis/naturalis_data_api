@@ -1,8 +1,7 @@
 package nl.naturalis.nba.dao.es.format;
 
+import java.net.URI;
 import java.util.Map;
-
-import nl.naturalis.nba.dao.es.format.calc.ICalculator;
 
 /**
  * <p>
@@ -52,6 +51,14 @@ public interface IField {
 	 * @return
 	 */
 	String getName();
+
+	/**
+	 * A unique identifier for the concept expressed in this field. This could,
+	 * for example, the id of a Dublin Core term or a Darwin Core term. This
+	 * method may return {@code null} if the field's content does not correspond
+	 * to a strictly defined concept.
+	 */
+	URI getTerm();
 
 	/**
 	 * The value to be written to the data set, formatted and escaped as

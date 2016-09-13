@@ -3,7 +3,11 @@
 	xmlns:self="http://data.naturalis.nl/nba-dataset-config" version="1.0"
 >
 
-	<!-- ANNOTATE XJC-GENERATED JAXB CLASS WITH @XmlRootElement(name = "dataset-config") !!! -->
+	<!-- IMPORTANT: After xjc has generated a class for DataSetXmlConfig-->
+	<!-- [1] Annotate the class with: @XmlRootElement(name = "dataset-config") -->
+	<!-- [2] Set name attribute of @XmlType annotation to empty string -->
+	<!-- Otherwise you WILL get errors when parsing config files using JAXB -->
+	
 	<xs:complexType name="DataSetXmlConfig">
 		<xs:sequence>
 			<xs:element name="entity" type="self:EntityXmlConfig" maxOccurs="unbounded" />
@@ -13,6 +17,7 @@
 	<xs:complexType name="EntityXmlConfig">
 		<xs:sequence>
 			<xs:element name="data-source" type="self:DataSourceXmlConfig" />
+			<xs:element name="filter" type="self:PluginXmlConfig" minOccurs="0" />
 			<xs:element name="fields" type="self:FieldsXmlConfig" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -40,10 +45,11 @@
 			<xs:choice>
 				<xs:element name="path" type="self:PathXmlConfig" />
 				<xs:element name="constant" type="xs:string" />
-				<xs:element name="calculator" type="self:CalculatorXmlConfig" />
+				<xs:element name="calculator" type="self:PluginXmlConfig" />
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="term" type="xs:anyURI" />
 	</xs:complexType>
 
 	<xs:complexType name="PathXmlConfig">
@@ -54,19 +60,20 @@
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:complexType name="CalculatorArgXmlConfig">
+	<xs:complexType name="PluginXmlConfig">
+		<xs:sequence>
+			<xs:element name="java-class" type="xs:string" />
+			<xs:element name="arg" type="self:PluginParamXmlConfig" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="PluginParamXmlConfig">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="name" type="xs:string" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
-	</xs:complexType>
-
-	<xs:complexType name="CalculatorXmlConfig">
-		<xs:sequence>
-			<xs:element name="java-class" type="xs:string" />
-			<xs:element name="arg" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="QuerySpecXmlConfig">

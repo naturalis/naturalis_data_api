@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.es.query;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
@@ -36,7 +36,7 @@ public class FieldCheck {
 		catch (NoSuchFieldException e) {
 			throw new InvalidConditionException(e.getMessage());
 		}
-		return field instanceof DocumentField;
+		return field instanceof PrimitiveField;
 	}
 
 }

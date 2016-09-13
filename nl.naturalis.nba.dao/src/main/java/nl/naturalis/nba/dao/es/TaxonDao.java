@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.api.ITaxonAccess;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.exception.DaoException;
@@ -20,7 +21,6 @@ import nl.naturalis.nba.dao.es.format.dwca.DwcaWriter;
 
 public class TaxonDao implements ITaxonAccess {
 
-	@SuppressWarnings("unused")
 	private static Logger logger = getLogger(TaxonDao.class);
 
 	public TaxonDao()
@@ -33,10 +33,12 @@ public class TaxonDao implements ITaxonAccess {
 	}
 
 	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaGetDataSet(String name, ZipOutputStream out) throws NoSuchDataSetException
 	{
 		File root = DaoRegistry.getInstance().getConfigurationDirectory();
 		File confFile = FileUtil.newFile(root, "dwca/taxon/" + name + ".dataset-config.xml");
+		logger.info("Searching for configuration file for data set \"{}\": {}",
+				confFile.getAbsolutePath());
 		if (!confFile.isFile()) {
 			String msg = String.format("No such data set: \"%s\"", name);
 			throw new DaoException(msg);

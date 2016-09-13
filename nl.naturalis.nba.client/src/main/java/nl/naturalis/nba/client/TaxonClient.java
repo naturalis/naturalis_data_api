@@ -3,6 +3,7 @@ package nl.naturalis.nba.client;
 import java.util.zip.ZipOutputStream;
 
 import nl.naturalis.nba.api.ITaxonAccess;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 
@@ -22,7 +23,7 @@ public class TaxonClient extends AbstractClient implements ITaxonAccess {
 	}
 
 	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaGetDataSet(String name, ZipOutputStream out) throws NoSuchDataSetException
 	{
 		// TODO Auto-generated method stub
 		

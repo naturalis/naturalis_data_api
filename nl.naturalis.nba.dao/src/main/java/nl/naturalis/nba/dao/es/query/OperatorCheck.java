@@ -7,7 +7,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.AnalyzableField;
-import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
@@ -31,9 +31,9 @@ public class OperatorCheck {
 
 	public boolean ok() throws InvalidConditionException
 	{
-		DocumentField field;
+		PrimitiveField field;
 		try {
-			field = (DocumentField) mappingInfo.getField(condition.getField());
+			field = (PrimitiveField) mappingInfo.getField(condition.getField());
 		}
 		catch (NoSuchFieldException e) {
 			throw new InvalidConditionException(e.getMessage());

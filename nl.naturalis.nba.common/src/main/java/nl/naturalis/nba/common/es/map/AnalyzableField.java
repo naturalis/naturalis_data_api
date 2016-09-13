@@ -5,13 +5,13 @@ import java.util.LinkedHashMap;
 /**
  * An {@code IndexableField} is a {@link ESField} that lets you specify if and
  * how it is indexed. A {@code Field} can be either a top-level
- * {@link DocumentField} or a virtual "{@link MultiField multi-field}"
+ * {@link PrimitiveField} or a virtual "{@link MultiField multi-field}"
  * underneath it.
  * 
  * @author Ayco Holleman
  *
  */
-public class AnalyzableField extends DocumentField implements IAnalyzable {
+public class AnalyzableField extends PrimitiveField implements IAnalyzable {
 
 	protected String analyzer;
 	private LinkedHashMap<String, MultiField> fields;

@@ -8,17 +8,15 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 
 /**
- * An entity object is the object within an Elasticsearch {@link DocumentType
- * document} that functions as the main entity for a {@link Entity
- * file} within a data set. Suppose, for example, that you want to print out
- * specimen collector information, then the entity object would be the
+ * An entity object is an Elasticsearch document or an object nested within it
+ * that functions as the main data source for a record within a data set.
+ * Suppose, for example, that you want to print out specimen collector
+ * information, then the entity object would be the
  * {@link GatheringEvent#getGatheringPersons() gatheringPersons} object within
  * the {@link Specimen#getGatheringEvent() gatheringEvent} object within the
  * {@link DocumentType#SPECIMEN Specimen} document type. Since there may be
  * multiple collectors associated with a specimen, one specimen document may
- * yield multiple specimen collector records. The entity object may possibly be
- * the entire Elasticsearch document rather than any object nested within it
- * (e.g. if you wanted to print out specimen information).
+ * yield multiple specimen collector records.
  * 
  * See also {@link Entity#getPathString()}.
  * 
@@ -29,6 +27,12 @@ public class EntityObject {
 
 	private Map<String, Object> data;
 	private EntityObject parent;
+
+	EntityObject(Map<String, Object> data)
+	{
+		this.data = data;
+		this.parent = null;
+	}
 
 	EntityObject(Map<String, Object> data, EntityObject parent)
 	{

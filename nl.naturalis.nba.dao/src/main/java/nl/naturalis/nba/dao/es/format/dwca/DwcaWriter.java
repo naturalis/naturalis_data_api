@@ -19,10 +19,12 @@ import org.elasticsearch.search.sort.SortParseElement;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSet;
+import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
 import nl.naturalis.nba.dao.es.format.Entity;
 import nl.naturalis.nba.dao.es.format.IField;
@@ -49,14 +51,23 @@ public class DwcaWriter {
 		this.zos = zos;
 	}
 
-	public void write() throws InvalidQueryException
+	public void write() throws DataSetConfigurationException
 	{
 		for (Entity entity : dataSet.getEntities()) {
 			newZipEntry(zos, entity.getName() + ".csv");
 			Path path = entity.getDataSource().getPath();
 			QuerySpec query = entity.getDataSource().getQuerySpec();
 			DocumentFlattener flattener = new DocumentFlattener(path, 8);
-			SearchResponse response = executeQuery(query);
+			SearchResponse response;
+			try {
+				response = executeQuery(query);
+			}
+			catch (InvalidQueryException e) {
+				String fmt = "Invalid query specification for entity %s:\n%s";
+				String queryString = JsonUtil.toPrettyJson(query);
+				String msg = String.format(fmt, entity, queryString);
+				throw new DataSetConfigurationException(msg);
+			}
 			List<IField> fields = entity.getFields();
 			CsvPrinter csvPrinter = new CsvPrinter(fields, flattener, zos);
 			csvPrinter.printHeader();

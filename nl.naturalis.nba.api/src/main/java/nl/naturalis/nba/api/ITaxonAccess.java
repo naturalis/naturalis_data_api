@@ -28,7 +28,7 @@ public interface ITaxonAccess {
 	 *            The output stream to write to
 	 * @throws InvalidQueryException
 	 */
-	void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException;
+	void dwcaGetDataSet(String name, ZipOutputStream out) throws NoSuchDataSetException;
 
 	/**
 	 * Returns the names of all predefined data sets with taxon/species data.

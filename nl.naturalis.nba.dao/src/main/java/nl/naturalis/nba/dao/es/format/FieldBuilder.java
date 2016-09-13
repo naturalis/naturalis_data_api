@@ -87,13 +87,32 @@ class FieldBuilder {
 	private void validatePath(Path path, boolean relative, String fieldName)
 			throws FieldConfigurationException
 	{
-		Path fullPath;
-		if (dataSource.getPath() == null || !relative)
-			fullPath = path;
-		else
-			fullPath = dataSource.getPath().append(path);
+		DataSource ds = this.dataSource;
 		try {
-			fullPath.validate(dataSource.getMapping());
+			Path fullPath;
+			if (ds.getPath() == null || !relative) {
+				fullPath = path;
+			}
+			else if (ds.getPath().isArray(ds.getMapping())) {
+				/*
+				 * If the entity object within the Elasticsearch document is an
+				 * array, then to validate the entire path, we need to insert an
+				 * arbitrary array index between the path to the entity object
+				 * and the path to the field (relative to the entity object).
+				 * For example, if the entity object is the "identifications"
+				 * array within the Specimen document, then the only way we can
+				 * verify if "defaultClassification" is a valid field, is by
+				 * constructing the path
+				 * "identifications.0.defaultClassification". The path
+				 * "identifications.defaultClassification" would fail
+				 * validation. See the validate method in the Path class.
+				 */
+				fullPath = ds.getPath().append("0").append(path);
+			}
+			else {
+				fullPath = ds.getPath().append(path);
+			}
+			fullPath.validate(ds.getMapping());
 		}
 		catch (InvalidPathException e) {
 			throw new FieldConfigurationException(fieldName, e.getMessage());

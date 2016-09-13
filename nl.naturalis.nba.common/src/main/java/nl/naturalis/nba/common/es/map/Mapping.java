@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Models an Elasticsearch type mapping.
  * 
- * @see Document
+ * @see ComplexField
  * 
  * @author Ayco Holleman
  *
  */
-public class Mapping extends Document {
+public class Mapping extends ComplexField {
 
 	/* NBA types are always strictly typed. */
 	private final String dynamic = "strict";

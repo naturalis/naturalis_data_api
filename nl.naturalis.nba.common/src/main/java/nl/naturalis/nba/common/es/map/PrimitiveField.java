@@ -1,10 +1,10 @@
 package nl.naturalis.nba.common.es.map;
 
-public class DocumentField extends ESField {
+public class PrimitiveField extends ESField {
 
 	protected Index index;
 
-	public DocumentField(ESDataType type)
+	public PrimitiveField(ESDataType type)
 	{
 		this.type = type;
 	}

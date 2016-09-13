@@ -31,15 +31,15 @@ public class MappingInfo {
 	 * Determines if the specified field <i>or any of its ancestors</i> is a
 	 * multi-valued field.
 	 * 
-	 * @see ESField#isMultiValued()
+	 * @see ESField#isArray()
 	 * 
 	 * @param field
 	 * @return
 	 */
-	public static boolean isMultiValued(ESField field)
+	public static boolean isArrayOrDescendendantOfArray(ESField field)
 	{
 		for (ESField f = field; f != null; f = f.getParent()) {
-			if (f.isMultiValued()) {
+			if (f.isArray()) {
 				return true;
 			}
 		}
@@ -53,12 +53,12 @@ public class MappingInfo {
 	 * @param field
 	 * @return
 	 */
-	public static List<Document> getAncestors(ESField field)
+	public static List<ComplexField> getAncestors(ESField field)
 	{
-		List<Document> ancestors = new ArrayList<>(3);
+		List<ComplexField> ancestors = new ArrayList<>(3);
 		field = field.getParent();
 		while (field.getParent() != null) {
-			ancestors.add((Document) field);
+			ancestors.add((ComplexField) field);
 			field = field.getParent();
 		}
 		return ancestors;
@@ -76,16 +76,16 @@ public class MappingInfo {
 	 */
 	public static String getNestedPath(ESField field)
 	{
-		List<Document> in = getAncestors(field);
-		List<Document> out;
+		List<ComplexField> in = getAncestors(field);
+		List<ComplexField> out;
 		for (int i = 0; i < in.size(); ++i) {
-			Document d = in.get(i);
+			ComplexField d = in.get(i);
 			if (d.getType() == NESTED) {
 				out = in.subList(i, in.size());
 				Collections.reverse(out);
-				return CollectionUtil.implode(out, ".", new Stringifier<Document>() {
+				return CollectionUtil.implode(out, ".", new Stringifier<ComplexField>() {
 
-					public String execute(Document doc, Object... args)
+					public String execute(ComplexField doc, Object... args)
 					{
 						return doc.getName();
 					}
@@ -167,7 +167,7 @@ public class MappingInfo {
 	 * @return
 	 * @throws NoSuchFieldException
 	 */
-	public List<Document> getAncestors(String path) throws NoSuchFieldException
+	public List<ComplexField> getAncestors(String path) throws NoSuchFieldException
 	{
 		return getAncestors(getField(path));
 	}
@@ -189,7 +189,7 @@ public class MappingInfo {
 	}
 
 	/**
-	 * See {@link #isMultiValued(ESField)}.
+	 * See {@link #isArrayOrDescendendantOfArray(ESField)}.
 	 * 
 	 * @param path
 	 * @return
@@ -197,7 +197,7 @@ public class MappingInfo {
 	 */
 	public boolean isMultiValued(String path) throws NoSuchFieldException
 	{
-		return isMultiValued(getField(path));
+		return isArrayOrDescendendantOfArray(getField(path));
 	}
 
 	private ESField getField(Path fullPath, Path path, Map<String, ? extends ESField> map)
@@ -211,8 +211,8 @@ public class MappingInfo {
 		if (path.countElements() == 1) {
 			return f;
 		}
-		if (f instanceof Document) {
-			map = ((Document) f).getProperties();
+		if (f instanceof ComplexField) {
+			map = ((ComplexField) f).getProperties();
 			return getField(fullPath, path.shift(), map);
 		}
 		throw new NoSuchFieldException(fullPath, path.getElement(0));

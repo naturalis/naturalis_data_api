@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.es.format;
 
 public class DataSetConfigurationException extends Exception {
 
-	DataSetConfigurationException(String message)
+	public DataSetConfigurationException(String message)
 	{
 		super(message);
 	}

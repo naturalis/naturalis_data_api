@@ -59,14 +59,14 @@ public class MappingFactory {
 		return mapping;
 	}
 
-	private static void addFieldsToDocument(Document document, Class<?> type,
+	private static void addFieldsToDocument(ComplexField document, Class<?> type,
 			HashSet<Class<?>> ancestors)
 	{
 		for (Field javaField : getFields(type)) {
 			ESField esField = createESField(javaField, ancestors);
 			esField.setName(javaField.getName());
 			esField.setParent(document);
-			esField.setMultiValued(isMultiValued(javaField));
+			esField.setArray(isMultiValued(javaField));
 			document.addField(javaField.getName(), esField);
 		}
 		for (Method javaMethod : getMappedProperties(type)) {
@@ -75,7 +75,7 @@ public class MappingFactory {
 			ESField esField = createESField(javaMethod, ancestors);
 			esField.setName(fieldName);
 			esField.setParent(document);
-			esField.setMultiValued(isMultiValued(javaMethod));
+			esField.setArray(isMultiValued(javaMethod));
 			document.addField(fieldName, esField);
 		}
 	}
@@ -118,7 +118,7 @@ public class MappingFactory {
 		return createSimpleField(method, esType);
 	}
 
-	private static DocumentField createSimpleField(AnnotatedElement fm, ESDataType esType)
+	private static PrimitiveField createSimpleField(AnnotatedElement fm, ESDataType esType)
 	{
 		if (esType == GEO_SHAPE) {
 			return new GeoShapeField();
@@ -131,48 +131,48 @@ public class MappingFactory {
 				addMultiFields(field, fm);
 				return field;
 			}
-			return new DocumentField(esType);
+			return new PrimitiveField(esType);
 		}
-		DocumentField field = new DocumentField(esType);
+		PrimitiveField field = new PrimitiveField(esType);
 		field.setIndex(NO);
 		return field;
 	}
 
-	private static Document createDocument(Field field, Class<?> mapToType,
+	private static ComplexField createDocument(Field field, Class<?> mapToType,
 			HashSet<Class<?>> ancestors)
 	{
 		Class<?> realType = field.getType();
-		Document document;
+		ComplexField document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
 			if (field.getAnnotation(NotNested.class) == null) {
-				document = new Document(NESTED);
+				document = new ComplexField(NESTED);
 			}
 			else {
-				document = new Document();
+				document = new ComplexField();
 			}
 		}
 		else {
-			document = new Document();
+			document = new ComplexField();
 		}
 		addFieldsToDocument(document, mapToType, ancestors);
 		return document;
 	}
 
-	private static Document createDocument(Method method, Class<?> mapToType,
+	private static ComplexField createDocument(Method method, Class<?> mapToType,
 			HashSet<Class<?>> ancestors)
 	{
 		Class<?> realType = method.getReturnType();
-		Document document;
+		ComplexField document;
 		if (realType.isArray() || isA(realType, Collection.class)) {
 			if (method.getAnnotation(NotNested.class) == null) {
-				document = new Document(NESTED);
+				document = new ComplexField(NESTED);
 			}
 			else {
-				document = new Document();
+				document = new ComplexField();
 			}
 		}
 		else {
-			document = new Document();
+			document = new ComplexField();
 		}
 		addFieldsToDocument(document, mapToType, ancestors);
 		return document;

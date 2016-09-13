@@ -11,7 +11,7 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.SortField;
-import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
@@ -36,10 +36,10 @@ public class SortFieldsTranslator {
 			String path = sf.getPath();
 			try {
 				ESField f = mappingInfo.getField(path);
-				if (!(f instanceof DocumentField)) {
+				if (!(f instanceof PrimitiveField)) {
 					throw invalidSortField(path);
 				}
-				if (MappingInfo.isMultiValued(f)) {
+				if (MappingInfo.isArrayOrDescendendantOfArray(f)) {
 					throw sortOnMultiValuedField(path);
 				}
 			}

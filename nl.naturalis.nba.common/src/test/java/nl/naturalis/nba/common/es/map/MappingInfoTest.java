@@ -40,7 +40,7 @@ public class MappingInfoTest {
 	{
 		ESField f = personInfo.getField("pets");
 		assertNotNull("01", f);
-		assertTrue("02", f instanceof Document);
+		assertTrue("02", f instanceof ComplexField);
 	}
 
 	@Test
@@ -135,14 +135,14 @@ public class MappingInfoTest {
 	@Test(expected = NoSuchFieldException.class)
 	public void testGetAncestors_01() throws NoSuchFieldException
 	{
-		List<Document> ancestors = personInfo.getAncestors("bla");
+		List<ComplexField> ancestors = personInfo.getAncestors("bla");
 		assertEquals("01", 2, ancestors.size());
 	}
 
 	@Test(expected = NoSuchFieldException.class)
 	public void testGetAncestors_02() throws NoSuchFieldException
 	{
-		List<Document> ancestors = personInfo.getAncestors("pets.bla");
+		List<ComplexField> ancestors = personInfo.getAncestors("pets.bla");
 		assertEquals("01", 2, ancestors.size());
 	}
 
@@ -150,7 +150,7 @@ public class MappingInfoTest {
 	public void testGetAncestors_03() throws NoSuchFieldException
 	{
 		String path = "addressBook.country.name";
-		List<Document> ancestors = personInfo.getAncestors(path);
+		List<ComplexField> ancestors = personInfo.getAncestors(path);
 		assertEquals("01", 2, ancestors.size());
 	}
 

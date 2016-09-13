@@ -5,7 +5,8 @@ import static java.lang.System.arraycopy;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -30,13 +31,13 @@ public final class Path {
 
 	public Path(String[] elements)
 	{
-		this.elems = elements;
+		this.elems = new String[elements.length];
+		arraycopy(elements, 0, this.elems, 0, elements.length);
 	}
 
 	public Path(Path other)
 	{
-		this.elems = new String[other.elems.length];
-		arraycopy(other.elems, 0, this.elems, 0, this.elems.length);
+		this(other.elems);
 	}
 
 	public String getPathString()
@@ -98,9 +99,10 @@ public final class Path {
 	}
 
 	/**
-	 * Validates that this instance represents a path to a <b>single and
-	 * primitive</b> value within an Elasticsearch document. The following paths
-	 * would fail this test:<br>
+	 * Validates that this instance represents an <b>unambiguous</b> path to a
+	 * <b>single</b> and <b>primitive</b> value within an Elasticsearch
+	 * document. The following paths would fail this test (given the
+	 * {@link Specimen} document type):<br>
 	 * <code>
 	 * identications.defaultClassification.kingdom
 	 * identications.0.defaultClassification
@@ -115,9 +117,41 @@ public final class Path {
 	public void validate(Mapping mapping) throws InvalidPathException
 	{
 		MappingInfo mappingInfo = new MappingInfo(mapping);
-		checkPathComplete(mappingInfo);
+		if (!isPrimitive(mapping)) {
+			String msg = String.format("Incomplete path: %s", this);
+			throw new InvalidPathException(msg);
+		}
 		checkRequiredArrayIndices(mappingInfo);
 		checkIllegalArrayIndices(mappingInfo);
+	}
+
+	/**
+	 * Whether or not this {@code Path} instance represents a primitive value.
+	 */
+	public boolean isPrimitive(Mapping mapping) throws InvalidPathException
+	{
+		MappingInfo mappingInfo = new MappingInfo(mapping);
+		ESField esField;
+		try {
+			esField = mappingInfo.getField(getPurePath());
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidPathException(e.getMessage());
+		}
+		return (esField instanceof PrimitiveField);
+	}
+
+	public boolean isArray(Mapping mapping) throws InvalidPathException
+	{
+		MappingInfo mappingInfo = new MappingInfo(mapping);
+		ESField esField;
+		try {
+			esField = mappingInfo.getField(getPurePath());
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidPathException(e.getMessage());
+		}
+		return esField.isArray();
 	}
 
 	@Override
@@ -143,25 +177,8 @@ public final class Path {
 	}
 
 	/*
-	 * Make sure path references a simple, primitive value (not an object).
-	 */
-	private void checkPathComplete(MappingInfo mi) throws InvalidPathException
-	{
-		try {
-			ESField esField = mi.getField(getPurePath());
-			if (!(esField instanceof DocumentField)) {
-				String msg = String.format("Incomplete path: %s", this);
-				throw new InvalidPathException(msg);
-			}
-		}
-		catch (NoSuchFieldException e) {
-			throw new InvalidPathException(e.getMessage());
-		}
-	}
-
-	/*
-	 * Make sure array indices are ALWAYS used if the preceding path element
-	 * references an array.
+	 * Make sure path elements representing an array are followed by an array
+	 * index.
 	 */
 	private void checkRequiredArrayIndices(MappingInfo mi) throws InvalidPathException
 	{
@@ -180,7 +197,7 @@ public final class Path {
 			catch (NoSuchFieldException e) {
 				throw new InvalidPathException(e.getMessage());
 			}
-			if (esField.isMultiValued()) {
+			if (esField.isArray()) {
 				if (i == elems.length - 1 || !isInteger(elems[i + 1])) {
 					String fmt = "Array index required after multi-valued field %s";
 					String msg = String.format(fmt, sb.toString());
@@ -191,8 +208,8 @@ public final class Path {
 	}
 
 	/*
-	 * Make sure array indices are ONLY used if the preceding path element
-	 * references an array.
+	 * Make sure path elements representing a primitive value are NOT followed
+	 * by array index.
 	 */
 	private void checkIllegalArrayIndices(MappingInfo mi) throws InvalidPathException
 	{
@@ -211,7 +228,7 @@ public final class Path {
 			catch (NoSuchFieldException e) {
 				throw new InvalidPathException(e.getMessage());
 			}
-			if (!esField.isMultiValued()) {
+			if (!esField.isArray()) {
 				if (i < elems.length - 1 && isInteger(elems[i + 1])) {
 					String fmt = "Illegal array index following single-valued field: %s";
 					String msg = String.format(fmt, sb.toString());

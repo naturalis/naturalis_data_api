@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Abstract base class for all nodes within a mapping. The {@link Mapping}
- * object itself, any nested {@link Document documents} within it, all
- * {@link DocumentField fields} and all {@link MultiField multi-fields}
+ * object itself, any nested {@link ComplexField documents} within it, all
+ * {@link PrimitiveField fields} and all {@link MultiField multi-fields}
  * underneath a field are instances of an {@link ESField}.
  * 
  * @author Ayco Holleman
@@ -21,7 +21,7 @@ public abstract class ESField {
 	@JsonIgnore
 	protected ESField parent;
 	@JsonIgnore
-	protected boolean multiValued;
+	protected boolean array;
 
 	public String getName()
 	{
@@ -54,24 +54,25 @@ public abstract class ESField {
 	}
 
 	/**
-	 * Whether or not the field is multi-valued. In Elasticsearch every field is
-	 * principally multi-valued. However, because the NBA generates
-	 * Elasticsearch type mappings from Java {@link Class} objects, we can
-	 * determine in advance whether this is actually going to be the case. If
-	 * the Java field corresponding to an Elasticsearch field is an array or a
-	 * {@link Collection}, the Elasticsearch field may contain multiple values.
-	 * Otherwise it definitely is single-valued.
+	 * Whether or not the field is multi-valued. There is no such thing as an
+	 * "array" data type in Elasticsearch. Every field is principally
+	 * multi-valued. Multiple values can be stored in the same field. However,
+	 * because the NBA generates Elasticsearch type mappings from {@link Class}
+	 * objects, we know in advance whether this is actually going to be the
+	 * case. If the Java field corresponding to an Elasticsearch field is an
+	 * array or a {@link Collection} object, the Elasticsearch field may contain
+	 * multiple values. Otherwise it definitely is single-valued.
 	 * 
 	 * @return
 	 */
-	public boolean isMultiValued()
+	public boolean isArray()
 	{
-		return multiValued;
+		return array;
 	}
 
-	public void setMultiValued(boolean multiValued)
+	public void setArray(boolean array)
 	{
-		this.multiValued = multiValued;
+		this.array = array;
 	}
 
 }

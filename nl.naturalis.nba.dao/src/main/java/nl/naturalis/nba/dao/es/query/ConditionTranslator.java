@@ -20,7 +20,7 @@ import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.es.map.DocumentField;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.es.DocumentType;
@@ -134,16 +134,16 @@ public abstract class ConditionTranslator {
 	}
 
 	/**
-	 * Returns a {@link DocumentField} instance corresponding to the field
+	 * Returns a {@link PrimitiveField} instance corresponding to the field
 	 * specified in the condition.
 	 * 
 	 * @return
 	 * @throws InvalidConditionException 
 	 */
-	DocumentField field() throws InvalidConditionException
+	PrimitiveField field() throws InvalidConditionException
 	{
 		try {
-			return (DocumentField) mappingInfo.getField(path());
+			return (PrimitiveField) mappingInfo.getField(path());
 		}
 		catch (NoSuchFieldException e) {
 			throw new InvalidConditionException(e.getMessage());

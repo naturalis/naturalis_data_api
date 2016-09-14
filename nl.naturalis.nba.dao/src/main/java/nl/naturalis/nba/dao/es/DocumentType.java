@@ -51,7 +51,8 @@ public class DocumentType<T extends ESType> {
 				 * DocumentType instances defined above, and add the applicable
 				 * DocumentType instances to the new IndexInfo instance.
 				 */
-				new IndexInfo(cfg);
+				@SuppressWarnings("unused")
+				IndexInfo indexInfo = new IndexInfo(cfg);
 			}
 		}
 		catch (Throwable t) {

@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
+import java.net.URI;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -28,10 +30,10 @@ class Field {
 	{
 	}
 
-	Field(String index, String Term)
+	Field(int index, URI term)
 	{
-		this.index = index;
-		this.term = Term;
+		this.index = String.valueOf(index);
+		this.term = term.toString();
 	}
 
 	String getIndex()

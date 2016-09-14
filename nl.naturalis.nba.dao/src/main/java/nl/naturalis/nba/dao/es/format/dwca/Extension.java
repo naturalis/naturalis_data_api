@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "extension")
-abstract class Extension {
+class Extension {
 
 	@XmlAttribute(name = "encoding")
 	private final String encoding = ENCODING;
@@ -37,15 +37,30 @@ abstract class Extension {
 	private final String ignoreHeaderLines = IGNORE_HEADER_LINES;
 	@XmlElement(name = "coreid")
 	private final CoreId coreId = new CoreId();
-	
+
 	@XmlAttribute(name = "rowType")
-	String rowType;
+	private String rowType;
 	@XmlElement(name = "files")
-	Files files;
+	private Files files;
 	@XmlElement(name = "field")
-	List<Field> fields;
+	private List<Field> fields;
 
 	Extension()
 	{
+	}
+
+	void setRowType(String rowType)
+	{
+		this.rowType = rowType;
+	}
+
+	void setFiles(Files files)
+	{
+		this.files = files;
+	}
+
+	void setFields(List<Field> fields)
+	{
+		this.fields = fields;
 	}
 }

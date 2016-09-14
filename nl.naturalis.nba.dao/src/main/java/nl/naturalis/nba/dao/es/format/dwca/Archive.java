@@ -4,6 +4,7 @@ import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.METADATA;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS;
 import static nl.naturalis.nba.dao.es.format.dwca.DwcaConstants.XMLNS_XSI;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -23,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "archive")
-abstract class Archive {
+class Archive {
 
 	@XmlAttribute(name = "metadata")
 	private final String metadata = METADATA;
@@ -33,12 +34,22 @@ abstract class Archive {
 	private final String xmlnsxsi = XMLNS_XSI;
 
 	@XmlElement(name = "core")
-	Core core;
+	private Core core;
 	@XmlElement(name = "extension")
-	List<Extension> extensions;
+	private List<Extension> extensions = new ArrayList<>(8);
 
 	Archive()
 	{
+	}
+
+	void setCore(Core core)
+	{
+		this.core = core;
+	}
+
+	void addExtension(Extension extension)
+	{
+		extensions.add(extension);
 	}
 
 }

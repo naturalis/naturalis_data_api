@@ -14,11 +14,11 @@ import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
  * @author Ayco Holleman
  *
  */
-public class MetaXmlGenerator {
+public class MetaXmlWriter {
 
 	private Archive archive;
 
-	public MetaXmlGenerator(Archive archive)
+	public MetaXmlWriter(Archive archive)
 	{
 		this.archive = archive;
 	}
@@ -28,7 +28,7 @@ public class MetaXmlGenerator {
 	 * 
 	 * @param out
 	 */
-	public void generateMetaXml(OutputStream out)
+	public void write(OutputStream out)
 	{
 		try {
 			JAXBContext context = JAXBContext.newInstance(archive.getClass());

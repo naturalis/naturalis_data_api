@@ -1,12 +1,17 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.ConfigObject;
+import org.domainobject.util.ConfigObject.MissingPropertyException;
+import org.domainobject.util.ConfigObject.PropertyNotSetException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequestBuilder;
@@ -44,17 +49,30 @@ public class DwcaWriter {
 
 	private DataSet dataSet;
 	private ZipOutputStream zos;
+	private ConfigObject dwcaConfig;
 
 	public DwcaWriter(DataSet dataSet, ZipOutputStream zos)
 	{
 		this.dataSet = dataSet;
 		this.zos = zos;
+		this.dwcaConfig = ConfigObject.forResource("/dwca.properties");
 	}
 
 	public void write() throws DataSetConfigurationException
 	{
+		try {
+			writeMetaXml();
+			writeCsvFiles();
+		}
+		finally {
+			finish(zos);
+		}
+	}
+
+	public void writeCsvFiles() throws DataSetConfigurationException
+	{
 		for (Entity entity : dataSet.getEntities()) {
-			newZipEntry(zos, entity.getName() + ".csv");
+			newZipEntry(zos, getFileNameForEntity(entity));
 			Path path = entity.getDataSource().getPath();
 			QuerySpec query = entity.getDataSource().getQuerySpec();
 			DocumentFlattener flattener = new DocumentFlattener(path);
@@ -89,101 +107,71 @@ public class DwcaWriter {
 				}
 			}
 		}
-		finish(zos);
 	}
 
-	//	/**
-	//	 * Writes a DarwinCore archive for the specified data set. The Elasticsearch
-	//	 * query to be executed is specified in a file called "queryspec.json"
-	//	 * residing in the
-	//	 * {@link DwcaUtil#getDatasetDirectory(DataSetCollectionConfiguration, String) directory}
-	//	 * created for the data set.
-	//	 * 
-	//	 * @param dataSet
-	//	 * @throws InvalidQueryException
-	//	 */
-	//	public void processPredefinedQuery(String dataSet) throws InvalidQueryException
-	//	{
-	////		logger.debug("Configuring DwCA writer for data set \"{}\"", dataSet);
-	////		IField[] fields = getFields(dsc);
-	////		logger.debug("Writing meta.xml");
-	////		writeMetaXml(zos, fields);
-	////		logger.debug("Writing eml.xml");
-	////		writeEmlXml(zos, dataSet);
-	////		logger.debug("Loading query specification for data set \"{}\"", dataSet);
-	////		QuerySpec querySpec = getQuerySpec(dsc, dataSet);
-	////		logger.debug("Writing CSV payload");
-	////		writeCsv(querySpec, fields, zos);
-	//	}
-	//
-	//	/**
-	//	 * Writes a DarwinCore archive containing the data retrieved using the
-	//	 * specified {@link QuerySpec}.
-	//	 * 
-	//	 * @param querySpec
-	//	 * @throws InvalidQueryException
-	//	 */
-	//	public void processDynamicQuery(QuerySpec querySpec) throws InvalidQueryException
-	//	{
-	////		if (logger.isDebugEnabled()) {
-	////			String json = JsonUtil.toPrettyJson(querySpec, true);
-	////			logger.debug("Configuring DwCA writer for query:\n{}", json);
-	////		}
-	////		IField[] fields = getFields(dsc);
-	////		logger.debug("Writing meta.xml");
-	////		writeMetaXml(zos, fields);
-	////		logger.debug("Writing eml.xml");
-	////		writeEmlXml(zos, null);
-	////		logger.debug("Writing CSV payload");
-	////		writeCsv(querySpec, fields, zos);
-	//	}
-	//
-	//	private void writeMetaXml(ZipOutputStream zos, IField[] fields)
-	//	{
-	////		newZipEntry(zos, "meta.xml");
-	////		MetaXmlGenerator metaXmlGenerator = getMetaXmlGenerator(dsc, fields);
-	////		metaXmlGenerator.generateMetaXml(zos);
-	//	}
-	//
-	//	private void writeEmlXml(ZipOutputStream zos, String dataSet)
-	//	{
-	//		newZipEntry(zos, "eml.xml");
-	//		File emlFile = getEmlFile(dsc, dataSet);
-	//		try (InputStream is = new FileInputStream(emlFile)) {
-	//			IOUtil.pipe(is, zos, 2048);
-	//		}
-	//		catch (IOException e) {
-	//			throw new DwcaCreationException(e);
-	//		}
-	//	}
-	//
-	//	private void writeCsv(QuerySpec spec, IField[] fields, ZipOutputStream zos)
-	//			throws InvalidQueryException
-	//	{
-	////		newZipEntry(zos, getCsvFileName(dsc));
-	////		CsvPrinter csvPrinter = new CsvPrinter(fields, zos);
-	////		SearchResponse response = executeQuery(spec);
-	////		csvPrinter.printHeader();
-	////		int processed = 0;
-	////		while (true) {
-	////			for (SearchHit hit : response.getHits().getHits()) {
-	////				if (++processed % 50000 == 0) {
-	////					logger.debug("Records processed: " + processed);
-	////					csvPrinter.flush();
-	////				}
-	////				csvPrinter.printRecord(hit.getSource());
-	////			}
-	////			String scrollId = response.getScrollId();
-	////			Client client = ESClientManager.getInstance().getClient();
-	////			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-	////			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
-	////			if (response.getHits().getHits().length == 0) {
-	////				break;
-	////			}
-	////		}
-	////		finish(zos);
-	//	}
-	//
+	public void writeMetaXml() throws DataSetConfigurationException
+	{
+		newZipEntry(zos, "meta.xml");
+		Archive archive = new Archive();
+		Core core = new Core();
+		archive.setCore(core);
+		Entity taxon = dataSet.getEntity("TAXON");
+		core.setFiles(new Files(getFileNameForEntity(taxon)));
+		core.setRowType(getRowTypeForEntity(taxon));
+		core.setFields(getMetaXmlFieldsForEntity(taxon));
+		for (Entity entity : dataSet.getEntities()) {
+			if (entity.getName().equals("TAXON"))
+				continue;
+			Extension extension = new Extension();
+			extension.setFiles(new Files(getFileNameForEntity(entity)));
+			extension.setRowType(getRowTypeForEntity(entity));
+			extension.setFields(getMetaXmlFieldsForEntity(entity));
+			archive.addExtension(extension);
+		}
+		MetaXmlWriter metaXmlWriter = new MetaXmlWriter(archive);
+		metaXmlWriter.write(zos);
+	}
+
+	private String getFileNameForEntity(Entity entity) throws DataSetConfigurationException
+	{
+		String property = "taxon.entity." + entity.getName() + ".location";
+		try {
+			return dwcaConfig.required(property);
+		}
+		catch (PropertyNotSetException | MissingPropertyException e) {
+			throw new DataSetConfigurationException(e.getMessage());
+		}
+	}
+
+	private String getRowTypeForEntity(Entity entity) throws DataSetConfigurationException
+	{
+		String property = "taxon.entity." + entity.getName() + ".rowtype";
+		try {
+			return dwcaConfig.required(property);
+		}
+		catch (PropertyNotSetException | MissingPropertyException e) {
+			throw new DataSetConfigurationException(e.getMessage());
+		}
+	}
+
+	private static List<Field> getMetaXmlFieldsForEntity(Entity entity)
+			throws DataSetConfigurationException
+	{
+		List<IField> entityFields = entity.getFields();
+		List<Field> metaXmlFields = new ArrayList<>(entityFields.size());
+		for (int i = 0; i < entityFields.size(); i++) {
+			IField entityField = entityFields.get(i);
+			URI term = entityField.getTerm();
+			if (term == null) {
+				String fmt = "Entity %s, field %s: term attribute required for DwCA files";
+				String msg = String.format(fmt, entity.getName(), entityField.getName());
+				throw new DataSetConfigurationException(msg);
+			}
+			metaXmlFields.add(new Field(i, term));
+		}
+		return metaXmlFields;
+	}
+
 	private static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException
 	{
 		QuerySpecTranslator qst = new QuerySpecTranslator(spec, DocumentType.TAXON);

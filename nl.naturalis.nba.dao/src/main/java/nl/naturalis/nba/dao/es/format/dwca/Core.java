@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "core")
-abstract class Core {
+class Core {
 
 	@XmlAttribute(name = "encoding")
 	private final String encoding = ENCODING;
@@ -40,14 +40,29 @@ abstract class Core {
 	private final Id id = new Id();
 
 	@XmlAttribute(name = "rowType")
-	String rowType;
+	private String rowType;
 	@XmlElement(name = "files")
-	Files files;
+	private Files files;
 	@XmlElement(name = "field")
-	List<Field> fields;
+	private List<Field> fields;
 
 	Core()
 	{
+	}
+
+	void setRowType(String rowType)
+	{
+		this.rowType = rowType;
+	}
+
+	void setFiles(Files files)
+	{
+		this.files = files;
+	}
+
+	void setFields(List<Field> fields)
+	{
+		this.fields = fields;
 	}
 
 }

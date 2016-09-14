@@ -20,6 +20,15 @@ public class DataSet {
 	{
 		return entities;
 	}
+	
+	public Entity getEntity(String name) throws DataSetConfigurationException {
+		for(Entity entity: entities) {
+			if(entity.getName().equals(name))
+				return entity;
+		}
+		String msg = String.format("No such entity: \"%s\"", name);
+		throw new DataSetConfigurationException(msg);
+	}
 
 	void addEntity(Entity entity)
 	{

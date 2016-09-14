@@ -9,9 +9,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.ConfigObject.MissingPropertyException;
-import org.domainobject.util.ConfigObject.PropertyNotSetException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequestBuilder;
@@ -28,7 +25,6 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
-import nl.naturalis.nba.dao.es.format.DataSet;
 import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
 import nl.naturalis.nba.dao.es.format.Entity;
@@ -47,15 +43,13 @@ public class DwcaWriter {
 	private static Logger logger = LogManager.getLogger(DwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
-	private DataSet dataSet;
+	private DwcaConfig dwcaConfig;
 	private ZipOutputStream zos;
-	private ConfigObject dwcaConfig;
 
-	public DwcaWriter(DataSet dataSet, ZipOutputStream zos)
+	public DwcaWriter(DwcaConfig dwcaConfig, ZipOutputStream zos)
 	{
-		this.dataSet = dataSet;
+		this.dwcaConfig = dwcaConfig;
 		this.zos = zos;
-		this.dwcaConfig = ConfigObject.forResource("/dwca.properties");
 	}
 
 	public void write() throws DataSetConfigurationException
@@ -69,10 +63,10 @@ public class DwcaWriter {
 		}
 	}
 
-	public void writeCsvFiles() throws DataSetConfigurationException
+	private void writeCsvFiles() throws DataSetConfigurationException
 	{
-		for (Entity entity : dataSet.getEntities()) {
-			newZipEntry(zos, getFileNameForEntity(entity));
+		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
+			newZipEntry(zos, dwcaConfig.getCsvFileName(entity));
 			Path path = entity.getDataSource().getPath();
 			QuerySpec query = entity.getDataSource().getQuerySpec();
 			DocumentFlattener flattener = new DocumentFlattener(path);
@@ -109,22 +103,22 @@ public class DwcaWriter {
 		}
 	}
 
-	public void writeMetaXml() throws DataSetConfigurationException
+	private void writeMetaXml() throws DataSetConfigurationException
 	{
 		newZipEntry(zos, "meta.xml");
 		Archive archive = new Archive();
 		Core core = new Core();
 		archive.setCore(core);
-		Entity taxon = dataSet.getEntity("TAXON");
-		core.setFiles(new Files(getFileNameForEntity(taxon)));
-		core.setRowType(getRowTypeForEntity(taxon));
-		core.setFields(getMetaXmlFieldsForEntity(taxon));
-		for (Entity entity : dataSet.getEntities()) {
-			if (entity.getName().equals("TAXON"))
+		Entity coreEntity = dwcaConfig.getCoreEntity();
+		core.setFiles(new Files(dwcaConfig.getCsvFileName(coreEntity)));
+		core.setRowType(dwcaConfig.getRowtype(coreEntity));
+		core.setFields(getMetaXmlFieldsForEntity(coreEntity));
+		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
+			if (entity.getName().equals(coreEntity.getName()))
 				continue;
 			Extension extension = new Extension();
-			extension.setFiles(new Files(getFileNameForEntity(entity)));
-			extension.setRowType(getRowTypeForEntity(entity));
+			extension.setFiles(new Files(dwcaConfig.getRowtype(entity)));
+			extension.setRowType(dwcaConfig.getRowtype(entity));
 			extension.setFields(getMetaXmlFieldsForEntity(entity));
 			archive.addExtension(extension);
 		}
@@ -132,26 +126,9 @@ public class DwcaWriter {
 		metaXmlWriter.write(zos);
 	}
 
-	private String getFileNameForEntity(Entity entity) throws DataSetConfigurationException
+	private void writeEmlXml() throws DataSetConfigurationException
 	{
-		String property = "taxon.entity." + entity.getName() + ".location";
-		try {
-			return dwcaConfig.required(property);
-		}
-		catch (PropertyNotSetException | MissingPropertyException e) {
-			throw new DataSetConfigurationException(e.getMessage());
-		}
-	}
-
-	private String getRowTypeForEntity(Entity entity) throws DataSetConfigurationException
-	{
-		String property = "taxon.entity." + entity.getName() + ".rowtype";
-		try {
-			return dwcaConfig.required(property);
-		}
-		catch (PropertyNotSetException | MissingPropertyException e) {
-			throw new DataSetConfigurationException(e.getMessage());
-		}
+		newZipEntry(zos, "eml.xml");
 	}
 
 	private static List<Field> getMetaXmlFieldsForEntity(Entity entity)

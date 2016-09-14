@@ -31,7 +31,7 @@ import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
  * whitespace-trimmed and yielding null if nothing remains (rather than an empty
  * string). This is guaranteed by the use of StringTrimXmlAdapter class in the
  * config package and by the &#64;XmlJavaTypeAdapter annotation in the
- * package-info.java file of the config package. So be careful when regenerating
+ * package-info.java file of the config package. So be careful when re-generating
  * the JAXB classes, which also end up in that package !!! Use the
  * xjc-dataset-config.sh script.
  */

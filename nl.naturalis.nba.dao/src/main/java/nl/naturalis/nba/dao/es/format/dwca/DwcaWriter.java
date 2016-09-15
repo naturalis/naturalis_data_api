@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.IOUtil;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequestBuilder;
@@ -24,6 +27,7 @@ import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
@@ -52,60 +56,95 @@ public class DwcaWriter {
 		this.zos = zos;
 	}
 
-	public void write() throws DataSetConfigurationException
+	public void writeDwcaForQuery(QuerySpec querySpec)
+			throws DataSetConfigurationException, InvalidQueryException
 	{
 		try {
+			writeEmlXml();
 			writeMetaXml();
-			writeCsvFiles();
+			writeCsvFilesForQuery(querySpec);
 		}
 		finally {
-			finish(zos);
+			finish();
 		}
 	}
 
-	private void writeCsvFiles() throws DataSetConfigurationException
+	public void writeDwcaForDataSet() throws DataSetConfigurationException
+	{
+		try {
+			writeEmlXml();
+			writeMetaXml();
+			writeCsvFilesForDataSet();
+		}
+		finally {
+			finish();
+		}
+	}
+
+	private void writeCsvFilesForQuery(QuerySpec querySpec)
+			throws DataSetConfigurationException, InvalidQueryException
+	{
+
+		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
+			newZipEntry(dwcaConfig.getCsvFileName(entity));
+			writeCsvFile(entity, executeQuery(querySpec));
+		}
+	}
+
+	private void writeCsvFilesForDataSet() throws DataSetConfigurationException
 	{
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
-			newZipEntry(zos, dwcaConfig.getCsvFileName(entity));
-			Path path = entity.getDataSource().getPath();
+			newZipEntry(dwcaConfig.getCsvFileName(entity));
 			QuerySpec query = entity.getDataSource().getQuerySpec();
-			DocumentFlattener flattener = new DocumentFlattener(path);
 			SearchResponse response;
 			try {
 				response = executeQuery(query);
 			}
 			catch (InvalidQueryException e) {
+				/*
+				 * Now it's not the user's fault but the application
+				 * maintainer's, so we convert the InvalidQueryException to a
+				 * DataSetConfigurationException
+				 */
 				String fmt = "Invalid query specification for entity %s:\n%s";
 				String queryString = JsonUtil.toPrettyJson(query);
 				String msg = String.format(fmt, entity, queryString);
 				throw new DataSetConfigurationException(msg);
 			}
-			List<IField> fields = entity.getFields();
-			CsvPrinter csvPrinter = new CsvPrinter(fields, flattener, zos);
-			csvPrinter.printHeader();
-			int processed = 0;
-			while (true) {
-				for (SearchHit hit : response.getHits().getHits()) {
-					if (++processed % 50000 == 0) {
-						logger.debug("Records processed: " + processed);
-						csvPrinter.flush();
-					}
-					csvPrinter.printRecord(hit.getSource());
-				}
-				String scrollId = response.getScrollId();
-				Client client = ESClientManager.getInstance().getClient();
-				SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-				response = ssrb.setScroll(TIME_OUT).execute().actionGet();
-				if (response.getHits().getHits().length == 0) {
-					break;
-				}
+			writeCsvFile(entity, response);
+		}
+	}
+
+	private void writeCsvFile(Entity entity, SearchResponse response)
+	{
+		Path path = entity.getDataSource().getPath();
+		DocumentFlattener flattener = new DocumentFlattener(path);
+		List<IField> fields = entity.getFields();
+		CsvPrinter csvPrinter = new CsvPrinter(fields, flattener, zos);
+		csvPrinter.printHeader();
+		int processed = 0;
+		while (true) {
+			for (SearchHit hit : response.getHits().getHits()) {
+				if (++processed % 10000 == 0)
+					csvPrinter.flush();
+				if (logger.isDebugEnabled() && processed % 100000 == 0)
+					logger.debug("Records processed: " + processed);
+				csvPrinter.printRecord(hit.getSource());
+			}
+			String scrollId = response.getScrollId();
+			Client client = ESClientManager.getInstance().getClient();
+			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
+			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
+			if (response.getHits().getHits().length == 0) {
+				break;
 			}
 		}
+		flush();
 	}
 
 	private void writeMetaXml() throws DataSetConfigurationException
 	{
-		newZipEntry(zos, "meta.xml");
+		newZipEntry("meta.xml");
 		Archive archive = new Archive();
 		Core core = new Core();
 		archive.setCore(core);
@@ -124,11 +163,24 @@ public class DwcaWriter {
 		}
 		MetaXmlWriter metaXmlWriter = new MetaXmlWriter(archive);
 		metaXmlWriter.write(zos);
+		flush();
 	}
 
 	private void writeEmlXml() throws DataSetConfigurationException
 	{
-		newZipEntry(zos, "eml.xml");
+		newZipEntry("eml.xml");
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(dwcaConfig.getEmlFile());
+			IOUtil.pipe(fis, zos, 2048);
+			flush();
+		}
+		catch (FileNotFoundException e) { /* Already checked */
+			throw new DaoException(e);
+		}
+		finally {
+			IOUtil.close(fis);
+		}
 	}
 
 	private static List<Field> getMetaXmlFieldsForEntity(Entity entity)
@@ -160,7 +212,7 @@ public class DwcaWriter {
 		return response;
 	}
 
-	private static ZipEntry newZipEntry(ZipOutputStream zos, String name)
+	private ZipEntry newZipEntry(String name)
 	{
 		ZipEntry entry = new ZipEntry(name);
 		try {
@@ -172,7 +224,17 @@ public class DwcaWriter {
 		return entry;
 	}
 
-	private static void finish(ZipOutputStream zos)
+	private void flush()
+	{
+		try {
+			zos.flush();
+		}
+		catch (IOException e) {
+			throw new DwcaCreationException(e);
+		}
+	}
+
+	private void finish()
 	{
 		try {
 			zos.finish();

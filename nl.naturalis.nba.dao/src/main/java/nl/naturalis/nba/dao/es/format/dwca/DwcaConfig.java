@@ -20,6 +20,18 @@ public class DwcaConfig {
 	private static String CONF_FILE_EXTENSION = ".dataset-config.xml";
 	private static ConfigObject dwcaConfig = ConfigObject.forResource("/dwca.properties");
 
+	public static DwcaConfig getDynamicDwcaConfig(DwcaDataSetType dataSetType)
+			throws DataSetConfigurationException
+	{
+		try {
+			return new DwcaConfig("dynamic", dataSetType);
+		}
+		catch (NoSuchDataSetException e) {
+			String msg = "Missing configuration file dynamic" + CONF_FILE_EXTENSION;
+			throw new DataSetConfigurationException(msg);
+		}
+	}
+
 	private String dataSetName;
 	private DwcaDataSetType dataSetType;
 	private DataSet dataSet;

@@ -28,6 +28,14 @@ public class TaxonDao implements ITaxonAccess {
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
 	{
+		try {
+			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.TAXON);
+			DwcaWriter writer = new DwcaWriter(config, out);
+			writer.writeDwcaForQuery(querySpec);
+		}
+		catch (DataSetConfigurationException e) {
+			throw new DaoException(e);
+		}
 	}
 
 	@Override
@@ -36,7 +44,7 @@ public class TaxonDao implements ITaxonAccess {
 		try {
 			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.TAXON);
 			DwcaWriter writer = new DwcaWriter(config, out);
-			writer.write();
+			writer.writeDwcaForDataSet();
 		}
 		catch (DataSetConfigurationException e) {
 			throw new DaoException(e);

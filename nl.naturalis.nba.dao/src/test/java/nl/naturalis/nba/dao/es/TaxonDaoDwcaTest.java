@@ -14,24 +14,25 @@ import nl.naturalis.nba.api.query.QuerySpec;
 @SuppressWarnings("static-method")
 public class TaxonDaoDwcaTest {
 
-	//@Test
+	@Test
 	public void testDynamic() throws InvalidQueryException, IOException
 	{
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("sourceSystem.code", "=", "BRAHMS"));
+		qs.addCondition(new Condition("sourceSystem.code", "=", "NSR"));
 		TaxonDao dao = new TaxonDao();
 		long start = System.currentTimeMillis();
-		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca.zip");
+		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca-dynamic.zip");
 		ZipOutputStream zos = new ZipOutputStream(fos);
 		dao.dwcaQuery(qs, zos);
 		fos.close();
+		zos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
 		long took = (end - start) / 1000;
 		System.out.println("dynamic took: " + took + " seconds");
 	}
 
-	@Test
+	//@Test
 	public void testNSR() throws IOException, NoSuchDataSetException
 	{
 		TaxonDao dao = new TaxonDao();
@@ -40,6 +41,7 @@ public class TaxonDaoDwcaTest {
 		ZipOutputStream zos = new ZipOutputStream(fos);
 		dao.dwcaGetDataSet("nsr", zos);
 		fos.close();
+		zos.close();
 		System.out.println();
 		long end = System.currentTimeMillis();
 		long took = (end - start) / 1000;

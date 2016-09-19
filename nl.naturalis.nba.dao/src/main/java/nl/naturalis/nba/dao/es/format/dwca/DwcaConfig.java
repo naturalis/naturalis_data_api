@@ -2,6 +2,8 @@ package nl.naturalis.nba.dao.es.format.dwca;
 
 import java.io.File;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ConfigObject.MissingPropertyException;
 import org.domainobject.util.ConfigObject.PropertyNotSetException;
@@ -19,6 +21,7 @@ public class DwcaConfig {
 
 	private static String CONF_FILE_EXTENSION = ".dataset-config.xml";
 	private static ConfigObject dwcaConfig = ConfigObject.forResource("/dwca.properties");
+	private static Logger logger = LogManager.getLogger(DwcaConfig.class);
 
 	public static DwcaConfig getDynamicDwcaConfig(DwcaDataSetType dataSetType)
 			throws DataSetConfigurationException
@@ -103,6 +106,8 @@ public class DwcaConfig {
 	{
 		String fileName = dataSetName + CONF_FILE_EXTENSION;
 		File confFile = FileUtil.newFile(getHome(), fileName);
+		logger.info("Searching configuration file for data set {}: {}", dataSetName,
+				confFile.getPath());
 		if (!confFile.isFile()) {
 			throw new NoSuchDataSetException(dataSetName);
 		}

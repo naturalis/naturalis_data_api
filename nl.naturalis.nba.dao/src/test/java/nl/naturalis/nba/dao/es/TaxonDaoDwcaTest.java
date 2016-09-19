@@ -14,7 +14,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 @SuppressWarnings("static-method")
 public class TaxonDaoDwcaTest {
 
-	@Test
+	//@Test
 	public void testDynamic() throws InvalidQueryException, IOException
 	{
 		QuerySpec qs = new QuerySpec();
@@ -32,7 +32,7 @@ public class TaxonDaoDwcaTest {
 		System.out.println("dynamic took: " + took + " seconds");
 	}
 
-	//@Test
+	@Test
 	public void testNSR() throws IOException, NoSuchDataSetException
 	{
 		TaxonDao dao = new TaxonDao();

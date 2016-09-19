@@ -41,7 +41,7 @@ abstract class AbstractClient {
 		this.config = config;
 	}
 
-	SimpleHttpGet newGETRequest()
+	SimpleHttpGet newJsonGetRequest()
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
@@ -49,9 +49,9 @@ abstract class AbstractClient {
 		return request;
 	}
 
-	SimpleHttpGet httpGet(String path)
+	SimpleHttpGet getJson(String path)
 	{
-		SimpleHttpGet request = newGETRequest();
+		SimpleHttpGet request = newJsonGetRequest();
 		request.setPath(path);
 		return (SimpleHttpGet) sendRequest(request);
 	}

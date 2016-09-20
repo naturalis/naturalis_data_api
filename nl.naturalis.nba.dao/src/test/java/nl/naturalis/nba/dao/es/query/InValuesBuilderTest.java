@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class InValuesBuilderTest {
 
 	@Test

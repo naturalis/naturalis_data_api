@@ -36,7 +36,7 @@ public class MappingInfo {
 	 * @param field
 	 * @return
 	 */
-	public static boolean isArrayOrDescendendantOfArray(ESField field)
+	public static boolean isOrDescendsFromArray(ESField field)
 	{
 		for (ESField f = field; f != null; f = f.getParent()) {
 			if (f.isArray()) {
@@ -189,15 +189,15 @@ public class MappingInfo {
 	}
 
 	/**
-	 * See {@link #isArrayOrDescendendantOfArray(ESField)}.
+	 * See {@link #isOrDescendsFromArray(ESField)}.
 	 * 
 	 * @param path
 	 * @return
 	 * @throws NoSuchFieldException
 	 */
-	public boolean isMultiValued(String path) throws NoSuchFieldException
+	public boolean isOrDescendsFromArray(String path) throws NoSuchFieldException
 	{
-		return isArrayOrDescendendantOfArray(getField(path));
+		return isOrDescendsFromArray(getField(path));
 	}
 
 	private ESField getField(Path fullPath, Path path, Map<String, ? extends ESField> map)

@@ -1,9 +1,11 @@
 package nl.naturalis.nba.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.test.TestPerson;
 
@@ -40,9 +42,10 @@ public class PathTest {
 		assertEquals("04", "defaultClassification", path.getElement(2));
 		assertEquals("05", "kingdom", path.getElement(3));
 	}
-	
+
 	@Test
-	public void testShift_01() {
+	public void testShift_01()
+	{
 		Path path0 = new Path("identifications.0.defaultClassification.kingdom");
 		Path path1 = new Path("0.defaultClassification.kingdom");
 		assertEquals("01", path1, path0.shift());
@@ -50,7 +53,7 @@ public class PathTest {
 		path1 = new Path("defaultClassification.kingdom");
 		assertEquals("02", path1, path0.shift());
 		path0 = path1;
-		path1 = new Path("kingdom");		
+		path1 = new Path("kingdom");
 	}
 
 	@Test
@@ -77,10 +80,108 @@ public class PathTest {
 		path.validate(MappingFactory.getMapping(TestPerson.class));
 	}
 
+	@Test
 	public void testValidate_04() throws InvalidPathException
 	{
 		// Happy flow, no exception shouild be thrown
 		Path path = new Path("pets.2.colors.3");
 		path.validate(MappingFactory.getMapping(TestPerson.class));
 	}
+
+	@Test
+	public void testIsPrimitive_01() throws InvalidPathException
+	{
+		Path path = new Path("pets.0.name");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isPrimitive(mapping));
+	}
+
+	@Test
+	public void testIsPrimitive_02() throws InvalidPathException
+	{
+		Path path = new Path("pets.name");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isPrimitive(mapping));
+	}
+
+	@Test
+	public void testIsPrimitive_03() throws InvalidPathException
+	{
+		Path path = new Path("luckyNumbers");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isPrimitive(mapping));
+	}
+
+	@Test
+	public void testIsPrimitive_04() throws InvalidPathException
+	{
+		Path path = new Path("hobbies");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isPrimitive(mapping));
+	}
+
+	@Test
+	public void testIsPrimitive_05() throws InvalidPathException
+	{
+		Path path = new Path("smoker");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isPrimitive(mapping));
+	}
+
+	@Test
+	public void testIsPrimitive_06() throws InvalidPathException
+	{
+		Path path = new Path("addressBook");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertFalse("01", path.isPrimitive(mapping));
+	}
+
+	@Test
+	public void testIsArray_01() throws InvalidPathException
+	{
+		Path path = new Path("pets.0.name");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertFalse("01", path.isArray(mapping));
+	}
+
+	@Test
+	public void testIsArray_02() throws InvalidPathException
+	{
+		Path path = new Path("pets.name");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertFalse("01", path.isArray(mapping));
+	}
+
+	@Test
+	public void testIsArray_03() throws InvalidPathException
+	{
+		Path path = new Path("luckyNumbers");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isArray(mapping));
+	}
+
+	@Test
+	public void testIsArray_04() throws InvalidPathException
+	{
+		Path path = new Path("hobbies");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isArray(mapping));
+	}
+
+	@Test
+	public void testIsArray_05() throws InvalidPathException
+	{
+		Path path = new Path("smoker");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertFalse("01", path.isArray(mapping));
+	}
+
+	@Test
+	public void testIsArray_06() throws InvalidPathException
+	{
+		Path path = new Path("addressBook");
+		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		assertTrue("01", path.isArray(mapping));
+	}
+
 }

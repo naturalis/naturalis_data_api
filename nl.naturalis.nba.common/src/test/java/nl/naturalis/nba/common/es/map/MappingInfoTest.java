@@ -163,26 +163,26 @@ public class MappingInfoTest {
 	}
 
 	@Test
-	public void testIsMultiValued_01() throws NoSuchFieldException
+	public void testIsOrDescendsFromArray_01() throws NoSuchFieldException
 	{
-		assertFalse("01", personInfo.isMultiValued("firstName"));
+		assertFalse("01", personInfo.isOrDescendsFromArray("firstName"));
 	}
 
 	@Test
-	public void testIsMultiValued_02() throws NoSuchFieldException
+	public void testIsOrDescendsFromArray_02() throws NoSuchFieldException
 	{
-		assertTrue("01", personInfo.isMultiValued("luckyNumbers"));
+		assertTrue("01", personInfo.isOrDescendsFromArray("luckyNumbers"));
 	}
 
 	@Test
-	public void testIsMultiValued_03() throws NoSuchFieldException
+	public void testIsOrDescendsFromArray_03() throws NoSuchFieldException
 	{
-		assertFalse("01", personInfo.isMultiValued("address.street"));
+		assertFalse("01", personInfo.isOrDescendsFromArray("address.street"));
 	}
 
 	@Test
-	public void testIsMultiValued_04() throws NoSuchFieldException
+	public void testIsOrDescendsFromArray_04() throws NoSuchFieldException
 	{
-		assertTrue("01", personInfo.isMultiValued("addressBook.street"));
+		assertTrue("01", personInfo.isOrDescendsFromArray("addressBook.street"));
 	}
 }

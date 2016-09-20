@@ -39,7 +39,7 @@ public class SortFieldsTranslator {
 				if (!(f instanceof PrimitiveField)) {
 					throw invalidSortField(path);
 				}
-				if (MappingInfo.isArrayOrDescendendantOfArray(f)) {
+				if (MappingInfo.isOrDescendsFromArray(f)) {
 					throw sortOnMultiValuedField(path);
 				}
 			}

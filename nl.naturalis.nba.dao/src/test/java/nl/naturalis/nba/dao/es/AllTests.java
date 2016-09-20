@@ -25,10 +25,10 @@ import nl.naturalis.nba.dao.es.util.ESUtilTest;
 	InValuesBuilderTest.class,
 	InConditionTranslatorTest.class,
 	DocumentFlattenerTest.class,
-	SpecimenDAONullChecksTest.class,
-	SpecimenDAOWithBetweenConditionTest.class,
-	SpecimenDAOWithInConditionTest.class,
-	SpecimenDAOTest.class
+	SpecimenDaoNullChecksTest.class,
+	SpecimenDaoWithBetweenConditionTest.class,
+	SpecimenDaoWithInConditionTest.class,
+	SpecimenDaoTest.class
 })
 //@formatter:on
 public class AllTests {

@@ -100,9 +100,9 @@ public final class Path {
 
 	/**
 	 * Validates that this instance represents an <b>unambiguous</b> path to a
-	 * <b>single</b> and <b>primitive</b> value within an Elasticsearch
-	 * document. The following paths would fail this test (given the
-	 * {@link Specimen} document type):<br>
+	 * <b>primitive</b> value within an Elasticsearch document. The following
+	 * paths would fail this test (given the {@link Specimen} document
+	 * type):<br>
 	 * <code>
 	 * identications.defaultClassification.kingdom
 	 * identications.0.defaultClassification

@@ -23,7 +23,8 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.types.ESSpecimen;
 
-public class SpecimenDAOWithInConditionTest {
+@SuppressWarnings("static-method")
+public class SpecimenDaoWithInConditionTest {
 
 	static ESSpecimen pMajor;
 	static ESSpecimen lFuscus1;

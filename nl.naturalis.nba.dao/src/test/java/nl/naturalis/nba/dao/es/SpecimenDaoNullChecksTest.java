@@ -24,7 +24,8 @@ import nl.naturalis.nba.dao.es.types.ESSpecimen;
  * @author Ayco Holleman
  *
  */
-public class SpecimenDAONullChecksTest {
+@SuppressWarnings("static-method")
+public class SpecimenDaoNullChecksTest {
 
 	static ESSpecimen pMajor;
 	static ESSpecimen lFuscus1;

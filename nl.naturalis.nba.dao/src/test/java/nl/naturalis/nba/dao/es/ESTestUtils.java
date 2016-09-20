@@ -24,7 +24,7 @@ public class ESTestUtils {
 
 	public static void saveSpecimens(ESSpecimen... specimens)
 	{
-		DocumentType dt = DocumentType.forClass(ESSpecimen.class);
+		DocumentType<?> dt = DocumentType.forClass(ESSpecimen.class);
 		ESUtil.disableAutoRefresh(dt.getIndexInfo());
 		for (ESSpecimen specimen : specimens) {
 			saveSpecimen(specimen, false);
@@ -50,7 +50,7 @@ public class ESTestUtils {
 
 	public static void saveObject(String id, String parentId, ESType obj, boolean refreshIndex)
 	{
-		DocumentType dt = DocumentType.forClass(obj.getClass());
+		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
 		String source = JsonUtil.toJson(obj);

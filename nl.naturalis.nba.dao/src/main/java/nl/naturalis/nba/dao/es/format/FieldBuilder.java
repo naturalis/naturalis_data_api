@@ -3,11 +3,16 @@ package nl.naturalis.nba.dao.es.format;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
 
 class FieldBuilder {
+
+	private static Logger logger = LogManager.getLogger(FieldBuilder.class);
 
 	private static String CALC_PACKAGE = ICalculator.class.getPackage().getName();
 	private static String ERR_RELATIVE_PATH = "Relative path only allowed in combination with non-empty <path> within <data-source>";
@@ -99,24 +104,23 @@ class FieldBuilder {
 			if (ds.getPath() == null || !relative) {
 				fullPath = path;
 			}
-			else if (ds.getPath().isArray(ds.getMapping())) {
-				/*
-				 * If the entity object within the Elasticsearch document is an
-				 * array, then to validate the entire path, we need to insert an
-				 * arbitrary array index between the path to the entity object
-				 * and the path to the field (relative to the entity object).
-				 * For example, if the entity object is the "identifications"
-				 * array within the Specimen document, then the only way we can
-				 * verify if "defaultClassification" is a valid field, is by
-				 * constructing the path
-				 * "identifications.0.defaultClassification". The path
-				 * "identifications.defaultClassification" would fail
-				 * validation. See the validate method in the Path class.
-				 */
-				fullPath = ds.getPath().append("0").append(path);
-			}
 			else {
-				fullPath = ds.getPath().append(path);
+				fullPath = new Path();
+				for (int i = 0; i < ds.getPath().countElements(); i++) {
+					fullPath = fullPath.append(ds.getPath().element(i));
+					if (fullPath.isArray(ds.getMapping())) {
+						/*
+						 * Append an arbitrary array index to the path so we can
+						 * call Path.validate() later on
+						 */
+						fullPath = fullPath.append("0");
+					}
+				}
+				fullPath = fullPath.append(path);
+			}
+			if (logger.isDebugEnabled()) {
+				String fmt = "Constructing validatable path for field {}: {}";
+				logger.debug(fmt, fieldName, fullPath.getPathString());
 			}
 			fullPath.validate(ds.getMapping());
 		}

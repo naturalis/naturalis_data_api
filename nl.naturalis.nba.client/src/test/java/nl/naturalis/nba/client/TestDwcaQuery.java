@@ -18,7 +18,7 @@ public class TestDwcaQuery {
 		TaxonClient client = session.getTaxonClient();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/java-client-dwca.zip");
 		QuerySpec querySpec = new QuerySpec();
-		querySpec.addCondition(new Condition("sourceSystem.code", "=", "NSR"));
+		querySpec.addCondition(new Condition("sourceSystem.code", "EQUALS", "NSR"));
 		client.dwcaQuery(querySpec, fos);
 		IOUtil.close(fos);
 	}

@@ -21,7 +21,6 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionMapperBase.class);
 
-
 	@Override
 	public Response toResponse(Throwable e)
 	{
@@ -34,16 +33,18 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 		 */
 
 		/*
-		 * javax.ws.rs.NotFoundException does not come from our code, giving off
-		 * a nice RESTful signal that a query has returned 0 results, but from
-		 * JAX-RS itself telling the client that the URL cannot be resolved (so
-		 * a bit more serious and hard-core).
+		 * javax.ws.rs.NotFoundException does not come from our code telling you
+		 * nicely that a query has returned 0 results. It comes from Wildfly
+		 * telling the client that the URL cannot be resolved, so rather serious
+		 * and hard-core.
 		 */
 		if (e.getClass() == NotFoundException.class) {
-			return Response.serverError().entity(e.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
+			return Response.serverError().entity(e.toString()).type(MediaType.TEXT_PLAIN_TYPE)
+					.build();
 		}
 		if (e.getCause() != null && e.getCause().getClass() == NotFoundException.class) {
-			return Response.serverError().entity(e.getCause().toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
+			return Response.serverError().entity(e.getCause().toString())
+					.type(MediaType.TEXT_PLAIN_TYPE).build();
 		}
 
 		if (e.getClass() == HTTP200Exception.class) {
@@ -72,12 +73,15 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 		}
 
 		/*
-		 * We shouldn't really be getting to this point because resource methods
-		 * SHOULD wrap the entire request-response cycle within a try/catch-all
-		 * block and wrap any Exception into either an HTTP200Exception or a
-		 * RESTException.
+		 * WE SHOULD NOT BE GETTING TO THIS POINT! It means some resource method
+		 * (e.g. in SpecimenResource) has forgotten to trap a RuntimeException
+		 * (probably bubbling up from the DAO layer). Resource methods SHOULD
+		 * wrap the entire request-response cycle within a try/catch-all block
+		 * and wrap any exception into a (subclass of) RESTException. Note that
+		 * the Java client will not deserialize exceptions properly if you do
+		 * not do this.
 		 */
-		logger.warn("Exception not wrapped by resource method: " + e.getClass().getName());
+		logger.error("Exception not wrapped by resource method: {}", e.getClass().getName());
 
 		if (e instanceof WebApplicationException) {
 			WebApplicationException exc = (WebApplicationException) e;
@@ -91,11 +95,11 @@ public class ExceptionMapperBase implements ExceptionMapper<Throwable> {
 		return Response.serverError().entity(e.toString()).type(MediaType.TEXT_PLAIN_TYPE).build();
 	}
 
-
 	private static Response jsonResponse(Throwable t)
 	{
 		RESTException e = (RESTException) t;
-		return Response.status(e.getStatus()).type(MediaType.APPLICATION_JSON).entity(e.getInfo()).build();
+		return Response.status(e.getStatus()).type(MediaType.APPLICATION_JSON).entity(e.getInfo())
+				.build();
 	}
 
 }

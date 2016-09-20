@@ -20,7 +20,7 @@ import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 public class DwcaConfig {
 
 	public static String CONF_FILE_EXTENSION = ".dataset-config.xml";
-	
+
 	private static ConfigObject dwcaConfig = ConfigObject.forResource("/dwca.properties");
 	private static Logger logger = LogManager.getLogger(DwcaConfig.class);
 
@@ -83,7 +83,9 @@ public class DwcaConfig {
 			return myConfig.required(property);
 		}
 		catch (PropertyNotSetException | MissingPropertyException e) {
-			throw new DataSetConfigurationException(e.getMessage());
+			String fmt = "%s (check dwca.properties)";
+			String msg = String.format(fmt, e.getMessage());
+			throw new DataSetConfigurationException(msg);
 		}
 	}
 
@@ -94,7 +96,9 @@ public class DwcaConfig {
 			return myConfig.required(property);
 		}
 		catch (PropertyNotSetException | MissingPropertyException e) {
-			throw new DataSetConfigurationException(e.getMessage());
+			String fmt = "%s (check dwca.properties)";
+			String msg = String.format(fmt, e.getMessage());
+			throw new DataSetConfigurationException(msg);
 		}
 	}
 

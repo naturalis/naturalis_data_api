@@ -24,6 +24,11 @@ public final class Path {
 
 	private final String[] elems;
 
+	public Path()
+	{
+		this.elems = new String[0];
+	}
+
 	public Path(String path)
 	{
 		this.elems = split(path);

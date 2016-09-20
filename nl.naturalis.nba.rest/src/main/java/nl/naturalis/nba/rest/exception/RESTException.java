@@ -1,5 +1,7 @@
 package nl.naturalis.nba.rest.exception;
 
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import nl.naturalis.nba.api.search.QueryParams;
 
@@ -28,12 +30,10 @@ public class RESTException extends RuntimeException {
 	private final UriInfo request;
 	private final MultivaluedMap<String, String> formParams;
 
-
 	public RESTException(UriInfo request, Status status)
 	{
 		this(request, null, null, status);
 	}
-
 
 	public RESTException(UriInfo request, Status status, String message)
 	{
@@ -43,20 +43,24 @@ public class RESTException extends RuntimeException {
 		this.formParams = null;
 	}
 
+	public RESTException(UriInfo request, Throwable cause)
+	{
+		this(request, null, cause, INTERNAL_SERVER_ERROR);
+	}
 
 	public RESTException(UriInfo request, Throwable cause, Status status)
 	{
 		this(request, null, cause, status);
 	}
 
-
-	public RESTException(UriInfo request, MultivaluedMap<String, String> formParams, Throwable cause)
+	public RESTException(UriInfo request, MultivaluedMap<String, String> formParams,
+			Throwable cause)
 	{
-		this(request, formParams, cause, Status.INTERNAL_SERVER_ERROR);
+		this(request, formParams, cause, INTERNAL_SERVER_ERROR);
 	}
 
-
-	public RESTException(UriInfo request, MultivaluedMap<String, String> formParams, Throwable cause, Status status)
+	public RESTException(UriInfo request, MultivaluedMap<String, String> formParams,
+			Throwable cause, Status status)
 	{
 		super(cause);
 		this.status = status;
@@ -64,12 +68,10 @@ public class RESTException extends RuntimeException {
 		this.formParams = formParams;
 	}
 
-
 	public Status getStatus()
 	{
 		return status;
 	}
-
 
 	/**
 	 * 
@@ -116,7 +118,8 @@ public class RESTException extends RuntimeException {
 			StringBuilder sb = new StringBuilder(128);
 			sb.append("at ");
 			sb.append(e.getClassName()).append('.').append(e.getMethodName());
-			sb.append('(').append(e.getFileName()).append(':').append(e.getLineNumber()).append(')');
+			sb.append('(').append(e.getFileName()).append(':').append(e.getLineNumber())
+					.append(')');
 			trace.add(sb.toString());
 		}
 		exceptionInfo.put("stackTrace", trace);

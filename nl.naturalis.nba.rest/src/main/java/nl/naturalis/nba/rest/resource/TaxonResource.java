@@ -32,6 +32,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
+import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")
@@ -69,6 +70,9 @@ public class TaxonResource {
 					catch (InvalidQueryException e) {
 						throw new HTTP400Exception(uriInfo, e.getMessage());
 					}
+					catch (Throwable e) {
+						throw new RESTException(uriInfo, e);
+					}
 				}
 			};
 			ResponseBuilder response = Response.ok(stream);
@@ -98,6 +102,9 @@ public class TaxonResource {
 					}
 					catch (NoSuchDataSetException e) {
 						throw new HTTP404Exception(uriInfo, e.getMessage());
+					}
+					catch (Throwable e) {
+						throw new RESTException(uriInfo, e);
 					}
 				}
 			};

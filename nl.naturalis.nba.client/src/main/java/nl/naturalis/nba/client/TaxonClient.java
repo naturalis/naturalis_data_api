@@ -1,11 +1,11 @@
 package nl.naturalis.nba.client;
 
+import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.zip.ZipOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,44 +28,61 @@ public class TaxonClient extends AbstractClient implements ITaxonAccess {
 	}
 
 	@Override
-	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
 		String json = JsonUtil.toJson(querySpec);
-		logger.info("Executing DwCA query:\n{}", json);
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
 		request.setPath("taxon/dwca/query/" + json);
-		request.execute();
+		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		logger.info("Downloading and saving DarwinCore archive");
-		IOUtil.pipe(request.getResponseAsStream(), out, 4096);
-		logger.info("DarwinCore archive download complete");
+		InputStream in = null;
+		try {
+			logger.info("Downloading DarwinCore archive");
+			in = request.getResponseBodyAsStream();
+			IOUtil.pipe(in, out, 4096);
+			logger.info("DarwinCore archive download complete");
+		}
+		finally {
+			IOUtil.close(in);
+		}
 	}
 
 	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws NoSuchDataSetException
+	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
-		logger.info("Retrieving DwCA data set \"{}\"", name);
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
 		request.setPath("taxon/dwca/dataset/" + name);
-		request.execute();
+		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		logger.info("Downloading and saving DarwinCore archive");
-		IOUtil.pipe(request.getResponseAsStream(), out, 4096);
-		logger.info("DarwinCore archive download complete");
+		InputStream in = null;
+		try {
+			logger.info("Downloading DarwinCore archive");
+			in = request.getResponseBodyAsStream();
+			IOUtil.pipe(in, out, 4096);
+			logger.info("DarwinCore archive download complete");
+		}
+		finally {
+			IOUtil.close(in);
+		}
 	}
 
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		return null;
+		SimpleHttpGet request = getJson("taxon/dwca/getDataSetNames");
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(), String[].class);
 	}
 
 }

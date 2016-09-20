@@ -33,6 +33,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.SpecimenDao;
+import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nda.ejb.service.SpecimenService;
@@ -162,7 +163,7 @@ public class SpecimenResource {
 						dao.dwcaQuery(qs, new ZipOutputStream(out));
 					}
 					catch (InvalidQueryException e) {
-						throw new WebApplicationException(e);
+						throw new HTTP400Exception(uriInfo, e.getMessage());
 					}
 				}
 			};

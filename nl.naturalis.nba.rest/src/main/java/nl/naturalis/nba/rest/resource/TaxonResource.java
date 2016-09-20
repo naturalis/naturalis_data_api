@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -16,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -32,6 +30,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.TaxonDao;
+import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
@@ -56,20 +55,19 @@ public class TaxonResource {
 	@Produces("application/zip")
 	public Response dwcaQuery(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
 	{
-		logger.info("Receiving query: " + json);
 		try {
 			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override
-				public void write(OutputStream out) throws IOException, WebApplicationException
+				public void write(OutputStream out) throws IOException
 				{
 					TaxonDao dao = new TaxonDao();
 					try {
-						dao.dwcaQuery(qs, new ZipOutputStream(out));
+						dao.dwcaQuery(qs, out);
 					}
 					catch (InvalidQueryException e) {
-						throw new WebApplicationException(e);
+						throw new HTTP400Exception(uriInfo, e.getMessage());
 					}
 				}
 			};
@@ -88,7 +86,6 @@ public class TaxonResource {
 	@Produces("application/zip")
 	public Response dwcaGetDataSet(@PathParam("dataset") String name, @Context UriInfo uriInfo)
 	{
-		
 		try {
 			StreamingOutput stream = new StreamingOutput() {
 
@@ -97,7 +94,7 @@ public class TaxonResource {
 				{
 					TaxonDao dao = new TaxonDao();
 					try {
-						dao.dwcaGetDataSet(name, new ZipOutputStream(out));
+						dao.dwcaGetDataSet(name, out);
 					}
 					catch (NoSuchDataSetException e) {
 						throw new HTTP404Exception(uriInfo, e.getMessage());

@@ -18,7 +18,7 @@ abstract class AbstractClient {
 	static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
 	{
 		URI uri = getURI(request);
-		logger.info("Sending {} request: {}", request.getMethod(), uri);
+		logger.info("Sending {} request:\n{}", request.getMethod(), uri);
 		try {
 			request.execute();
 		}

@@ -215,15 +215,15 @@ public class IndexManagerREST implements IndexManager {
 	@Override
 	public void saveObject(String type, Object obj, String id)
 	{
-		lastRequest = httpPut;
-		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
-		httpPut.setPath(sb.toString());
-		httpPut.setContentType(MIMETYPE_JSON);
-		httpPut.setObject(obj);
-		execute();
-		if (!isSuccess()) {
-			throw createIndexException();
-		}
+//		lastRequest = httpPut;
+//		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
+//		httpPut.setPath(sb.toString());
+//		httpPut.setContentType(MIMETYPE_JSON);
+//		httpPut.setObject(obj);
+//		execute();
+//		if (!isSuccess()) {
+//			throw createIndexException();
+//		}
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api;
 
-import java.util.zip.ZipOutputStream;
+import java.io.OutputStream;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -15,7 +15,7 @@ public interface ITaxonAccess {
 	 * @param out
 	 * @throws InvalidQueryException
 	 */
-	void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException;
+	void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException;
 
 	/**
 	 * Writes a DarwinCore Archive with taxa from a predefined data set to the
@@ -28,7 +28,7 @@ public interface ITaxonAccess {
 	 *            The output stream to write to
 	 * @throws InvalidQueryException
 	 */
-	void dwcaGetDataSet(String name, ZipOutputStream out) throws NoSuchDataSetException;
+	void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException;
 
 	/**
 	 * Returns the names of all predefined data sets with taxon/species data.

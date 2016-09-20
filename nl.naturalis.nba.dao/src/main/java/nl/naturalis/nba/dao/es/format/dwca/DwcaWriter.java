@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.es.format.dwca;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,10 +51,10 @@ public class DwcaWriter {
 	private DwcaConfig dwcaConfig;
 	private ZipOutputStream zos;
 
-	public DwcaWriter(DwcaConfig dwcaConfig, ZipOutputStream zos)
+	public DwcaWriter(DwcaConfig dwcaConfig, OutputStream out)
 	{
 		this.dwcaConfig = dwcaConfig;
-		this.zos = zos;
+		this.zos = new ZipOutputStream(out);
 	}
 
 	public void writeDwcaForQuery(QuerySpec querySpec)

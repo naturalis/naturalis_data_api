@@ -7,7 +7,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 
-public class Test2 {
+public class TestQuery_02 {
 
 	public static void main(String[] args)
 	{

@@ -19,7 +19,8 @@ import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
 public class DwcaConfig {
 
-	private static String CONF_FILE_EXTENSION = ".dataset-config.xml";
+	public static String CONF_FILE_EXTENSION = ".dataset-config.xml";
+	
 	private static ConfigObject dwcaConfig = ConfigObject.forResource("/dwca.properties");
 	private static Logger logger = LogManager.getLogger(DwcaConfig.class);
 

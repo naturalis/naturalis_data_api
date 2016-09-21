@@ -16,9 +16,9 @@ public class TestDwcaQuery {
 		String baseUrl = "http://localhost:8080/v2";
 		NBASession session = new NBASessionConfigurator().setBaseUrl(baseUrl).create();
 		TaxonClient client = session.getTaxonClient();
-		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/java-client-dwca.zip");
+		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca.zip");
 		QuerySpec querySpec = new QuerySpec();
-		querySpec.addCondition(new Condition("sourceSystem.code", "EQUALS", "NSR"));
+		querySpec.addCondition(new Condition("defaultClassification.genus", "EQUALS", "Larus"));
 		client.dwcaQuery(querySpec, fos);
 		IOUtil.close(fos);
 	}

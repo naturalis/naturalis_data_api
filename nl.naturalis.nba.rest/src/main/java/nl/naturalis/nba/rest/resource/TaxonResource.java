@@ -33,7 +33,6 @@ import nl.naturalis.nba.dao.es.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
-import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")
 @Path("/taxon")
@@ -44,9 +43,6 @@ public class TaxonResource {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(TaxonResource.class);
-
-	@EJB
-	SpecimenService service;
 
 	@EJB
 	Registry registry;

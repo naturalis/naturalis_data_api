@@ -273,7 +273,7 @@ public class SpecimenDaoTest {
 	public void testQuery__QuerySpec__07() throws InvalidQueryException
 	{
 		String collector = "gatheringEvent.gatheringPersons.fullName";
-		Condition condition = new Condition(collector, LIKE, "altenbu");
+		Condition condition = new Condition(collector, LIKE, "AlTeNbU");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -344,7 +344,7 @@ public class SpecimenDaoTest {
 	@Test
 	public void testQuery__QuerySpec__11() throws InvalidQueryException
 	{
-		Condition condition = new Condition("recordBasis", EQUALS_IC, "preserved specimen");
+		Condition condition = new Condition("recordBasis", EQUALS_IC, "PrEsErVeD sPeCiMeN");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -360,7 +360,7 @@ public class SpecimenDaoTest {
 	{
 		// This excludes pMajorSpecimen01, tRexSpecimen01 and
 		// larusFuscusSpecimen01 (2 remaining).
-		Condition condition = new Condition("recordBasis", NOT_EQUALS_IC, "preserved specimen");
+		Condition condition = new Condition("recordBasis", NOT_EQUALS_IC, "PrEsErVeD sPeCiMeN");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

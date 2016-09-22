@@ -5,7 +5,6 @@ import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import java.io.File;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;

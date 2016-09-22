@@ -35,7 +35,6 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 
 	private static Logger logger = getLogger(SpecimenDao.class);
 
-
 	private DocumentType<ES_OBJECT> dt;
 	private ITransferObject<API_OBJECT, ES_OBJECT> to;
 
@@ -47,8 +46,9 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 
 	public API_OBJECT find(String id)
 	{
-		if (logger.isDebugEnabled())
+		if (logger.isDebugEnabled()) {
 			logger.debug("find(\"{}\")", id);
+		}
 		GetRequestBuilder request = client().prepareGet();
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
@@ -57,12 +57,11 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		request.setId(id);
 		GetResponse response = request.execute().actionGet();
 		if (!response.isExists()) {
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				logger.debug("{} with id \"{}\" not found", dt, id);
+			}
 			return null;
 		}
-		if (logger.isDebugEnabled())
-			logger.debug("Response:\n{}", response.getSourceAsString());
 		Map<String, Object> data = response.getSource();
 		return createApiObject(id, data);
 	}
@@ -84,7 +83,7 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		QuerySpecTranslator qst = new QuerySpecTranslator(spec, dt);
 		return processSearchRequest(qst.translate());
 	}
-	
+
 	public String save(API_OBJECT apiObject, boolean immediate)
 	{
 		String id = apiObject.getId();
@@ -142,7 +141,7 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		SearchResponse response = request.execute().actionGet();
 		SearchHit[] hits = response.getHits().getHits();
 		if (logger.isDebugEnabled()) {
-			logger.debug("Processing response:\n{}", response);
+			logger.debug("Documents found: {}", response.getHits().totalHits());
 		}
 		API_OBJECT[] apiObjects = createApiObjectArray(hits.length);
 		for (int i = 0; i < hits.length; ++i) {

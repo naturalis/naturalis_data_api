@@ -44,9 +44,16 @@ public class DwcaConfig {
 	public DwcaConfig(String dataSetName, DwcaDataSetType dataSetType)
 			throws DataSetConfigurationException, NoSuchDataSetException
 	{
+		String type = dataSetType.name().toLowerCase();
+		logger.info("Initializing configuration for data set \"{}\" (type={})", dataSetName, type);
 		this.dataSetName = dataSetName;
 		this.dataSetType = dataSetType;
-		this.myConfig = dwcaConfig.getSection(dataSetType.name().toLowerCase());
+		this.myConfig = dwcaConfig.getSection(type);
+		if (myConfig == null) {
+			String fmt = "Missing section \"%s\" in dwca.properties";
+			String msg = String.format(fmt, type);
+			throw new DataSetConfigurationException(msg);
+		}
 		this.dataSet = buildDataSet();
 	}
 
@@ -111,8 +118,7 @@ public class DwcaConfig {
 	{
 		String fileName = dataSetName + CONF_FILE_EXTENSION;
 		File confFile = FileUtil.newFile(getHome(), fileName);
-		logger.info("Searching configuration file for data set {}: {}", dataSetName,
-				confFile.getPath());
+		logger.info("Searching for configuration file: {}", confFile.getPath());
 		if (!confFile.isFile()) {
 			throw new NoSuchDataSetException(dataSetName);
 		}

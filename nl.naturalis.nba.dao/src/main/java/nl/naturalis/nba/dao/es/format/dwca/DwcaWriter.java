@@ -209,7 +209,13 @@ public class DwcaWriter {
 		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
 		request.setScroll(TIME_OUT);
 		request.setSize(1000);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query:\n{}", request);
+		}
 		SearchResponse response = request.execute().actionGet();
+		if(logger.isDebugEnabled()) {
+			logger.debug("Documents found: {}", response.getHits().totalHits());
+		}
 		return response;
 	}
 

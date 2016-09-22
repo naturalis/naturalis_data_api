@@ -33,11 +33,13 @@ public class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 			if (value() == null) {
 				return boolQuery().mustNot(existsQuery(path()));
 			}
-			return termQuery(multiField, value());
+			String value = value().toString().toLowerCase();
+			return termQuery(multiField, value);
 		}
 		if (value() == null) {
 			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(path())));
 		}
-		return nestedQuery(nestedPath, termQuery(multiField, value()));
+		String value = value().toString().toLowerCase();
+		return nestedQuery(nestedPath, termQuery(multiField, value));
 	}
 }

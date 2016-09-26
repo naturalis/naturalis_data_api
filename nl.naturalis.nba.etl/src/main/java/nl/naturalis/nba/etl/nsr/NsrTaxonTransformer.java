@@ -46,7 +46,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	{
 		super(stats);
 	}
-	
+
 	@Override
 	protected String getObjectID()
 	{
@@ -59,11 +59,13 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		try {
 			Element taxonElem = input.getRecord();
 			String rank = val(taxonElem, "rank");
-			if (invalidRank(rank))
+			if (invalidRank(rank)) {
 				return null;
+			}
 			ESTaxon taxon = new ESTaxon();
-			if (!addScientificNames(taxon))
+			if (!addScientificNames(taxon)) {
 				return null;
+			}
 			addSystemClassification(taxon);
 			addDefaultClassification(taxon);
 			equalizeNameComponents(taxon);
@@ -91,14 +93,16 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	{
 		if (rank == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing taxonomic rank");
+			}
 			return true;
 		}
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Ignoring higher taxon: \"%s\"", rank);
+			}
 			return true;
 		}
 		return false;
@@ -107,8 +111,9 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	private boolean addScientificNames(ESTaxon taxon)
 	{
 		List<Element> nameElems = getNameElements();
-		if (nameElems == null)
+		if (nameElems == null) {
 			return false;
+		}
 		for (Element e : nameElems) {
 			String nametype = val(e, "nametype");
 			if (nametype == null) {
@@ -118,14 +123,16 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 				return false;
 			}
 			if (!isVernacularName(nametype)) {
-				if (!add(taxon, getScientificName(e)))
+				if (!add(taxon, getScientificName(e))) {
 					return false;
+				}
 			}
 		}
 		if (taxon.getAcceptedName() == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing accepted name for taxon");
+			}
 			return false;
 		}
 		return true;
@@ -136,15 +143,17 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		Element namesElem = getChild(input.getRecord(), "names");
 		if (namesElem == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing <names> element under <taxon> element");
+			}
 			return null;
 		}
 		List<Element> nameElems = getChildren(namesElem);
 		if (nameElems == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing accepted name (zero <name> elements under <names> element)");
+			}
 			return null;
 		}
 		return nameElems;
@@ -155,8 +164,9 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
 			if (taxon.getAcceptedName() != null) {
 				stats.recordsRejected++;
-				if (!suppressErrors)
+				if (!suppressErrors) {
 					error("Only one accepted name per taxon allowed");
+				}
 				return false;
 			}
 			taxon.setAcceptedName(sn);
@@ -178,8 +188,9 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		if (nameElems != null) {
 			for (Element e : nameElems) {
 				String nameType = val(e, "nametype");
-				if (isVernacularName(nameType))
+				if (isVernacularName(nameType)) {
 					taxon.addVernacularName(getVernacularName(e));
+				}
 			}
 		}
 	}
@@ -193,16 +204,18 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	{
 		String uri = val(input.getRecord(), "url");
 		if (uri == null) {
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Missing URL for taxon with id \"%s\"", taxon.getSourceSystemId());
+			}
 		}
 		else {
 			try {
 				taxon.setRecordURI(new URI(uri));
 			}
 			catch (URISyntaxException e) {
-				if (!suppressErrors)
+				if (!suppressErrors) {
 					warn("Invalid URL: \"%s\"", uri);
+				}
 			}
 		}
 	}
@@ -210,11 +223,13 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	private void addDescriptions(ESTaxon taxon)
 	{
 		Element e = getChild(input.getRecord(), "description");
-		if (e == null)
+		if (e == null) {
 			return;
+		}
 		List<Element> pageElems = getChildren(e);
-		if (pageElems == null)
+		if (pageElems == null) {
 			return;
+		}
 		for (Element pageElem : pageElems) {
 			TaxonDescription descr = new TaxonDescription();
 			descr.setCategory(val(pageElem, "title"));
@@ -250,8 +265,9 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			}
 			monomials.add(new Monomial(rank, epithet));
 		}
-		if (monomials.size() != 0)
+		if (monomials.size() != 0) {
 			taxon.setSystemClassification(monomials);
+		}
 	}
 
 	/*
@@ -291,11 +307,13 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		sn.setInfraspecificEpithet(val(nameElem, "infra_specific_epithet"));
 		sn.setTaxonomicStatus(getTaxonomicStatus(nameElem));
 		String expertName = val(nameElem, "expert_name");
-		if (expertName == null)
+		if (expertName == null) {
 			expertName = val(nameElem, "expert");
-		String organization = val(nameElem, "organization_name");
-		if (organization == null)
-			organization = val(nameElem, "organization");
+		}
+		String organization = val(nameElem, "organisation_name");
+		if (organization == null) {
+			organization = val(nameElem, "organisation");
+		}
 		if (expertName != null || organization != null) {
 			Expert expert = new Expert();
 			expert.setFullName(expertName);
@@ -322,11 +340,13 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		String nameType = val(e, "nametype");
 		vn.setPreferred(nameType.equals("isPreferredNameOf"));
 		String expert = val(e, "expert_name");
-		if (expert == null)
+		if (expert == null) {
 			expert = val(e, "expert");
+		}
 		String organization = val(e, "organization_name");
-		if (organization == null)
+		if (organization == null) {
 			organization = val(e, "organization");
+		}
 		if (expert != null || organization != null) {
 			Expert exp = new Expert();
 			exp.setFullName(expert);
@@ -350,15 +370,17 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		String raw = val(nameElem, "nametype");
 		if (raw == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing or empty <nametype> for name: " + val(nameElem, "fullname"));
+			}
 			return null;
 		}
 		TaxonomicStatus status = translations.get(raw);
 		if (status == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Invalid taxonomic status: " + raw);
+			}
 			return null;
 		}
 		return status;

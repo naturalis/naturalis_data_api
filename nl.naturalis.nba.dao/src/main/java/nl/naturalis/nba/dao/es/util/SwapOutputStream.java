@@ -1,8 +1,23 @@
 package nl.naturalis.nba.dao.es.util;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * An output stream that first fills up an internal buffer before flushing it
+ * and switching over to another output stream. In other words, first all write
+ * actions operate on an in-memory buffer. Then, once a write action causes the
+ * buffer to fill up or overflow, the buffer is flushed to the other output
+ * stream, and from that moment all write actions are forwared to the other
+ * output stream. This class is not meant to provide buffering functionality
+ * like a {@link BufferedOutputStream}. Instead, you would use it in situations
+ * where you hope or expect that the swap never takes places and all write
+ * actions take place in-memory.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class SwapOutputStream extends OutputStream {
 
 	/**
@@ -27,13 +42,13 @@ public class SwapOutputStream extends OutputStream {
 	/**
 	 * Creates a {@code SwapOutputStream} that swaps its in-memory buffer to the
 	 * specified {@code OutputStream} once the in-memory buffer grows beyond 1
-	 * MB.
+	 * megabyte.
 	 * 
-	 * @param swapTo
+	 * @param destination
 	 */
-	public SwapOutputStream(OutputStream swapTo)
+	public SwapOutputStream(OutputStream destination)
 	{
-		this(swapTo, 1024 * 1024);
+		this(destination, 1024 * 1024);
 	}
 
 	/**
@@ -101,7 +116,7 @@ public class SwapOutputStream extends OutputStream {
 
 	/**
 	 * Forces a premature swap, that is, even if the in-memory buffer has not
-	 * reached its full capacity yet.
+	 * reached full capacity yet.
 	 * 
 	 * @throws IOException
 	 */
@@ -115,21 +130,20 @@ public class SwapOutputStream extends OutputStream {
 	}
 
 	/**
-	 * Calls {@code close()} on the swap-to {@link OutputStream}. Note that this
-	 * will <i>not</i> induce an implicit swap. If there is still data in the
-	 * in-memory buffer, the {@code OutputStream} will be closed without a
-	 * single byte written to it. Call {@link #swapAndClose()} to first swap and
-	 * then close the {@code OutputStream}.
+	 * Calls {@code close()} on the swap-to output stream. Note that this will
+	 * not induce an implicit swap. If the swap has not taken place yet, the
+	 * output stream will be closed without a single byte written to it. Call
+	 * {@link #swapAndClose()} to first swap and then close the output stream.
 	 */
 	@Override
 	public void close() throws IOException
 	{
 		dest.close();
 	}
-	
+
 	/**
-	 * Writes the in-memory buffer to the swap-to {@link OutputStream} and
-	 * closes the swap-to {@link OutputStream}.
+	 * Flushes in-memory buffer to the swap-to output stream and then closes the
+	 * output stream.
 	 * 
 	 * @throws IOException
 	 */
@@ -144,9 +158,21 @@ public class SwapOutputStream extends OutputStream {
 	 * 
 	 * @return
 	 */
-	public int bytesInBuffer()
+	public int size()
 	{
 		return cnt;
+	}
+
+	/**
+	 * Returns the contents of the in-memory buffer.
+	 * 
+	 * @return
+	 */
+	public byte[] getBuffer()
+	{
+		byte[] copy = new byte[cnt];
+		System.arraycopy(buf, 0, copy, 0, cnt);
+		return copy;
 	}
 
 	/**

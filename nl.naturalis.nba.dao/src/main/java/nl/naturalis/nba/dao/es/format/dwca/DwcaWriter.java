@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -141,6 +142,26 @@ public class DwcaWriter {
 			}
 		}
 		flush();
+	}
+	
+	private void writeCsvFiles(SearchResponse response) {
+		int processed = 0;
+		while (true) {
+			for (SearchHit hit : response.getHits().getHits()) {
+				Map<String,Object> data = hit.getSource();
+				for(Entity entity:dwcaConfig.getDataSet().getEntities()) {
+					
+				}
+			}
+			String scrollId = response.getScrollId();
+			Client client = ESClientManager.getInstance().getClient();
+			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
+			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
+			if (response.getHits().getHits().length == 0) {
+				break;
+			}
+		}
+		flush();		
 	}
 
 	private void writeMetaXml() throws DataSetConfigurationException

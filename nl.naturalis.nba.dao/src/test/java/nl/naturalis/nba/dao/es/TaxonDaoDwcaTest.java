@@ -2,7 +2,6 @@ package nl.naturalis.nba.dao.es;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.zip.ZipOutputStream;
 
 import org.junit.Test;
 

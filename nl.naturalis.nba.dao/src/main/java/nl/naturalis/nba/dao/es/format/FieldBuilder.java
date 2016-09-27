@@ -2,6 +2,8 @@ package nl.naturalis.nba.dao.es.format;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
+import nl.naturalis.nba.dao.es.format.config.PluginParamXmlConfig;
 
 class FieldBuilder {
 
@@ -84,7 +87,15 @@ class FieldBuilder {
 		URI term = getTerm(fieldConfig);
 		String className = fieldConfig.getCalculator().getJavaClass();
 		ICalculator calculator = getCalculator(name, className);
-		return fieldFactory.createdCalculatedField(name, term, calculator);
+		LinkedHashMap<String, String> args = null;
+		List<PluginParamXmlConfig> argConfigs = fieldConfig.getCalculator().getArg();
+		if (argConfigs != null) {
+			args = new LinkedHashMap<>(4);
+			for (PluginParamXmlConfig argConfig : argConfigs) {
+				args.put(argConfig.getName(), argConfig.getValue());
+			}
+		}
+		return fieldFactory.createdCalculatedField(name, term, calculator, args);
 	}
 
 	IField createConstantField(FieldXmlConfig fieldConfig) throws FieldConfigurationException

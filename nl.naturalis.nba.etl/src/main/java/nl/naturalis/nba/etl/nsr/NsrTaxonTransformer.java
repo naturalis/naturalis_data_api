@@ -23,6 +23,7 @@ import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
+import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
 
 public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
@@ -72,6 +73,8 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			taxon.setSourceSystem(NSR);
 			taxon.setSourceSystemId(objectID);
 			taxon.setTaxonRank(rank);
+			String s = getOccurrenceStatusVerbatim(taxonElem);
+			taxon.setOccurrenceStatusVerbatim(s);
 			taxon.setSourceSystemParentId(val(taxonElem, "nsr_id_parent"));
 			setRecordURI(taxon);
 			addVernacularNames(taxon);
@@ -268,6 +271,13 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		if (monomials.size() != 0) {
 			taxon.setSystemClassification(monomials);
 		}
+	}
+
+	private static String getOccurrenceStatusVerbatim(Element taxonElem)
+	{
+		/* Get content of status element within status element */
+		Element statusElement = DOMUtil.getChild(taxonElem, "status");
+		return statusElement == null ? null : val(statusElement, "status");
 	}
 
 	/*

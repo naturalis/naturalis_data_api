@@ -10,7 +10,6 @@ public class TaxonTransfer {
 		// Only static method in transfer objects
 	}
 
-
 	public static Taxon transfer(ESTaxon esTaxon)
 	{
 		Taxon taxon = new Taxon();
@@ -19,6 +18,8 @@ public class TaxonTransfer {
 		taxon.setSourceSystemParentId(esTaxon.getSourceSystemParentId());
 		taxon.setRecordURI(esTaxon.getRecordURI());
 		taxon.setTaxonRank(esTaxon.getTaxonRank());
+		taxon.setTaxonRemarks(esTaxon.getTaxonRemarks());
+		taxon.setOccurrenceStatusVerbatim(esTaxon.getOccurrenceStatusVerbatim());
 		taxon.setAcceptedName(esTaxon.getAcceptedName());
 		taxon.setDefaultClassification(esTaxon.getDefaultClassification());
 		taxon.setSystemClassification(esTaxon.getSystemClassification());
@@ -27,8 +28,6 @@ public class TaxonTransfer {
 		taxon.setDescriptions(esTaxon.getDescriptions());
 		taxon.setReferences(esTaxon.getReferences());
 		taxon.setExperts(esTaxon.getExperts());
-		// Distribution data not yet disclosed through domain model
-		//taxon.setLocalities(esTaxon.getLocalities());
 		return taxon;
 	}
 }

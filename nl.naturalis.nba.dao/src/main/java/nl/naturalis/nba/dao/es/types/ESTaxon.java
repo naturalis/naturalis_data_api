@@ -14,14 +14,13 @@ import nl.naturalis.nba.api.model.*;
 public class ESTaxon extends NbaTraceableObject implements ESType {
 
 	private String sourceSystemParentId;
-
 	private String taxonRank;
+	private String taxonRemarks;
+	private String occurrenceStatusVerbatim;
 	private ScientificName acceptedName;
-	private String identifyingEpithets;
-
 	private DefaultClassification defaultClassification;
-	private List<Monomial> systemClassification;
 
+	private List<Monomial> systemClassification;
 	private List<ScientificName> synonyms;
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
@@ -97,6 +96,26 @@ public class ESTaxon extends NbaTraceableObject implements ESType {
 		this.taxonRank = taxonRank;
 	}
 
+	public String getTaxonRemarks()
+	{
+		return taxonRemarks;
+	}
+
+	public void setTaxonRemarks(String taxonRemarks)
+	{
+		this.taxonRemarks = taxonRemarks;
+	}
+
+	public String getOccurrenceStatusVerbatim()
+	{
+		return occurrenceStatusVerbatim;
+	}
+
+	public void setOccurrenceStatusVerbatim(String occurrenceStatusVerbatim)
+	{
+		this.occurrenceStatusVerbatim = occurrenceStatusVerbatim;
+	}
+
 	public ScientificName getAcceptedName()
 	{
 		return acceptedName;
@@ -105,21 +124,6 @@ public class ESTaxon extends NbaTraceableObject implements ESType {
 	public void setAcceptedName(ScientificName acceptedName)
 	{
 		this.acceptedName = acceptedName;
-		// @formatter:off
-		String identifier = acceptedName.getGenusOrMonomial()
-				+ "||"
-				+ acceptedName.getSubgenus()
-				+ "||"
-				+ acceptedName.getSpecificEpithet()
-				+ "||"
-				+ acceptedName.getInfraspecificEpithet();
-		// @formatter:on
-		this.identifyingEpithets = identifier;
-	}
-
-	public String getIdentifyingEpithets()
-	{
-		return identifyingEpithets;
 	}
 
 	public DefaultClassification getDefaultClassification()

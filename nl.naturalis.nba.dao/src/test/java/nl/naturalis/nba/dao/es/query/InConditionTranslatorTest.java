@@ -18,7 +18,7 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.test.TestPerson;
+import nl.naturalis.nba.dao.es.test.TestPerson;
 
 import static nl.naturalis.nba.dao.es.query.ConditionTranslatorFactory.getTranslator;
 

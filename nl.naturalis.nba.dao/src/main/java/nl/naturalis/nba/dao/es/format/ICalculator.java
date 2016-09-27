@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * An {@code ICalculator} is used to determine the value for a calculated field
@@ -19,7 +19,7 @@ public interface ICalculator {
 	 * are parameter names, the values of the map are parameter values. This
 	 * method is called just once, right after instantiation of the calculator.
 	 */
-	void initialize(Map<String, String> args);
+	void initialize(LinkedHashMap<String, String> args);
 
 	/**
 	 * Calculates a values. The specified Elasticsearch document (converted to a

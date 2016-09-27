@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.format.csv;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.es.map.ESDataType;
@@ -63,8 +64,8 @@ public class CsvFieldFactory implements IFieldFactory {
 	}
 
 	@Override
-	public IField createdCalculatedField(String name, URI term, ICalculator calculator)
-			throws FieldConfigurationException
+	public IField createdCalculatedField(String name, URI term, ICalculator calculator,
+			LinkedHashMap<String, String> args) throws FieldConfigurationException
 	{
 		return new CalculatedField(name, term, calculator);
 	}

@@ -2,26 +2,27 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class Taxon extends NbaTraceableObject implements INbaModelObject {
 
 	private String sourceSystemParentId;
-
 	private String taxonRank;
+	private String taxonRemarks;
+	private String occurrenceStatusVerbatim;
 	private ScientificName acceptedName;
-
 	private DefaultClassification defaultClassification;
-	private List<Monomial> systemClassification;
 
+	private List<Monomial> systemClassification;
 	private List<ScientificName> synonyms;
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
 	private List<Reference> references;
 	private List<Expert> experts;
-
 	private List<Specimen> specimens;
-
-	//  Distribution data (from CoL distribution data)
-	//	private List<String> localities;
 
 	public String getSourceSystemParentId()
 	{
@@ -44,7 +45,41 @@ public class Taxon extends NbaTraceableObject implements INbaModelObject {
 	}
 
 	/**
-	 * Botanical
+	 * This property expresses DwC term
+	 * <a href= "http://rs.tdwg.org/dwc/terms/taxonRemarks">taxonRemarks</a>
+	 * 
+	 * @return
+	 */
+	public String getTaxonRemarks()
+	{
+		return taxonRemarks;
+	}
+
+	public void setTaxonRemarks(String taxonRemarks)
+	{
+		this.taxonRemarks = taxonRemarks;
+	}
+
+	/**
+	 * This property expresses DwC term <a href=
+	 * "http://rs.tdwg.org/dwc/terms/occurrenceRemarks">occurrenceRemarks</a>
+	 * 
+	 * @return
+	 */
+	public String getOccurrenceStatusVerbatim()
+	{
+		return occurrenceStatusVerbatim;
+	}
+
+	public void setOccurrenceStatusVerbatim(String occurrenceStatusVerbatim)
+	{
+		this.occurrenceStatusVerbatim = occurrenceStatusVerbatim;
+	}
+
+	/**
+	 * Botanical equivalent of valid name. This returns the same value as
+	 * {@link #getValidName()}. You can choose either method, according to
+	 * taste.
 	 * 
 	 * @return
 	 */
@@ -54,7 +89,9 @@ public class Taxon extends NbaTraceableObject implements INbaModelObject {
 	}
 
 	/**
-	 * Zoological
+	 * Zoological equivalent of accepted name. This returns the same value as
+	 * {@link #getAcceptedName()}. You can choose either method, according to
+	 * taste.
 	 * 
 	 * @return
 	 */
@@ -63,17 +100,11 @@ public class Taxon extends NbaTraceableObject implements INbaModelObject {
 		return acceptedName;
 	}
 
-	/**
-	 * Botanical
-	 */
 	public void setAcceptedName(ScientificName scientificName)
 	{
 		this.acceptedName = scientificName;
 	}
 
-	/**
-	 * Zoological
-	 */
 	public void setValidName(ScientificName scientificName)
 	{
 		this.acceptedName = scientificName;
@@ -164,16 +195,5 @@ public class Taxon extends NbaTraceableObject implements INbaModelObject {
 	{
 		this.specimens = specimens;
 	}
-
-	//	public List<String> getLocalities()
-	//	{
-	//		return localities;
-	//	}
-	//
-	//
-	//	public void setLocalities(List<String> localities)
-	//	{
-	//		this.localities = localities;
-	//	}
 
 }

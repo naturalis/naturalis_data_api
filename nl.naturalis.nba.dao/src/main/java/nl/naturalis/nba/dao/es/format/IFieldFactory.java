@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.format;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 
 import nl.naturalis.nba.common.Path;
 
@@ -34,9 +35,10 @@ public interface IFieldFactory {
 	 * @param name
 	 * @param term
 	 * @param calculator
+	 * @param args 
 	 * @return
 	 */
-	IField createdCalculatedField(String name, URI term, ICalculator calculator)
+	IField createdCalculatedField(String name, URI term, ICalculator calculator, LinkedHashMap<String, String> args)
 			throws FieldConfigurationException;
 
 	/**

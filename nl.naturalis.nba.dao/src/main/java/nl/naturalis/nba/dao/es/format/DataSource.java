@@ -14,6 +14,12 @@ public class DataSource {
 	{
 	}
 
+	DataSource(DataSource other)
+	{
+		this.mapping = other.mapping;
+		this.querySpec = other.querySpec;
+	}
+
 	public Mapping getMapping()
 	{
 		return mapping;

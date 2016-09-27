@@ -10,13 +10,15 @@
 	
 	<xs:complexType name="DataSetXmlConfig">
 		<xs:sequence>
+			<xs:element name="shared-data-source" type="self:DataSourceXmlConfig"  minOccurs="0"/>
 			<xs:element name="entity" type="self:EntityXmlConfig" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="EntityXmlConfig">
 		<xs:sequence>
-			<xs:element name="data-source" type="self:DataSourceXmlConfig" />
+			<xs:element name="data-source" type="self:DataSourceXmlConfig" minOccurs="0" />
+			<xs:element name="path" type="xs:string" minOccurs="0" />
 			<xs:element name="filter" type="self:PluginXmlConfig" minOccurs="0" />
 			<xs:element name="fields" type="self:FieldsXmlConfig" />
 		</xs:sequence>
@@ -29,7 +31,6 @@
 				<xs:element name="document" type="xs:string" />
 				<xs:element name="java-class" type="xs:string" />
 			</xs:choice>
-			<xs:element name="path" type="xs:string" minOccurs="0" />
 			<xs:element name="query-spec" type="self:QuerySpecXmlConfig" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>

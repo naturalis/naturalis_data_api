@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.dao.es.DocumentType;
@@ -22,7 +21,6 @@ class DataSourceBuilder {
 	{
 		DataSource dataSource = new DataSource();
 		dataSource.setMapping(getMapping());
-		dataSource.setPath(getPath());
 		dataSource.setQuerySpec(getQuerySpec());
 		return dataSource;
 	}
@@ -68,14 +66,6 @@ class DataSourceBuilder {
 					+ "a valid Elasticsearch document type";
 			throw new DataSetConfigurationException(msg);
 		}
-	}
-
-	private Path getPath()
-	{
-		String path = dataSourceConfig.getPath();
-		if (path == null)
-			return null;
-		return new Path(path);
 	}
 
 	private QuerySpec getQuerySpec() throws DataSetConfigurationException

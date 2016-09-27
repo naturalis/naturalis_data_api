@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -61,26 +60,24 @@ public class DwcaWriter {
 	public void writeDwcaForQuery(QuerySpec querySpec)
 			throws DataSetConfigurationException, InvalidQueryException
 	{
-		try {
-			writeEmlXml();
-			writeMetaXml();
-			writeCsvFilesForQuery(querySpec);
-		}
-		finally {
-			finish();
-		}
+		logger.info("Generating DarwinCore archive for user-defined query");
+		writeEmlXml();
+		writeMetaXml();
+		writeCsvFilesForQuery(querySpec);
+		finish();
+		logger.info("Finished writing DarwinCore archive for user-defined query");
 	}
 
 	public void writeDwcaForDataSet() throws DataSetConfigurationException
 	{
-		try {
-			writeEmlXml();
-			writeMetaXml();
-			writeCsvFilesForDataSet();
-		}
-		finally {
-			finish();
-		}
+		logger.info("Generating DarwinCore archive for data set \"{}\"",
+				dwcaConfig.getDataSetName());
+		writeEmlXml();
+		writeMetaXml();
+		writeCsvFilesForDataSet();
+		finish();
+		logger.info("Finished writing DarwinCore archive for data set \"{}\"",
+				dwcaConfig.getDataSetName());
 	}
 
 	private void writeCsvFilesForQuery(QuerySpec querySpec)
@@ -88,7 +85,9 @@ public class DwcaWriter {
 	{
 
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
-			newZipEntry(dwcaConfig.getCsvFileName(entity));
+			String fileName = dwcaConfig.getCsvFileName(entity);
+			logger.info("Generating CSV file for entity {}", entity.getName());
+			newZipEntry(fileName);
 			writeCsvFile(entity, executeQuery(querySpec));
 		}
 	}
@@ -96,7 +95,9 @@ public class DwcaWriter {
 	private void writeCsvFilesForDataSet() throws DataSetConfigurationException
 	{
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
-			newZipEntry(dwcaConfig.getCsvFileName(entity));
+			String fileName = dwcaConfig.getCsvFileName(entity);
+			logger.info("Generating CSV file for entity {}", entity.getName());
+			newZipEntry(fileName);
 			QuerySpec query = entity.getDataSource().getQuerySpec();
 			SearchResponse response;
 			try {
@@ -130,7 +131,7 @@ public class DwcaWriter {
 				if (++processed % 10000 == 0)
 					csvPrinter.flush();
 				if (logger.isDebugEnabled() && processed % 100000 == 0)
-					logger.debug("Records processed: " + processed);
+					logger.debug("Documents processed: " + processed);
 				csvPrinter.printRecord(hit.getSource());
 			}
 			String scrollId = response.getScrollId();
@@ -143,29 +144,31 @@ public class DwcaWriter {
 		}
 		flush();
 	}
-	
-	private void writeCsvFiles(SearchResponse response) {
-		int processed = 0;
-		while (true) {
-			for (SearchHit hit : response.getHits().getHits()) {
-				Map<String,Object> data = hit.getSource();
-				for(Entity entity:dwcaConfig.getDataSet().getEntities()) {
-					
-				}
-			}
-			String scrollId = response.getScrollId();
-			Client client = ESClientManager.getInstance().getClient();
-			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
-			if (response.getHits().getHits().length == 0) {
-				break;
-			}
-		}
-		flush();		
-	}
+
+	//	private void writeCsvFiles(SearchResponse response)
+	//	{
+	//		int processed = 0;
+	//		while (true) {
+	//			for (SearchHit hit : response.getHits().getHits()) {
+	//				Map<String, Object> data = hit.getSource();
+	//				for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
+	//
+	//				}
+	//			}
+	//			String scrollId = response.getScrollId();
+	//			Client client = ESClientManager.getInstance().getClient();
+	//			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
+	//			response = ssrb.setScroll(TIME_OUT).execute().actionGet();
+	//			if (response.getHits().getHits().length == 0) {
+	//				break;
+	//			}
+	//		}
+	//		flush();
+	//	}
 
 	private void writeMetaXml() throws DataSetConfigurationException
 	{
+		logger.info("Generating meta.xml");
 		newZipEntry("meta.xml");
 		Archive archive = new Archive();
 		Core core = new Core();
@@ -190,6 +193,7 @@ public class DwcaWriter {
 
 	private void writeEmlXml() throws DataSetConfigurationException
 	{
+		logger.info("Adding eml.xml to archive ({})", dwcaConfig.getEmlFile());
 		newZipEntry("eml.xml");
 		FileInputStream fis = null;
 		try {
@@ -234,9 +238,7 @@ public class DwcaWriter {
 			logger.debug("Executing query:\n{}", request);
 		}
 		SearchResponse response = request.execute().actionGet();
-		if(logger.isDebugEnabled()) {
-			logger.debug("Documents found: {}", response.getHits().totalHits());
-		}
+		logger.info("Elasticsearch documents to be processed: {}", response.getHits().totalHits());
 		return response;
 	}
 

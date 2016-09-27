@@ -15,7 +15,9 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.config.DataSetXmlConfig;
+import nl.naturalis.nba.dao.es.format.config.DataSourceXmlConfig;
 import nl.naturalis.nba.dao.es.format.config.EntityXmlConfig;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
 
@@ -86,8 +88,9 @@ public class DataSetBuilder {
 
 	public DataSetBuilder setFieldFactoryForEntity(String entityName, IFieldFactory fieldFactory)
 	{
-		if (entityFieldFactories == null)
+		if (entityFieldFactories == null) {
 			entityFieldFactories = new HashMap<>(8);
+		}
 		entityFieldFactories.put(entityName, fieldFactory);
 		return this;
 	}
@@ -96,15 +99,20 @@ public class DataSetBuilder {
 	{
 		DataSetXmlConfig dataSetConfig = parseConfigFile();
 		DataSet dataSet = new DataSet();
+		DataSource sharedDataSource = null;
+		if (dataSetConfig.getSharedDataSource() != null) {
+			DataSourceXmlConfig config = dataSetConfig.getSharedDataSource();
+			sharedDataSource = new DataSourceBuilder(config).build();
+			dataSet.setSharedDataSource(sharedDataSource);
+		}
 		for (EntityXmlConfig entityConfig : dataSetConfig.getEntity()) {
 			Entity entity = new Entity();
 			dataSet.addEntity(entity);
 			entity.setName(entityConfig.getName());
-			DataSourceBuilder dsb = new DataSourceBuilder(entityConfig.getDataSource());
-			DataSource dataSource = dsb.build();
-			entity.setDataSource(dataSource);
+			DataSource myDataSource = getDataSource(entityConfig, sharedDataSource);
+			entity.setDataSource(myDataSource);
 			IFieldFactory fieldFactory = getFieldFactory(entityConfig.getName());
-			FieldBuilder fieldBuilder = new FieldBuilder(fieldFactory, dataSource);
+			FieldBuilder fieldBuilder = new FieldBuilder(fieldFactory, myDataSource);
 			for (FieldXmlConfig field : entityConfig.getFields().getField()) {
 				try {
 					entity.addField(fieldBuilder.build(field));
@@ -122,6 +130,35 @@ public class DataSetBuilder {
 			}
 		}
 		return dataSet;
+	}
+
+	private static DataSource getDataSource(EntityXmlConfig entityConfig,
+			DataSource sharedDataSource) throws DataSetConfigurationException
+	{
+		DataSourceXmlConfig dsConfig = entityConfig.getDataSource();
+		DataSource dataSource;
+		if (dsConfig == null) {
+			if (sharedDataSource == null) {
+				String msg = format(ERR_BAD_ENTITY, entityConfig.getName(),
+						"Missing <data-source> element and no <shared-data-source> "
+								+ "defined under <dataset-config>");
+				throw new DataSetConfigurationException(msg);
+			}
+			dataSource = new DataSource(sharedDataSource);
+		}
+		else {
+			if (sharedDataSource != null) {
+				String msg = format(ERR_BAD_ENTITY, entityConfig.getName(),
+						"Mutually exclusive: <shared-data-source>, <data-source>");
+				throw new DataSetConfigurationException(msg);
+			}
+			dataSource = new DataSourceBuilder(dsConfig).build();
+		}
+		String path = entityConfig.getPath();
+		if (path != null) {
+			dataSource.setPath(new Path(path));
+		}
+		return dataSource;
 	}
 
 	private IFieldFactory getFieldFactory(String entity) throws DataSetConfigurationException

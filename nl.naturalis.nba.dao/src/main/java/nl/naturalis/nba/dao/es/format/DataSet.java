@@ -14,7 +14,18 @@ import java.util.List;
  */
 public class DataSet {
 
+	private DataSource sharedDataSource;
 	private List<Entity> entities;
+
+	public DataSource getSharedDataSource()
+	{
+		return sharedDataSource;
+	}
+
+	void setSharedDataSource(DataSource sharedDataSource)
+	{
+		this.sharedDataSource = sharedDataSource;
+	}
 
 	public List<Entity> getEntities()
 	{

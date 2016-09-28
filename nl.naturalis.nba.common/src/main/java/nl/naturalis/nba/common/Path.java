@@ -4,13 +4,15 @@ import static java.lang.System.arraycopy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
-import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
  * Immutable class representing a path within an Elasticsearch document. Array
@@ -157,6 +159,11 @@ public final class Path {
 			throw new InvalidPathException(e.getMessage());
 		}
 		return esField.isArray();
+	}
+
+	public Object read(Map<String, Object> data)
+	{
+		return JsonUtil.readField(data, this);
 	}
 
 	@Override

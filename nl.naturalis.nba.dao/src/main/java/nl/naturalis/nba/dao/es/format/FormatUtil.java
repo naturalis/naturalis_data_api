@@ -52,7 +52,7 @@ public class FormatUtil {
 		 * context of writing data sets that potentially contain millions of
 		 * records. Parsing/formatting using the SimpleDateFormat turns out to
 		 * be very slow. Therefore we use a bare-knuckle way of reformatting the
-		 * date string. This ceases to be valid if the date formats change.
+		 * date string. This ceases to be valid if the date formats change!!!
 		 */
 		// return DEFAULT_DATE_FORMAT.format(ES_DATE_TIME_FORMAT.parse(esDateString));
 		char[] chars = esDate.substring(0, 10).toCharArray();

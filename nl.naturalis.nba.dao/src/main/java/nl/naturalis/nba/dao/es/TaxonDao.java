@@ -14,6 +14,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.es.format.DataSetWriteException;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaConfig;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaUtil;
@@ -36,7 +37,7 @@ public class TaxonDao implements ITaxonAccess {
 			DwcaWriter writer = new DwcaWriter(config, out);
 			writer.writeDwcaForQuery(querySpec);
 		}
-		catch (DataSetConfigurationException e) {
+		catch (DataSetConfigurationException | DataSetWriteException e) {
 			throw new DaoException(e);
 		}
 	}
@@ -49,7 +50,7 @@ public class TaxonDao implements ITaxonAccess {
 			DwcaWriter writer = new DwcaWriter(config, out);
 			writer.writeDwcaForDataSet();
 		}
-		catch (DataSetConfigurationException e) {
+		catch (DataSetConfigurationException | DataSetWriteException e) {
 			throw new DaoException(e);
 		}
 	}

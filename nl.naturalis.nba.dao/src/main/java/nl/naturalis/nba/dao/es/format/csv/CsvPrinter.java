@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
+import nl.naturalis.nba.dao.es.format.DataSetWriteException;
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.IField;
@@ -45,7 +46,7 @@ public class CsvPrinter {
 		ps.println();
 	}
 
-	public void printRecord(Map<String, Object> document)
+	public void printRecord(Map<String, Object> document) throws DataSetWriteException
 	{
 		List<EntityObject> records = flattener.flatten(document);
 		for (EntityObject record : records) {

@@ -6,6 +6,7 @@ import java.net.URI;
 
 import nl.naturalis.nba.dao.es.format.AbstractField;
 import nl.naturalis.nba.dao.es.format.EntityObject;
+import nl.naturalis.nba.dao.es.format.FieldWriteException;
 import nl.naturalis.nba.dao.es.format.ICalculator;
 
 class CalculatedField extends AbstractField {
@@ -19,7 +20,7 @@ class CalculatedField extends AbstractField {
 	}
 
 	@Override
-	public String getValue(EntityObject entity)
+	public String getValue(EntityObject entity) throws FieldWriteException
 	{
 		Object val = calculator.calculateValue(entity);
 		return escapeCsv(val.toString());

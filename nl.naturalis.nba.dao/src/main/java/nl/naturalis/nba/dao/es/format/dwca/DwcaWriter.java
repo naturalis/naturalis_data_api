@@ -31,6 +31,7 @@ import nl.naturalis.nba.dao.es.ESClientManager;
 import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.es.format.DataSetWriteException;
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
 import nl.naturalis.nba.dao.es.format.Entity;
 import nl.naturalis.nba.dao.es.format.IField;
@@ -58,7 +59,7 @@ public class DwcaWriter {
 	}
 
 	public void writeDwcaForQuery(QuerySpec querySpec)
-			throws DataSetConfigurationException, InvalidQueryException
+			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
 		writeEmlXml();
@@ -68,7 +69,7 @@ public class DwcaWriter {
 		logger.info("Finished writing DarwinCore archive for user-defined query");
 	}
 
-	public void writeDwcaForDataSet() throws DataSetConfigurationException
+	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for data set \"{}\"",
 				dwcaConfig.getDataSetName());
@@ -81,7 +82,7 @@ public class DwcaWriter {
 	}
 
 	private void writeCsvFilesForQuery(QuerySpec querySpec)
-			throws DataSetConfigurationException, InvalidQueryException
+			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
@@ -92,7 +93,8 @@ public class DwcaWriter {
 		}
 	}
 
-	private void writeCsvFilesForDataSet() throws DataSetConfigurationException
+	private void writeCsvFilesForDataSet()
+			throws DataSetConfigurationException, DataSetWriteException
 	{
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
 			String fileName = dwcaConfig.getCsvFileName(entity);
@@ -118,7 +120,7 @@ public class DwcaWriter {
 		}
 	}
 
-	private void writeCsvFile(Entity entity, SearchResponse response)
+	private void writeCsvFile(Entity entity, SearchResponse response) throws DataSetWriteException
 	{
 		Path path = entity.getDataSource().getPath();
 		DocumentFlattener flattener = new DocumentFlattener(path);

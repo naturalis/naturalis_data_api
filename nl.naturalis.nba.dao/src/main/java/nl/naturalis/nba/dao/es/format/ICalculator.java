@@ -7,7 +7,8 @@ import java.util.LinkedHashMap;
  * in a data set. This type of field does not obtain its value directly from an
  * Elasticsearch document. Instead, it applies some logic, with or without using
  * the data in the Elasticsearch document, to arrive at the value for the data
- * set field. {@code ICalculator} <i>must</i> provide a no-arg constructor.
+ * set field. {@code ICalculator} implementations <b>must</b> provide a no-arg
+ * constructor.
  * 
  * @author Ayco Holleman
  *
@@ -19,15 +20,18 @@ public interface ICalculator {
 	 * are parameter names, the values of the map are parameter values. This
 	 * method is called just once, right after instantiation of the calculator.
 	 */
-	void initialize(LinkedHashMap<String, String> args);
+	void initialize(LinkedHashMap<String, String> args) throws DataSetConfigurationException;
 
 	/**
-	 * Calculates a values. The specified Elasticsearch document (converted to a
-	 * {@code Map}) may or may not be used to calculate the value.
+	 * Calculates a values. The specified entity object may or may not be used
+	 * to calculate the value. <i>This method must never return null.</i> Fields
+	 * using an {@code ICalculator} will blindly call {@code toString()} on the
+	 * returned value. Recommended practice to indicate that a value was
+	 * {@code null} is to return {@link FormatUtil#EMPTY_STRING}.
 	 * 
 	 * @param entity
 	 * @return
 	 */
-	Object calculateValue(EntityObject entity);
+	Object calculateValue(EntityObject entity) throws CalculatorException;
 
 }

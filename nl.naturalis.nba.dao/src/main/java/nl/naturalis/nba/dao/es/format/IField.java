@@ -67,6 +67,6 @@ public interface IField {
 	 * @param entity
 	 * @return
 	 */
-	String getValue(EntityObject entity);
+	String getValue(EntityObject entity) throws FieldWriteException;
 
 }

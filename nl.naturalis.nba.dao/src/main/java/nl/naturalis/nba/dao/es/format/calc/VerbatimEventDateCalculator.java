@@ -1,26 +1,28 @@
 package nl.naturalis.nba.dao.es.format.calc;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 
 import java.util.LinkedHashMap;
 
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.ICalculator;
 
 /**
- * Generates a value for the &#46;verbatimEventDate&#46; field.
+ * Generates a value for the DarwinCore &#34;verbatimEventDate&#34; term.
+ * Assumes the entity object is a plain {@link Specimen} document (no entity
+ * path).
  * 
  * @author Ayco Holleman
  *
  */
 public class VerbatimEventDateCalculator implements ICalculator {
 
-	private static final Path EVENT_DATE_BEGIN = new Path("gatheringEvent.dateTimeBegin");
-	private static final Path EVENT_DATE_END = new Path("gatheringEvent.dateTimeEnd");
+	private static final Path beginDatePath = new Path("gatheringEvent.dateTimeBegin");
+	private static final Path endDatePath = new Path("gatheringEvent.dateTimeEnd");
 
 	@Override
 	public void initialize(LinkedHashMap<String, String> args)
@@ -30,13 +32,15 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity)
 	{
-		Object obj0 = readField(entity.getData(), EVENT_DATE_BEGIN);
-		if (obj0 == MISSING_VALUE)
+		Object beginDate = beginDatePath.read(entity.getData());
+		if (beginDate == MISSING_VALUE) {
 			return EMPTY_STRING;
-		Object obj1 = readField(entity.getData(), EVENT_DATE_END);
-		if (obj1 == MISSING_VALUE || obj0.equals(obj1))
-			return formatDate(obj0.toString());
-		return formatDate(obj0.toString()) + " | " + formatDate(obj1.toString());
+		}
+		Object endDate = endDatePath.read(entity.getData());
+		if (endDate == MISSING_VALUE || beginDate.equals(endDate)) {
+			return formatDate(beginDate.toString());
+		}
+		return formatDate(beginDate.toString()) + " | " + formatDate(endDate.toString());
 	}
 
 }

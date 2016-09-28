@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.dao.es.format.calc.VerbatimEventDateCalculator;
 import nl.naturalis.nba.dao.es.format.config.FieldXmlConfig;
 import nl.naturalis.nba.dao.es.format.config.PluginParamXmlConfig;
 
@@ -17,7 +18,9 @@ class FieldBuilder {
 
 	private static Logger logger = LogManager.getLogger(FieldBuilder.class);
 
-	private static String CALC_PACKAGE = ICalculator.class.getPackage().getName();
+	/* Pick an arbitrary class from the package containing the calculators */
+	private static String CALC_PACKAGE = VerbatimEventDateCalculator.class.getPackage().getName();
+
 	private static String ERR_RELATIVE_PATH = "Relative path only allowed in combination with non-empty <path> within <data-source>";
 	private static String ERR_EXCLUSIVE_ELEMENTS = "Only one of <path>, <constant>, <calculator> allowed within <field>";
 	private static String ERR_MISSING_ELEMENT = "One of <path>, <constant>, <calculator> required within <field>";

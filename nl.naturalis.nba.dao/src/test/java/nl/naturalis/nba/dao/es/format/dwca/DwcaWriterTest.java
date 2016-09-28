@@ -12,13 +12,14 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.es.format.DataSetWriteException;
 
 @SuppressWarnings("static-method")
 public class DwcaWriterTest {
 
 	@Test
-	public void testWriteDwcaForQuery_01()
-			throws DataSetConfigurationException, InvalidQueryException, FileNotFoundException
+	public void testWriteDwcaForQuery_01() throws DataSetConfigurationException,
+			InvalidQueryException, FileNotFoundException, DataSetWriteException
 	{
 		DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.TAXON);
 		QuerySpec qs = new QuerySpec();

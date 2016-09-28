@@ -1,19 +1,23 @@
 package nl.naturalis.nba.dao.es.util;
 
 import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
  * An output stream that first fills up an internal buffer before flushing it
- * and switching over to another output stream. In other words, first all write
- * actions operate on an in-memory buffer. Then, once a write action causes the
- * buffer to fill up or overflow, the buffer is flushed to the other output
- * stream, and from that moment all write actions are forwared to the other
- * output stream. This class is not meant to provide buffering functionality
- * like a {@link BufferedOutputStream}. Instead, you would use it in situations
- * where you hope or expect that the swap never takes places and all write
- * actions take place in-memory.
+ * and switching over to an underlying output stream. In other words, first all
+ * write actions operate on an in-memory buffer. Then, once a write action
+ * causes the buffer to fill up or overflow, the buffer is flushed to the
+ * underlying output stream, and from that moment all write actions are forwared
+ * to that output stream. This class is not meant to provide buffering
+ * functionality like a {@link BufferedOutputStream}. Instead, you would use it
+ * in situations where you hope or expect that the swap never takes places and
+ * all write actions take place in-memory. The underlying outputstream is only
+ * used by way of fall-back, in case the in-memory buffer does flow over, and
+ * would most likely write to persistent storage (like a
+ * {@link FileOutputStream}).
  * 
  * @author Ayco Holleman
  *
@@ -41,14 +45,14 @@ public class SwapOutputStream extends OutputStream {
 
 	/**
 	 * Creates a {@code SwapOutputStream} that swaps its in-memory buffer to the
-	 * specified {@code OutputStream} once the in-memory buffer grows beyond 1
-	 * megabyte.
+	 * specified {@code OutputStream} once the in-memory buffer grows beyond 128
+	 * kilobytes.
 	 * 
 	 * @param destination
 	 */
 	public SwapOutputStream(OutputStream destination)
 	{
-		this(destination, 1024 * 1024);
+		this(destination, 128 * 1024);
 	}
 
 	/**
@@ -72,9 +76,9 @@ public class SwapOutputStream extends OutputStream {
 	public void write(int b) throws IOException
 	{
 		if (swapped) {
-			dest.write(b);
+			dest.write((byte) b);
 		}
-		else if (cnt + 1 < buf.length) {
+		else if (cnt < buf.length) {
 			buf[cnt] = (byte) b;
 			cnt += 1;
 		}
@@ -91,13 +95,13 @@ public class SwapOutputStream extends OutputStream {
 		if (swapped) {
 			dest.write(b, off, len);
 		}
-		else if (cnt + len < buf.length) {
+		else if (cnt + len <= buf.length) {
 			System.arraycopy(b, off, buf, cnt, len);
 			cnt += len;
 		}
 		else {
 			swapped = true;
-			dest.write(buf);
+			dest.write(buf, 0, cnt);
 			dest.write(b, off, len);
 		}
 	}
@@ -116,17 +120,20 @@ public class SwapOutputStream extends OutputStream {
 
 	/**
 	 * Forces a premature swap, that is, even if the in-memory buffer has not
-	 * reached full capacity yet.
+	 * reached full capacity yet. If the in-memory buffer has already been
+	 * swapped out to the underlying outputstream (either implicitly because of
+	 * a buffer overflow or explicitly because of a previous call to
+	 * {@code swap()}), calling this method has no effect.
 	 * 
 	 * @throws IOException
 	 */
 	public void swap() throws IOException
 	{
 		if (swapped) {
-			throw new IOException("Already swapped");
+			return;
 		}
 		swapped = true;
-		dest.write(buf);
+		dest.write(buf, 0, cnt);
 	}
 
 	/**

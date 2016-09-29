@@ -79,7 +79,7 @@ public class DocumentFlattener {
 			return;
 		}
 		Object obj = readField(node.getData(), path.element(0));
-		if (obj == null || obj == MISSING_VALUE) {
+		if (obj == MISSING_VALUE) {
 			return;
 		}
 		if (obj instanceof List) {

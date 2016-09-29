@@ -1,14 +1,14 @@
 package nl.naturalis.nba.dao.es.format.calc;
 
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.format.CalculatorException;
-import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.es.format.CalculationException;
+import nl.naturalis.nba.dao.es.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.ICalculator;
 
@@ -22,36 +22,53 @@ import nl.naturalis.nba.dao.es.format.ICalculator;
  */
 public class ScientificNameAuthorshipCalculator implements ICalculator {
 
-	private static final Path authorPath = new Path("author");
-	private static final Path yearPath = new Path("year");
-	private static final Path verbatimPath = new Path("authorshipVerbatim");
+	private Path authorPath;
+	private Path yearPath;
+	private Path verbatimPath;
 
 	@Override
-	public void initialize(LinkedHashMap<String, String> args) throws DataSetConfigurationException
+	public void initialize(Map<String, String> args) throws CalculatorInitializationException
 	{
+		String type = args.get("type");
+		if (type == null) {
+			String msg = "Missing required element <arg name=\"type\">";
+			throw new CalculatorInitializationException(msg);
+		}
+		switch (type) {
+			case "accepted name":
+				authorPath = new Path("acceptedName.author");
+				yearPath = new Path("acceptedName.year");
+				verbatimPath = new Path("acceptedName.authorshipVerbatim");
+				break;
+			case "synonym":
+			case "vernacular name":
+				authorPath = new Path("author");
+				yearPath = new Path("year");
+				verbatimPath = new Path("authorshipVerbatim");
+				break;
+			default:
+				String msg = "Contents of element <arg name=\"type\"> must be one "
+						+ "of: \"accepted name\", \"synonym\", \"vernacular name\"";
+				throw new CalculatorInitializationException(msg);
+		}
 	}
 
 	@Override
-	public Object calculateValue(EntityObject entity) throws CalculatorException
+	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		String author = EMPTY_STRING;
-		String year = EMPTY_STRING;
 		Object value = authorPath.read(entity.getData());
-		if (value != JsonUtil.MISSING_VALUE) {
-			author = value.toString();
+		if (value == MISSING_VALUE) {
+			value = verbatimPath.read(entity.getData());
+			if (value == MISSING_VALUE) {
+				return EMPTY_STRING;
+			}
+			return value;
 		}
-		value = yearPath.read(entity.getData());
-		if (value != JsonUtil.MISSING_VALUE) {
-			year = value.toString();
+		Object year = yearPath.read(entity.getData());
+		if (year == MISSING_VALUE) {
+			return value;
 		}
-		if (author != EMPTY_STRING && year != EMPTY_STRING) {
-			return author + ", " + year;
-		}
-		value = verbatimPath.read(entity.getData());
-		if (value != JsonUtil.MISSING_VALUE) {
-			return value.toString();
-		}
-		return EMPTY_STRING;
+		return value + ", " + year;
 	}
 
 }

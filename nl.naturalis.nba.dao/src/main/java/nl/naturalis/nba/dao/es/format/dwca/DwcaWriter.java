@@ -184,7 +184,7 @@ public class DwcaWriter {
 				continue;
 			Extension extension = new Extension();
 			extension.setFiles(new Files(dwcaConfig.getRowtype(entity)));
-			extension.setRowType(dwcaConfig.getRowtype(entity));
+			extension.setRowType(dwcaConfig.getCsvFileName(entity));
 			extension.setFields(getMetaXmlFieldsForEntity(entity));
 			archive.addExtension(extension);
 		}

@@ -2,8 +2,9 @@ package nl.naturalis.nba.dao.es.format;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,15 +91,21 @@ class FieldBuilder {
 		URI term = getTerm(fieldConfig);
 		String className = fieldConfig.getCalculator().getJavaClass();
 		ICalculator calculator = getCalculator(name, className);
-		LinkedHashMap<String, String> args = null;
+		Map<String, String> args = null;
 		List<PluginParamXmlConfig> argConfigs = fieldConfig.getCalculator().getArg();
 		if (argConfigs != null) {
-			args = new LinkedHashMap<>(4);
+			args = new HashMap<>(4);
 			for (PluginParamXmlConfig argConfig : argConfigs) {
 				args.put(argConfig.getName(), argConfig.getValue());
 			}
+			try {
+				calculator.initialize(args);
+			}
+			catch (CalculatorInitializationException e) {
+				throw new FieldConfigurationException(name, e.getMessage());
+			}
 		}
-		return fieldFactory.createdCalculatedField(name, term, calculator, args);
+		return fieldFactory.createdCalculatedField(name, term, calculator);
 	}
 
 	IField createConstantField(FieldXmlConfig fieldConfig) throws FieldConfigurationException

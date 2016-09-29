@@ -124,7 +124,7 @@ public class DataSetBuilder {
 					throw new DataSetConfigurationException(msg);
 				}
 				catch (DataSetConfigurationException e1) {
-					String msg = format(ERR_BAD_ENTITY, e1.getMessage());
+					String msg = format(ERR_BAD_ENTITY, entity.getName(), e1.getMessage());
 					throw new DataSetConfigurationException(msg);
 				}
 			}

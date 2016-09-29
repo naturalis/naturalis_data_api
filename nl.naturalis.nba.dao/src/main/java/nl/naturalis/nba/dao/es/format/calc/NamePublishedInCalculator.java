@@ -2,13 +2,13 @@ package nl.naturalis.nba.dao.es.format.calc;
 
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.format.CalculatorException;
-import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.es.format.CalculationException;
+import nl.naturalis.nba.dao.es.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.FormatUtil;
 import nl.naturalis.nba.dao.es.format.ICalculator;
@@ -25,17 +25,39 @@ import nl.naturalis.nba.dao.es.format.ICalculator;
  */
 public class NamePublishedInCalculator implements ICalculator {
 
-	private static final Path titlePath = new Path("references.0.titleCitation");
-	private static final Path authorPath = new Path("references.0.author.fullName");
-	private static final Path datePath = new Path("references.0.publicationDate");
+	private Path titlePath;
+	private Path authorPath;
+	private Path datePath;
 
 	@Override
-	public void initialize(LinkedHashMap<String, String> args) throws DataSetConfigurationException
+	public void initialize(Map<String, String> args) throws CalculatorInitializationException
 	{
+		String type = args.get("type");
+		if (type == null) {
+			String msg = "Missing required element <arg name=\"type\">";
+			throw new CalculatorInitializationException(msg);
+		}
+		switch (type) {
+			case "accepted name":
+				titlePath = new Path("acceptedName.references.0.titleCitation");
+				authorPath = new Path("acceptedName.references.0.author.fullName");
+				datePath = new Path("acceptedName.references.0.publicationDate");
+				break;
+			case "synonym":
+			case "vernacular name":
+				titlePath = new Path("references.0.titleCitation");
+				authorPath = new Path("references.0.author.fullName");
+				datePath = new Path("references.0.publicationDate");
+				break;
+			default:
+				String msg = "Contents of element <arg name=\"type\"> must be one "
+						+ "of: \"accepted name\", \"synonym\", \"vernacular name\"";
+				throw new CalculatorInitializationException(msg);
+		}
 	}
 
 	@Override
-	public Object calculateValue(EntityObject entity) throws CalculatorException
+	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
 		String title = EMPTY_STRING;
 		String author = EMPTY_STRING;
@@ -55,7 +77,24 @@ public class NamePublishedInCalculator implements ICalculator {
 		if (title == EMPTY_STRING && author == EMPTY_STRING && date == EMPTY_STRING) {
 			return EMPTY_STRING;
 		}
-		return title + " (" + author + "," + date + ")";
+		StringBuilder sb = new StringBuilder(32);
+		sb.append(title);
+		if (author != EMPTY_STRING || date != EMPTY_STRING) {
+			if (title != EMPTY_STRING) {
+				sb.append(' ');
+			}
+			sb.append('(');
+			sb.append(author);
+			if (author == EMPTY_STRING) {
+				sb.append(date);
+			}
+			else {
+				sb.append(", ");
+				sb.append(date);
+			}
+			sb.append(')');
+		}
+		return sb.toString();
 	}
 
 }

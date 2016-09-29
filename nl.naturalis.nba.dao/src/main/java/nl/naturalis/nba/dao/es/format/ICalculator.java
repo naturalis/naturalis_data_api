@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.es.format;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * An {@code ICalculator} is used to determine the value for a calculated field
@@ -20,7 +20,7 @@ public interface ICalculator {
 	 * are parameter names, the values of the map are parameter values. This
 	 * method is called just once, right after instantiation of the calculator.
 	 */
-	void initialize(LinkedHashMap<String, String> args) throws DataSetConfigurationException;
+	void initialize(Map<String, String> args) throws CalculatorInitializationException;
 
 	/**
 	 * Calculates a values. The specified entity object may or may not be used
@@ -32,6 +32,6 @@ public interface ICalculator {
 	 * @param entity
 	 * @return
 	 */
-	Object calculateValue(EntityObject entity) throws CalculatorException;
+	Object calculateValue(EntityObject entity) throws CalculationException;
 
 }

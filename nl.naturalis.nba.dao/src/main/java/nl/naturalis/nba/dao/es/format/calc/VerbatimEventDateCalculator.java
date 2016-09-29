@@ -4,10 +4,11 @@ import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.formatDate;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.dao.es.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.ICalculator;
 
@@ -25,7 +26,7 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	private static final Path endDatePath = new Path("gatheringEvent.dateTimeEnd");
 
 	@Override
-	public void initialize(LinkedHashMap<String, String> args)
+	public void initialize(Map<String, String> args) throws CalculatorInitializationException
 	{
 	}
 

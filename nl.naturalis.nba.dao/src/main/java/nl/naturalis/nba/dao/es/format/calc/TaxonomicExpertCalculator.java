@@ -1,14 +1,14 @@
 package nl.naturalis.nba.dao.es.format.calc;
 
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
 import static nl.naturalis.nba.dao.es.format.FormatUtil.EMPTY_STRING;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.es.format.CalculatorException;
-import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.es.format.CalculationException;
+import nl.naturalis.nba.dao.es.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.es.format.EntityObject;
 import nl.naturalis.nba.dao.es.format.ICalculator;
 
@@ -24,29 +24,55 @@ import nl.naturalis.nba.dao.es.format.ICalculator;
  */
 public class TaxonomicExpertCalculator implements ICalculator {
 
-	private static final Path namePath = new Path("experts.0.fullName");
-	private static final Path orgPath = new Path("experts.0.organization.name");
+	private Path namePath;
+	private Path orgPath;
 
 	@Override
-	public void initialize(LinkedHashMap<String, String> args) throws DataSetConfigurationException
+	public void initialize(Map<String, String> args) throws CalculatorInitializationException
 	{
+		String type = args.get("type");
+		if (type == null) {
+			String msg = "Missing required element <arg name=\"type\">";
+			throw new CalculatorInitializationException(msg);
+		}
+		switch (type) {
+			case "accepted name":
+				namePath = new Path("acceptedName.experts.0.fullName");
+				orgPath = new Path("acceptedName.experts.0.organization.name");
+				break;
+			case "synonym":
+			case "vernacular name":
+				namePath = new Path("experts.0.fullName");
+				orgPath = new Path("experts.0.organization.name");
+				break;
+			default:
+				String msg = "Contents of element <arg name=\"type\"> must be one "
+						+ "of: \"accepted name\", \"synonym\", \"vernacular name\"";
+				throw new CalculatorInitializationException(msg);
+		}
 	}
 
 	@Override
-	public Object calculateValue(EntityObject entity) throws CalculatorException
+	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		String name = EMPTY_STRING;
-		String org = EMPTY_STRING;
+		String name = null;
+		String org = null;
 		Object value = namePath.read(entity.getData());
-		if (value != JsonUtil.MISSING_VALUE) {
+		if (value != MISSING_VALUE) {
 			name = value.toString();
 		}
 		value = orgPath.read(entity.getData());
-		if (value != JsonUtil.MISSING_VALUE) {
+		if (value != MISSING_VALUE) {
 			org = value.toString();
 		}
-		if (name == EMPTY_STRING && org == EMPTY_STRING) {
-			return EMPTY_STRING;
+		if (name == null) {
+			if (org == null) {
+				return EMPTY_STRING;
+			}
+			return '(' + org + ')';
+		}
+		if (org == null) {
+			return name;
 		}
 		return name + " (" + org + ")";
 	}

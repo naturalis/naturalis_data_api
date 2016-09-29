@@ -97,7 +97,7 @@ public class SprayableZipOutputStream extends OutputStream {
 			zipEntry.setMethod(ZipEntry.STORED);
 			zip.putNextEntry(zipEntry);
 			bucket = (CompressedSwapFileOutputStream) stream.getValue();
-			bucket.writeAllBytes(zip);
+			bucket.finish(zip);
 			/* And now we tell it the truth */
 			zipEntry.setMethod(ZipEntry.DEFLATED);
 		}

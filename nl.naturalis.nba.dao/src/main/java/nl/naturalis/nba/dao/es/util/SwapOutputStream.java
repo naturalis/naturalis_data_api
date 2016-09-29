@@ -171,7 +171,10 @@ public class SwapOutputStream extends OutputStream {
 	}
 
 	/**
-	 * Returns the contents of the in-memory buffer.
+	 * Returns the contents of the in-memory buffer. Note that if the buffer had
+	 * reach full capacity and subsequent bytes had been written to the
+	 * underlying output stream, this method still only returns the bytes in the
+	 * buffer.
 	 * 
 	 * @return
 	 */
@@ -180,6 +183,20 @@ public class SwapOutputStream extends OutputStream {
 		byte[] copy = new byte[cnt];
 		System.arraycopy(buf, 0, copy, 0, cnt);
 		return copy;
+	}
+
+	/**
+	 * Writes the contents of the in-memory buffer to the specified output
+	 * stream. Note that if the buffer had reach full capacity and subsequent
+	 * bytes had been written to the underlying output stream, this method still
+	 * only writes out the bytes in the buffer.
+	 * 
+	 * @param out
+	 * @throws IOException
+	 */
+	public void writeTo(OutputStream out) throws IOException
+	{
+		out.write(buf, 0, cnt);
 	}
 
 	/**

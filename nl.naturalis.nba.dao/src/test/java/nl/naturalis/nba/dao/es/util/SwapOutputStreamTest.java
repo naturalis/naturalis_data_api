@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.es.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -33,20 +34,59 @@ public class SwapOutputStreamTest {
 		/* Make in-memory buffer smaller than amount of data */
 		SwapOutputStream sos = new SwapOutputStream(baos, 3);
 		sos.write(data);
+		sos.swap();
 		byte[] echo = baos.toByteArray();
 		assertTrue("01", ArrayUtil.deepEquals(data, echo));
-		sos.swap();
 		sos.close();
 	}
 
 	@Test
-	public void testSize()
+	public void testSwap_03() throws IOException
 	{
+		byte[] data = new byte[] { 3, 7, 1, 5, 6, 8, 0, 2 };
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		/* Make in-memory buffer greater than amount of data */
+		SwapOutputStream sos = new SwapOutputStream(baos, 64);
+		sos.write(data);
+		sos.swap();
+		byte[] echo = baos.toByteArray();
+		assertTrue("01", ArrayUtil.deepEquals(data, echo));
+		sos.close();
 	}
 
 	@Test
-	public void testGetBuffer()
+	public void testSize_01() throws IOException
 	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SwapOutputStream sos = new SwapOutputStream(baos, 4);
+		sos.write(7);
+		assertEquals("01", 1, sos.size());
+		sos.write(4);
+		assertEquals("02", 2, sos.size());
+		sos.write(6);
+		assertEquals("03", 3, sos.size());
+		sos.write(6);
+		assertEquals("04", 4, sos.size());
+		sos.write(5);
+		assertEquals("05", 4, sos.size());
+		sos.write(3);
+		assertEquals("06", 4, sos.size());
+		sos.write(2);
+		assertEquals("07", 4, sos.size());
+		sos.close();
+	}
+
+	@Test
+	public void testSize_02() throws IOException
+	{
+		byte[] data = new byte[] { 3, 7, 1 };
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SwapOutputStream sos = new SwapOutputStream(baos, 4);
+		sos.write(data);
+		assertEquals("01", 3, sos.size());
+		sos.write(data);
+		assertEquals("02", 3, sos.size());
+		sos.close();
 	}
 
 	@Test

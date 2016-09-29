@@ -36,7 +36,7 @@ public class SprayableZipOutputStream extends OutputStream {
 		if (streams.containsKey(name)) {
 			throw new IOException("Duplicate zip entry: " + name);
 		}
-		DeflatedSwapFileOutputStream bucket = DeflatedSwapFileOutputStream.newInstance();
+		CompressedSwapFileOutputStream bucket = CompressedSwapFileOutputStream.newInstance();
 		streams.put(name, bucket);
 	}
 
@@ -45,7 +45,7 @@ public class SprayableZipOutputStream extends OutputStream {
 		if (streams.containsKey(name)) {
 			throw new IOException("Duplicate zip entry: " + name);
 		}
-		DeflatedSwapFileOutputStream bucket = DeflatedSwapFileOutputStream.newInstance(size);
+		CompressedSwapFileOutputStream bucket = CompressedSwapFileOutputStream.newInstance(size);
 		streams.put(name, bucket);
 	}
 
@@ -53,7 +53,7 @@ public class SprayableZipOutputStream extends OutputStream {
 	{
 		OutputStream bucket = streams.get(name);
 		if (bucket == null) {
-			bucket = DeflatedSwapFileOutputStream.newInstance();
+			bucket = CompressedSwapFileOutputStream.newInstance();
 			streams.put(name, bucket);
 		}
 		active = bucket;
@@ -83,16 +83,23 @@ public class SprayableZipOutputStream extends OutputStream {
 	@Override
 	public void close() throws IOException
 	{
-		DeflatedSwapFileOutputStream bucket;
+		CompressedSwapFileOutputStream bucket;
 		for (Map.Entry<String, OutputStream> stream : streams.entrySet()) {
 			if (mainEntry != null && stream.getKey().equals(mainEntry)) {
 				continue;
 			}
 			ZipEntry zipEntry = new ZipEntry(stream.getKey());
+			/*
+			 * We trick the ZipOutputStream into treating this entry as an
+			 * uncompressed entry. Then we pour in the compressed data from the
+			 * CompressedSwapFileOutputStream.
+			 */
 			zipEntry.setMethod(ZipEntry.STORED);
 			zip.putNextEntry(zipEntry);
-			bucket = (DeflatedSwapFileOutputStream) stream.getValue();
-			bucket.copyTo(zip);
+			bucket = (CompressedSwapFileOutputStream) stream.getValue();
+			bucket.writeAllBytes(zip);
+			/* And now we tell it the truth */
+			zipEntry.setMethod(ZipEntry.DEFLATED);
 		}
 	}
 

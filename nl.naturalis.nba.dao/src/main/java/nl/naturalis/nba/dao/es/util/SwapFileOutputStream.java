@@ -125,17 +125,17 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	}
 
 	/**
-	 * Copies all bytes written to this output stream to the specified output
+	 * Writes all bytes written to this output stream to the specified output
 	 * stream. This method is meant to make it transparent to the client whether
 	 * or not the in-memory buffer has been swapped out to the swap file. If no
 	 * swap has taken place yet, it simply writes the in-memory buffer to the
-	 * specified output stream. Otherwise it reads the contents of the swap file
-	 * and writes it to the output stream.
+	 * specified output stream. Otherwise it reads the contents of the swap
+	 * file, writes it to the output stream, and deletes the swap file.
 	 * 
 	 * @param out
 	 * @throws IOException
 	 */
-	public void copyTo(OutputStream out) throws IOException
+	public void writeAllBytes(OutputStream out) throws IOException
 	{
 		dest.close();
 		if (swapped) {

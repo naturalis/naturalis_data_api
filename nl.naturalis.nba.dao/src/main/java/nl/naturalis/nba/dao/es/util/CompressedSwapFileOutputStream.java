@@ -25,7 +25,7 @@ import org.domainobject.util.IOUtil;
  * @author Ayco Holleman
  *
  */
-public class DeflatedSwapFileOutputStream extends SwapOutputStream {
+public class CompressedSwapFileOutputStream extends SwapOutputStream {
 
 	/**
 	 * Creates a new instance that swaps its in-memory buffer an auto-generated
@@ -34,9 +34,9 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	 * @param swapFile
 	 * @throws IOException
 	 */
-	public static DeflatedSwapFileOutputStream newInstance() throws IOException
+	public static CompressedSwapFileOutputStream newInstance() throws IOException
 	{
-		return new DeflatedSwapFileOutputStream(tempFile());
+		return new CompressedSwapFileOutputStream(tempFile());
 	}
 
 	/**
@@ -48,9 +48,9 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	 * @return
 	 * @throws IOException
 	 */
-	public static DeflatedSwapFileOutputStream newInstance(int treshold) throws IOException
+	public static CompressedSwapFileOutputStream newInstance(int treshold) throws IOException
 	{
-		return new DeflatedSwapFileOutputStream(tempFile(), treshold);
+		return new CompressedSwapFileOutputStream(tempFile(), treshold);
 	}
 
 	/**
@@ -68,10 +68,10 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	 * @return
 	 * @throws IOException
 	 */
-	public static DeflatedSwapFileOutputStream newInstance(int treshold, int bufSize)
+	public static CompressedSwapFileOutputStream newInstance(int treshold, int bufSize)
 			throws IOException
 	{
-		return new DeflatedSwapFileOutputStream(tempFile(), treshold, bufSize);
+		return new CompressedSwapFileOutputStream(tempFile(), treshold, bufSize);
 	}
 
 	private File swapFile;
@@ -84,7 +84,7 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	 * @param swapFile
 	 * @throws IOException
 	 */
-	public DeflatedSwapFileOutputStream(File swapFile) throws IOException
+	public CompressedSwapFileOutputStream(File swapFile) throws IOException
 	{
 		super(stream(swapFile));
 		this.swapFile = swapFile;
@@ -99,7 +99,7 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	 * @param treshold
 	 * @throws IOException
 	 */
-	public DeflatedSwapFileOutputStream(File swapFile, int treshold) throws IOException
+	public CompressedSwapFileOutputStream(File swapFile, int treshold) throws IOException
 	{
 		super(stream(swapFile), treshold);
 		this.swapFile = swapFile;
@@ -120,27 +120,28 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	 * @param treshold
 	 * @throws IOException
 	 */
-	public DeflatedSwapFileOutputStream(File swapFile, int treshold, int bufSize) throws IOException
+	public CompressedSwapFileOutputStream(File swapFile, int treshold, int bufSize)
+			throws IOException
 	{
 		super(stream(swapFile, bufSize), treshold);
 		this.swapFile = swapFile;
 	}
 
 	/**
-	 * Copies all bytes written to this output stream to the specified output
+	 * Writes all bytes written to this output stream to the specified output
 	 * stream. This method is meant to make it transparent to the client whether
 	 * or not the in-memory buffer has been swapped out to the swap file. If no
 	 * swap has taken place yet, it simply writes the in-memory buffer to the
-	 * specified output stream. Otherwise it reads the contents of the swap file
-	 * and writes it to the output stream. Note that this will copy the
-	 * compressed data to the output stream. Use
-	 * {@link #uncompress(OutputStream) uncompress} the copy the uncompressed
+	 * specified output stream. Otherwise it reads the contents of the swap
+	 * file, writes it to the output stream, and deletes the swap file. Note
+	 * that this method writes the compressed data to the output stream. Use
+	 * {@link #uncompress(OutputStream) uncompress} to write the uncompressed
 	 * data to the output stream.
 	 * 
 	 * @param out
 	 * @throws IOException
 	 */
-	public void copyTo(OutputStream out) throws IOException
+	public void writeAllBytes(OutputStream out) throws IOException
 	{
 		dest.close();
 		if (swapped) {
@@ -155,19 +156,15 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 	}
 
 	/**
-	 * Copies all bytes written to this output stream to the specified output
-	 * stream. This method is meant to make it transparent to the client whether
-	 * or not the in-memory buffer has been swapped out to the swap file. If no
-	 * swap has taken place yet, it simply writes the in-memory buffer to the
-	 * specified output stream. This method first uncompresses the data before
-	 * writing it to the output stream.
+	 * Uncompresses the data written to this instances and then writes it to the
+	 * specified output stream. See {@link #writeAllBytes(OutputStream)}.
 	 * 
 	 * @param out
 	 * @throws IOException
 	 */
 	public void uncompress(OutputStream out) throws IOException
 	{
-		copyTo(new InflaterOutputStream(out, new Inflater(true)));
+		writeAllBytes(new InflaterOutputStream(out, new Inflater(true)));
 	}
 
 	private static OutputStream stream(File swapFile) throws FileNotFoundException
@@ -188,7 +185,7 @@ public class DeflatedSwapFileOutputStream extends SwapOutputStream {
 
 	private static File tempFile() throws IOException
 	{
-		String prefix = DeflatedSwapFileOutputStream.class.getName().toLowerCase();
+		String prefix = CompressedSwapFileOutputStream.class.getName().toLowerCase();
 		return File.createTempFile(prefix, ".swp");
 	}
 

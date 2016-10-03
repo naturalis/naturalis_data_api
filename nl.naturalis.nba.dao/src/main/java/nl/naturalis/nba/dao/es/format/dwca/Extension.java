@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * JAXB class modeling the &lt;extension&gt; element within the meta&#46;xml
@@ -22,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = { "files", "coreId", "fields" })
 @XmlRootElement(name = "extension")
 class Extension {
 

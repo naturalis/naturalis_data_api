@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * JAXB class modeling the &lt;core&gt; element within the meta&#46;xml file.
@@ -23,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = { "files", "id", "fields" })
 @XmlRootElement(name = "core")
 class Core {
 
@@ -36,7 +38,7 @@ class Core {
 	private final String linesTerminatedBy = LINES_TERMINATED_BY;
 	@XmlAttribute(name = "ignoreHeaderLines")
 	private final String ignoreHeaderLines = IGNORE_HEADER_LINES;
-	@XmlElement(name = "coreid")
+	@XmlElement(name = "id")
 	private final Id id = new Id();
 
 	@XmlAttribute(name = "rowType")

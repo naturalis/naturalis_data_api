@@ -88,7 +88,7 @@ public class NamePublishedInCalculator implements ICalculator {
 			if (author == EMPTY_STRING) {
 				sb.append(date);
 			}
-			else {
+			else if (date != EMPTY_STRING) {
 				sb.append(", ");
 				sb.append(date);
 			}

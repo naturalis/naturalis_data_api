@@ -28,13 +28,13 @@ public class EntityObject {
 	private Map<String, Object> data;
 	private EntityObject parent;
 
-	EntityObject(Map<String, Object> data)
+	public EntityObject(Map<String, Object> data)
 	{
 		this.data = data;
 		this.parent = null;
 	}
 
-	EntityObject(Map<String, Object> data, EntityObject parent)
+	public EntityObject(Map<String, Object> data, EntityObject parent)
 	{
 		this.data = data;
 		this.parent = parent;

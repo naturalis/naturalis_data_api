@@ -137,4 +137,65 @@ public class SwapOutputStreamTest {
 		sos.close();
 	}
 
+	@Test
+	public void testGetBuffer_01() throws IOException
+	{
+		byte[] data = new byte[] { 3, 7, 0 };
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SwapOutputStream sos = new SwapOutputStream(baos, 4);
+		sos.write(data);
+		byte[] buffer = sos.getBuffer();
+		assertTrue("01", ArrayUtil.deepEquals(data, buffer));
+		sos.write(2);
+		buffer = sos.getBuffer();
+		assertTrue("02", ArrayUtil.deepEquals(new byte[] { 3, 7, 0, 2 }, buffer));
+		sos.write(7);
+		buffer = sos.getBuffer();
+		assertTrue("03", ArrayUtil.deepEquals(new byte[] { 3, 7, 0, 2 }, buffer));
+		sos.write(1);
+		buffer = sos.getBuffer();
+		assertTrue("04", ArrayUtil.deepEquals(new byte[] { 3, 7, 0, 2 }, buffer));
+		sos.close();
+	}
+
+	@Test
+	public void testGetBuffer_02() throws IOException
+	{
+		byte[] data = new byte[] { 3, 7, 0 };
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SwapOutputStream sos = new SwapOutputStream(baos, 4);
+		sos.write(data);
+		byte[] buffer = sos.getBuffer();
+		assertTrue("01", ArrayUtil.deepEquals(data, buffer));
+		sos.write(data);
+		buffer = sos.getBuffer();
+		assertTrue("02", ArrayUtil.deepEquals(data, buffer));
+		sos.close();
+	}
+
+	@Test
+	public void testWriteBuffer_01() throws IOException
+	{
+		byte[] data = new byte[] { 3, 7, 0 };
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		SwapOutputStream sos = new SwapOutputStream(baos, 4);
+		sos.write(data);
+		ByteArrayOutputStream bucket = new ByteArrayOutputStream();
+		sos.writeBuffer(bucket);
+		assertTrue("01", ArrayUtil.deepEquals(data, bucket.toByteArray()));
+		sos.write(0);
+		bucket = new ByteArrayOutputStream();
+		sos.writeBuffer(bucket);
+		assertTrue("02", ArrayUtil.deepEquals(new byte[] { 3, 7, 0, 0 }, bucket.toByteArray()));
+		sos.write(2);
+		bucket = new ByteArrayOutputStream();
+		sos.writeBuffer(bucket);
+		assertTrue("03", ArrayUtil.deepEquals(new byte[] { 3, 7, 0, 0 }, bucket.toByteArray()));
+		sos.write(5);
+		bucket = new ByteArrayOutputStream();
+		sos.writeBuffer(bucket);
+		assertTrue("04", ArrayUtil.deepEquals(new byte[] { 3, 7, 0, 0 }, bucket.toByteArray()));
+		sos.close();
+	}
+
 }

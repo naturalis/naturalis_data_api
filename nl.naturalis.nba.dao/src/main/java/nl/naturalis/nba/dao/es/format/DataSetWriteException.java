@@ -7,4 +7,9 @@ public class DataSetWriteException extends Exception {
 		super(message);
 	}
 
+	public DataSetWriteException(Throwable t)
+	{
+		super(t);
+	}
+
 }

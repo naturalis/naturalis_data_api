@@ -27,16 +27,17 @@ public class DataSet {
 		this.sharedDataSource = sharedDataSource;
 	}
 
-	public List<Entity> getEntities()
+	public Entity[] getEntities()
 	{
-		return entities;
+		return entities.toArray(new Entity[entities.size()]);
 	}
 
 	public Entity getEntity(String name) throws DataSetConfigurationException
 	{
 		for (Entity entity : entities) {
-			if (entity.getName().equals(name))
+			if (entity.getName().equals(name)) {
 				return entity;
+			}
 		}
 		String msg = String.format("No such entity: \"%s\"", name);
 		throw new DataSetConfigurationException(msg);

@@ -10,14 +10,17 @@ import java.io.OutputStream;
  * and switching over to an underlying output stream. In other words, first all
  * write actions operate on an in-memory buffer. Then, once a write action
  * causes the buffer to fill up or overflow, the buffer is flushed to the
- * underlying output stream, and from that moment all write actions are forwared
- * to that output stream. This class is not meant to provide buffering
- * functionality like a {@link BufferedOutputStream}. Instead, you would use it
- * in situations where you hope or expect that the swap never takes places and
- * all write actions take place in-memory. The underlying outputstream is only
- * used by way of fall-back, in case the in-memory buffer does flow over, and
- * would most likely write to persistent storage (like a
- * {@link FileOutputStream}).
+ * underlying output stream, and all subsequent write actions are simply
+ * forwarded to the underlying output stream. This class is not meant to provide
+ * buffering functionality like a {@link BufferedOutputStream}. Instead, you
+ * would use it in situations where you hope or expect that the in-memory buffer
+ * will never be swapped out to the underlying output stream. The underlying
+ * outputstream is used by way of fall-back, in case the in-memory buffer does
+ * flow over, and would most likely write to persistent storage (like a
+ * {@link FileOutputStream}). A {@code SwapOutputStream} has no way of
+ * collecting all data written to it once the in-memory buffer has flown over.
+ * It is up to subclasses of {@code SwapOutputStream} to provide this
+ * functionality.
  * 
  * @author Ayco Holleman
  *
@@ -29,10 +32,10 @@ public class SwapOutputStream extends OutputStream {
 	 */
 	protected byte buf[];
 	/**
-	 * The output stream to which data is written once the treshold has been
-	 * reached.
+	 * The output stream to which data will be written once the treshold has
+	 * been reached.
 	 */
-	protected OutputStream dest;
+	protected OutputStream out;
 	/**
 	 * The number of valid bytes in the buffer.
 	 */
@@ -45,14 +48,14 @@ public class SwapOutputStream extends OutputStream {
 
 	/**
 	 * Creates a {@code SwapOutputStream} that swaps its in-memory buffer to the
-	 * specified {@code OutputStream} once the in-memory buffer grows beyond 128
+	 * specified {@code OutputStream} once the in-memory buffer grows beyond 64
 	 * kilobytes.
 	 * 
 	 * @param destination
 	 */
 	public SwapOutputStream(OutputStream destination)
 	{
-		this(destination, 128 * 1024);
+		this(destination, 64 * 1024);
 	}
 
 	/**
@@ -68,7 +71,7 @@ public class SwapOutputStream extends OutputStream {
 	 */
 	public SwapOutputStream(OutputStream destination, int treshold)
 	{
-		this.dest = destination;
+		this.out = destination;
 		this.buf = new byte[treshold];
 	}
 
@@ -76,7 +79,7 @@ public class SwapOutputStream extends OutputStream {
 	public void write(int b) throws IOException
 	{
 		if (swapped) {
-			dest.write((byte) b);
+			out.write((byte) b);
 		}
 		else if (cnt < buf.length) {
 			buf[cnt] = (byte) b;
@@ -84,8 +87,8 @@ public class SwapOutputStream extends OutputStream {
 		}
 		else {
 			swapped = true;
-			dest.write(buf);
-			dest.write((byte) b);
+			out.write(buf);
+			out.write((byte) b);
 		}
 	}
 
@@ -93,7 +96,7 @@ public class SwapOutputStream extends OutputStream {
 	public void write(byte[] b, int off, int len) throws IOException
 	{
 		if (swapped) {
-			dest.write(b, off, len);
+			out.write(b, off, len);
 		}
 		else if (cnt + len <= buf.length) {
 			System.arraycopy(b, off, buf, cnt, len);
@@ -101,20 +104,20 @@ public class SwapOutputStream extends OutputStream {
 		}
 		else {
 			swapped = true;
-			dest.write(buf, 0, cnt);
-			dest.write(b, off, len);
+			out.write(buf, 0, cnt);
+			out.write(b, off, len);
 		}
 	}
 
 	/**
-	 * Calls {@code flush()} on the swap-to {@link OutputStream} <i>if</i> the
-	 * swap has taken place. Otherwise calling this method has no effect.
+	 * Calls {@code flush()} on the underlying {@link OutputStream} if the swap
+	 * has taken place. Otherwise calling this method has no effect.
 	 */
 	@Override
 	public void flush() throws IOException
 	{
 		if (swapped) {
-			dest.flush();
+			out.flush();
 		}
 	}
 
@@ -133,31 +136,19 @@ public class SwapOutputStream extends OutputStream {
 			return;
 		}
 		swapped = true;
-		dest.write(buf, 0, cnt);
+		out.write(buf, 0, cnt);
 	}
 
 	/**
-	 * Calls {@code close()} on the swap-to output stream. Note that this will
-	 * not induce an implicit swap. If the swap has not taken place yet, the
-	 * output stream will be closed without a single byte written to it. Call
-	 * {@link #swapAndClose()} to first swap and then close the output stream.
+	 * Calls {@code close()} on the underlying output stream. Note that this
+	 * will <i>not</i> induce an implicit swap. If the in-memory buffer has not
+	 * overflown yet, the output stream will be closed without a single byte
+	 * written to it.
 	 */
 	@Override
 	public void close() throws IOException
 	{
-		dest.close();
-	}
-
-	/**
-	 * Flushes in-memory buffer to the swap-to output stream and then closes the
-	 * output stream.
-	 * 
-	 * @throws IOException
-	 */
-	public void swapAndClose() throws IOException
-	{
-		swap();
-		dest.close();
+		out.close();
 	}
 
 	/**
@@ -171,10 +162,7 @@ public class SwapOutputStream extends OutputStream {
 	}
 
 	/**
-	 * Returns the contents of the in-memory buffer. Note that if the buffer had
-	 * reach full capacity and subsequent bytes had been written to the
-	 * underlying output stream, this method still only returns the bytes in the
-	 * buffer.
+	 * Returns the contents of the in-memory buffer.
 	 * 
 	 * @return
 	 */
@@ -187,16 +175,16 @@ public class SwapOutputStream extends OutputStream {
 
 	/**
 	 * Writes the contents of the in-memory buffer to the specified output
-	 * stream. Note that if the buffer had reach full capacity and subsequent
-	 * bytes had been written to the underlying output stream, this method still
-	 * only writes out the bytes in the buffer.
+	 * stream. Note that if the buffer has overflown and bytes have been written
+	 * to the underlying output stream, this method still only writes out the
+	 * bytes in the buffer.
 	 * 
-	 * @param out
+	 * @param destination
 	 * @throws IOException
 	 */
-	public void writeTo(OutputStream out) throws IOException
+	public void writeBuffer(OutputStream destination) throws IOException
 	{
-		out.write(buf, 0, cnt);
+		destination.write(buf, 0, cnt);
 	}
 
 	/**

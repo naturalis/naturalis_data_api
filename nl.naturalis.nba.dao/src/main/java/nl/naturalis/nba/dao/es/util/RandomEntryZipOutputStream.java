@@ -7,37 +7,42 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class SprayableZipOutputStream extends OutputStream {
+/**
+ * An {@link OutputStream} that compresses data written to it according to the
+ * zip file format. Contrary to a regulat {@link ZipOutputStream}, this class
+ * lets you write multiple zip entries in parallel.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class RandomEntryZipOutputStream extends OutputStream {
+
+	private static final int DEFAULT_SWAP_TRESHOLD = 1024 * 1024;
 
 	private HashMap<String, OutputStream> streams;
-
 	private String mainEntry;
-	private ZipOutputStream zip;
-
+	private ZipOutputStream zipStream;
 	private OutputStream active;
 
-	public SprayableZipOutputStream(OutputStream out, String mainEntry) throws IOException
+	public RandomEntryZipOutputStream(OutputStream out, String mainEntry) throws IOException
 	{
 		this.mainEntry = mainEntry;
-		zip = new ZipOutputStream(out);
-		zip.putNextEntry(new ZipEntry(mainEntry));
+		zipStream = new ZipOutputStream(out);
+		zipStream.putNextEntry(new ZipEntry(mainEntry));
 		streams = new HashMap<>();
-		streams.put(mainEntry, zip);
+		streams.put(mainEntry, zipStream);
+		active = zipStream;
 	}
 
-	public SprayableZipOutputStream(OutputStream out) throws IOException
+	public RandomEntryZipOutputStream(OutputStream out) throws IOException
 	{
-		zip = new ZipOutputStream(out);
+		zipStream = new ZipOutputStream(out);
 		streams = new HashMap<>();
 	}
 
 	public void addEntry(String name) throws IOException
 	{
-		if (streams.containsKey(name)) {
-			throw new IOException("Duplicate zip entry: " + name);
-		}
-		CompressedSwapFileOutputStream bucket = CompressedSwapFileOutputStream.newInstance();
-		streams.put(name, bucket);
+		addEntry(name, DEFAULT_SWAP_TRESHOLD);
 	}
 
 	public void addEntry(String name, int size) throws IOException
@@ -45,7 +50,7 @@ public class SprayableZipOutputStream extends OutputStream {
 		if (streams.containsKey(name)) {
 			throw new IOException("Duplicate zip entry: " + name);
 		}
-		CompressedSwapFileOutputStream bucket = CompressedSwapFileOutputStream.newInstance(size);
+		CompressedSwapFileOutputStream bucket = new CompressedSwapFileOutputStream(size);
 		streams.put(name, bucket);
 	}
 
@@ -53,7 +58,7 @@ public class SprayableZipOutputStream extends OutputStream {
 	{
 		OutputStream bucket = streams.get(name);
 		if (bucket == null) {
-			bucket = CompressedSwapFileOutputStream.newInstance();
+			bucket = new CompressedSwapFileOutputStream(DEFAULT_SWAP_TRESHOLD);
 			streams.put(name, bucket);
 		}
 		active = bucket;
@@ -76,12 +81,12 @@ public class SprayableZipOutputStream extends OutputStream {
 	@Override
 	public void flush() throws IOException
 	{
-		checkActive();
-		active.flush();
+		for (OutputStream stream : streams.values()) {
+			stream.flush();
+		}
 	}
 
-	@Override
-	public void close() throws IOException
+	public ZipOutputStream mergeEntries() throws IOException
 	{
 		CompressedSwapFileOutputStream bucket;
 		for (Map.Entry<String, OutputStream> stream : streams.entrySet()) {
@@ -89,18 +94,19 @@ public class SprayableZipOutputStream extends OutputStream {
 				continue;
 			}
 			ZipEntry zipEntry = new ZipEntry(stream.getKey());
-			/*
-			 * We trick the ZipOutputStream into treating this entry as an
-			 * uncompressed entry. Then we pour in the compressed data from the
-			 * CompressedSwapFileOutputStream.
-			 */
-			zipEntry.setMethod(ZipEntry.STORED);
-			zip.putNextEntry(zipEntry);
+			zipStream.putNextEntry(zipEntry);
 			bucket = (CompressedSwapFileOutputStream) stream.getValue();
-			bucket.finish(zip);
-			/* And now we tell it the truth */
-			zipEntry.setMethod(ZipEntry.DEFLATED);
+			bucket.collect(zipStream, true);
+			bucket.cleanUpAndClose();
 		}
+		return zipStream;
+	}
+
+	@Override
+	public void close() throws IOException
+	{
+		String msg = "Not supported. Call close on ZipOutputStream produced by merge method";
+		throw new IOException(msg);
 	}
 
 	private void checkActive() throws IOException

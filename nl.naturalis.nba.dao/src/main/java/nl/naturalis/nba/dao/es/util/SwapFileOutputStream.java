@@ -10,11 +10,10 @@ import java.io.OutputStream;
 import org.domainobject.util.IOUtil;
 
 /**
- * A {@link SwapOutputStream} that swaps out to a {@link File file}. The
- * {@link FileOutputStream} created from the {@link File} object is already
- * wrapped into a {@link BufferedOutputStream}. Therefore it is pointless to
- * wrap instances of {@code SwapFileOutputStream} into a
- * {@code BufferedOutputStream}.
+ * A {@link SwapOutputStream} that swaps out to a file. The
+ * {@link FileOutputStream} created from the {@link File} object is wrapped into
+ * a {@link BufferedOutputStream}. Therefore it probably does not make sense to
+ * wrap instances of this class into a {@code BufferedOutputStream}.
  * 
  * @author Ayco Holleman
  *
@@ -23,22 +22,19 @@ public class SwapFileOutputStream extends SwapOutputStream {
 
 	/**
 	 * Creates a new instance that swaps its in-memory buffer an auto-generated
-	 * temp file. See {@link SwapOutputStream#SwapOutputStream(OutputStream)}.
+	 * temp file. See {@link #SwapFileOutputStream(File)}.
 	 * 
 	 * @param swapFile
 	 * @throws IOException
 	 */
 	public static SwapFileOutputStream newInstance() throws IOException
 	{
-		String prefix = SwapFileOutputStream.class.getName().toLowerCase();
-		File tempFile = File.createTempFile(prefix, ".swp");
-		return new SwapFileOutputStream(tempFile);
+		return new SwapFileOutputStream(tempFile());
 	}
 
 	/**
 	 * Creates a new instance that swaps its in-memory buffer an auto-generated
-	 * temp file. See
-	 * {@link SwapOutputStream#SwapOutputStream(OutputStream, int)}.
+	 * temp file. See {@link #SwapFileOutputStream(File, int)}.
 	 * 
 	 * @param treshold
 	 * @return
@@ -46,46 +42,22 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	 */
 	public static SwapFileOutputStream newInstance(int treshold) throws IOException
 	{
-		String prefix = SwapFileOutputStream.class.getName().toLowerCase();
-		File tempFile = File.createTempFile(prefix, ".swp");
-		return new SwapFileOutputStream(tempFile, treshold);
-	}
-
-	/**
-	 * Creates a new instance that swaps its in-memory buffer an auto-generated
-	 * temp file. See
-	 * {@link SwapOutputStream#SwapOutputStream(OutputStream, int)}. The
-	 * {@code bufSize} argument determines the buffer size of the
-	 * {@code BufferedOutputStream} that wraps the {@link FileOutputStream}
-	 * created for the swap file (it is passed on to the
-	 * {@link BufferedOutputStream#BufferedOutputStream(OutputStream, int)
-	 * constructor} of {@code BufferedOutputStream}).
-	 * 
-	 * @param bufSize
-	 * @param treshold
-	 * @return
-	 * @throws IOException
-	 */
-	public static SwapFileOutputStream newInstance(int treshold, int bufSize) throws IOException
-	{
-		String prefix = SwapFileOutputStream.class.getName().toLowerCase();
-		File tempFile = File.createTempFile(prefix, ".swp");
-		return new SwapFileOutputStream(tempFile, treshold, bufSize);
+		return new SwapFileOutputStream(tempFile(), treshold);
 	}
 
 	private File swapFile;
+	private boolean closed;
 
 	/**
 	 * Creates a new instance that swaps its in-memory buffer an auto-generated
-	 * temp file. See
-	 * {@link SwapOutputStream#SwapOutputStream(OutputStream, int)}.
+	 * temp file. See {@link SwapOutputStream#SwapOutputStream(OutputStream)}.
 	 * 
 	 * @param swapFile
 	 * @throws IOException
 	 */
 	public SwapFileOutputStream(File swapFile) throws IOException
 	{
-		super(new BufferedOutputStream(new FileOutputStream(swapFile)));
+		super(streamTo(swapFile, 512));
 	}
 
 	/**
@@ -99,54 +71,90 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	 */
 	public SwapFileOutputStream(File swapFile, int treshold) throws IOException
 	{
-		super(new BufferedOutputStream(new FileOutputStream(swapFile)), treshold);
+		super(streamTo(swapFile, 512), treshold);
 		this.swapFile = swapFile;
 	}
 
 	/**
-	 * Creates a new instance that swaps its in-memory buffer to the specified
-	 * swap file. See
-	 * {@link SwapOutputStream#SwapOutputStream(OutputStream, int)}. The
-	 * {@code bufSize} argument determines the buffer size of the
-	 * {@code BufferedOutputStream} that wraps the {@link FileOutputStream}
-	 * created for the swap file (it is passed on to the
-	 * {@link BufferedOutputStream#BufferedOutputStream(OutputStream, int)
-	 * constructor} of {@code BufferedOutputStream}).
+	 * Copies all bytes written to this {@code SwapFileOutputStream} to the
+	 * specified output stream. This method makes it transparent to the client
+	 * whether or not the in-memory buffer has been swapped out to the swap
+	 * file. If no swap has taken place yet, it writes the in-memory buffer to
+	 * the specified output stream. Otherwise it reads the contents of the swap
+	 * file and writes it to the output stream. If you call {@code collect()}
+	 * after the in-memory buffer has been swapped out to the swap file, this
+	 * method implicitly closes the {@link FileOutputStream} created for the
+	 * swap file and any subsequent write action will cause an IOException.
 	 * 
-	 * @param swapFile
-	 * @param bufSize
-	 * @param treshold
+	 * @param bucket
 	 * @throws IOException
 	 */
-	public SwapFileOutputStream(File swapFile, int treshold, int bufSize) throws IOException
+	public void collect(OutputStream bucket) throws IOException
 	{
-		super(new BufferedOutputStream(new FileOutputStream(swapFile), bufSize), treshold);
-		this.swapFile = swapFile;
-	}
-
-	/**
-	 * Writes all bytes written to this output stream to the specified output
-	 * stream. This method is meant to make it transparent to the client whether
-	 * or not the in-memory buffer has been swapped out to the swap file. If no
-	 * swap has taken place yet, it simply writes the in-memory buffer to the
-	 * specified output stream. Otherwise it reads the contents of the swap
-	 * file, writes it to the output stream, and deletes the swap file.
-	 * 
-	 * @param out
-	 * @throws IOException
-	 */
-	public void writeAllBytes(OutputStream out) throws IOException
-	{
-		dest.close();
 		if (swapped) {
+			if (!swapFile.exists()) {
+				String msg = "Swap file no longer exists: " + swapFile.getPath();
+				throw new IOException(msg);
+			}
+			close();
 			FileInputStream fis = new FileInputStream(swapFile);
-			IOUtil.pipe(fis, out, 4096);
+			IOUtil.pipe(fis, bucket, 2048);
 			fis.close();
 		}
 		else {
-			out.write(buf, 0, cnt);
+			bucket.write(buf, 0, cnt);
 		}
-		swapFile.delete();
 	}
 
+	@Override
+	public void close() throws IOException
+	{
+		if (!closed) {
+			out.close();
+			closed = true;
+		}
+	}
+
+	/**
+	 * Deletes the swap file and closes the {@code SwapFileOutputStream}.
+	 * 
+	 * @throws IOException
+	 */
+	public void cleanupAndClose() throws IOException
+	{
+		close();
+		if (swapFile.exists()) {
+			swapFile.delete();
+		}
+	}
+
+	private static OutputStream streamTo(File swapFile, int bufSize) throws IOException
+	{
+		if (swapFile.exists()) {
+			String msg = "Cannot reuse existing swap file: " + swapFile.getPath();
+			throw new IOException(msg);
+		}
+		FileOutputStream fos = new FileOutputStream(swapFile);
+		return new BufferedOutputStream(fos, bufSize);
+	}
+
+	/*
+	 * NB Creating a temp file using File.createTempFile is not satisfactory as
+	 * the swap files may be created in rapid succession while
+	 * File.createTempFile seems to use System.currentTimeMillis() to invent a
+	 * file name.
+	 */
+	private static File tempFile()
+	{
+		StringBuilder sb = new StringBuilder(64);
+		sb.append(System.getProperty("java.io.tmpdir"));
+		sb.append('/');
+		sb.append(System.identityHashCode(new Object()));
+		sb.append('.');
+		sb.append(System.currentTimeMillis());
+		sb.append('.');
+		sb.append(SwapFileOutputStream.class.getSimpleName().toLowerCase());
+		sb.append(".swp");
+		return new File(sb.toString());
+	}
 }

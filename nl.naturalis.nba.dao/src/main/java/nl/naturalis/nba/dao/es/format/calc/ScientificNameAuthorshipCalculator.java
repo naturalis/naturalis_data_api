@@ -41,14 +41,13 @@ public class ScientificNameAuthorshipCalculator implements ICalculator {
 				verbatimPath = new Path("acceptedName.authorshipVerbatim");
 				break;
 			case "synonym":
-			case "vernacular name":
 				authorPath = new Path("author");
 				yearPath = new Path("year");
 				verbatimPath = new Path("authorshipVerbatim");
 				break;
 			default:
 				String msg = "Contents of element <arg name=\"type\"> must be one "
-						+ "of: \"accepted name\", \"synonym\", \"vernacular name\"";
+						+ "of: \"accepted name\", \"synonym\"";
 				throw new CalculatorInitializationException(msg);
 		}
 	}

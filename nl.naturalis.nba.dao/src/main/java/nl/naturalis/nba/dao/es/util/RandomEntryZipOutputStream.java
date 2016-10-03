@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * An {@link OutputStream} that compresses data written to it according to the
  * zip file format. Contrary to a regulat {@link ZipOutputStream}, this class
@@ -16,6 +19,8 @@ import java.util.zip.ZipOutputStream;
  *
  */
 public class RandomEntryZipOutputStream extends OutputStream {
+
+	private static Logger logger = LogManager.getLogger(RandomEntryZipOutputStream.class);
 
 	private static final int DEFAULT_SWAP_TRESHOLD = 1024 * 1024;
 
@@ -98,6 +103,9 @@ public class RandomEntryZipOutputStream extends OutputStream {
 			bucket = (CompressedSwapFileOutputStream) stream.getValue();
 			bucket.collect(zipStream, true);
 			bucket.cleanUpAndClose();
+			if (bucket.hasSwapped()) {
+				logger.warn("A swap file was used as intermediate storage for zip entry \"{}\"");
+			}
 		}
 		return zipStream;
 	}

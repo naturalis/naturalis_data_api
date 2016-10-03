@@ -127,7 +127,7 @@ public class DwcaConfig {
 	{
 		String fileName = dataSetName + CONF_FILE_EXTENSION;
 		File confFile = FileUtil.newFile(getHome(), fileName);
-		logger.info("Searching for configuration file: {}", confFile.getPath());
+		logger.info("Configuration file: {}", confFile.getPath());
 		if (!confFile.isFile()) {
 			throw new NoSuchDataSetException(dataSetName);
 		}

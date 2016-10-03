@@ -41,4 +41,10 @@ public class CompressedSwapFileOutputStream extends DeflaterOutputStream {
 		sfos.cleanupAndClose();
 	}
 
+	public boolean hasSwapped()
+	{
+		SwapFileOutputStream sfos = (SwapFileOutputStream) out;
+		return sfos.hasSwapped();
+	}
+
 }

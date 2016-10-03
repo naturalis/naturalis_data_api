@@ -12,8 +12,31 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * An {@link OutputStream} that compresses data written to it according to the
- * zip file format. Contrary to a regulat {@link ZipOutputStream}, this class
- * lets you write multiple zip entries in parallel.
+ * zip file format. Contrary to a regular {@link ZipOutputStream}, this class
+ * lets you write multiple zip entries in parallel. In general you would create
+ * a {@code RandomEntryZipOutputStream} with one zip entry (the main entry)
+ * being written directly to the underlying output stream while data for the
+ * other zip entries is written to intermediate storage. Once you are done
+ * writing data for the entries managed by the
+ * {@code RandomEntryZipOutputStream}, you call {@link #mergeEntries()}. This
+ * will collect the data written to intermediate storage and copy it to the
+ * underlying output stream. {@code RandomEntryZipOutputStream} uses a
+ * {@link CompressedSwapFileOutputStream} as intermediate storage for zip
+ * entries (for each zip entry a separate {@code CompressedSwapFileOutputStream}
+ * is created). Unfortunately, {@link ZipOutputStream} does not let you write
+ * already-compressed data to it. Thus, even though
+ * {@code CompressedSwapFileOutputStream} uses the same compression mechananism
+ * as {@code ZipOutputStream} you still need to uncompress the data when
+ * retrieving it back from {@code CompressedSwapFileOutputStream} and then let
+ * {@code ZipOutputStream} compress it again. The actual reason for using a
+ * {@code CompressedSwapFileOutputStream} is to decrease the chance that data
+ * for data for the entries will have to be swapped out to a file.
+ * {@link #mergeEntries()} returns a regular {@link ZipOutputStream} that you
+ * can use to add zip entries in the customary (serial) fashion.
+ * {@link CompressedSwapFileOutputStream} does not make implicit calls to
+ * {@link ZipOutputStream#close() close} or {@link ZipOutputStream#finish()
+ * finish} on the {@code ZipOutputStream} it creates. These tasks are explicitly
+ * left to the client.
  * 
  * @author Ayco Holleman
  *

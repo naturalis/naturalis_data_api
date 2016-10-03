@@ -94,7 +94,7 @@ public class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	{
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
 			String fileName = dwcaConfig.getCsvFileName(entity);
-			logger.info("Generating CSV file for entity {}", entity.getName());
+			logger.info("Adding CSV file for entity {}", entity.getName());
 			zos.putNextEntry(new ZipEntry(fileName));
 			writeCsvFile(entity, executeQuery(querySpec));
 		}
@@ -105,7 +105,7 @@ public class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	{
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
 			String fileName = dwcaConfig.getCsvFileName(entity);
-			logger.info("Generating CSV file for entity {}", entity.getName());
+			logger.info("Adding CSV file for entity {}", entity.getName());
 			zos.putNextEntry(new ZipEntry(fileName));
 			QuerySpec query = entity.getDataSource().getQuerySpec();
 			SearchResponse response;
@@ -138,11 +138,13 @@ public class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		int processed = 0;
 		while (true) {
 			for (SearchHit hit : response.getHits().getHits()) {
-				if (++processed % 10000 == 0)
-					csvPrinter.flush();
-				if (logger.isDebugEnabled() && processed % 100000 == 0)
-					logger.debug("Documents processed: " + processed);
 				csvPrinter.printRecord(hit.getSource());
+				if (++processed % 10000 == 0) {
+					csvPrinter.flush();
+				}
+				if (logger.isDebugEnabled() && processed % 100000 == 0) {
+					logger.debug("Documents processed: " + processed);
+				}
 			}
 			String scrollId = response.getScrollId();
 			Client client = ESClientManager.getInstance().getClient();

@@ -99,6 +99,7 @@ public class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		RandomEntryZipOutputStream rezos;
 		try {
 			rezos = createZipStream();
+			logger.info("Adding CSV files");
 			writeCsvFiles(response, rezos);
 			ZipOutputStream zos = rezos.mergeEntries();
 			writeMetaXml(dwcaConfig, zos);

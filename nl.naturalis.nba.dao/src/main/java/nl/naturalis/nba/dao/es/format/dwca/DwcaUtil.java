@@ -48,7 +48,7 @@ public class DwcaUtil {
 	static void writeEmlXml(DwcaConfig dwcaConfig, ZipOutputStream zos)
 			throws DataSetConfigurationException, IOException
 	{
-		logger.info("Adding eml.xml to archive ({})", dwcaConfig.getEmlFile());
+		logger.info("Adding eml.xml ({})", dwcaConfig.getEmlFile());
 		zos.putNextEntry(new ZipEntry("eml.xml"));
 		FileInputStream fis = null;
 		fis = new FileInputStream(dwcaConfig.getEmlFile());
@@ -59,7 +59,7 @@ public class DwcaUtil {
 	static void writeMetaXml(DwcaConfig dwcaConfig, ZipOutputStream zos)
 			throws DataSetConfigurationException, IOException
 	{
-		logger.info("Generating meta.xml");
+		logger.info("Adding meta.xml");
 		zos.putNextEntry(new ZipEntry("meta.xml"));
 		Archive archive = new Archive();
 		Core core = new Core();

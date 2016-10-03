@@ -1,19 +1,15 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.writeEmlXml;
+import static nl.naturalis.nba.dao.es.format.dwca.DwcaUtil.writeMetaXml;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.IOUtil;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequestBuilder;
@@ -29,8 +25,6 @@ import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.es.DocumentType;
 import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.exception.DaoException;
-import nl.naturalis.nba.dao.es.exception.DwcaCreationException;
 import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.es.format.DataSetWriteException;
 import nl.naturalis.nba.dao.es.format.DocumentFlattener;
@@ -46,20 +40,21 @@ import nl.naturalis.nba.dao.es.util.RandomEntryZipOutputStream;
  * @author Ayco Holleman
  *
  */
-public class DwcaWriter2 {
+public class SingleDataSourceDwcaWriter implements IDwcaWriter {
 
-	private static Logger logger = LogManager.getLogger(DwcaWriter2.class);
+	private static Logger logger = LogManager.getLogger(SingleDataSourceDwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DwcaConfig dwcaConfig;
 	private OutputStream out;
 
-	public DwcaWriter2(DwcaConfig dwcaConfig, OutputStream out) throws IOException
+	SingleDataSourceDwcaWriter(DwcaConfig dwcaConfig, OutputStream out)
 	{
 		this.dwcaConfig = dwcaConfig;
 		this.out = out;
 	}
 
+	@Override
 	public void writeDwcaForQuery(QuerySpec querySpec)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
@@ -70,11 +65,51 @@ public class DwcaWriter2 {
 			rezos = createZipStream();
 			writeCsvFiles(response, rezos);
 			ZipOutputStream zos = rezos.mergeEntries();
+			writeMetaXml(dwcaConfig, zos);
+			writeEmlXml(dwcaConfig, zos);
+			zos.finish();
 		}
 		catch (IOException e) {
 			throw new DataSetWriteException(e);
 		}
+		logger.info("Finished writing DarwinCore archive for user-defined query");
+	}
 
+	@Override
+	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
+	{
+		String fmt = "Generating DarwinCore archive for data set \"{}\"";
+		logger.info(fmt, dwcaConfig.getDataSetName());
+		QuerySpec query = dwcaConfig.getDataSet().getSharedDataSource().getQuerySpec();
+		SearchResponse response;
+		try {
+			response = executeQuery(query);
+		}
+		catch (InvalidQueryException e) {
+			/*
+			 * Not the user's fault but the application maintainer's, so we
+			 * convert the InvalidQueryException to a
+			 * DataSetConfigurationException
+			 */
+			fmt = "Invalid query specification for shared data source:\n%s";
+			String queryString = JsonUtil.toPrettyJson(query);
+			String msg = String.format(fmt, queryString);
+			throw new DataSetConfigurationException(msg);
+		}
+		RandomEntryZipOutputStream rezos;
+		try {
+			rezos = createZipStream();
+			writeCsvFiles(response, rezos);
+			ZipOutputStream zos = rezos.mergeEntries();
+			writeMetaXml(dwcaConfig, zos);
+			writeEmlXml(dwcaConfig, zos);
+			zos.finish();
+		}
+		catch (IOException e) {
+			throw new DataSetWriteException(e);
+		}
+		fmt = "Finished writing DarwinCore archive for data set \"{}\"";
+		logger.info(fmt, dwcaConfig.getDataSetName());
 	}
 
 	private void writeCsvFiles(SearchResponse response, RandomEntryZipOutputStream rezos)

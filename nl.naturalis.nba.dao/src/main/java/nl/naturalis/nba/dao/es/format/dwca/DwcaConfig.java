@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.es.format.dwca;
 
 import java.io.File;
+import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,6 +56,14 @@ public class DwcaConfig {
 			throw new DataSetConfigurationException(msg);
 		}
 		this.dataSet = buildDataSet();
+	}
+
+	public IDwcaWriter getWriter(OutputStream out)
+	{
+		if (dataSet.getSharedDataSource() == null) {
+			return new MultiDataSourceDwcaWriter(this, out);
+		}
+		return new SingleDataSourceDwcaWriter(this, out);
 	}
 
 	String getDataSetName()

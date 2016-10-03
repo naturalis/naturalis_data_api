@@ -18,7 +18,7 @@ import nl.naturalis.nba.dao.es.format.DataSetWriteException;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaConfig;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.es.format.dwca.DwcaUtil;
-import nl.naturalis.nba.dao.es.format.dwca.DwcaWriter;
+import nl.naturalis.nba.dao.es.format.dwca.IDwcaWriter;
 
 public class TaxonDao implements ITaxonAccess {
 
@@ -34,7 +34,7 @@ public class TaxonDao implements ITaxonAccess {
 	{
 		try {
 			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.TAXON);
-			DwcaWriter writer = new DwcaWriter(config, out);
+			IDwcaWriter writer = config.getWriter(out);
 			writer.writeDwcaForQuery(querySpec);
 		}
 		catch (DataSetConfigurationException | DataSetWriteException e) {
@@ -47,7 +47,7 @@ public class TaxonDao implements ITaxonAccess {
 	{
 		try {
 			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.TAXON);
-			DwcaWriter writer = new DwcaWriter(config, out);
+			IDwcaWriter writer = config.getWriter(out);
 			writer.writeDwcaForDataSet();
 		}
 		catch (DataSetConfigurationException | DataSetWriteException e) {

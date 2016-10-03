@@ -26,7 +26,7 @@ public class DwcaWriterTest {
 		qs.addCondition(new Condition("defaultClassification.genus", EQUALS_IC, "LARUS"));
 		FileOutputStream fos = new FileOutputStream(
 				"/home/ayco/tmp/DwcaWriterTest.testWriteDwcaForQuery_01.zip");
-		DwcaWriter writer = new DwcaWriter(config, fos);
+		MultiDataSourceDwcaWriter writer = new MultiDataSourceDwcaWriter(config, fos);
 		writer.writeDwcaForQuery(qs);
 	}
 

@@ -40,20 +40,21 @@ import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
  * @author Ayco Holleman
  *
  */
-public class DwcaWriter {
+public class MultiDataSourceDwcaWriter implements IDwcaWriter {
 
-	private static Logger logger = LogManager.getLogger(DwcaWriter.class);
+	private static Logger logger = LogManager.getLogger(MultiDataSourceDwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DwcaConfig dwcaConfig;
 	private ZipOutputStream zos;
 
-	public DwcaWriter(DwcaConfig dwcaConfig, OutputStream out)
+	MultiDataSourceDwcaWriter(DwcaConfig dwcaConfig, OutputStream out)
 	{
 		this.dwcaConfig = dwcaConfig;
 		this.zos = new ZipOutputStream(out);
 	}
 
+	@Override
 	public void writeDwcaForQuery(QuerySpec querySpec)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
@@ -70,6 +71,7 @@ public class DwcaWriter {
 		logger.info("Finished writing DarwinCore archive for user-defined query");
 	}
 
+	@Override
 	public void writeDwcaForDataSet() throws DataSetConfigurationException, DataSetWriteException
 	{
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";

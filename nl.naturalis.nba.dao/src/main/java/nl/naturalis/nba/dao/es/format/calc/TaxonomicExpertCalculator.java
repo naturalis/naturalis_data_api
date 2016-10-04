@@ -14,9 +14,8 @@ import nl.naturalis.nba.dao.es.format.ICalculator;
 
 /**
  * Generates a value for the &#34;expert&#34; field. Assumes the entity object
- * is a plain {@link Taxon} document (no entity path) or the
- * {@link Taxon#getSynonyms() synonyms} entity or
- * {@link Taxon#getVernacularNames() vernacularNames} entity within a
+ * is a plain {@link Taxon} document or the {@link Taxon#getSynonyms() synonyms}
+ * entity or {@link Taxon#getVernacularNames() vernacularNames} entity within a
  * {@code Taxon} document.
  * 
  * @author Ayco Holleman

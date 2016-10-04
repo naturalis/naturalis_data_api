@@ -22,7 +22,7 @@ public class SortFieldsTranslator {
 	private List<SortField> sortFields;
 	private MappingInfo mappingInfo;
 
-	public SortFieldsTranslator(List<SortField> sortFields, DocumentType documentType)
+	public SortFieldsTranslator(List<SortField> sortFields, DocumentType<?> documentType)
 	{
 		this.sortFields = sortFields;
 		this.mappingInfo = new MappingInfo(documentType.getMapping());

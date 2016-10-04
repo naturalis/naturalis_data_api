@@ -18,6 +18,17 @@ import nl.naturalis.nba.dao.es.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.es.format.Entity;
 import nl.naturalis.nba.dao.es.format.csv.CsvFieldFactory;
 
+/**
+ * Captures the information in the XML configuration file for a DarwinCore
+ * archive. A {@code DwcaConfig} is used by {@link IDwcaWriter} instances to
+ * drive the generation of DarwinCore archives. At the same time, the
+ * {@code DwcaConfig} class functions as a factory for {@code IDwcaWriter}
+ * instances since different configurations require different implementations of
+ * the {@code IDwcaWriter} interface.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DwcaConfig {
 
 	public static String CONF_FILE_EXTENSION = ".dataset-config.xml";
@@ -58,6 +69,13 @@ public class DwcaConfig {
 		this.dataSet = buildDataSet();
 	}
 
+	/**
+	 * Returns a DarwinCore archive writer tailored to the requirements
+	 * specified in the XML configuration file.
+	 * 
+	 * @param out
+	 * @return
+	 */
 	public IDwcaWriter getWriter(OutputStream out)
 	{
 		if (dataSet.getSharedDataSource() == null) {

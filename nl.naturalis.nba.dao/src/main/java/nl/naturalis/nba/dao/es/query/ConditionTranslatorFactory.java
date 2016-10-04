@@ -20,7 +20,7 @@ public class ConditionTranslatorFactory {
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition, DocumentType type)
+	public static ConditionTranslator getTranslator(Condition condition, DocumentType<?> type)
 	{
 		MappingInfo inspector = new MappingInfo(type.getMapping());
 		return getTranslator(condition, inspector);

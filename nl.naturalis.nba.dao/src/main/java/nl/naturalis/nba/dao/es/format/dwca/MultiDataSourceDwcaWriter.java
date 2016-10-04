@@ -40,7 +40,7 @@ import nl.naturalis.nba.dao.es.query.QuerySpecTranslator;
  * @author Ayco Holleman
  *
  */
-public class MultiDataSourceDwcaWriter implements IDwcaWriter {
+class MultiDataSourceDwcaWriter implements IDwcaWriter {
 
 	private static Logger logger = LogManager.getLogger(MultiDataSourceDwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
@@ -114,9 +114,9 @@ public class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			}
 			catch (InvalidQueryException e) {
 				/*
-				 * Now it's not the user's fault but the application
-				 * maintainer's, so we convert the InvalidQueryException to a
-				 * DataSetConfigurationException
+				 * Not the user's fault but the application maintainer's, because we
+				 * got the QuerySpec from the config file, so we convert the
+				 * InvalidQueryException to a DataSetConfigurationException
 				 */
 				String fmt = "Invalid query specification for entity %s:\n%s";
 				String queryString = JsonUtil.toPrettyJson(query);

@@ -40,7 +40,7 @@ import nl.naturalis.nba.dao.es.util.RandomEntryZipOutputStream;
  * @author Ayco Holleman
  *
  */
-public class SingleDataSourceDwcaWriter implements IDwcaWriter {
+class SingleDataSourceDwcaWriter implements IDwcaWriter {
 
 	private static Logger logger = LogManager.getLogger(SingleDataSourceDwcaWriter.class);
 	private static TimeValue TIME_OUT = new TimeValue(5000);
@@ -87,9 +87,9 @@ public class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		}
 		catch (InvalidQueryException e) {
 			/*
-			 * Not the user's fault but the application maintainer's, so we
-			 * convert the InvalidQueryException to a
-			 * DataSetConfigurationException
+			 * Not the user's fault but the application maintainer's, because we
+			 * got the QuerySpec from the config file, so we convert the
+			 * InvalidQueryException to a DataSetConfigurationException
 			 */
 			fmt = "Invalid query specification for shared data source:\n%s";
 			String queryString = JsonUtil.toPrettyJson(query);
@@ -118,6 +118,10 @@ public class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	{
 		CsvPrinter[] printers = createCsvPrinters(rezos);
 		String[] fileNames = getCsvFileNames();
+		for (int i = 0; i < printers.length; i++) {
+			rezos.setActiveEntry(fileNames[i]);
+			printers[i].printHeader();
+		}
 		int processed = 0;
 		while (true) {
 			for (SearchHit hit : response.getHits().getHits()) {

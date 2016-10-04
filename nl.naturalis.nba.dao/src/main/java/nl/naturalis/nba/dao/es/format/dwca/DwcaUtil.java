@@ -21,7 +21,7 @@ import nl.naturalis.nba.dao.es.format.Entity;
 import nl.naturalis.nba.dao.es.format.IField;
 
 /**
- * Utility class for the DwCA generation process.
+ * Utility class for the DwCA creation process.
  * 
  * @author Ayco Holleman
  *

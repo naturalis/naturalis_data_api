@@ -14,7 +14,7 @@ import nl.naturalis.nba.dao.es.format.ICalculator;
 
 /**
  * Generates a value for the DarwinCore &#34;namePublishedIn&#34; term. Assumes
- * the entity object is a plain {@link Taxon} document (no entity path) or the
+ * the entity object is a plain {@link Taxon} document or the
  * {@link Taxon#getSynonyms() synonyms} entity within a {@code Taxon} document.
  * 
  * @author Ayco Holleman

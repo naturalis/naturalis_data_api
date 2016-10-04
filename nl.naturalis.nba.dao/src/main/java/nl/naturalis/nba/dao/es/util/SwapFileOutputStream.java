@@ -10,10 +10,10 @@ import java.io.OutputStream;
 import org.domainobject.util.IOUtil;
 
 /**
- * A {@link SwapOutputStream} that swaps out to a file. The
- * {@link FileOutputStream} created from the {@link File} object is wrapped into
- * a {@link BufferedOutputStream}. Therefore it probably does not make sense to
- * wrap instances of this class into a {@code BufferedOutputStream}.
+ * A {@link SwapOutputStream} that swaps to file. The {@link FileOutputStream}
+ * created from the {@link File} object is already wrapped into a
+ * {@link BufferedOutputStream}, so there's no advantage to be had from wrapping
+ * instances of this class into a {@code BufferedOutputStream}.
  * 
  * @author Ayco Holleman
  *
@@ -33,8 +33,8 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	}
 
 	/**
-	 * Creates a new instance that swaps its in-memory buffer an auto-generated
-	 * temp file. See {@link #SwapFileOutputStream(File, int)}.
+	 * Creates a new instance that swaps its in-memory buffer to an
+	 * auto-generated temp file. See {@link #SwapFileOutputStream(File, int)}.
 	 * 
 	 * @param treshold
 	 * @return
@@ -49,8 +49,9 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	private boolean closed;
 
 	/**
-	 * Creates a new instance that swaps its in-memory buffer an auto-generated
-	 * temp file. See {@link SwapOutputStream#SwapOutputStream(OutputStream)}.
+	 * Creates a new instance that swaps its in-memory buffer to an
+	 * auto-generated temp file. See
+	 * {@link SwapOutputStream#SwapOutputStream(OutputStream)}.
 	 * 
 	 * @param swapFile
 	 * @throws IOException
@@ -76,15 +77,15 @@ public class SwapFileOutputStream extends SwapOutputStream {
 	}
 
 	/**
-	 * Copies all bytes written to this {@code SwapFileOutputStream} to the
+	 * Collects all bytes written to this {@code SwapFileOutputStream} to the
 	 * specified output stream. This method makes it transparent to the client
-	 * whether or not the in-memory buffer has been swapped out to the swap
-	 * file. If no swap has taken place yet, it writes the in-memory buffer to
-	 * the specified output stream. Otherwise it reads the contents of the swap
-	 * file and writes it to the output stream. If you call {@code collect()}
-	 * after the in-memory buffer has been swapped out to the swap file, this
-	 * method implicitly closes the {@link FileOutputStream} created for the
-	 * swap file and any subsequent write action will cause an IOException.
+	 * whether the in-memory buffer has been swapped to file or not. If no swap
+	 * has taken place yet, it writes the in-memory buffer to the specified
+	 * output stream. Otherwise it reads the contents of the swap file and
+	 * writes it to the output stream. If you call {@code collect()} after the
+	 * in-memory buffer has been swapped out to the swap file, this method
+	 * implicitly closes the {@link FileOutputStream} created for the swap file
+	 * and any subsequent write action will cause an IOException.
 	 * 
 	 * @param bucket
 	 * @throws IOException

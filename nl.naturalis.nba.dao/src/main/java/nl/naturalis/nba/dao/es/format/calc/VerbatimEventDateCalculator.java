@@ -14,8 +14,7 @@ import nl.naturalis.nba.dao.es.format.ICalculator;
 
 /**
  * Generates a value for the DarwinCore &#34;verbatimEventDate&#34; term.
- * Assumes the entity object is a plain {@link Specimen} document (no entity
- * path).
+ * Assumes the entity object is a plain {@link Specimen} document.
  * 
  * @author Ayco Holleman
  *

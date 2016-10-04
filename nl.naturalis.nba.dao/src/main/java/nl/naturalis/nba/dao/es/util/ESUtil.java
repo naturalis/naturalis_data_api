@@ -38,8 +38,8 @@ import nl.naturalis.nba.dao.es.exception.DaoException;
 import nl.naturalis.nba.dao.es.types.ESType;
 
 /**
- * Methods for interacting with Elasticsearch, mostly meant for unit testing and
- * for use by the ETL programs.
+ * Methods for interacting with Elasticsearch, mostly intended to be used for
+ * unit testing and by the data import programs in {@code nl.naturalis.nba.etl}.
  * 
  * @author Ayco Holleman
  *

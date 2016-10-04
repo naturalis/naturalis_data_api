@@ -5,6 +5,13 @@ import java.io.OutputStream;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterOutputStream;
 
+/**
+ * A {@link DeflaterOutputStream} compresses data and then forwards it to a
+ * {@link SwapFileOutputStream}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CompressedSwapFileOutputStream extends DeflaterOutputStream {
 
 	public CompressedSwapFileOutputStream() throws IOException

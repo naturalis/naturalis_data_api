@@ -16,8 +16,6 @@ import javax.ws.rs.core.UriInfo;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.rest.util.ResourceUtil;
-
 @Path("/")
 @Stateless
 @LocalBean
@@ -34,7 +32,6 @@ public class HomeResource {
 	{
 		InputStream in = getClass().getResourceAsStream("welcome.html");
 		String s = new String(IOUtil.readAllBytes(in));
-
 		in = getClass().getResourceAsStream("/version.properties");
 		ConfigObject cfg;
 		if (in == null) {

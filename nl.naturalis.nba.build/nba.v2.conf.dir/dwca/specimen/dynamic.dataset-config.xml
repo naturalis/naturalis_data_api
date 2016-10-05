@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dataset-config xmlns="http://data.naturalis.nl/nba-dataset-config">
+	<shared-data-source>
+		<document>Taxon</document>
+		<query-spec>
+			<conditions>
+				<condition>
+					<field>sourceSystem.code</field>
+					<operator>EQUALS</operator>
+					<value>:-)</value>
+				</condition>
+			</conditions>
+		</query-spec>
+	</shared-data-source>
+	<entity name="TAXON">
+		<fields>
+			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
+				<path>sourceSystemId</path>
+			</field>
+			<field name="scientificName" term="http://rs.tdwg.org/dwc/terms/scientificName">
+				<path>acceptedName.fullScientificName</path>
+			</field>
+			<field name="scientificNameAuthorship" term="http://rs.tdwg.org/dwc/terms/scientificNameAuthorship">
+				<calculator>
+						<java-class>ScientificNameAuthorshipCalculator</java-class>
+						<arg name="type">accepted name</arg>
+				</calculator>
+			</field>
+			<field name="taxonomicStatus" term="http://rs.tdwg.org/dwc/terms/taxonomicStatus">
+				<constant>accepted name</constant>
+			</field>
+			<field name="taxonRank" term="http://rs.tdwg.org/dwc/terms/taxonRank">
+				<path>taxonRank</path>
+			</field>
+			<field name="kingdom" term="http://rs.tdwg.org/dwc/terms/kingdom">
+				<path>defaultClassification.kingdom</path>
+			</field>
+			<field name="phylum" term="http://rs.tdwg.org/dwc/terms/phylum">
+				<path>defaultClassification.phylum</path>
+			</field>
+			<field name="class" term="http://rs.tdwg.org/dwc/terms/class">
+				<path>defaultClassification.className</path>
+			</field>
+			<field name="order" term="http://rs.tdwg.org/dwc/terms/order">
+				<path>defaultClassification.order</path>
+			</field>
+			<field name="superFamily" term="http://rs.tdwg.org/dwc/terms/superfamily">
+				<path>defaultClassification.superFamily</path>
+			</field>
+			<field name="family" term="http://rs.tdwg.org/dwc/terms/family">
+				<path>defaultClassification.family</path>
+			</field>
+			<field name="genus" term="http://rs.tdwg.org/dwc/terms/genus">
+				<path>defaultClassification.genus</path>
+			</field>
+			<field name="subgenus" term="http://rs.tdwg.org/dwc/terms/subgenus">
+				<path>defaultClassification.subgenus</path>
+			</field>
+			<field name="specificEpithet" term="http://rs.tdwg.org/dwc/terms/specificEpithet">
+				<path>defaultClassification.specificEpithet</path>
+			</field>
+			<field name="infraspecificEpithet" term="http://rs.tdwg.org/dwc/terms/infraspecificEpithet">
+				<path>defaultClassification.infraspecificEpithet</path>
+			</field>
+			<field name="occurrenceStatus" term="http://rs.tdwg.org/dwc/terms/occurrenceStatus">
+				<path>occurrenceStatusVerbatim</path>
+			</field>
+			<field name="expert" term="http://purl.org/dc/terms/agent">
+				<calculator>
+						<java-class>TaxonomicExpertCalculator</java-class>
+						<arg name="type">accepted name</arg>
+				</calculator>
+			</field>
+			<field name="namePublishedIn" term="http://rs.tdwg.org/dwc/terms/namePublishedIn">
+				<calculator>
+						<java-class>NamePublishedInCalculator</java-class>
+						<arg name="type">accepted name</arg>
+				</calculator>
+			</field>
+			<field name="references" term="http://purl.org/dc/terms/references">
+				<path>recordURI</path>
+			</field>
+		</fields>
+	</entity>
+	<entity name="SYNONYM">
+		<path>synonyms</path>
+		<fields>
+			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
+				<path>sourceSystemId</path>
+			</field>
+			<field name="scientificName" term="http://rs.tdwg.org/dwc/terms/scientificName">
+				<path relative="true">fullScientificName</path>
+			</field>
+			<field name="scientificNameAuthorship" term="http://rs.tdwg.org/dwc/terms/scientificNameAuthorship">
+				<calculator>
+						<java-class>ScientificNameAuthorshipCalculator</java-class>
+						<arg name="type">synonym</arg>
+				</calculator>
+			</field>
+			<field name="taxonomicStatus" term="http://rs.tdwg.org/dwc/terms/taxonomicStatus">
+				<path relative="true">taxonomicStatus</path>
+			</field>
+			<field name="expert" term="http://purl.org/dc/terms/agent">
+				<calculator>
+						<java-class>TaxonomicExpertCalculator</java-class>
+						<arg name="type">synonym</arg>
+				</calculator>
+			</field>
+			<field name="namePublishedIn" term="http://rs.tdwg.org/dwc/terms/namePublishedIn">
+				<calculator>
+						<java-class>NamePublishedInCalculator</java-class>
+						<arg name="type">synonym</arg>
+				</calculator>
+			</field>
+		</fields>
+	</entity>
+	<entity name="VERNACULAR_NAME">
+		<path>vernacularNames</path>
+		<fields>
+			<field name="taxonID" term="http://rs.tdwg.org/dwc/terms/taxonID">
+				<path>sourceSystemId</path>
+			</field>
+			<field name="vernacularName" term="http://rs.tdwg.org/dwc/terms/vernacularName">
+				<path relative="true">name</path>
+			</field>
+			<field name="language" term="http://purl.org/dc/terms/language">
+				<path relative="true">language</path>
+			</field>
+			<field name="expert" term="http://purl.org/dc/terms/agent">
+				<calculator>
+						<java-class>TaxonomicExpertCalculator</java-class>
+						<arg name="type">vernacular name</arg>
+				</calculator>
+			</field>
+			<field name="source" term="http://purl.org/dc/terms/source">
+				<calculator>
+						<java-class>NamePublishedInCalculator</java-class>
+						<arg name="type">vernacular name</arg>
+				</calculator>
+			</field>
+		</fields>
+	</entity>
+</dataset-config>

@@ -11,12 +11,8 @@ import org.domainobject.util.FileUtil;
 import nl.naturalis.nba.dao.exception.InitializationException;
 
 /**
- * Class providing centralized access to core services such as logging and
- * elasticsearch. If anything goes wrong while configuring those services an
- * {@link InitializationException} is thrown and it probably doesn't make much
- * sense to let the program continue. Therefore one of the first things an
- * import program should do is retrieve an instance of the {@code Registry}
- * class.
+ * Class providing centralized access to common resources and services for the
+ * DAO module and dependent modules.
  * 
  * @author Ayco Holleman
  *
@@ -51,9 +47,9 @@ public class DaoRegistry {
 	private Logger logger = getLogger(getClass());
 
 	/**
-	 * Returns a {@code Registry} instance.
+	 * Returns a {@code DaoRegistry} instance.
 	 * 
-	 * @return A {@code Registry} instance.
+	 * @return A {@code DaoRegistry} instance.
 	 */
 	public static DaoRegistry getInstance()
 	{
@@ -85,8 +81,8 @@ public class DaoRegistry {
 	 * Returns the directory designated to contain the application's
 	 * configuration files. This directory must be specified by a system
 	 * property named "nba.v2.conf.dir". This directory must contain at least
-	 * nba.properties, and may contain additional files that the application
-	 * expects to be there.
+	 * nba.properties, and may contain additional files and folders that the
+	 * application expects to be there.
 	 * 
 	 * @return
 	 */

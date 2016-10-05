@@ -161,19 +161,30 @@
 
 	<target name="-do-run-tests">
 		<echo level="info">==== ${ant.project.name} (test) ====</echo>
+		<!-- Set up environment for unit/integration tests -->
+		<property name="test.conf.dir"
+		          value="${build.module.location}/nba-test.v2.conf.dir" />
+		<delete file="${test.conf.dir}/nba.properties" />
+		<copy file="${test.conf.dir}/nba.properties.tpl"
+		      tofile="${test.conf.dir}/nba.properties">
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/${build.properties.file}" />
+		</copy>
 		<mkdir dir="${build.module.location}/log/test-reports" />
+		<tstamp>
+			<format property="test.datetime" pattern="yyyyMMddHHmmss" />
+		</tstamp>
 		<java classname="org.junit.runner.JUnitCore"
 		      fork="true"
 		      resultproperty="junit.result"
-		      output="/home/ayco/tmp/TEST-${junit.suite.classname}.txt"
-		      error="/home/ayco/tmp/TEST-${junit.suite.classname}.txt">
+		      output="${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log"
+		      error="${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log">
 			<arg value="${junit.suite.classname}" />
 			<sysproperty key="log4j.configurationFile"
 			             value="${build.module.location}/log4j2.xml" />
-			<sysproperty key="nba-test.v2.conf.dir"
-			             value="/home/ayco/projects/nba/v2/test-service" />
-			<sysproperty key="nba-test.v2.log.dir"
-			             value="${build.module.location}/log" />
+			<sysproperty key="nba-test.v2.conf.dir" value="${test.conf.dir}" />
+			<sysproperty key="nba-test.v2.log.dir" value="${build.module.location}/log" />
 			<classpath>
 				<fileset dir="build/classpath">
 					<include name="**/*.jar" />
@@ -188,8 +199,9 @@
 		<condition property="junit.ok">
 			<equals arg1="${junit.result}" arg2="0" />
 		</condition>
+		<echo file="${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log" />
 		<fail unless:set="junit.ok"
-		      message="At least one test failed! See ${build.module.location}/log/test-reports/TEST-${junit.suite.classname}.txt" />
+		      message="At least one test failed! See ${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log" />
 	</target>
 
 	<!--

@@ -10,7 +10,7 @@
 	<import file="./modules.xml" />
 
 	<tstamp>
-		<format property="now" pattern="yyyy_MM_dd___HH_mm_ss" locale="en" />
+		<format property="now" pattern="yyyy/MM/dd HH:mm:ss" locale="en" />
 	</tstamp>
 
 	<target name="-verify">

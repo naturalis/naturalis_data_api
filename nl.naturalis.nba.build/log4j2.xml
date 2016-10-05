@@ -4,12 +4,12 @@
 		<Console name="CONSOLE">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</Console>
-		<File name="FILE" fileName="${sys:nba-test.v2.log.dir}/AllTests.log">
+		<!-- File name="FILE" fileName="${sys:nba-test.v2.log.dir}/AllTests.log">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
-		</File>
+		</File -->
 	</Appenders>
 	<Loggers>
-		<Root level="INFO">
+		<Root level="ALL">
 			<!-- AppenderRef ref="FILE" / -->
 			<AppenderRef ref="CONSOLE" />
 		</Root>

@@ -10,7 +10,7 @@ import org.geojson.Geometry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.dao.es.types.ESGeoArea;
+import nl.naturalis.nba.dao.types.ESGeoArea;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 

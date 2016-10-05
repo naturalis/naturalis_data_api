@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.DaoRegistry;
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Utility class providing common functionality used throughout this library.

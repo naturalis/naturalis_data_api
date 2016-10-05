@@ -14,7 +14,7 @@
 		</filelist>
 	</path>
 
-	<property name="junit.suite.classname" value="nl.naturalis.nba.dao.es.AllTests" />
+	<property name="junit.suite.classname" value="nl.naturalis.nba.dao.AllTests" />
 
 	<target name="build" depends="build-common-module,clean,package" />
 

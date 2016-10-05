@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 
 /**
  * Utility class for finding values in the CoL data sources (taxa.txt,

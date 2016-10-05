@@ -1,10 +1,10 @@
 package nl.naturalis.nba.etl.geo;
 
 import static nl.naturalis.nba.api.model.SourceSystem.GEO;
-import static nl.naturalis.nba.dao.es.DocumentType.GEO_AREA;
-import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.es.types.ESGeoArea;
+import nl.naturalis.nba.dao.types.ESGeoArea;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 

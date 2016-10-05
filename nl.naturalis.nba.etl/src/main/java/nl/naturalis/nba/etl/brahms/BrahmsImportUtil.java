@@ -16,9 +16,9 @@ import org.domainobject.util.ConfigObject;
 import org.joda.time.LocalDate;
 
 import nl.naturalis.nba.api.model.*;
-import nl.naturalis.nba.dao.es.DaoRegistry;
-import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.TransformUtil;

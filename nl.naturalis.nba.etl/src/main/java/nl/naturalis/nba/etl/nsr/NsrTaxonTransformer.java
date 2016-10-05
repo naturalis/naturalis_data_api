@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.*;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 

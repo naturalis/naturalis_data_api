@@ -17,7 +17,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**

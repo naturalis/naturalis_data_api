@@ -1,10 +1,10 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
-import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 

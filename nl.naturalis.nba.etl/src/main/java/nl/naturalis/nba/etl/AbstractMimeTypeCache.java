@@ -10,7 +10,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.FileUtil;
 import org.domainobject.util.http.SimpleHttpHead;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 
 /**
  * Abstract base class for mimetype caches. Provides the public interface of a

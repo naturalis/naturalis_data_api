@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,8 +12,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
 import nl.naturalis.nba.etl.elasticsearch.IndexManager;

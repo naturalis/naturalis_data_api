@@ -3,7 +3,7 @@ package nl.naturalis.nba.etl.geo;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 
 class GeoImportUtil {
 

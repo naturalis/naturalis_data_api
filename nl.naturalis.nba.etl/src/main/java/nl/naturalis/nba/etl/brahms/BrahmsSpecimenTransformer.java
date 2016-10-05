@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_COLLECTION_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_SOURCE_ID;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 import org.domainobject.util.ConfigObject;
 
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
-import nl.naturalis.nba.dao.es.util.ESUtil;
+import nl.naturalis.nba.dao.types.ESSpecimen;
+import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;

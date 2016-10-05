@@ -20,9 +20,9 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
+import nl.naturalis.nba.dao.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.types.ESMultiMediaObject;
+import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.NameMismatchException;

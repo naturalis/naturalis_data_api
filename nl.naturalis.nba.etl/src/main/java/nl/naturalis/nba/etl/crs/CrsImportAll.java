@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**

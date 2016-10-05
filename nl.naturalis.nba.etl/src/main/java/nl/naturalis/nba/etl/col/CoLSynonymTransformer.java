@@ -1,8 +1,8 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
-import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.*;
 
 import java.util.Arrays;
@@ -10,8 +10,8 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
-import nl.naturalis.nba.dao.es.util.ESUtil;
+import nl.naturalis.nba.dao.types.ESTaxon;
+import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;

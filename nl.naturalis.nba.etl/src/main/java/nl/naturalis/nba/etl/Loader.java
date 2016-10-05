@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.etl.col.CoLReferenceImporter;
 import nl.naturalis.nba.etl.col.CoLSynonymImporter;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;

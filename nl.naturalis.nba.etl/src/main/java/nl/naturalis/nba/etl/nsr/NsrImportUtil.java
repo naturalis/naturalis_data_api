@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**

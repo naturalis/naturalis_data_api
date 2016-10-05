@@ -7,8 +7,8 @@ import org.elasticsearch.client.Client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.es.DocumentType;
-import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**

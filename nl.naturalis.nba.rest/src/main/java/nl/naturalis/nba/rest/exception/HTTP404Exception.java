@@ -2,7 +2,7 @@ package nl.naturalis.nba.rest.exception;
 
 import javax.ws.rs.core.Response.Status;
 
-import nl.naturalis.nba.dao.es.DocumentType;
+import nl.naturalis.nba.dao.DocumentType;
 
 import javax.ws.rs.core.UriInfo;
 

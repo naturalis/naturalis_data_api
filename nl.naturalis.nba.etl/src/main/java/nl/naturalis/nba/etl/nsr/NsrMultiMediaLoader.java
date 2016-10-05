@@ -1,10 +1,10 @@
 package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
-import static nl.naturalis.nba.dao.es.DocumentType.MULTI_MEDIA_OBJECT;
-import static nl.naturalis.nba.dao.es.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
+import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 

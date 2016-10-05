@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
-import static nl.naturalis.nba.dao.es.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.*;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFile;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getXmlFiles;
@@ -10,11 +10,11 @@ import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
 import java.io.File;
 import java.util.List;
 
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.dao.types.ESMultiMediaObject;
+import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 

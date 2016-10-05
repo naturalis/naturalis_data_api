@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.ndff;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NDFF;
-import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ndff.NdffImportUtil.getCsvFiles;
 
 import java.io.File;
@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;

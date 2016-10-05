@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
-import static nl.naturalis.nba.dao.es.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -13,9 +13,9 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.xml.sax.SAXException;
 
-import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.DaoRegistry;
-import nl.naturalis.nba.dao.es.types.ESMultiMediaObject;
+import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;

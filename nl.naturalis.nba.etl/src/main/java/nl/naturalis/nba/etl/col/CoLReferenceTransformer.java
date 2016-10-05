@@ -5,9 +5,9 @@ import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
-import static nl.naturalis.nba.dao.es.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.es.util.ESUtil.*;
 import static nl.naturalis.nba.api.model.SourceSystem.*;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.util.ESUtil.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -15,8 +15,8 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
-import nl.naturalis.nba.dao.es.types.ESTaxon;
-import nl.naturalis.nba.dao.es.util.ESUtil;
+import nl.naturalis.nba.dao.types.ESTaxon;
+import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.*;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 

@@ -11,9 +11,9 @@ import java.util.List;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.dao.es.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.es.types.ESGatheringSiteCoordinates;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 /**

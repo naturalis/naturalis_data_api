@@ -8,7 +8,7 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**

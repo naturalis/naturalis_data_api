@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.geo;
 
 import static nl.naturalis.nba.api.model.SourceSystem.*;
-import static nl.naturalis.nba.dao.es.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.*;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.dao.es.ESClientManager;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;

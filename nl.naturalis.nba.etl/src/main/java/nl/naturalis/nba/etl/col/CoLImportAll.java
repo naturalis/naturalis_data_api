@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.col;
 
-import nl.naturalis.nba.dao.es.DaoRegistry;
+import nl.naturalis.nba.dao.DaoRegistry;
 
 /**
  * Manages the import of CoL taxa, synonyms, vernacular names and literature

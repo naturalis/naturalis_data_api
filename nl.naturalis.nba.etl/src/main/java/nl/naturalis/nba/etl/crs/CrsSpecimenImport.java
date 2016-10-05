@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
-import static nl.naturalis.nba.dao.es.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.crs.CrsImportUtil.callSpecimenService;
 
 import java.util.List;
@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
-import nl.naturalis.nba.dao.es.ESClientManager;
-import nl.naturalis.nba.dao.es.types.ESSpecimen;
+import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;

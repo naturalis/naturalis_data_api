@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.format;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public class Entity {
 
 	private String name;
 	private DataSource dataSource;
-	private IEntityFilter filter;
+	private List<IEntityFilter> filters;
 	private List<IField> fields;
 
 	Entity()
@@ -43,14 +42,14 @@ public class Entity {
 		this.dataSource = dataSource;
 	}
 
-	public IEntityFilter getFilter()
+	public List<IEntityFilter> getFilters()
 	{
-		return filter;
+		return filters;
 	}
 
-	void setFilter(IEntityFilter filter)
+	void setFilters(List<IEntityFilter> filters)
 	{
-		this.filter = filter;
+		this.filters = filters;
 	}
 
 	public List<IField> getFields()
@@ -58,11 +57,9 @@ public class Entity {
 		return fields;
 	}
 
-	public void addField(IField field)
+	void setFields(List<IField> fields)
 	{
-		if (fields == null)
-			fields = new ArrayList<>(24);
-		fields.add(field);
+		this.fields = fields;
 	}
 
 }

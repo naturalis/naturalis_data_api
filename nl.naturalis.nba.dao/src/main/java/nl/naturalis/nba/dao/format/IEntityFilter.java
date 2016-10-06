@@ -17,7 +17,7 @@ public interface IEntityFilter {
 	 * map are parameter names, the values of the map are parameter values. This
 	 * method is called just once, right after instantiation of the calculator.
 	 */
-	void initialize(Map<String, String> args);
+	void initialize(Map<String, String> args) throws EntityFilterInitializationException;
 
 	/**
 	 * Whether or not to use the specified {@link EntityObject} while writing a
@@ -26,6 +26,6 @@ public interface IEntityFilter {
 	 * @param entity
 	 * @return
 	 */
-	boolean accept(EntityObject entity);
+	boolean accept(EntityObject entity) throws EntityFilterException;
 
 }

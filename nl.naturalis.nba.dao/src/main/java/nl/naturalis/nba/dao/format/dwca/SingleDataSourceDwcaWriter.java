@@ -29,6 +29,7 @@ import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.DocumentFlattener;
 import nl.naturalis.nba.dao.format.Entity;
+import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;

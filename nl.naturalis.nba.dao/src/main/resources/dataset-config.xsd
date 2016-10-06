@@ -19,7 +19,7 @@
 		<xs:sequence>
 			<xs:element name="data-source" type="self:DataSourceXmlConfig" minOccurs="0" />
 			<xs:element name="path" type="xs:string" minOccurs="0" />
-			<xs:element name="filter" type="self:PluginXmlConfig" minOccurs="0" />
+			<xs:element name="filter" type="self:PluginXmlConfig" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="fields" type="self:FieldsXmlConfig" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />

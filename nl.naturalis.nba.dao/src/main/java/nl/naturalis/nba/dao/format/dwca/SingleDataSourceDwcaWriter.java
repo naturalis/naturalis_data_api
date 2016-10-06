@@ -29,6 +29,7 @@ import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.DocumentFlattener;
 import nl.naturalis.nba.dao.format.Entity;
+import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvPrinter;
@@ -117,18 +118,33 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	private void writeCsvFiles(SearchResponse response, RandomEntryZipOutputStream rezos)
 			throws DataSetConfigurationException, DataSetWriteException, IOException
 	{
-		CsvPrinter[] printers = createCsvPrinters(rezos);
+		CsvPrinter[] printers = getPrinters(rezos);
+		DocumentFlattener[] flatteners = getFlatteners();
 		String[] fileNames = getCsvFileNames();
 		for (int i = 0; i < printers.length; i++) {
 			rezos.setActiveEntry(fileNames[i]);
 			printers[i].printHeader();
 		}
 		int processed = 0;
+		Entity[] entities = dwcaConfig.getDataSet().getEntities();
+		// The scroll loop:
 		while (true) {
+			// Loop over documents in current page:
 			for (SearchHit hit : response.getHits().getHits()) {
-				for (int i = 0; i < printers.length; i++) {
-					rezos.setActiveEntry(fileNames[i]);
-					printers[i].printRecord(hit.getSource());
+				// Loop over entities in data set:
+				for (int i = 0; i < entities.length; i++) {
+					// Squash current document and loop over resulting entity objects:
+					List<EntityObject> eos = flatteners[i].flatten(hit.getSource());
+					ENTITY_OBJECT_LOOP: for (EntityObject eo : eos) {
+						// Loop over filters defined for current entity:
+						for (IEntityFilter filter : entities[i].getFilters()) {
+							if (!filter.accept(eo)) {
+								continue ENTITY_OBJECT_LOOP;
+							}
+						}
+						rezos.setActiveEntry(fileNames[i]);
+						printers[i].printRecord(eo);
+					}
 				}
 				if (++processed % 10000 == 0) {
 					rezos.flush();
@@ -165,18 +181,26 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		return rezos;
 	}
 
-	private CsvPrinter[] createCsvPrinters(OutputStream out)
+	private CsvPrinter[] getPrinters(OutputStream out)
 	{
 		Entity[] entities = dwcaConfig.getDataSet().getEntities();
 		CsvPrinter[] printers = new CsvPrinter[entities.length];
 		for (int i = 0; i < entities.length; i++) {
-			Entity entity = entities[i];
-			Path path = entity.getDataSource().getPath();
-			DocumentFlattener flattener = new DocumentFlattener(path);
-			List<IField> fields = entity.getFields();
-			printers[i] = new CsvPrinter(fields, flattener, out);
+			List<IField> fields = entities[i].getFields();
+			printers[i] = new CsvPrinter(fields, out);
 		}
 		return printers;
+	}
+
+	private DocumentFlattener[] getFlatteners()
+	{
+		Entity[] entities = dwcaConfig.getDataSet().getEntities();
+		DocumentFlattener[] flatteners = new DocumentFlattener[entities.length];
+		for (int i = 0; i < entities.length; i++) {
+			Path path = entities[i].getDataSource().getPath();
+			flatteners[i] = new DocumentFlattener(path);
+		}
+		return flatteners;
 	}
 
 	private String[] getCsvFileNames() throws DataSetConfigurationException

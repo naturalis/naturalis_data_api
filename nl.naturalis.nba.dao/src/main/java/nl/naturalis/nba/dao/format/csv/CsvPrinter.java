@@ -22,12 +22,10 @@ public class CsvPrinter {
 
 	private List<IField> fields;
 	private PrintStream ps;
-	private DocumentFlattener flattener;
 
-	public CsvPrinter(List<IField> fields, DocumentFlattener flattener, OutputStream out)
+	public CsvPrinter(List<IField> fields, OutputStream out)
 	{
 		this.fields = fields;
-		this.flattener = flattener;
 		if (out instanceof PrintStream) {
 			ps = (PrintStream) out;
 		}
@@ -46,17 +44,14 @@ public class CsvPrinter {
 		ps.println();
 	}
 
-	public void printRecord(Map<String, Object> document) throws DataSetWriteException
+	public void printRecord(EntityObject entity) throws DataSetWriteException
 	{
-		List<EntityObject> records = flattener.flatten(document);
-		for (EntityObject record : records) {
-			for (int i = 0; i < fields.size(); ++i) {
-				if (i != 0)
-					ps.print(',');
-				ps.print(fields.get(i).getValue(record));
-			}
-			ps.println();
+		for (int i = 0; i < fields.size(); ++i) {
+			if (i != 0)
+				ps.print(',');
+			ps.print(fields.get(i).getValue(entity));
 		}
+		ps.println();
 	}
 
 	public void flush()

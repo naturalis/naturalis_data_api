@@ -1,8 +1,8 @@
 package nl.naturalis.nba.client;
 
 /**
- * A {@code ClientConfig} instance encapsulates the information necessary to
- * connect to a particular NBA instance (e.g. NBA production or NBA test).
+ * A Java bean containing the information necessary to connect to a particular
+ * NBA instance (e.g. NBA production or NBA test).
  * 
  * @author Ayco Holleman
  *

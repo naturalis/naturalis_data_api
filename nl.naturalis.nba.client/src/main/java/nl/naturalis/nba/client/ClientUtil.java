@@ -11,12 +11,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 
+/**
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ClientUtil {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(ClientUtil.class);
 	private static final ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
 
+	/**
+	 * Extracts and returns a string value from a JSON server response.
+	 * 
+	 * @param response
+	 * @return
+	 */
 	public static String getString(byte[] response)
 	{
 		try {
@@ -28,6 +39,12 @@ public class ClientUtil {
 		}
 	}
 
+	/**
+	 * Extracts and returns an integer from a JSON server response.
+	 * 
+	 * @param response
+	 * @return
+	 */
 	public static int getInt(byte[] response)
 	{
 		try {
@@ -39,6 +56,12 @@ public class ClientUtil {
 		}
 	}
 
+	/**
+	 * Extracts and returns a boolean value from a JSON server response.
+	 * 
+	 * @param response
+	 * @return
+	 */
 	public static boolean getBoolean(byte[] response)
 	{
 		try {
@@ -50,6 +73,14 @@ public class ClientUtil {
 		}
 	}
 
+	/**
+	 * Converts the specified JSON server response to an object of the specified
+	 * type.
+	 * 
+	 * @param response
+	 * @param type
+	 * @return
+	 */
 	public static <T> T getObject(byte[] response, Class<T> type)
 	{
 		try {
@@ -61,6 +92,12 @@ public class ClientUtil {
 		}
 	}
 
+	/**
+	 * Converts the specified object to JSON and writes it to
+	 * {@code System.out}. Fields with {@code null} values are ignored.
+	 * 
+	 * @param obj
+	 */
 	public static void printTerse(Object obj)
 	{
 		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
@@ -75,6 +112,13 @@ public class ClientUtil {
 		}
 	}
 
+	/**
+	 * Converts the specified object to JSON and writes it to
+	 * {@code System.out}. Fields with {@code null} values are include in the
+	 * output.
+	 * 
+	 * @param obj
+	 */
 	public static void printFull(Object obj)
 	{
 		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();

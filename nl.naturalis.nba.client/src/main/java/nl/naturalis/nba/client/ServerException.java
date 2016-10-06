@@ -13,20 +13,15 @@ import org.domainobject.util.StringUtil;
 import org.domainobject.util.debug.BeanPrinter;
 
 /**
- * An {@code NBAResourceException} is the client-side mirror of a
- * {@code RESTException} in the service layer. All resource methods must throw a
- * {@code RESTException} in case of an error condition and trap/wrap any other
- * {@code Exception}. Both {@code RESTException} and
- * {@code NBAResourceException} contain a field storing information about what
- * went wrong while processing the request ({@code info} and {@code serverInfo}
- * respectively). These fields are equivalent.
+ * A {@link RuntimeException} thrown when an error condition arose in
+ * server-side code.
  * 
  * @author Ayco Holleman
  *
  */
 public class ServerException extends RuntimeException {
 
-	private static final Logger logger = LogManager.getLogger(ServerException.class);
+	private static Logger logger = LogManager.getLogger(ServerException.class);
 
 	@SuppressWarnings("unchecked")
 	static ServerException newServerException(int status, byte[] response)

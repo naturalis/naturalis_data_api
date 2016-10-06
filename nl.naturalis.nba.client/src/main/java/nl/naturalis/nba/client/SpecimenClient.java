@@ -19,7 +19,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
- * A client-side implementation of the {@link ISpecimenAccess specimen API} defined
+ * Client-side implementation of the {@link ISpecimenAccess specimen API} defined
  * by the NBA.
  * 
  * @author Ayco Holleman

@@ -57,6 +57,9 @@
 	<target name="build" depends="build-rest-module,clean,create-ear-file" />
 
 	<target name="install" depends="build">
+		<!-- Delete current installation -->
+		<delete file="${ear.install.path}" quiet="true" failonerror="false" />
+		<delete dir="${ear.install.path}" quiet="true" failonerror="false" />
 		<!-- Copy ear file to Wildfly deployments dir -->
 		<copy file="build/${ear.module.artifact}"
 		      tofile="${ear.install.path}"

@@ -12,7 +12,7 @@ public class TestDwcaGetDataSet {
 	public static void main(String[] args) throws FileNotFoundException, NoSuchDataSetException
 	{
 		String baseUrl = "http://localhost:8080/v2";
-		NBASession session = new NBASessionConfigurator().setBaseUrl(baseUrl).create();
+		NBASession session = new NBASession(new ClientConfig(baseUrl));
 		TaxonClient client = session.getTaxonClient();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/java-client-nsr.zip");
 		client.dwcaGetDataSet("nsr", fos);

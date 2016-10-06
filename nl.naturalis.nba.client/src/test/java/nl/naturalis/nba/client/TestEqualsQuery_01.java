@@ -12,7 +12,7 @@ public class TestEqualsQuery_01 {
 	public static void main(String[] args)
 	{
 		String baseUrl = "http://localhost:8080/v2";
-		NBASession session = new NBASessionConfigurator().setBaseUrl(baseUrl).create();
+		NBASession session = new NBASession(new ClientConfig(baseUrl));
 		SpecimenClient client = session.getSpecimenClient();
 		Condition condition1 = new Condition("identifications.defaultClassification.genus", EQUALS_IC, "LARUS");
 		QuerySpec query = new QuerySpec();

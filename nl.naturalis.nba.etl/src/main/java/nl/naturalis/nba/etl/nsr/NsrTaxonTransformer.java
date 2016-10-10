@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.domainobject.util.DOMUtil;
@@ -56,8 +57,9 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		translations.put("isInvalidNameOf", SYNONYM);
 	}
 
-	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
-			"varietas", "cultivar", "forma_specialis", "forma");
+	private static final HashSet<String> allowedTaxonRanks = new HashSet<>(
+			Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis",
+					"forma", "nothospecies", "nothosubspecies", "nothovarietas", "subforma"));
 
 	NsrTaxonTransformer(ETLStatistics stats)
 	{
@@ -333,6 +335,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		sn.setFullScientificName(val(nameElem, "fullname"));
 		sn.setAuthor(val(nameElem, "name_author"));
 		sn.setYear(val(nameElem, "authorship_year"));
+		sn.setAuthorshipVerbatim(val(nameElem, "authorship"));
 		sn.setGenusOrMonomial(val(nameElem, "uninomial"));
 		sn.setSpecificEpithet(val(nameElem, "specific_epithet"));
 		sn.setInfraspecificEpithet(val(nameElem, "infra_specific_epithet"));

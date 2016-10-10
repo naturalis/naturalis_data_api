@@ -36,7 +36,13 @@ import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
-public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
+/**
+ * The transformer component in the NSR ETL cycle for taxa.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<>();
 
@@ -53,7 +59,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
 			"varietas", "cultivar", "forma_specialis", "forma");
 
-	public NsrTaxonTransformer(ETLStatistics stats)
+	NsrTaxonTransformer(ETLStatistics stats)
 	{
 		super(stats);
 	}

@@ -3,8 +3,9 @@ package nl.naturalis.nba.etl;
 import org.w3c.dom.Element;
 
 /**
- * A Java bean representing an XML record (something that comes out of an
- * XML extractor and goes into an {@link XMLTransformer}).
+ * A Java bean representing an XML record. Instances of {@code XMLRecordInfo}
+ * are produced XML extractors consumed by {@link XMLTransformer transformer
+ * instances}).
  * 
  * @author Ayco Holleman
  *

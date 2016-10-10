@@ -20,7 +20,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public class NsrExtractor implements Iterable<XMLRecordInfo> {
+/**
+ * The extractor component in the NSR ETL cycle. Reads the NSR XML source files
+ * and produces an {@link Iterator} over {@link XMLRecordInfo} instances.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class NsrExtractor implements Iterable<XMLRecordInfo> {
 
 	private static final Logger logger;
 	private static final Iterator<XMLRecordInfo> zeroRecordsIterator;
@@ -48,14 +55,14 @@ public class NsrExtractor implements Iterable<XMLRecordInfo> {
 	final ETLStatistics stats;
 	final List<Element> elems;
 
-	public NsrExtractor(File f, ETLStatistics stats)
+	NsrExtractor(File f, ETLStatistics stats)
 	{
 		this.stats = stats;
 		try {
 			logger.info("Parsing XML");
 			DocumentBuilder docBuilder = getDocumentBuilder();
-			Document doc = docBuilder.parse(f);	
-//			Document doc = LineNumberXMLParser.readXML(new FileInputStream(f));
+			Document doc = docBuilder.parse(f);
+			//			Document doc = LineNumberXMLParser.readXML(new FileInputStream(f));
 			logger.info("Queueing records");
 			Element taxa = DOMUtil.getChild(doc.getDocumentElement());
 			elems = taxa == null ? null : DOMUtil.getChildren(taxa);

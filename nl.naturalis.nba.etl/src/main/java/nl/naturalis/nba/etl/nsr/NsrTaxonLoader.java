@@ -14,7 +14,7 @@ import nl.naturalis.nba.etl.Loader;
  * @author Ayco Holleman
  *
  */
-public class NsrTaxonLoader extends Loader<ESTaxon> {
+class NsrTaxonLoader extends Loader<ESTaxon> {
 
 	public NsrTaxonLoader(int treshold, ETLStatistics stats)
 	{

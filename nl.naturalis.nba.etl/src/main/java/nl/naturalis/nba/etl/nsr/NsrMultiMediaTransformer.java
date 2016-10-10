@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  * @author Ayco Holleman
  *
  */
-public class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
+class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
 
 	private ESTaxon taxon;
 

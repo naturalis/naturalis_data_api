@@ -22,7 +22,7 @@ import nl.naturalis.nba.dao.format.config.DataSetXmlConfig;
 import nl.naturalis.nba.dao.format.config.DataSourceXmlConfig;
 import nl.naturalis.nba.dao.format.config.EntityXmlConfig;
 import nl.naturalis.nba.dao.format.config.FieldXmlConfig;
-import nl.naturalis.nba.dao.format.config.FieldsXmlConfig;
+import nl.naturalis.nba.dao.format.config.MappingXmlConfig;
 import nl.naturalis.nba.dao.format.config.PluginXmlConfig;
 
 /*
@@ -174,8 +174,8 @@ public class DataSetBuilder {
 	private List<IField> getFields(EntityXmlConfig entityConfig, DataSource dataSource)
 			throws DataSetConfigurationException
 	{
-		FieldsXmlConfig fxc = entityConfig.getFields();
-		List<FieldXmlConfig> fieldConfigs = fxc.getField();
+		MappingXmlConfig mappingConfig = entityConfig.getMapping();
+		List<FieldXmlConfig> fieldConfigs = mappingConfig.getField();
 		IFieldFactory fieldFactory = getFieldFactory(entityConfig.getName());
 		FieldBuilder fieldBuilder = new FieldBuilder(fieldFactory, dataSource);
 		List<IField> fields = new ArrayList<>(fieldConfigs.size());
@@ -218,6 +218,15 @@ public class DataSetBuilder {
 			return root;
 		}
 		catch (JAXBException e) {
+			if (e.getMessage().indexOf(
+					"unexpected element (uri:\"http://data.naturalis.nl/nba-dataset-config\", "
+							+ "local:\"dataset-config\")") != -1) {
+				String msg = "Your friendly programmer has re-generated the JAXB "
+						+ "classes from dataset-config.xsd, but forgot to edit the "
+						+ "DataSetXmlConfig class afterwards. See instructions in "
+						+ "dataset-config.xsd in src/main/resources";
+				throw new DataSetConfigurationException(msg);
+			}
 			String fmt = "Error while parsing configuration file: %s";
 			String msg = format(fmt, e.getMessage());
 			throw new DataSetConfigurationException(msg);

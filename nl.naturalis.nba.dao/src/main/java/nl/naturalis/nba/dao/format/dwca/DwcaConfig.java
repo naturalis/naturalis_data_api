@@ -138,7 +138,7 @@ public class DwcaConfig {
 
 	Entity getCoreEntity() throws DataSetConfigurationException
 	{
-		return dataSet.getEntity(dataSetType.name());
+		return dataSet.getEntity(dataSetType.name().toLowerCase());
 	}
 
 	private DataSet buildDataSet() throws DataSetConfigurationException, NoSuchDataSetException

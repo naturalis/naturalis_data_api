@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.dao.format.DataSetWriteException;
-import nl.naturalis.nba.dao.format.DocumentFlattener;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IField;
 
@@ -32,6 +31,11 @@ public class CsvPrinter {
 		else {
 			ps = new PrintStream(out);
 		}
+	}
+
+	public void printBOM()
+	{
+		ps.print('\ufeff');
 	}
 
 	public void printHeader()

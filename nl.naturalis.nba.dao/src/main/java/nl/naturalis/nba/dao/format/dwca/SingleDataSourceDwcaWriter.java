@@ -123,6 +123,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		String[] fileNames = getCsvFileNames();
 		for (int i = 0; i < printers.length; i++) {
 			rezos.setActiveEntry(fileNames[i]);
+			printers[i].printBOM();
 			printers[i].printHeader();
 		}
 		int processed = 0;

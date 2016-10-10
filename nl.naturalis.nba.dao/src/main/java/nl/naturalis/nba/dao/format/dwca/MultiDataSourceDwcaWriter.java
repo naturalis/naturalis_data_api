@@ -30,6 +30,8 @@ import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.DocumentFlattener;
 import nl.naturalis.nba.dao.format.Entity;
+import nl.naturalis.nba.dao.format.EntityObject;
+import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
@@ -114,9 +116,10 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			}
 			catch (InvalidQueryException e) {
 				/*
-				 * Not the user's fault but the application maintainer's, because we
-				 * got the QuerySpec from the config file, so we convert the
-				 * InvalidQueryException to a DataSetConfigurationException
+				 * Not the user's fault but the application maintainer's,
+				 * because we got the QuerySpec from the config file, so we
+				 * convert the InvalidQueryException to a
+				 * DataSetConfigurationException
 				 */
 				String fmt = "Invalid query specification for entity %s:\n%s";
 				String queryString = JsonUtil.toPrettyJson(query);
@@ -133,12 +136,21 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		Path path = entity.getDataSource().getPath();
 		DocumentFlattener flattener = new DocumentFlattener(path);
 		List<IField> fields = entity.getFields();
-		CsvPrinter csvPrinter = new CsvPrinter(fields, flattener, zos);
+		CsvPrinter csvPrinter = new CsvPrinter(fields, zos);
+		csvPrinter.printBOM();
 		csvPrinter.printHeader();
 		int processed = 0;
 		while (true) {
 			for (SearchHit hit : response.getHits().getHits()) {
-				csvPrinter.printRecord(hit.getSource());
+				List<EntityObject> eos = flattener.flatten(hit.getSource());
+				ENTITY_OBJECT_LOOP: for (EntityObject eo : eos) {
+					for (IEntityFilter filter : entity.getFilters()) {
+						if (!filter.accept(eo)) {
+							continue ENTITY_OBJECT_LOOP;
+						}
+					}
+					csvPrinter.printRecord(eo);
+				}
 				if (++processed % 10000 == 0) {
 					csvPrinter.flush();
 				}

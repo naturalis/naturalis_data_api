@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.format.filter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.domainobject.util.ConfigObject;
@@ -18,18 +20,18 @@ import nl.naturalis.nba.dao.format.IEntityFilter;
  * <ol>
  * <li><b>path</b> Required. Specifies the path of the field containing the
  * values to filter on.
- * <li><b>values</b> Required. A comma-separated list of values to filter on. If
- * the field has any of the values in the list, the entity will <b>not</b> be
- * written to the data set. You may provide a special value,
- * <code>@NULL@</code>, to indicate that you want to filter out the entity if
- * the field is null or empty.
+ * <li><b>values</b> Required. A comma-separated list of values to filter on.
+ * The entity will <b>only</b> be written to the data set if the specified field
+ * has one of the values in the list. You may provide a special value,
+ * <code>@NULL@</code>, to indicate that you want include entities if their
+ * value for the specified field is null or empty.
+ * <li><b>invert</b> Optional. If {@code true}, the filter is inverted. In other
+ * words, the entity will <b>not</b> be written to the data set if the field has
+ * any of the values in the list. Defaults to {@code true}.
  * <li><b>separator</b> Optional. The value separator. Defaults to the comma
  * character.
- * <li><b>ignoreCase</b> Optional. If "true", comparisons are made in a
- * case-insenstive way. Defaults to "false".
- * <li><b>invert</b> Optional. If "true", the filter is inverted. In other
- * words, the entity will <b>only</b> be written to the data set if the field
- * has one of the values in the list. Defaults to "false".
+ * <li><b>ignoreCase</b> Optional. If {@code true}, comparisons are made in a
+ * case-insenstive way. Defaults to {@code false}.
  * </ol>
  * 
  * @author Ayco Holleman
@@ -44,6 +46,9 @@ public class SimpleEntityFilter implements IEntityFilter {
 	private String[] values;
 	private boolean ignoreCase;
 	private boolean invert;
+
+	// Whether or not one of the words in the <values> element was @NULL@
+	private boolean containsNullString;
 
 	@Override
 	public void initialize(Map<String, String> args) throws EntityFilterInitializationException
@@ -67,34 +72,41 @@ public class SimpleEntityFilter implements IEntityFilter {
 					+ "entity filter \"GenericEntityFilter\"";
 			throw new EntityFilterInitializationException(msg);
 		}
-		values = arg.split(separator);
-		if (ignoreCase) {
-			for (int i = 0; i < values.length; i++) {
-				values[i] = values[i].toUpperCase();
+		String[] words = arg.split(separator);
+		List<String> wordList = new ArrayList<>(words.length);
+		for (String word : words) {
+			if (word.equals(NULL_STRING)) {
+				containsNullString = true;
+			}
+			else {
+				wordList.add(word);
 			}
 		}
+		values = wordList.toArray(new String[wordList.size()]);
 	}
 
 	@Override
 	public boolean accept(EntityObject entity) throws EntityFilterException
 	{
+		boolean accept = !invert;
 		Object value = path.read(entity.getData());
-		String s;
 		if (value == JsonUtil.MISSING_VALUE) {
-			s = NULL_STRING;
+			return containsNullString ? accept : !accept;
 		}
-		else if (ignoreCase) {
-			s = value.toString().toUpperCase();
+		if (ignoreCase) {
+			for (String s : values) {
+				if (s.equalsIgnoreCase(value.toString())) {
+					return accept;
+				}
+			}
+			return !accept;
 		}
-		else {
-			s = value.toString();
-		}
-		for (String v : values) {
-			if (s.equals(v)) {
-				return invert;
+		for (String s : values) {
+			if (s.equals(value.toString())) {
+				return accept;
 			}
 		}
-		return !invert;
+		return !accept;
 	}
 
 }

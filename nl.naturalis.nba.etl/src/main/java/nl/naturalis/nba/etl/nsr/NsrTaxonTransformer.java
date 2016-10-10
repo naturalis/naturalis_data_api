@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.ACCEPTED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
+import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;
@@ -18,13 +19,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import nl.naturalis.nba.api.model.*;
+import org.domainobject.util.DOMUtil;
+import org.w3c.dom.Element;
+
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.Expert;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.Organization;
+import nl.naturalis.nba.api.model.Person;
+import nl.naturalis.nba.api.model.Reference;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.TaxonDescription;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
+import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-
-import org.domainobject.util.DOMUtil;
-import org.w3c.dom.Element;
 
 public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 
@@ -36,7 +46,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		translations.put("isSynonymSLOf", SYNONYM);
 		translations.put("isBasionymOf", BASIONYM);
 		translations.put("isHomonymOf", HOMONYM);
-		translations.put("isMisspelledNameOf", SYNONYM);
+		translations.put("isMisspelledNameOf", MISSPELLED_NAME);
 		translations.put("isInvalidNameOf", SYNONYM);
 	}
 
@@ -299,10 +309,14 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 					dc.setClassName(m.getName());
 				else if (m.getRank().equals("ordo"))
 					dc.setOrder(m.getName());
+				else if (m.getRank().equals("superfamilia"))
+					dc.setSuperFamily(m.getName());
 				else if (m.getRank().equals("familia"))
 					dc.setFamily(m.getName());
 				else if (m.getRank().equals("genus"))
 					dc.setGenus(m.getName());
+				else if (m.getRank().equals("subgenus"))
+					dc.setSubgenus(m.getName());
 			}
 		}
 	}
@@ -312,6 +326,7 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(val(nameElem, "fullname"));
 		sn.setAuthor(val(nameElem, "name_author"));
+		sn.setYear(val(nameElem, "authorship_year"));
 		sn.setGenusOrMonomial(val(nameElem, "uninomial"));
 		sn.setSpecificEpithet(val(nameElem, "specific_epithet"));
 		sn.setInfraspecificEpithet(val(nameElem, "infra_specific_epithet"));
@@ -348,6 +363,15 @@ public class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		vn.setLanguage(val(e, "language"));
 		vn.setName(val(e, "fullname"));
 		String nameType = val(e, "nametype");
+		if (nameType == null) {
+			// do nothing
+		}
+		if (nameType.equals("isPreferredNameOf")) {
+			vn.setPreferred(Boolean.TRUE);
+		}
+		else if (nameType.equals("isAlternativeNameOf")) {
+			vn.setPreferred(Boolean.FALSE);
+		}
 		vn.setPreferred(nameType.equals("isPreferredNameOf"));
 		String expert = val(e, "expert_name");
 		if (expert == null) {

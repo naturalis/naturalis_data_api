@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao.format;
 
-import java.util.List;
-
 /**
  * An {@code EntityConfiguration} specifies how to generate one particular file
  * in a data set. For example, DwC archives may contain multiple CSV files, each
@@ -15,8 +13,8 @@ public class Entity {
 
 	private String name;
 	private DataSource dataSource;
-	private List<IEntityFilter> filters;
-	private List<IField> fields;
+	private IEntityFilter[] filters;
+	private IField[] fields;
 
 	Entity()
 	{
@@ -42,22 +40,22 @@ public class Entity {
 		this.dataSource = dataSource;
 	}
 
-	public List<IEntityFilter> getFilters()
+	public IEntityFilter[] getFilters()
 	{
 		return filters;
 	}
 
-	void setFilters(List<IEntityFilter> filters)
+	void setFilters(IEntityFilter[] filters)
 	{
 		this.filters = filters;
 	}
 
-	public List<IField> getFields()
+	public IField[] getFields()
 	{
 		return fields;
 	}
 
-	void setFields(List<IField> fields)
+	void setFields(IField[] fields)
 	{
 		this.fields = fields;
 	}

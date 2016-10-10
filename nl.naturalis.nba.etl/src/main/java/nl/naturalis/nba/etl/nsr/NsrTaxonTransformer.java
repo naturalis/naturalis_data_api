@@ -375,7 +375,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		if (nameType == null) {
 			// do nothing
 		}
-		if (nameType.equals("isPreferredNameOf")) {
+		else if (nameType.equals("isPreferredNameOf")) {
 			vn.setPreferred(Boolean.TRUE);
 		}
 		else if (nameType.equals("isAlternativeNameOf")) {

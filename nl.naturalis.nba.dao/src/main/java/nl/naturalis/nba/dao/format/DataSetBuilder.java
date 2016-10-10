@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -109,30 +108,34 @@ public class DataSetBuilder {
 			sharedDataSource = new DataSourceBuilder(config).build();
 			dataSet.setSharedDataSource(sharedDataSource);
 		}
+		Entity[] entities = new Entity[dataSetConfig.getEntity().size()];
+		int i = 0;
 		for (EntityXmlConfig entityConfig : dataSetConfig.getEntity()) {
 			Entity entity = new Entity();
-			dataSet.addEntity(entity);
+			entities[i++] = entity;
 			String entityName = entityConfig.getName();
 			entity.setName(entityName);
-			List<IEntityFilter> filters = getEntityFilters(entityConfig);
+			IEntityFilter[] filters = getEntityFilters(entityConfig);
 			entity.setFilters(filters);
 			DataSource myDataSource = getDataSource(entityConfig, sharedDataSource);
 			entity.setDataSource(myDataSource);
-			List<IField> fields = getFields(entityConfig, myDataSource);
+			IField[] fields = getFields(entityConfig, myDataSource);
 			entity.setFields(fields);
 		}
+		dataSet.setEntities(entities);
 		return dataSet;
 	}
 
-	private static List<IEntityFilter> getEntityFilters(EntityXmlConfig entityConfig)
+	private static IEntityFilter[] getEntityFilters(EntityXmlConfig entityConfig)
 			throws DataSetConfigurationException
 	{
 		List<PluginXmlConfig> filterConfigs = entityConfig.getFilter();
-		List<IEntityFilter> filters = new ArrayList<>(filterConfigs.size());
+		IEntityFilter[] filters = new IEntityFilter[filterConfigs.size()];
+		int i = 0;
 		for (PluginXmlConfig filterConfig : filterConfigs) {
 			try {
 				IEntityFilter filter = new FilterBuilder(filterConfig).build();
-				filters.add(filter);
+				filters[i++] = filter;
 			}
 			catch (DataSetConfigurationException e) {
 				String msg = String.format(ERR_BAD_ENTITY, entityConfig.getName(), e.getMessage());
@@ -171,17 +174,18 @@ public class DataSetBuilder {
 		return dataSource;
 	}
 
-	private List<IField> getFields(EntityXmlConfig entityConfig, DataSource dataSource)
+	private IField[] getFields(EntityXmlConfig entityConfig, DataSource dataSource)
 			throws DataSetConfigurationException
 	{
 		MappingXmlConfig mappingConfig = entityConfig.getMapping();
 		List<FieldXmlConfig> fieldConfigs = mappingConfig.getField();
 		IFieldFactory fieldFactory = getFieldFactory(entityConfig.getName());
 		FieldBuilder fieldBuilder = new FieldBuilder(fieldFactory, dataSource);
-		List<IField> fields = new ArrayList<>(fieldConfigs.size());
+		IField[] fields = new IField[fieldConfigs.size()];
+		int i = 0;
 		for (FieldXmlConfig field : fieldConfigs) {
 			try {
-				fields.add(fieldBuilder.build(field));
+				fields[i++] = fieldBuilder.build(field);
 			}
 			catch (FieldConfigurationException e0) {
 				String msg = format(ERR_BAD_FIELD, entityConfig.getName(), e0.getField(),

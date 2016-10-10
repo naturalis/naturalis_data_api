@@ -135,7 +135,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	{
 		Path path = entity.getDataSource().getPath();
 		DocumentFlattener flattener = new DocumentFlattener(path);
-		List<IField> fields = entity.getFields();
+		IField[] fields = entity.getFields();
 		CsvPrinter csvPrinter = new CsvPrinter(fields, zos);
 		csvPrinter.printBOM();
 		csvPrinter.printHeader();

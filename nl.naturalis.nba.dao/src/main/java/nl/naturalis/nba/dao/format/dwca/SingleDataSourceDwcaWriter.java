@@ -187,7 +187,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		Entity[] entities = dwcaConfig.getDataSet().getEntities();
 		CsvPrinter[] printers = new CsvPrinter[entities.length];
 		for (int i = 0; i < entities.length; i++) {
-			List<IField> fields = entities[i].getFields();
+			IField[] fields = entities[i].getFields();
 			printers[i] = new CsvPrinter(fields, out);
 		}
 		return printers;

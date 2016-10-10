@@ -85,10 +85,10 @@ public class DwcaUtil {
 	private static List<Field> getMetaXmlFieldsForEntity(Entity entity)
 			throws DataSetConfigurationException
 	{
-		List<IField> entityFields = entity.getFields();
-		List<Field> metaXmlFields = new ArrayList<>(entityFields.size());
-		for (int i = 0; i < entityFields.size(); i++) {
-			IField entityField = entityFields.get(i);
+		IField[] entityFields = entity.getFields();
+		List<Field> metaXmlFields = new ArrayList<>(entityFields.length);
+		for (int i = 0; i < entityFields.length; i++) {
+			IField entityField = entityFields[i];
 			URI term = entityField.getTerm();
 			if (term == null) {
 				String fmt = "Entity %s, field %s: term attribute required for DwCA files";

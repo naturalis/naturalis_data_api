@@ -1,8 +1,5 @@
 package nl.naturalis.nba.dao.format;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Class capturing the information necessary to generate a data set. A data set
  * is a file or collection of files containing formatted data (e.g. CSV
@@ -15,7 +12,7 @@ import java.util.List;
 public class DataSet {
 
 	private DataSource sharedDataSource;
-	private List<Entity> entities;
+	private Entity[] entities;
 
 	public DataSource getSharedDataSource()
 	{
@@ -29,7 +26,12 @@ public class DataSet {
 
 	public Entity[] getEntities()
 	{
-		return entities.toArray(new Entity[entities.size()]);
+		return entities;
+	}
+
+	void setEntities(Entity[] entities)
+	{
+		this.entities = entities;
 	}
 
 	public Entity getEntity(String name) throws DataSetConfigurationException
@@ -41,13 +43,6 @@ public class DataSet {
 		}
 		String msg = String.format("No such entity: \"%s\"", name);
 		throw new DataSetConfigurationException(msg);
-	}
-
-	void addEntity(Entity entity)
-	{
-		if (entities == null)
-			entities = new ArrayList<>(5);
-		entities.add(entity);
 	}
 
 }

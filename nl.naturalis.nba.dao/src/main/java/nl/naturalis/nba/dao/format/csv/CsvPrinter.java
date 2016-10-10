@@ -2,7 +2,6 @@ package nl.naturalis.nba.dao.format.csv;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.Map;
 
 import nl.naturalis.nba.dao.format.DataSetWriteException;
@@ -19,10 +18,10 @@ import nl.naturalis.nba.dao.format.IField;
  */
 public class CsvPrinter {
 
-	private List<IField> fields;
+	private IField[] fields;
 	private PrintStream ps;
 
-	public CsvPrinter(List<IField> fields, OutputStream out)
+	public CsvPrinter(IField[] fields, OutputStream out)
 	{
 		this.fields = fields;
 		if (out instanceof PrintStream) {
@@ -40,20 +39,20 @@ public class CsvPrinter {
 
 	public void printHeader()
 	{
-		for (int i = 0; i < fields.size(); ++i) {
+		for (int i = 0; i < fields.length; ++i) {
 			if (i != 0)
 				ps.print(',');
-			ps.print(fields.get(i).getName());
+			ps.print(fields[i].getName());
 		}
 		ps.println();
 	}
 
 	public void printRecord(EntityObject entity) throws DataSetWriteException
 	{
-		for (int i = 0; i < fields.size(); ++i) {
+		for (int i = 0; i < fields.length; ++i) {
 			if (i != 0)
 				ps.print(',');
-			ps.print(fields.get(i).getValue(entity));
+			ps.print(fields[i].getValue(entity));
 		}
 		ps.println();
 	}

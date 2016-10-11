@@ -123,8 +123,14 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			}
 			mmo.setDescription(val(e, "short_description"));
 			mmo.setCaption(mmo.getDescription());
-			String locality = val(e, "geography");
 			String date = val(e, "date_taken");
+			if (date.equalsIgnoreCase("in prep")) {
+				date = null;
+				if (logger.isDebugEnabled()) {
+					logger.debug("Invalid date: \"{}\"", date);
+				}
+			}
+			String locality = val(e, "geography");
 			if (locality != null || date != null) {
 				ESGatheringEvent ge = new ESGatheringEvent();
 				mmo.setGatheringEvents(Arrays.asList(ge));

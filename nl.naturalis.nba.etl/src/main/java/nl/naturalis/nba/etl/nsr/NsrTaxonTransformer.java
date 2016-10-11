@@ -6,7 +6,6 @@ import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
-import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
 import static org.domainobject.util.DOMUtil.getChild;
@@ -16,8 +15,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.domainobject.util.DOMUtil;
@@ -57,9 +56,9 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		translations.put("isInvalidNameOf", SYNONYM);
 	}
 
-	private static final HashSet<String> allowedTaxonRanks = new HashSet<>(
-			Arrays.asList("species", "subspecies", "varietas", "cultivar", "forma_specialis",
-					"forma", "nothospecies", "nothosubspecies", "nothovarietas", "subforma"));
+	private static final List<String> allowedTaxonRanks = Arrays.asList("species", "subspecies",
+			"varietas", "cultivar", "forma_specialis", "forma", "nothospecies", "nothosubspecies",
+			"nothovarietas", "subforma");
 
 	NsrTaxonTransformer(ETLStatistics stats)
 	{
@@ -87,7 +86,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			}
 			addSystemClassification(taxon);
 			addDefaultClassification(taxon);
-			equalizeNameComponents(taxon);
+			//equalizeNameComponents(taxon);
 			taxon.setSourceSystem(NSR);
 			taxon.setSourceSystemId(objectID);
 			taxon.setTaxonRank(rank);
@@ -121,8 +120,8 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		}
 		if (!allowedTaxonRanks.contains(rank)) {
 			stats.recordsSkipped++;
-			if (!suppressErrors) {
-				warn("Ignoring higher taxon: \"%s\"", rank);
+			if (logger.isDebugEnabled()) {
+				debug("Ignoring higher taxon: \"%s\"", rank);
 			}
 			return true;
 		}
@@ -309,22 +308,32 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		List<Monomial> monomials = taxon.getSystemClassification();
 		if (monomials != null) {
 			for (Monomial m : monomials) {
-				if (m.getRank().equals("regnum"))
-					dc.setKingdom(m.getName());
-				else if (m.getRank().equals("phylum"))
-					dc.setPhylum(m.getName());
-				else if (m.getRank().equals("classis"))
-					dc.setClassName(m.getName());
-				else if (m.getRank().equals("ordo"))
-					dc.setOrder(m.getName());
-				else if (m.getRank().equals("superfamilia"))
-					dc.setSuperFamily(m.getName());
-				else if (m.getRank().equals("familia"))
-					dc.setFamily(m.getName());
-				else if (m.getRank().equals("genus"))
-					dc.setGenus(m.getName());
-				else if (m.getRank().equals("subgenus"))
-					dc.setSubgenus(m.getName());
+				switch (m.getRank()) {
+					case "regnum":
+						dc.setKingdom(m.getName());
+						break;
+					case "phylum":
+						dc.setPhylum(m.getName());
+						break;
+					case "classis":
+						dc.setClassName(m.getName());
+						break;
+					case "ordo":
+						dc.setOrder(m.getName());
+						break;
+					case "superfamilia":
+						dc.setSuperFamily(m.getName());
+						break;
+					case "familia":
+						dc.setFamily(m.getName());
+						break;
+					case "genus":
+						dc.setGenus(m.getName());
+						break;
+					case "subgenus":
+						dc.setSubgenus(m.getName());
+						break;
+				}
 			}
 		}
 	}
@@ -360,27 +369,18 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			Reference ref = new Reference();
 			ref.setTitleCitation(title);
 			ref.setAuthor(new Person(author));
-			ref.setPublicationDate(parseDate(val(nameElem, "reference_date")));
+			ref.setPublicationDate(getReferenceDate(nameElem));
 			sn.setReferences(Arrays.asList(ref));
 		}
 		return sn;
 	}
 
-	private static VernacularName getVernacularName(Element e)
+	private VernacularName getVernacularName(Element e)
 	{
 		VernacularName vn = new VernacularName();
 		vn.setLanguage(val(e, "language"));
 		vn.setName(val(e, "fullname"));
 		String nameType = val(e, "nametype");
-		if (nameType == null) {
-			// do nothing
-		}
-		else if (nameType.equals("isPreferredNameOf")) {
-			vn.setPreferred(Boolean.TRUE);
-		}
-		else if (nameType.equals("isAlternativeNameOf")) {
-			vn.setPreferred(Boolean.FALSE);
-		}
 		vn.setPreferred(nameType.equals("isPreferredNameOf"));
 		String expert = val(e, "expert_name");
 		if (expert == null) {
@@ -402,10 +402,25 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			Reference ref = new Reference();
 			ref.setTitleCitation(title);
 			ref.setAuthor(new Person(author));
-			ref.setPublicationDate(parseDate(val(e, "reference_date")));
+			ref.setPublicationDate(getReferenceDate(e));
 			vn.setReferences(Arrays.asList(ref));
 		}
 		return vn;
+	}
+
+	private Date getReferenceDate(Element e)
+	{
+		String date = val(e, "reference_date");
+		if (date == null) {
+			return null;
+		}
+		if (date.toLowerCase().startsWith("in prep")) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Invalid date: \"{}\"", date);
+			}
+			return null;
+		}
+		return parseDate(date);
 	}
 
 	private TaxonomicStatus getTaxonomicStatus(Element nameElem)

@@ -128,6 +128,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		}
 		int processed = 0;
 		Entity[] entities = dwcaConfig.getDataSet().getEntities();
+		int[] written = new int[entities.length];
+		int[] filtered = new int[entities.length];
 		// The scroll loop:
 		while (true) {
 			// Loop over documents in current page:
@@ -140,10 +142,12 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 						// Loop over filters defined for current entity:
 						for (IEntityFilter filter : entities[i].getFilters()) {
 							if (!filter.accept(eo)) {
+								filtered[i] += 1;
 								continue ENTITY_OBJECT_LOOP;
 							}
 						}
 						rezos.setActiveEntry(fileNames[i]);
+						written[i] += 1;
 						printers[i].printRecord(eo);
 					}
 				}
@@ -161,6 +165,13 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			if (response.getHits().getHits().length == 0) {
 				break;
 			}
+		}
+		logger.info("Documents processed: {}", processed);
+		for (int i = 0; i < entities.length; i++) {
+			logger.info("Records written for entity {}  : {}", entities[i].getName(),
+					written[i]);
+			logger.info("Records filtered for entity {} : {}", entities[i].getName(),
+					filtered[i]);
 		}
 		rezos.flush();
 	}

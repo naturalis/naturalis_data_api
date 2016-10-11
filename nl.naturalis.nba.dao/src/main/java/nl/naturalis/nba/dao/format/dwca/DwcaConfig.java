@@ -57,7 +57,7 @@ public class DwcaConfig {
 			throws DataSetConfigurationException, NoSuchDataSetException
 	{
 		String type = dataSetType.name().toLowerCase();
-		logger.info("Loading configuration for data set \"{}\")", dataSetName);
+		logger.info("Loading configuration for data set \"{}\"", dataSetName);
 		this.dataSetName = dataSetName;
 		this.dataSetType = dataSetType;
 		this.myConfig = dwcaConfig.getSection(type);
@@ -79,8 +79,10 @@ public class DwcaConfig {
 	public IDwcaWriter getWriter(OutputStream out)
 	{
 		if (dataSet.getSharedDataSource() == null) {
+			logger.info("Creating DwCA writer for per-entity data source setup");
 			return new MultiDataSourceDwcaWriter(this, out);
 		}
+		logger.info("Creating DwCA writer for shared data source setup");
 		return new SingleDataSourceDwcaWriter(this, out);
 	}
 

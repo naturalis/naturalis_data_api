@@ -20,21 +20,38 @@ import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.dao.types.ESType;
 
 /**
- * An enumeration of the four document types managed by the NBA. Each
- * {@code DocumentType} instance functions as a little cache of oft-used,
- * potentially heavy-weight objects associated with the document type. For
- * example, although you can easily create {@link Mapping} objects yourself, it
- * is recommendable to {@link #getMapping() request} them from the appropriate
- * {@code DocumentType} instance.
+ * Provides information about an Elasticsearch document type. This class is very
+ * much like an {@code enum} of the four document types managed by the NBA
+ * (Specimen, Taxon, MultiMediaObject and GeoArea). You cannot instantiate this
+ * class. There are four {@code public static final} instances of it, for each
+ * of the document types just mentioned. Each {@code DocumentType} instance
+ * functions as a little cache of frequently-used, heavy-weight objects
+ * associated with the document type. For example, although you can easily
+ * create {@link Mapping} objects yourself, it is recommendable to
+ * {@link #getMapping() request} them from the appropriate {@code DocumentType}
+ * instance.
  * 
  * @author Ayco Holleman
  *
  */
 public class DocumentType<T extends ESType> {
 
+	/**
+	 * A {@code DocumentType} instance representing the Specimen document type.
+	 */
 	public static final DocumentType<ESSpecimen> SPECIMEN;
+	/**
+	 * A {@code DocumentType} instance representing the Taxon document type.
+	 */
 	public static final DocumentType<ESTaxon> TAXON;
+	/**
+	 * A {@code DocumentType} instance representing the MultiMediaObject
+	 * document type.
+	 */
 	public static final DocumentType<ESMultiMediaObject> MULTI_MEDIA_OBJECT;
+	/**
+	 * A {@code DocumentType} instance representing the GeoArea document type.
+	 */
 	public static final DocumentType<ESGeoArea> GEO_AREA;
 
 	static {
@@ -67,8 +84,7 @@ public class DocumentType<T extends ESType> {
 	}
 
 	/**
-	 * Returns the {@code DocumentType} instance for the specified document
-	 * type.
+	 * Returns a {@code DocumentType} instance for the specified name
 	 */
 	public static DocumentType<?> forName(String name)
 	{
@@ -85,7 +101,9 @@ public class DocumentType<T extends ESType> {
 
 	/**
 	 * Returns the {@code DocumentType} instance corresponding to the specified
-	 * Elasticsearch model object,
+	 * Java class. For aach Elasticsearch document type there is one Java class
+	 * structured just like it. In fact, the document type is generated through
+	 * reflection from the Java class.
 	 */
 	public static DocumentType<?> forClass(Class<? extends ESType> cls)
 	{
@@ -116,7 +134,7 @@ public class DocumentType<T extends ESType> {
 	private DocumentType(String name, Class<T> esType)
 	{
 		logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
-		logger.info("Retrieving info for document type {}", name);
+		logger.info("Retrieving info for document type \"{}\"", name);
 		this.name = name;
 		this.esType = esType;
 		this.mapping = MappingFactory.getMapping(esType);
@@ -124,26 +142,51 @@ public class DocumentType<T extends ESType> {
 		this.objMapper = oml.getObjectMapper(esType);
 	}
 
+	/**
+	 * Returns the name of the document type.
+	 * 
+	 * @return
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * Returns information about the index hosting the document type.
+	 * 
+	 * @return
+	 */
 	public IndexInfo getIndexInfo()
 	{
 		return indexInfo;
 	}
 
+	/**
+	 * Returns the Java class reflecting the document type.
+	 * 
+	 * @return
+	 */
 	public Class<T> getESType()
 	{
 		return esType;
 	}
 
+	/**
+	 * Returns a {@link Mapping object} representing the document type mapping.
+	 * 
+	 * @return
+	 */
 	public Mapping getMapping()
 	{
 		return mapping;
 	}
 
+	/**
+	 * Returns a Jackson Object mapper for the document type.
+	 * 
+	 * @return
+	 */
 	public ObjectMapper getObjectMapper()
 	{
 		return objMapper;

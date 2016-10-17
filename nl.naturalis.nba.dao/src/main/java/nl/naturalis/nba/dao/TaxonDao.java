@@ -1,7 +1,5 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.OutputStream;
@@ -23,7 +21,7 @@ import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 public class TaxonDao implements ITaxonAccess {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = getLogger(TaxonDao.class);
+	private static Logger logger = DaoRegistry.getInstance().getLogger(TaxonDao.class);
 
 	public TaxonDao()
 	{
@@ -67,8 +65,9 @@ public class TaxonDao implements ITaxonAccess {
 				if (f.getName().startsWith("dynamic")) {
 					return false;
 				}
-				if (f.isFile() && f.getName().endsWith(DwcaConfig.CONF_FILE_EXTENSION))
+				if (f.isFile() && f.getName().endsWith(DwcaConfig.CONF_FILE_EXTENSION)) {
 					return true;
+				}
 				return false;
 			}
 		});

@@ -1,9 +1,10 @@
 package nl.naturalis.nba.dao.format.dwca;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.io.File;
 import java.io.OutputStream;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.ConfigObject.MissingPropertyException;
@@ -31,11 +32,27 @@ import nl.naturalis.nba.dao.format.csv.CsvFieldFactory;
  */
 public class DwcaConfig {
 
+	private static final Logger logger = getLogger(DwcaConfig.class);
+
+	/**
+	 * The file extension of configuration files driving the generation of data
+	 * sets. (&#34;.dataset-config.xml&#34;).
+	 */
 	public static String CONF_FILE_EXTENSION = ".dataset-config.xml";
 
 	private static ConfigObject dwcaConfig = ConfigObject.forResource("/dwca.properties");
-	private static Logger logger = LogManager.getLogger(DwcaConfig.class);
 
+	/**
+	 * Returns a {@code DwcaConfig} instance for the generation of DwCA files
+	 * from &#34;live queries&#34;. Note that these, too, require a
+	 * configuration file just like the configuration files for predefined data
+	 * sets. The only difference is that the &lt;data-source&gt; c.q.
+	 * &lt;shared-data-source&gt; element is ignored.
+	 * 
+	 * @param dataSetType
+	 * @return
+	 * @throws DataSetConfigurationException
+	 */
 	public static DwcaConfig getDynamicDwcaConfig(DwcaDataSetType dataSetType)
 			throws DataSetConfigurationException
 	{
@@ -71,7 +88,11 @@ public class DwcaConfig {
 
 	/**
 	 * Returns a DarwinCore archive writer tailored to the requirements
-	 * specified in the XML configuration file.
+	 * specified in the XML configuration file. Notably, if the configuration
+	 * file specified a &lt;shared-data-source&gt; you wil get a writer that
+	 * generates all CSV files while iterating just once over an Elasticsearch
+	 * result set while otherwise you will get a writer that executes a new
+	 * query for each CSV file.
 	 * 
 	 * @param out
 	 * @return
@@ -145,9 +166,10 @@ public class DwcaConfig {
 
 	private DataSet buildDataSet() throws DataSetConfigurationException, NoSuchDataSetException
 	{
+		File confDir = getHome();
 		String fileName = dataSetName + CONF_FILE_EXTENSION;
-		File confFile = FileUtil.newFile(getHome(), fileName);
-		logger.info("Configuration file: {}", confFile.getPath());
+		File confFile = FileUtil.newFile(confDir, fileName);
+		logger.info("Searching for {} in {}", fileName, confDir.getPath());
 		if (!confFile.isFile()) {
 			throw new NoSuchDataSetException(dataSetName);
 		}

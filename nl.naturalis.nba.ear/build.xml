@@ -64,11 +64,10 @@
 		<copy file="build/${ear.module.artifact}"
 		      tofile="${ear.install.path}"
 		      overwrite="true" />
-		<property name="proto.conf.dir"
-		          value="${build.module.location}/nba.v2.conf.dir" />
-		<!-- Copy nba.properties to conf dir -->
-		<copy todir="${nl.naturalis.nba.conf.dir}"
-		      file="${proto.conf.dir}/nba.properties"
+		<property name="proto.conf.dir" value="${build.module.location}/proto.conf.dir" />
+		<!-- Copy nba.properties to configuration dir -->
+		<copy file="${build.module.location}/nba.properties.template"
+		      tofile="${nl.naturalis.nba.conf.dir}/nba.properties"
 		      overwrite="true">
 			<filterset begintoken="@"
 			           endtoken="@"

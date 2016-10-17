@@ -5,8 +5,8 @@
 		<Console name="CONSOLE">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</Console>
-		<!-- /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/log/test.log token is replaced by ant when this file is copied to log4j2.xml -->
-		<File name="FILE" fileName="/home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/log/test.log">
+		<!-- @@@ token is replaced by ant when this file is copied to log4j2.xml -->
+		<File name="FILE" fileName="@@@">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</File>
 	</Appenders>

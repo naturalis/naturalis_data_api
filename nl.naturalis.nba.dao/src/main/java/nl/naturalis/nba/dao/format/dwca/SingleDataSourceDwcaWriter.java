@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.format.dwca;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeEmlXml;
 import static nl.naturalis.nba.dao.format.dwca.DwcaUtil.writeMetaXml;
 
@@ -8,7 +9,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -44,8 +44,8 @@ import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
  */
 class SingleDataSourceDwcaWriter implements IDwcaWriter {
 
-	private static Logger logger = LogManager.getLogger(SingleDataSourceDwcaWriter.class);
-	private static TimeValue TIME_OUT = new TimeValue(5000);
+	private static final Logger logger = getLogger(SingleDataSourceDwcaWriter.class);
+	private static final TimeValue TIME_OUT = new TimeValue(5000);
 
 	private DwcaConfig dwcaConfig;
 	private OutputStream out;
@@ -168,9 +168,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		}
 		logger.info("Documents processed: {}", processed);
 		for (int i = 0; i < entities.length; i++) {
-			logger.info("Records written for entity {}  : {}", entities[i].getName(),
-					written[i]);
-			logger.info("Records filtered for entity {} : {}", entities[i].getName(),
+			logger.info("Records written for entity {}  : {}", entities[i].getName(), written[i]);
+			logger.info("Records rejected by filters for entity {} : {}", entities[i].getName(),
 					filtered[i]);
 		}
 		rezos.flush();

@@ -161,20 +161,28 @@
 
 	<target name="-do-run-tests">
 		<echo level="info">==== ${ant.project.name} (test) ====</echo>
-		<!-- Set up environment for unit/integration tests -->
-		<property name="test.conf.dir"
-		          value="${build.module.location}/nba-test.v2.conf.dir" />
-		<delete file="${test.conf.dir}/nba.properties" />
-		<copy file="${test.conf.dir}/nba.properties.tpl"
-		      tofile="${test.conf.dir}/nba.properties">
+		<tstamp>
+			<format property="test.datetime" pattern="yyyyMMddHHmmss" />
+		</tstamp>
+		<property name="proto.conf.dir"
+		          location="${build.module.location}/proto.conf.dir" />
+		<property name="log4j.config" location="${build.module.location}/log4j2.xml" />
+		<!-- Create nba.properties file in the proto configuration directory -->
+		<copy file="${build.module.location}/nba-test.properties.template"
+		      tofile="${proto.conf.dir}/nba.properties"
+		      overwrite="true">
 			<filterset begintoken="@"
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
+		<copy file="${build.module.location}/log4j2.xml.template"
+		      tofile="${log4j.config}"
+		      overwrite="true">
+		</copy>
+		<replace file="${log4j.config}"
+		         token="@@@"
+		         value="${build.module.location}/log/test.log" />
 		<mkdir dir="${build.module.location}/log/test-reports" />
-		<tstamp>
-			<format property="test.datetime" pattern="yyyyMMddHHmmss" />
-		</tstamp>
 		<java classname="org.junit.runner.JUnitCore"
 		      fork="true"
 		      resultproperty="junit.result"
@@ -183,8 +191,7 @@
 			<arg value="${junit.suite.classname}" />
 			<sysproperty key="log4j.configurationFile"
 			             value="${build.module.location}/log4j2.xml" />
-			<sysproperty key="nba-test.v2.conf.dir" value="${test.conf.dir}" />
-			<sysproperty key="nba-test.v2.log.dir" value="${build.module.location}/log" />
+			<sysproperty key="nba.v2.conf.dir" value="${proto.conf.dir}" />
 			<classpath>
 				<fileset dir="build/classpath">
 					<include name="**/*.jar" />

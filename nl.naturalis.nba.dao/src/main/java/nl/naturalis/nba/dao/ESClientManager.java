@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -26,7 +28,7 @@ import nl.naturalis.nba.dao.exception.ConnectionFailureException;
  */
 public class ESClientManager {
 
-	private static final Logger logger = DaoRegistry.getInstance().getLogger(ESClientManager.class);
+	private static final Logger logger = getLogger(ESClientManager.class);
 
 	private static ESClientManager instance;
 
@@ -66,7 +68,6 @@ public class ESClientManager {
 			for (int i = 0; i < hosts.length; ++i) {
 				InetAddress host = hosts[i];
 				int port = ports[i];
-				logger.info("Adding transport address \"{}:{}\"", host.getHostAddress(), port);
 				InetSocketTransportAddress addr;
 				addr = new InetSocketTransportAddress(host, port);
 				((TransportClient) client).addTransportAddress(addr);
@@ -84,6 +85,7 @@ public class ESClientManager {
 	public void closeClient()
 	{
 		if (client != null) {
+			logger.info("Disconnecting from Elasticsearch cluster");
 			try {
 				client.close();
 			}
@@ -151,9 +153,6 @@ public class ESClientManager {
 		ClusterStatsResponse response = null;
 		try {
 			response = client.admin().cluster().clusterStats(request).actionGet();
-			if (logger.isDebugEnabled()) {
-				logger.debug("Cluster stats: " + response.toString());
-			}
 		}
 		catch (NoNodeAvailableException e) {
 			String cluster = config.required("elasticsearch.cluster.name");
@@ -169,7 +168,7 @@ public class ESClientManager {
 			throw new ConnectionFailureException(e);
 		}
 		if (response.getStatus().equals(ClusterHealthStatus.RED)) {
-			throw new ConnectionFailureException("ElasticSearch cluster in bad health");
+			throw new ConnectionFailureException("Elasticsearch cluster in bad health");
 		}
 	}
 }

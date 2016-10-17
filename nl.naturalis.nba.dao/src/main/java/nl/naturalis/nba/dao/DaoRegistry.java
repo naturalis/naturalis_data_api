@@ -20,22 +20,16 @@ import nl.naturalis.nba.dao.exception.InitializationException;
 public class DaoRegistry {
 
 	/**
-	 * Name of the main configuration file: &#34;nba.properties&#34;.
+	 * Name of the main NBA configuration file (&#34;nba.properties&#34;).
 	 */
 	public static final String CONFIG_FILE_NAME = "nba.properties";
 	/**
-	 * Name of the system property pointing to the configuration directory:
-	 * &#34;nba.v2.conf.dir&#34;. This directory must at least contain
-	 * nba.properties.
+	 * Name of the system property pointing to the configuration directory
+	 * (&#34;nba.v2.conf.dir&#34;). This directory must at least contain
+	 * nba.properties, but may contain additional configuration related
+	 * resources.
 	 */
 	public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
-	/**
-	 * Name of the system property pointing to the configuration directory for
-	 * integration tests: &#34;nba-test.v2.conf.dir&#34;. This directory must at
-	 * least contain nba.properties. If this property is present it takes
-	 * precedence over {@link #SYSPROP_CONFIG_DIR}.
-	 */
-	public static final String SYSPROP_CONFIG_DIR_TEST = "nba-test.v2.conf.dir";
 
 	protected static DaoRegistry instance;
 
@@ -43,7 +37,6 @@ public class DaoRegistry {
 	private File cfgFile;
 	private ConfigObject config;
 
-	@SuppressWarnings("unused")
 	private Logger logger = getLogger(getClass());
 
 	/**
@@ -59,7 +52,7 @@ public class DaoRegistry {
 		return instance;
 	}
 
-	protected DaoRegistry()
+	private DaoRegistry()
 	{
 		setConfDir();
 		loadConfig();
@@ -92,10 +85,8 @@ public class DaoRegistry {
 	}
 
 	/**
-	 * Returns a {@link File} instance for the main configuration file
-	 * (nba.properties). If this method is called from within a unit test, this
-	 * file will be in {@link #SYSPROP_CONFIG_DIR_TEST}, otherwise the file be
-	 * in {@link #SYSPROP_CONFIG_DIR}.
+	 * Returns a {@link File} object for the main configuration file
+	 * (nba.properties).
 	 * 
 	 * @return
 	 */
@@ -105,7 +96,9 @@ public class DaoRegistry {
 	}
 
 	/**
-	 * Returns a file with a path relative to the configuration directory.
+	 * Returns a {@link File} object for the specified path. The path is assumed
+	 * to be relative to the NBA configuration directory. See
+	 * {@link #getConfigurationDirectory() getConfigurationDirectory}.
 	 * 
 	 * @param relativePath
 	 *            The path of the file relative to the configuration directory.
@@ -137,24 +130,20 @@ public class DaoRegistry {
 
 	private void setConfDir()
 	{
-		String usedProperty = SYSPROP_CONFIG_DIR_TEST;
-		String path = System.getProperty(usedProperty);
+		String path = System.getProperty(SYSPROP_CONFIG_DIR);
 		if (path == null) {
-			usedProperty = SYSPROP_CONFIG_DIR;
-			path = System.getProperty(usedProperty);
-			if (path == null) {
-				String msg = String.format("Missing system property \"%s\"", usedProperty);
-				throw new InitializationException(msg);
-			}
+			String msg = String.format("Missing system property \"%s\"", SYSPROP_CONFIG_DIR);
+			throw new InitializationException(msg);
 		}
 		File dir = new File(path);
 		if (!dir.isDirectory()) {
 			String fmt = "Invalid value for system property \"%s\": \"%s\" (no such directory)";
-			String msg = String.format(fmt, usedProperty, path);
+			String msg = String.format(fmt, SYSPROP_CONFIG_DIR, path);
 			throw new InitializationException(msg);
 		}
 		try {
 			cfgDir = dir.getCanonicalFile();
+			logger.info("NBA configuration directory: " + cfgDir.getPath());
 		}
 		catch (IOException e) {
 			throw new InitializationException(e);
@@ -169,8 +158,9 @@ public class DaoRegistry {
 	private void loadConfig()
 	{
 		cfgFile = FileUtil.newFile(cfgDir, CONFIG_FILE_NAME);
+		logger.info("Loading " + CONFIG_FILE_NAME);
 		if (!cfgFile.isFile()) {
-			String msg = String.format("Configuration file missing: %s", cfgFile.getPath());
+			String msg = String.format("Missing configuration file: %s", cfgFile.getPath());
 			throw new InitializationException(msg);
 		}
 		this.config = new ConfigObject(cfgFile);

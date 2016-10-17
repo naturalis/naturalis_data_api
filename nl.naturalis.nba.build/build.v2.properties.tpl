@@ -26,7 +26,6 @@ elasticsearch.index.0.types=Specimen,MultiMediaObject,Taxon,GeoArea
 
 
 
-
 ##########################################################
 # NBA service
 ##########################################################
@@ -37,10 +36,9 @@ elasticsearch.index.0.types=Specimen,MultiMediaObject,Taxon,GeoArea
 # soon such that you will only have to set it here.
 nl.naturalis.nba.conf.dir=/home/ayco/projects/nba/v2/service
 
-# Full path (including file name) of the destination of
-# the ear file once it it has been built. 
+# The FULL path (INCLUDING file name !!) of the destination
+# of the ear file once it it has been built. 
 ear.install.path=/home/ayco/programs/wildfly-10.0.0.Final/standalone/deployments/nl.naturalis.nba.ear.ear
-
 
 
 
@@ -68,25 +66,3 @@ etl.col.year=2015
 # base URL for the production environment is used
 # (http://data.biodiversitydata.nl).
 etl.purl.baseurl=
-
-
-
-
-##########################################################
-# Export module
-##########################################################
-
-# Directory into which to install the export module
-nba.export.install.dir=/data/nda-export
-
-# Top directory for output from the export programs.
-# The DwCA export program will create and write to
-# a subdirectory named "dwca".
-nba.export.output.dir=/data/nda-export/output
-
-# Top directory for user-editable configuration files.
-# The DwCA export program expects the eml files to reside
-# in ${nba.export.user.conf.dir}/dwca.
-nba.export.user.conf.dir=/data/nda-export/conf
-
-nba.export.log.dir=/data/nda-export/log

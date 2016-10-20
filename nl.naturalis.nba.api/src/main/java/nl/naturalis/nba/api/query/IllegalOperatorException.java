@@ -2,6 +2,14 @@ package nl.naturalis.nba.api.query;
 
 import static java.lang.String.format;
 
+/**
+ * Thrown when a {@link ComparisonOperator query operator} is used for a field
+ * that does not does not support that operator (e&#46;g&#46; when you use
+ * {@link ComparisonOperator#NOT_LIKE NOT_LIKE} on a number field).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class IllegalOperatorException extends InvalidConditionException {
 
 	public IllegalOperatorException(Condition condition)

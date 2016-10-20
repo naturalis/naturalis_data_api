@@ -7,8 +7,9 @@ import java.util.List;
  * @author Ayco Holleman
  *
  */
-public class Taxon extends NbaTraceableObject implements INbaModelObject {
+public class Taxon extends NbaTraceableObject implements IDocumentObject {
 
+	private String id;
 	private String sourceSystemParentId;
 	private String taxonRank;
 	private String taxonRemarks;
@@ -23,6 +24,18 @@ public class Taxon extends NbaTraceableObject implements INbaModelObject {
 	private List<Reference> references;
 	private List<Expert> experts;
 	private List<Specimen> specimens;
+
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 
 	public String getSourceSystemParentId()
 	{

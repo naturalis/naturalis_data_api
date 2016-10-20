@@ -39,11 +39,13 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		identifications.add(identification);
 	}
 
+	@Override
 	public String getId()
 	{
 		return id;
 	}
 
+	@Override
 	public void setId(String id)
 	{
 		this.id = id;

@@ -9,6 +9,7 @@ import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -22,8 +23,6 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
@@ -351,7 +350,7 @@ public class SpecimenDaoTest {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 3, result.length);
+		assertEquals("01", 2, result.length);
 	}
 
 	/*
@@ -367,7 +366,7 @@ public class SpecimenDaoTest {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
-		assertEquals("01", 2, result.length);
+		assertEquals("01", 3, result.length);
 	}
 
 	/*
@@ -399,6 +398,22 @@ public class SpecimenDaoTest {
 		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 2, result.length);
+	}
+
+	@Test
+	public void testQueryValues_01() throws InvalidQueryException
+	{
+		QuerySpec qs = new QuerySpec();
+		qs.addFields("recordBasis", "gatheringEvent.country", "fromCaptivity");
+		qs.addCondition(new Condition("sourceSystem.code", EQUALS, "CRS"));
+		qs.sortAcending("unitID");
+		Object[][] expected = new Object[3][];
+		expected[0] = new Object[] { "FossileSpecimen", "United States", false };
+		expected[1] = new Object[] { "Preserved specimen", "Netherlands", false };
+		expected[2] = new Object[] { "Preserved specimen", "Netherlands", false };
+		SpecimenDao dao = new SpecimenDao();
+		Object[][] actual = dao.queryValues(qs);
+		assertArrayEquals("01", expected, actual);
 	}
 
 	/*

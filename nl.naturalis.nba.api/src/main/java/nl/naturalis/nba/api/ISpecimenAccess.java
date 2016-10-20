@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api;
 
+import java.io.OutputStream;
 import java.util.zip.ZipOutputStream;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -58,12 +59,45 @@ public interface ISpecimenAccess {
 	boolean exists(String unitID);
 
 	/**
-	 * Returns specimens according to the provided query specification.
+	 * Returns specimens conforming to the provided query specification.
 	 * 
 	 * @param querySpec
 	 * @return
 	 */
 	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
+
+	/**
+	 * A bandwidth-conscious alternative to the {@link #query(QuerySpec) query}
+	 * method. This method only returns the values of the fields specified
+	 * through {@link QuerySpec#setFields(java.util.List) QuerySpec.setFields}
+	 * or {@link QuerySpec#addFields(String...) QuerySpec.addFields}. For
+	 * example, if you used either of these methods to request {@code unitID},
+	 * {@code sourceSystem.code} and {@code recordBasis}, the response would
+	 * like this:<br>
+	 * <code>
+	 * [["RGM.805582","CRS","FossileSpecimen"],["RGM.805581","CRS","FossileSpecimen"]]
+	 * </code><br>
+	 * 
+	 * @param spec
+	 * @return
+	 * @throws InvalidQueryException
+	 */
+	Object[][] queryValues(QuerySpec spec) throws InvalidQueryException;
+
+	/**
+	 * A bandwidth-conscious and fast-responding alternative to the
+	 * {@link #query(QuerySpec) query} method. This method produces the same
+	 * type of data as the other ({@link #queryValues(QuerySpec) queryValues}
+	 * method, but writes them directly to the specified output stream. This
+	 * method requires more client-side programming but responds immediately and
+	 * places no limit on the amount of documents being processed per call (see
+	 * {@link QuerySpec#setSize(int)}).
+	 * 
+	 * @param spec
+	 * @param out
+	 * @throws InvalidQueryException
+	 */
+	void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException;
 
 	/**
 	 * Writes a DarwinCore Archive with specimens satisfying the specified query

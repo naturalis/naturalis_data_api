@@ -178,6 +178,11 @@ public class DataSetBuilder {
 			throws DataSetConfigurationException
 	{
 		MappingXmlConfig mappingConfig = entityConfig.getMapping();
+		if (mappingConfig == null) {
+			String msg = format(ERR_BAD_ENTITY, entityConfig.getName(),
+					"Missing required element: <mapping>");
+			throw new DataSetConfigurationException(msg);
+		}
 		List<FieldXmlConfig> fieldConfigs = mappingConfig.getField();
 		IFieldFactory fieldFactory = getFieldFactory(entityConfig.getName());
 		FieldBuilder fieldBuilder = new FieldBuilder(fieldFactory, dataSource);

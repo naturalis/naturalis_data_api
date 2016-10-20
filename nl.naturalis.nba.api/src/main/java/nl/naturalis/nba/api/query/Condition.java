@@ -15,8 +15,7 @@ import java.util.List;
  * surrounded by parentheses: {@code (condition AND sibling0 AND
  * sibling1)}. Because each sibling may itself also have a list of sibling
  * conditions, this allows you to nest logical expressions like
- * {@code (A AND (B OR C OR (D AND E)) AND F)} or
- * {@code (A OR (B AND C AND (D OR E)) OR F)}.
+ * {@code (A AND (B OR C OR (D AND E)) AND F)}.
  * </p>
  * <h3>Combining AND and OR siblings</h3>
  * <p>
@@ -24,8 +23,11 @@ import java.util.List;
  * OR siblings, the condition itself and its AND siblings make up one boolean
  * expression, which is then joined with the OR siblings. For example, if you
  * have a condition C with AND siblings A1, A2, A3, and with OR siblings O1, O2,
- * O3, then the resulting expression would be
- * {@code ((C AND A1 AND A2 AND A3) OR O1 OR O2 OR O3)}.
+ * O3, then the resulting expression would be:
+ * </p>
+ * <code>
+ * (C AND A1 AND A2 AND A3) OR O1 OR O2 OR O3
+ * </code>
  * </p>
  * <h3>Negating a condition</h3>
  * <p>
@@ -35,51 +37,25 @@ import java.util.List;
  * resulting expression will <b>not</b> be:
  * </p>
  * <code>
- * (((NOT C) AND A1 AND A2 AND A3) OR O1 OR 02 OR O3)
+ * ((NOT C) AND A1 AND A2 AND A3) OR O1 OR 02 OR O3
  * </code>
  * <p>
- * It will be:
+ * Instead, it will be:
  * </p>
  * <code>
  * NOT((C AND A1 AND A2 AND A3) OR O1 OR 02 OR O3)
  * </code>
  * <p>
- * This can become confusing if the siblings themselves are also negated. For
- * example, the following code will probably not evaluate as you might as first
- * glance expect:
- * </p>
- * <code>
- * Condition condition = new Condition(NOT, genus, EQUALS, "Larus");<br>
- * condition.andNot(sourceSystem, EQUALS, "CRS");
- * </code>
- * <p>
- * This condition will evaluate to:
- * </p>
- * <code>
- * NOT(genus="Larus" AND NOT sourceSystem="CRS")
- * </code>
- * <p>
- * Which is equivalent to:
- * </p>
- * <code>
- * genus!="Larus" OR sourceSystem="CRS"
- * </code>
- * <p>
- * To avoid this confusion, avoid using the NOT operator in a condition that
- * also has siblings. For example:
- * </p>
- * <code>
- * Condition condition = new Condition(genus, NOT_EQUALS, "Larus");<br>
- * condition.andNot(sourceSystem, EQUALS, "CRS");
- * </code>
- * <p>
- * Alternatively, add negatively expressed conditions one by one to the
- * {@link QuerySpec} object without nesting one within the other:
+ * This can quickly become confusing if the siblings themselves are also
+ * negated. To avoid this confusion, avoid using the NOT operator and instead
+ * use (for example) NOT_EQUALS instead of EQUALS. Alternatively, add negatively
+ * expressed conditions separately to the {@link QuerySpec} object without
+ * nesting one within the other:
  * </p>
  * <code>
  * QuerySpec querySpec = new QuerySpec();<br>
- * querySpec.addCondition(new Condition(NOT, genus, EQUALS, "Larus"));<br>
- * querySpec.addCondition(new Condition(NOT, sourceSystem, EQUALS, "CRS"));
+ * querySpec.addCondition(new Condition(NOT, "genus", EQUALS, "Larus"));<br>
+ * querySpec.addCondition(new Condition(NOT, "sourceSystem.code", EQUALS, "CRS"));
  * </code>
  * 
  * @author Ayco Holleman

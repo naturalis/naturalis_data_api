@@ -10,24 +10,24 @@ public class TaxonTransfer {
 		// Only static method in transfer objects
 	}
 
-	public static Taxon transfer(ESTaxon esTaxon)
+	public static Taxon transfer(ESTaxon in)
 	{
-		Taxon taxon = new Taxon();
-		taxon.setSourceSystem(esTaxon.getSourceSystem());
-		taxon.setSourceSystemId(esTaxon.getSourceSystemId());
-		taxon.setSourceSystemParentId(esTaxon.getSourceSystemParentId());
-		taxon.setRecordURI(esTaxon.getRecordURI());
-		taxon.setTaxonRank(esTaxon.getTaxonRank());
-		taxon.setTaxonRemarks(esTaxon.getTaxonRemarks());
-		taxon.setOccurrenceStatusVerbatim(esTaxon.getOccurrenceStatusVerbatim());
-		taxon.setAcceptedName(esTaxon.getAcceptedName());
-		taxon.setDefaultClassification(esTaxon.getDefaultClassification());
-		taxon.setSystemClassification(esTaxon.getSystemClassification());
-		taxon.setSynonyms(esTaxon.getSynonyms());
-		taxon.setVernacularNames(esTaxon.getVernacularNames());
-		taxon.setDescriptions(esTaxon.getDescriptions());
-		taxon.setReferences(esTaxon.getReferences());
-		taxon.setExperts(esTaxon.getExperts());
-		return taxon;
+		Taxon out = new Taxon();
+		out.setSourceSystem(in.getSourceSystem());
+		out.setSourceSystemId(in.getSourceSystemId());
+		out.setSourceSystemParentId(in.getSourceSystemParentId());
+		out.setRecordURI(in.getRecordURI());
+		out.setTaxonRank(in.getTaxonRank());
+		out.setTaxonRemarks(in.getTaxonRemarks());
+		out.setOccurrenceStatusVerbatim(in.getOccurrenceStatusVerbatim());
+		out.setAcceptedName(in.getAcceptedName());
+		out.setDefaultClassification(in.getDefaultClassification());
+		out.setSystemClassification(in.getSystemClassification());
+		out.setSynonyms(in.getSynonyms());
+		out.setVernacularNames(in.getVernacularNames());
+		out.setDescriptions(in.getDescriptions());
+		out.setReferences(in.getReferences());
+		out.setExperts(in.getExperts());
+		return out;
 	}
 }

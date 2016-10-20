@@ -1,8 +1,11 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
+import java.io.OutputStream;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -80,8 +83,55 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 
 	public API_OBJECT[] query(QuerySpec spec) throws InvalidQueryException
 	{
-		QuerySpecTranslator qst = new QuerySpecTranslator(spec, dt);
-		return processSearchRequest(qst.translate());
+		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
+		return processSearchRequest(translator.translate());
+	}
+
+	public Object[][] queryValues(QuerySpec spec) throws InvalidQueryException
+	{
+		if (spec.getFields() == null || spec.getFields().size() == 0) {
+			throw new InvalidQueryException("At least one field must be selected");
+		}
+		String[] fields = spec.getFields().toArray(new String[spec.getFields().size()]);
+		/* Enable reference comparison for id field: */
+		String idField = "id";
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i].equals(idField)) {
+				fields[i] = idField;
+			}
+		}
+		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
+		SearchRequestBuilder request = translator.translate();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query:\n{}", request);
+		}
+		SearchResponse response = request.execute().actionGet();
+		SearchHit[] hits = response.getHits().getHits();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Documents found: {}", response.getHits().totalHits());
+		}
+		Object[][] records = new Object[hits.length][];
+		for (int i = 0; i < hits.length; ++i) {
+			Map<String, Object> data = hits[i].getSource();
+			Object[] record = new Object[fields.length];
+			for (int j = 0; j < fields.length; ++j) {
+				if (fields[j] == idField) {
+					record[j] = hits[i].getId();
+				}
+				else {
+					Object val = readField(data, fields[j]);
+					record[j] = ((val == MISSING_VALUE) ? null : val);
+				}
+			}
+			records[i] = record;
+		}
+		return records;
+	}
+
+	public void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+
 	}
 
 	public String save(API_OBJECT apiObject, boolean immediate)
@@ -107,6 +157,7 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		return response.getId();
 	}
 
+	@SuppressWarnings("unused")
 	public boolean delete(String id, boolean immediate)
 	{
 		String index = dt.getIndexInfo().getName();
@@ -155,8 +206,9 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 
 	private API_OBJECT createApiObject(String id, Map<String, Object> data)
 	{
-		if (logger.isDebugEnabled())
+		if (logger.isDebugEnabled()) {
 			logger.debug("Creating {} instance with id {}", dt, id);
+		}
 		ObjectMapper om = dt.getObjectMapper();
 		ES_OBJECT esObject = om.convertValue(data, dt.getESType());
 		return to.getApiObject(esObject, id);

@@ -18,6 +18,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -132,11 +133,13 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/query/{querySpec}")
+	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public Specimen[] query(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
+	public Specimen[] query(@Context UriInfo uriInfo)
 	{
 		try {
+			MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+			String json = params.getFirst("querySpec");
 			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
 			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);

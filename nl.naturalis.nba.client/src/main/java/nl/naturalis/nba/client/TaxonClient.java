@@ -2,6 +2,7 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ServerException.newServerException;
+import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
 import java.io.InputStream;
@@ -12,12 +13,20 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.IOUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 
+import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.NoSuchDataSetException;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
+/**
+ * Client-side implementation of the {@link ITaxonAccess taxon API}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class TaxonClient extends AbstractClient implements ITaxonAccess {
 
 	private static final Logger logger = LogManager.getLogger(TaxonClient.class);
@@ -25,6 +34,34 @@ public class TaxonClient extends AbstractClient implements ITaxonAccess {
 	public TaxonClient(ClientConfig config)
 	{
 		super(config);
+	}
+
+	@Override
+	public Taxon[] query(QuerySpec querySpec) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[][] queryValues(QuerySpec querySpec) throws InvalidQueryException
+	{
+		SimpleHttpGet request = newJsonGetRequest();
+		request.setPath("specimen/query");
+		request.addParam("querySpec", toJson(querySpec));
+		sendRequest(request);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(), Object[][].class);
+	}
+
+	@Override
+	public void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

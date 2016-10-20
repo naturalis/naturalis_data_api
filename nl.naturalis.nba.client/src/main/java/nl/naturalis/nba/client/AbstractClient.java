@@ -11,6 +11,13 @@ import org.domainobject.util.http.SimpleHttpException;
 import org.domainobject.util.http.SimpleHttpGet;
 import org.domainobject.util.http.SimpleHttpRequest;
 
+/**
+ * Abstract base class for all client-side implementations of the NBA API.
+ * Provides HTTP request plumbing for subclasses.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 abstract class AbstractClient {
 
 	private static final Logger logger = LogManager.getLogger(AbstractClient.class);
@@ -30,6 +37,7 @@ abstract class AbstractClient {
 					throw new ClientException(msg);
 				}
 			}
+			throw t;
 		}
 		return request;
 	}

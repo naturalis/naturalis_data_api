@@ -4,8 +4,10 @@ import static nl.naturalis.nba.client.ClientUtil.getBoolean;
 import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ClientUtil.getString;
 import static nl.naturalis.nba.client.ServerException.newServerException;
+import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
+import java.io.OutputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,8 +21,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
- * Client-side implementation of the {@link ISpecimenAccess specimen API} defined
- * by the NBA.
+ * Client-side implementation of the {@link ISpecimenAccess specimen API}.
  * 
  * @author Ayco Holleman
  *
@@ -106,8 +107,10 @@ public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
 	@Override
 	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		String json = JsonUtil.toJson(querySpec);
-		SimpleHttpGet request = getJson("specimen/query/" + json);
+		SimpleHttpGet request = newJsonGetRequest();
+		request.setPath("specimen/query");
+		request.addParam("querySpec", toJson(querySpec));
+		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
@@ -116,9 +119,23 @@ public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
 	}
 
 	@Override
+	public Object[][] queryValues(QuerySpec spec) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public String save(Specimen specimen, boolean immediate)
 	{
-		String json = JsonUtil.toJson(specimen);
+		String json = toJson(specimen);
 		SimpleHttpGet request;
 		if (immediate) {
 			request = getJson("specimen/save/immediate/" + json);
@@ -143,14 +160,14 @@ public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
 	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

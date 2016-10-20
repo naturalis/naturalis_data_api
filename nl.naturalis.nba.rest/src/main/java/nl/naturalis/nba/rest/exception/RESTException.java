@@ -12,8 +12,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import nl.naturalis.nba.api.search.QueryParams;
-
 /**
  * Base {@code Exception} thrown by resource methods. Resource methods must trap
  * any error condition within a try/catch-all block and wrap the
@@ -124,13 +122,13 @@ public class RESTException extends RuntimeException {
 		}
 		exceptionInfo.put("stackTrace", trace);
 
-		QueryParams params = new QueryParams();
-		params.addParams(request.getPathParameters());
-		params.addParams(request.getQueryParameters());
-		if (formParams != null) {
-			params.addParams(formParams);
-		}
-		info.put("queryParams", params);
+//		QueryParams params = new QueryParams();
+//		params.addParams(request.getPathParameters());
+//		params.addParams(request.getQueryParameters());
+//		if (formParams != null) {
+//			params.addParams(formParams);
+//		}
+//		info.put("queryParams", params);
 
 		return info;
 	}

@@ -17,6 +17,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.domainobject.util.debug.BeanPrinter;
 
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -38,7 +40,6 @@ import nl.naturalis.nba.rest.exception.RESTException;
 @Path("/taxon")
 @Stateless
 @LocalBean
-/* only here so @EJB injection works in JBoss AS; remove when possible */
 public class TaxonResource {
 
 	@SuppressWarnings("unused")
@@ -46,6 +47,30 @@ public class TaxonResource {
 
 	@EJB
 	Registry registry;
+
+	@GET
+	@Path("/queryValues")
+	@Produces(JSON_CONTENT_TYPE)
+	public Object[][] queryValues(@Context UriInfo uriInfo)
+	{
+		try {
+			MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+			String json = params.getFirst("querySpec");
+			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
+			TaxonDao dao = new TaxonDao();
+			try {
+				Object[][] result = dao.queryValues(qs);
+				BeanPrinter.out(result);
+				return result;
+			}
+			catch (InvalidQueryException e) {
+				throw new HTTP400Exception(uriInfo, e.getMessage());
+			}
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 
 	@GET
 	@Path("/dwca/query/{querySpec}")

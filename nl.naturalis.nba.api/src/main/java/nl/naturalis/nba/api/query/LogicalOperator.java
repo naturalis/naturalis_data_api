@@ -1,5 +1,13 @@
 package nl.naturalis.nba.api.query;
 
+/**
+ * Symbolic constants for the two logical operators (AND and OR). Logical
+ * operators are used to combine the {@link Condition query conditions} within a
+ * {@link QuerySpec query specification}.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public enum LogicalOperator
 {
 	AND, OR;

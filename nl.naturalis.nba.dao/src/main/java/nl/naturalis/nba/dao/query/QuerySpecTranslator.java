@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
@@ -21,17 +22,14 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.api.query.SortField;
-import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 
 public class QuerySpecTranslator {
 
-	private static final Logger logger;
-
-	static {
-		logger = DaoRegistry.getInstance().getLogger(QuerySpecTranslator.class);
-	}
+	private static final Logger logger = getLogger(QuerySpecTranslator.class);
 
 	private QuerySpec spec;
 	private DocumentType<?> type;
@@ -45,11 +43,14 @@ public class QuerySpecTranslator {
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Query using QuerySpec:\n{}", toPrettyJson(spec));
+			logger.debug("Translating QuerySpec:\n{}", toPrettyJson(spec));
 		}
 		QueryBuilder query = translateConditions();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
 		SearchRequestBuilder request = newSearchRequest();
+		if (spec.getFields() != null) {
+			addFields(request);
+		}
 		request.setQuery(csq);
 		request.setFrom(spec.getFrom());
 		request.setSize(spec.getSize());
@@ -62,7 +63,22 @@ public class QuerySpecTranslator {
 		}
 		return request;
 	}
-	
+
+	private void addFields(SearchRequestBuilder request) throws InvalidQueryException
+	{
+		MappingInfo mappingInfo = new MappingInfo(type.getMapping());
+		List<String> fields = spec.getFields();
+		for (String field : fields) {
+			try {
+				mappingInfo.getField(field);
+			}
+			catch (NoSuchFieldException e) {
+				throw new InvalidQueryException(e.getMessage());
+			}
+		}
+		String[] include = fields.toArray(new String[fields.size()]);
+		request.setFetchSource(include, null);
+	}
 
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{
@@ -92,8 +108,8 @@ public class QuerySpecTranslator {
 	{
 		String index = type.getIndexInfo().getName();
 		if (logger.isDebugEnabled()) {
-			String pattern = "New search request (index={};type={})";
-			logger.debug(pattern, index, type.getName());
+			String fmt = "New search request (index={};type={})";
+			logger.debug(fmt, index, type.getName());
 		}
 		Client client = ESClientManager.getInstance().getClient();
 		SearchRequestBuilder request = client.prepareSearch(index);

@@ -1,0 +1,1222 @@
+08:01:54.236 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:01:54.241 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:01:54.245 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:01:54.370 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:01:54.373 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:01:54.386 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:01:54.389 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:01:54.390 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:01:54.390 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:01:54.390 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:01:54.390 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:01:54.390 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:01:54.392 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:54.394 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:01:55.068 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:55.069 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:55.130 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:55.131 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:55.232 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:55.232 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:55.286 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:55.286 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:55.325 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:55.325 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:55.351 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:55.351 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:55.407 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:55.411 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:55.846 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:55.853 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:55.853 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:55.884 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:55.884 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:55.912 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:55.913 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:55.942 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:55.942 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:55.968 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:55.968 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:55.985 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:55.985 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.020 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.021 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:56.199 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:56.207 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:56.207 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:56.245 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:56.245 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.277 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.277 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:56.312 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:56.312 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:56.342 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:56.343 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:56.361 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:56.361 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.391 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.392 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:56.481 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:56.488 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:56.489 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:56.532 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:56.532 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.556 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.556 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:56.587 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:56.587 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:56.610 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:56.611 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:56.626 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:56.626 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.660 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.661 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:56.750 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:56.756 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:56.756 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:56.792 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:56.792 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.812 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.812 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:56.835 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:56.836 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:56.853 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:56.853 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:56.870 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:56.870 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:56.907 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:56.908 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:56.991 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:57.003 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:57.003 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:57.042 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:57.042 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.063 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.063 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:57.085 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:57.085 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:57.101 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:57.101 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:57.114 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:57.114 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.138 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.139 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:57.210 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:57.215 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:57.216 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:57.244 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:57.245 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.265 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.265 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:57.286 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:57.286 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:57.313 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:57.313 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:57.329 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:57.329 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.363 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.364 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:57.462 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:57.470 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:57.470 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:57.514 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:57.514 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.533 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.533 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:57.557 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:57.557 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:57.580 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:57.580 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:57.592 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:57.592 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.619 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.620 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:57.696 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:57.704 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:57.704 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:57.743 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:57.743 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.767 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.767 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:57.794 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:57.794 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:57.810 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:57.810 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:57.821 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:57.822 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.849 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.850 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:57.913 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:57.919 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:57.919 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:57.954 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:57.954 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:57.972 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:57.972 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:57.993 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:57.993 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:58.010 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:58.010 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:58.022 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:58.022 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.048 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.048 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:58.110 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:58.116 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:58.116 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:58.147 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:58.147 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.168 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.168 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:58.193 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:58.193 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:58.214 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:58.214 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:58.228 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:58.228 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.257 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.258 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:58.322 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:58.329 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:58.329 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:58.364 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:58.364 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.386 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.386 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:58.413 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:58.413 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:58.433 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:58.433 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:58.449 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:58.449 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.474 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.475 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:58.532 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:58.538 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:58.538 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:58.565 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:58.566 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.595 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.595 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:58.614 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:58.614 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:58.629 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:58.629 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:58.640 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:58.640 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.660 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.661 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:58.719 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:58.728 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:58.728 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:58.753 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:58.754 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.775 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.775 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:58.804 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:58.804 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:58.824 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:58.824 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:58.841 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:58.841 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:58.861 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:58.862 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:58.924 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:58.932 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:58.932 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:58.960 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:58.960 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.002 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.002 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:59.029 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:59.029 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:59.050 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:59.050 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:59.064 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:59.064 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.094 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.094 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:59.154 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:59.160 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:59.160 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:59.183 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:59.183 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.200 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.200 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:59.218 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:59.219 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:59.239 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:59.239 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:59.250 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:59.250 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.269 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.270 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:59.324 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:59.330 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:59.330 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:59.354 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:59.354 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.369 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.370 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:59.387 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:59.387 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:59.401 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:59.401 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:59.412 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:59.412 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.435 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.436 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:59.493 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:59.498 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:59.498 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:59.523 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:59.523 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.543 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.543 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:59.566 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:59.566 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:59.583 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:59.583 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:59.594 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:59.594 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.615 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.615 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:59.668 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:59.674 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:59.674 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:59.702 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:59.702 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.718 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.718 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:59.733 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:59.734 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:59.748 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:59.748 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:59.761 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:59.761 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.780 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.781 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:01:59.827 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:01:59.833 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:01:59.833 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:01:59.855 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:01:59.855 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.878 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.878 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:01:59.899 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:01:59.899 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:01:59.916 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:01:59.916 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:01:59.928 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:01:59.928 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:01:59.952 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:01:59.952 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:02:00.002 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:02:00.008 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:02:00.008 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:02:00.031 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:02:00.031 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:02:00.047 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:02:00.047 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:02:00.068 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:02:00.069 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:02:00.084 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:02:00.084 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:02:00.093 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:02:00.094 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:02:00.113 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:02:00.113 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:02:00.158 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:02:00.163 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:02:00.163 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:02:00.189 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:02:00.189 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:02:00.207 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:02:00.207 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:02:00.224 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:02:00.225 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:02:00.239 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:02:00.239 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:02:00.282 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:02:00.282 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:02:00.300 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:02:00.301 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:02:00.373 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:02:00.379 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:02:00.379 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:02:00.398 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:02:00.399 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:02:00.414 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:02:00.414 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:02:00.431 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:02:00.431 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:02:00.446 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:02:00.446 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:02:00.462 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:02:00.462 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:02:00.487 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:02:00.487 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:06:29.197 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:06:29.202 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:06:29.204 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:06:29.328 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:06:29.340 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:06:29.344 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:06:29.347 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:06:29.347 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:06:29.347 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:06:29.347 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:06:29.347 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:06:29.347 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:06:29.350 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:06:29.352 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:06:30.042 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:06:30.042 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:06:30.079 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:06:30.079 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:06:30.159 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:06:30.159 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:06:30.181 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:06:30.182 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:06:30.200 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:06:30.200 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:06:30.212 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:06:30.212 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:06:30.234 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:06:30.237 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:13:54.529 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:13:54.534 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:13:54.536 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:13:54.683 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:13:54.686 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:13:54.697 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:13:54.700 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:13:54.700 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:13:54.701 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:13:54.701 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:13:54.701 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:13:54.701 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:13:54.703 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:13:54.705 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:13:55.413 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:13:55.413 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:13:55.451 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:13:55.452 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:13:55.533 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:13:55.533 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:13:55.562 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:13:55.562 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:13:55.582 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:13:55.582 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:13:55.597 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:13:55.597 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:13:55.631 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:13:55.635 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:17:53.224 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:17:53.229 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:17:53.231 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:17:53.357 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:17:53.360 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:17:53.374 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:17:53.376 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:17:53.376 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:17:53.377 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:17:53.377 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:17:53.377 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:17:53.377 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:17:53.379 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:17:53.381 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:17:54.060 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:17:54.061 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:17:54.099 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:17:54.099 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:17:54.180 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:17:54.180 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:17:54.204 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:17:54.205 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:17:54.226 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:17:54.226 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:17:54.242 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:17:54.242 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:17:54.272 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:17:54.275 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:18:57.392 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:18:57.397 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:18:57.399 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:18:57.533 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:18:57.537 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:18:57.549 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:18:57.552 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:18:57.552 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:18:57.553 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:18:57.553 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:18:57.553 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:18:57.553 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:18:57.555 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:18:57.557 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:18:58.213 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:18:58.213 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:18:58.249 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:18:58.249 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:18:58.341 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:18:58.341 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:18:58.366 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:18:58.366 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:18:58.383 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:18:58.383 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:18:58.396 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:18:58.396 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:18:58.418 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:18:58.421 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:19:33.680 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:19:33.684 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:19:33.686 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:19:33.812 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:19:33.826 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:19:33.830 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:19:33.832 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:19:33.833 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:19:33.833 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:19:33.833 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:19:33.833 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:19:33.833 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:19:33.835 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:19:33.837 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:19:34.503 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:19:34.503 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:19:34.543 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:19:34.543 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:19:34.642 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:19:34.642 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:19:34.670 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:19:34.670 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:19:34.691 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:19:34.691 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:19:34.707 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:19:34.707 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:19:34.732 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:19:34.736 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:23:06.101 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:23:06.106 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:23:06.108 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:23:06.230 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:23:06.233 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:23:06.247 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:23:06.250 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:23:06.250 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:23:06.250 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:23:06.250 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:23:06.250 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:23:06.251 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:23:06.253 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:23:06.255 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:23:06.918 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:23:06.918 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:23:06.953 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:23:06.954 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:23:07.037 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:23:07.038 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:23:07.064 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:23:07.064 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:23:07.086 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:23:07.086 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:23:07.102 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:23:07.102 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:23:07.143 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:23:07.146 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:26:56.812 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:26:56.818 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:26:56.820 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:26:56.950 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:26:56.953 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:26:56.965 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:26:56.967 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:26:56.968 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:26:56.968 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:26:56.968 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:26:56.968 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:26:56.968 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:26:56.971 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:26:56.973 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:26:57.665 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:26:57.665 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:26:57.706 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:26:57.706 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:26:57.781 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:26:57.782 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:26:57.805 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:26:57.805 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:26:57.823 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:26:57.823 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:26:57.838 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:26:57.838 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:26:57.866 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:26:57.870 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:28:01.405 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:28:01.410 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:28:01.412 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:28:01.560 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:28:01.564 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:28:01.576 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:28:01.579 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:28:01.579 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:28:01.579 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:28:01.579 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:28:01.579 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:28:01.580 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:28:01.582 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:28:01.584 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:28:02.300 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:28:02.300 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:28:02.333 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:28:02.333 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:28:02.406 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:28:02.406 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:28:02.431 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:28:02.431 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:28:02.448 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:28:02.448 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:28:02.461 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:28:02.461 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:28:02.484 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:28:02.487 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:36:22.094 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:36:22.099 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:36:22.102 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:36:22.248 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:36:22.252 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:36:22.263 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:36:22.265 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:36:22.266 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:36:22.266 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:36:22.266 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:36:22.266 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:36:22.266 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:36:22.268 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:36:22.271 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:36:22.928 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:36:22.928 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:36:22.965 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:36:22.965 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:36:23.046 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:36:23.046 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:36:23.074 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:36:23.074 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:36:23.092 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:36:23.092 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:36:23.108 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:36:23.108 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:36:23.137 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:36:23.141 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:06.560 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:40:06.565 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:40:06.567 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:40:06.698 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:40:06.709 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:40:06.715 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:40:06.717 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:40:06.717 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:40:06.718 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:40:06.718 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:40:06.718 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:40:06.718 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:40:06.720 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:06.722 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:40:07.398 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:07.398 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:07.432 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:07.432 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:07.507 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:07.507 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:07.530 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:07.530 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:07.551 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:07.551 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:07.565 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:07.565 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:07.592 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:07.594 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:37.784 INFO  nl.naturalis.nba.dao.DaoRegistry - NBA configuration directory: /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir
+08:40:37.789 INFO  nl.naturalis.nba.dao.DaoRegistry - Loading nba.properties
+08:40:37.791 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Specimen"
+08:40:37.932 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "Taxon"
+08:40:37.935 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "MultiMediaObject"
+08:40:37.939 INFO  nl.naturalis.nba.dao.DocumentType - Retrieving info for document type "GeoArea"
+08:40:37.941 INFO  nl.naturalis.nba.dao.DocumentType - Processing section elasticsearch.index.0 of /home/ayco/git/naturalis_data_api/nl.naturalis.nba.build/proto.conf.dir/nba.properties
+08:40:37.942 INFO  nl.naturalis.nba.dao.IndexInfo - Retrieving info for index "nba_integration_test"
+08:40:37.942 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Specimen assigned to index nba_integration_test
+08:40:37.942 INFO  nl.naturalis.nba.dao.IndexInfo - Document type MultiMediaObject assigned to index nba_integration_test
+08:40:37.942 INFO  nl.naturalis.nba.dao.IndexInfo - Document type Taxon assigned to index nba_integration_test
+08:40:37.942 INFO  nl.naturalis.nba.dao.IndexInfo - Document type GeoArea assigned to index nba_integration_test
+08:40:37.947 INFO  nl.naturalis.nba.dao.ESClientManager - Connecting to Elasticsearch cluster
+08:40:38.672 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:38.680 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:38.680 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:38.715 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:38.715 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:38.801 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:38.801 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:38.825 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:38.825 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:38.843 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:38.843 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:38.856 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:38.881 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testGetAutoRefreshInterval] index.refresh_interval is 8s
+08:40:38.884 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testGetAutoRefreshInterval] Refresh interval is 8s
+08:40:38.885 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:38.891 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:38.891 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:38.908 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:38.909 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:38.928 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:38.929 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:38.951 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:38.951 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:38.973 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:38.974 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:38.986 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:38.988 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testSetAutoRefreshInterval] Original refresh interval: 8s
+08:40:38.988 INFO  nl.naturalis.nba.dao.util.ESUtil - Updating index refresh interval for index nba_integration_test
+08:40:38.995 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testSetAutoRefreshInterval] New refresh interval: 4s
+08:40:38.995 INFO  nl.naturalis.nba.dao.util.ESUtil - Updating index refresh interval for index nba_integration_test
+08:40:39.002 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testSetAutoRefreshInterval] Reset refresh interval: 8s
+08:40:39.002 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testGetElasticsearchId_SourceSystem__int] Generated _id: "12409COL"
+08:40:39.004 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:39.011 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:39.011 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:39.032 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:39.032 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.054 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.055 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:39.080 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:39.080 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:39.099 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:39.099 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:39.114 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:39.136 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:39.142 INFO  nl.naturalis.nba.dao.util.ESUtilTest - [testGetElasticsearchId_SourceSystem__String] Generated _id: "L   12345@BRAHMS"
+08:40:39.209 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:39.214 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:39.214 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:39.233 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:39.233 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.250 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.250 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:39.267 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:39.267 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:39.285 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:39.285 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:39.296 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:39.296 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.319 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.322 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:39.455 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:39.460 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:39.460 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:39.477 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:39.477 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.498 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.498 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:39.515 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:39.515 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:39.528 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:39.528 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:39.539 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:39.539 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.584 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.585 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:39.628 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:39.632 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:39.633 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:39.649 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:39.649 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.665 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.665 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:39.681 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:39.681 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:39.694 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:39.694 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:39.704 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:39.704 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.722 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.723 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:39.765 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:39.769 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:39.769 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:39.786 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:39.786 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.812 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.812 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:39.828 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:39.829 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:39.843 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:39.844 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:39.857 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:39.857 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.877 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.878 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:39.926 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:39.931 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:39.931 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:39.947 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:39.947 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:39.966 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:39.967 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:39.991 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:39.992 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.019 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.019 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.036 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.036 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.056 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.057 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.102 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.106 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.106 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.122 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.123 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.140 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.140 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:40.155 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:40.155 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.168 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.168 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.179 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.179 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.198 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.199 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.261 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.267 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.267 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.281 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.281 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.297 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.297 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:40.313 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:40.313 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.326 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.326 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.336 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.336 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.353 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.354 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.401 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.405 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.405 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.420 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.421 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.436 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.437 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:40.451 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:40.451 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.465 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.465 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.475 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.475 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.495 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.495 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.534 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.538 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.538 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.556 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.556 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.579 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.579 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:40.603 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:40.603 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.619 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.619 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.631 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.631 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.649 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.650 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.693 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.698 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.698 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.712 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.712 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.733 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.733 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:40.748 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:40.748 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.761 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.762 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.771 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.771 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.789 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.790 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.837 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.841 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.841 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.856 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.857 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.874 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.874 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:40.890 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:40.890 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:40.902 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:40.902 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:40.912 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:40.912 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:40.930 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:40.931 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:40.971 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:40.976 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:40.976 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:40.992 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:40.992 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.008 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.008 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.024 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.024 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.036 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.037 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.046 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.046 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.063 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.064 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.106 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.111 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.111 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.126 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.126 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.143 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.143 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.157 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.157 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.169 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.170 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.179 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.179 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.197 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.197 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.241 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.245 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.246 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.263 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.263 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.280 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.280 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.295 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.295 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.308 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.308 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.317 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.317 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.335 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.336 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.375 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.379 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.379 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.396 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.396 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.416 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.416 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.430 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.430 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.442 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.442 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.452 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.452 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.468 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.469 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.510 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.514 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.514 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.536 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.536 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.550 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.550 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.566 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.566 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.578 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.578 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.589 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.589 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.607 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.608 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.648 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.653 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.653 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.669 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.669 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.681 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.682 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.695 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.695 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.708 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.708 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.717 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.718 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.746 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.746 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.785 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.789 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.789 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.801 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.801 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.814 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.814 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.829 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.829 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.842 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.842 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.852 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.852 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.871 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.871 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:41.909 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:41.913 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:41.914 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:41.927 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:41.927 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.940 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.940 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:41.955 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:41.955 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:41.967 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:41.967 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:41.976 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:41.976 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:41.993 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:41.993 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.035 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.039 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.039 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.053 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.053 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.066 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.066 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.081 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.081 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.093 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.093 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.102 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.102 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.119 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.119 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.157 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.162 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.162 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.176 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.176 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.192 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.192 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.207 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.208 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.219 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.219 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.229 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.229 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.246 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.247 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.284 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.288 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.288 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.303 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.303 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.317 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.317 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.331 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.331 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.344 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.344 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.353 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.354 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.372 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.372 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.411 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.416 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.416 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.432 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.432 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.449 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.449 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.462 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.462 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.475 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.475 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.485 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.486 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.503 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.504 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.543 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.549 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.549 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.564 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.564 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.577 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.577 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.592 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.592 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.604 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.604 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.614 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.614 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.634 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.634 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.670 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.674 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.674 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.690 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.690 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.707 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.707 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.729 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.729 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.741 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.741 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.751 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.751 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.769 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.770 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.814 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.819 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.820 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.847 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.847 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.863 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.863 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:42.879 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:42.879 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:42.894 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:42.894 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:42.903 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:42.903 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:42.926 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:42.926 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:42.969 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:42.974 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:42.974 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:42.993 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:42.993 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.009 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.009 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.030 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.030 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.043 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.043 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.052 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.052 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.069 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.070 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.107 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.111 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.111 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.125 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.125 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.139 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.139 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.152 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.152 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.166 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.166 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.176 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.176 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.196 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.197 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.235 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.239 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.240 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.254 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.254 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.266 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.266 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.280 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.280 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.293 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.293 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.301 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.302 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.319 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.320 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.357 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.363 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.363 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.380 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.380 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.396 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.396 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.409 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.409 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.422 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.422 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.431 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.431 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.447 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.448 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.486 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.489 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.489 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.503 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.503 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.515 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.515 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.529 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.529 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.541 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.541 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.550 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.550 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.570 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.570 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.606 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.610 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.610 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.630 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.630 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.643 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.643 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.664 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.664 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.677 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.677 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.686 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.687 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.706 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.707 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.752 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.755 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.755 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.768 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.768 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.783 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.783 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.796 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.796 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.808 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.808 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.817 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.817 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.833 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.834 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.866 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.869 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.869 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:43.884 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:43.884 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.897 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.897 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:43.910 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:43.911 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:43.922 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:43.922 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:43.930 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:43.930 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:43.947 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:43.948 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test
+08:40:43.996 INFO  nl.naturalis.nba.dao.util.ESUtil - Deleting index nba_integration_test
+08:40:43.999 INFO  nl.naturalis.nba.dao.util.ESUtil - Index deleted
+08:40:43.999 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating index nba_integration_test
+08:40:44.015 INFO  nl.naturalis.nba.dao.util.ESUtil - Created index nba_integration_test
+08:40:44.015 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:44.027 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:44.027 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type MultiMediaObject
+08:40:44.040 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type MultiMediaObject
+08:40:44.040 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Taxon
+08:40:44.052 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Taxon
+08:40:44.052 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type GeoArea
+08:40:44.061 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type GeoArea
+08:40:44.061 INFO  nl.naturalis.nba.dao.util.ESUtil - Creating type Specimen
+08:40:44.078 INFO  nl.naturalis.nba.dao.util.ESUtil - Created type Specimen
+08:40:44.078 INFO  nl.naturalis.nba.dao.util.ESUtil - Disabling auto-refresh for index nba_integration_test

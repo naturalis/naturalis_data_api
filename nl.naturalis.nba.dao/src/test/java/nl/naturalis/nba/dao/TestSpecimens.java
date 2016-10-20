@@ -191,7 +191,7 @@ class TestSpecimens {
 		specimen.setTheme(Arrays.asList("Living Dinos"));
 		specimen.setPhaseOrStage(ADULT);
 		specimen.setSex(FEMALE);
-		specimen.setRecordBasis("Preserved specimen");
+		specimen.setRecordBasis("FossileSpecimen");
 		ESGatheringEvent gathering = new ESGatheringEvent();
 		gathering.setProjectTitle("Project T. Rex");
 		gathering.setLocalityText("Montana, U.S.A.");

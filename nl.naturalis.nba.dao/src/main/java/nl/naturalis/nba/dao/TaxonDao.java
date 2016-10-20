@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.OutputStream;
@@ -8,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.NoSuchDataSetException;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -17,14 +21,18 @@ import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
 import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
+import nl.naturalis.nba.dao.transfer.ITransferObject;
+import nl.naturalis.nba.dao.transfer.TaxonTransferObject;
+import nl.naturalis.nba.dao.types.ESTaxon;
 
-public class TaxonDao implements ITaxonAccess {
+public class TaxonDao extends AbstractDao<Taxon, ESTaxon> implements ITaxonAccess {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = DaoRegistry.getInstance().getLogger(TaxonDao.class);
+	private static final Logger logger = getLogger(TaxonDao.class);
 
 	public TaxonDao()
 	{
+		super(TAXON);
 	}
 
 	@Override
@@ -77,6 +85,18 @@ public class TaxonDao implements ITaxonAccess {
 			names[i] = name.substring(0, name.indexOf('.'));
 		}
 		return names;
+	}
+
+	@Override
+	ITransferObject<Taxon, ESTaxon> getTransferObject()
+	{
+		return new TaxonTransferObject();
+	}
+
+	@Override
+	Taxon[] createApiObjectArray(int length)
+	{
+		return new Taxon[length];
 	}
 
 }

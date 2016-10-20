@@ -32,7 +32,7 @@ public class CoLVernacularNameCleaner {
 	public static void main(String[] args)
 	{
 		CoLVernacularNameCleaner remover = new CoLVernacularNameCleaner();
-		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.csv_dir");
+		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		remover.cleanup(dwcaDir + "/vernacular.txt");
 	}
 

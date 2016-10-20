@@ -28,7 +28,7 @@ public class CoLVernacularNameImporter {
 	public static void main(String[] args) throws Exception
 	{
 		CoLVernacularNameImporter importer = new CoLVernacularNameImporter();
-		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.csv_dir");
+		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		importer.importCsv(dwcaDir + "/vernacular.txt");
 	}
 

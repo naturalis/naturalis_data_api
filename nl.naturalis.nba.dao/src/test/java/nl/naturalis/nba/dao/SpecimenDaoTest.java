@@ -309,7 +309,7 @@ public class SpecimenDaoTest {
 		String sourceSystem = "sourceSystem.code";
 		Condition condition = new Condition(genus, EQUALS, "Larus");
 		condition.and(collector, LIKE, "altenburg");
-		condition.andNot(sourceSystem, EQUALS, "NDFF");
+		condition.and(new Condition(NOT,sourceSystem, EQUALS, "NDFF"));
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -328,9 +328,9 @@ public class SpecimenDaoTest {
 		// This excludes larusFuscusSpecimen01 and larusFuscusSpecimen02
 		Condition condition = new Condition(genus, NOT_EQUALS, "Larus");
 		// This excludes parusMajorSpecimen01 and tRexSpecimen01
-		condition.andNot(sourceSystem, EQUALS, "CRS");
+		condition.and(new Condition(NOT, sourceSystem, EQUALS, "CRS"));
 		// This excludes (again) larusFuscusSpecimen02
-		condition.andNot(sourceSystem, EQUALS, "NDFF");
+		condition.and(new Condition(NOT, sourceSystem, EQUALS, "NDFF"));
 		// Remains: malusSylvestrisSpecimen01
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

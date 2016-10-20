@@ -33,7 +33,7 @@ public class CoLTaxonDistributionEnricher {
 		try {
 			index = ETLRegistry.getInstance().getIndexManager(TAXON);
 			CoLTaxonDistributionEnricher enricher = new CoLTaxonDistributionEnricher(index);
-			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.csv_dir");
+			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 			enricher.importCsv(dwcaDir + "/distribution.txt");
 		}
 		finally {

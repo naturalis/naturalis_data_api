@@ -32,7 +32,7 @@ public class CoLReferenceCleaner {
 	public static void main(String[] args)
 	{
 		CoLReferenceCleaner remover = new CoLReferenceCleaner();
-		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.csv_dir");
+		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		remover.cleanup(dwcaDir + "/reference.txt");
 	}
 

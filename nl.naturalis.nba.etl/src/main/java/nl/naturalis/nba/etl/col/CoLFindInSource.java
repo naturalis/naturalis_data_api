@@ -22,7 +22,7 @@ public class CoLFindInSource {
 	{
 		try {
 			CoLFindInSource colfindinsource = new CoLFindInSource();
-			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.csv_dir");
+			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 			colfindinsource.ReadValueFromCsv(dwcaDir + "/vernacular.txt");
 		}
 		finally {

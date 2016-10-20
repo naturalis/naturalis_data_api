@@ -8,11 +8,11 @@ import java.util.List;
 /**
  * <p>
  * Class modeling a query condition. A condition consists of a field name, a
- * {@link ComparisonOperator comparison operator} and a value. For example:
- * "name", EQUALS, "John". A condition can optionally have a list of sibling
- * conditions. These are joined to the containing condition using the AND or OR
- * operator. A condition and its siblings are strongly bound together, as though
- * surrounded by parentheses: {@code (condition AND sibling0 AND
+ * {@link ComparisonOperator} and a value. For example: "name", EQUALS, "John".
+ * A condition can optionally have a list of sibling conditions. These are
+ * joined to the containing condition using the AND or OR operator. A condition
+ * and its siblings are strongly bound together, as though surrounded by
+ * parentheses: {@code (condition AND sibling0 AND
  * sibling1)}. Because each sibling may itself also have a list of sibling
  * conditions, this allows you to nest logical expressions like
  * {@code (A AND (B OR C OR (D AND E)) AND F)}.
@@ -124,25 +124,6 @@ public class Condition {
 		return this;
 	}
 
-	public Condition andNot(String field, String operator, Object value)
-	{
-		return andNot(new Condition(field, operator, value));
-	}
-
-	public Condition andNot(String field, ComparisonOperator operator, Object value)
-	{
-		return andNot(new Condition(field, operator, value));
-	}
-
-	public Condition andNot(Condition sibling)
-	{
-		if (and == null) {
-			and = new ArrayList<>(5);
-		}
-		and.add(sibling.negate());
-		return this;
-	}
-
 	public Condition or(String field, String operator, Object value)
 	{
 		return or(new Condition(field, operator, value));
@@ -162,25 +143,6 @@ public class Condition {
 		return this;
 	}
 
-	public Condition orNot(String field, String operator, Object value)
-	{
-		return orNot(new Condition(field, operator, value));
-	}
-
-	public Condition orNot(String field, ComparisonOperator operator, Object value)
-	{
-		return orNot(new Condition(field, operator, value));
-	}
-
-	public Condition orNot(Condition sibling)
-	{
-		if (or == null) {
-			or = new ArrayList<>(5);
-		}
-		or.add(sibling.negate());
-		return this;
-	}
-
 	/**
 	 * Negates the condition. That is, if it already was a negated condition, it
 	 * becomes a non-negated condition again; otherwise it becomes a negated
@@ -195,20 +157,35 @@ public class Condition {
 	}
 
 	/**
-	 * Whether or not this is a negated condition.
+	 * Returns whether or not this is a negated condition. Equivalent to
+	 * <code>getNot() != null</code>.
 	 * 
 	 * @return
 	 */
 	public boolean isNegated()
 	{
-		return not == NOT;
+		return not != null;
 	}
 
+	/**
+	 * Returns {@link UnaryBooleanOperator#NOT UnaryBooleanOperator.NOT} if the
+	 * condition is negated, {@code null} otherwise.
+	 * 
+	 * @return
+	 */
 	public UnaryBooleanOperator getNot()
 	{
 		return not;
 	}
 
+	/**
+	 * Determines whether or not this is a negated condition. Passing
+	 * {@link UnaryBooleanOperator#NOT UnaryBooleanOperator.NOT} will make it a
+	 * negated condition. Passing {@code null} effectively makes it a
+	 * non-negated condition.
+	 * 
+	 * @param not
+	 */
 	public void setNot(UnaryBooleanOperator not)
 	{
 		this.not = not;

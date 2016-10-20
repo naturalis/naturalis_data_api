@@ -16,7 +16,6 @@ public class ResourceUtil {
 	// but displayed instead as JSON.
 	private static final String PARAM_SHOW_AS_JSON = "_jsonError";
 
-
 	public static RESTException handleError(UriInfo request, Throwable throwable, Status status)
 	{
 		if (throwable instanceof RESTException) {
@@ -29,14 +28,13 @@ public class ResourceUtil {
 		return new RESTException(request, throwable, status);
 	}
 
-
 	public static RESTException handleError(UriInfo request, Throwable throwable)
 	{
 		return handleError(request, null, throwable);
 	}
 
-
-	public static RESTException handleError(UriInfo request, MultivaluedMap<String, String> form, Throwable throwable)
+	public static RESTException handleError(UriInfo request, MultivaluedMap<String, String> form,
+			Throwable throwable)
 	{
 		if (throwable instanceof RESTException) {
 			return (RESTException) throwable;
@@ -47,7 +45,6 @@ public class ResourceUtil {
 		return new RESTException(request, form, throwable);
 	}
 
-
 	public static RESTException handleError(UriInfo request, Status status)
 	{
 		if (showErrorInResponseBody(request)) {
@@ -56,67 +53,66 @@ public class ResourceUtil {
 		return new RESTException(request, status);
 	}
 
-
-//	public static void doAfterDao(AbstractResultSet result, UriInfo request, boolean addNavigationLinks)
-//	{
-//		doAfterDao(result, request, null, addNavigationLinks);
-//	}
-//
-//
-//	public static void doAfterDao(AbstractResultSet result, UriInfo request, MultivaluedMap<String, String> formParams, boolean addNavigationLinks)
-//	{
-//		QueryParams params = new QueryParams();
-//		params.addParams(request.getQueryParameters());
-//		if (formParams != null) {
-//			params.addParams(formParams);
-//		}
-//		result.setQueryParameters(params);
-//		result.addLink("_self", request.getRequestUri().toString());
-//		if (addNavigationLinks) {
-//			String offset = request.getQueryParameters().getFirst("_offset");
-//			boolean hasOffset = true;
-//			String maxResults = request.getQueryParameters().getFirst("_maxResults");
-//			if (offset == null || offset.trim().length() == 0) {
-//				hasOffset = false;
-//				offset = "0";
-//			}
-//			if (maxResults == null || maxResults.trim().length() == 0) {
-//				maxResults = "10";
-//			}
-//			long iOffset = Long.parseLong(offset);
-//			long iMaxResults = Long.parseLong(maxResults);
-//			long offsetNext = iOffset + iMaxResults;
-//			long offsetPrev = Math.max(0, iOffset - iMaxResults);
-//			UriBuilder prevLinkUriBuilder = request.getRequestUriBuilder();
-//			UriBuilder nextLinkUriBuilder = request.getRequestUriBuilder();
-//
-//			if (offsetNext < result.getTotalSize()) {
-//				if (hasOffset) {
-//					nextLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetNext));
-//				}
-//				else {
-//					nextLinkUriBuilder.queryParam("_offset", String.valueOf(offsetNext));
-//				}
-//			}
-//
-//			if (offsetPrev == 0) {
-//				if (hasOffset) {
-//					prevLinkUriBuilder.replaceQueryParam("_offset", "0");
-//				}
-//			}
-//			else {
-//				if (hasOffset) {
-//					prevLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetPrev));
-//				}
-//				else {
-//					prevLinkUriBuilder.queryParam("_offset", String.valueOf(offsetPrev));
-//				}
-//			}
-//
-//			result.addLink("_prevPage", prevLinkUriBuilder.build().toString());
-//			result.addLink("_nextPage", nextLinkUriBuilder.build().toString());
-//		}
-//	}
+	//	public static void doAfterDao(AbstractResultSet result, UriInfo request, boolean addNavigationLinks)
+	//	{
+	//		doAfterDao(result, request, null, addNavigationLinks);
+	//	}
+	//
+	//
+	//	public static void doAfterDao(AbstractResultSet result, UriInfo request, MultivaluedMap<String, String> formParams, boolean addNavigationLinks)
+	//	{
+	//		QueryParams params = new QueryParams();
+	//		params.addParams(request.getQueryParameters());
+	//		if (formParams != null) {
+	//			params.addParams(formParams);
+	//		}
+	//		result.setQueryParameters(params);
+	//		result.addLink("_self", request.getRequestUri().toString());
+	//		if (addNavigationLinks) {
+	//			String offset = request.getQueryParameters().getFirst("_offset");
+	//			boolean hasOffset = true;
+	//			String maxResults = request.getQueryParameters().getFirst("_maxResults");
+	//			if (offset == null || offset.trim().length() == 0) {
+	//				hasOffset = false;
+	//				offset = "0";
+	//			}
+	//			if (maxResults == null || maxResults.trim().length() == 0) {
+	//				maxResults = "10";
+	//			}
+	//			long iOffset = Long.parseLong(offset);
+	//			long iMaxResults = Long.parseLong(maxResults);
+	//			long offsetNext = iOffset + iMaxResults;
+	//			long offsetPrev = Math.max(0, iOffset - iMaxResults);
+	//			UriBuilder prevLinkUriBuilder = request.getRequestUriBuilder();
+	//			UriBuilder nextLinkUriBuilder = request.getRequestUriBuilder();
+	//
+	//			if (offsetNext < result.getTotalSize()) {
+	//				if (hasOffset) {
+	//					nextLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetNext));
+	//				}
+	//				else {
+	//					nextLinkUriBuilder.queryParam("_offset", String.valueOf(offsetNext));
+	//				}
+	//			}
+	//
+	//			if (offsetPrev == 0) {
+	//				if (hasOffset) {
+	//					prevLinkUriBuilder.replaceQueryParam("_offset", "0");
+	//				}
+	//			}
+	//			else {
+	//				if (hasOffset) {
+	//					prevLinkUriBuilder.replaceQueryParam("_offset", String.valueOf(offsetPrev));
+	//				}
+	//				else {
+	//					prevLinkUriBuilder.queryParam("_offset", String.valueOf(offsetPrev));
+	//				}
+	//			}
+	//
+	//			result.addLink("_prevPage", prevLinkUriBuilder.build().toString());
+	//			result.addLink("_nextPage", nextLinkUriBuilder.build().toString());
+	//		}
+	//	}
 
 	private static boolean showErrorInResponseBody(UriInfo request)
 	{
@@ -127,6 +123,5 @@ public class ResourceUtil {
 		}
 		return showAsJson;
 	}
-
 
 }

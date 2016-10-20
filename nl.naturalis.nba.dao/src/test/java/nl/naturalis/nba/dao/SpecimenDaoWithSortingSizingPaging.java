@@ -51,7 +51,7 @@ public class SpecimenDaoWithSortingSizingPaging {
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
 	{
 		QuerySpec qs = new QuerySpec();
-		qs.sortAcending("city");
+		qs.sortBy("city");
 		SpecimenDao dao = new SpecimenDao();
 		Specimen[] result = dao.query(qs);
 		assertEquals("01", 5, result.length);

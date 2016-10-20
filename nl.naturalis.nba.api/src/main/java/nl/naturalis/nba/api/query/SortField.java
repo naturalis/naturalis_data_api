@@ -10,7 +10,23 @@ package nl.naturalis.nba.api.query;
 public class SortField {
 
 	private String path;
-	private boolean ascending = true;
+	private boolean ascending;
+
+	public SortField()
+	{
+		this(null, true);
+	}
+
+	public SortField(String path)
+	{
+		this(path, true);
+	}
+
+	public SortField(String path, boolean ascending)
+	{
+		this.path = path;
+		this.ascending = ascending;
+	}
 
 	/**
 	 * Returns the path of the field on which to sort.

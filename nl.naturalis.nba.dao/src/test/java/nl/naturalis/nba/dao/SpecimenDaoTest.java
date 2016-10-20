@@ -406,7 +406,7 @@ public class SpecimenDaoTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addFields("recordBasis", "gatheringEvent.country", "fromCaptivity");
 		qs.addCondition(new Condition("sourceSystem.code", EQUALS, "CRS"));
-		qs.sortAcending("unitID");
+		qs.sortBy("unitID");
 		Object[][] expected = new Object[3][];
 		expected[0] = new Object[] { "FossileSpecimen", "United States", false };
 		expected[1] = new Object[] { "Preserved specimen", "Netherlands", false };

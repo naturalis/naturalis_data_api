@@ -67,31 +67,26 @@ public class QuerySpec {
 	 * 
 	 * @param field
 	 */
-	public void sortAcending(String field)
+	public void sortBy(String field)
 	{
 		if (sortFields == null) {
 			sortFields = new ArrayList<>(2);
 		}
-		SortField so = new SortField();
-		so.setPath(field);
-		sortFields.add(so);
+		sortFields.add(new SortField(field));
 	}
 
 	/**
-	 * Causes the documents in the result set to be sorted in descending order
-	 * of the specified field.
+	 * Causes the documents in the result set to be sorted on the specified
+	 * field with the sort order determined by the {@code ascending} parameter.
 	 * 
 	 * @param field
 	 */
-	public void sortDescending(String field)
+	public void sortBy(String field, boolean ascending)
 	{
 		if (sortFields == null) {
 			sortFields = new ArrayList<>(2);
 		}
-		SortField so = new SortField();
-		so.setPath(field);
-		so.setAscending(false);
-		sortFields.add(so);
+		sortFields.add(new SortField(field, ascending));
 	}
 
 	/**

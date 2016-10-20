@@ -37,13 +37,13 @@ import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
+import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")
 @Path("/specimen")
 @Stateless
 @LocalBean
-/* only here so @EJB injection works in JBoss AS; remove when possible */
 public class SpecimenResource {
 
 	@SuppressWarnings("unused")
@@ -138,9 +138,22 @@ public class SpecimenResource {
 	public Specimen[] query(@Context UriInfo uriInfo)
 	{
 		try {
-			MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-			String json = params.getFirst("querySpec");
-			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	public Specimen[] queryValues(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);
 		}

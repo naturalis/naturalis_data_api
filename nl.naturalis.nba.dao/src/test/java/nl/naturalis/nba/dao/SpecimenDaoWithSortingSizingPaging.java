@@ -11,9 +11,8 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
@@ -53,8 +52,8 @@ public class SpecimenDaoWithSortingSizingPaging {
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("city");
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 5, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 5, result.size());
 	}
 
 

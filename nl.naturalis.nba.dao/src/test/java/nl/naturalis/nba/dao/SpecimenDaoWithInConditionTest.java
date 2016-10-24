@@ -20,9 +20,8 @@ import org.junit.Test;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
@@ -74,9 +73,9 @@ public class SpecimenDaoWithInConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 1, result.length);
-		assertEquals("02", pMajor.getUnitID(), result[0].getUnitID());
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
+		assertEquals("02", pMajor.getUnitID(), result.get(0).getUnitID());
 	}
 
 	/*
@@ -96,8 +95,8 @@ public class SpecimenDaoWithInConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 4, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
 	}
 
 	/*
@@ -117,8 +116,8 @@ public class SpecimenDaoWithInConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 4, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
 	}
 
 	/*
@@ -139,8 +138,8 @@ public class SpecimenDaoWithInConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 4, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 4, result.size());
 	}
 
 	/*
@@ -157,8 +156,8 @@ public class SpecimenDaoWithInConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 1, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
 	}
 
 }

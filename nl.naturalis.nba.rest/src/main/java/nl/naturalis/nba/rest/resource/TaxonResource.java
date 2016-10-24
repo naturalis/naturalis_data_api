@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -17,7 +18,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
@@ -25,16 +25,17 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.debug.BeanPrinter;
 
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
+import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
 
 @SuppressWarnings("static-method")
 @Path("/taxon")
@@ -49,23 +50,14 @@ public class TaxonResource {
 	Registry registry;
 
 	@GET
-	@Path("/queryValues")
+	@Path("/queryRaw")
 	@Produces(JSON_CONTENT_TYPE)
-	public Object[][] queryValues(@Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryValues(@Context UriInfo uriInfo)
 	{
 		try {
-			MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-			String json = params.getFirst("querySpec");
-			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
-			try {
-				Object[][] result = dao.queryValues(qs);
-				BeanPrinter.out(result);
-				return result;
-			}
-			catch (InvalidQueryException e) {
-				throw new HTTP400Exception(uriInfo, e.getMessage());
-			}
+			return dao.queryRaw(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

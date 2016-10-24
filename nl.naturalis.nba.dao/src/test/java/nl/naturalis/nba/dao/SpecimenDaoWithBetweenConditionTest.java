@@ -19,9 +19,8 @@ import org.junit.Test;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
@@ -69,11 +68,11 @@ public class SpecimenDaoWithBetweenConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
 		// year after the next test specimen, so we can have only one query
 		// result (pMajor).
-		assertEquals("01", 1, result.length);
+		assertEquals("01", 1, result.size());
 	}
 
 	@Test
@@ -89,10 +88,10 @@ public class SpecimenDaoWithBetweenConditionTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Since we use NOT_BETWEEN, all specimens except pMajor should come
 		// back.
-		assertEquals("01", 4, result.length);
+		assertEquals("01", 4, result.size());
 	}
 
 }

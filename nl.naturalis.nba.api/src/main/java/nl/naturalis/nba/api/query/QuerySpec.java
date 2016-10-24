@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.naturalis.nba.api.ISpecimenAccess;
-import nl.naturalis.nba.api.ITaxonAccess;
+import nl.naturalis.nba.api.INbaAccess;
 
 /**
  * Models an NBA query. All information required by the various {@code query}
@@ -103,17 +102,14 @@ public class QuerySpec {
 	/**
 	 * Sets the fields to return in the query response. This is akin to a SQL
 	 * SELECT clause. By default all fields will be selected. Note that if you
-	 * use this {@code QuerySpec} instance to retrieve data model objects, for
-	 * example as with {@link ISpecimenAccess#query(QuerySpec)
-	 * ISpecimenAccess.query}, you <i>still</i> get those objects, only with all
-	 * non-selected fields set to their default value ({@code null} for string
-	 * fields and objects, zero for number fields and {@code false} for boolean
-	 * fields). This might save some bandwidth, but it is probably marginal.
-	 * However, limiting the number of fields you select <i>will</i> make a
-	 * difference with methods like {@link ITaxonAccess#queryValues(QuerySpec)
-	 * ITaxonAccess.queryValues}. In fact with this family of methods you
-	 * <i>must</i> call {@code setFields} to specify the fields you want to show
-	 * up in the result set.
+	 * use this {@code QuerySpec} instance to retrieve data model objects, as
+	 * with {@link INbaAccess#query(QuerySpec) INbaAccess.query}, you
+	 * <i>still</i> get those objects, only with all non-selected fields set to
+	 * their default value ({@code null} for string fields and objects, zero for
+	 * number fields and {@code false} for boolean fields). This might save some
+	 * bandwidth, but probably only marginally. However, limiting the number of
+	 * fields you select <i>will</i> make a difference with methods like
+	 * {@link INbaAccess#queryVRaw(QuerySpec) INbaAccess.queryRaw}.
 	 * 
 	 * @return
 	 */

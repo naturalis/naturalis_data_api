@@ -1,6 +1,5 @@
 package nl.naturalis.nba.api;
 
-import java.io.OutputStream;
 import java.util.zip.ZipOutputStream;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -13,27 +12,9 @@ import nl.naturalis.nba.api.query.QuerySpec;
  * @author Ayco Holleman
  *
  */
-public interface ISpecimenAccess {
+public interface ISpecimenAccess extends INbaAccess<Specimen> {
 
-	/**
-	 * Returns the {@link Specimen} with the specified system id, or
-	 * {@code null} if there is no such specimen.
-	 * 
-	 * @param id
-	 *            The NBA system ID of the specimen
-	 * @return
-	 */
-	Specimen find(String id);
 
-	/**
-	 * Returns the {@link Specimen}s with the specified system ids, or a
-	 * zero-length array no specimens were found.
-	 * 
-	 * @param id
-	 *            The NBA system IDs of the requested specimens
-	 * @return
-	 */
-	Specimen[] find(String[] ids);
 
 	/**
 	 * Retrieves a {@link Specimen} by its UnitID. Since the UnitID is not
@@ -57,47 +38,6 @@ public interface ISpecimenAccess {
 	 * @return
 	 */
 	boolean exists(String unitID);
-
-	/**
-	 * Returns specimens conforming to the provided query specification.
-	 * 
-	 * @param querySpec
-	 * @return
-	 */
-	Specimen[] query(QuerySpec querySpec) throws InvalidQueryException;
-
-	/**
-	 * A bandwidth-conscious alternative to the {@link #query(QuerySpec) query}
-	 * method. This method only returns the values of the fields specified
-	 * through {@link QuerySpec#setFields(java.util.List) QuerySpec.setFields}
-	 * or {@link QuerySpec#addFields(String...) QuerySpec.addFields}. For
-	 * example, if you used either of these methods to request {@code unitID},
-	 * {@code sourceSystem.code} and {@code recordBasis}, the response would
-	 * like this:<br>
-	 * <code>
-	 * [["RGM.805582","CRS","FossileSpecimen"],["RGM.805581","CRS","FossileSpecimen"]]
-	 * </code><br>
-	 * 
-	 * @param spec
-	 * @return
-	 * @throws InvalidQueryException
-	 */
-	Object[][] queryValues(QuerySpec spec) throws InvalidQueryException;
-
-	/**
-	 * A bandwidth-conscious and fast-responding alternative to the
-	 * {@link #query(QuerySpec) query} method. This method produces the same
-	 * type of data as the other ({@link #queryValues(QuerySpec) queryValues}
-	 * method, but writes them directly to the specified output stream. This
-	 * method requires more client-side programming but responds immediately and
-	 * places no limit on the amount of documents being processed per call (see
-	 * {@link QuerySpec#setSize(int)}).
-	 * 
-	 * @param spec
-	 * @param out
-	 * @throws InvalidQueryException
-	 */
-	void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException;
 
 	/**
 	 * Writes a DarwinCore Archive with specimens satisfying the specified query

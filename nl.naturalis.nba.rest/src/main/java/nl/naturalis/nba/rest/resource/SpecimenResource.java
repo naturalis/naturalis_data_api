@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
@@ -18,7 +19,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
@@ -135,7 +136,7 @@ public class SpecimenResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public Specimen[] query(@Context UriInfo uriInfo)
+	public QueryResult<Specimen> query(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
@@ -148,14 +149,14 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/query")
+	@Path("/queryRaw")
 	@Produces(JSON_CONTENT_TYPE)
-	public Specimen[] queryValues(@Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryRaw(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
-			return dao.query(qs);
+			return dao.queryRaw(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

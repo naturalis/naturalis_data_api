@@ -1,11 +1,11 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
-import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
-import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -28,20 +28,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.transfer.ITransferObject;
 import nl.naturalis.nba.dao.types.ESType;
 
-abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESType> {
+abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESType> {
 
-	private static Logger logger = getLogger(SpecimenDao.class);
+	private static Logger logger = getLogger(NbaDao.class);
 
 	private DocumentType<ES_OBJECT> dt;
 	private ITransferObject<API_OBJECT, ES_OBJECT> to;
 
-	AbstractDao(DocumentType<ES_OBJECT> dt)
+	NbaDao(DocumentType<ES_OBJECT> dt)
 	{
 		this.dt = dt;
 		this.to = getTransferObject();
@@ -71,8 +72,9 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 
 	public API_OBJECT[] find(String[] ids)
 	{
-		if (logger.isDebugEnabled())
+		if (logger.isDebugEnabled()) {
 			logger.debug("find({})", toJson(ids));
+		}
 		String type = dt.getName();
 		SearchRequestBuilder request = newSearchRequest();
 		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
@@ -81,25 +83,14 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		return processSearchRequest(request);
 	}
 
-	public API_OBJECT[] query(QuerySpec spec) throws InvalidQueryException
+	public QueryResult<API_OBJECT> query(QuerySpec spec) throws InvalidQueryException
 	{
 		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
-		return processSearchRequest(translator.translate());
+		return createQueryResult(translator.translate());
 	}
 
-	public Object[][] queryValues(QuerySpec spec) throws InvalidQueryException
+	public QueryResult<Map<String, Object>> queryRaw(QuerySpec spec) throws InvalidQueryException
 	{
-		if (spec.getFields() == null || spec.getFields().size() == 0) {
-			throw new InvalidQueryException("At least one field must be selected");
-		}
-		String[] fields = spec.getFields().toArray(new String[spec.getFields().size()]);
-		/* Enable reference comparison for id field: */
-		String idField = "id";
-		for (int i = 0; i < fields.length; i++) {
-			if (fields[i].equals(idField)) {
-				fields[i] = idField;
-			}
-		}
 		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
 		SearchRequestBuilder request = translator.translate();
 		if (logger.isDebugEnabled()) {
@@ -110,28 +101,23 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		if (logger.isDebugEnabled()) {
 			logger.debug("Documents found: {}", response.getHits().totalHits());
 		}
-		Object[][] records = new Object[hits.length][];
-		for (int i = 0; i < hits.length; ++i) {
-			Map<String, Object> data = hits[i].getSource();
-			Object[] record = new Object[fields.length];
-			for (int j = 0; j < fields.length; ++j) {
-				if (fields[j] == idField) {
-					record[j] = hits[i].getId();
-				}
-				else {
-					Object val = readField(data, fields[j]);
-					record[j] = ((val == MISSING_VALUE) ? null : val);
-				}
+		List<Map<String, Object>> resultSet = new ArrayList<>(hits.length);
+		if (spec.getFields().contains("id")) {
+			for (SearchHit hit : hits) {
+				Map<String, Object> source = hit.getSource();
+				source.put("id", hit.getId());
+				resultSet.add(hit.getSource());
 			}
-			records[i] = record;
 		}
-		return records;
-	}
-
-	public void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException
-	{
-		// TODO Auto-generated method stub
-
+		else {
+			for (SearchHit hit : hits) {
+				resultSet.add(hit.getSource());
+			}
+		}
+		QueryResult<Map<String, Object>> result = new QueryResult<>();
+		result.setTotalSize(response.getHits().totalHits());
+		result.setResultSet(resultSet);
+		return result;
 	}
 
 	public String save(API_OBJECT apiObject, boolean immediate)
@@ -184,16 +170,31 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 		return request;
 	}
 
+	QueryResult<API_OBJECT> createQueryResult(SearchRequestBuilder request)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query:\n{}", request);
+		}
+		SearchResponse response = request.execute().actionGet();
+		QueryResult<API_OBJECT> result = new QueryResult<>();
+		result.setTotalSize(response.getHits().totalHits());
+		API_OBJECT[] apiObjects = processResponse(response);
+		result.setResultSet(Arrays.asList(apiObjects));
+		return result;
+	}
+
 	API_OBJECT[] processSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing query:\n{}", request);
 		}
 		SearchResponse response = request.execute().actionGet();
+		return processResponse(response);
+	}
+
+	API_OBJECT[] processResponse(SearchResponse response)
+	{
 		SearchHit[] hits = response.getHits().getHits();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Documents found: {}", response.getHits().totalHits());
-		}
 		API_OBJECT[] apiObjects = createApiObjectArray(hits.length);
 		for (int i = 0; i < hits.length; ++i) {
 			String id = hits[i].getId();
@@ -206,9 +207,6 @@ abstract class AbstractDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends
 
 	private API_OBJECT createApiObject(String id, Map<String, Object> data)
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Creating {} instance with id {}", dt, id);
-		}
 		ObjectMapper om = dt.getObjectMapper();
 		ES_OBJECT esObject = om.convertValue(data, dt.getESType());
 		return to.getApiObject(esObject, id);

@@ -23,7 +23,7 @@ import nl.naturalis.nba.dao.transfer.ITransferObject;
 import nl.naturalis.nba.dao.transfer.SpecimenTransferObject;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
-public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements ISpecimenAccess {
+public class SpecimenDao extends NbaDao<Specimen, ESSpecimen> implements ISpecimenAccess {
 
 	private static Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDao.class);
 
@@ -103,9 +103,9 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	@Override
 	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
 	{
-//		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
-//		DwcaWriter writer = new DwcaWriter(dsc, out);
-//		writer.processDynamicQuery(spec);
+		//		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
+		//		DwcaWriter writer = new DwcaWriter(dsc, out);
+		//		writer.processDynamicQuery(spec);
 	}
 
 	@Override
@@ -117,28 +117,28 @@ public class SpecimenDao extends AbstractDao<Specimen, ESSpecimen> implements IS
 	public String[] dwcaGetDataSetNames()
 	{
 		return null;
-//		File dir = getDocumentTypeDirectory(SPECIMEN);
-//		ArrayList<String> names = new ArrayList<>(32);
-//		for (File subdir : getSubdirectories(dir)) {
-//			if (subdir.getName().equals("dynamic"))
-//				continue; // Special directory for dynamic DwCA
-//			if (!containsFile(subdir, "fields.config"))
-//				continue; // Can't be a data set collection dir
-//			File[] dataSetDirs = getSubdirectories(subdir);
-//			if (dataSetDirs.length == 0) {
-//				if (containsFile(subdir, "eml.xml")) {
-//					names.add(subdir.getName());
-//				}
-//			}
-//			else {
-//				for (File dataSetDir : dataSetDirs) {
-//					if (containsFile(dataSetDir, "eml.xml")) {
-//						names.add(dataSetDir.getName());
-//					}
-//				}
-//			}
-//		}
-//		return names.toArray(new String[names.size()]);
+		//		File dir = getDocumentTypeDirectory(SPECIMEN);
+		//		ArrayList<String> names = new ArrayList<>(32);
+		//		for (File subdir : getSubdirectories(dir)) {
+		//			if (subdir.getName().equals("dynamic"))
+		//				continue; // Special directory for dynamic DwCA
+		//			if (!containsFile(subdir, "fields.config"))
+		//				continue; // Can't be a data set collection dir
+		//			File[] dataSetDirs = getSubdirectories(subdir);
+		//			if (dataSetDirs.length == 0) {
+		//				if (containsFile(subdir, "eml.xml")) {
+		//					names.add(subdir.getName());
+		//				}
+		//			}
+		//			else {
+		//				for (File dataSetDir : dataSetDirs) {
+		//					if (containsFile(dataSetDir, "eml.xml")) {
+		//						names.add(dataSetDir.getName());
+		//					}
+		//				}
+		//			}
+		//		}
+		//		return names.toArray(new String[names.size()]);
 	}
 
 	@Override

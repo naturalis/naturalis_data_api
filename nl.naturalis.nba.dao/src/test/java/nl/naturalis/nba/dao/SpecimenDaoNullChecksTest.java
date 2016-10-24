@@ -3,7 +3,9 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
-import static nl.naturalis.nba.dao.util.ESUtil.*;
+import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.util.ESUtil.createType;
+import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -13,9 +15,8 @@ import org.junit.Test;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 /**
@@ -69,8 +70,8 @@ public class SpecimenDaoNullChecksTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 5, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 5, result.size());
 	}
 
 	/*
@@ -84,8 +85,8 @@ public class SpecimenDaoNullChecksTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 0, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
 	}
 
 	/*
@@ -98,8 +99,8 @@ public class SpecimenDaoNullChecksTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 0, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
 	}
 
 	/*
@@ -112,8 +113,8 @@ public class SpecimenDaoNullChecksTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
-		assertEquals("01", 5, result.length);
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 5, result.size());
 	}
 
 	/*
@@ -126,9 +127,9 @@ public class SpecimenDaoNullChecksTest {
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		Specimen[] result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Only for mSylvestris is gatheringEvent.dateTimeBegin null.
-		assertEquals("01", 1, result.length);
+		assertEquals("01", 1, result.size());
 	}
 
 }

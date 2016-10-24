@@ -1,43 +1,13 @@
 package nl.naturalis.nba.client;
 
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
-
 import nl.naturalis.nba.api.IMultiMediaObjectAccess;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 
-public class MultiMediaClient extends AbstractClient implements IMultiMediaObjectAccess {
+public class MultiMediaClient extends NbaClient<MultiMediaObject> implements IMultiMediaObjectAccess {
 
-	MultiMediaClient(ClientConfig cfg)
+	MultiMediaClient(ClientConfig cfg, String rootPath)
 	{
-		super(cfg);
+		super(cfg, rootPath);
 	}
-
-
-//	public boolean exists(String unitID) throws ServerException
-//	{
-//		httpGet.setPath("multimedia/exists/" + unitID);
-//		int status = httpGet.execute().getStatus();
-//		if (status != HTTP_OK) {
-//			throw ServerException.newServerException(status, httpGet.getResponseBody());
-//		}
-//		return ClientUtil.getBoolean(httpGet.getResponseBody());
-//	}
-//
-//
-//	public MultiMediaObject find(String unitID) throws ServerException
-//	{
-//		httpGet.setPath("multimedia/find/" + unitID);
-//		int status = httpGet.execute().getStatus();
-//		if (status == HTTP_NOT_FOUND) {
-//			return null;
-//		}
-//		else if (status != HTTP_OK) {
-//			throw ServerException.newServerException(status, httpGet.getResponseBody());
-//		}
-//		else {
-//			return ClientUtil.getObject(httpGet.getResponseBody(), MultiMediaObject.class);
-//		}
-//	}
 
 }

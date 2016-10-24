@@ -7,9 +7,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 
 /**
@@ -91,6 +93,55 @@ public class ClientUtil {
 		catch (JsonMappingException e0) {
 			String fmt = "Could not convert JSON response to %s:\n\n%s\n";
 			String msg = String.format(fmt, type.getSimpleName(), response);
+			throw new ClientException(msg);
+		}
+		catch (IOException e) {
+			throw new ClientException(e);
+		}
+	}
+
+	/**
+	 * Converts the specified JSON server response to an object of the specified
+	 * type.
+	 * 
+	 * @param response
+	 * @param type
+	 * @return
+	 */
+	public static <T> T getObject(byte[] response, TypeReference<T> type)
+	{
+		try {
+			ObjectMapper om = oml.getObjectMapper(type);
+			return om.readValue(response, type);
+		}
+		catch (JsonMappingException e0) {
+			String fmt = "Could not convert JSON response to instance of %s. Response was:\n%s";
+			String msg = String.format(fmt, type.getType().getTypeName(), response);
+			throw new ClientException(msg);
+		}
+		catch (IOException e) {
+			throw new ClientException(e);
+		}
+	}
+
+	/**
+	 * Converts the specified JSON server response to an object of the specified
+	 * type.
+	 * 
+	 * @param response
+	 * @param type
+	 * @return
+	 */
+	public static <T> QueryResult<T> getQueryResult(byte[] response,
+			TypeReference<QueryResult<T>> type)
+	{
+		try {
+			ObjectMapper om = oml.getObjectMapper(type);
+			return om.readValue(response, type);
+		}
+		catch (JsonMappingException e0) {
+			String fmt = "Could not convert JSON response to instance of %s. Response was:\n%s";
+			String msg = String.format(fmt, type.getType().getTypeName(), response);
 			throw new ClientException(msg);
 		}
 		catch (IOException e) {

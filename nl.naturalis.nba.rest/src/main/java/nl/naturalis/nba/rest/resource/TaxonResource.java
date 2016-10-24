@@ -52,7 +52,7 @@ public class TaxonResource {
 	@GET
 	@Path("/queryRaw")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryValues(@Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryRaw(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();

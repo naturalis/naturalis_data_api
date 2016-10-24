@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * @see http://terms.tdwg.org/wiki/Audubon_Core_Term_List#dwc:scientificName
  */
-public class MultiMediaObject extends NbaTraceableObject implements INbaModelObject {
+public class MultiMediaObject extends NbaTraceableObject implements IDocumentObject {
 
 	/**
 	 * Enumeration of the possible types of a {@code Media} object.
@@ -20,6 +20,7 @@ public class MultiMediaObject extends NbaTraceableObject implements INbaModelObj
 		COLLECTION, STILL_IMAGE, SOUND, MOVING_IMAGE, INTERACTIVE_RESOURCE, TEXT, OTHER
 	}
 
+	private String id;
 	private String sourceInstitutionID;
 	private String sourceID;
 	private String owner;
@@ -64,6 +65,18 @@ public class MultiMediaObject extends NbaTraceableObject implements INbaModelObj
 			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
 		}
 		serviceAccessPoints.put(sap.getVariant(), sap);
+	}
+
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		this.id = id;
 	}
 
 	public String getSourceInstitutionID()

@@ -10,6 +10,8 @@ import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.domainobject.util.CollectionUtil;
 
 import nl.naturalis.nba.api.query.Condition;
@@ -34,11 +36,15 @@ public class UrlQuerySpecBuilder {
 	public static final String PARAM_SORT_FIELDS = "_sortFields";
 
 	private static final String ERR_ILLEGAL_PARAM = "Unknown or illegal parameter: %s";
+	private static final String ERR_NO_UNDERSCORE = "Unknown or illegal parameter: "
+			+ "querySpec. Did you mean _querySpec?";
 	private static final String ERR_DUPLICATE_PARAM = "Duplicate parameter not allowed: %s";
 	private static final String ERR_BAD_PARAM = "Invalid value for parameter %s: \"%s\"";
 	private static final String ERR_BAD_INT_PARAM = "Parameter %s must be an integer (was \"%s\")";
 	private static final String ERR_SORT_PARAM = "Parameter %s: sort order must be \"ASC\" or \"DESC\"";
 	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
+
+	private static final Logger logger = LogManager.getLogger(UrlQuerySpecBuilder.class);
 
 	private UriInfo uriInfo;
 
@@ -49,6 +55,7 @@ public class UrlQuerySpecBuilder {
 
 	public QuerySpec build()
 	{
+		logger.info("Extracting QuerySpec object from request URL");
 		checkParams(uriInfo);
 		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 		List<String> values = params.get(PARAM_QUERY_SPEC);
@@ -65,6 +72,8 @@ public class UrlQuerySpecBuilder {
 			return deserialize(json, QuerySpec.class);
 		}
 		QuerySpec qs = new QuerySpec();
+		logger.info("Parameter \"_querySpec\" not present in request URL. Assembling "
+				+ "QuerySpec object from other query parameters in URL.");
 		for (String param : params.keySet()) {
 			values = params.get(param);
 			if (values.size() != 1) {
@@ -73,6 +82,8 @@ public class UrlQuerySpecBuilder {
 			}
 			String value = values.iterator().next();
 			switch (param) {
+				case "querySpec":
+					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
 				case PARAM_SORT_FIELDS:
 					qs.setSortFields(getSortFields(uriInfo, param, value));
 					break;
@@ -94,6 +105,7 @@ public class UrlQuerySpecBuilder {
 						throw new HTTP400Exception(uriInfo, msg);
 					}
 					qs.addCondition(new Condition(param, EQUALS, value));
+					break;
 			}
 		}
 		return qs;
@@ -103,11 +115,10 @@ public class UrlQuerySpecBuilder {
 	private static void checkParams(UriInfo uriInfo)
 	{
 		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-		if (params.containsKey("_querySpec")) {
+		if (params.containsKey(PARAM_QUERY_SPEC)) {
 			List<String> forbidden = Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE,
 					PARAM_SORT_FIELDS, PARAM_OPERATOR);
-			forbidden.removeAll(params.keySet());
-			if (forbidden.size() != 0) {
+			if (forbidden.removeAll(params.keySet())) {
 				String imploded = CollectionUtil.implode(forbidden);
 				String msg = String.format(ERR_BAD_PARAM_COMBI, imploded);
 				throw new HTTP400Exception(uriInfo, msg);

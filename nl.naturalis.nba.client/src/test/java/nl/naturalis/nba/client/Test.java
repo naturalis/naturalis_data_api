@@ -1,21 +1,22 @@
 package nl.naturalis.nba.client;
 
 import static java.lang.System.out;
+import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
 import static org.domainobject.util.StringUtil.pad;
 import static org.domainobject.util.StringUtil.rpad;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 
 public class Test {
 
 	public static void main(String[] args)
 	{
 		String baseUrl = "http://localhost:8080/v2";
-		NBASession session = new NBASession(new ClientConfig(baseUrl));
+		NbaSession session = new NbaSession(new ClientConfig(baseUrl));
 		SpecimenClient client = session.getSpecimenClient();
 		String[] collections = client.getNamedCollections();
 		for (String collection : collections) {
@@ -36,7 +37,7 @@ public class Test {
 		condition2.or(condition1);
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition1);
-		Specimen[] result=null;
+		QueryResult<Specimen> result=null;
 		try {
 			result = client.query(query);
 		}
@@ -44,7 +45,7 @@ public class Test {
 			System.err.println(e.getMessage());
 		}
 		ClientUtil.printTerse(result);
-		System.out.println("Number of specimens found: " + result.length);		
+		System.out.println("Number of specimens found: " + result.size());		
 	}
 
 }

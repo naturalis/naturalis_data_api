@@ -7,7 +7,6 @@ import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
 
-import java.io.OutputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,6 @@ import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
  * Client-side implementation of the {@link ISpecimenAccess specimen API}.
@@ -26,14 +24,14 @@ import nl.naturalis.nba.common.json.JsonUtil;
  * @author Ayco Holleman
  *
  */
-public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
+public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAccess {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenClient.class);
 
-	SpecimenClient(ClientConfig cfg)
+	SpecimenClient(ClientConfig cfg, String rootPath)
 	{
-		super(cfg);
+		super(cfg, rootPath);
 	}
 
 	@Override
@@ -45,29 +43,6 @@ public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getBoolean(request.getResponseBody());
-	}
-
-	@Override
-	public Specimen find(String id)
-	{
-		SimpleHttpGet request = getJson("specimen/find/" + id);
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getObject(request.getResponseBody(), Specimen.class);
-	}
-
-	@Override
-	public Specimen[] find(String[] ids)
-	{
-		String json = JsonUtil.toJson(ids);
-		SimpleHttpGet request = getJson("specimen/findByIds/" + json);
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getObject(request.getResponseBody(), Specimen[].class);
 	}
 
 	@Override
@@ -102,34 +77,6 @@ public class SpecimenClient extends AbstractClient implements ISpecimenAccess {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), String[].class);
-	}
-
-	@Override
-	public Specimen[] query(QuerySpec querySpec) throws InvalidQueryException
-	{
-		SimpleHttpGet request = newJsonGetRequest();
-		request.setPath("specimen/query");
-		request.addParam("querySpec", toJson(querySpec));
-		sendRequest(request);
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getObject(request.getResponseBody(), Specimen[].class);
-	}
-
-	@Override
-	public Object[][] queryValues(QuerySpec spec) throws InvalidQueryException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void queryValues(QuerySpec spec, OutputStream out) throws InvalidQueryException
-	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_US
 
 import java.text.SimpleDateFormat;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -35,7 +36,18 @@ public class ObjectMapperLocator {
 		dfault = createDefaultObjectMapper();
 	}
 
-	public ObjectMapper getObjectMapper(Class<?> forClass)
+	@SuppressWarnings("unused")
+	public ObjectMapper getObjectMapper(Class<?> forType)
+	{
+		/*
+		 * Currently we always serve up the same ObjectMapper instance, whatever
+		 * type of object to serialize or deserialize.
+		 */
+		return dfault;
+	}
+
+	@SuppressWarnings("unused")
+	public ObjectMapper getObjectMapper(TypeReference<?> forType)
 	{
 		/*
 		 * Currently we always serve up the same ObjectMapper instance, whatever

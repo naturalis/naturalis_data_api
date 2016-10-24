@@ -26,14 +26,14 @@ import org.domainobject.util.http.SimpleHttpGet;
  * @author Ayco Holleman
  *
  */
-public class NBASession {
+public class NbaSession {
 
 	private final ClientConfig cfg;
 
 	/**
 	 * Sets up a session that will connect to the production version of the NBA.
 	 */
-	public NBASession()
+	public NbaSession()
 	{
 		this.cfg = new ClientConfig();
 	}
@@ -44,7 +44,7 @@ public class NBASession {
 	 * 
 	 * @param cfg
 	 */
-	public NBASession(ClientConfig cfg)
+	public NbaSession(ClientConfig cfg)
 	{
 		this.cfg = cfg;
 	}
@@ -56,7 +56,7 @@ public class NBASession {
 	 */
 	public SpecimenClient getSpecimenClient()
 	{
-		return new SpecimenClient(cfg);
+		return new SpecimenClient(cfg, "specimen/");
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class NBASession {
 	 */
 	public MultiMediaClient getMultiMediaObjectClient()
 	{
-		return new MultiMediaClient(cfg);
+		return new MultiMediaClient(cfg, "multimedia/");
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class NBASession {
 	 */
 	public TaxonClient getTaxonClient()
 	{
-		return new TaxonClient(cfg);
+		return new TaxonClient(cfg, "taxon/");
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class NBASession {
 		request.setBaseUrl(cfg.getBaseUrl());
 		request.setAccept(MIMETYPE_JSON);
 		request.setPath("/ping");
-		AbstractClient.sendRequest(request);
+		NbaClient.sendRequest(request);
 		int status = request.getStatus();
 		if (status == HTTP_NOT_FOUND) {
 			return "Received a 404 (NOT FOUND) error. Please check Base URL: " + cfg.getBaseUrl();

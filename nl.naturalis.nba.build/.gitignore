@@ -1,4 +1,6 @@
 /log/
 /build.properties
 /build.v2.properties
+/log4j2.xml
 /.ant-targets-build.xml
+

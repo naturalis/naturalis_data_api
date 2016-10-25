@@ -11,25 +11,25 @@ import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
-public class OperatorCheck {
+class OperatorCheck {
 
-	private final Condition condition;
-	private final MappingInfo mappingInfo;
+	private Condition condition;
+	private MappingInfo mappingInfo;
 
-	public OperatorCheck(Condition condition, MappingInfo mappingInfo)
+	OperatorCheck(Condition condition, MappingInfo mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;
 	}
 
-	public void execute() throws InvalidConditionException
+	void execute() throws InvalidConditionException
 	{
 		if (!ok()) {
 			throw new IllegalOperatorException(condition);
 		}
 	}
 
-	public boolean ok() throws InvalidConditionException
+	boolean ok() throws InvalidConditionException
 	{
 		PrimitiveField field;
 		try {
@@ -51,6 +51,10 @@ public class OperatorCheck {
 					return af.hasMultiField(IGNORE_CASE_MULTIFIELD);
 				}
 				return false;
+			case LT:
+			case LTE:
+			case GT:
+			case GTE:
 			case BETWEEN:
 			case NOT_BETWEEN:
 				switch (field.getType()) {

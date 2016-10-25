@@ -7,18 +7,18 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
-public class FieldCheck {
+class FieldCheck {
 
-	private final Condition condition;
-	private final MappingInfo mappingInfo;
+	private Condition condition;
+	private MappingInfo mappingInfo;
 
-	public FieldCheck(Condition condition, MappingInfo mappingInfo)
+	FieldCheck(Condition condition, MappingInfo mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;
 	}
 
-	public void execute() throws InvalidConditionException
+	void execute() throws InvalidConditionException
 	{
 		if (!ok()) {
 			String fmt = "Field %s cannot be queried";
@@ -27,7 +27,7 @@ public class FieldCheck {
 		}
 	}
 
-	public boolean ok() throws InvalidConditionException
+	boolean ok() throws InvalidConditionException
 	{
 		ESField field;
 		try {

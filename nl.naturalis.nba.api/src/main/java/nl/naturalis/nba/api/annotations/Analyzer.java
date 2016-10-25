@@ -3,8 +3,8 @@ package nl.naturalis.nba.api.annotations;
 import nl.naturalis.nba.api.query.ComparisonOperator;
 
 /**
- * Provides symbolic constants for the Elasticsearch analyzers defined within
- * NBA's document store.
+ * Symbolic constants for the Elasticsearch analyzers defined within NBA's
+ * document store.
  * 
  * @see Analyzers
  * 

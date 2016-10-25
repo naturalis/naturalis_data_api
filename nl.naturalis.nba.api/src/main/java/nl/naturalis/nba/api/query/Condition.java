@@ -32,9 +32,16 @@ import java.util.List;
  * <h3>Negating a condition</h3>
  * <p>
  * A condition may be negated using operator {@link UnaryBooleanOperator#NOT
- * NOT}. This means that the <b>entire</b> expression that the condition
- * evaluates to is negated. Thus when you negate the above condition, the
- * resulting expression will <b>not</b> be:
+ * NOT}. For example:
+ * </p>
+ * <code>
+ * Condition condition = new Condition(NOT, "name", EQUALS, "John");
+ * </code>
+ * <p>
+ * However, be aware that the effect of this is that the <b>entire</b>
+ * expression that the condition evaluates to is negated. Thus when you negate
+ * the above condition (with both AND and OR siblings), the resulting expression
+ * will <b>not</b> be:
  * </p>
  * <code>
  * ((NOT C) AND A1 AND A2 AND A3) OR O1 OR 02 OR O3
@@ -49,7 +56,7 @@ import java.util.List;
  * This can quickly become confusing if the siblings themselves are also
  * negated. To avoid this confusion, avoid using the NOT operator and instead
  * use (for example) NOT_EQUALS instead of EQUALS. Alternatively, add negatively
- * expressed conditions separately to the {@link QuerySpec} object without
+ * expressed conditions one by one to the {@link QuerySpec} object instead of
  * nesting one within the other:
  * </p>
  * <code>
@@ -74,6 +81,14 @@ public class Condition {
 	{
 	}
 
+	/**
+	 * Creates a condition for the specified field, comparing it to the
+	 * specified value using the specified operator.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 */
 	public Condition(String field, String operator, Object value)
 	{
 		this.field = field;
@@ -81,6 +96,14 @@ public class Condition {
 		this.value = value;
 	}
 
+	/**
+	 * Creates a condition for the specified field, comparing it to the
+	 * specified value using the specified operator.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 */
 	public Condition(String field, ComparisonOperator operator, Object value)
 	{
 		this.field = field;
@@ -88,6 +111,15 @@ public class Condition {
 		this.value = value;
 	}
 
+	/**
+	 * Creates a negated condition for the specified field, comparing it to the
+	 * specified value using the specified operator.
+	 * 
+	 * @param not
+	 * @param field
+	 * @param operator
+	 * @param value
+	 */
 	public Condition(UnaryBooleanOperator not, String field, String operator, Object value)
 	{
 		this.not = not;
@@ -96,6 +128,15 @@ public class Condition {
 		this.value = value;
 	}
 
+	/**
+	 * Creates a negated condition for the specified field, comparing it to the
+	 * specified value using the specified operator.
+	 * 
+	 * @param not
+	 * @param field
+	 * @param operator
+	 * @param value
+	 */
 	public Condition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
 			Object value)
 	{
@@ -105,16 +146,38 @@ public class Condition {
 		this.value = value;
 	}
 
+	/**
+	 * Adds an AND sibling condition to this {@code Condition}.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 * @return
+	 */
 	public Condition and(String field, String operator, Object value)
 	{
 		return and(new Condition(field, operator, value));
 	}
 
+	/**
+	 * Adds an AND sibling condition to this {@code Condition}.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 * @return
+	 */
 	public Condition and(String field, ComparisonOperator operator, Object value)
 	{
 		return and(new Condition(field, operator, value));
 	}
 
+	/**
+	 * Adds an AND sibling condition to this {@code Condition}.
+	 * 
+	 * @param sibling
+	 * @return
+	 */
 	public Condition and(Condition sibling)
 	{
 		if (and == null) {
@@ -124,16 +187,38 @@ public class Condition {
 		return this;
 	}
 
+	/**
+	 * Adds an OR sibling condition to this {@code Condition}.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 * @return
+	 */
 	public Condition or(String field, String operator, Object value)
 	{
 		return or(new Condition(field, operator, value));
 	}
 
+	/**
+	 * Adds an OR sibling condition to this {@code Condition}.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 * @return
+	 */
 	public Condition or(String field, ComparisonOperator operator, Object value)
 	{
 		return or(new Condition(field, operator, value));
 	}
 
+	/**
+	 * Adds an OR sibling condition to this {@code Condition}.
+	 * 
+	 * @param sibling
+	 * @return
+	 */
 	public Condition or(Condition sibling)
 	{
 		if (or == null) {
@@ -145,7 +230,7 @@ public class Condition {
 
 	/**
 	 * Negates the condition. That is, if it already was a negated condition, it
-	 * becomes a non-negated condition again; otherwise it becomes a negated
+	 * becomes a non-negated condition again, otherwise it becomes a negated
 	 * condition.
 	 * 
 	 * @return
@@ -168,8 +253,8 @@ public class Condition {
 	}
 
 	/**
-	 * Returns {@link UnaryBooleanOperator#NOT UnaryBooleanOperator.NOT} if the
-	 * condition is negated, {@code null} otherwise.
+	 * Returns {@link UnaryBooleanOperator#NOT NOT} if the condition is negated,
+	 * {@code null} otherwise.
 	 * 
 	 * @return
 	 */
@@ -179,10 +264,9 @@ public class Condition {
 	}
 
 	/**
-	 * Determines whether or not this is a negated condition. Passing
-	 * {@link UnaryBooleanOperator#NOT UnaryBooleanOperator.NOT} will make it a
-	 * negated condition. Passing {@code null} effectively makes it a
-	 * non-negated condition.
+	 * Determines whether or not to negate the condition. Passing
+	 * {@link UnaryBooleanOperator#NOT NOT} will make it a negated condition.
+	 * Passing {@code null} effectively makes it a non-negated condition.
 	 * 
 	 * @param not
 	 */
@@ -191,51 +275,101 @@ public class Condition {
 		this.not = not;
 	}
 
+	/**
+	 * Returns the field to which the condition applies.
+	 * 
+	 * @return
+	 */
 	public String getField()
 	{
 		return field;
 	}
 
+	/**
+	 * Sets the field to which the condition applies.
+	 * 
+	 * @param field
+	 */
 	public void setField(String field)
 	{
 		this.field = field;
 	}
 
+	/**
+	 * Returns the opeator with which to compare the field to a value.
+	 * 
+	 * @return
+	 */
 	public ComparisonOperator getOperator()
 	{
 		return operator;
 	}
 
+	/**
+	 * Sets the opeator with which to compare the field to a value.
+	 * 
+	 * @param operator
+	 */
 	public void setOperator(ComparisonOperator operator)
 	{
 		this.operator = operator;
 	}
 
+	/**
+	 * Returns the value to compare the field with.
+	 * 
+	 * @return
+	 */
 	public Object getValue()
 	{
 		return value;
 	}
 
+	/**
+	 * Sets the value to compare the field with.
+	 * 
+	 * @param value
+	 */
 	public void setValue(Object value)
 	{
 		this.value = value;
 	}
 
+	/**
+	 * Returns the AND sibling conditions.
+	 * 
+	 * @return
+	 */
 	public List<Condition> getAnd()
 	{
 		return and;
 	}
 
+	/**
+	 * Sets the AND sibling conditions.
+	 * 
+	 * @param and
+	 */
 	public void setAnd(List<Condition> and)
 	{
 		this.and = and;
 	}
 
+	/**
+	 * Returns the OR sibling conditions.
+	 * 
+	 * @return
+	 */
 	public List<Condition> getOr()
 	{
 		return or;
 	}
 
+	/**
+	 * Sets the OR sibling conditions.
+	 * 
+	 * @param or
+	 */
 	public void setOr(List<Condition> or)
 	{
 		this.or = or;

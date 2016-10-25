@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.model.Taxon;
 
 /**
  * Models an NBA query. All information required by the various {@code query}
@@ -76,7 +77,7 @@ public class QuerySpec {
 
 	/**
 	 * Causes the documents in the result set to be sorted on the specified
-	 * field with the sort order determined by the {@code ascending} parameter.
+	 * field with the sort order determined by the {@code ascending} argument.
 	 * 
 	 * @param field
 	 */
@@ -101,15 +102,16 @@ public class QuerySpec {
 
 	/**
 	 * Sets the fields to return in the query response. This is akin to a SQL
-	 * SELECT clause. By default all fields will be selected. Note that if you
-	 * use this {@code QuerySpec} instance to retrieve data model objects, as
-	 * with {@link INbaAccess#query(QuerySpec) INbaAccess.query}, you
-	 * <i>still</i> get those objects, only with all non-selected fields set to
-	 * their default value ({@code null} for string fields and objects, zero for
-	 * number fields and {@code false} for boolean fields). This might save some
-	 * bandwidth, but probably only marginally. However, limiting the number of
-	 * fields you select <i>will</i> make a difference with methods like
-	 * {@link INbaAccess#queryVRaw(QuerySpec) INbaAccess.queryRaw}.
+	 * SELECT clause. By default all fields will be selected. Be aware of the
+	 * effect this method has when querying data model objects like {@link Taxon
+	 * taxa} or {@link Specimen specimens} (e.g. with the
+	 * {@link INbaAccess#query(QuerySpec) query} method): you <i>still</i> get
+	 * full-blown {@code Taxon} c.q. {@code Specimen} objects, only with all
+	 * non-selected fields set to their default value ({@code null} for strings,
+	 * dates and objects, zero for number fields and {@code false} for boolean
+	 * fields). The values of non-selected fields have no relation to their
+	 * actual values in the NBA data store. Therefore: do not read values of
+	 * fields you did not select!
 	 * 
 	 * @return
 	 */

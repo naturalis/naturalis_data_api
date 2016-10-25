@@ -12,10 +12,13 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.IOUtil;
 import org.domainobject.util.http.SimpleHttpGet;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
@@ -90,6 +93,24 @@ public class TaxonClient extends NbaClient<Taxon> implements ITaxonAccess {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getObject(request.getResponseBody(), String[].class);
+	}
+
+	@Override
+	Class<Taxon> documentObjectClass()
+	{
+		return Taxon.class;
+	}
+
+	@Override
+	Class<Taxon[]> documentObjectArrayClass()
+	{
+		return Taxon[].class;
+	}
+
+	@Override
+	TypeReference<QueryResult<Taxon>> queryResultTypeReference()
+	{
+		return new TypeReference<QueryResult<Taxon>>() {};
 	}
 
 }

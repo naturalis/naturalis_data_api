@@ -1,6 +1,6 @@
 package nl.naturalis.nba.client;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;

@@ -13,9 +13,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.http.SimpleHttpGet;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
@@ -122,6 +125,24 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	Class<Specimen> documentObjectClass()
+	{
+		return Specimen.class;
+	}
+
+	@Override
+	Class<Specimen[]> documentObjectArrayClass()
+	{
+		return Specimen[].class;
+	}
+
+	@Override
+	TypeReference<QueryResult<Specimen>> queryResultTypeReference()
+	{
+		return new TypeReference<QueryResult<Specimen>>() {};
 	}
 
 }

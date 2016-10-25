@@ -28,7 +28,8 @@ import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
  * Abstract base class for all client-side implementations of the NBA API.
- * Provides HTTP request plumbing for subclasses.
+ * Implements shared functionality specified by {@link INbaAccess} and provides
+ * HTTP request plumbing functionality for subclasses.
  * 
  * @author Ayco Holleman
  *
@@ -74,8 +75,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		TypeReference<T> typeRef = new TypeReference<T>() {};
-		return getObject(request.getResponseBody(), typeRef);
+		return getObject(request.getResponseBody(), documentObjectClass());
 	}
 
 	@Override
@@ -87,8 +87,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		TypeReference<T[]> typeRef = new TypeReference<T[]>() {};
-		return getObject(request.getResponseBody(), typeRef);
+		return getObject(request.getResponseBody(), documentObjectArrayClass());
 	}
 
 	@Override
@@ -102,8 +101,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		TypeReference<QueryResult<T>> typeRef = new TypeReference<QueryResult<T>>() {};
-		return getQueryResult(request.getResponseBody(), typeRef);
+		return getQueryResult(request.getResponseBody(), queryResultTypeReference());
 	}
 
 	@Override
@@ -118,9 +116,16 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		TypeReference<QueryResult<Map<String, Object>>> typeRef = new TypeReference<QueryResult<Map<String, Object>>>() {};
+		TypeReference<QueryResult<Map<String, Object>>> typeRef;
+		typeRef = new TypeReference<QueryResult<Map<String, Object>>>() {};
 		return getQueryResult(request.getResponseBody(), typeRef);
 	}
+
+	abstract Class<T> documentObjectClass();
+
+	abstract Class<T[]> documentObjectArrayClass();
+
+	abstract TypeReference<QueryResult<T>> queryResultTypeReference();
 
 	SimpleHttpGet newJsonGetRequest()
 	{

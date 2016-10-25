@@ -106,12 +106,15 @@ public class QuerySpec {
 	 * effect this method has when querying data model objects like {@link Taxon
 	 * taxa} or {@link Specimen specimens} (e.g. with the
 	 * {@link INbaAccess#query(QuerySpec) query} method): you <i>still</i> get
-	 * full-blown {@code Taxon} c.q. {@code Specimen} objects, only with all
-	 * non-selected fields set to their default value ({@code null} for strings,
-	 * dates and objects, zero for number fields and {@code false} for boolean
-	 * fields). The values of non-selected fields have no relation to their
-	 * actual values in the NBA data store. Therefore: do not read values of
-	 * fields you did not select!
+	 * back full-blown {@code Taxon} c.q. {@code Specimen} objects, only with
+	 * all non-selected fields set to their default value ({@code null} for
+	 * strings, dates and objects, zero for number fields and {@code false} for
+	 * boolean fields). Thus, the value of a non-selected field has no relation
+	 * to its actual value in the NBA data store. This is especially confusing
+	 * if you also specified a {@link Condition} for that field (e.g. you
+	 * specified it to be {@code true} but in the query result it appears to be
+	 * {@code false} - the default boolean value). Therefore: <i>do not read
+	 * values of fields you did not select!</i>
 	 * 
 	 * @return
 	 */

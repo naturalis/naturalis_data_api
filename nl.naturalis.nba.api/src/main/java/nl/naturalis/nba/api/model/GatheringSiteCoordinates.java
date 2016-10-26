@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+import nl.naturalis.nba.api.annotations.Mapped;
+
 public class GatheringSiteCoordinates implements INbaModelObject {
 
 	private Double longitudeDecimal;
@@ -19,6 +21,15 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	{
 		this.longitudeDecimal = longitude;
 		this.latitudeDecimal = latitude;
+	}
+
+	@Mapped
+	public GeoPoint getGeoPoint()
+	{
+		if (longitudeDecimal == null || latitudeDecimal == null) {
+			return null;
+		}
+		return new GeoPoint(latitudeDecimal, longitudeDecimal);
 	}
 
 	public Double getLongitudeDecimal()

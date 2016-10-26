@@ -9,7 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import nl.naturalis.nba.api.annotations.MappedProperty;
+import nl.naturalis.nba.api.annotations.Mapped;
 
 class MappingUtil {
 
@@ -36,7 +36,7 @@ class MappingUtil {
 
 	/**
 	 * Returns all getter methods of the specified class and its superclasses
-	 * (not including {@link Object}) that have the {@link MappedProperty}
+	 * (not including {@link Object}) that have the {@link Mapped}
 	 * annotation.
 	 * 
 	 * @param cls
@@ -91,7 +91,7 @@ class MappingUtil {
 
 	/**
 	 * Checks whether a getter method is annotated with the
-	 * {@link MappedProperty} annotation.
+	 * {@link Mapped} annotation.
 	 */
 	private static boolean isMappedProperty(Method m)
 	{
@@ -104,11 +104,11 @@ class MappingUtil {
 			return false;
 		String name = m.getName();
 		if (name.startsWith("get") && (name.charAt(3) == '_' || isUpperCase(name.charAt(3)))) {
-			return null != m.getAnnotation(MappedProperty.class);
+			return null != m.getAnnotation(Mapped.class);
 		}
 		if (name.startsWith("is") && (name.charAt(2) == '_' || isUpperCase(name.charAt(2)))) {
 			if (returnType == boolean.class || returnType == Boolean.class) {
-				return null != m.getAnnotation(MappedProperty.class);
+				return null != m.getAnnotation(Mapped.class);
 			}
 		}
 		return false;

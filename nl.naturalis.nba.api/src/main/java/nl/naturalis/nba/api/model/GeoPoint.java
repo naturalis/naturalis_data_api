@@ -2,25 +2,37 @@ package nl.naturalis.nba.api.model;
 
 public class GeoPoint implements INbaModelObject {
 
-	private double[] coordinates;
+	private double lat;
+	private double lon;
+
+	public GeoPoint(double lat, double lon)
+	{
+		this.lat = lat;
+		this.lon = lon;
+	}
 
 	public GeoPoint()
 	{
 	}
 
-	public GeoPoint(double longitude, double latitude)
+	double getLat()
 	{
-		this.coordinates = new double[] { longitude, latitude };
+		return lat;
 	}
 
-	public double[] getCoordinates()
+	void setLat(double lat)
 	{
-		return coordinates;
+		this.lat = lat;
 	}
 
-	public void setCoordinates(double[] coordinates)
+	double getLon()
 	{
-		this.coordinates = coordinates;
+		return lon;
+	}
+
+	void setLon(double lon)
+	{
+		this.lon = lon;
 	}
 
 }

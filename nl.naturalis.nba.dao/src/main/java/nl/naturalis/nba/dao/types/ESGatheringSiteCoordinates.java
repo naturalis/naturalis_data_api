@@ -2,7 +2,8 @@ package nl.naturalis.nba.dao.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import nl.naturalis.nba.api.annotations.MappedProperty;
+import nl.naturalis.nba.api.annotations.Mapped;
+import nl.naturalis.nba.api.model.GeoPoint;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ESGatheringSiteCoordinates {
@@ -26,13 +27,13 @@ public class ESGatheringSiteCoordinates {
 		this.latitudeDecimal = latitude;
 	}
 
-	@MappedProperty
-	public double[] getPoint()
+	@Mapped
+	public GeoPoint getGeoPoint()
 	{
 		if (longitudeDecimal == null || latitudeDecimal == null) {
 			return null;
 		}
-		return new double[] { longitudeDecimal, latitudeDecimal };
+		return new GeoPoint(latitudeDecimal, longitudeDecimal);
 	}
 
 	public Double getLongitudeDecimal()

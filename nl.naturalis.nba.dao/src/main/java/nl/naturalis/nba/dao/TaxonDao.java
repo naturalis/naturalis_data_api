@@ -94,7 +94,7 @@ public class TaxonDao extends NbaDao<Taxon, ESTaxon> implements ITaxonAccess {
 	}
 
 	@Override
-	Taxon[] createApiObjectArray(int length)
+	Taxon[] createDocumentObjectArray(int length)
 	{
 		return new Taxon[length];
 	}

@@ -148,7 +148,7 @@ public class SpecimenDao extends NbaDao<Specimen, ESSpecimen> implements ISpecim
 	}
 
 	@Override
-	Specimen[] createApiObjectArray(int length)
+	Specimen[] createDocumentObjectArray(int length)
 	{
 		return new Specimen[length];
 	}

@@ -23,9 +23,15 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
@@ -35,20 +41,21 @@ import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.transfer.ITransferObject;
 import nl.naturalis.nba.dao.types.ESType;
 
-abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESType> {
+abstract class NbaDao<T extends IDocumentObject, U extends ESType> implements INbaAccess<T> {
 
 	private static Logger logger = getLogger(NbaDao.class);
 
-	private DocumentType<ES_OBJECT> dt;
-	private ITransferObject<API_OBJECT, ES_OBJECT> to;
+	private DocumentType<U> dt;
+	private ITransferObject<T, U> to;
 
-	NbaDao(DocumentType<ES_OBJECT> dt)
+	NbaDao(DocumentType<U> dt)
 	{
 		this.dt = dt;
 		this.to = getTransferObject();
 	}
 
-	public API_OBJECT find(String id)
+	@Override
+	public T find(String id)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("find(\"{}\")", id);
@@ -67,10 +74,11 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 			return null;
 		}
 		Map<String, Object> data = response.getSource();
-		return createApiObject(id, data);
+		return createDocumentObject(id, data);
 	}
 
-	public API_OBJECT[] find(String[] ids)
+	@Override
+	public T[] find(String[] ids)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("find({})", toJson(ids));
@@ -83,12 +91,14 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 		return processSearchRequest(request);
 	}
 
-	public QueryResult<API_OBJECT> query(QuerySpec spec) throws InvalidQueryException
+	@Override
+	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
+		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 		return createQueryResult(translator.translate());
 	}
 
+	@Override
 	public QueryResult<Map<String, Object>> queryRaw(QuerySpec spec) throws InvalidQueryException
 	{
 		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
@@ -120,7 +130,64 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 		return result;
 	}
 
-	public String save(API_OBJECT apiObject, boolean immediate)
+	@Override
+	public long count(QuerySpec querySpec) throws InvalidQueryException
+	{
+		SearchRequestBuilder request;
+		if (querySpec == null) {
+			request = newSearchRequest();
+		}
+		else {
+			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+			request = translator.translate();
+		}
+		request.setSize(0);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query:\n{}", request);
+		}
+		SearchResponse response = request.execute().actionGet();
+		return response.getHits().totalHits();
+	}
+
+	@Override
+	public List<KeyValuePair<String, Long>> getDistinctValues(String forField, QuerySpec querySpec)
+			throws InvalidQueryException
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("getDistinctValues(\"{}\")", forField);
+		}
+		SearchRequestBuilder request;
+		if (querySpec == null) {
+			request = newSearchRequest();
+		}
+		else {
+			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+			request = translator.translate();
+		}
+		TermsBuilder termsBuilder = AggregationBuilders.terms(forField);
+		termsBuilder.field(forField);
+		request.setSize(0);
+		request.addAggregation(termsBuilder);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query:\n{}", request);
+		}
+		SearchResponse response = request.execute().actionGet();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Documents found: {}", response.getHits().totalHits());
+		}
+		Terms terms = response.getAggregations().get(forField);
+		List<Bucket> buckets = terms.getBuckets();
+		List<KeyValuePair<String, Long>> result = new ArrayList<>(buckets.size());
+		for (Bucket bucket : buckets) {
+			KeyValuePair<String, Long> kv = new KeyValuePair<String, Long>();
+			kv.setKey(bucket.getKeyAsString());
+			kv.setValue(bucket.getDocCount());
+			result.add(kv);
+		}
+		return result;
+	}
+
+	public String save(T apiObject, boolean immediate)
 	{
 		String id = apiObject.getId();
 		String index = dt.getIndexInfo().getName();
@@ -130,7 +197,7 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 			logger.debug(pattern, index, type, id);
 		}
 		IndexRequestBuilder request = client().prepareIndex(index, type, id);
-		ES_OBJECT esObject = to.getEsObject(apiObject);
+		U esObject = to.getEsObject(apiObject);
 		byte[] source = JsonUtil.serialize(esObject);
 		request.setSource(source);
 		IndexResponse response = request.execute().actionGet();
@@ -153,9 +220,9 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 		return response.isFound();
 	}
 
-	abstract ITransferObject<API_OBJECT, ES_OBJECT> getTransferObject();
+	abstract ITransferObject<T, U> getTransferObject();
 
-	abstract API_OBJECT[] createApiObjectArray(int length);
+	abstract T[] createDocumentObjectArray(int length);
 
 	SearchRequestBuilder newSearchRequest()
 	{
@@ -170,20 +237,20 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 		return request;
 	}
 
-	QueryResult<API_OBJECT> createQueryResult(SearchRequestBuilder request)
+	QueryResult<T> createQueryResult(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing query:\n{}", request);
 		}
 		SearchResponse response = request.execute().actionGet();
-		QueryResult<API_OBJECT> result = new QueryResult<>();
+		QueryResult<T> result = new QueryResult<>();
 		result.setTotalSize(response.getHits().totalHits());
-		API_OBJECT[] apiObjects = processResponse(response);
+		T[] apiObjects = processResponse(response);
 		result.setResultSet(Arrays.asList(apiObjects));
 		return result;
 	}
 
-	API_OBJECT[] processSearchRequest(SearchRequestBuilder request)
+	T[] processSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing query:\n{}", request);
@@ -192,23 +259,23 @@ abstract class NbaDao<API_OBJECT extends IDocumentObject, ES_OBJECT extends ESTy
 		return processResponse(response);
 	}
 
-	API_OBJECT[] processResponse(SearchResponse response)
+	T[] processResponse(SearchResponse response)
 	{
 		SearchHit[] hits = response.getHits().getHits();
-		API_OBJECT[] apiObjects = createApiObjectArray(hits.length);
+		T[] apiObjects = createDocumentObjectArray(hits.length);
 		for (int i = 0; i < hits.length; ++i) {
 			String id = hits[i].getId();
 			Map<String, Object> data = hits[i].getSource();
-			API_OBJECT specimen = createApiObject(id, data);
+			T specimen = createDocumentObject(id, data);
 			apiObjects[i] = specimen;
 		}
 		return apiObjects;
 	}
 
-	private API_OBJECT createApiObject(String id, Map<String, Object> data)
+	private T createDocumentObject(String id, Map<String, Object> data)
 	{
 		ObjectMapper om = dt.getObjectMapper();
-		ES_OBJECT esObject = om.convertValue(data, dt.getESType());
+		U esObject = om.convertValue(data, dt.getESType());
 		return to.getApiObject(esObject, id);
 	}
 

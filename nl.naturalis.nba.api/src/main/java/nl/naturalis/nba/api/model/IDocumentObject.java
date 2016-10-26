@@ -21,8 +21,9 @@ public interface IDocumentObject extends INbaModelObject {
 
 	/**
 	 * Returns the Elasticsearch system ID of the document corresponding to this
-	 * instance. This is the value of the standard {@code _id} field of
-	 * Elasticsearch documents.
+	 * instance. This is the value of the standard Elasticsearch {@code _id}
+	 * field (not part of the document itself but of the {@code SearchHit}
+	 * encapsulating the document).
 	 * 
 	 * @return
 	 */

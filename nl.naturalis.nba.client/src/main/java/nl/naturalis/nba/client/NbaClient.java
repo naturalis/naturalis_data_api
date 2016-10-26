@@ -9,6 +9,7 @@ import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +21,7 @@ import org.domainobject.util.http.SimpleHttpRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
@@ -119,6 +121,19 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		TypeReference<QueryResult<Map<String, Object>>> typeRef;
 		typeRef = new TypeReference<QueryResult<Map<String, Object>>>() {};
 		return getQueryResult(request.getResponseBody(), typeRef);
+	}
+
+	@Override
+	public long count(QuerySpec querySpec) throws InvalidQueryException
+	{
+		return 0;
+	}
+
+	@Override
+	public List<KeyValuePair<String, Long>> getDistinctValues(String forField, QuerySpec spec)
+			throws InvalidQueryException
+	{
+		return null;
 	}
 
 	abstract Class<T> documentObjectClass();

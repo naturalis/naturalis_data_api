@@ -10,9 +10,59 @@ import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.model.Taxon;
 
 /**
+ * <p>
  * Models an NBA query. All information required by the various {@code query}
  * methods in the API take a {@link QuerySpec} object to drive the query
  * process.
+ * </p>
+ * <h3>Providing query specifications through the REST API</h3>
+ * <p>
+ * Whenever a method in the formal API (the set of interfaces in the
+ * {@code nl.naturalis.nba.api} package) takes a {@code QuerySpec} object, the
+ * corresponding REST API gives you two options the encode the {@code QuerySpec}
+ * object in the URL. One option is to provide a {@code _querySpec} query
+ * parameter whose value is the JSON-encoded {@code QuerySpec} object (i.e. the
+ * {@code QuerySpec} object serialized to JSON). For example:<br>
+ * <br>
+ * <code>
+ * http://api.biodiversitydata.nl/v2/specimen/query?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22sourceSystem.code%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BRAHMS%22%7D%5D%2C%22from%22%3A0%2C%22size%22%3A0%7D<br>
+ * </code><br>
+ * Since these URLs are hard to read and construct for humans, you can also
+ * encode the query specification as follows:<br>
+ * <br>
+ * <ol>
+ * <li>Every query parameter that does not start with an underscore is taken to
+ * be a {@link Condition query condition}. For example:<br>
+ * <br>
+ * <code>
+ * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen<br>
+ * </code><br>
+ * <li>The {@code _fields} parameter can be used to set the fields you want
+ * returned in the response. You can specify multiple fields by separating them
+ * with a comma. See {@link #setFields(List) setFields}.
+ * <li>The {@code _from} parameter can be used to specify an result set offset.
+ * See {@link #setFrom(int) setFrom}.
+ * <li>The {@code _size} parameter can be used to specify the maximum number of
+ * documents to return. See {@link #setSize(int) setSize}.
+ * <li>The {@code _sortFields} parameter can be used to specify the fields on
+ * which to sort. You can specify multiple fields as well as sort directions by
+ * using commas to separate the fields and colons the separate field from sort
+ * direction. See {@link #setSortFields(List) setSortFields}. For example:<br>
+ * <br>
+ * <code>
+ * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&_sortFields=recordBasis:ASC,unitID:DESC<br>
+ * </code><br>
+ * <li>The {@code _operator} parameter can be used to specify the logical
+ * operator joining the query conditions (either AND or OR). See
+ * {@link #setLogicalOperator(LogicalOperator) setLogicalOperator}.
+ * </ol>
+ * </p>
+ * <p>
+ * You cannot mix the two encoding options. You must <b>either</b> provide a
+ * {@code _querySpec} query parameter <b>or</b> use the combination of
+ * parameters listed above. Complex queries with nested query conditions cannot
+ * be encoded using the second option.
+ * </p>
  * 
  * @author Ayco Holleman
  *

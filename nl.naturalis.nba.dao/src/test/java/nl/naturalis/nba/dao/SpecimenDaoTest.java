@@ -23,6 +23,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.transfer.SpecimenTransfer;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
@@ -424,6 +425,13 @@ public class SpecimenDaoTest {
 		SpecimenDao dao = new SpecimenDao();
 		String[] ids = dao.getIdsInCollection(theme);
 		assertEquals("01", 3, ids.length);
+	}
+
+	@Test
+	public void testGetDistinctValues_01() throws InvalidQueryException
+	{
+		SpecimenDao dao = new SpecimenDao();
+		System.out.println(JsonUtil.toPrettyJson(dao.getDistinctValues("recordBasis", null)));
 	}
 
 	/*

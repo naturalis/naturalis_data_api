@@ -20,7 +20,7 @@ public enum ComparisonOperator
 	 * search term that is {@code null}. This is equivalent to using the
 	 * <code>IS NULL</code> operator in SQL. For example:<br>
 	 * <code>
-	 * // Retrieves all documents in which taxonRank is not set
+	 * // Retrieves all documents in which taxonRank is not set<br>
 	 * Condition condition = new Condition("taxonRank", EQUALS, null);
 	 * </code>
 	 */
@@ -33,22 +33,22 @@ public enum ComparisonOperator
 	 * providing a search term that is {@code null}. This is equivalent to using
 	 * the <code>IS NOT NULL</code> operator in SQL. For example:<br>
 	 * <code>
-	 * // Retrieves all documents in which taxonRank is set
+	 * // Retrieves all documents in which taxonRank is set<br>
 	 * Condition condition = new Condition("taxonRank", NOT_EQUALS, null);
 	 * </code>
 	 */
 	NOT_EQUALS("!="),
 
 	/**
-	 * <code>EQUALS IGNORE CASE</code>. Operator used to establish that search
-	 * term and field value are equal ignoring case. Can only be used for text
-	 * fields. The search term may be null when using the EQUALS operator. This
-	 * is equivalent to using the <code>IS NULL</code> operator in SQL.
+	 * <code>EQUALS IGNORE CASE</code>&#46; Operator used to establish that
+	 * search term and field value are equal ignoring case. Can only be used for
+	 * text fields. The search term may be null when using the EQUALS operator.
+	 * This is equivalent to using the <code>IS NULL</code> operator in SQL.
 	 */
 	EQUALS_IC,
 
 	/**
-	 * <code>NOT EQUALS IGNORE CASE</code>. Operator used to establish that
+	 * <code>NOT EQUALS IGNORE CASE</code>&#46; Operator used to establish that
 	 * search term and field value are not equal, even when ignoring case. Can
 	 * only be used for text fields. The search term may be null when using the
 	 * EQUALS operator. This is equivalent to using the <code>IS NOT NULL</code>
@@ -71,30 +71,30 @@ public enum ComparisonOperator
 	NOT_LIKE,
 
 	/**
-	 * <code>LESS THAN</code>. Operator used to establish that a field&#39;s
+	 * <code>LESS THAN</code>&#46; Operator used to establish that a field&#39;s
 	 * value is less than the search term. Can only be used for number fields
 	 * and date fields.
 	 */
 	LT("<"),
 
 	/**
-	 * <code>LESS THAN OR EQUAL</code>. Operator used to establish that a
+	 * <code>LESS THAN OR EQUAL</code>&#46; Operator used to establish that a
 	 * field&#39;s value is less than or equal to the search term. Can only be
 	 * used for number fields and date fields.
 	 */
 	LTE("<="),
 
 	/**
-	 * <code>GREATER THAN. Operator used to establish that a field&#39;s value
-	 * is greater than the search term. Can only be used for number fields and
-	 * date fields.
+	 * <code>GREATER THAN</code>&#46; Operator used to establish that a
+	 * field&#39;s value is greater than the search term. Can only be used for
+	 * number fields and date fields.
 	 */
 	GT(">"),
 
 	/**
-	 * GREATER THAN OR EQUAL. Operator used to establish that a field&#39;s
-	 * value is greater than or equal to the search term. Can only be used for
-	 * number fields and date fields.
+	 * <code>GREATER THAN OR EQUAL</code>&#46; Operator used to establish that a
+	 * field&#39;s value is greater than or equal to the search term. Can only
+	 * be used for number fields and date fields.
 	 */
 	GTE(">="),
 
@@ -102,10 +102,10 @@ public enum ComparisonOperator
 	 * Operator used to establish that a field&#39;s value falls within a given
 	 * range. Can only be used for number fields and date fields. When using the
 	 * BETWEEN or NOT_BETWEEN operator in a {@link Condition}, the
-	 * {@link Condition#getValue() value} property of the condition must be an
-	 * array or a {@link Collection} object with exactly two elements. The first
-	 * element is used as the "from" value (inclusive). The second element is
-	 * used as the "to" value (inclusive). Although you can choose any
+	 * {@link Condition#getValue() value} property of the condition <b>must</b>
+	 * be an array or a {@link Collection} object with exactly two elements. The
+	 * first element is used as the "from" value (inclusive). The second element
+	 * is used as the "to" value (inclusive). Although you can choose any
 	 * {@link Collection} implementation you like, you should not choose one
 	 * where you have no control over the order of the elements (like
 	 * {@link HashSet}). Example:<br>
@@ -125,9 +125,9 @@ public enum ComparisonOperator
 	/**
 	 * Operator used to establish that a field&#39;s value is one of a given set
 	 * of values. When using the IN or NOT_IN operator in a {@link Condition},
-	 * the {@link Condition#getValue() value} property of the condition must be
-	 * an array or a {@link Collection} object with zero or more elements.
-	 * Example:<br>
+	 * the {@link Condition#getValue() value} property of the condition
+	 * <b>must</b> be an array or a {@link Collection} object with zero or more
+	 * elements. Example:<br>
 	 * <code>
 	 * Condition condition = new Condition("phaseOrStage", IN, new String[] {"embryo", "pupa", "larva"});
 	 * </code>

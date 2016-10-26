@@ -14,8 +14,6 @@ import nl.naturalis.nba.api.query.QuerySpec;
  */
 public interface ISpecimenAccess extends INbaAccess<Specimen> {
 
-
-
 	/**
 	 * Retrieves a {@link Specimen} by its UnitID. Since the UnitID is not
 	 * strictly specified to be unique across all of the NBA's data sources, a
@@ -73,7 +71,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	/**
 	 * Returns all &#34;special collections&#34; defined within the specimen
 	 * dataset. These can be collections from a particular collector or
-	 * collections revolving around a theme (e.g. Extinct Birds).
+	 * collections revolving around a theme (e.g. &#34;Extinct Birds&#34;).
 	 * 
 	 * @return
 	 */

@@ -29,20 +29,20 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
+		Object value = condition.getValue();
 		String nestedPath = MappingInfo.getNestedPath(field());
 		String multiField = path() + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
-			if (value() == null) {
+			if (value == null) {
 				return boolQuery().mustNot(existsQuery(path()));
 			}
-			String value = value().toString().toLowerCase();
-			return termQuery(multiField, value);
+			return termQuery(multiField, value.toString().toLowerCase());
 		}
-		if (value() == null) {
+		if (value == null) {
 			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(path())));
 		}
-		String value = value().toString().toLowerCase();
-		return nestedQuery(nestedPath, termQuery(multiField, value));
+		String str = value.toString().toLowerCase();
+		return nestedQuery(nestedPath, termQuery(multiField, str));
 	}
 
 	@Override
@@ -70,8 +70,9 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	@Override
 	void ensureValueValidForOperator() throws InvalidConditionException
 	{
-		ensureValueIsNotNull(condition);
-		ensureValueIsString(condition);
+		if (condition.getValue() != null) {
+			ensureValueIsString(condition);
+		}
 	}
 
 }

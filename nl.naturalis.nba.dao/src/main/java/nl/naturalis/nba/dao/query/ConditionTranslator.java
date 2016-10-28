@@ -143,15 +143,15 @@ public abstract class ConditionTranslator {
 		}
 	}
 
-	/**
-	 * Returns the value specified in the condition.
-	 * 
-	 * @return
-	 */
-	Object value()
-	{
-		return condition.getValue();
-	}
+//	/**
+//	 * Returns the value specified in the condition.
+//	 * 
+//	 * @return
+//	 */
+//	Object value()
+//	{
+//		return condition.getValue();
+//	}
 
 	/**
 	 * Returns the AND siblings specified in the condition.

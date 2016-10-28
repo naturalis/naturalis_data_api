@@ -32,7 +32,7 @@ class InConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		InValuesBuilder ivb = new InValuesBuilder(value());
+		InValuesBuilder ivb = new InValuesBuilder(condition.getValue());
 		QueryBuilder query;
 		if (ivb.containsNull()) {
 			if (ivb.getValues().size() == 0)

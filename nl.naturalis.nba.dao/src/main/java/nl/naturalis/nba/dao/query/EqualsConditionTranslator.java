@@ -21,17 +21,18 @@ class EqualsConditionTranslator extends ConditionTranslator {
 
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
+		Object value = condition.getValue();
 		String nestedPath = MappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
-			if (value() == null) {
+			if (value == null) {
 				return boolQuery().mustNot(existsQuery(path()));
 			}
-			return termQuery(path(), value());
+			return termQuery(path(), value);
 		}
-		if (value() == null) {
+		if (value == null) {
 			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(path())));
 		}
-		return nestedQuery(nestedPath, termQuery(path(), value()));
+		return nestedQuery(nestedPath, termQuery(path(), value));
 	}
 
 	@Override

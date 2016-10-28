@@ -15,7 +15,7 @@ class LTEConditionTranslator extends RangeConditionTranslator {
 	@Override
 	void setRange(RangeQueryBuilder query)
 	{
-		query.lte(value());
+		query.lte(condition.getValue());
 	}
 
 }

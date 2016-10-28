@@ -15,7 +15,7 @@ class GTConditionTranslator extends RangeConditionTranslator {
 	@Override
 	void setRange(RangeQueryBuilder query)
 	{
-		query.gt(value());
+		query.gt(condition.getValue());
 	}
 
 }

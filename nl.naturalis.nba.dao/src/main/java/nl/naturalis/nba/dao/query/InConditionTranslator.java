@@ -70,12 +70,13 @@ class InConditionTranslator extends ConditionTranslator {
 
 	private TermsQueryBuilder isOneOf(List<?> values)
 	{
-		return termsQuery(path(), values);
+		return termsQuery(condition.getField(), values);
 	}
 
 	private BoolQueryBuilder isNull()
 	{
-		return boolQuery().mustNot(existsQuery(path()));
+		String field = condition.getField();
+		return boolQuery().mustNot(existsQuery(field));
 	}
 
 }

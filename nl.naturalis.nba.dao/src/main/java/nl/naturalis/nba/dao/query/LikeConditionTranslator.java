@@ -29,7 +29,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		String nestedPath = MappingInfo.getNestedPath(field());
-		String multiField = path() + '.' + LIKE_MULTIFIELD.getName();
+		String multiField = condition.getField() + '.' + LIKE_MULTIFIELD.getName();
 		String value = condition.getValue().toString().toLowerCase();
 		if (nestedPath == null) {
 			return termQuery(multiField, value);

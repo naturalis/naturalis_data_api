@@ -116,15 +116,15 @@ public abstract class ConditionTranslator {
 	 */
 	abstract void ensureValueValidForOperator() throws InvalidConditionException;
 
-	/**
-	 * Returns the field specified in the condition.
-	 * 
-	 * @return
-	 */
-	String path()
-	{
-		return condition.getField();
-	}
+//	/**
+//	 * Returns the field specified in the condition.
+//	 * 
+//	 * @return
+//	 */
+//	String path()
+//	{
+//		return condition.getField();
+//	}
 
 	/**
 	 * Returns a {@link PrimitiveField} instance corresponding to the field
@@ -136,22 +136,12 @@ public abstract class ConditionTranslator {
 	PrimitiveField field() throws InvalidConditionException
 	{
 		try {
-			return (PrimitiveField) mappingInfo.getField(path());
+			return (PrimitiveField) mappingInfo.getField(condition.getField());
 		}
 		catch (NoSuchFieldException e) {
 			throw new InvalidConditionException(e.getMessage());
 		}
 	}
-
-//	/**
-//	 * Returns the value specified in the condition.
-//	 * 
-//	 * @return
-//	 */
-//	Object value()
-//	{
-//		return condition.getValue();
-//	}
 
 	/**
 	 * Returns the AND siblings specified in the condition.

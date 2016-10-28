@@ -67,7 +67,8 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		if (min == null && max == null) {
 			throw invalidConditionException(condition, ERROR_1, operator);
 		}
-		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
+		String field = condition.getField();
+		RangeQueryBuilder query = QueryBuilders.rangeQuery(field);
 		query.from(min);
 		query.to(max);
 		String nestedPath = MappingInfo.getNestedPath(field());

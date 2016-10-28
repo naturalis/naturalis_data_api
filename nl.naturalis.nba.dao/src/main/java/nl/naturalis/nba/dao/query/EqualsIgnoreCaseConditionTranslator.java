@@ -1,7 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
-import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsString;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
@@ -29,17 +28,18 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
+		String field = condition.getField();
 		Object value = condition.getValue();
 		String nestedPath = MappingInfo.getNestedPath(field());
-		String multiField = path() + '.' + IGNORE_CASE_MULTIFIELD.getName();
+		String multiField = field + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
 			if (value == null) {
-				return boolQuery().mustNot(existsQuery(path()));
+				return boolQuery().mustNot(existsQuery(field));
 			}
 			return termQuery(multiField, value.toString().toLowerCase());
 		}
 		if (value == null) {
-			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(path())));
+			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(field)));
 		}
 		String str = value.toString().toLowerCase();
 		return nestedQuery(nestedPath, termQuery(multiField, str));

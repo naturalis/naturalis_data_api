@@ -110,7 +110,7 @@ public abstract class ConditionTranslator {
 	abstract void checkOperatorFieldCombi() throws IllegalOperatorException;
 
 	/*
-	 * Implement any up-front/fail-fast operator-value compatibility check yo
+	 * Implement any up-front/fail-fast operator-value compatibility check you
 	 * can think of. Throw an InvalidConditionException if value is not
 	 * compatible with operator.
 	 */
@@ -141,7 +141,7 @@ public abstract class ConditionTranslator {
 		List<Condition> or = condition.getOr();
 		QueryBuilder result;
 		if (and == null && or == null) {
-			if (!nested && withNegatingOperator()) {
+			if (!nested && mustNegate()) {
 				result = not(translateCondition());
 			}
 			else {
@@ -161,13 +161,18 @@ public abstract class ConditionTranslator {
 		else {
 			result = translateWithAndSiblings();
 		}
+		/*
+		 * Condition might be negated using operator NOT as well as use a
+		 * negating comparison operator like NOT_BETWEEN, causing the condition
+		 * to be doubly negated.
+		 */
 		return condition.isNegated() ? not(result) : result;
 	}
 
 	private BoolQueryBuilder translateWithAndSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		if (withNegatingOperator()) {
+		if (mustNegate()) {
 			boolQuery.mustNot(translateCondition());
 		}
 		else {
@@ -175,7 +180,7 @@ public abstract class ConditionTranslator {
 		}
 		for (Condition sibling : condition.getAnd()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
-			if (translator.withNegatingOperator()) {
+			if (translator.mustNegate()) {
 				boolQuery.mustNot(translator.translate(true));
 			}
 			else {
@@ -188,7 +193,7 @@ public abstract class ConditionTranslator {
 	private BoolQueryBuilder translateWithOrSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		if (withNegatingOperator()) {
+		if (mustNegate()) {
 			boolQuery.should(not(translateCondition()));
 		}
 		else {
@@ -196,7 +201,7 @@ public abstract class ConditionTranslator {
 		}
 		for (Condition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
-			if (translator.withNegatingOperator()) {
+			if (translator.mustNegate()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
 			else {
@@ -211,7 +216,7 @@ public abstract class ConditionTranslator {
 		BoolQueryBuilder boolQuery = boolQuery();
 		for (Condition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
-			if (translator.withNegatingOperator()) {
+			if (translator.mustNegate()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
 			else {
@@ -230,7 +235,7 @@ public abstract class ConditionTranslator {
 	 * Whether or not the condition translated by this translator instance uses
 	 * a negating operator.
 	 */
-	private boolean withNegatingOperator()
+	private boolean mustNegate()
 	{
 		return negatingOperators.contains(condition.getOperator());
 	}

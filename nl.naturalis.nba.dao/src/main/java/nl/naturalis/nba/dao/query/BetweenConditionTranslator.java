@@ -16,6 +16,8 @@ import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
+import static nl.naturalis.nba.dao.query.TranslatorUtil.*;
+
 /**
  * Translates conditions with a BETWEEN or NOT_BETWEEN operator.
  * 
@@ -29,7 +31,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 			+ "with exactly two elements";
 
 	private static final String ERROR_1 = "When using operator %s, at least "
-			+ "one of boundary values must not be null";
+			+ "one of the boundary values must not be null";
 
 	BetweenConditionTranslator(Condition condition, MappingInfo inspector)
 	{
@@ -39,30 +41,28 @@ class BetweenConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		if (value() == null) {
-			throw searchTermMustNotBeNull();
-		}
 		Object val0;
 		Object val1;
 		if (value().getClass().isArray()) {
-			if (Array.getLength(value()) != 2)
-				throw error(ERROR_0, operator());
+			if (Array.getLength(value()) != 2) {
+				throw invalidConditionException(condition, ERROR_0, operator());
+			}
 			val0 = Array.get(value(), 0);
 			val1 = Array.get(value(), 1);
 		}
 		else if (value() instanceof Collection) {
 			Collection<?> collection = (Collection<?>) value();
 			if (collection.size() != 2)
-				throw error(ERROR_0, operator());
+				throw invalidConditionException(condition, ERROR_0, operator());
 			Iterator<?> iterator = collection.iterator();
 			val0 = iterator.next();
 			val1 = iterator.next();
 		}
 		else {
-			throw error(ERROR_0, operator());
+			throw invalidConditionException(condition, ERROR_0, operator());
 		}
 		if (val0 == null && val1 == null) {
-			throw error(ERROR_1, operator());
+			throw invalidConditionException(condition, ERROR_1, operator());
 		}
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
 		query.from(val0);
@@ -74,10 +74,15 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		return nestedQuery(nestedPath, query);
 	}
 
-
 	@Override
-	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	void ensureOperatorValidForField() throws IllegalOperatorException
 	{
 		ensureFieldIsDateOrNumber(condition, mappingInfo);
+	}
+
+	@Override
+	void ensureValueValidForOperator() throws InvalidConditionException
+	{
+		ensureValueIsNotNull(condition);
 	}
 }

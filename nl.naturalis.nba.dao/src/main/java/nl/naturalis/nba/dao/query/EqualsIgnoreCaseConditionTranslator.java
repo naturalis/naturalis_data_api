@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsString;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -27,12 +29,6 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		if (value() == null) {
-			throw searchTermMustNotBeNull();
-		}
-		if (value().getClass() != String.class) {
-			throw searchTermHasWrongType();
-		}
 		String nestedPath = MappingInfo.getNestedPath(field());
 		String multiField = path() + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
@@ -50,7 +46,7 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	void ensureOperatorValidForField() throws IllegalOperatorException
 	{
 		ESField field = null;
 		try {
@@ -69,6 +65,13 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 				return;
 			}
 		}
+	}
+
+	@Override
+	void ensureValueValidForOperator() throws InvalidConditionException
+	{
+		ensureValueIsNotNull(condition);
+		ensureValueIsString(condition);
 	}
 
 }

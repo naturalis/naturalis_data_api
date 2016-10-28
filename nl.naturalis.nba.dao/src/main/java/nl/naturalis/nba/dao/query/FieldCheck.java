@@ -7,6 +7,13 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
+/**
+ * Ensures the a {@link Condition} specifies an existing field and that it is a
+ * primitive field (not an object).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class FieldCheck {
 
 	private Condition condition;

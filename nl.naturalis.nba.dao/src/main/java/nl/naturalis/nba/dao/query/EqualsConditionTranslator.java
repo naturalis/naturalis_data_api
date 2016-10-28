@@ -12,7 +12,7 @@ import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
-public class EqualsConditionTranslator extends ConditionTranslator {
+class EqualsConditionTranslator extends ConditionTranslator {
 
 	EqualsConditionTranslator(Condition condition, MappingInfo inspector)
 	{
@@ -35,8 +35,12 @@ public class EqualsConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	void ensureOperatorValidForField() throws IllegalOperatorException
 	{
-		// All operators allowed with EQUALS/NOT_EQUALS
+	}
+
+	@Override
+	void ensureValueValidForOperator() throws InvalidConditionException
+	{
 	}
 }

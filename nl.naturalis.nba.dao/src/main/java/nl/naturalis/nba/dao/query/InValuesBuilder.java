@@ -8,8 +8,8 @@ import java.util.List;
 import nl.naturalis.nba.api.query.Condition;
 
 /**
- * Converts a condition's {@link Condition#getValue() value} (which can be any
- * type of object) to a list of nun-null values.
+ * Converts a condition's {@link Condition#getValue() value} to a {@link List}
+ * of nun-null values.
  * 
  * @author Ayco Holleman
  *
@@ -25,7 +25,7 @@ class InValuesBuilder {
 	 * 
 	 * @param value
 	 */
-	public InValuesBuilder(Object value)
+	InValuesBuilder(Object value)
 	{
 		if (value == null) {
 			values = new ArrayList<>(0);
@@ -48,7 +48,7 @@ class InValuesBuilder {
 	 * 
 	 * @return
 	 */
-	public List<Object> getValues()
+	List<Object> getValues()
 	{
 		return values;
 	}
@@ -59,7 +59,7 @@ class InValuesBuilder {
 	 * 
 	 * @return
 	 */
-	public boolean containsNull()
+	boolean containsNull()
 	{
 		return containsNull;
 	}

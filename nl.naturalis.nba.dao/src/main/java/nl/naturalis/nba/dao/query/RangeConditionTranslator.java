@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureFieldIsDateOrNumber;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.*;
 import static org.domainobject.util.ClassUtil.isA;
 import static org.domainobject.util.ClassUtil.isNumber;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -26,12 +27,6 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		if (value() == null) {
-			throw searchTermMustNotBeNull();
-		}
-		if (!isNumber(value()) && !isA(value(), Date.class)) {
-			throw searchTermHasWrongType();
-		}
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
 		setRange(query);
 		String nestedPath = MappingInfo.getNestedPath(field());
@@ -42,9 +37,16 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	void ensureOperatorValidForField() throws IllegalOperatorException
 	{
 		ensureFieldIsDateOrNumber(condition, mappingInfo);
+	}
+
+	@Override
+	void ensureValueValidForOperator() throws InvalidConditionException
+	{
+		ensureValueIsNotNull(condition);
+		ensureValueIsDateOrNumber(condition);
 	}
 
 	abstract void setRange(RangeQueryBuilder query);

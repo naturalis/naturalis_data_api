@@ -18,12 +18,13 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.es.map.PrimitiveField;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
@@ -101,29 +102,19 @@ public abstract class ConditionTranslator {
 
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
-	abstract void ensureFieldCompatibleWithOperator() throws InvalidConditionException;
+	/*
+	 * Implement any up-front/fail-fast field-operator compatibility check you
+	 * can think of. Throw an InvalidConditionException if field is not
+	 * compatible with operator.
+	 */
+	abstract void ensureOperatorValidForField() throws IllegalOperatorException;
 
-	InvalidConditionException error(String msg, Object... msgArgs)
-	{
-		StringBuilder sb = new StringBuilder(100);
-		sb.append("Invalid query condition for field ");
-		sb.append(condition.getField());
-		sb.append(". ");
-		sb.append(String.format(msg, msgArgs));
-		return new InvalidConditionException(sb.toString());
-	}
-
-	InvalidConditionException searchTermMustNotBeNull()
-	{
-		return error("Search term must not be null when using operator %s", operator());
-	}
-
-	InvalidConditionException searchTermHasWrongType()
-	{
-		ComparisonOperator op = condition.getOperator();
-		Class<?> type = value().getClass();
-		return error("Search term has wrong type for operator %s: %s", op, type);
-	}
+	/*
+	 * Implement any up-front/fail-fast operator-value compatibility check yo
+	 * can think of. Throw an InvalidConditionException if value is not
+	 * compatible with operator.
+	 */
+	abstract void ensureValueValidForOperator() throws InvalidConditionException;
 
 	/**
 	 * Returns the field specified in the condition.
@@ -194,7 +185,8 @@ public abstract class ConditionTranslator {
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
-		ensureFieldCompatibleWithOperator();
+		ensureOperatorValidForField();
+		ensureValueValidForOperator();
 		QueryBuilder result;
 		if (and() == null && or() == null) {
 			if (!nested && withNegatingOperator()) {

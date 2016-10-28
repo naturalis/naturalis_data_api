@@ -18,5 +18,4 @@ class GTConditionTranslator extends RangeConditionTranslator {
 		query.gt(value());
 	}
 
-
 }

@@ -51,9 +51,13 @@ class InConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	void ensureOperatorValidForField() throws IllegalOperatorException
 	{
-		// All operators allowed with IN/NOT_IN
+	}
+
+	@Override
+	void ensureValueValidForOperator() throws InvalidConditionException
+	{
 	}
 
 	private QueryBuilder isNullOrOneOf(List<?> values)
@@ -73,4 +77,5 @@ class InConditionTranslator extends ConditionTranslator {
 	{
 		return boolQuery().mustNot(existsQuery(path()));
 	}
+
 }

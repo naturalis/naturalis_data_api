@@ -1,7 +1,9 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsString;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.invalidConditionException;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
@@ -26,29 +28,17 @@ class LikeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		if (value() == null) {
-			throw searchTermMustNotBeNull();
-		}
-		if (value().getClass() != String.class) {
-			throw searchTermHasWrongType();
-		}
-		String value = (String) value();
-		if (value.length() < 3) {
-			throw error("Search term must contain at least 3 characters with operator %s", LIKE);
-		}
-		if (value.length() > 10) {
-			throw error("Search term must contain at most 10 characters with operator %s", LIKE);
-		}
 		String nestedPath = MappingInfo.getNestedPath(field());
 		String multiField = path() + '.' + LIKE_MULTIFIELD.getName();
+		String value = condition.getValue().toString().toLowerCase();
 		if (nestedPath == null) {
-			return termQuery(multiField, value.toLowerCase());
+			return termQuery(multiField, value);
 		}
-		return nestedQuery(nestedPath, termQuery(multiField, value.toLowerCase()));
+		return nestedQuery(nestedPath, termQuery(multiField, value));
 	}
 
 	@Override
-	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	void ensureOperatorValidForField() throws IllegalOperatorException
 	{
 		ESField field = null;
 		try {
@@ -71,5 +61,21 @@ class LikeConditionTranslator extends ConditionTranslator {
 			}
 		}
 		throw new IllegalOperatorException(condition);
+	}
+
+	@Override
+	void ensureValueValidForOperator() throws InvalidConditionException
+	{
+		ensureValueIsNotNull(condition);
+		ensureValueIsString(condition);
+		String value = condition.getValue().toString();
+		if (value.length() < 3) {
+			String fmt = "Search term must contain at least 3 characters with operator %s";
+			throw invalidConditionException(condition, fmt, condition.getOperator());
+		}
+		if (value.length() > 10) {
+			String fmt = "Search term must contain at most 10 characters with operator %s";
+			throw invalidConditionException(condition, fmt, condition.getOperator());
+		}
 	}
 }

@@ -1,6 +1,9 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureFieldIsDateOrNumber;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.invalidConditionException;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.lang.reflect.Array;
@@ -16,8 +19,6 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-
-import static nl.naturalis.nba.dao.query.TranslatorUtil.*;
 
 /**
  * Translates conditions with a BETWEEN or NOT_BETWEEN operator.
@@ -71,7 +72,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(field);
 		query.from(min);
 		query.to(max);
-		String nestedPath = MappingInfo.getNestedPath(field());
+		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null) {
 			return query;
 		}

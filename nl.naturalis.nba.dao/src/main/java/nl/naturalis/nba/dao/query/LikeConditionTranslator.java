@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.query;
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsString;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.invalidConditionException;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -28,7 +29,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		String nestedPath = MappingInfo.getNestedPath(field());
+		String nestedPath = getNestedPath(condition, mappingInfo);
 		String multiField = condition.getField() + '.' + LIKE_MULTIFIELD.getName();
 		String value = condition.getValue().toString().toLowerCase();
 		if (nestedPath == null) {

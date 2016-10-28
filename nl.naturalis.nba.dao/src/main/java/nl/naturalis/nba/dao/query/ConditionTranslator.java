@@ -123,15 +123,15 @@ public abstract class ConditionTranslator {
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	PrimitiveField field() throws InvalidConditionException
-	{
-		try {
-			return (PrimitiveField) mappingInfo.getField(condition.getField());
-		}
-		catch (NoSuchFieldException e) {
-			throw new InvalidConditionException(e.getMessage());
-		}
-	}
+//	PrimitiveField field() throws InvalidConditionException
+//	{
+//		try {
+//			return (PrimitiveField) mappingInfo.getField(condition.getField());
+//		}
+//		catch (NoSuchFieldException e) {
+//			throw new InvalidConditionException(e.getMessage());
+//		}
+//	}
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{

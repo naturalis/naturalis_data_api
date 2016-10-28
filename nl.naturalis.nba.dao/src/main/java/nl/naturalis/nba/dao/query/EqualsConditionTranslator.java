@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -23,7 +24,7 @@ class EqualsConditionTranslator extends ConditionTranslator {
 	{
 		String field = condition.getField();
 		Object value = condition.getValue();
-		String nestedPath = MappingInfo.getNestedPath(field());
+		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null) {
 			if (value == null) {
 				return boolQuery().mustNot(existsQuery(field));

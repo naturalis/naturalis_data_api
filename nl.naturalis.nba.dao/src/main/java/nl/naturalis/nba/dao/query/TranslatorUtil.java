@@ -12,6 +12,7 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
 
 class TranslatorUtil {
 
@@ -24,6 +25,19 @@ class TranslatorUtil {
 		sb.append(". ");
 		sb.append(String.format(msg, msgArgs));
 		return new InvalidConditionException(sb.toString());
+	}
+
+	static String getNestedPath(Condition condition, MappingInfo mappingInfo)
+	{
+		PrimitiveField pf;
+		try {
+			pf = (PrimitiveField) mappingInfo.getField(condition.getField());
+		}
+		catch (NoSuchFieldException e) {
+			// Won't happen because already checked in ConditionTranslatorFactory
+			return null;
+		}
+		return MappingInfo.getNestedPath(pf);
 	}
 
 	static InvalidConditionException searchTermMustNotBeNull(Condition condition)

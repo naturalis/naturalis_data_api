@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -17,14 +18,15 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 /**
- * Translates conditions with an IN or NOT_IN operator.
+ * Translates conditions with an IN or NOT_IN operator when used with non-Geo
+ * data types.
  * 
  * @author Ayco Holleman
  *
  */
-class InConditionTranslator extends ConditionTranslator {
+class InValuesConditionTranslator extends ConditionTranslator {
 
-	InConditionTranslator(Condition condition, MappingInfo inspector)
+	InValuesConditionTranslator(Condition condition, MappingInfo inspector)
 	{
 		super(condition, inspector);
 	}
@@ -35,15 +37,17 @@ class InConditionTranslator extends ConditionTranslator {
 		InValuesBuilder ivb = new InValuesBuilder(condition.getValue());
 		QueryBuilder query;
 		if (ivb.containsNull()) {
-			if (ivb.getValues().size() == 0)
+			if (ivb.getValues().size() == 0) {
 				query = isNull();
-			else
+			}
+			else {
 				query = isNullOrOneOf(ivb.getValues());
+			}
 		}
 		else {
 			query = isOneOf(ivb.getValues());
 		}
-		String nestedPath = MappingInfo.getNestedPath(field());
+		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null) {
 			return query;
 		}

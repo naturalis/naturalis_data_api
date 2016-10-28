@@ -62,7 +62,7 @@ public class ConditionTranslatorFactory {
 				return new LikeConditionTranslator(condition, mappingInfo);
 			case IN:
 			case NOT_IN:
-				return new InConditionTranslator(condition, mappingInfo);
+				return new InValuesConditionTranslator(condition, mappingInfo);
 		}
 		return null;
 	}

@@ -12,6 +12,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -49,7 +50,13 @@ class InConditionTranslator extends ConditionTranslator {
 		return nestedQuery(nestedPath, query);
 	}
 
-	public QueryBuilder isNullOrOneOf(List<?> values)
+	@Override
+	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	{
+		// All operators allowed with IN/NOT_IN
+	}
+
+	private QueryBuilder isNullOrOneOf(List<?> values)
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
 		boolQuery.should(isOneOf(values));
@@ -57,14 +64,13 @@ class InConditionTranslator extends ConditionTranslator {
 		return boolQuery;
 	}
 
-	TermsQueryBuilder isOneOf(List<?> values)
+	private TermsQueryBuilder isOneOf(List<?> values)
 	{
 		return termsQuery(path(), values);
 	}
 
-	BoolQueryBuilder isNull()
+	private BoolQueryBuilder isNull()
 	{
 		return boolQuery().mustNot(existsQuery(path()));
 	}
-
 }

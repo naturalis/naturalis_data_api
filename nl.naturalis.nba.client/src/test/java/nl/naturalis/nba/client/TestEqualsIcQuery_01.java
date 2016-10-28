@@ -15,7 +15,7 @@ public class TestEqualsIcQuery_01 {
 		String baseUrl = "http://localhost:8080/v2";
 		NbaSession session = new NbaSession(new ClientConfig(baseUrl));
 		SpecimenClient client = session.getSpecimenClient();
-		Condition condition1 = new Condition("sourceSystem.code", EQUALS, "BRAHMS");
+		Condition condition1 = new Condition("sourceSystem.code", EQUALS, "CRS");
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition1);
 		QueryResult<Specimen> result = null;

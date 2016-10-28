@@ -101,6 +101,8 @@ public abstract class ConditionTranslator {
 
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
+	abstract void ensureFieldCompatibleWithOperator() throws InvalidConditionException;
+
 	InvalidConditionException error(String msg, Object... msgArgs)
 	{
 		StringBuilder sb = new StringBuilder(100);
@@ -138,7 +140,7 @@ public abstract class ConditionTranslator {
 	 * specified in the condition.
 	 * 
 	 * @return
-	 * @throws InvalidConditionException 
+	 * @throws InvalidConditionException
 	 */
 	PrimitiveField field() throws InvalidConditionException
 	{
@@ -192,8 +194,7 @@ public abstract class ConditionTranslator {
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
-		new FieldCheck(condition, mappingInfo).execute();
-		new OperatorCheck(condition, mappingInfo).execute();
+		ensureFieldCompatibleWithOperator();
 		QueryBuilder result;
 		if (and() == null && or() == null) {
 			if (!nested && withNegatingOperator()) {

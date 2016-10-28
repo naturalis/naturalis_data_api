@@ -12,9 +12,11 @@ class GTConditionTranslator extends RangeConditionTranslator {
 		super(condition, mappingInfo);
 	}
 
-	protected void setRange(RangeQueryBuilder query)
+	@Override
+	void setRange(RangeQueryBuilder query)
 	{
 		query.gt(value());
 	}
+
 
 }

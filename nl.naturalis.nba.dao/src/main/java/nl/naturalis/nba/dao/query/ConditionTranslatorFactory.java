@@ -21,9 +21,9 @@ public class ConditionTranslatorFactory {
 	 * @throws InvalidConditionException
 	 */
 	public static ConditionTranslator getTranslator(Condition condition, DocumentType<?> type)
+			throws InvalidConditionException
 	{
-		MappingInfo inspector = new MappingInfo(type.getMapping());
-		return getTranslator(condition, inspector);
+		return getTranslator(condition, new MappingInfo(type.getMapping()));
 	}
 
 	/**
@@ -33,9 +33,12 @@ public class ConditionTranslatorFactory {
 	 * @param condition
 	 * @param mappingInfo
 	 * @return
+	 * @throws InvalidConditionException
 	 */
 	public static ConditionTranslator getTranslator(Condition condition, MappingInfo mappingInfo)
+			throws InvalidConditionException
 	{
+		new FieldCheck(condition, mappingInfo).execute();
 		switch (condition.getOperator()) {
 			case EQUALS:
 			case NOT_EQUALS:

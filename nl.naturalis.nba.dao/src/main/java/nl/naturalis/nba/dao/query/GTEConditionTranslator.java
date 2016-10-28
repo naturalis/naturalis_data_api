@@ -12,6 +12,7 @@ class GTEConditionTranslator extends RangeConditionTranslator {
 		super(condition, mappingInfo);
 	}
 
+	@Override
 	void setRange(RangeQueryBuilder query)
 	{
 		query.gte(value());

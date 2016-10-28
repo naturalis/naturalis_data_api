@@ -8,6 +8,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -31,5 +32,11 @@ public class EqualsConditionTranslator extends ConditionTranslator {
 			return nestedQuery(nestedPath, boolQuery().mustNot(existsQuery(path())));
 		}
 		return nestedQuery(nestedPath, termQuery(path(), value()));
+	}
+
+	@Override
+	void ensureFieldCompatibleWithOperator() throws IllegalOperatorException
+	{
+		// All operators allowed with EQUALS/NOT_EQUALS
 	}
 }

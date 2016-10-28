@@ -17,18 +17,18 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
-public class SortFieldsTranslator {
+class SortFieldsTranslator {
 
 	private List<SortField> sortFields;
 	private MappingInfo mappingInfo;
 
-	public SortFieldsTranslator(List<SortField> sortFields, DocumentType<?> documentType)
+	SortFieldsTranslator(List<SortField> sortFields, DocumentType<?> documentType)
 	{
 		this.sortFields = sortFields;
 		this.mappingInfo = new MappingInfo(documentType.getMapping());
 	}
 
-	public SortBuilder[] translate() throws InvalidQueryException
+	SortBuilder[] translate() throws InvalidQueryException
 	{
 		SortBuilder[] result = new SortBuilder[sortFields.size()];
 		int i = 0;

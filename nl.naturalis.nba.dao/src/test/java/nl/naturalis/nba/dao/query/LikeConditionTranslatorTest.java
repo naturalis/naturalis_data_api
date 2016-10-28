@@ -7,11 +7,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.query.ConditionTranslator;
 
 @SuppressWarnings("static-method")
 public class LikeConditionTranslatorTest {
@@ -40,7 +40,7 @@ public class LikeConditionTranslatorTest {
 	 * Checks that translation fails if field being queried is not a string
 	 * field.
 	 */
-	@Test(expected = InvalidConditionException.class)
+	@Test(expected = IllegalOperatorException.class)
 	public void testTranslate_02() throws InvalidConditionException
 	{
 		Condition c = new Condition("age", LIKE, "foo");

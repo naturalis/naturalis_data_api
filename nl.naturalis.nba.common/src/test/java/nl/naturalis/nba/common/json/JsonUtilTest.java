@@ -13,8 +13,6 @@ import org.geojson.GeoJsonObject;
 import org.geojson.Polygon;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 @SuppressWarnings("static-method")
 public class JsonUtilTest {
 

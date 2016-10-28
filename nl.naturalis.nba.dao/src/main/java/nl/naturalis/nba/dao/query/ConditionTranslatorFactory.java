@@ -1,5 +1,9 @@
 package nl.naturalis.nba.dao.query;
 
+import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
+
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.query.Condition;
@@ -66,29 +70,41 @@ public class ConditionTranslatorFactory {
 				return new LikeConditionTranslator(condition, mappingInfo);
 			case IN:
 			case NOT_IN:
-				PrimitiveField pf = TranslatorUtil.getESField(condition, mappingInfo);
-				switch (pf.getType()) {
-					case GEO_POINT:
-					case GEO_SHAPE:
-						if (condition.getValue() instanceof GeoJsonObject) {
-							return new InGeometryConditionTranslator(condition, mappingInfo);
-						}
-						if (condition.getValue().getClass() == String.class) {
-							String s = condition.getValue().toString().trim();
-							if (s.charAt(0) == '{') {
-								try {
-
-								}
-								catch (JsonDeserializationException e) {
-
-								}
-							}
-						}
-					default:
-						return new InValuesConditionTranslator(condition, mappingInfo);
-				}
+				return getInConditionTranslator(condition, mappingInfo);
 		}
 		return null;
+	}
+
+	private static ConditionTranslator getInConditionTranslator(Condition condition,
+			MappingInfo mappingInfo) throws InvalidConditionException
+	{
+		PrimitiveField pf = getESField(condition, mappingInfo);
+		switch (pf.getType()) {
+			case GEO_POINT:
+			case GEO_SHAPE:
+				ensureValueIsNotNull(condition);
+				if (condition.getValue() instanceof GeoJsonObject) {
+					return new InGeometryConditionTranslator(condition, mappingInfo);
+				}
+				if (condition.getValue().getClass() == String.class) {
+					String s = condition.getValue().toString().trim();
+					if (s.charAt(0) == '{') {
+						try {
+							GeoJsonObject geo = deserialize(s, GeoJsonObject.class);
+							condition.setValue(geo);
+							return new InGeometryConditionTranslator(condition, mappingInfo);
+						}
+						catch (JsonDeserializationException e) {
+							String fmt = "Not a valid GeoJSON string (%s):\n%s";
+							String msg = String.format(fmt, e.getMessage(), s);
+							throw new InvalidConditionException(msg);
+						}
+					}
+					return new InGeoAreaConditionTranslator(condition, mappingInfo);
+				}
+			default:
+				return new InValuesConditionTranslator(condition, mappingInfo);
+		}
 	}
 
 }

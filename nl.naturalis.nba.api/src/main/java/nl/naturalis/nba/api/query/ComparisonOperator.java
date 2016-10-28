@@ -3,6 +3,9 @@ package nl.naturalis.nba.api.query;
 import java.util.Collection;
 import java.util.HashSet;
 
+import nl.naturalis.nba.api.model.GeoPoint;
+import nl.naturalis.nba.api.model.GeoShape;
+
 /**
  * Symbolic constants for the operators that can be used in a {@link Condition
  * query condition}.
@@ -124,10 +127,11 @@ public enum ComparisonOperator
 
 	/**
 	 * Operator used to establish that a field&#39;s value is one of a given set
-	 * of values. When using the IN or NOT_IN operator in a {@link Condition},
-	 * the {@link Condition#getValue() value} property of the condition
-	 * <b>must</b> be an array or a {@link Collection} object with zero or more
-	 * elements. Example:<br>
+	 * of values or, if the field is a {@link GeoPoint} or {@link GeoShape},
+	 * that it lies within a certain area or shape. When using the IN or NOT_IN
+	 * operator in a {@link Condition}, the {@link Condition#getValue() value}
+	 * property of the condition <b>must</b> be an array or a {@link Collection}
+	 * object with zero or more elements. Example:<br>
 	 * <code>
 	 * Condition condition = new Condition("phaseOrStage", IN, new String[] {"embryo", "pupa", "larva"});
 	 * </code>

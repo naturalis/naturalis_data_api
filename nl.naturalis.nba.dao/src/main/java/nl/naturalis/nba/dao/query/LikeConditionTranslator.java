@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.query;
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsString;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.invalidConditionException;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -17,7 +18,6 @@ import nl.naturalis.nba.common.es.map.AnalyzableField;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
 class LikeConditionTranslator extends ConditionTranslator {
 
@@ -41,14 +41,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	@Override
 	void checkOperatorFieldCombi() throws IllegalOperatorException
 	{
-		ESField field = null;
-		try {
-			field = mappingInfo.getField(condition.getField());
-		}
-		catch (NoSuchFieldException e) {
-			// Won't happend, already checked
-			assert (false);
-		}
+		ESField field = getESField(condition, mappingInfo);
 		if (field.getType() != ESDataType.STRING) {
 			throw new IllegalOperatorException(condition);
 		}
@@ -75,7 +68,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 			throw invalidConditionException(condition, fmt, condition.getOperator());
 		}
 		if (value.length() > 10) {
-			String fmt = "Search term must contain at most 10 characters with operator %s";
+			String fmt = "Search term may contain no more than 10 characters with operator %s";
 			throw invalidConditionException(condition, fmt, condition.getOperator());
 		}
 	}

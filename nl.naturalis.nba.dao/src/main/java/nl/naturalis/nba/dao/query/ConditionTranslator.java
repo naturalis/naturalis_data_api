@@ -22,8 +22,6 @@ import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
-import nl.naturalis.nba.common.es.map.PrimitiveField;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
@@ -100,6 +98,10 @@ public abstract class ConditionTranslator {
 		return translate(false);
 	}
 
+	/*
+	 * Convert the Condition to a QueryBuilder as appropriate for the operator
+	 * that the subclass is dealing with.
+	 */
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
 	/*
@@ -115,23 +117,6 @@ public abstract class ConditionTranslator {
 	 * compatible with operator.
 	 */
 	abstract void checkOperatorValueCombi() throws InvalidConditionException;
-
-	/**
-	 * Returns a {@link PrimitiveField} instance corresponding to the field
-	 * specified in the condition.
-	 * 
-	 * @return
-	 * @throws InvalidConditionException
-	 */
-//	PrimitiveField field() throws InvalidConditionException
-//	{
-//		try {
-//			return (PrimitiveField) mappingInfo.getField(condition.getField());
-//		}
-//		catch (NoSuchFieldException e) {
-//			throw new InvalidConditionException(e.getMessage());
-//		}
-//	}
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
@@ -154,8 +139,8 @@ public abstract class ConditionTranslator {
 			}
 			else {
 				result = translateOrSiblings();
-				BoolQueryBuilder extra = translateWithAndSiblings();
-				((BoolQueryBuilder) result).should(extra);
+				BoolQueryBuilder meWithAndSiblings = translateWithAndSiblings();
+				((BoolQueryBuilder) result).should(meWithAndSiblings);
 			}
 		}
 		else {

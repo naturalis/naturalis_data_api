@@ -1,8 +1,12 @@
 package nl.naturalis.nba.dao.query;
 
+import org.geojson.GeoJsonObject;
+
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.dao.DocumentType;
 
 public class ConditionTranslatorFactory {
@@ -62,7 +66,27 @@ public class ConditionTranslatorFactory {
 				return new LikeConditionTranslator(condition, mappingInfo);
 			case IN:
 			case NOT_IN:
-				return new InValuesConditionTranslator(condition, mappingInfo);
+				PrimitiveField pf = TranslatorUtil.getESField(condition, mappingInfo);
+				switch (pf.getType()) {
+					case GEO_POINT:
+					case GEO_SHAPE:
+						if (condition.getValue() instanceof GeoJsonObject) {
+							return new InGeometryConditionTranslator(condition, mappingInfo);
+						}
+						if (condition.getValue().getClass() == String.class) {
+							String s = condition.getValue().toString().trim();
+							if (s.charAt(0) == '{') {
+								try {
+
+								}
+								catch (JsonDeserializationException e) {
+
+								}
+							}
+						}
+					default:
+						return new InValuesConditionTranslator(condition, mappingInfo);
+				}
 		}
 		return null;
 	}

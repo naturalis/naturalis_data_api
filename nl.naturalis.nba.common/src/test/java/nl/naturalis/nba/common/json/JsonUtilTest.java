@@ -9,9 +9,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.geojson.GeoJsonObject;
+import org.geojson.Polygon;
 import org.junit.Test;
 
-import nl.naturalis.nba.common.json.JsonUtil;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @SuppressWarnings("static-method")
 public class JsonUtilTest {
@@ -125,7 +127,7 @@ public class JsonUtilTest {
 	public void testReadField_08()
 	{
 		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
-			Object value =  JsonUtil.readField(is, "bla");
+			Object value = JsonUtil.readField(is, "bla");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
 		catch (IOException e) {
@@ -137,7 +139,7 @@ public class JsonUtilTest {
 	public void testReadField_09()
 	{
 		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
-			Object value =  JsonUtil.readField(is, "bla.0");
+			Object value = JsonUtil.readField(is, "bla.0");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
 		catch (IOException e) {
@@ -149,7 +151,7 @@ public class JsonUtilTest {
 	public void testReadField_10()
 	{
 		try (InputStream is = JsonUtilTest.class.getResourceAsStream("JsonUtilTest.json")) {
-			Object value =  JsonUtil.readField(is, "bla.bla");
+			Object value = JsonUtil.readField(is, "bla.bla");
 			assertTrue("01", value == JsonUtil.MISSING_VALUE);
 		}
 		catch (IOException e) {
@@ -157,4 +159,63 @@ public class JsonUtilTest {
 		}
 	}
 
+	@Test
+	public void testDeserialize_02()
+	{
+		String input = "{\"type\":\"Polygon\",\"coordinates\":[[[4.713134765625,52.83595824834852],[5.1416015625,52.83595824834852],[5.1416015625,52.516220863930734],[4.713134765625,52.516220863930734],[4.713134765625,52.83595824834852]]]}";
+		Object output = JsonUtil.deserialize(input, GeoJsonObject.class);
+		assertEquals("01", Polygon.class, output.getClass());
+	}
+
+	@Test(expected = JsonDeserializationException.class)
+	public void testDeserialize_03()
+	{
+		// Missing opening '{'
+		String input = "\"type\":\"Polygon\",\"coordinates\":[[[4.713134765625,52.83595824834852],[5.1416015625,52.83595824834852],[5.1416015625,52.516220863930734],[4.713134765625,52.516220863930734],[4.713134765625,52.83595824834852]]]}";
+		JsonUtil.deserialize(input, GeoJsonObject.class);
+	}
+
+	@Test(expected = JsonDeserializationException.class)
+	public void testDeserialize_04()
+	{
+		// Missing opening '{' (we shouldn't even be able 
+		// to cast this to a Map object)
+		String input = "\"type\":\"Polygon\",\"coordinates\":[[[4.713134765625,52.83595824834852],[5.1416015625,52.83595824834852],[5.1416015625,52.516220863930734],[4.713134765625,52.516220863930734],[4.713134765625,52.83595824834852]]]}";
+		JsonUtil.deserialize(input);
+	}
+
+	@Test(expected = JsonDeserializationException.class)
+	public void testDeserialize_05()
+	{
+		// Valid JSON, but not convertible to GeoJsonObject
+		String input = "false";
+		JsonUtil.deserialize(input, GeoJsonObject.class);
+	}
+
+	@Test()
+	public void testDeserialize_06()
+	{
+		// Just make sure there's nothing special going on here
+		String input = "false";
+		Object output = JsonUtil.deserialize(input, Boolean.class);
+		assertEquals("01", Boolean.FALSE, output);
+	}
+
+	@Test(expected = JsonDeserializationException.class)
+	public void testDeserialize_08()
+	{
+		// Just make absolutely sure we can't brew any GeoJsonObject
+		// out of this
+		String input = "Amsterdam";
+		JsonUtil.deserialize(input, GeoJsonObject.class);
+	}
+
+	@Test(expected = JsonDeserializationException.class)
+	public void testDeserialize_09()
+	{
+		// In fact, since it is not valid JSON in the first place,
+		// even this should not work
+		String input = "Amsterdam";
+		JsonUtil.deserialize(input, String.class);
+	}
 }

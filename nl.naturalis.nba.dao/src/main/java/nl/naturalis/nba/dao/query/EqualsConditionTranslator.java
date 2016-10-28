@@ -20,6 +20,7 @@ class EqualsConditionTranslator extends ConditionTranslator {
 		super(condition, inspector);
 	}
 
+	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		String field = condition.getField();

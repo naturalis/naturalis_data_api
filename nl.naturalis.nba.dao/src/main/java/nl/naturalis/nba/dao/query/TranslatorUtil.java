@@ -29,15 +29,19 @@ class TranslatorUtil {
 
 	static String getNestedPath(Condition condition, MappingInfo mappingInfo)
 	{
-		PrimitiveField pf;
+		PrimitiveField pf = getESField(condition, mappingInfo);
+		return MappingInfo.getNestedPath(pf);
+	}
+
+	static PrimitiveField getESField(Condition condition, MappingInfo mappingInfo)
+	{
 		try {
-			pf = (PrimitiveField) mappingInfo.getField(condition.getField());
+			return (PrimitiveField) mappingInfo.getField(condition.getField());
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because already checked in ConditionTranslatorFactory
 			return null;
 		}
-		return MappingInfo.getNestedPath(pf);
 	}
 
 	static InvalidConditionException searchTermMustNotBeNull(Condition condition)

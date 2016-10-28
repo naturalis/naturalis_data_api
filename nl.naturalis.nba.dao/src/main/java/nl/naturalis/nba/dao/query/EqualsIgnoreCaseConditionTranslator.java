@@ -46,7 +46,7 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureOperatorValidForField() throws IllegalOperatorException
+	void checkOperatorFieldCombi() throws IllegalOperatorException
 	{
 		ESField field = null;
 		try {
@@ -68,7 +68,7 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureValueValidForOperator() throws InvalidConditionException
+	void checkOperatorValueCombi() throws InvalidConditionException
 	{
 		if (condition.getValue() != null) {
 			ensureValueIsString(condition);

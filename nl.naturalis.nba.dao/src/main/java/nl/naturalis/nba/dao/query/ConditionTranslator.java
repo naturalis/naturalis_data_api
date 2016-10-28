@@ -89,7 +89,7 @@ public abstract class ConditionTranslator {
 
 	/**
 	 * Converts the {@link Condition} passed in through the
-	 * {@link #ConditionTranslator(Condition) constructor} into an Elasticsearch
+	 * {@link #ConditionTranslator(Condition) constructor} to an Elasticsearch
 	 * {@link QueryBuilder} instance.
 	 * 
 	 * @return
@@ -107,24 +107,14 @@ public abstract class ConditionTranslator {
 	 * can think of. Throw an InvalidConditionException if field is not
 	 * compatible with operator.
 	 */
-	abstract void ensureOperatorValidForField() throws IllegalOperatorException;
+	abstract void checkOperatorFieldCombi() throws IllegalOperatorException;
 
 	/*
 	 * Implement any up-front/fail-fast operator-value compatibility check yo
 	 * can think of. Throw an InvalidConditionException if value is not
 	 * compatible with operator.
 	 */
-	abstract void ensureValueValidForOperator() throws InvalidConditionException;
-
-//	/**
-//	 * Returns the field specified in the condition.
-//	 * 
-//	 * @return
-//	 */
-//	String path()
-//	{
-//		return condition.getField();
-//	}
+	abstract void checkOperatorValueCombi() throws InvalidConditionException;
 
 	/**
 	 * Returns a {@link PrimitiveField} instance corresponding to the field
@@ -143,32 +133,14 @@ public abstract class ConditionTranslator {
 		}
 	}
 
-	/**
-	 * Returns the AND siblings specified in the condition.
-	 * 
-	 * @return
-	 */
-	List<Condition> and()
-	{
-		return condition.getAnd();
-	}
-
-	/**
-	 * Returns the OR siblings specified in the condition.
-	 * 
-	 * @return
-	 */
-	List<Condition> or()
-	{
-		return condition.getOr();
-	}
-
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
-		ensureOperatorValidForField();
-		ensureValueValidForOperator();
+		checkOperatorFieldCombi();
+		checkOperatorValueCombi();
+		List<Condition> and = condition.getAnd();
+		List<Condition> or = condition.getOr();
 		QueryBuilder result;
-		if (and() == null && or() == null) {
+		if (and == null && or == null) {
 			if (!nested && withNegatingOperator()) {
 				result = not(translateCondition());
 			}
@@ -176,8 +148,8 @@ public abstract class ConditionTranslator {
 				result = translateCondition();
 			}
 		}
-		else if (or() != null) {
-			if (and() == null) {
+		else if (or != null) {
+			if (and == null) {
 				result = translateWithOrSiblings();
 			}
 			else {
@@ -201,7 +173,7 @@ public abstract class ConditionTranslator {
 		else {
 			boolQuery.must(translateCondition());
 		}
-		for (Condition sibling : and()) {
+		for (Condition sibling : condition.getAnd()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.mustNot(translator.translate(true));
@@ -222,7 +194,7 @@ public abstract class ConditionTranslator {
 		else {
 			boolQuery.should(translateCondition());
 		}
-		for (Condition sibling : or()) {
+		for (Condition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));
@@ -237,7 +209,7 @@ public abstract class ConditionTranslator {
 	private BoolQueryBuilder translateOrSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		for (Condition sibling : or()) {
+		for (Condition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.withNegatingOperator()) {
 				boolQuery.should(not(translator.translate(true)));

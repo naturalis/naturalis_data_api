@@ -51,12 +51,12 @@ class InConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureOperatorValidForField() throws IllegalOperatorException
+	void checkOperatorFieldCombi() throws IllegalOperatorException
 	{
 	}
 
 	@Override
-	void ensureValueValidForOperator() throws InvalidConditionException
+	void checkOperatorValueCombi() throws InvalidConditionException
 	{
 	}
 

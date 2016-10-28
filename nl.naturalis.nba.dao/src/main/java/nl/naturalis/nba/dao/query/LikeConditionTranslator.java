@@ -38,7 +38,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureOperatorValidForField() throws IllegalOperatorException
+	void checkOperatorFieldCombi() throws IllegalOperatorException
 	{
 		ESField field = null;
 		try {
@@ -64,7 +64,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureValueValidForOperator() throws InvalidConditionException
+	void checkOperatorValueCombi() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
 		ensureValueIsString(condition);

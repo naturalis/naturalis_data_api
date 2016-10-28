@@ -35,13 +35,13 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void ensureOperatorValidForField() throws IllegalOperatorException
+	void checkOperatorFieldCombi() throws IllegalOperatorException
 	{
 		ensureFieldIsDateOrNumber(condition, mappingInfo);
 	}
 
 	@Override
-	void ensureValueValidForOperator() throws InvalidConditionException
+	void checkOperatorValueCombi() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
 		ensureValueIsDateOrNumber(condition);

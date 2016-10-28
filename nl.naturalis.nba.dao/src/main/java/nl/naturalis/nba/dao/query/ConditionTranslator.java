@@ -144,16 +144,6 @@ public abstract class ConditionTranslator {
 	}
 
 	/**
-	 * Returns the operator specified in the condition.
-	 * 
-	 * @return
-	 */
-	ComparisonOperator operator()
-	{
-		return condition.getOperator();
-	}
-
-	/**
 	 * Returns the value specified in the condition.
 	 * 
 	 * @return
@@ -280,7 +270,7 @@ public abstract class ConditionTranslator {
 	 */
 	private boolean withNegatingOperator()
 	{
-		return negatingOperators.contains(operator());
+		return negatingOperators.contains(condition.getOperator());
 	}
 
 }

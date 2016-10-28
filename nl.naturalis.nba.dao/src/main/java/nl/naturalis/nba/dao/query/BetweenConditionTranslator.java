@@ -11,6 +11,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
+import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
@@ -41,32 +42,34 @@ class BetweenConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		Object val0;
-		Object val1;
-		if (value().getClass().isArray()) {
-			if (Array.getLength(value()) != 2) {
-				throw invalidConditionException(condition, ERROR_0, operator());
+		ComparisonOperator operator = condition.getOperator();
+		Object value = condition.getValue();
+		Object min;
+		Object max;
+		if (value.getClass().isArray()) {
+			if (Array.getLength(value) != 2) {
+				throw invalidConditionException(condition, ERROR_0, operator);
 			}
-			val0 = Array.get(value(), 0);
-			val1 = Array.get(value(), 1);
+			min = Array.get(value, 0);
+			max = Array.get(value, 1);
 		}
-		else if (value() instanceof Collection) {
-			Collection<?> collection = (Collection<?>) value();
+		else if (value instanceof Collection) {
+			Collection<?> collection = (Collection<?>) value;
 			if (collection.size() != 2)
-				throw invalidConditionException(condition, ERROR_0, operator());
+				throw invalidConditionException(condition, ERROR_0, operator);
 			Iterator<?> iterator = collection.iterator();
-			val0 = iterator.next();
-			val1 = iterator.next();
+			min = iterator.next();
+			max = iterator.next();
 		}
 		else {
-			throw invalidConditionException(condition, ERROR_0, operator());
+			throw invalidConditionException(condition, ERROR_0, operator);
 		}
-		if (val0 == null && val1 == null) {
-			throw invalidConditionException(condition, ERROR_1, operator());
+		if (min == null && max == null) {
+			throw invalidConditionException(condition, ERROR_1, operator);
 		}
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(path());
-		query.from(val0);
-		query.to(val1);
+		query.from(min);
+		query.to(max);
 		String nestedPath = MappingInfo.getNestedPath(field());
 		if (nestedPath == null) {
 			return query;

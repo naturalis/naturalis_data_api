@@ -21,7 +21,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.test.TestPerson;
 
 
-public class InConditionTranslatorTest {
+public class InValuesConditionTranslatorTest {
 
 	private static MappingInfo mappingInfo;
 

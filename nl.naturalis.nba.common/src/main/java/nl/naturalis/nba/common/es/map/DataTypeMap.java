@@ -21,11 +21,11 @@ import org.geojson.Point;
  * @author Ayco Holleman
  *
  */
-public class DataTypeMap {
+class DataTypeMap {
 
 	private static final DataTypeMap instance = new DataTypeMap();
 
-	public static DataTypeMap getInstance()
+	static DataTypeMap getInstance()
 	{
 		return instance;
 	}
@@ -80,7 +80,7 @@ public class DataTypeMap {
 	 * Whether or not the specified Java type maps to a primitive Elasticsearch
 	 * type (any type other than &#46;object&#46; and &#46;nested&#46;).
 	 */
-	public boolean isESPrimitive(Class<?> javaType)
+	boolean isESPrimitive(Class<?> javaType)
 	{
 		return getESType(javaType) == null;
 	}
@@ -94,7 +94,7 @@ public class DataTypeMap {
 	 * @param javaType
 	 * @return
 	 */
-	public ESDataType getESType(Class<?> javaType)
+	ESDataType getESType(Class<?> javaType)
 	{
 		ESDataType esDataType = null;
 		while (javaType != Object.class) {
@@ -111,7 +111,7 @@ public class DataTypeMap {
 	 * @param esType
 	 * @return
 	 */
-	public Set<Class<?>> getJavaTypes(ESDataType esType)
+	Set<Class<?>> getJavaTypes(ESDataType esType)
 	{
 		return es2java.get(esType);
 	}

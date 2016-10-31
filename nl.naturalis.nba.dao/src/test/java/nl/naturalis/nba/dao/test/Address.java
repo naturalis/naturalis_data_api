@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.test;
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.api.model.GeoPoint;
 
 /**
  * A simple class that can be used to create test objects.
@@ -21,6 +22,7 @@ public class Address {
 	@Analyzers({ Analyzer.CASE_INSENSITIVE, Analyzer.LIKE, Analyzer.DEFAULT })
 	private String city;
 	private Country country;
+	private GeoPoint location;
 
 	public String getStreet()
 	{
@@ -70,6 +72,16 @@ public class Address {
 	public void setCountry(Country country)
 	{
 		this.country = country;
+	}
+
+	public GeoPoint getLocation()
+	{
+		return location;
+	}
+
+	public void setLocation(GeoPoint location)
+	{
+		this.location = location;
 	}
 
 }

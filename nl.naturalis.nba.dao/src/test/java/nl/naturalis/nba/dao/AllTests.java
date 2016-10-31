@@ -8,7 +8,7 @@ import nl.naturalis.nba.dao.format.DocumentFlattenerTest;
 import nl.naturalis.nba.dao.format.calc.NamePublishedInCalculatorTest;
 import nl.naturalis.nba.dao.query.BetweenConditionTranslatorTest;
 import nl.naturalis.nba.dao.query.EqualsConditionTranslatorTest;
-import nl.naturalis.nba.dao.query.InConditionTranslatorTest;
+import nl.naturalis.nba.dao.query.InValuesConditionTranslatorTest;
 import nl.naturalis.nba.dao.query.InValuesBuilderTest;
 import nl.naturalis.nba.dao.query.LikeConditionTranslatorTest;
 import nl.naturalis.nba.dao.util.ESClientManagerTest;
@@ -26,7 +26,7 @@ import nl.naturalis.nba.dao.util.SwapOutputStreamTest;
 	LikeConditionTranslatorTest.class ,
 	BetweenConditionTranslatorTest.class ,
 	InValuesBuilderTest.class,
-	InConditionTranslatorTest.class,
+	InValuesConditionTranslatorTest.class,
 	NamePublishedInCalculatorTest.class,
 	SwapOutputStreamTest.class,
 	SwapFileOutputStreamTest.class,

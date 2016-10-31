@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Java bean representing the result from a query request.
+ * Java bean representing the result of a query request.
  * 
  * @author Ayco Holleman
  *

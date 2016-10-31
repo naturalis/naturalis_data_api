@@ -1,15 +1,16 @@
 package nl.naturalis.nba.dao;
 
+import java.io.InputStream;
+import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.dao.types.ESType;
 import nl.naturalis.nba.dao.util.ESUtil;
@@ -23,6 +24,15 @@ public class ESTestUtils {
 	static {
 		registry = DaoRegistry.getInstance();
 		logger = registry.getLogger(ESTestUtils.class);
+	}
+
+	public static boolean queryEquals(Class<?> unitTestClass, QueryBuilder query,
+			String file)
+	{
+		InputStream is = unitTestClass.getResourceAsStream(file);
+		Map<String, Object> expected = JsonUtil.deserialize(is);
+		Map<String, Object> actual = JsonUtil.deserialize(query.toString());
+		return actual.equals(expected);
 	}
 
 	public static void saveSpecimens(ESSpecimen... specimens)
@@ -51,7 +61,8 @@ public class ESTestUtils {
 		saveObject(id, null, object, refreshIndex);
 	}
 
-	public static void saveObject(String id, String parentId, ESType obj, boolean refreshIndex)
+	public static void saveObject(String id, String parentId, ESType obj,
+			boolean refreshIndex)
 	{
 		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
 		String index = dt.getIndexInfo().getName();

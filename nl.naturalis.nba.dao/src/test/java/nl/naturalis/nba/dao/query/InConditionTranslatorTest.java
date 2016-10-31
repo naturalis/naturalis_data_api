@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
+import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +47,7 @@ public class InConditionTranslatorTest {
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "InConditionTranslatorTest__testTranslate_01.json";
-		assertEquals("02", getContents(file), query.toString());
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	/*
@@ -61,7 +62,7 @@ public class InConditionTranslatorTest {
 		// System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "InConditionTranslatorTest__testTranslate_01.json";
-		assertEquals("02", getContents(file), query.toString());
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	/*
@@ -75,7 +76,7 @@ public class InConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
 		String file = "InConditionTranslatorTest__testTranslate_02.json";
-		assertEquals("01", getContents(file), query.toString());
+		assertTrue("01", queryEquals(getClass(), query, file));
 	}
 
 	/*
@@ -94,11 +95,7 @@ public class InConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		String file = "InConditionTranslatorTest__testTranslate_03.json";
-		assertEquals("01", getContents(file), query.toString());
+		assertTrue("01", queryEquals(getClass(), query, file));
 	}
 
-	private String getContents(String file)
-	{
-		return FileUtil.getContents(getClass().getResourceAsStream(file));
-	}
 }

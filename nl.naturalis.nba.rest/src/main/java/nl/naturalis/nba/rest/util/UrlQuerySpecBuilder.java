@@ -1,6 +1,6 @@
 package nl.naturalis.nba.rest.util;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 
 import java.util.ArrayList;
@@ -13,7 +13,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.CollectionUtil;
+import static org.domainobject.util.ConfigObject.*;
 
+import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.LogicalOperator;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -22,6 +24,8 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 
 /**
  * Extracts {@link QuerySpec} objects from request URLs.
+ * 
+ * @see QuerySpec
  * 
  * @author Ayco Holleman
  *
@@ -32,8 +36,9 @@ public class UrlQuerySpecBuilder {
 	public static final String PARAM_FIELDS = "_fields";
 	public static final String PARAM_FROM = "_from";
 	public static final String PARAM_SIZE = "_size";
-	public static final String PARAM_OPERATOR = "_operator";
+	public static final String PARAM_OPERATOR = "_logicalOperator";
 	public static final String PARAM_SORT_FIELDS = "_sortFields";
+	public static final String PARAM_IGNORE_CASE = "_ignoreCase";
 
 	private static final String ERR_ILLEGAL_PARAM = "Unknown or illegal parameter: %s";
 	private static final String ERR_NO_UNDERSCORE = "Unknown or illegal parameter: "
@@ -72,8 +77,7 @@ public class UrlQuerySpecBuilder {
 			return deserialize(json, QuerySpec.class);
 		}
 		QuerySpec qs = new QuerySpec();
-		logger.info("Parameter \"_querySpec\" not present in request URL. Assembling "
-				+ "QuerySpec object from other query parameters in URL.");
+		ComparisonOperator operator = getComparisonOperator();
 		for (String param : params.keySet()) {
 			values = params.get(param);
 			if (values.size() != 1) {
@@ -84,6 +88,8 @@ public class UrlQuerySpecBuilder {
 			switch (param) {
 				case "querySpec":
 					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
+				case PARAM_IGNORE_CASE:
+					break;
 				case PARAM_SORT_FIELDS:
 					qs.setSortFields(getSortFields(uriInfo, param, value));
 					break;
@@ -104,7 +110,7 @@ public class UrlQuerySpecBuilder {
 						String msg = String.format(ERR_ILLEGAL_PARAM, param);
 						throw new HTTP400Exception(uriInfo, msg);
 					}
-					qs.addCondition(new Condition(param, EQUALS, value));
+					qs.addCondition(new Condition(param, operator, value));
 					break;
 			}
 		}
@@ -140,7 +146,18 @@ public class UrlQuerySpecBuilder {
 		}
 	}
 
-	private static LogicalOperator getLogicalOperator(UriInfo uriInfo, String param, String value)
+	private ComparisonOperator getComparisonOperator()
+	{
+		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+		String ignoreCase = params.getFirst(PARAM_IGNORE_CASE);
+		if (isTrueValue(ignoreCase)) {
+			return EQUALS_IC;
+		}
+		return EQUALS;
+	}
+
+	private static LogicalOperator getLogicalOperator(UriInfo uriInfo, String param,
+			String value)
 	{
 		if (value.length() == 0) {
 			return null;
@@ -156,7 +173,8 @@ public class UrlQuerySpecBuilder {
 		return op;
 	}
 
-	private static List<SortField> getSortFields(UriInfo uriInfo, String param, String value)
+	private static List<SortField> getSortFields(UriInfo uriInfo, String param,
+			String value)
 	{
 		if (value.length() == 0) {
 			return null;
@@ -175,10 +193,10 @@ public class UrlQuerySpecBuilder {
 				}
 				else {
 					String order = chunk.substring(i + 1).trim().toUpperCase();
-					if (order.equals("ASC") || order.equals("TRUE")) {
+					if (order.equals("ASC")) {
 						sortFields.add(new SortField(path));
 					}
-					else if (order.equals("DESC") || order.equals("FALSE")) {
+					else if (order.equals("DESC")) {
 						sortFields.add(new SortField(path, false));
 					}
 					else {

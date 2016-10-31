@@ -27,6 +27,13 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 
+/**
+ * A {@code QuerySpecTranslator} is responsible for translating an NBA {@link QuerySpec}
+ * object into an Elasticsearch {@link SearchRequestBuilder} object.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class QuerySpecTranslator {
 
 	private static final Logger logger = getLogger(QuerySpecTranslator.class);

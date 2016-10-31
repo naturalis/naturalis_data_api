@@ -26,6 +26,15 @@ public class ESTestUtils {
 		logger = registry.getLogger(ESTestUtils.class);
 	}
 
+	/**
+	 * Asserts that the specified {@code QueryBuilder} instance has the same JSON
+	 * representation as the contents of the specified file.
+	 * 
+	 * @param unitTestClass
+	 * @param query
+	 * @param file
+	 * @return
+	 */
 	public static boolean queryEquals(Class<?> unitTestClass, QueryBuilder query,
 			String file)
 	{

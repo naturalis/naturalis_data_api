@@ -3,13 +3,11 @@ package nl.naturalis.nba.dao.query;
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.domainobject.util.FileUtil;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.BeforeClass;
@@ -20,7 +18,6 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.query.ConditionTranslator;
 import nl.naturalis.nba.dao.test.TestPerson;
 
 

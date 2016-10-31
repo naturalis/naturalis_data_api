@@ -11,57 +11,57 @@ import nl.naturalis.nba.api.model.Taxon;
 
 /**
  * <p>
- * Models an NBA query. All information required by the various {@code query}
- * methods in the API take a {@link QuerySpec} object to drive the query
- * process.
+ * Models an NBA query. All information required by the various {@code query} methods in
+ * the API take a {@link QuerySpec} object to drive the query process.
  * </p>
  * <h3>Providing query specifications through the REST API</h3>
  * <p>
  * Whenever a method in the formal API (the set of interfaces in the
  * {@code nl.naturalis.nba.api} package) takes a {@code QuerySpec} object, the
- * corresponding REST API gives you two options the encode the {@code QuerySpec}
- * object in the URL. One option is to provide a {@code _querySpec} query
- * parameter whose value is the JSON-encoded {@code QuerySpec} object (i.e. the
- * {@code QuerySpec} object serialized to JSON). For example:<br>
+ * corresponding REST API gives you two options the encode the {@code QuerySpec} object in
+ * the URL. One option is to provide a {@code _querySpec} query parameter whose value is
+ * the JSON-encoded {@code QuerySpec} object (i.e. the {@code QuerySpec} object serialized
+ * to JSON). For example:<br>
  * <br>
  * <code>
  * http://api.biodiversitydata.nl/v2/specimen/query?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22sourceSystem.code%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BRAHMS%22%7D%5D%2C%22from%22%3A0%2C%22size%22%3A0%7D<br>
  * </code><br>
- * Since these URLs are hard to read and construct for humans, you can also
- * encode the query specification as follows:<br>
+ * Since these URLs are hard to read and construct for humans, you can also encode the
+ * query specification as follows:<br>
  * <br>
  * <ol>
- * <li>Every query parameter that does not start with an underscore is taken to
- * be a {@link Condition query condition}. For example:<br>
+ * <li>Every query parameter that does not start with an underscore is turned into a
+ * {@link Condition query condition}. For example:<br>
  * <br>
  * <code>
  * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen<br>
  * </code><br>
- * <li>The {@code _fields} parameter can be used to set the fields you want
- * returned in the response. You can specify multiple fields by separating them
- * with a comma. See {@link #setFields(List) setFields}.
- * <li>The {@code _from} parameter can be used to specify an result set offset.
- * See {@link #setFrom(int) setFrom}.
- * <li>The {@code _size} parameter can be used to specify the maximum number of
- * documents to return. See {@link #setSize(int) setSize}.
- * <li>The {@code _sortFields} parameter can be used to specify the fields on
- * which to sort. You can specify multiple fields as well as sort directions by
- * using commas to separate the fields and colons the separate field from sort
- * direction. See {@link #setSortFields(List) setSortFields}. For example:<br>
+ * <li>The {@code _fields} parameter can be used to set the fields you want returned in
+ * the response. You can specify multiple fields by separating them with a comma. See
+ * {@link #setFields(List) setFields}.
+ * <li>The {@code _from} parameter can be used to specify an result set offset. See
+ * {@link #setFrom(int) setFrom}.
+ * <li>The {@code _size} parameter can be used to specify the maximum number of documents
+ * to return. See {@link #setSize(int) setSize}.
+ * <li>The {@code _sortFields} parameter can be used to specify the fields on which to
+ * sort. You can specify multiple fields as well as sort directions by using commas to
+ * separate the fields and colons the separate field from sort direction. See
+ * {@link #setSortFields(List) setSortFields}. For example:<br>
  * <br>
  * <code>
  * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&_sortFields=recordBasis:ASC,unitID:DESC<br>
  * </code><br>
- * <li>The {@code _operator} parameter can be used to specify the logical
- * operator joining the query conditions (either AND or OR). See
+ * <li>The {@code _logicalOperator} parameter can be used to specify the logical operator
+ * joining the query conditions (either AND or OR). See
  * {@link #setLogicalOperator(LogicalOperator) setLogicalOperator}.
+ * <li>The {@code _ignoreCase} parameter can be used to issue a case-insensitive search.
  * </ol>
  * </p>
  * <p>
  * You cannot mix the two encoding options. You must <b>either</b> provide a
- * {@code _querySpec} query parameter <b>or</b> use the combination of
- * parameters listed above. Complex queries with nested query conditions cannot
- * be encoded using the second option.
+ * {@code _querySpec} query parameter <b>or</b> use the combination of parameters listed
+ * above. Complex queries with operators other than {@link ComparisonOperator#EQUALS} or
+ * with nested query conditions are not possible with the second option.
  * </p>
  * 
  * @author Ayco Holleman
@@ -73,8 +73,8 @@ public class QuerySpec {
 	private List<Condition> conditions;
 	private LogicalOperator logicalOperator;
 	private List<SortField> sortFields;
-	private int from;
-	private int size;
+	private Integer from;
+	private Integer size;
 
 	/**
 	 * Creates a new, empty {@code QuerySpec} object.
@@ -84,9 +84,8 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Specifies one or more fields to be returned in the query response. The
-	 * field must belong to the document type being queried. See
-	 * {@link #getFields() getFields}.
+	 * Specifies one or more fields to be returned in the query response. The field must
+	 * belong to the document type being queried. See {@link #getFields() getFields}.
 	 * 
 	 * @param fields
 	 */
@@ -112,8 +111,8 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Causes the documents in the result set to be sorted in ascending order of
-	 * the specified field.
+	 * Causes the documents in the result set to be sorted in ascending order of the
+	 * specified field.
 	 * 
 	 * @param field
 	 */
@@ -126,8 +125,8 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Causes the documents in the result set to be sorted on the specified
-	 * field with the sort order determined by the {@code ascending} argument.
+	 * Causes the documents in the result set to be sorted on the specified field with the
+	 * sort order determined by the {@code ascending} argument.
 	 * 
 	 * @param field
 	 */
@@ -140,8 +139,8 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Returns the fields to return in the query response. This is akin to a SQL
-	 * SELECT clause. By default all fields will be selected.
+	 * Returns the fields to return in the query response. This is akin to a SQL SELECT
+	 * clause. By default all fields will be selected.
 	 * 
 	 * @return
 	 */
@@ -151,20 +150,18 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Sets the fields to return in the query response. This is akin to a SQL
-	 * SELECT clause. By default all fields will be selected. Be aware of the
-	 * effect this method has when querying data model objects like {@link Taxon
-	 * taxa} or {@link Specimen specimens} (e.g. with the
-	 * {@link INbaAccess#query(QuerySpec) query} method): you <i>still</i> get
-	 * back full-blown {@code Taxon} c.q. {@code Specimen} objects, only with
-	 * all non-selected fields set to their default value ({@code null} for
-	 * strings, dates and objects, zero for number fields and {@code false} for
-	 * boolean fields). Thus, the value of a non-selected field has no relation
-	 * to its actual value in the NBA data store. This is especially confusing
-	 * if you also specified a {@link Condition} for that field (e.g. you
-	 * specified it to be {@code true} but in the query result it appears to be
-	 * {@code false} - the default boolean value). Therefore: <i>do not read
-	 * values of fields you did not select!</i>
+	 * Sets the fields to return in the query response. This is akin to a SQL SELECT
+	 * clause. By default all fields will be selected. Be aware of the effect this method
+	 * has when querying data model objects like {@link Taxon taxa} or {@link Specimen
+	 * specimens} (e.g. with the {@link INbaAccess#query(QuerySpec) query} method): you
+	 * <i>still</i> get back full-blown {@code Taxon} c.q. {@code Specimen} objects, only
+	 * with all non-selected fields set to their default value ({@code null} for strings,
+	 * dates and objects, zero for number fields and {@code false} for boolean fields).
+	 * Thus, the value of a non-selected field has no relation to its actual value in the
+	 * NBA data store. This is especially confusing if you also specified a
+	 * {@link Condition} for that field (e.g. you specified it to be {@code true} but in
+	 * the query result it appears to be {@code false} - the default boolean value).
+	 * Therefore: <i>do not read values of fields you did not select!</i>
 	 * 
 	 * @return
 	 */
@@ -174,8 +171,7 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Returns the conditions a&#46;k&#46;a&#46; criteria that the documents
-	 * must satify.
+	 * Returns the conditions a&#46;k&#46;a&#46; criteria that the documents must satify.
 	 * 
 	 * @return
 	 */
@@ -185,8 +181,7 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Sets the conditions a&#46;k&#46;a&#46; criteria that the documents must
-	 * satify.
+	 * Sets the conditions a&#46;k&#46;a&#46; criteria that the documents must satify.
 	 * 
 	 * @param conditions
 	 */
@@ -197,9 +192,9 @@ public class QuerySpec {
 
 	/**
 	 * Returns the logical operator ({@link LogicalOperator#AND AND} or
-	 * {@link LogicalOperator#AND OR}) with which to join the
-	 * {@link #getConditions() query conditions}. Note that any condition may
-	 * itself contain a list of sibling AND and sibling OR conditions.
+	 * {@link LogicalOperator#AND OR}) with which to join the {@link #getConditions()
+	 * query conditions}. Note that any condition may itself contain a list of sibling AND
+	 * and sibling OR conditions.
 	 * 
 	 * @return
 	 */
@@ -210,9 +205,9 @@ public class QuerySpec {
 
 	/**
 	 * Sets the logical operator ({@link LogicalOperator#AND AND} or
-	 * {@link LogicalOperator#AND OR}) with which to join the
-	 * {@link #getConditions() query conditions}. Note that any condition may
-	 * itself contain a list of sibling AND and sibling OR conditions.
+	 * {@link LogicalOperator#AND OR}) with which to join the {@link #getConditions()
+	 * query conditions}. Note that any condition may itself contain a list of sibling AND
+	 * and sibling OR conditions.
 	 * 
 	 * @param operator
 	 */
@@ -242,35 +237,35 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Returns the offset in the total result set of documents satisfying the
-	 * conditions of this {@code QuerySpec}.
+	 * Returns the offset in the total result set of documents satisfying the conditions
+	 * of this {@code QuerySpec}. Defaults to 0 (zero).
 	 * 
 	 * @return
 	 */
-	public int getFrom()
+	public Integer getFrom()
 	{
-		return from;
+		return from == null ? Integer.valueOf(0) : from;
 	}
 
 	/**
-	 * Sets the offset in the total result set of documents satisfying the
-	 * conditions of this {@code QuerySpec}.
+	 * Sets the offset in the total result set of documents satisfying the conditions of
+	 * this {@code QuerySpec}.
 	 * 
 	 * @return
 	 */
-	public void setFrom(int from)
+	public void setFrom(Integer from)
 	{
 		this.from = from;
 	}
 
 	/**
-	 * Returns the number of documents to return.
+	 * Returns the number of documents to return. Defaults to 10.
 	 * 
 	 * @return
 	 */
-	public int getSize()
+	public Integer getSize()
 	{
-		return size == 0 ? 10 : size;
+		return size == null ? Integer.valueOf(10) : size;
 	}
 
 	/**
@@ -278,7 +273,7 @@ public class QuerySpec {
 	 * 
 	 * @param size
 	 */
-	public void setSize(int size)
+	public void setSize(Integer size)
 	{
 		this.size = size;
 	}

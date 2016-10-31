@@ -1,8 +1,9 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
-import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
+
+import java.util.Collection;
 
 import org.geojson.GeoJsonObject;
 
@@ -20,31 +21,31 @@ public class ConditionTranslatorFactory {
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
-	 * condition} and the specified {@link DocumentType document type}.
+	 * Returns a {@link ConditionTranslator} for the specified {@link Condition condition}
+	 * and the specified {@link DocumentType document type}.
 	 * 
 	 * @param condition
 	 * @param type
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition, DocumentType<?> type)
-			throws InvalidConditionException
+	public static ConditionTranslator getTranslator(Condition condition,
+			DocumentType<?> type) throws InvalidConditionException
 	{
 		return getTranslator(condition, new MappingInfo(type.getMapping()));
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
-	 * condition} and the specified {@link MappingInfo} object.
+	 * Returns a {@link ConditionTranslator} for the specified {@link Condition condition}
+	 * and the specified {@link MappingInfo} object.
 	 * 
 	 * @param condition
 	 * @param mappingInfo
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition, MappingInfo mappingInfo)
-			throws InvalidConditionException
+	public static ConditionTranslator getTranslator(Condition condition,
+			MappingInfo mappingInfo) throws InvalidConditionException
 	{
 		new FieldCheck(condition, mappingInfo).execute();
 		switch (condition.getOperator()) {
@@ -78,33 +79,60 @@ public class ConditionTranslatorFactory {
 	private static ConditionTranslator getInConditionTranslator(Condition condition,
 			MappingInfo mappingInfo) throws InvalidConditionException
 	{
+		Object val = condition.getValue();
+		if (val == null || val.getClass().isArray() || val instanceof Collection) {
+			return new InValuesConditionTranslator(condition, mappingInfo);
+		}
 		PrimitiveField pf = getESField(condition, mappingInfo);
 		switch (pf.getType()) {
 			case GEO_POINT:
+				if (val instanceof GeoJsonObject) {
+					return new PointInShapeConditionTranslator(condition, mappingInfo);
+				}
+				if (mustAssumeJson(val)) {
+					condition.setValue(getGeoJsonObject(val));
+					return new PointInShapeConditionTranslator(condition, mappingInfo);
+				}
 			case GEO_SHAPE:
-				ensureValueIsNotNull(condition);
-				if (condition.getValue() instanceof GeoJsonObject) {
-					return new InGeometryConditionTranslator(condition, mappingInfo);
+				if (val instanceof GeoJsonObject) {
+					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
-				if (condition.getValue().getClass() == String.class) {
-					String s = condition.getValue().toString().trim();
-					if (s.charAt(0) == '{') {
-						try {
-							GeoJsonObject geo = deserialize(s, GeoJsonObject.class);
-							condition.setValue(geo);
-							return new InGeometryConditionTranslator(condition, mappingInfo);
-						}
-						catch (JsonDeserializationException e) {
-							String fmt = "Not a valid GeoJSON string (%s):\n%s";
-							String msg = String.format(fmt, e.getMessage(), s);
-							throw new InvalidConditionException(msg);
-						}
-					}
-					return new InGeoAreaConditionTranslator(condition, mappingInfo);
+				if (mustAssumeJson(val)) {
+					condition.setValue(getGeoJsonObject(val));
+					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
+				return new InGeoAreaConditionTranslator(condition, mappingInfo);
 			default:
 				return new InValuesConditionTranslator(condition, mappingInfo);
 		}
+	}
+
+	/*
+	 * Whether or not we should assume that Condition.value is a JSON string, or at least
+	 * not a geographical name like "Amsterdam". The assumption is that no geographical
+	 * name starts with '{' and ends with '}', which seems safe.
+	 */
+	private static boolean mustAssumeJson(Object val)
+	{
+		if (val.getClass() == String.class) {
+			String s = val.toString().trim();
+			return s.charAt(0) != '{' && s.charAt(s.length() - 1) != '}';
+		}
+		return false;
+	}
+
+	private static GeoJsonObject getGeoJsonObject(Object val)
+			throws InvalidConditionException
+	{
+		try {
+			return deserialize(val.toString(), GeoJsonObject.class);
+		}
+		catch (JsonDeserializationException e) {
+			String fmt = "Not a valid GeoJSON string (%s):\n%s";
+			String msg = String.format(fmt, e.getMessage(), val);
+			throw new InvalidConditionException(msg);
+		}
+
 	}
 
 }

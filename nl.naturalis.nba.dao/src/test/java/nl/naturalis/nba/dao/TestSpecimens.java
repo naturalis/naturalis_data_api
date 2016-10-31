@@ -22,6 +22,7 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.types.ESGatheringEvent;
+import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 /**
@@ -49,6 +50,10 @@ class TestSpecimens {
 		gathering.setCity("Uitgeest");
 		gathering.setDateTimeBegin(datetime("2010/04/03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
+
+		ESGatheringSiteCoordinates coords;
+		coords = new ESGatheringSiteCoordinates(52.531713, 4.705922);
+		gathering.setSiteCoordinates(Arrays.asList(coords));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");

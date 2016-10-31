@@ -1,6 +1,16 @@
 package nl.naturalis.nba.common.es.map;
 
-import static nl.naturalis.nba.common.es.map.ESDataType.*;
+import static nl.naturalis.nba.common.es.map.ESDataType.BOOLEAN;
+import static nl.naturalis.nba.common.es.map.ESDataType.BYTE;
+import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
+import static nl.naturalis.nba.common.es.map.ESDataType.DOUBLE;
+import static nl.naturalis.nba.common.es.map.ESDataType.FLOAT;
+import static nl.naturalis.nba.common.es.map.ESDataType.GEO_POINT;
+import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
+import static nl.naturalis.nba.common.es.map.ESDataType.INTEGER;
+import static nl.naturalis.nba.common.es.map.ESDataType.LONG;
+import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
+import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
 
 import java.net.URI;
 import java.net.URL;
@@ -14,6 +24,9 @@ import java.util.Set;
 
 import org.geojson.Geometry;
 import org.geojson.Point;
+
+import nl.naturalis.nba.api.model.GeoPoint;
+import nl.naturalis.nba.api.model.GeoShape;
 
 /**
  * Maps Java types to Elasticsearch types and vice versa.
@@ -64,8 +77,8 @@ class DataTypeMap {
 		/* GEO types */
 		java2es.put(Point.class, GEO_POINT);
 		java2es.put(Geometry.class, GEO_SHAPE);
-		// java2es.put(GeoPoint.class, GEO_POINT);
-		// java2es.put(GeoShape.class, GEO_SHAPE);
+		java2es.put(GeoPoint.class, GEO_POINT);
+		java2es.put(GeoShape.class, GEO_SHAPE);
 
 		/* Create reverse map */
 		for (Map.Entry<Class<?>, ESDataType> entry : java2es.entrySet()) {

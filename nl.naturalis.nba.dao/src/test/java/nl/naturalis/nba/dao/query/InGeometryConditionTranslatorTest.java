@@ -1,15 +1,12 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
-import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
@@ -38,7 +35,7 @@ public class InGeometryConditionTranslatorTest {
 	
 	@Test
 	public void testTranslate_01a() throws InvalidConditionException
-	{
+	{		
 		List<LngLatAlt> list = new ArrayList<>();
 		list.add(new LngLatAlt(40, -70));
 		list.add(new LngLatAlt(30, -80));

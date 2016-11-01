@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.query;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
 import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
-import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
+import org.elasticsearch.index.query.GeoPolygonQueryBuilder;
 import org.elasticsearch.index.query.GeoShapeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.LngLatAlt;
@@ -35,6 +36,7 @@ class PointInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
+		GeoPolygonQueryBuilder q = geoPolygonQuery(condition.getField());
 		GeoShapeQueryBuilder query = geoShapeQuery(condition.getField(), getShape());
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null) {

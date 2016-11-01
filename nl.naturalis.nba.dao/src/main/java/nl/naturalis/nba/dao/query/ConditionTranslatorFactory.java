@@ -89,7 +89,7 @@ public class ConditionTranslatorFactory {
 				if (val instanceof GeoJsonObject) {
 					return new PointInShapeConditionTranslator(condition, mappingInfo);
 				}
-				if (mustAssumeJson(val)) {
+				if (isJson(val)) {
 					condition.setValue(getGeoJsonObject(val));
 					return new PointInShapeConditionTranslator(condition, mappingInfo);
 				}
@@ -97,7 +97,7 @@ public class ConditionTranslatorFactory {
 				if (val instanceof GeoJsonObject) {
 					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
-				if (mustAssumeJson(val)) {
+				if (isJson(val)) {
 					condition.setValue(getGeoJsonObject(val));
 					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
@@ -108,11 +108,11 @@ public class ConditionTranslatorFactory {
 	}
 
 	/*
-	 * Whether or not we should assume that Condition.value is a JSON string, or at least
+	 * Whether or not we must assume that Condition.value is a JSON string, or at least
 	 * not a geographical name like "Amsterdam". The assumption is that no geographical
 	 * name starts with '{' and ends with '}', which seems safe.
 	 */
-	private static boolean mustAssumeJson(Object val)
+	private static boolean isJson(Object val)
 	{
 		if (val.getClass() == String.class) {
 			String s = val.toString().trim();

@@ -6,4 +6,7 @@
         module="nl.naturalis.nba.api"
         status="integration">
 	</info>
+	<dependencies>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
+	</dependencies>
 </ivy-module>

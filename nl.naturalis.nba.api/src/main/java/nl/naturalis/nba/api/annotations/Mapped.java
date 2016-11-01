@@ -8,15 +8,12 @@ import java.lang.annotation.Target;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
- * Indicates that the field or property (getter method) decorated with this
- * annotation is mapped to a field in the document store. Fields are mapped by
- * default, so they don't need to be decorated with this annotation. Properties,
- * on the other hand, are not. If a getter method is mapped, it means you can
- * query it just like any other field (unless it happens to be also have the
- * {@link NotIndexed} annotation). In other words, you can create a
- * {@link Condition query condition} for it. Note that for a getter named (for
- * example) {@code getSummary()}, you would create a query on a field named
- * {@code summary}.
+ * Indicates that the method decorated with this annotation is mapped to a field in the
+ * Elasticsearch document store. The method must be a Java bean getter method conforming
+ * to the Java bean naming conventions, for example: {@code getFullName()}. The
+ * corresponding Elasticsearch field will be {@code fullName} and you must query it as
+ * such. The class containing the method should not also have a field named
+ * {@code fullName} since that would cause {@code fullName} to be doubly mapped.
  * 
  * @see IDocumentObject
  * 
@@ -24,7 +21,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD })
+@Target({ ElementType.METHOD })
 public @interface Mapped {
 
 }

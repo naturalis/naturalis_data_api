@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
+import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
@@ -20,6 +20,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
@@ -45,27 +46,28 @@ public class SpecimenDaoGeoQueryTest {
 		lFuscus2 = TestSpecimens.larusFuscusSpecimen02();
 		tRex = TestSpecimens.tRexSpecimen01();
 		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
-		ESTestUtils.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
+		ESTestUtils.saveSpecimens(pMajor);
 	}
 
 	@Test
 	public void testQuery_01() throws InvalidQueryException
 	{
 		List<LngLatAlt> list = new ArrayList<>();
-		list.add(new LngLatAlt(52.542892, 4.687768));
-		list.add(new LngLatAlt(52.547694, 4.764329));
-		list.add(new LngLatAlt(52.501008, 4.765531));
-		list.add(new LngLatAlt(52.497299, 4.677957));
-		list.add(new LngLatAlt(52.542892, 4.687768));
+		list.add(new LngLatAlt(0.0, 0.0));
+		list.add(new LngLatAlt(0.0, 10.0));
+		list.add(new LngLatAlt(10.0, 10.0));
+		list.add(new LngLatAlt(10.0, 0.0));
+		list.add(new LngLatAlt(0.0, 0.0));
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
 		Condition condition;
-		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, polygon);
+		condition = new Condition("gatheringEvent.siteCoordinates.geoPoint", NOT_IN, polygon);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
+		System.out.println(JsonUtil.toPrettyJson(result));
 		assertEquals("01", 1, result.size());		
 	}
 

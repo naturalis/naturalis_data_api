@@ -52,7 +52,8 @@ class TestSpecimens {
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
 		GatheringSiteCoordinates coords;
-		coords = new GatheringSiteCoordinates(52.531713, 4.705922);
+		//coords = new GatheringSiteCoordinates(52.531713, 4.705922);
+		coords = new GatheringSiteCoordinates(5.0, 5.0);
 		gathering.setSiteCoordinates(Arrays.asList(coords));
 
 		DefaultClassification classification = new DefaultClassification();

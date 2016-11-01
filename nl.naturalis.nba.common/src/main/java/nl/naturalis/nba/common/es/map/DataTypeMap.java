@@ -22,11 +22,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.geojson.Geometry;
-import org.geojson.Point;
+import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.model.GeoPoint;
-import nl.naturalis.nba.api.model.GeoShape;
 
 /**
  * Maps Java types to Elasticsearch types and vice versa.
@@ -75,10 +73,8 @@ class DataTypeMap {
 		java2es.put(LocalDateTime.class, DATE);
 		java2es.put(Date.class, DATE);
 		/* GEO types */
-		java2es.put(Point.class, GEO_POINT);
-		java2es.put(Geometry.class, GEO_SHAPE);
+		java2es.put(GeoJsonObject.class, GEO_SHAPE);
 		java2es.put(GeoPoint.class, GEO_POINT);
-		java2es.put(GeoShape.class, GEO_SHAPE);
 
 		/* Create reverse map */
 		for (Map.Entry<Class<?>, ESDataType> entry : java2es.entrySet()) {

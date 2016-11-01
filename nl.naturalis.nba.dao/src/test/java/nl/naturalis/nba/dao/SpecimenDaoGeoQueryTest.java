@@ -61,14 +61,11 @@ public class SpecimenDaoGeoQueryTest {
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
 		Condition condition;
-		condition = new Condition("gatheringEvent.siteCoordinates.geoPoint", IN, polygon);
+		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, polygon);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
-		// year after the next test specimen, so we can have only one query
-		// result (pMajor).
 		assertEquals("01", 1, result.size());		
 	}
 

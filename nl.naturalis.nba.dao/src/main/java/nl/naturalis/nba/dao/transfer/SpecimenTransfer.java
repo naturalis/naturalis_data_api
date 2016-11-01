@@ -41,7 +41,7 @@ public class SpecimenTransfer {
 		out.setMultiMediaPublic(in.isMultiMediaPublic());
 		out.setAcquiredFrom(in.getAcquiredFrom());
 		out.setIdentifications(in.getIdentifications());
-		out.setGatheringEvent(GatheringEventTransfer.load(in.getGatheringEvent()));
+		out.setGatheringEvent(in.getGatheringEvent());
 		return out;
 	}
 
@@ -74,7 +74,7 @@ public class SpecimenTransfer {
 		out.setMultiMediaPublic(in.isMultiMediaPublic());
 		out.setAcquiredFrom(in.getAcquiredFrom());
 		out.setIdentifications(in.getIdentifications());
-		out.setGatheringEvent(GatheringEventTransfer.save(in.getGatheringEvent()));
+		out.setGatheringEvent(in.getGatheringEvent());
 		return out;
 	}
 

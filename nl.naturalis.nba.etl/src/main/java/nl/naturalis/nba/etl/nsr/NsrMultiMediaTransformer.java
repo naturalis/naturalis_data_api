@@ -18,16 +18,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.w3c.dom.Element;
+
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.dao.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.NameMismatchException;
-
-import org.w3c.dom.Element;
 
 /**
  * Transforms and validates NSR source data.
@@ -132,7 +132,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			}
 			String locality = val(e, "geography");
 			if (locality != null || date != null) {
-				ESGatheringEvent ge = new ESGatheringEvent();
+				MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
 				mmo.setGatheringEvents(Arrays.asList(ge));
 				ge.setLocalityText(locality);
 				ge.setDateTimeBegin(parseDate(date));

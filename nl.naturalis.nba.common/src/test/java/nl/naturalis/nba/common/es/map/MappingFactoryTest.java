@@ -18,7 +18,7 @@ public class MappingFactoryTest {
 		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
 		MappingSerializer serializer = new MappingSerializer(true);
 		String json = serializer.serialize(mapping);
-		// System.out.println(json);
+		System.out.println(json);
 		String file = "MappingFactoryTest__testGetMapping.json";
 		assertEquals("01", getContents(file), json);
 	}

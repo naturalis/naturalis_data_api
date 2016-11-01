@@ -7,6 +7,7 @@
         status="integration">
 	</info>
 	<dependencies>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.7.8"/>
 		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
 	</dependencies>
 </ivy-module>

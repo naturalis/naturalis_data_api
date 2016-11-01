@@ -17,12 +17,12 @@ import java.util.Date;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.dao.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
 /**
@@ -43,7 +43,7 @@ class TestSpecimens {
 		specimen.setPhaseOrStage(ADULT);
 		specimen.setSex(MALE);
 		specimen.setRecordBasis("Preserved specimen");
-		ESGatheringEvent gathering = new ESGatheringEvent();
+		GatheringEvent gathering = new GatheringEvent();
 		gathering.setProjectTitle("Vogels der Lage Landen");
 		gathering.setLocalityText("Duinen, nabij Uitgeest");
 		gathering.setCountry("Netherlands");
@@ -51,8 +51,8 @@ class TestSpecimens {
 		gathering.setDateTimeBegin(datetime("2010/04/03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
-		ESGatheringSiteCoordinates coords;
-		coords = new ESGatheringSiteCoordinates(52.531713, 4.705922);
+		GatheringSiteCoordinates coords;
+		coords = new GatheringSiteCoordinates(52.531713, 4.705922);
 		gathering.setSiteCoordinates(Arrays.asList(coords));
 
 		DefaultClassification classification = new DefaultClassification();
@@ -98,7 +98,7 @@ class TestSpecimens {
 		specimen.setPhaseOrStage(JUVENILE);
 		specimen.setSex(MALE);
 		specimen.setRecordBasis("Preserved specimen");
-		ESGatheringEvent gathering = new ESGatheringEvent();
+		GatheringEvent gathering = new GatheringEvent();
 		gathering.setProjectTitle("Vogels der Lage Landen");
 		gathering.setLocalityText("In de duinen, nabij Uitgeest");
 		gathering.setCountry("Netherlands");
@@ -147,7 +147,7 @@ class TestSpecimens {
 		specimen.setUnitID("309801857");
 		specimen.setSourceSystem(NDFF);
 		specimen.setPhaseOrStage(EGG);
-		ESGatheringEvent gathering = new ESGatheringEvent();
+		GatheringEvent gathering = new GatheringEvent();
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Hiversum");
 		gathering.setDateTimeBegin(datetime("2008/04/03 13:04"));
@@ -197,7 +197,7 @@ class TestSpecimens {
 		specimen.setPhaseOrStage(ADULT);
 		specimen.setSex(FEMALE);
 		specimen.setRecordBasis("FossileSpecimen");
-		ESGatheringEvent gathering = new ESGatheringEvent();
+		GatheringEvent gathering = new GatheringEvent();
 		gathering.setProjectTitle("Project T. Rex");
 		gathering.setLocalityText("Montana, U.S.A.");
 		gathering.setCountry("United States");
@@ -247,7 +247,7 @@ class TestSpecimens {
 		specimen.setPhaseOrStage(ADULT);
 		specimen.setSex(FEMALE);
 		specimen.setRecordBasis("Herbarium sheet");
-		ESGatheringEvent gathering = new ESGatheringEvent();
+		GatheringEvent gathering = new GatheringEvent();
 		gathering.setLocalityText("Dorchester, U.K.");
 		gathering.setCountry("United Kingdom");
 		gathering.setDateTimeBegin(null);

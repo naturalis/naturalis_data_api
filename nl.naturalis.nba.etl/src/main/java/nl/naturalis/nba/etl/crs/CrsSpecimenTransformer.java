@@ -19,9 +19,20 @@ import java.util.List;
 import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
 
-import nl.naturalis.nba.api.model.*;
-import nl.naturalis.nba.dao.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.BioStratigraphy;
+import nl.naturalis.nba.api.model.ChronoStratigraphy;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.LithoStratigraphy;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.Person;
+import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
+import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -274,10 +285,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 		return classification;
 	}
 
-	private ESGatheringEvent getGatheringEvent()
+	private GatheringEvent getGatheringEvent()
 	{
 		Element record = input.getRecord();
-		ESGatheringEvent ge = new ESGatheringEvent();
+		GatheringEvent ge = new GatheringEvent();
 		ge.setProjectTitle(val(record, "abcd:ProjectTitle"));
 		ge.setWorldRegion(val(record, "abcd:WorldRegion"));
 		ge.setCountry(val(record, "abcd:Country"));
@@ -304,7 +315,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			lat = null;
 		}
 		if (lat != null || lon != null) {
-			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
+			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
 		}
 		ge.setChronoStratigraphy(getChronoStratigraphyList());
 		ge.setBioStratigraphy(getBioStratigraphyList());

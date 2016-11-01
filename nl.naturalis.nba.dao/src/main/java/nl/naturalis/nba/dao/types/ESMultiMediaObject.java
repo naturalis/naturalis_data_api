@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 import nl.naturalis.nba.api.model.NbaTraceableObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
@@ -33,7 +34,7 @@ public class ESMultiMediaObject extends NbaTraceableObject implements ESType {
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
 	private List<String> sexes;
-	private List<ESGatheringEvent> gatheringEvents;
+	private List<MultiMediaGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
 	private List<String> identifyingEpithets;
 	private List<String> theme;
@@ -276,12 +277,12 @@ public class ESMultiMediaObject extends NbaTraceableObject implements ESType {
 		this.sexes = sexes;
 	}
 
-	public List<ESGatheringEvent> getGatheringEvents()
+	public List<MultiMediaGatheringEvent> getGatheringEvents()
 	{
 		return gatheringEvents;
 	}
 
-	public void setGatheringEvents(List<ESGatheringEvent> gatheringEvents)
+	public void setGatheringEvents(List<MultiMediaGatheringEvent> gatheringEvents)
 	{
 		this.gatheringEvents = gatheringEvents;
 	}
@@ -294,22 +295,6 @@ public class ESMultiMediaObject extends NbaTraceableObject implements ESType {
 	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
 	{
 		this.identifications = identifications;
-		if (identifications != null) {
-			this.identifyingEpithets = new ArrayList<String>(identifications.size());
-			for (MultiMediaContentIdentification identification : identifications) {
-				//@formatter:off
-				String identifier = 
-	        		identification.getScientificName().getGenusOrMonomial() +
-	        		"||" +
-	        		identification.getScientificName().getSubgenus() +
-	        		"||" +
-	        		identification.getScientificName().getSpecificEpithet() +
-	        		"||" +
-	        		identification.getScientificName().getInfraspecificEpithet();
-				//@formatter:on
-				identifyingEpithets.add(identifier);
-			}
-		}
 	}
 
 	public List<String> getIdentifyingEpithets()

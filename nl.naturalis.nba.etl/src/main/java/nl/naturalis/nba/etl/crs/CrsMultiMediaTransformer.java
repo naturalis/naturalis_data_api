@@ -20,13 +20,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.w3c.dom.Element;
+
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -37,8 +39,6 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-
-import org.w3c.dom.Element;
 
 /**
  * The transformer component for the CRS multimedia import.
@@ -241,9 +241,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		return identifications;
 	}
 
-	private ESGatheringEvent getGatheringEvent(Element e)
+	private MultiMediaGatheringEvent getGatheringEvent(Element e)
 	{
-		ESGatheringEvent ge = new ESGatheringEvent();
+		MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
 		ge.setWorldRegion(val(e, "Iptc4xmpExt:WorldRegion"));
 		ge.setCountry(val(e, "Iptc4xmpExt:CountryName"));
 		ge.setProvinceState(val(e, "Iptc4xmpExt:ProvinceState"));
@@ -261,8 +261,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			lon = null;
 		}
 		if (lat != null || lon != null) {
-			ESGatheringSiteCoordinates coords;
-			coords = new ESGatheringSiteCoordinates(lat, lon);
+			GatheringSiteCoordinates coords;
+			coords = new GatheringSiteCoordinates(lat, lon);
 			ge.setSiteCoordinates(Arrays.asList(coords));
 		}
 		String s = val(e, "abcd:GatheringAgent");

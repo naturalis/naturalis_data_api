@@ -1,14 +1,21 @@
 package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
-import static nl.naturalis.nba.dao.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.*;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.IMAGELIST;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PLANTDESC;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.TYPE;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDate;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getGatheringEvent;
+import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getMultiMediaGatheringEvent;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
 
 import java.net.URI;
@@ -24,8 +31,8 @@ import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.api.model.VernacularName;
+import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
@@ -92,7 +99,7 @@ class BrahmsMultiMediaTransformer
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, BRAHMS);
 			mmo.setTheme(themes);
 			mmo.setDescription(input.get(PLANTDESC));
-			mmo.setGatheringEvents(Arrays.asList(getGatheringEvent(input)));
+			mmo.setGatheringEvents(Arrays.asList(getMultiMediaGatheringEvent(input)));
 			mmo.setIdentifications(Arrays.asList(getIdentification()));
 			mmo.setSpecimenTypeStatus(typeStatusNormalizer.normalize(input.get(TYPE)));
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));

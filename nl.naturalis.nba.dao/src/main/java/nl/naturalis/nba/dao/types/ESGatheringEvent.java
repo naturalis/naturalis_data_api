@@ -15,6 +15,7 @@ import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 
+@Deprecated
 public class ESGatheringEvent implements INbaModelObject {
 
 	private String projectTitle;
@@ -36,12 +37,13 @@ public class ESGatheringEvent implements INbaModelObject {
 	private String altitudeUnifOfMeasurement;
 	private String depth;
 	private String depthUnitOfMeasurement;
+	
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<ESGatheringSiteCoordinates> siteCoordinates;
 
-	private List<BioStratigraphy> bioStratigraphy;
 	private List<ChronoStratigraphy> chronoStratigraphy;
+	private List<BioStratigraphy> bioStratigraphy;
 	private List<LithoStratigraphy> lithoStratigraphy;
 
 	public String getProjectTitle()

@@ -1,14 +1,11 @@
 package nl.naturalis.nba.dao.transfer;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
-import nl.naturalis.nba.dao.types.ESGatheringEvent;
 import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 
 public class MultiMediaObjectTransfer {
@@ -39,17 +36,7 @@ public class MultiMediaObjectTransfer {
 		mmo.setCopyrightText(esMmo.getCopyrightText());
 		mmo.setCreator(esMmo.getCreator());
 		mmo.setDescription(esMmo.getDescription());
-
-		List<ESGatheringEvent> esGatheringEvents = esMmo.getGatheringEvents();
-		if (esGatheringEvents != null) {
-			List<MultiMediaGatheringEvent> gatheringEvents = new ArrayList<>();
-			for (ESGatheringEvent gatheringEvent : esGatheringEvents) {
-				gatheringEvents
-						.add(GatheringEventTransfer.loadMultiMediaGatheringEvent(gatheringEvent));
-			}
-			mmo.setGatheringEvents(gatheringEvents);
-		}
-
+		mmo.setGatheringEvents(esMmo.getGatheringEvents());
 		mmo.setMultimediaPublic(esMmo.isMultiMediaPublic());
 		mmo.setPhasesOrStages(esMmo.getPhasesOrStages());
 		List<ServiceAccessPoint> serviceAccessPoints = esMmo.getServiceAccessPoints();

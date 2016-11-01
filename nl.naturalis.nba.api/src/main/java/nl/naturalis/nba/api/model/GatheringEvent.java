@@ -1,43 +1,28 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class GatheringEvent implements INbaModelObject {
 
 	private String projectTitle;
 	private String worldRegion;
-	/*
-	 * This is not strictly ABCD, but this information is provided by some
-	 * Naturalis data sources, and the meaning and specifity of continent is
-	 * rather more obvious than world region. If a data source provides a
-	 * continent, but not a world region, {@code content} and {@code
-	 * worldRegion} will both be set to the provided continent. If a data source
-	 * provides a world region, but not a continent, only the {@code
-	 * worldRegion} field will be set to the world region, unless a continent
-	 * could be parsed out of the world region.
-	 */
 	private String continent;
 	private String country;
 	private String iso3166Code;
 	private String provinceState;
 	private String island;
 	private String locality;
-	/*
-	 * This is not strictly ABCD, but it enables the generation of IPTC data
-	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s. If a
-	 * Naturalis data source happens to provide a city but not a locality, both
-	 * {@code city} and {@code locality} will be set to the provided locality.
-	 * If a locality was provided but not a city, only the {@code locality}
-	 * field will be set, unless a city could be parsed out of the locality.
-	 */
 	private String city;
-	/*
-	 * This is not strictly ABCD, but it enables the generation of IPTC data
-	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s.
-	 */
 	private String sublocality;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String localityText;
 	private Date dateTimeBegin;
 	private Date dateTimeEnd;
@@ -46,11 +31,13 @@ public class GatheringEvent implements INbaModelObject {
 	private String altitudeUnifOfMeasurement;
 	private String depth;
 	private String depthUnitOfMeasurement;
+	
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
+	
 	private List<ChronoStratigraphy> chronoStratigraphy;
-	private List<BioStratigraphy> bioStratigraphic;
+	private List<BioStratigraphy> bioStratigraphy;
 	private List<LithoStratigraphy> lithoStratigraphy;
 
 	public void addSiteCoordinates(GatheringSiteCoordinates coordinates)
@@ -86,6 +73,16 @@ public class GatheringEvent implements INbaModelObject {
 		this.worldRegion = worldRegion;
 	}
 
+	/**
+	 * This is not strictly ABCD, but this information is provided by some Naturalis data
+	 * sources, and the meaning and specifity of continent is rather more obvious than
+	 * world region. If a data source provides a continent, but not a world region,
+	 * {@code content} and {@code
+	 * worldRegion} will both be set to the provided continent. If a data source provides
+	 * a world region, but not a continent, only the {@code
+	 * worldRegion} field will be set to the world region, unless a continent could be
+	 * parsed out of the world region.
+	 */
 	public String getContinent()
 	{
 		return continent;
@@ -146,6 +143,14 @@ public class GatheringEvent implements INbaModelObject {
 		this.locality = locality;
 	}
 
+	/**
+	 * This is not strictly ABCD, but it enables the generation of IPTC data
+	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s. If a Naturalis data
+	 * source happens to provide a city but not a locality, both {@code city} and
+	 * {@code locality} will be set to the provided locality. If a locality was provided
+	 * but not a city, only the {@code locality} field will be set, unless a city could be
+	 * parsed out of the locality.
+	 */
 	public String getCity()
 	{
 		return city;
@@ -156,6 +161,10 @@ public class GatheringEvent implements INbaModelObject {
 		this.city = city;
 	}
 
+	/**
+	 * This is not strictly ABCD, but it enables the generation of IPTC data
+	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s.
+	 */
 	public String getSublocality()
 	{
 		return sublocality;
@@ -288,12 +297,12 @@ public class GatheringEvent implements INbaModelObject {
 
 	public List<BioStratigraphy> getBioStratigraphic()
 	{
-		return bioStratigraphic;
+		return bioStratigraphy;
 	}
 
-	public void setBioStratigraphic(List<BioStratigraphy> bioStratigraphic)
+	public void setBioStratigraphy(List<BioStratigraphy> bioStratigraphic)
 	{
-		this.bioStratigraphic = bioStratigraphic;
+		this.bioStratigraphy = bioStratigraphic;
 	}
 
 	public List<LithoStratigraphy> getLithoStratigraphy()

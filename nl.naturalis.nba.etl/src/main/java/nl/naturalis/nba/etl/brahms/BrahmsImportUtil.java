@@ -1,6 +1,33 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.*;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.AUTHOR1;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.AUTHOR2;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.AUTHOR3;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CONTINENT;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COUNTRY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DETBY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.FAMCLASS;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.FAMILY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.GENUS;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LATITUDE;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LOCNOTES;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LONGITUDE;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MAJORAREA;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTH;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.ORDER;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.RANK1;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.RANK2;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SP1;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SP2;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SP3;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SPECIES;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEAR;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,10 +42,18 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.joda.time.LocalDate;
 
-import nl.naturalis.nba.api.model.*;
+import nl.naturalis.nba.api.model.Agent;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.GatheringEvent;
+import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
+import nl.naturalis.nba.api.model.Person;
+import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.TaxonomicRank;
+import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.types.ESGatheringEvent;
-import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.TransformUtil;
@@ -33,8 +68,10 @@ class BrahmsImportUtil {
 
 	private static final Logger logger = ETLRegistry.getInstance()
 			.getLogger(BrahmsImportUtil.class);
-	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
-	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat(
+			"yyyyMMdd");
+	private static final boolean suppressErrors = ConfigObject
+			.isEnabled("brahms.suppress-errors");
 
 	private static final String MSG_INVALID_NUMBER = "Invalid number in field %s: \"%s\" (value set to 0)";
 
@@ -62,8 +99,8 @@ class BrahmsImportUtil {
 	}
 
 	/**
-	 * Creates a backup of successfully processed CSV files by appending a
-	 * datetime stamp and a {@code .imported} file extension to their name.
+	 * Creates a backup of successfully processed CSV files by appending a datetime stamp
+	 * and a {@code .imported} file extension to their name.
 	 */
 	static void backup()
 	{
@@ -74,8 +111,8 @@ class BrahmsImportUtil {
 	}
 
 	/**
-	 * Removes the {@code .imported} file extension from files that have it,
-	 * causing them to be re-processed the next time an import is started.
+	 * Removes the {@code .imported} file extension from files that have it, causing them
+	 * to be re-processed the next time an import is started.
 	 */
 	static void removeBackupExtension()
 	{
@@ -98,13 +135,12 @@ class BrahmsImportUtil {
 	}
 
 	/**
-	 * Constructs a {@code Date} object from the date fields in a Brahms export
-	 * file. If {@code year} or {@code month} are empty or zero, {@code null} is
-	 * returned. If {@code day} is empty or zero, the date is rounded to the
-	 * first day of the month. If {@code year}, {@code month} or {@code day} are
-	 * not numeric, a warning is logged, and {@code null} is returned. If
-	 * {@code month} or {@code day} are out-of-range (e.g. 13 for month), the
-	 * result is undefined.
+	 * Constructs a {@code Date} object from the date fields in a Brahms export file. If
+	 * {@code year} or {@code month} are empty or zero, {@code null} is returned. If
+	 * {@code day} is empty or zero, the date is rounded to the first day of the month. If
+	 * {@code year}, {@code month} or {@code day} are not numeric, a warning is logged,
+	 * and {@code null} is returned. If {@code month} or {@code day} are out-of-range
+	 * (e.g. 13 for month), the result is undefined.
 	 * 
 	 * @param year
 	 * @param month
@@ -134,7 +170,6 @@ class BrahmsImportUtil {
 				if (dayInt == 0)
 					dayInt = 1;
 			}
-
 			LocalDate date = new LocalDate(yearInt, monthInt, dayInt);
 			return date.toDate();
 		}
@@ -148,16 +183,15 @@ class BrahmsImportUtil {
 	}
 
 	/**
-	 * Constructs a {@code Date} object from the date fields in a Brahms export
-	 * file. Used to construct a begin and end date from problematic gathering
-	 * event dates in the source data. If {@code year} is empty or zero,
-	 * {@code null} is returned. If {@code month} is empty or zero, the month is
-	 * set to january. If {@code day} is empty or zero, the day is set to the
-	 * first day or the last day of the month depending on the value of the
-	 * {@code lastDayOfMonth} argument. If {@code year}, {@code month} or
-	 * {@code day} are not numeric, a warning is logged, and {@code null} is
-	 * returned. If {@code month} or {@code day} are out-of-range (e.g. 13 for
-	 * month), the result is undefined.
+	 * Constructs a {@code Date} object from the date fields in a Brahms export file. Used
+	 * to construct a begin and end date from problematic gathering event dates in the
+	 * source data. If {@code year} is empty or zero, {@code null} is returned. If
+	 * {@code month} is empty or zero, the month is set to january. If {@code day} is
+	 * empty or zero, the day is set to the first day or the last day of the month
+	 * depending on the value of the {@code lastDayOfMonth} argument. If {@code year},
+	 * {@code month} or {@code day} are not numeric, a warning is logged, and {@code null}
+	 * is returned. If {@code month} or {@code day} are out-of-range (e.g. 13 for month),
+	 * the result is undefined.
 	 * 
 	 * @param year
 	 * @param month
@@ -192,7 +226,6 @@ class BrahmsImportUtil {
 				if (dayInt == 0)
 					dayInt = -1;
 			}
-
 			LocalDate date;
 			if (dayInt == -1) {
 				date = new LocalDate(yearInt, monthInt, 1);
@@ -202,7 +235,6 @@ class BrahmsImportUtil {
 			else {
 				date = new LocalDate(yearInt, monthInt, dayInt);
 			}
-
 			return date.toDate();
 		}
 		catch (Exception e) {
@@ -220,7 +252,8 @@ class BrahmsImportUtil {
 	 * @param record
 	 * @return
 	 */
-	static SpecimenIdentification getSpecimenIdentification(CSVRecordInfo<BrahmsCsvField> record)
+	static SpecimenIdentification getSpecimenIdentification(
+			CSVRecordInfo<BrahmsCsvField> record)
 	{
 		SpecimenIdentification identification = new SpecimenIdentification();
 		String s = record.get(DETBY);
@@ -300,8 +333,8 @@ class BrahmsImportUtil {
 	 * @param sn
 	 * @return
 	 */
-	static DefaultClassification getDefaultClassification(CSVRecordInfo<BrahmsCsvField> record,
-			ScientificName sn)
+	static DefaultClassification getDefaultClassification(
+			CSVRecordInfo<BrahmsCsvField> record, ScientificName sn)
 	{
 		DefaultClassification dc = TransformUtil.extractClassificiationFromName(sn);
 		dc.setKingdom("Plantae");
@@ -313,14 +346,35 @@ class BrahmsImportUtil {
 	}
 
 	/**
-	 * Extracts a {@code ESGatheringEvent} instance from a raw CSV record.
+	 * Extracts a {@code GatheringEvent} instance from a raw CSV record.
 	 * 
 	 * @param record
 	 * @return
 	 */
-	static ESGatheringEvent getGatheringEvent(CSVRecordInfo<BrahmsCsvField> record)
+	static GatheringEvent getGatheringEvent(CSVRecordInfo<BrahmsCsvField> record)
 	{
-		final ESGatheringEvent ge = new ESGatheringEvent();
+		GatheringEvent ge = new GatheringEvent();
+		populateGatheringEvent(ge, record);
+		return ge;
+	}
+
+	/**
+	 * Extracts a {@code MultiMediaGatheringEvent} instance from a raw CSV record.
+	 * 
+	 * @param record
+	 * @return
+	 */
+	static MultiMediaGatheringEvent getMultiMediaGatheringEvent(
+			CSVRecordInfo<BrahmsCsvField> record)
+	{
+		MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
+		populateGatheringEvent(ge, record);
+		return ge;
+	}
+
+	private static void populateGatheringEvent(GatheringEvent ge,
+			CSVRecordInfo<BrahmsCsvField> record)
+	{
 		ge.setWorldRegion(record.get(CONTINENT));
 		ge.setContinent(ge.getWorldRegion());
 		ge.setCountry(record.get(COUNTRY));
@@ -370,18 +424,17 @@ class BrahmsImportUtil {
 			lat = null;
 		}
 		if (lat != null || lon != null) {
-			ge.setSiteCoordinates(Arrays.asList(new ESGatheringSiteCoordinates(lat, lon)));
+			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
 		}
 		String collector = record.get(COLLECTOR);
 		if (collector != null) {
 			ge.setGatheringPersons(Arrays.asList(new Person(collector)));
 		}
-		return ge;
 	}
 
 	/**
-	 * Converts a {@code DefaultClassification} instance to a system
-	 * classification (which is just a list of {@code Monomial}s).
+	 * Converts a {@code DefaultClassification} instance to a system classification (which
+	 * is just a list of {@code Monomial}s).
 	 * 
 	 * @param dc
 	 * @return
@@ -448,7 +501,8 @@ class BrahmsImportUtil {
 		return record.get(RANK2);
 	}
 
-	public static Double getDouble(CSVRecordInfo<BrahmsCsvField> record, BrahmsCsvField field)
+	public static Double getDouble(CSVRecordInfo<BrahmsCsvField> record,
+			BrahmsCsvField field)
 	{
 		String s = record.get(field);
 		if (s == null)
@@ -463,7 +517,8 @@ class BrahmsImportUtil {
 		}
 	}
 
-	public static Float getFloat(CSVRecordInfo<BrahmsCsvField> record, BrahmsCsvField field)
+	public static Float getFloat(CSVRecordInfo<BrahmsCsvField> record,
+			BrahmsCsvField field)
 	{
 		String s = record.get(field);
 		if (s == null)
@@ -480,7 +535,8 @@ class BrahmsImportUtil {
 
 	private static File getDataDir()
 	{
-		return DaoRegistry.getInstance().getConfiguration().getDirectory("brahms.data.dir");
+		return DaoRegistry.getInstance().getConfiguration()
+				.getDirectory("brahms.data.dir");
 	}
 
 }

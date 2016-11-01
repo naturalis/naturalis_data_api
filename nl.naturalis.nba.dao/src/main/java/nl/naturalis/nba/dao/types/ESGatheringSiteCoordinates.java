@@ -6,6 +6,7 @@ import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.model.GeoPoint;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class ESGatheringSiteCoordinates {
 
 	private Double longitudeDecimal;

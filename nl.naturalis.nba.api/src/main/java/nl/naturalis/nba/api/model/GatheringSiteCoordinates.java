@@ -4,9 +4,12 @@ import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 import org.geojson.Polygon;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.query.ComparisonOperator;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GatheringSiteCoordinates implements INbaModelObject {
 
 	private Double longitudeDecimal;

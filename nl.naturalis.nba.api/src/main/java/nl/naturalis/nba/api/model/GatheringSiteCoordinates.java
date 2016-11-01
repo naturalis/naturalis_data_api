@@ -21,6 +21,8 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	private String gridCellCode;
 	private String gridQualifier;
 
+	private GeoPoint geoPoint;
+
 	public GatheringSiteCoordinates()
 	{
 	}
@@ -44,13 +46,18 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	 * 
 	 * @return
 	 */
-	@Mapped
 	public GeoPoint getGeoPoint()
 	{
-		if (longitudeDecimal == null || latitudeDecimal == null) {
-			return null;
-		}
-		return new GeoPoint(latitudeDecimal, longitudeDecimal);
+		return geoPoint;
+		//		if (longitudeDecimal == null || latitudeDecimal == null) {
+		//			return null;
+		//		}
+		//		return new GeoPoint(latitudeDecimal, longitudeDecimal);
+	}
+
+	public void setGeoPoint(GeoPoint p)
+	{
+		this.geoPoint = p;
 	}
 
 	/**

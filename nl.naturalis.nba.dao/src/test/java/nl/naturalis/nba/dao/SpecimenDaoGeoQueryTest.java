@@ -62,7 +62,7 @@ public class SpecimenDaoGeoQueryTest {
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
 		Condition condition;
-		condition = new Condition("gatheringEvent.siteCoordinates.geoPoint", NOT_IN, polygon);
+		condition = new Condition("gatheringEvent.siteCoordinates.geoPoint", IN, polygon);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

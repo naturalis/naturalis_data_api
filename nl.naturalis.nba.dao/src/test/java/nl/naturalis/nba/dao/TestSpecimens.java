@@ -19,6 +19,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.GeoPoint;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -54,6 +55,7 @@ class TestSpecimens {
 		GatheringSiteCoordinates coords;
 		//coords = new GatheringSiteCoordinates(52.531713, 4.705922);
 		coords = new GatheringSiteCoordinates(5.0, 5.0);
+		coords.setGeoPoint(new GeoPoint(5.0, 5.0));
 		gathering.setSiteCoordinates(Arrays.asList(coords));
 
 		DefaultClassification classification = new DefaultClassification();

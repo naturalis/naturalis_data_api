@@ -1,6 +1,6 @@
 package nl.naturalis.nba.common.es.map;
 
-public class GeoShapeField extends PrimitiveField {
+public class GeoShapeField extends SimpleField {
 
 	private String precision = "5km";
 

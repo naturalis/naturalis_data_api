@@ -12,7 +12,7 @@ import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
-import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.common.es.map.SimpleField;
 
 class TranslatorUtil {
 
@@ -29,14 +29,14 @@ class TranslatorUtil {
 
 	static String getNestedPath(Condition condition, MappingInfo mappingInfo)
 	{
-		PrimitiveField pf = getESField(condition, mappingInfo);
+		SimpleField pf = getESField(condition, mappingInfo);
 		return MappingInfo.getNestedPath(pf);
 	}
 
-	static PrimitiveField getESField(Condition condition, MappingInfo mappingInfo)
+	static SimpleField getESField(Condition condition, MappingInfo mappingInfo)
 	{
 		try {
-			return (PrimitiveField) mappingInfo.getField(condition.getField());
+			return (SimpleField) mappingInfo.getField(condition.getField());
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because already checked in ConditionTranslatorFactory

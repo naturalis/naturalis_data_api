@@ -11,7 +11,7 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
-import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
@@ -226,7 +226,7 @@ public final class Path {
 		catch (NoSuchFieldException e) {
 			throw new InvalidPathException(e.getMessage());
 		}
-		return (esField instanceof PrimitiveField);
+		return (esField instanceof SimpleField);
 	}
 
 	/**

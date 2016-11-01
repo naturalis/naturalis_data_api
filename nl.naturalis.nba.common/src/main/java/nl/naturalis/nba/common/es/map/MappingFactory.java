@@ -1,6 +1,6 @@
 package nl.naturalis.nba.common.es.map;
 
-import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
+import static nl.naturalis.nba.common.es.map.ESDataType.*;
 import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.common.es.map.Index.NO;
 import static nl.naturalis.nba.common.es.map.Index.NOT_ANALYZED;
@@ -90,8 +90,8 @@ public class MappingFactory {
 		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
 			/*
-			 * Then the Java type does not map to a simple Elasticsearch type;
-			 * the Elastichsearch type is either "object" or "nested".
+			 * Then the Java type does not map to a simple Elasticsearch type; the
+			 * Elastichsearch type is either "object" or "nested".
 			 */
 			if (ancestors.contains(mapToType)) {
 				throw new ClassCircularityException(field, mapToType);
@@ -118,24 +118,25 @@ public class MappingFactory {
 		return createSimpleField(method, esType);
 	}
 
-	private static PrimitiveField createSimpleField(AnnotatedElement fm, ESDataType esType)
+	private static SimpleField createSimpleField(AnnotatedElement fm, ESDataType esType)
 	{
-		if (esType == GEO_SHAPE) {
-			return new GeoShapeField();
+		SimpleField sf;
+		switch (esType) {
+			case GEO_SHAPE:
+				sf = new GeoShapeField();
+				break;
+			case STRING:
+				sf = new StringField();
+				sf.setIndex(NOT_ANALYZED);
+				addMultiFields((StringField) sf, fm);
+				break;
+			default:
+				sf = new SimpleField(esType);
 		}
-		NotIndexed annotation = fm.getAnnotation(NotIndexed.class);
-		if (annotation == null) {
-			if (esType.isAnalyzable()) {
-				AnalyzableField field = new AnalyzableField(esType);
-				field.setIndex(NOT_ANALYZED);
-				addMultiFields(field, fm);
-				return field;
-			}
-			return new PrimitiveField(esType);
+		if (fm.getAnnotation(NotIndexed.class) != null) {
+			sf.setIndex(NO);
 		}
-		PrimitiveField field = new PrimitiveField(esType);
-		field.setIndex(NO);
-		return field;
+		return sf;
 	}
 
 	private static ComplexField createDocument(Field field, Class<?> mapToType,
@@ -179,10 +180,10 @@ public class MappingFactory {
 	}
 
 	/*
-	 * Returns false if the Java field does not contain the @Analyzers
-	 * annotation. Otherwise it returns true.
+	 * Returns false if the Java field does not contain the @Analyzers annotation.
+	 * Otherwise it returns true.
 	 */
-	private static boolean addMultiFields(AnalyzableField af, AnnotatedElement fm)
+	private static boolean addMultiFields(StringField af, AnnotatedElement fm)
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
@@ -214,11 +215,10 @@ public class MappingFactory {
 	}
 
 	/*
-	 * Maps a Java class to another Java class that must be used in its place.
-	 * The latter class is then mapped to an Elasticsearch data type. For
-	 * example, when mapping arrays, it's not the array that is mapped but the
-	 * class of its elements. No array type exists or is required in
-	 * Elasticsearch; fields are intrinsically multi-valued.
+	 * Maps a Java class to another Java class that must be used in its place. The latter
+	 * class is then mapped to an Elasticsearch data type. For example, when mapping
+	 * arrays, it's not the array that is mapped but the class of its elements. No array
+	 * type exists or is required in Elasticsearch; fields are intrinsically multi-valued.
 	 */
 	private static Class<?> mapType(Class<?> type, Type typeArg)
 	{
@@ -249,7 +249,8 @@ public class MappingFactory {
 		return false;
 	}
 
-	private static HashSet<Class<?>> newTree(HashSet<Class<?>> ancestors, Class<?> newType)
+	private static HashSet<Class<?>> newTree(HashSet<Class<?>> ancestors,
+			Class<?> newType)
 	{
 		HashSet<Class<?>> set = new HashSet<>(6);
 		set.addAll(ancestors);

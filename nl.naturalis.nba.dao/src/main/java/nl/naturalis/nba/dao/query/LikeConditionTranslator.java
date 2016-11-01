@@ -14,7 +14,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.common.es.map.AnalyzableField;
+import nl.naturalis.nba.common.es.map.StringField;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -48,8 +48,8 @@ class LikeConditionTranslator extends ConditionTranslator {
 		if (field.getType() != ESDataType.STRING) {
 			throw new IllegalOperatorException(condition);
 		}
-		if (field instanceof AnalyzableField) {
-			AnalyzableField af = (AnalyzableField) field;
+		if (field instanceof StringField) {
+			StringField af = (StringField) field;
 			if (af.hasMultiField(LIKE_MULTIFIELD)) {
 				return;
 			}

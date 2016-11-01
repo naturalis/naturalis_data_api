@@ -10,7 +10,7 @@ import org.geojson.GeoJsonObject;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.PrimitiveField;
+import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.dao.DocumentType;
 
@@ -83,7 +83,7 @@ public class ConditionTranslatorFactory {
 		if (val == null || val.getClass().isArray() || val instanceof Collection) {
 			return new InValuesConditionTranslator(condition, mappingInfo);
 		}
-		PrimitiveField pf = getESField(condition, mappingInfo);
+		SimpleField pf = getESField(condition, mappingInfo);
 		switch (pf.getType()) {
 			case GEO_POINT:
 				if (val instanceof GeoJsonObject) {

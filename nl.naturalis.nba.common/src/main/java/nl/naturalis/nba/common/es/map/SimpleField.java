@@ -1,10 +1,17 @@
 package nl.naturalis.nba.common.es.map;
 
-public class PrimitiveField extends ESField {
+/**
+ * A {@code SimpleField} is a field with a simple data type. In other words it is not an
+ * object containing other fields.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class SimpleField extends ESField {
 
 	protected Index index;
 
-	public PrimitiveField(ESDataType type)
+	public SimpleField(ESDataType type)
 	{
 		this.type = type;
 	}

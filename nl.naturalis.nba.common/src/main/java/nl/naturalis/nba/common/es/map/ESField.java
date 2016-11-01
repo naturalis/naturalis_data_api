@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Abstract base class for all nodes within a mapping. The {@link Mapping}
  * object itself, any nested {@link ComplexField documents} within it, all
- * {@link PrimitiveField fields} and all {@link MultiField multi-fields}
+ * {@link SimpleField fields} and all {@link MultiField multi-fields}
  * underneath a field are instances of an {@link ESField}.
  * 
  * @author Ayco Holleman

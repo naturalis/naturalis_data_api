@@ -40,11 +40,6 @@ public enum ESDataType
 		this.esName = esName;
 	}
 
-	public boolean isAnalyzable()
-	{
-		return this == STRING;
-	}
-
 	@Override
 	public String toString()
 	{

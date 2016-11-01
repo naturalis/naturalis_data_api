@@ -48,7 +48,7 @@ public class MappingInfoTest {
 	{
 		ESField f = personInfo.getField("lastName");
 		assertNotNull("01", f);
-		assertTrue("02", f instanceof AnalyzableField);
+		assertTrue("02", f instanceof StringField);
 	}
 
 	@Test(expected = NoSuchFieldException.class)

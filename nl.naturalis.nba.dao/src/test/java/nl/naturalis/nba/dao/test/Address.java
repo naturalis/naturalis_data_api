@@ -1,7 +1,11 @@
 package nl.naturalis.nba.dao.test;
 
+import org.geojson.GeoJsonObject;
+import org.geojson.Point;
+
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.model.GeoPoint;
 
@@ -82,6 +86,15 @@ public class Address {
 	public void setLocation(GeoPoint location)
 	{
 		this.location = location;
+	}
+
+	@Mapped
+	public GeoJsonObject getLocationAsShape()
+	{
+		if (location == null) {
+			return null;
+		}
+		return new Point(location.getLon(), location.getLat());
 	}
 
 }

@@ -14,6 +14,7 @@ import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.index.query.GeoShapeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
 import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
@@ -25,6 +26,15 @@ import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
+/**
+ * Translates conditions with an IN or NOT_IN operator when used with fields of type
+ * {@link GeoJsonObject} and with a {@link Condition#getValue() search term that is also a
+ * {@link GeoJsonObject} (or a JSON string that deserializes into a
+ * {@link GeoJsonObject}).
+ * 
+ * @author Ayco Holleman
+ *
+ */
 class ShapeInShapeConditionTranslator extends ConditionTranslator {
 
 	ShapeInShapeConditionTranslator(Condition condition, MappingInfo mappingInfo)
@@ -72,7 +82,8 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 			}
 			return shape;
 		}
-		throw new InvalidConditionException("Unsupported geo shape: " + cls.getSimpleName());
+		throw new InvalidConditionException(
+				"Unsupported geo shape: " + cls.getSimpleName());
 	}
 
 	private static Coordinate[] convert(List<List<LngLatAlt>> polyonCoords)

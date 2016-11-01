@@ -15,22 +15,22 @@ public class GeoPoint implements INbaModelObject {
 	{
 	}
 
-	double getLat()
+	public double getLat()
 	{
 		return lat;
 	}
 
-	void setLat(double lat)
+	public void setLat(double lat)
 	{
 		this.lat = lat;
 	}
 
-	double getLon()
+	public double getLon()
 	{
 		return lon;
 	}
 
-	void setLon(double lon)
+	public void setLon(double lon)
 	{
 		this.lon = lon;
 	}

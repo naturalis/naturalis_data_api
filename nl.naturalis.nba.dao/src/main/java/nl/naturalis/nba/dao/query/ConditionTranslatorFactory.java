@@ -101,7 +101,7 @@ public class ConditionTranslatorFactory {
 					condition.setValue(getGeoJsonObject(val));
 					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
-				return new InGeoAreaConditionTranslator(condition, mappingInfo);
+				return new ShapeInGeoAreaConditionTranslator(condition, mappingInfo);
 			default:
 				return new InValuesConditionTranslator(condition, mappingInfo);
 		}

@@ -1,0 +1,11 @@
+{
+  "geo_shape" : {
+    "address.locationAsShape" : {
+      "shape" : {
+        "type" : "polygon",
+        "coordinates" : [ [ [ 40.0, -70.0 ], [ 30.0, -80.0 ], [ 20.0, -90.0 ], [ 40.0, -70.0 ] ] ]
+      }
+    },
+    "_name" : null
+  }
+}

@@ -57,7 +57,7 @@ public class SpecimenDaoGeoQueryTest {
 		list.add(new LngLatAlt(0.0, 10.0));
 		list.add(new LngLatAlt(10.0, 10.0));
 		list.add(new LngLatAlt(10.0, 0.0));
-		list.add(new LngLatAlt(0.0, 0.0));
+		//list.add(new LngLatAlt(0.0, 0.0));
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);

@@ -5,6 +5,7 @@ import org.geojson.Point;
 import org.geojson.Polygon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.query.ComparisonOperator;
@@ -20,8 +21,6 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	private Double gridLongitudeDecimal;
 	private String gridCellCode;
 	private String gridQualifier;
-
-	private GeoPoint geoPoint;
 
 	public GatheringSiteCoordinates()
 	{
@@ -46,18 +45,14 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	 * 
 	 * @return
 	 */
+	@Mapped
+	@JsonProperty
 	public GeoPoint getGeoPoint()
 	{
-		return geoPoint;
-		//		if (longitudeDecimal == null || latitudeDecimal == null) {
-		//			return null;
-		//		}
-		//		return new GeoPoint(latitudeDecimal, longitudeDecimal);
-	}
-
-	public void setGeoPoint(GeoPoint p)
-	{
-		this.geoPoint = p;
+		if (longitudeDecimal == null || latitudeDecimal == null) {
+			return null;
+		}
+		return new GeoPoint(latitudeDecimal, longitudeDecimal);
 	}
 
 	/**

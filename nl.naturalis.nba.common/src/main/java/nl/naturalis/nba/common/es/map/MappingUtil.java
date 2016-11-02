@@ -9,6 +9,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import nl.naturalis.nba.api.annotations.Mapped;
 
 class MappingUtil {
@@ -18,8 +21,7 @@ class MappingUtil {
 	}
 
 	/**
-	 * Returns the type argument for a generic type (e.g. Person for
-	 * List&lt;Person&gt;)
+	 * Returns the type argument for a generic type (e.g. Person for List&lt;Person&gt;)
 	 */
 	static Class<?> getClassForTypeArgument(Type t)
 	{
@@ -35,9 +37,8 @@ class MappingUtil {
 	}
 
 	/**
-	 * Returns all getter methods of the specified class and its superclasses
-	 * (not including {@link Object}) that have the {@link Mapped}
-	 * annotation.
+	 * Returns all getter methods of the specified class and its superclasses (not
+	 * including {@link Object}) that have the {@link Mapped} annotation.
 	 * 
 	 * @param cls
 	 * @return
@@ -63,8 +64,8 @@ class MappingUtil {
 	}
 
 	/**
-	 * Returns all non-static fields of the specified class and its superclasses
-	 * (not including {@link Object}).
+	 * Returns all non-static fields of the specified class and its superclasses (not
+	 * including {@link Object}).
 	 * 
 	 * @param cls
 	 * @return
@@ -83,6 +84,8 @@ class MappingUtil {
 			for (Field f : fields) {
 				if (Modifier.isStatic(f.getModifiers()))
 					continue;
+				if (f.getAnnotation(JsonIgnore.class) != null)
+					continue;
 				allFields.add(f);
 			}
 		}
@@ -90,8 +93,7 @@ class MappingUtil {
 	}
 
 	/**
-	 * Checks whether a getter method is annotated with the
-	 * {@link Mapped} annotation.
+	 * Checks whether a getter method is annotated with the {@link Mapped} annotation.
 	 */
 	private static boolean isMappedProperty(Method m)
 	{
@@ -103,21 +105,23 @@ class MappingUtil {
 		if (returnType == void.class)
 			return false;
 		String name = m.getName();
-		if (name.startsWith("get") && (name.charAt(3) == '_' || isUpperCase(name.charAt(3)))) {
+		if (name.startsWith("get")
+				&& (name.charAt(3) == '_' || isUpperCase(name.charAt(3)))) {
 			return null != m.getAnnotation(Mapped.class);
 		}
-		if (name.startsWith("is") && (name.charAt(2) == '_' || isUpperCase(name.charAt(2)))) {
+		if (name.startsWith("is")
+				&& (name.charAt(2) == '_' || isUpperCase(name.charAt(2)))) {
 			if (returnType == boolean.class || returnType == Boolean.class) {
-				return null != m.getAnnotation(Mapped.class);
+				return null != m.getAnnotation(JsonProperty.class);
 			}
 		}
 		return false;
 	}
 
 	/**
-	 * Chops off the first two or three characters of a getter method name
-	 * (depending on whether it starts with "is" or "get"), makes the first of
-	 * the remaining characters lowercase, and returns the result.
+	 * Chops off the first two or three characters of a getter method name (depending on
+	 * whether it starts with "is" or "get"), makes the first of the remaining characters
+	 * lowercase, and returns the result.
 	 * 
 	 * @param getter
 	 * @return

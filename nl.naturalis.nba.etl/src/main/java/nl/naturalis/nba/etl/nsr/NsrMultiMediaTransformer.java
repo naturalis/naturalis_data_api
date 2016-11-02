@@ -45,9 +45,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	}
 
 	/**
-	 * Set the taxon object associated with this multimedia object. The taxon
-	 * object is extracted from the same XML record by the
-	 * {@link NsrTaxonTransformer}.
+	 * Set the taxon object associated with this multimedia object. The taxon object is
+	 * extracted from the same XML record by the {@link NsrTaxonTransformer}.
 	 * 
 	 * @param taxon
 	 */
@@ -63,11 +62,10 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	}
 
 	/**
-	 * Transforms an XML record into one ore more {@code ESMultiMediaObject}s.
-	 * The multimedia transformer does not keep track of record-level
-	 * statistics. The assumption is that if the taxon transformer was able to
-	 * extract a taxon from the XML record, then the record was OK at the record
-	 * level.
+	 * Transforms an XML record into one ore more {@code ESMultiMediaObject}s. The
+	 * multimedia transformer does not keep track of record-level statistics. The
+	 * assumption is that if the taxon transformer was able to extract a taxon from the
+	 * XML record, then the record was OK at the record level.
 	 */
 	@Override
 	protected List<ESMultiMediaObject> doTransform()
@@ -114,7 +112,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 				}
 				format = guessMimeType(uri.toString());
 			}
-			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, MEDIUM_QUALITY));
+			mmo.addServiceAccessPoint(
+					new ServiceAccessPoint(uri, format, MEDIUM_QUALITY));
 			mmo.setCreator(val(e, "photographer_name"));
 			mmo.setCopyrightText(val(e, "copyright"));
 			if (mmo.getCopyrightText() == null) {
@@ -124,7 +123,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			mmo.setDescription(val(e, "short_description"));
 			mmo.setCaption(mmo.getDescription());
 			String date = val(e, "date_taken");
-			if (date.equalsIgnoreCase("in prep")) {
+			if (date != null && date.equalsIgnoreCase("in prep")) {
 				date = null;
 				if (logger.isDebugEnabled()) {
 					logger.debug("Invalid date: \"{}\"", date);

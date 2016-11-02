@@ -24,14 +24,43 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
+import nl.naturalis.nba.api.query.Condition;
 
 /**
- * Generates Elasticsearch type mappings from {@link Class} objects.
+ * <p>
+ * Generates Elasticsearch type mappings from {@link Class} objects. For each instance
+ * field in the Java class a counterpart will be created in the Elasticsearch document
+ * type, unless it is annotated with {@link JsonIgnore}. Getters are ignored unless they
+ * are annotated with {@link JsonProperty}. Furthermore, fields and mapped getters can be
+ * annotated with NBA-specific annotations that specify or fine-tune the indexing
+ * behaviour for the field. For example: {@link NotIndexed} or {@link Analyzers}.
+ * {@link Mapping} objects play an important role not only during data imports (data is
+ * guaranteed to fit the document type because the document type was generated from the
+ * very class that contains the data); it also plays an important role when querying data.
+ * For example, if a field is annotated with {@link NotIndexed}, the query mechanism knows
+ * beforehand that a {@link Condition query condition} on that field will fail and won't
+ * even bother sending the query to Elasticsearch.
+ * </p>
+ * <p>
+ * {@code Mapping} objects are best consulted through a {@link MappingInfo} instance,
+ * which wraps and decorates the {@code Mapping} object with useful extra functionality.
+ * Contrary to the {@code Mapping} objects themselves, {@code MappingInfo} objects have
+ * negligable instantion costs. {@code Mapping} objects are expensive to create. However,
+ * a {@code MappingFactory} caches the {@code Mapping} objects it creates so asking twice
+ * for the same {@code Mapping} object is cheap.
+ * </p>
+ * <p>
+ * Note that a {@code Mapping} object <b>is</b> the Elasticsearch document type mapping.
+ * That is, if you serialize it to JSON, you have an Elasticsearch document type mapping.
+ * </p>
  * 
  * @author Ayco Holleman
  *
@@ -256,6 +285,11 @@ public class MappingFactory {
 		set.addAll(ancestors);
 		set.add(newType);
 		return set;
+	}
+
+	// Disallow instantiation
+	private MappingFactory()
+	{
 	}
 
 }

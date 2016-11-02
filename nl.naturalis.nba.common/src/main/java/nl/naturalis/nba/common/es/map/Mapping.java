@@ -3,7 +3,7 @@ package nl.naturalis.nba.common.es.map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Models an Elasticsearch type mapping.
+ * Models an Elasticsearch type mapping. See {@link MappingFactory} for more details.
  * 
  * @see ComplexField
  * 

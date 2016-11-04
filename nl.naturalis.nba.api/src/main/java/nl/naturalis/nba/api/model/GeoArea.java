@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.types;
+package nl.naturalis.nba.api.model;
 
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
@@ -8,8 +8,7 @@ import org.geojson.Geometry;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 
-@Deprecated
-public class ESGeoArea implements ESType {
+public class GeoArea implements IDocumentObject {
 
 	private int areaId;
 	@Analyzers({ CASE_INSENSITIVE })
@@ -23,6 +22,20 @@ public class ESGeoArea implements ESType {
 	private String isoCode;
 	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String countryNL;
+
+	@Override
+	public String getId()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		// TODO Auto-generated method stub
+	}
+	
 
 	public int getAreaId()
 	{

@@ -1,7 +1,8 @@
 package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
-import static nl.naturalis.nba.dao.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFile;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.backupXmlFiles;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.getXmlFiles;
@@ -10,17 +11,17 @@ import static nl.naturalis.nba.etl.nsr.NsrImportUtil.removeBackupExtension;
 import java.io.File;
 import java.util.List;
 
-import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.types.ESTaxon;
-import nl.naturalis.nba.etl.ETLRegistry;
-import nl.naturalis.nba.etl.XMLRecordInfo;
-
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.LoadConstants;
+import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.XMLRecordInfo;
 
 /**
  * Driver class for the import of NSR taxa and multimedia. Also allows you to
@@ -95,10 +96,10 @@ public class NsrImporter {
 				logger.info("Processing file " + f.getAbsolutePath());
 				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
-					List<ESTaxon> taxa = tTransformer.transform(extracted);
+					List<Taxon> taxa = tTransformer.transform(extracted);
 					taxonLoader.load(taxa);
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
-					List<ESMultiMediaObject> multimedia = mTransformer.transform(extracted);
+					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
 					mediaLoader.load(multimedia);
 					if (++i % 5000 == 0)
 						logger.info("Records processed: " + i);
@@ -138,7 +139,7 @@ public class NsrImporter {
 				logger.info("Processing file " + f.getAbsolutePath());
 				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
-					List<ESTaxon> transformed = transformer.transform(extracted);
+					List<Taxon> transformed = transformer.transform(extracted);
 					loader.load(transformed);
 					if (++i % 5000 == 0)
 						logger.info("Records processed: " + i);
@@ -174,7 +175,7 @@ public class NsrImporter {
 		 * taxon-related data from the XML records, so we don't have to
 		 * duplicate that functionality in the multimedia transformer. However,
 		 * we are not interested in the statistics maintained by the taxon
-		 * transformer (only whether it was able to produce an ESTaxon object or
+		 * transformer (only whether it was able to produce an Taxon object or
 		 * not). Therefore we instantiate the taxon transformer with a trash
 		 * statistics object.
 		 */
@@ -186,9 +187,9 @@ public class NsrImporter {
 			for (File f : xmlFiles) {
 				logger.info("Processing file " + f.getAbsolutePath());
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
-					List<ESTaxon> taxa = ntt.transform(extracted);
+					List<Taxon> taxa = ntt.transform(extracted);
 					transformer.setTaxon(taxa == null ? null : taxa.get(0));
-					List<ESMultiMediaObject> multimedia = transformer.transform(extracted);
+					List<MultiMediaObject> multimedia = transformer.transform(extracted);
 					loader.load(multimedia);
 					if (stats.recordsProcessed % 5000 == 0)
 						logger.info("Records processed: " + stats.recordsProcessed);

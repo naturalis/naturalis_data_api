@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
@@ -94,7 +94,7 @@ public class CrsMultiMediaImport {
 	{
 		CrsExtractor extractor = new CrsExtractor(bytes, stats);
 		for (XMLRecordInfo extracted : extractor) {
-			List<ESMultiMediaObject> transformed = transformer.transform(extracted);
+			List<MultiMediaObject> transformed = transformer.transform(extracted);
 			loader.load(transformed);
 			if (stats.recordsProcessed % 50000 == 0) {
 				logger.info("Records processed: " + stats.recordsProcessed);

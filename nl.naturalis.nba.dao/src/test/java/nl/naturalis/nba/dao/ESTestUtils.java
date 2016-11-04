@@ -10,9 +10,9 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.QueryBuilder;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.types.ESSpecimen;
-import nl.naturalis.nba.dao.types.ESType;
 import nl.naturalis.nba.dao.util.ESUtil;
 
 public class ESTestUtils {
@@ -44,33 +44,33 @@ public class ESTestUtils {
 		return actual.equals(expected);
 	}
 
-	public static void saveSpecimens(ESSpecimen... specimens)
+	public static void saveSpecimens(Specimen... specimens)
 	{
-		DocumentType<?> dt = DocumentType.forClass(ESSpecimen.class);
+		DocumentType<?> dt = DocumentType.forClass(Specimen.class);
 		ESUtil.disableAutoRefresh(dt.getIndexInfo());
-		for (ESSpecimen specimen : specimens) {
+		for (Specimen specimen : specimens) {
 			saveSpecimen(specimen, false);
 		}
 		ESUtil.refreshIndex(dt.getIndexInfo());
 	}
 
-	public static void saveSpecimen(ESSpecimen specimen, boolean refreshIndex)
+	public static void saveSpecimen(Specimen specimen, boolean refreshIndex)
 	{
 		String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
 		saveObject(id, null, specimen, refreshIndex);
 	}
 
-	public static void saveObject(ESType object, boolean refreshIndex)
+	public static void saveObject(IDocumentObject object, boolean refreshIndex)
 	{
 		saveObject(null, null, object, refreshIndex);
 	}
 
-	public static void saveObject(String id, ESType object, boolean refreshIndex)
+	public static void saveObject(String id, IDocumentObject object, boolean refreshIndex)
 	{
 		saveObject(id, null, object, refreshIndex);
 	}
 
-	public static void saveObject(String id, String parentId, ESType obj,
+	public static void saveObject(String id, String parentId, IDocumentObject obj,
 			boolean refreshIndex)
 	{
 		DocumentType<?> dt = DocumentType.forClass(obj.getClass());

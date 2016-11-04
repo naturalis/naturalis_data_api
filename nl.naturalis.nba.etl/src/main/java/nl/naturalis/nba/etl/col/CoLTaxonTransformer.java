@@ -1,7 +1,32 @@
 package nl.naturalis.nba.etl.col;
 
-import static nl.naturalis.nba.api.model.TaxonomicRank.*;
-import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.*;
+import static nl.naturalis.nba.api.model.TaxonomicRank.CLASS;
+import static nl.naturalis.nba.api.model.TaxonomicRank.FAMILY;
+import static nl.naturalis.nba.api.model.TaxonomicRank.GENUS;
+import static nl.naturalis.nba.api.model.TaxonomicRank.KINGDOM;
+import static nl.naturalis.nba.api.model.TaxonomicRank.ORDER;
+import static nl.naturalis.nba.api.model.TaxonomicRank.PHYLUM;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SPECIES;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SUBGENUS;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SUBSPECIES;
+import static nl.naturalis.nba.api.model.TaxonomicRank.SUPER_FAMILY;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.classRank;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.description;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.family;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.genericName;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.infraspecificEpithet;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.kingdom;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.order;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.phylum;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.references;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificName;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificNameAuthorship;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.specificEpithet;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.subgenus;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.superfamily;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonRank;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -11,9 +36,9 @@ import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
@@ -23,7 +48,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
  * @author Ayco Holleman
  *
  */
-class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTaxon> {
+class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon> {
 
 	private static final List<String> allowedTaxonRanks;
 
@@ -61,7 +86,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 	}
 
 	@Override
-	protected List<ESTaxon> doTransform()
+	protected List<Taxon> doTransform()
 	{
 		String rank = input.get(taxonRank);
 		if (!allowedTaxonRanks.contains(rank)) {
@@ -73,7 +98,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 		try {
 			stats.recordsAccepted++;
 			stats.objectsProcessed++;
-			ESTaxon taxon = new ESTaxon();
+			Taxon taxon = new Taxon();
 			taxon.setSourceSystem(SourceSystem.COL);
 			taxon.setSourceSystemId(input.get(taxonID));
 			taxon.setTaxonRank(input.get(taxonRank));
@@ -91,7 +116,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 		}
 	}
 
-	private void setTaxonDescription(ESTaxon taxon)
+	private void setTaxonDescription(Taxon taxon)
 	{
 		String descr = input.get(description);
 		if (descr != null) {
@@ -101,7 +126,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 		}
 	}
 
-	private void setRecordURI(ESTaxon taxon)
+	private void setRecordURI(Taxon taxon)
 	{
 		String refs = input.get(references);
 		if (refs == null) {
@@ -160,7 +185,7 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTax
 		return sn;
 	}
 
-	private static void addMonomials(ESTaxon taxon)
+	private static void addMonomials(Taxon taxon)
 	{
 		DefaultClassification dc = taxon.getDefaultClassification();
 		Monomial m;

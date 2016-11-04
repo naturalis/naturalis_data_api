@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.etl.col.CoLReferenceImporter;
 import nl.naturalis.nba.etl.col.CoLSynonymImporter;
@@ -37,7 +38,7 @@ import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
  *            The type of object to be converted to and stored as a JSON
  *            document
  */
-public abstract class Loader<T> implements Closeable {
+public abstract class Loader<T extends IDocumentObject> implements Closeable {
 
 	/**
 	 * An interface that specifies how an ElasticSearch {@code _id} is to be
@@ -83,7 +84,7 @@ public abstract class Loader<T> implements Closeable {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(Loader.class);
 
-	private final DocumentType type;
+	private final DocumentType<T> type;
 	private final int tresh;
 	private final ETLStatistics stats;
 	private final IndexManagerNative idxMgr;
@@ -104,7 +105,7 @@ public abstract class Loader<T> implements Closeable {
 	 * @param treshold
 	 * @param stats
 	 */
-	public Loader(DocumentType type, int treshold, ETLStatistics stats)
+	public Loader(DocumentType<T> type, int treshold, ETLStatistics stats)
 	{
 		this.type = type;
 		this.tresh = treshold;

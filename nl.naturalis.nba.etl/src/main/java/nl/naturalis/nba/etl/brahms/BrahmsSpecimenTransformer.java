@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 
 import org.domainobject.util.ConfigObject;
 
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -38,7 +38,7 @@ import nl.naturalis.nba.etl.normalize.UnmappedValueException;
  * @author Ayco Holleman
  *
  */
-class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, ESSpecimen> {
+class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, Specimen> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
@@ -64,13 +64,13 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 	}
 
 	@Override
-	protected List<ESSpecimen> doTransform()
+	protected List<Specimen> doTransform()
 	{
 		// No record-level validations, so:
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			ESSpecimen specimen = new ESSpecimen();
+			Specimen specimen = new Specimen();
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
 			if (unitIDPattern.matcher(objectID).matches()) {
@@ -110,14 +110,14 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, E
 		}
 	}
 
-	private static void setConstants(ESSpecimen specimen)
+	private static void setConstants(Specimen specimen)
 	{
 		specimen.setSourceSystem(BRAHMS);
 		specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		specimen.setOwner(SOURCE_INSTITUTION_ID);
 		specimen.setSourceID(BRAHMS_ABCD_SOURCE_ID);
-		specimen.setLicenceType(LICENCE_TYPE);
-		specimen.setLicence(LICENCE);
+		specimen.setLicenseType(LICENCE_TYPE);
+		specimen.setLicense(LICENCE);
 		specimen.setCollectionType(BRAHMS_ABCD_COLLECTION_TYPE);
 	}
 

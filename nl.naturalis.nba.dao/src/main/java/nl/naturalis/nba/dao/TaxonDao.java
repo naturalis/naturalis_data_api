@@ -21,11 +21,8 @@ import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
 import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
-import nl.naturalis.nba.dao.transfer.ITransferObject;
-import nl.naturalis.nba.dao.transfer.TaxonTransferObject;
-import nl.naturalis.nba.dao.types.ESTaxon;
 
-public class TaxonDao extends NbaDao<Taxon, ESTaxon> implements ITaxonAccess {
+public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonDao.class);
@@ -85,12 +82,6 @@ public class TaxonDao extends NbaDao<Taxon, ESTaxon> implements ITaxonAccess {
 			names[i] = name.substring(0, name.indexOf('.'));
 		}
 		return names;
-	}
-
-	@Override
-	ITransferObject<Taxon, ESTaxon> getTransferObject()
-	{
-		return new TaxonTransferObject();
 	}
 
 	@Override

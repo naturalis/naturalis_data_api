@@ -1,6 +1,6 @@
 package nl.naturalis.nba.common.es.map;
 
-import static nl.naturalis.nba.common.es.map.ESDataType.*;
+import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.common.es.map.Index.NO;
 import static nl.naturalis.nba.common.es.map.Index.NOT_ANALYZED;
@@ -32,6 +32,7 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.Condition;
 
 /**
@@ -67,7 +68,7 @@ import nl.naturalis.nba.api.query.Condition;
  */
 public class MappingFactory {
 
-	private static final HashMap<Class<?>, Mapping> cache = new HashMap<>();
+	private static final HashMap<Class<? extends IDocumentObject>, Mapping<? extends IDocumentObject>> cache = new HashMap<>();
 	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
 	/**
@@ -76,12 +77,13 @@ public class MappingFactory {
 	 * @param type
 	 * @return
 	 */
-	public static Mapping getMapping(Class<?> type)
+	public static <T extends IDocumentObject> Mapping<T> getMapping(Class<T> type)
 	{
 
-		Mapping mapping = cache.get(type);
+		@SuppressWarnings("unchecked")
+		Mapping<T> mapping = (Mapping<T>) cache.get(type);
 		if (mapping == null) {
-			mapping = new Mapping(type);
+			mapping = new Mapping<T>(type);
 			addFieldsToDocument(mapping, type, newTree(new HashSet<>(0), type));
 			cache.put(type, mapping);
 		}

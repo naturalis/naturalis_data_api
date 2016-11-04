@@ -17,6 +17,7 @@ import nl.naturalis.nba.api.model.SpecimenTypeStatus;
  * @author Ayco Holleman
  *
  */
+@Deprecated
 public class ESSpecimen extends NbaTraceableObject implements ESType {
 
 	private String unitID;

@@ -3,14 +3,20 @@ package nl.naturalis.nba.etl.col;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
-import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.*;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.genericName;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.infraspecificEpithet;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificName;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificNameAuthorship;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.specificEpithet;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonomicStatus;
 
 import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -21,13 +27,13 @@ import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
- * A implementation of {@link CSVTransformer} that enriches {@link ESTaxon}
+ * A implementation of {@link CSVTransformer} that enriches {@link Taxon}
  * objects with synonyms from the taxa.txt file.
  * 
  * @author Ayco Holleman
  *
  */
-class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, ESTaxon> {
+class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon> {
 
 	private final TaxonomicStatusNormalizer statusNormalizer;
 
@@ -62,14 +68,14 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	}
 
 	@Override
-	protected List<ESTaxon> doTransform()
+	protected List<Taxon> doTransform()
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
 			String id = getElasticsearchId(COL, objectID);
 			String synonym = input.get(scientificName);
-			ESTaxon taxon = loader.findInQueue(id);
+			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
 				/*
 				 * Taxon has already been queued for indexing because of a
@@ -131,7 +137,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> clean(CSVRecordInfo<CoLTaxonCsvField> recInf)
+	public List<Taxon> clean(CSVRecordInfo<CoLTaxonCsvField> recInf)
 	{
 		stats.recordsProcessed++;
 		this.input = recInf;
@@ -143,10 +149,10 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, EST
 		}
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		List<ESTaxon> result = null;
+		List<Taxon> result = null;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			ESTaxon taxon = loader.findInQueue(id);
+			Taxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
 				taxon = ESUtil.find(TAXON, id);
 				if (taxon != null && taxon.getSynonyms() != null) {

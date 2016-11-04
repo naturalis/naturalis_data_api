@@ -19,12 +19,11 @@ import java.util.List;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-import nl.naturalis.nba.api.model.GeoPoint;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 
 /**
  * Generates 5 Specimen objects used for testing the SpecimenDAO.
@@ -34,9 +33,9 @@ import nl.naturalis.nba.dao.types.ESSpecimen;
  */
 class TestSpecimens {
 
-	static ESSpecimen parusMajorSpecimen01()
+	static Specimen parusMajorSpecimen01()
 	{
-		ESSpecimen specimen = new ESSpecimen();
+		Specimen specimen = new Specimen();
 		specimen.setUnitID("ZMA.MAM.100");
 		specimen.setSourceSystem(CRS);
 		String[] collections = new String[] { "Altenburg", "Living Dinos" };
@@ -91,9 +90,9 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static ESSpecimen larusFuscusSpecimen01()
+	static Specimen larusFuscusSpecimen01()
 	{
-		ESSpecimen specimen = new ESSpecimen();
+		Specimen specimen = new Specimen();
 		specimen.setUnitID("ZMA.MAM.101");
 		specimen.setSourceSystem(CRS);
 		String[] collections = new String[] { "Altenburg", "Living Dinos" };
@@ -144,9 +143,9 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static ESSpecimen larusFuscusSpecimen02()
+	static Specimen larusFuscusSpecimen02()
 	{
-		ESSpecimen specimen = new ESSpecimen();
+		Specimen specimen = new Specimen();
 		specimen.setUnitID("309801857");
 		specimen.setSourceSystem(NDFF);
 		specimen.setPhaseOrStage(EGG);
@@ -191,9 +190,9 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static ESSpecimen tRexSpecimen01()
+	static Specimen tRexSpecimen01()
 	{
-		ESSpecimen specimen = new ESSpecimen();
+		Specimen specimen = new Specimen();
 		specimen.setUnitID("RMNH.100");
 		specimen.setSourceSystem(CRS);
 		specimen.setTheme(Arrays.asList("Living Dinos"));
@@ -240,9 +239,9 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	static ESSpecimen malusSylvestrisSpecimen01()
+	static Specimen malusSylvestrisSpecimen01()
 	{
-		ESSpecimen specimen = new ESSpecimen();
+		Specimen specimen = new Specimen();
 		specimen.setUnitID("L   100");
 		specimen.setSourceSystem(BRAHMS);
 		String[] collections = new String[] { "Strange Plants" };

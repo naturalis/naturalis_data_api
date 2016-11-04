@@ -9,6 +9,7 @@ import nl.naturalis.nba.api.model.MultiMediaObject.Type;
 import nl.naturalis.nba.api.model.NbaTraceableObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 
+@Deprecated
 public class ESMultiMediaObject extends NbaTraceableObject implements ESType {
 
 	private String sourceInstitutionID;

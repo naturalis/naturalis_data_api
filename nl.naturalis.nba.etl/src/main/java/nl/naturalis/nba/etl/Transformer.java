@@ -2,6 +2,8 @@ package nl.naturalis.nba.etl;
 
 import java.util.List;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+
 /**
  * Defines the capacities of a transformation component within the ETL process.
  * Basically: transforming one type of object into another. Note, however, that
@@ -17,7 +19,7 @@ import java.util.List;
  * @param <OUTPUT>
  *            The type of object that is output from the transformer
  */
-public interface Transformer<INPUT, OUTPUT> {
+public interface Transformer<INPUT, OUTPUT extends IDocumentObject> {
 
 	/**
 	 * Transform the input object into one or more output objects.

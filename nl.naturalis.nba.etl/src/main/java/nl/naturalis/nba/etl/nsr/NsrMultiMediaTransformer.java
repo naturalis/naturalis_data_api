@@ -22,9 +22,9 @@ import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.types.ESTaxon;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.NameMismatchException;
@@ -35,9 +35,9 @@ import nl.naturalis.nba.etl.NameMismatchException;
  * @author Ayco Holleman
  *
  */
-class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
+class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> {
 
-	private ESTaxon taxon;
+	private Taxon taxon;
 
 	public NsrMultiMediaTransformer(ETLStatistics stats)
 	{
@@ -50,7 +50,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	 * 
 	 * @param taxon
 	 */
-	public void setTaxon(ESTaxon taxon)
+	public void setTaxon(Taxon taxon)
 	{
 		this.taxon = taxon;
 	}
@@ -62,13 +62,13 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	}
 
 	/**
-	 * Transforms an XML record into one ore more {@code ESMultiMediaObject}s. The
+	 * Transforms an XML record into one ore more {@code MultiMediaObject}s. The
 	 * multimedia transformer does not keep track of record-level statistics. The
 	 * assumption is that if the taxon transformer was able to extract a taxon from the
 	 * XML record, then the record was OK at the record level.
 	 */
 	@Override
-	protected List<ESMultiMediaObject> doTransform()
+	protected List<MultiMediaObject> doTransform()
 	{
 		if (taxon == null) {
 			stats.recordsSkipped++;
@@ -84,23 +84,23 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			return null;
 		}
 		stats.recordsAccepted++;
-		List<ESMultiMediaObject> mmos = new ArrayList<>(imageElems.size());
+		List<MultiMediaObject> mmos = new ArrayList<>(imageElems.size());
 		for (Element imageElement : imageElems) {
-			ESMultiMediaObject mmo = transformOne(imageElement);
+			MultiMediaObject mmo = transformOne(imageElement);
 			if (mmo != null)
 				mmos.add(mmo);
 		}
 		return mmos.size() == 0 ? null : mmos;
 	}
 
-	private ESMultiMediaObject transformOne(Element e)
+	private MultiMediaObject transformOne(Element e)
 	{
 		stats.objectsProcessed++;
 		try {
 			URI uri = getUri(e);
 			if (uri == null)
 				return null;
-			ESMultiMediaObject mmo = newMediaObject();
+			MultiMediaObject mmo = newMediaObject();
 			String uriHash = String.valueOf(uri.hashCode()).replace('-', '0');
 			mmo.setSourceSystemId(objectID + '_' + uriHash);
 			mmo.setUnitID(mmo.getSourceSystemId());
@@ -117,8 +117,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			mmo.setCreator(val(e, "photographer_name"));
 			mmo.setCopyrightText(val(e, "copyright"));
 			if (mmo.getCopyrightText() == null) {
-				mmo.setLicenceType(LICENCE_TYPE);
-				mmo.setLicence(LICENCE);
+				mmo.setLicenseType(LICENCE_TYPE);
+				mmo.setLicense(LICENCE);
 			}
 			mmo.setDescription(val(e, "short_description"));
 			mmo.setCaption(mmo.getDescription());
@@ -146,9 +146,9 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		}
 	}
 
-	private ESMultiMediaObject newMediaObject() throws NameMismatchException
+	private MultiMediaObject newMediaObject() throws NameMismatchException
 	{
-		ESMultiMediaObject mmo = new ESMultiMediaObject();
+		MultiMediaObject mmo = new MultiMediaObject();
 		mmo.setSourceSystem(NSR);
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
@@ -162,7 +162,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 
 	private MultiMediaContentIdentification getIdentification()
 	{
-		ESTaxon t = taxon;
+		Taxon t = taxon;
 		MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 		mmci.setTaxonRank(t.getTaxonRank());
 		mmci.setScientificName(t.getAcceptedName());

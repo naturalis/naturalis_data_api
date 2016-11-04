@@ -1,6 +1,12 @@
 package nl.naturalis.nba.etl.geo;
 
-import static nl.naturalis.nba.etl.geo.GeoCsvField.*;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.country_nl;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.geojson;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.gid;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.iso;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.locality;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.source;
+import static nl.naturalis.nba.etl.geo.GeoCsvField.type;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,11 +16,11 @@ import org.geojson.Geometry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.dao.types.ESGeoArea;
+import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
-class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, ESGeoArea> {
+class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, GeoArea> {
 	
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -30,11 +36,11 @@ class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, ESGeoArea> {
 	}
 
 	@Override
-	protected List<ESGeoArea> doTransform()
+	protected List<GeoArea> doTransform()
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		ESGeoArea area = new ESGeoArea();
+		GeoArea area = new GeoArea();
 		area.setAreaId(Integer.parseInt(input.get(gid)));
 		area.setAreaType(input.get(type));
 		area.setCountryNL(input.get(country_nl));

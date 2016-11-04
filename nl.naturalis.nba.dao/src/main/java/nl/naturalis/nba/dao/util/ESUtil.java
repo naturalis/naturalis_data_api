@@ -28,6 +28,7 @@ import org.elasticsearch.index.IndexNotFoundException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingSerializer;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -35,7 +36,6 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.IndexInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.types.ESType;
 
 /**
  * Methods for interacting with Elasticsearch, mostly intended to be used for
@@ -336,12 +336,11 @@ public class ESUtil {
 	 * @param id
 	 * @return
 	 */
-	public static <T extends ESType> T find(DocumentType<?> dt, String id)
+	public static <T extends IDocumentObject> T find(DocumentType<T> dt, String id)
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
-		@SuppressWarnings("unchecked")
-		Class<T> cls = (Class<T>) dt.getESType();
+		Class<T> cls = (Class<T>) dt.getJavaType();
 		ObjectMapper objectMapper = dt.getObjectMapper();
 		Client client = ESClientManager.getInstance().getClient();
 		GetRequestBuilder grb = client.prepareGet(index, type, id);

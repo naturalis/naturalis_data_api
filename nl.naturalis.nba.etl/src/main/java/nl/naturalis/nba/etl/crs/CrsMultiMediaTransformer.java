@@ -25,11 +25,12 @@ import org.w3c.dom.Element;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.MimeTypeCache;
@@ -39,6 +40,7 @@ import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * The transformer component for the CRS multimedia import.
@@ -46,7 +48,7 @@ import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
  * @author Ayco Holleman
  *
  */
-class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject> {
+class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> {
 
 	private final PhaseOrStageNormalizer posNormalizer;
 	private final SpecimenTypeStatusNormalizer tsNormalizer;
@@ -57,7 +59,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	private String databaseID;
 	private List<Element> mediaFileElems;
 	private List<MultiMediaContentIdentification> identifications;
-	private ESMultiMediaObject first;
+	private MultiMediaObject first;
 
 	CrsMultiMediaTransformer(ETLStatistics stats)
 	{
@@ -89,10 +91,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	protected boolean skipRecord()
 	{
 		/*
-		 * Side effect: set the database identifier of the record, so we can
-		 * provide both the UnitID and the database ID of the specimen when
-		 * logging messages. We override messagePrefix() to also print out the
-		 * database ID.
+		 * Side effect: set the database identifier of the record, so we can provide both
+		 * the UnitID and the database ID of the specimen when logging messages. We
+		 * override messagePrefix() to also print out the database ID.
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		if (hasStatusDeleted()) {
@@ -110,7 +111,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	}
 
 	@Override
-	protected List<ESMultiMediaObject> doTransform()
+	protected List<MultiMediaObject> doTransform()
 	{
 		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
 		mediaFileElems = getDescendants(dc, "frmDigitalebestanden");
@@ -136,14 +137,14 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		}
 		stats.recordsAccepted++;
 		first = null;
-		List<ESMultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
+		List<MultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
 		for (Element elem : mediaFileElems) {
 			stats.objectsProcessed++;
 			String[] urlInfo = getUrlInfo(elem);
 			if (urlInfo == null) {
 				continue;
 			}
-			ESMultiMediaObject mmo;
+			MultiMediaObject mmo;
 			try {
 				mmo = initialize();
 				String url = urlInfo[0];
@@ -169,11 +170,11 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		return mmos;
 	}
 
-	private ESMultiMediaObject initialize()
+	private MultiMediaObject initialize()
 	{
 		if (first == null) {
 			Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
-			first = new ESMultiMediaObject();
+			first = new MultiMediaObject();
 			first.setGatheringEvents(Arrays.asList(getGatheringEvent(dc)));
 			String temp = getPhaseOrStage(dc);
 			first.setPhasesOrStages(temp == null ? null : Arrays.asList(temp));
@@ -184,8 +185,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			first.setSourceSystem(CRS);
 			first.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 			first.setSourceID(CRS.getCode());
-			first.setLicence(LICENCE);
-			first.setLicenceType(LICENCE_TYPE);
+			first.setLicense(LICENCE);
+			first.setLicenseType(LICENCE_TYPE);
 			first.setAssociatedSpecimenReference(objectID);
 			first.setIdentifications(identifications);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, CRS);
@@ -196,20 +197,20 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 	}
 
 	/*
-	 * Create a new multimedia object, initialized with the values from the
-	 * first multimedia object of the specimen record we are processing.
+	 * Create a new multimedia object, initialized with the values from the first
+	 * multimedia object of the specimen record we are processing.
 	 */
-	private ESMultiMediaObject initializeFromFirst()
+	private MultiMediaObject initializeFromFirst()
 	{
-		ESMultiMediaObject next = new ESMultiMediaObject();
+		MultiMediaObject next = new MultiMediaObject();
 		next.setGatheringEvents(first.getGatheringEvents());
 		next.setPhasesOrStages(first.getPhasesOrStages());
 		next.setSpecimenTypeStatus(first.getSpecimenTypeStatus());
 		next.setSexes(first.getSexes());
 		next.setCollectionType(first.getCollectionType());
 		next.setSourceSystem(first.getSourceSystem());
-		next.setLicence(first.getLicence());
-		next.setLicence(first.getLicenceType());
+		next.setLicense(first.getLicense());
+		next.setLicenseType(first.getLicenseType());
 		next.setAssociatedSpecimenReference(first.getAssociatedSpecimenReference());
 		next.setTheme(first.getTheme());
 		return next;
@@ -230,7 +231,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setScientificName(sn);
-			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
+			mmci.setDefaultClassification(
+					TransformUtil.extractClassificiationFromName(sn));
 			mmci.setIdentificationQualifiers(getQualifiers(e));
 			mmci.setVernacularNames(getVernacularNames(e));
 			if (identifications == null) {
@@ -340,8 +342,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		String mime;
 		if (url.startsWith(MEDIALIB_URL_START)) {
 			/*
-			 * HACK: attempt to repair bad medialib URLs where
-			 * MEDIALIB_URL_START occurs twice
+			 * HACK: attempt to repair bad medialib URLs where MEDIALIB_URL_START occurs
+			 * twice
 			 */
 			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START))
 				url = url.substring(MEDIALIB_URL_START.length());
@@ -411,13 +413,16 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<ESMultiMediaObject
 		return result;
 	}
 
-	private String getTypeStatus(Element record)
+	private SpecimenTypeStatus getTypeStatus(Element record)
 	{
 		String raw = val(record, "abcd:TypeStatus");
 		if (raw == null)
 			return null;
-		String result = tsNormalizer.normalize(raw);
-		if (result == NOT_MAPPED) {
+		SpecimenTypeStatus result;
+		try {
+			result = tsNormalizer.map(raw);
+		}
+		catch (UnmappedValueException e) {
 			if (!suppressErrors)
 				warn("Ignoring rogue value for TypeStatus: " + raw);
 			return null;

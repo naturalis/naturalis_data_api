@@ -24,17 +24,15 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.transfer.SpecimenTransfer;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest {
 
-	static ESSpecimen pMajor;
-	static ESSpecimen lFuscus1;
-	static ESSpecimen lFuscus2;
-	static ESSpecimen tRex;
-	static ESSpecimen mSylvestris;
+	static Specimen pMajor;
+	static Specimen lFuscus1;
+	static Specimen lFuscus2;
+	static Specimen tRex;
+	static Specimen mSylvestris;
 
 	@Before
 	public void before()
@@ -440,9 +438,8 @@ public class SpecimenDaoTest {
 	@Test
 	public void testSave__Specimen__01()
 	{
-		Specimen toBeSaved = SpecimenTransfer.load(pMajor, null);
 		SpecimenDao dao = new SpecimenDao();
-		String id = dao.save(toBeSaved, true);
+		String id = dao.save(pMajor, true);
 		assertNotNull("01", id);
 		Specimen retrieved = dao.find(id);
 		assertNotNull("02", retrieved);

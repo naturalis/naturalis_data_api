@@ -35,7 +35,7 @@ public class TaxonDaoDwcaTest {
 	{
 		TaxonDao dao = new TaxonDao();
 		long start = System.currentTimeMillis();
-		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/nsr.zip");
+		FileOutputStream fos = new FileOutputStream("C:\\Users\\ayco_\\Downloads\\nsr.zip");
 		dao.dwcaGetDataSet("nsr", fos);
 		fos.close();
 		System.out.println();

@@ -127,7 +127,7 @@ public final class LoadUtil {
 
 	public static ObjectMapper getObjectMapper(DocumentType type)
 	{
-		return ObjectMapperLocator.getInstance().getObjectMapper(type.getESType());
+		return ObjectMapperLocator.getInstance().getObjectMapper(type.getJavaType());
 	}
 
 	private static URIBuilder getPurlBuilder()

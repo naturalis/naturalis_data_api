@@ -74,7 +74,7 @@ public class ETLRegistry {
 		String index = documentType.getIndexInfo().getName();
 		IndexManagerNative idxMgr = new IndexManagerNative(client, index);
 		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
-		ObjectMapper om = oml.getObjectMapper(documentType.getESType());
+		ObjectMapper om = oml.getObjectMapper(documentType.getJavaType());
 		idxMgr.setObjectMapper(om);
 		return new IndexManagerNative(client, index);
 	}

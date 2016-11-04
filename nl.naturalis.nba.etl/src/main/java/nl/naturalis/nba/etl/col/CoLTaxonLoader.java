@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.types.ESTaxon;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
@@ -19,7 +19,7 @@ import nl.naturalis.nba.etl.Loader;
  * @author Ayco Holleman
  *
  */
-public class CoLTaxonLoader extends Loader<ESTaxon> {
+public class CoLTaxonLoader extends Loader<Taxon> {
 
 	public CoLTaxonLoader(ETLStatistics stats, int treshold)
 	{
@@ -27,12 +27,12 @@ public class CoLTaxonLoader extends Loader<ESTaxon> {
 	}
 
 	@Override
-	protected IdGenerator<ESTaxon> getIdGenerator()
+	protected IdGenerator<Taxon> getIdGenerator()
 	{
-		return new IdGenerator<ESTaxon>() {
+		return new IdGenerator<Taxon>() {
 
 			@Override
-			public String getId(ESTaxon obj)
+			public String getId(Taxon obj)
 			{
 				return getElasticsearchId(COL, obj.getSourceSystemId());
 			}

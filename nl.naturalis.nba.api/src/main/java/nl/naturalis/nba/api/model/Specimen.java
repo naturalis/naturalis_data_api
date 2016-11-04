@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Specimen extends NbaTraceableObject implements IDocumentObject {
@@ -31,11 +32,13 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
-	private List<Specimen> otherSpecimensInAssemblage;
-	private List<Taxon> associatedTaxa;
+	private List<String> theme;
 
 	public void addIndentification(SpecimenIdentification identification)
 	{
+		if (identifications == null) {
+			identifications = new ArrayList<>(3);
+		}
 		identifications.add(identification);
 	}
 
@@ -301,24 +304,14 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 		this.identifications = identifications;
 	}
 
-	public List<Specimen> getOtherSpecimensInAssemblage()
+	public List<String> getTheme()
 	{
-		return otherSpecimensInAssemblage;
+		return theme;
 	}
 
-	public void setOtherSpecimensInAssemblage(List<Specimen> otherSpecimensInAssemblage)
+	public void setTheme(List<String> theme)
 	{
-		this.otherSpecimensInAssemblage = otherSpecimensInAssemblage;
-	}
-
-	public List<Taxon> getAssociatedTaxa()
-	{
-		return associatedTaxa;
-	}
-
-	public void setAssociatedTaxa(List<Taxon> associatedTaxa)
-	{
-		this.associatedTaxa = associatedTaxa;
+		this.theme = theme;
 	}
 
 }

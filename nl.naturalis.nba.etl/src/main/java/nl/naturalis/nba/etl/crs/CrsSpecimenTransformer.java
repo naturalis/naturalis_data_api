@@ -30,10 +30,10 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadUtil;
@@ -50,7 +50,7 @@ import nl.naturalis.nba.etl.normalize.UnmappedValueException;
  * @author Ayco Holleman
  *
  */
-class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
+class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 	private static final SpecimenTypeStatusNormalizer tsNormalizer;
 	private static final SexNormalizer sexNormalizer;
@@ -83,7 +83,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 	}
 
 	@Override
-	protected List<ESSpecimen> doTransform()
+	protected List<Specimen> doTransform()
 	{
 		Element record = input.getRecord();
 
@@ -111,7 +111,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			return null;
 		}
 
-		ESSpecimen specimen = new ESSpecimen();
+		Specimen specimen = new Specimen();
 
 		for (Element e : elems) {
 			SpecimenIdentification si = getIdentification(e);
@@ -155,8 +155,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<ESSpecimen> {
 			specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 			specimen.setOwner(SOURCE_INSTITUTION_ID);
 			specimen.setSourceID("CRS");
-			specimen.setLicenceType(LICENCE_TYPE);
-			specimen.setLicence(LICENCE);
+			specimen.setLicenseType(LICENCE_TYPE);
+			specimen.setLicense(LICENCE);
 			specimen.setRecordBasis(recordBasis);
 			specimen.setKindOfUnit(val(record, "abcd:KindOfUnit"));
 			specimen.setCollectionType(val(record, "abcd:CollectionType"));

@@ -12,6 +12,7 @@ import nl.naturalis.nba.common.es.map.MappingFactory;
  * @author Ayco Holleman
  *
  */
+@Deprecated
 public interface ESType {
 
 }

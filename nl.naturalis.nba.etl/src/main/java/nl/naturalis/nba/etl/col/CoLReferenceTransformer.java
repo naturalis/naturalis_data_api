@@ -1,13 +1,13 @@
 package nl.naturalis.nba.etl.col;
 
+import static nl.naturalis.nba.api.model.SourceSystem.COL;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
-import static nl.naturalis.nba.api.model.SourceSystem.*;
-import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.ESUtil.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -15,19 +15,25 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
-import nl.naturalis.nba.dao.types.ESTaxon;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.util.ESUtil;
-import nl.naturalis.nba.etl.*;
+import nl.naturalis.nba.etl.AbstractCSVTransformer;
+import nl.naturalis.nba.etl.CSVRecordInfo;
+import nl.naturalis.nba.etl.CSVTransformer;
+import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.TransformUtil;
+import nl.naturalis.nba.etl.Transformer;
 import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
  * Subclass of {@link CSVTransformer} that transforms CSV records into
- * {@link ESTaxon} objects.
+ * {@link Taxon} objects.
  * 
  * @author Ayco Holleman
  *
  */
-class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvField, ESTaxon> {
+class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvField, Taxon> {
 
 	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
@@ -46,13 +52,13 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	}
 
 	@Override
-	protected List<ESTaxon> doTransform()
+	protected List<Taxon> doTransform()
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			ESTaxon taxon = loader.findInQueue(id);
+			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
 				Reference reference = createReference();
 				if (!taxon.getReferences().contains(reference)) {
@@ -102,7 +108,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> clean(CSVRecordInfo<CoLReferenceCsvField> recInf)
+	public List<Taxon> clean(CSVRecordInfo<CoLReferenceCsvField> recInf)
 	{
 		this.input = recInf;
 		objectID = input.get(taxonID);
@@ -110,12 +116,12 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 		stats.recordsProcessed++;
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		List<ESTaxon> result = null;
+		List<Taxon> result = null;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			ESTaxon taxon = loader.findInQueue(id);
+			Taxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(TAXON.getName(), id, ESTaxon.class);
+				taxon = index.get(TAXON.getName(), id, Taxon.class);
 				if (taxon != null && taxon.getReferences() != null) {
 					stats.objectsAccepted++;
 					taxon.setReferences(null);

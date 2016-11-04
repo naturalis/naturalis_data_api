@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.format;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -25,9 +26,9 @@ class DataSourceBuilder {
 		return dataSource;
 	}
 
-	private Mapping getMapping() throws DataSetConfigurationException
+	private Mapping<?> getMapping() throws DataSetConfigurationException
 	{
-		Mapping mapping = null;
+		Mapping<?> mapping = null;
 		if (dataSourceConfig.getDocument() != null) {
 			mapping = getMappingForDocument();
 		}
@@ -42,10 +43,12 @@ class DataSourceBuilder {
 		return mapping;
 	}
 
-	private Mapping getMappingForJavaClass() throws DataSetConfigurationException
+	private Mapping<?> getMappingForJavaClass() throws DataSetConfigurationException
 	{
 		try {
-			Class<?> cls = Class.forName(dataSourceConfig.getJavaClass());
+			@SuppressWarnings("unchecked")
+			Class<? extends IDocumentObject> cls = (Class<? extends IDocumentObject>) Class
+					.forName(dataSourceConfig.getJavaClass());
 			return MappingFactory.getMapping(cls);
 		}
 		catch (ClassNotFoundException e) {
@@ -55,7 +58,7 @@ class DataSourceBuilder {
 		}
 	}
 
-	private Mapping getMappingForDocument() throws DataSetConfigurationException
+	private Mapping<?> getMappingForDocument() throws DataSetConfigurationException
 	{
 		try {
 			DocumentType<?> dt = DocumentType.forName(dataSourceConfig.getDocument());

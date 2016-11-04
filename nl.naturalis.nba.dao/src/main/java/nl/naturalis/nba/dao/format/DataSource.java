@@ -6,7 +6,7 @@ import nl.naturalis.nba.common.es.map.Mapping;
 
 public class DataSource {
 
-	private Mapping mapping;
+	private Mapping<?> mapping;
 	private Path path;
 	private QuerySpec querySpec;
 
@@ -20,12 +20,12 @@ public class DataSource {
 		this.querySpec = other.querySpec;
 	}
 
-	public Mapping getMapping()
+	public Mapping<?> getMapping()
 	{
 		return mapping;
 	}
 
-	void setMapping(Mapping mapping)
+	void setMapping(Mapping<?> mapping)
 	{
 		this.mapping = mapping;
 	}

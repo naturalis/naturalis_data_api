@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
 import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
@@ -21,16 +21,15 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoGeoQueryTest {
 
-	static ESSpecimen pMajor;
-	static ESSpecimen lFuscus1;
-	static ESSpecimen lFuscus2;
-	static ESSpecimen tRex;
-	static ESSpecimen mSylvestris;
+	static Specimen pMajor;
+	static Specimen lFuscus1;
+	static Specimen lFuscus2;
+	static Specimen tRex;
+	static Specimen mSylvestris;
 
 	@Before
 	public void before()

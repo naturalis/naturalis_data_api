@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -24,13 +24,13 @@ import nl.naturalis.nba.etl.Transformer;
 
 /**
  * A subclass of {@link CSVTransformer} that transforms CSV records into
- * {@link ESTaxon} objects enriched with vernacular names.
+ * {@link Taxon} objects enriched with vernacular names.
  * 
  * @author Ayco Holleman
  *
  */
 class CoLVernacularNameTransformer
-		extends AbstractCSVTransformer<CoLVernacularNameCsvField, ESTaxon> {
+		extends AbstractCSVTransformer<CoLVernacularNameCsvField, Taxon> {
 
 	static Logger logger = ETLRegistry.getInstance().getLogger(CoLVernacularNameTransformer.class);
 
@@ -49,13 +49,13 @@ class CoLVernacularNameTransformer
 	}
 
 	@Override
-	protected List<ESTaxon> doTransform()
+	protected List<Taxon> doTransform()
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			ESTaxon taxon = loader.findInQueue(id);
+			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
 				VernacularName vn = createVernacularName();
 				if (!taxon.getVernacularNames().contains(vn)) {
@@ -106,7 +106,7 @@ class CoLVernacularNameTransformer
 	 * @param recInf
 	 * @return
 	 */
-	public List<ESTaxon> clean(CSVRecordInfo<CoLVernacularNameCsvField> recInf)
+	public List<Taxon> clean(CSVRecordInfo<CoLVernacularNameCsvField> recInf)
 	{
 		this.input = recInf;
 		objectID = input.get(taxonID);
@@ -114,10 +114,10 @@ class CoLVernacularNameTransformer
 		stats.recordsProcessed++;
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
-		List<ESTaxon> result = null;
+		List<Taxon> result = null;
 		try {
 			String id = getElasticsearchId(COL, objectID);
-			ESTaxon taxon = loader.findInQueue(id);
+			Taxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
 				taxon = ESUtil.find(TAXON, id);
 				if (taxon != null && taxon.getVernacularNames() != null) {

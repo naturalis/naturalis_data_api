@@ -37,17 +37,17 @@ public class MultiMediaObjectTransfer {
 		mmo.setCreator(esMmo.getCreator());
 		mmo.setDescription(esMmo.getDescription());
 		mmo.setGatheringEvents(esMmo.getGatheringEvents());
-		mmo.setMultimediaPublic(esMmo.isMultiMediaPublic());
+		mmo.setMultiMediaPublic(esMmo.isMultiMediaPublic());
 		mmo.setPhasesOrStages(esMmo.getPhasesOrStages());
 		List<ServiceAccessPoint> serviceAccessPoints = esMmo.getServiceAccessPoints();
 
-		if (serviceAccessPoints != null) {
-			LinkedHashMap<ServiceAccessPoint.Variant, ServiceAccessPoint> accessPointMap = new LinkedHashMap<>();
-			for (ServiceAccessPoint serviceAccessPoint : serviceAccessPoints) {
-				accessPointMap.put(serviceAccessPoint.getVariant(), serviceAccessPoint);
-			}
-			mmo.setServiceAccessPoints(accessPointMap);
-		}
+//		if (serviceAccessPoints != null) {
+//			LinkedHashMap<ServiceAccessPoint.Variant, ServiceAccessPoint> accessPointMap = new LinkedHashMap<>();
+//			for (ServiceAccessPoint serviceAccessPoint : serviceAccessPoints) {
+//				accessPointMap.put(serviceAccessPoint.getVariant(), serviceAccessPoint);
+//			}
+//			mmo.setServiceAccessPoints(accessPointMap);
+//		}
 
 		mmo.setPhasesOrStages(esMmo.getPhasesOrStages());
 		mmo.setSexes(esMmo.getSexes());

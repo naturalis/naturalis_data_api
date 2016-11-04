@@ -9,10 +9,13 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import org.domainobject.util.ClassUtil;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.naturalis.nba.api.annotations.Mapped;
+import nl.naturalis.nba.api.model.IDocumentObject;
 
 class MappingUtil {
 
@@ -73,16 +76,25 @@ class MappingUtil {
 	static ArrayList<Field> getFields(Class<?> cls)
 	{
 		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
+		Class<?> c = cls;
 		do {
-			hierarchy.add(cls);
-			cls = cls.getSuperclass();
-		} while (cls != Object.class);
+			hierarchy.add(c);
+			c = c.getSuperclass();
+		} while (c != Object.class);
 		ArrayList<Field> allFields = new ArrayList<>();
 		for (int i = hierarchy.size() - 1; i >= 0; i--) {
-			cls = hierarchy.get(i);
-			Field[] fields = cls.getDeclaredFields();
+			c = hierarchy.get(i);
+			Field[] fields = c.getDeclaredFields();
 			for (Field f : fields) {
 				if (Modifier.isStatic(f.getModifiers()))
+					continue;
+				/*
+				 * Do not map the "id" field of the IDocumentObject class itself. This
+				 * field is populated with the system ID of the Elasticsearch document,
+				 * which is not part of the document source. Note though that we
+				 * cannot @JsonIgnore this field because we do want it serialized.
+				 */
+				if (ClassUtil.isA(c, IDocumentObject.class) && f.getName().equals("id"))
 					continue;
 				if (f.getAnnotation(JsonIgnore.class) != null)
 					continue;

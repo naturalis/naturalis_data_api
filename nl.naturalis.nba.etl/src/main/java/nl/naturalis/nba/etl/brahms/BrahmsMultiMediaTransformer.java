@@ -28,15 +28,17 @@ import org.domainobject.util.ConfigObject;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.
@@ -45,7 +47,7 @@ import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
  *
  */
 class BrahmsMultiMediaTransformer
-		extends AbstractCSVTransformer<BrahmsCsvField, ESMultiMediaObject> {
+		extends AbstractCSVTransformer<BrahmsCsvField, MultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
@@ -68,16 +70,16 @@ class BrahmsMultiMediaTransformer
 	}
 
 	@Override
-	protected List<ESMultiMediaObject> doTransform()
+	protected List<MultiMediaObject> doTransform()
 	{
 		// No record-level validations for Brahms multimedia, so:
 		stats.recordsAccepted++;
-		ArrayList<ESMultiMediaObject> result = new ArrayList<>(3);
+		ArrayList<MultiMediaObject> result = new ArrayList<>(3);
 		String images = input.get(IMAGELIST);
 		if (images != null) {
 			String[] urls = images.split(",");
 			for (int i = 0; i < urls.length; ++i) {
-				ESMultiMediaObject mmo = transformOne(urls[i]);
+				MultiMediaObject mmo = transformOne(urls[i]);
 				if (mmo != null) {
 					result.add(mmo);
 				}
@@ -86,12 +88,12 @@ class BrahmsMultiMediaTransformer
 		return result;
 	}
 
-	private ESMultiMediaObject transformOne(String url)
+	private MultiMediaObject transformOne(String url)
 	{
 		stats.objectsProcessed++;
 		try {
 			URI uri = getUri(url);
-			ESMultiMediaObject mmo = newMultiMediaObject();
+			MultiMediaObject mmo = newMultiMediaObject();
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
 			mmo.setUnitID(objectID + '_' + uriHash);
 			mmo.setSourceSystemId(mmo.getUnitID());
@@ -101,7 +103,7 @@ class BrahmsMultiMediaTransformer
 			mmo.setDescription(input.get(PLANTDESC));
 			mmo.setGatheringEvents(Arrays.asList(getMultiMediaGatheringEvent(input)));
 			mmo.setIdentifications(Arrays.asList(getIdentification()));
-			mmo.setSpecimenTypeStatus(typeStatusNormalizer.normalize(input.get(TYPE)));
+			mmo.setSpecimenTypeStatus(getTypeStatus());
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
 			stats.objectsAccepted++;
 			return mmo;
@@ -118,15 +120,15 @@ class BrahmsMultiMediaTransformer
 		}
 	}
 
-	private static ESMultiMediaObject newMultiMediaObject()
+	private static MultiMediaObject newMultiMediaObject()
 	{
-		ESMultiMediaObject mmo = new ESMultiMediaObject();
+		MultiMediaObject mmo = new MultiMediaObject();
 		mmo.setSourceSystem(BRAHMS);
 		mmo.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
 		mmo.setSourceID("Brahms");
-		mmo.setLicenceType(LICENCE_TYPE);
-		mmo.setLicence(LICENCE);
+		mmo.setLicenseType(LICENCE_TYPE);
+		mmo.setLicense(LICENCE);
 		mmo.setCollectionType("Botany");
 		return mmo;
 	}
@@ -156,6 +158,19 @@ class BrahmsMultiMediaTransformer
 		return identification;
 	}
 
+	private SpecimenTypeStatus getTypeStatus()
+	{
+		try {
+			return typeStatusNormalizer.map(input.get(TYPE));
+		}
+		catch (UnmappedValueException e) {
+			if(!suppressErrors) {
+				warn(e.getMessage());
+			}
+			return null;
+		}
+	}
+	
 	private static ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
 		return new ServiceAccessPoint(uri, "image/jpeg", Variant.MEDIUM_QUALITY);

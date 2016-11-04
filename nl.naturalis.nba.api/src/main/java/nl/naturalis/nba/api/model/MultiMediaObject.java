@@ -1,8 +1,9 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 
@@ -31,7 +32,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String title;
 	private String caption;
 	private String description;
-	private Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints;
+	private List<ServiceAccessPoint> serviceAccessPoints;
 	private Type type;
 	private int taxonCount;
 	private String creator;
@@ -39,32 +40,36 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
 	private SpecimenTypeStatus specimenTypeStatus;
-	private boolean multimediaPublic;
+	private boolean multiMediaPublic;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
 	private List<String> phasesOrStages;
 	private List<String> sexes;
 	private List<MultiMediaGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
+	private List<String> theme;
 
 	// Non-persistent data
+	@JsonIgnore
 	private Specimen associatedSpecimen;
+	@JsonIgnore
 	private Taxon associatedTaxon;
 
-	public void addServiceAccessPoint(String uri, String format, ServiceAccessPoint.Variant variant)
+	public void addServiceAccessPoint(String uri, String format,
+			ServiceAccessPoint.Variant variant)
 	{
 		if (serviceAccessPoints == null) {
-			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
+			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();
 		}
-		serviceAccessPoints.put(variant, new ServiceAccessPoint(uri, format, variant));
+		serviceAccessPoints.add(new ServiceAccessPoint(uri, format, variant));
 	}
 
 	public void addServiceAccessPoint(ServiceAccessPoint sap)
 	{
 		if (serviceAccessPoints == null) {
-			serviceAccessPoints = new HashMap<ServiceAccessPoint.Variant, ServiceAccessPoint>();
+			serviceAccessPoints = new ArrayList<ServiceAccessPoint>();
 		}
-		serviceAccessPoints.put(sap.getVariant(), sap);
+		serviceAccessPoints.add(sap);
 	}
 
 	@Override
@@ -179,13 +184,12 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.description = description;
 	}
 
-	public Map<ServiceAccessPoint.Variant, ServiceAccessPoint> getServiceAccessPoints()
+	public List<ServiceAccessPoint> getServiceAccessPoints()
 	{
 		return serviceAccessPoints;
 	}
 
-	public void setServiceAccessPoints(
-			Map<ServiceAccessPoint.Variant, ServiceAccessPoint> serviceAccessPoints)
+	public void setServiceAccessPoints(List<ServiceAccessPoint> serviceAccessPoints)
 	{
 		this.serviceAccessPoints = serviceAccessPoints;
 	}
@@ -260,14 +264,14 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 		this.specimenTypeStatus = specimenTypeStatus;
 	}
 
-	public boolean isMultimediaPublic()
+	public boolean isMultiMediaPublic()
 	{
-		return multimediaPublic;
+		return multiMediaPublic;
 	}
 
-	public void setMultimediaPublic(boolean multimediaPublic)
+	public void setMultiMediaPublic(boolean multiMediaPublic)
 	{
-		this.multimediaPublic = multimediaPublic;
+		this.multiMediaPublic = multiMediaPublic;
 	}
 
 	public List<String> getSubjectParts()
@@ -328,6 +332,16 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	public void setIdentifications(List<MultiMediaContentIdentification> identifications)
 	{
 		this.identifications = identifications;
+	}
+
+	public List<String> getTheme()
+	{
+		return theme;
+	}
+
+	public void setTheme(List<String> theme)
+	{
+		this.theme = theme;
 	}
 
 	public Specimen getAssociatedSpecimen()

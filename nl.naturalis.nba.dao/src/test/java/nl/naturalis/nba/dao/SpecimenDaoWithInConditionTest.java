@@ -22,16 +22,15 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoWithInConditionTest {
 
-	static ESSpecimen pMajor;
-	static ESSpecimen lFuscus1;
-	static ESSpecimen lFuscus2;
-	static ESSpecimen tRex;
-	static ESSpecimen mSylvestris;
+	static Specimen pMajor;
+	static Specimen lFuscus1;
+	static Specimen lFuscus2;
+	static Specimen tRex;
+	static Specimen mSylvestris;
 
 	@Before
 	public void before()
@@ -53,7 +52,7 @@ public class SpecimenDaoWithInConditionTest {
 	@After
 	public void after()
 	{
-		// dropIndex(ESSpecimen.class);
+		// dropIndex(Specimen.class);
 	}
 
 	/*

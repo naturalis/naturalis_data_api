@@ -8,16 +8,16 @@ import org.domainobject.util.ConfigObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.model.GeoArea;
+import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.exception.InitializationException;
-import nl.naturalis.nba.dao.types.ESGeoArea;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.types.ESSpecimen;
-import nl.naturalis.nba.dao.types.ESTaxon;
-import nl.naturalis.nba.dao.types.ESType;
 
 /**
  * Provides information about an Elasticsearch document type. This class is very
@@ -34,32 +34,32 @@ import nl.naturalis.nba.dao.types.ESType;
  * @author Ayco Holleman
  *
  */
-public class DocumentType<T extends ESType> {
+public class DocumentType<T extends IDocumentObject> {
 
 	/**
 	 * A {@code DocumentType} instance representing the Specimen document type.
 	 */
-	public static final DocumentType<ESSpecimen> SPECIMEN;
+	public static final DocumentType<Specimen> SPECIMEN;
 	/**
 	 * A {@code DocumentType} instance representing the Taxon document type.
 	 */
-	public static final DocumentType<ESTaxon> TAXON;
+	public static final DocumentType<Taxon> TAXON;
 	/**
 	 * A {@code DocumentType} instance representing the MultiMediaObject
 	 * document type.
 	 */
-	public static final DocumentType<ESMultiMediaObject> MULTI_MEDIA_OBJECT;
+	public static final DocumentType<MultiMediaObject> MULTI_MEDIA_OBJECT;
 	/**
 	 * A {@code DocumentType} instance representing the GeoArea document type.
 	 */
-	public static final DocumentType<ESGeoArea> GEO_AREA;
+	public static final DocumentType<GeoArea> GEO_AREA;
 
 	static {
 
-		SPECIMEN = new DocumentType<>(ESSpecimen.class);
-		TAXON = new DocumentType<>(ESTaxon.class);
-		MULTI_MEDIA_OBJECT = new DocumentType<>(ESMultiMediaObject.class);
-		GEO_AREA = new DocumentType<>(ESGeoArea.class);
+		SPECIMEN = new DocumentType<>(Specimen.class);
+		TAXON = new DocumentType<>(Taxon.class);
+		MULTI_MEDIA_OBJECT = new DocumentType<>(MultiMediaObject.class);
+		GEO_AREA = new DocumentType<>(GeoArea.class);
 
 		try {
 			for (ConfigObject cfg : getIndexSections()) {
@@ -105,15 +105,15 @@ public class DocumentType<T extends ESType> {
 	 * structured just like it. In fact, the document type is generated through
 	 * reflection from the Java class.
 	 */
-	public static DocumentType<?> forClass(Class<? extends ESType> cls)
+	public static DocumentType<?> forClass(Class<? extends IDocumentObject> cls)
 	{
-		if (SPECIMEN.esType == cls)
+		if (SPECIMEN.javaType == cls)
 			return SPECIMEN;
-		if (TAXON.esType == cls)
+		if (TAXON.javaType == cls)
 			return TAXON;
-		if (MULTI_MEDIA_OBJECT.esType == cls)
+		if (MULTI_MEDIA_OBJECT.javaType == cls)
 			return MULTI_MEDIA_OBJECT;
-		if (GEO_AREA.esType == cls)
+		if (GEO_AREA.javaType == cls)
 			return GEO_AREA;
 		throw new DaoException("No document type corresponding to " + cls);
 	}
@@ -122,24 +122,24 @@ public class DocumentType<T extends ESType> {
 
 	private final Logger logger;
 	private final String name;
-	private final Class<T> esType;
+	private final Class<T> javaType;
 	private final ObjectMapper objMapper;
 	private final Mapping mapping;
 
-	private DocumentType(Class<T> esType)
+	private DocumentType(Class<T> javaType)
 	{
-		this(esType.getSimpleName().substring(2), esType);
+		this(javaType.getSimpleName(), javaType);
 	}
 
-	private DocumentType(String name, Class<T> esType)
+	private DocumentType(String name, Class<T> javaType)
 	{
 		logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
 		logger.info("Retrieving info for document type \"{}\"", name);
 		this.name = name;
-		this.esType = esType;
-		this.mapping = MappingFactory.getMapping(esType);
+		this.javaType = javaType;
+		this.mapping = MappingFactory.getMapping(javaType);
 		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
-		this.objMapper = oml.getObjectMapper(esType);
+		this.objMapper = oml.getObjectMapper(javaType);
 	}
 
 	/**
@@ -167,9 +167,9 @@ public class DocumentType<T extends ESType> {
 	 * 
 	 * @return
 	 */
-	public Class<T> getESType()
+	public Class<T> getJavaType()
 	{
-		return esType;
+		return javaType;
 	}
 
 	/**

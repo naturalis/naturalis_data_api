@@ -4,11 +4,11 @@ import static nl.naturalis.nba.api.model.SourceSystem.GEO;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.types.ESGeoArea;
+import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
-class GeoLoader extends Loader<ESGeoArea> {
+class GeoLoader extends Loader<GeoArea> {
 
 	GeoLoader(ETLStatistics stats, int treshold)
 	{
@@ -16,12 +16,12 @@ class GeoLoader extends Loader<ESGeoArea> {
 	}
 
 	@Override
-	protected IdGenerator<ESGeoArea> getIdGenerator()
+	protected IdGenerator<GeoArea> getIdGenerator()
 	{
-		return new IdGenerator<ESGeoArea>() {
+		return new IdGenerator<GeoArea>() {
 
 			@Override
-			public String getId(ESGeoArea obj)
+			public String getId(GeoArea obj)
 			{
 				return getElasticsearchId(GEO, obj.getAreaId());
 			}

@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
@@ -15,7 +15,7 @@ import nl.naturalis.nba.etl.Loader;
  * @author Ayco Holleman
  *
  */
-class CrsMultiMediaLoader extends Loader<ESMultiMediaObject> {
+class CrsMultiMediaLoader extends Loader<MultiMediaObject> {
 
 	CrsMultiMediaLoader(ETLStatistics stats, int treshold)
 	{
@@ -23,11 +23,11 @@ class CrsMultiMediaLoader extends Loader<ESMultiMediaObject> {
 	}
 
 	@Override
-	protected IdGenerator<ESMultiMediaObject> getIdGenerator()
+	protected IdGenerator<MultiMediaObject> getIdGenerator()
 	{
-		return new IdGenerator<ESMultiMediaObject>() {
+		return new IdGenerator<MultiMediaObject>() {
 			@Override
-			public String getId(ESMultiMediaObject obj)
+			public String getId(MultiMediaObject obj)
 			{
 				return getElasticsearchId(CRS, obj.getUnitID());
 			}

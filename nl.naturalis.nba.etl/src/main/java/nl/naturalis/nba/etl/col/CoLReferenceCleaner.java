@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -77,7 +77,7 @@ public class CoLReferenceCleaner {
 			for (CSVRecordInfo<CoLReferenceCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				List<ESTaxon> taxa = transformer.clean(rec);
+				List<Taxon> taxa = transformer.clean(rec);
 				loader.load(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());

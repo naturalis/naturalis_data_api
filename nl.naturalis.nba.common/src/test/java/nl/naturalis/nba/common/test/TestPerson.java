@@ -3,14 +3,17 @@ package nl.naturalis.nba.common.test;
 import java.util.Date;
 import java.util.List;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+
 /**
  * A simple class that can be used to create test objects.
  * 
  * @author Ayco Holleman
  *
  */
-public class TestPerson {
+public class TestPerson implements IDocumentObject {
 
+	private String id;
 	private String firstName;
 	private String lastName;
 	private Date birthDate;
@@ -22,6 +25,18 @@ public class TestPerson {
 	private Pet[] pets;
 	private List<Integer> luckyNumbers;
 	private List<Address> addressBook;
+
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 
 	public String getFirstName()
 	{

@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao.transfer;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.types.ESSpecimen;
 
+@Deprecated
 public class SpecimenTransfer {
 
 	private SpecimenTransfer()

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +23,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
 	private List<Reference> references;
-	private List<Expert> experts;
-	private List<Specimen> specimens;
+	private List<Expert> experts;	
 
 	@Override
 	public String getId()
@@ -74,8 +74,8 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	}
 
 	/**
-	 * This property expresses DwC term <a href=
-	 * "http://rs.tdwg.org/dwc/terms/occurrenceRemarks">occurrenceRemarks</a>
+	 * This property expresses DwC term
+	 * <a href= "http://rs.tdwg.org/dwc/terms/occurrenceRemarks">occurrenceRemarks</a>
 	 * 
 	 * @return
 	 */
@@ -91,8 +91,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 
 	/**
 	 * Botanical equivalent of valid name. This returns the same value as
-	 * {@link #getValidName()}. You can choose either method, according to
-	 * taste.
+	 * {@link #getValidName()}. You can choose either method, according to taste.
 	 * 
 	 * @return
 	 */
@@ -103,8 +102,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 
 	/**
 	 * Zoological equivalent of accepted name. This returns the same value as
-	 * {@link #getAcceptedName()}. You can choose either method, according to
-	 * taste.
+	 * {@link #getAcceptedName()}. You can choose either method, according to taste.
 	 * 
 	 * @return
 	 */
@@ -134,8 +132,8 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	}
 
 	/**
-	 * Get the system classification of this taxon, i.e. the as-is
-	 * classification of the source system.
+	 * Get the system classification of this taxon, i.e. the as-is classification of the
+	 * source system.
 	 * 
 	 * @return The system classification of this taxon
 	 */
@@ -199,14 +197,45 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 		this.references = references;
 	}
 
-	public List<Specimen> getSpecimens()
+	public void addSynonym(ScientificName synonym)
 	{
-		return specimens;
+		if (synonyms == null) {
+			synonyms = new ArrayList<>();
+		}
+		synonyms.add(synonym);
 	}
 
-	public void setSpecimens(List<Specimen> specimens)
+	public void addMonomial(Monomial monomial)
 	{
-		this.specimens = specimens;
+		if (systemClassification == null) {
+			systemClassification = new ArrayList<>();
+		}
+		systemClassification.add(monomial);
 	}
+
+	public void addVernacularName(VernacularName name)
+	{
+		if (vernacularNames == null) {
+			vernacularNames = new ArrayList<>();
+		}
+		vernacularNames.add(name);
+	}
+
+	public void addReference(Reference reference)
+	{
+		if (references == null) {
+			references = new ArrayList<>();
+		}
+		references.add(reference);
+	}
+
+	public void addDescription(TaxonDescription description)
+	{
+		if (descriptions == null) {
+			descriptions = new ArrayList<>();
+		}
+		descriptions.add(description);
+	}
+
 
 }

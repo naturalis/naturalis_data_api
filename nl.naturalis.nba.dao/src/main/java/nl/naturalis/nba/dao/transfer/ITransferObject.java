@@ -16,6 +16,7 @@ import nl.naturalis.nba.dao.types.ESType;
  * @param <API_OBJECT>
  * @param <ES_OBJECT>
  */
+@Deprecated
 public interface ITransferObject<API_OBJECT extends INbaModelObject, ES_OBJECT extends ESType> {
 
 	/**

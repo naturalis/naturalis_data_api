@@ -13,9 +13,9 @@ import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 import org.xml.sax.SAXException;
 
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
@@ -129,7 +129,7 @@ public class CrsMultiMediaImportOffline {
 			return;
 		}
 		for (XMLRecordInfo extracted : extractor) {
-			List<ESMultiMediaObject> transformed = transformer.transform(extracted);
+			List<MultiMediaObject> transformed = transformer.transform(extracted);
 			loader.load(transformed);
 			if (stats.recordsProcessed % 50000 == 0) {
 				logger.info("Records processed: " + stats.recordsProcessed);

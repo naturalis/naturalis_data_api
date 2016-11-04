@@ -12,6 +12,7 @@ import nl.naturalis.nba.dao.types.ESGatheringSiteCoordinates;
  *
  * @author Byron Voorbach
  */
+@Deprecated
 public class GatheringSiteCoordinatesTransfer {
 
 	/**

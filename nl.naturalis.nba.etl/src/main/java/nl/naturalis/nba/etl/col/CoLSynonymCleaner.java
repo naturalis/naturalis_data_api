@@ -9,9 +9,9 @@ import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -90,7 +90,7 @@ public class CoLSynonymCleaner {
 			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				List<ESTaxon> taxa = transformer.clean(rec);
+				List<Taxon> taxa = transformer.clean(rec);
 				loader.load(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());

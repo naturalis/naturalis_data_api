@@ -18,8 +18,8 @@ import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 /**
@@ -29,7 +29,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
  *
  */
 
-public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField, ESSpecimen> {
+public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField, Specimen> {
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -45,12 +45,12 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 	}
 
 	@Override
-	protected List<ESSpecimen> doTransform()
+	protected List<Specimen> doTransform()
 	{
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			ESSpecimen specimen = new ESSpecimen();
+			Specimen specimen = new Specimen();
 			specimen.setSourceSystem(SourceSystem.NDFF);
 			specimen.setSourceSystemId(objectID);
 			specimen.setUnitID(objectID);
@@ -59,8 +59,8 @@ public class NdffSpecimenTransformer extends AbstractCSVTransformer<NdffCsvField
 			specimen.setSourceInstitutionID("Dutch Butterfly Conservation");
 			specimen.setSourceID("NDFF");
 			specimen.setOwner("Dutch Butterfly Conservation");
-			specimen.setLicenceType("Copyright");
-			specimen.setLicence("CC-BY-NC");
+			specimen.setLicenseType("Copyright");
+			specimen.setLicense("CC-BY-NC");
 			specimen.setCollectionType("Dutch Butterfly Conservation");
 
 			SpecimenIdentification si = new SpecimenIdentification();

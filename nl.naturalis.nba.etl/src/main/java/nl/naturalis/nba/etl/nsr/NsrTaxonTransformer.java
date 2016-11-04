@@ -29,10 +29,10 @@ import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.types.ESTaxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
@@ -42,7 +42,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
  * @author Ayco Holleman
  *
  */
-class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
+class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 
 	private static final HashMap<String, TaxonomicStatus> translations = new HashMap<>();
 
@@ -72,7 +72,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	}
 
 	@Override
-	protected List<ESTaxon> doTransform()
+	protected List<Taxon> doTransform()
 	{
 		try {
 			Element taxonElem = input.getRecord();
@@ -80,7 +80,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 			if (invalidRank(rank)) {
 				return null;
 			}
-			ESTaxon taxon = new ESTaxon();
+			Taxon taxon = new Taxon();
 			if (!addScientificNames(taxon)) {
 				return null;
 			}
@@ -128,7 +128,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		return false;
 	}
 
-	private boolean addScientificNames(ESTaxon taxon)
+	private boolean addScientificNames(Taxon taxon)
 	{
 		List<Element> nameElems = getNameElements();
 		if (nameElems == null) {
@@ -179,7 +179,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		return nameElems;
 	}
 
-	private boolean add(ESTaxon taxon, ScientificName sn)
+	private boolean add(Taxon taxon, ScientificName sn)
 	{
 		if (sn.getTaxonomicStatus() == ACCEPTED_NAME) {
 			if (taxon.getAcceptedName() != null) {
@@ -201,7 +201,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	 * This method MUST be called after addScientificNames(), because it relies
 	 * on checks that are done in that method.
 	 */
-	private void addVernacularNames(ESTaxon taxon)
+	private void addVernacularNames(Taxon taxon)
 	{
 		Element namesElem = getChild(input.getRecord(), "names");
 		List<Element> nameElems = getChildren(namesElem);
@@ -220,7 +220,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		return (nameType.equals("isPreferredNameOf") || nameType.equals("isAlternativeNameOf"));
 	}
 
-	private void setRecordURI(ESTaxon taxon)
+	private void setRecordURI(Taxon taxon)
 	{
 		String uri = val(input.getRecord(), "url");
 		if (uri == null) {
@@ -240,7 +240,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		}
 	}
 
-	private void addDescriptions(ESTaxon taxon)
+	private void addDescriptions(Taxon taxon)
 	{
 		Element e = getChild(input.getRecord(), "description");
 		if (e == null) {
@@ -258,7 +258,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 		}
 	}
 
-	private void addSystemClassification(ESTaxon taxon)
+	private void addSystemClassification(Taxon taxon)
 	{
 		Element ce = getChild(input.getRecord(), "classification");
 		// Confusingly, the elements under <classification> are again <taxon>
@@ -301,7 +301,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<ESTaxon> {
 	 * Does not set lower ranks, therefore does not cause discrepancies between
 	 * DefaultClassification and ScientificName.
 	 */
-	private static void addDefaultClassification(ESTaxon taxon)
+	private static void addDefaultClassification(Taxon taxon)
 	{
 		DefaultClassification dc = new DefaultClassification();
 		taxon.setDefaultClassification(dc);

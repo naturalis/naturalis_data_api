@@ -19,11 +19,8 @@ import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.dao.transfer.ITransferObject;
-import nl.naturalis.nba.dao.transfer.SpecimenTransferObject;
-import nl.naturalis.nba.dao.types.ESSpecimen;
 
-public class SpecimenDao extends NbaDao<Specimen, ESSpecimen> implements ISpecimenAccess {
+public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
 	private static Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDao.class);
 
@@ -139,12 +136,6 @@ public class SpecimenDao extends NbaDao<Specimen, ESSpecimen> implements ISpecim
 		//			}
 		//		}
 		//		return names.toArray(new String[names.size()]);
-	}
-
-	@Override
-	ITransferObject<Specimen, ESSpecimen> getTransferObject()
-	{
-		return new SpecimenTransferObject();
 	}
 
 	@Override

@@ -38,20 +38,16 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
-import nl.naturalis.nba.dao.transfer.ITransferObject;
-import nl.naturalis.nba.dao.types.ESType;
 
-abstract class NbaDao<T extends IDocumentObject, U extends ESType> implements INbaAccess<T> {
+abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
 	private static Logger logger = getLogger(NbaDao.class);
 
-	private DocumentType<U> dt;
-	private ITransferObject<T, U> to;
+	private DocumentType<T> dt;
 
-	NbaDao(DocumentType<U> dt)
+	NbaDao(DocumentType<T> dt)
 	{
 		this.dt = dt;
-		this.to = getTransferObject();
 	}
 
 	@Override
@@ -197,8 +193,7 @@ abstract class NbaDao<T extends IDocumentObject, U extends ESType> implements IN
 			logger.debug(pattern, index, type, id);
 		}
 		IndexRequestBuilder request = client().prepareIndex(index, type, id);
-		U esObject = to.getEsObject(apiObject);
-		byte[] source = JsonUtil.serialize(esObject);
+		byte[] source = JsonUtil.serialize(apiObject);
 		request.setSource(source);
 		IndexResponse response = request.execute().actionGet();
 		if (immediate) {
@@ -210,7 +205,6 @@ abstract class NbaDao<T extends IDocumentObject, U extends ESType> implements IN
 		return response.getId();
 	}
 
-	@SuppressWarnings("unused")
 	public boolean delete(String id, boolean immediate)
 	{
 		String index = dt.getIndexInfo().getName();
@@ -219,8 +213,6 @@ abstract class NbaDao<T extends IDocumentObject, U extends ESType> implements IN
 		DeleteResponse response = request.execute().actionGet();
 		return response.isFound();
 	}
-
-	abstract ITransferObject<T, U> getTransferObject();
 
 	abstract T[] createDocumentObjectArray(int length);
 
@@ -275,8 +267,7 @@ abstract class NbaDao<T extends IDocumentObject, U extends ESType> implements IN
 	private T createDocumentObject(String id, Map<String, Object> data)
 	{
 		ObjectMapper om = dt.getObjectMapper();
-		U esObject = om.convertValue(data, dt.getESType());
-		return to.getApiObject(esObject, id);
+		return om.convertValue(data, dt.getJavaType());
 	}
 
 	private static Client client()

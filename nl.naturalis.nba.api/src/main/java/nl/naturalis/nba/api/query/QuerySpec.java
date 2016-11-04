@@ -1,7 +1,5 @@
 package nl.naturalis.nba.api.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 
 import java.util.ArrayList;
@@ -9,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 
 /**

@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
 
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
@@ -14,12 +14,12 @@ import nl.naturalis.nba.etl.Loader;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaLoader extends Loader<ESMultiMediaObject> {
+class BrahmsMultiMediaLoader extends Loader<MultiMediaObject> {
 
-	private static final IdGenerator<ESMultiMediaObject> ID_GENERATOR = new IdGenerator<ESMultiMediaObject>() {
+	private static final IdGenerator<MultiMediaObject> ID_GENERATOR = new IdGenerator<MultiMediaObject>() {
 
 		@Override
-		public String getId(ESMultiMediaObject obj)
+		public String getId(MultiMediaObject obj)
 		{
 			return getElasticsearchId(BRAHMS, obj.getUnitID());
 		}
@@ -31,7 +31,7 @@ class BrahmsMultiMediaLoader extends Loader<ESMultiMediaObject> {
 	}
 
 	@Override
-	protected IdGenerator<ESMultiMediaObject> getIdGenerator()
+	protected IdGenerator<MultiMediaObject> getIdGenerator()
 	{
 		return ID_GENERATOR;
 	}

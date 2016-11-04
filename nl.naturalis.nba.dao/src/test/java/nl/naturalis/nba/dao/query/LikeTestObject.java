@@ -2,10 +2,11 @@ package nl.naturalis.nba.dao.query;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
-import nl.naturalis.nba.dao.types.ESType;
+import nl.naturalis.nba.api.model.IDocumentObject;
 
-public class LikeTestObject implements ESType {
+public class LikeTestObject implements IDocumentObject {
 
+	private String id;
 	@Analyzers(Analyzer.LIKE)
 	private String firstName;
 	@Analyzers(Analyzer.LIKE)
@@ -13,6 +14,18 @@ public class LikeTestObject implements ESType {
 	@Analyzers({})
 	private String address;
 	private int age;
+
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 
 	public String getFirstName()
 	{

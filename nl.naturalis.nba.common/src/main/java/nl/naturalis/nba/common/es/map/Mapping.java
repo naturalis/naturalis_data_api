@@ -2,6 +2,8 @@ package nl.naturalis.nba.common.es.map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+
 /**
  * Models an Elasticsearch type mapping. See {@link MappingFactory} for more details.
  * 
@@ -10,14 +12,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Ayco Holleman
  *
  */
-public class Mapping extends ComplexField {
+public class Mapping<T extends IDocumentObject> extends ComplexField {
 
 	/* NBA types are always strictly typed. */
 	private final String dynamic = "strict";
 	@JsonIgnore
-	private final Class<?> mappedClass;
+	private final Class<T> mappedClass;
 
-	Mapping(Class<?> mappedClass)
+	Mapping(Class<T> mappedClass)
 	{
 		this.mappedClass = mappedClass;
 	}
@@ -36,7 +38,7 @@ public class Mapping extends ComplexField {
 	 * Returns Java class from which the Elasticsearch mapping was generated.
 	 * generated.
 	 */
-	public Class<?> getMappedClass()
+	public Class<T> getMappedClass()
 	{
 		return mappedClass;
 	}
@@ -50,7 +52,7 @@ public class Mapping extends ComplexField {
 		if (obj == null || obj.getClass() != Mapping.class) {
 			return false;
 		}
-		Mapping other = (Mapping) obj;
+		Mapping<?> other = (Mapping<?>) obj;
 		return mappedClass == other.mappedClass;
 	}
 

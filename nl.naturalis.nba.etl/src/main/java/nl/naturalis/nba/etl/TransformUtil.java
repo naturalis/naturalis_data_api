@@ -12,17 +12,17 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.domainobject.util.StringUtil;
+
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.dao.types.ESMultiMediaObject;
-import nl.naturalis.nba.dao.types.ESSpecimen;
-import nl.naturalis.nba.dao.types.ESTaxon;
-
-import org.apache.logging.log4j.Logger;
-import org.domainobject.util.StringUtil;
+import nl.naturalis.nba.api.model.Taxon;
 
 /**
  * Provides common functionality for the various {@link Transformer}
@@ -137,19 +137,19 @@ public class TransformUtil {
 		return sn;
 	}
 
-	public static void equalizeNameComponents(ESTaxon taxon) throws NameMismatchException
+	public static void equalizeNameComponents(Taxon taxon) throws NameMismatchException
 	{
 		equalizeNameComponents(taxon.getDefaultClassification(), taxon.getAcceptedName());
 	}
 
-	public static void equalizeNameComponents(ESSpecimen specimen) throws NameMismatchException
+	public static void equalizeNameComponents(Specimen specimen) throws NameMismatchException
 	{
 		for (SpecimenIdentification i : specimen.getIdentifications()) {
 			equalizeNameComponents(i.getDefaultClassification(), i.getScientificName());
 		}
 	}
 
-	public static void equalizeNameComponents(ESMultiMediaObject mmo) throws NameMismatchException
+	public static void equalizeNameComponents(MultiMediaObject mmo) throws NameMismatchException
 	{
 		for (MultiMediaContentIdentification i : mmo.getIdentifications()) {
 			equalizeNameComponents(i.getDefaultClassification(), i.getScientificName());

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+
 /**
  * Abstract base class for all transformation components within the ETL cycle. Provides
  * functionality for uniform error reporting.
@@ -17,7 +19,7 @@ import org.apache.logging.log4j.Logger;
  * @param <OUTPUT>
  *            The type of object that is output from the transformer
  */
-public abstract class AbstractTransformer<INPUT, OUTPUT>
+public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 		implements Transformer<INPUT, OUTPUT> {
 
 	/**

@@ -68,8 +68,7 @@ public class DocumentType<T extends IDocumentObject> {
 				 * DocumentType instances defined above, and add the applicable
 				 * DocumentType instances to the new IndexInfo instance.
 				 */
-				@SuppressWarnings("unused")
-				IndexInfo indexInfo = new IndexInfo(cfg);
+				new IndexInfo(cfg);
 			}
 		}
 		catch (Throwable t) {
@@ -124,7 +123,7 @@ public class DocumentType<T extends IDocumentObject> {
 	private final String name;
 	private final Class<T> javaType;
 	private final ObjectMapper objMapper;
-	private final Mapping mapping;
+	private final Mapping<T> mapping;
 
 	private DocumentType(Class<T> javaType)
 	{
@@ -173,11 +172,11 @@ public class DocumentType<T extends IDocumentObject> {
 	}
 
 	/**
-	 * Returns a {@link Mapping object} representing the document type mapping.
+	 * Returns a {@link Mapping mapping object} representing the document type mapping.
 	 * 
 	 * @return
 	 */
-	public Mapping getMapping()
+	public Mapping<T> getMapping()
 	{
 		return mapping;
 	}
@@ -198,6 +197,7 @@ public class DocumentType<T extends IDocumentObject> {
 		return this == obj;
 	}
 
+	@Override
 	public int hashCode()
 	{
 		return System.identityHashCode(this);

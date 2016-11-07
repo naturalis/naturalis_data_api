@@ -93,4 +93,37 @@ public class SpecimenDaoWithBetweenConditionTest {
 		assertEquals("01", 4, result.size());
 	}
 
+	/*
+	 * Test with plain "string dates"
+	 */
+	@Test
+	public void testQuery__QuerySpec__03() throws InvalidQueryException
+	{
+		String from = "2007-04-01";
+		String to = "2007-05-01";
+		String[] fromTo = new String[] { from, to };
+		Condition condition = new Condition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with plain "string dates"
+	 */
+	@Test
+	public void testQuery__QuerySpec__04() throws InvalidQueryException
+	{
+		String from = "2007-04-01T00:00:00Z";
+		String to = "2007-05-01T23:50:00Z";
+		String[] fromTo = new String[] { from, to };
+		Condition condition = new Condition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
+	}
 }

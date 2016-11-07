@@ -1,0 +1,13 @@
+#!/bin/bash
+
+. ./include.sh
+
+type="${1}"
+
+suppress_errors=false
+esBulkrequestSize=1000
+
+JAVA_OPTS="$JAVA_OPTS -Dcrs.suppress-errors=${suppress_errors}"
+JAVA_OPTS="$JAVA_OPTS -Des.bulk.request.size=${esBulkrequestSize}"
+
+java -cp ${classpath} $JAVA_OPTS ${root_package}.geo.GeoImporter

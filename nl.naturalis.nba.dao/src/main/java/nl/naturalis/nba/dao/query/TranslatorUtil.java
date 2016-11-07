@@ -3,9 +3,10 @@ package nl.naturalis.nba.dao.query;
 import static org.domainobject.util.ClassUtil.isA;
 import static org.domainobject.util.ClassUtil.isNumber;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
@@ -15,6 +16,15 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 
 class TranslatorUtil {
+
+	private static final SimpleDateFormat SDF0 = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat SDF1 = new SimpleDateFormat("yyyy/MM/dd");
+	private static final SimpleDateFormat SDF2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat SDF3 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	private static final SimpleDateFormat SDF4 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+	private static final SimpleDateFormat[] acceptedDateFormats = new SimpleDateFormat[] { SDF0,
+			SDF1, SDF2, SDF3, SDF4 };
 
 	static InvalidConditionException invalidConditionException(Condition condition, String msg,
 			Object... msgArgs)
@@ -52,10 +62,9 @@ class TranslatorUtil {
 
 	static InvalidConditionException searchTermHasWrongType(Condition condition)
 	{
-		ComparisonOperator op = condition.getOperator();
-		Class<?> type = condition.getValue().getClass();
-		String fmt = "Search term has wrong type for operator %s: %s";
-		return invalidConditionException(condition, fmt, op, type);
+		String type = condition.getValue().getClass().getName();
+		String fmt = "Search term has wrong type for query condition on field %s: %s";
+		return invalidConditionException(condition, fmt, condition.getField(), type);
 	}
 
 	static void ensureValueIsNotNull(Condition condition) throws InvalidConditionException
@@ -78,6 +87,17 @@ class TranslatorUtil {
 		if (!isNumber(condition.getValue()) && !isA(condition.getValue(), Date.class)) {
 			throw searchTermHasWrongType(condition);
 		}
+	}
+
+	static Date asDate(String value)
+	{
+		for (SimpleDateFormat sdf : acceptedDateFormats) {
+			try {
+				return sdf.parse(value);
+			}
+			catch (ParseException e) {}
+		}
+		return null;
 	}
 
 	static void ensureFieldIsDateOrNumber(Condition condition, MappingInfo mappingInfo)

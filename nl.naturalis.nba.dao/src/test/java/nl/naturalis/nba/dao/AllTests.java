@@ -35,6 +35,7 @@ import nl.naturalis.nba.dao.util.SwapOutputStreamTest;
 	SwapOutputStreamTest.class,
 	SwapFileOutputStreamTest.class,
 	DocumentFlattenerTest.class,
+	INbaAccess_QueryUsingLessThanGreaterThanTest.class,
 	SpecimenDaoNullChecksTest.class,
 	SpecimenDaoWithBetweenConditionTest.class,
 	SpecimenDaoWithInConditionTest.class,

@@ -57,6 +57,7 @@ etl.crs.data.dir=/home/ayco/projects/nba/data/crs
 etl.col.data.dir=/home/ayco/projects/nba/data/col
 etl.brahms.data.dir=/home/ayco/projects/nba/data/brahms
 etl.nsr.data.dir=/home/ayco/projects/nba/data/nsr
+etl.geo.data.dir=/home/ayco/projects/nba/data/geo
 etl.ndff.data.dir=/home/ayco/projects/nba/data/ndff
 
 # Variable used to generate URLs for Catalogue of Life

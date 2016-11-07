@@ -156,7 +156,7 @@ public class SpecimenResource {
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
-			return dao.queryRaw(qs);
+			return dao.queryData(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

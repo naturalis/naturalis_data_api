@@ -57,7 +57,7 @@ public class TaxonResource {
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
-			return dao.queryRaw(qs);
+			return dao.queryData(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

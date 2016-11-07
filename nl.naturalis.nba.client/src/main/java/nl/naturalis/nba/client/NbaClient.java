@@ -107,7 +107,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public QueryResult<Map<String, Object>> queryRaw(QuerySpec querySpec)
+	public QueryResult<Map<String, Object>> queryData(QuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		SimpleHttpGet request = newJsonGetRequest();

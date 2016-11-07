@@ -95,7 +95,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public QueryResult<Map<String, Object>> queryRaw(QuerySpec spec) throws InvalidQueryException
+	public QueryResult<Map<String, Object>> queryData(QuerySpec spec) throws InvalidQueryException
 	{
 		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
 		SearchRequestBuilder request = translator.translate();
@@ -267,7 +267,9 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	private T createDocumentObject(String id, Map<String, Object> data)
 	{
 		ObjectMapper om = dt.getObjectMapper();
-		return om.convertValue(data, dt.getJavaType());
+		T documentObject = om.convertValue(data, dt.getJavaType());
+		documentObject.setId(id);
+		return documentObject;
 	}
 
 	private static Client client()

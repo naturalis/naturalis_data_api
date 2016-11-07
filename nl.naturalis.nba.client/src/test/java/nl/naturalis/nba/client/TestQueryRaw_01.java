@@ -22,7 +22,7 @@ public class TestQueryRaw_01 {
 		query.addCondition(condition1);
 		QueryResult<Map<String, Object>> result = null;
 		try {
-			result = client.queryRaw(query);
+			result = client.queryData(query);
 		}
 		catch (InvalidQueryException e) {
 			System.err.println(e.getMessage());

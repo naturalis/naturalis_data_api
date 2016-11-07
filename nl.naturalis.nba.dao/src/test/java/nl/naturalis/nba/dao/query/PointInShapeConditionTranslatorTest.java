@@ -3,6 +3,8 @@ package nl.naturalis.nba.dao.query;
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +15,6 @@ import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
@@ -29,7 +30,7 @@ public class PointInShapeConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> m = MappingFactory.getMapping(TestPerson.class);
 		mappingInfo = new MappingInfo(m);
 	}
 

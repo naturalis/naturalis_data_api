@@ -21,7 +21,7 @@ public class LikeConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = MappingFactory.getMapping(LikeTestObject.class);
+		Mapping<LikeTestObject> m = MappingFactory.getMapping(LikeTestObject.class);
 		inspector = new MappingInfo(m);
 	}
 

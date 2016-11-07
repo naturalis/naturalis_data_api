@@ -26,13 +26,13 @@ public class EqualsConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = MappingFactory.getMapping(EqualsTestObject.class);
+		Mapping<EqualsTestObject> m = MappingFactory.getMapping(EqualsTestObject.class);
 		mappingInfo = new MappingInfo(m);
 	}
 
 	/*
-	 * Tests that comparing field with null using EQUALS operator results in ExistsQuery
-	 * being generated.
+	 * Tests that comparing field with null using EQUALS operator results in
+	 * ExistsQuery being generated.
 	 */
 	@Test
 	public void testTranslate_01() throws InvalidConditionException
@@ -47,8 +47,8 @@ public class EqualsConditionTranslatorTest {
 	}
 
 	/*
-	 * Tests that comparing field with null using NOT_EQUALS operator results in a doubly
-	 * negated ExistsQuery being generated.
+	 * Tests that comparing field with null using NOT_EQUALS operator results in
+	 * a doubly negated ExistsQuery being generated.
 	 */
 	@Test
 	public void testTranslate_02() throws InvalidConditionException
@@ -63,8 +63,8 @@ public class EqualsConditionTranslatorTest {
 	}
 
 	/*
-	 * Tests that comparing field with null using EQUALS operator and NOT operator results
-	 * in a doubly-negated ExistsQuery being generated.
+	 * Tests that comparing field with null using EQUALS operator and NOT
+	 * operator results in a doubly-negated ExistsQuery being generated.
 	 */
 	@Test
 	public void testTranslate_03() throws InvalidConditionException
@@ -79,8 +79,8 @@ public class EqualsConditionTranslatorTest {
 	}
 
 	/*
-	 * Tests that comparing field with null using NOT_EQUALS operator and NOT operator
-	 * results in a triply-negated ExistsQuery being generated.
+	 * Tests that comparing field with null using NOT_EQUALS operator and NOT
+	 * operator results in a triply-negated ExistsQuery being generated.
 	 */
 	@Test
 	public void testTranslate_04() throws InvalidConditionException
@@ -95,8 +95,8 @@ public class EqualsConditionTranslatorTest {
 	}
 
 	/*
-	 * Tests that a simple condition (without siblings and without the NOT operator) gets
-	 * translated into a term query.
+	 * Tests that a simple condition (without siblings and without the NOT
+	 * operator) gets translated into a term query.
 	 */
 	@Test
 	public void testTranslate_05() throws InvalidConditionException
@@ -160,8 +160,8 @@ public class EqualsConditionTranslatorTest {
 	}
 
 	/*
-	 * Tests that NOT operator negates not just the condition itself but the combination
-	 * of condition and its AND and OR siblings.
+	 * Tests that NOT operator negates not just the condition itself but the
+	 * combination of condition and its AND and OR siblings.
 	 */
 	@Test
 	public void testTranslate_09() throws InvalidConditionException
@@ -187,8 +187,7 @@ public class EqualsConditionTranslatorTest {
 		isJohnSmith.and("lastName", "=", "Smith");
 
 		Condition inNetherlands = new Condition("country", "=", "Netherlands");
-		inNetherlands.and(
-				new Condition("city", "=", "Amsterdam").or("city", "=", "Rotterdam"));
+		inNetherlands.and(new Condition("city", "=", "Amsterdam").or("city", "=", "Rotterdam"));
 
 		Condition inGermany = new Condition("country", "=", "Germany");
 		inGermany.and(new Condition("city", "=", "Berlin").or("city", "=", "Hanover"));
@@ -227,8 +226,8 @@ public class EqualsConditionTranslatorTest {
 	{
 		Condition condition = new Condition("firstName", "=", "John");
 		condition.and("lastName", "=", "Smith").and("favouriteFood", "=", "Chinese");
-		condition.or("city", "=", "Amsterdam").or("city", "=", "Rotterdam").or("city",
-				"=", "Leiden");
+		condition.or("city", "=", "Amsterdam").or("city", "=", "Rotterdam").or("city", "=",
+				"Leiden");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);

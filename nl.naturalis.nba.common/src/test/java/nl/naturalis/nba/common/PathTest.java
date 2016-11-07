@@ -92,7 +92,7 @@ public class PathTest {
 	public void testIsPrimitive_01() throws InvalidPathException
 	{
 		Path path = new Path("pets.0.name");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isPrimitive(mapping));
 	}
 
@@ -100,7 +100,7 @@ public class PathTest {
 	public void testIsPrimitive_02() throws InvalidPathException
 	{
 		Path path = new Path("pets.name");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isPrimitive(mapping));
 	}
 
@@ -108,7 +108,7 @@ public class PathTest {
 	public void testIsPrimitive_03() throws InvalidPathException
 	{
 		Path path = new Path("luckyNumbers");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isPrimitive(mapping));
 	}
 
@@ -116,7 +116,7 @@ public class PathTest {
 	public void testIsPrimitive_04() throws InvalidPathException
 	{
 		Path path = new Path("hobbies");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isPrimitive(mapping));
 	}
 
@@ -124,7 +124,7 @@ public class PathTest {
 	public void testIsPrimitive_05() throws InvalidPathException
 	{
 		Path path = new Path("smoker");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isPrimitive(mapping));
 	}
 
@@ -132,7 +132,7 @@ public class PathTest {
 	public void testIsPrimitive_06() throws InvalidPathException
 	{
 		Path path = new Path("addressBook");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertFalse("01", path.isPrimitive(mapping));
 	}
 
@@ -140,7 +140,7 @@ public class PathTest {
 	public void testIsArray_01() throws InvalidPathException
 	{
 		Path path = new Path("pets.0.name");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertFalse("01", path.isArray(mapping));
 	}
 
@@ -148,7 +148,7 @@ public class PathTest {
 	public void testIsArray_02() throws InvalidPathException
 	{
 		Path path = new Path("pets.name");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertFalse("01", path.isArray(mapping));
 	}
 
@@ -156,7 +156,7 @@ public class PathTest {
 	public void testIsArray_03() throws InvalidPathException
 	{
 		Path path = new Path("luckyNumbers");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isArray(mapping));
 	}
 
@@ -164,7 +164,7 @@ public class PathTest {
 	public void testIsArray_04() throws InvalidPathException
 	{
 		Path path = new Path("hobbies");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isArray(mapping));
 	}
 
@@ -172,7 +172,7 @@ public class PathTest {
 	public void testIsArray_05() throws InvalidPathException
 	{
 		Path path = new Path("smoker");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertFalse("01", path.isArray(mapping));
 	}
 
@@ -180,7 +180,7 @@ public class PathTest {
 	public void testIsArray_06() throws InvalidPathException
 	{
 		Path path = new Path("addressBook");
-		Mapping mapping = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
 		assertTrue("01", path.isArray(mapping));
 	}
 

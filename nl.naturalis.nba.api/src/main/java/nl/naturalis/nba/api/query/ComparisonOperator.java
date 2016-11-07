@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.model.GeoPoint;
 
 /**

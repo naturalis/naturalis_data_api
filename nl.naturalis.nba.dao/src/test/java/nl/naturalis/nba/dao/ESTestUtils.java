@@ -27,20 +27,37 @@ public class ESTestUtils {
 	}
 
 	/**
-	 * Asserts that the specified {@code QueryBuilder} instance has the same JSON
-	 * representation as the contents of the specified file.
+	 * Asserts that the specified {@code QueryBuilder} instance has the same
+	 * JSON representation as the contents of the specified file.
 	 * 
 	 * @param unitTestClass
 	 * @param query
 	 * @param file
 	 * @return
 	 */
-	public static boolean queryEquals(Class<?> unitTestClass, QueryBuilder query,
-			String file)
+	public static boolean queryEquals(Class<?> unitTestClass, QueryBuilder query, String file)
 	{
 		InputStream is = unitTestClass.getResourceAsStream(file);
 		Map<String, Object> expected = JsonUtil.deserialize(is);
 		Map<String, Object> actual = JsonUtil.deserialize(query.toString());
+		return actual.equals(expected);
+	}
+
+	/**
+	 * Asserts that the specified JSON string is equal the JSON in the specified
+	 * file. Both JSON strings are first read into a map so formatting
+	 * differences don't play a role.
+	 * 
+	 * @param unitTestClass
+	 * @param jsonString
+	 * @param jsonFile
+	 * @return
+	 */
+	public static boolean jsonEquals(Class<?> unitTestClass, String jsonString, String jsonFile)
+	{
+		InputStream is = unitTestClass.getResourceAsStream(jsonFile);
+		Map<String, Object> expected = JsonUtil.deserialize(is);
+		Map<String, Object> actual = JsonUtil.deserialize(jsonString);
 		return actual.equals(expected);
 	}
 

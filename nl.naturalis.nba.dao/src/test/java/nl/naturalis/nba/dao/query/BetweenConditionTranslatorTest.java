@@ -32,7 +32,7 @@ public class BetweenConditionTranslatorTest {
 	@BeforeClass
 	public static void init()
 	{
-		Mapping m = MappingFactory.getMapping(TestPerson.class);
+		Mapping<TestPerson> m = MappingFactory.getMapping(TestPerson.class);
 		mappingInfo = new MappingInfo(m);
 	}
 

@@ -27,10 +27,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.NoSuchDataSetException;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
@@ -50,9 +52,57 @@ public class TaxonResource {
 	Registry registry;
 
 	@GET
-	@Path("/queryRaw")
+	@Path("/find/{id}")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryRaw(@Context UriInfo uriInfo)
+	public Taxon find(@PathParam("id") String id, @Context UriInfo uriInfo)
+	{
+		try {
+			TaxonDao dao = new TaxonDao();
+			Taxon result = dao.find(id);
+			if (result == null) {
+				throw new HTTP404Exception(uriInfo, DocumentType.TAXON, id);
+			}
+			return result;
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/findByIds/{ids}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Taxon[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
+	{
+		try {
+			String[] idArray = JsonUtil.deserialize(ids, String[].class);
+			TaxonDao dao = new TaxonDao();
+			return dao.find(idArray);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	public QueryResult<Taxon> query(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/queryData")
+	@Produces(JSON_CONTENT_TYPE)
+	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();

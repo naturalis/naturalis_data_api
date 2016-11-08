@@ -4,6 +4,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.es.map.ESField;
+import nl.naturalis.nba.common.es.map.Index;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
@@ -17,24 +18,15 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 class FieldCheck {
 
 	private Condition condition;
-	private MappingInfo mappingInfo;
+	private MappingInfo<?> mappingInfo;
 
-	FieldCheck(Condition condition, MappingInfo mappingInfo)
+	FieldCheck(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;
 	}
 
 	void execute() throws InvalidConditionException
-	{
-		if (!ok()) {
-			String fmt = "Field %s cannot be queried";
-			String msg = String.format(fmt, condition.getField());
-			throw new InvalidConditionException(msg);
-		}
-	}
-
-	boolean ok() throws InvalidConditionException
 	{
 		ESField field;
 		try {
@@ -43,7 +35,17 @@ class FieldCheck {
 		catch (NoSuchFieldException e) {
 			throw new InvalidConditionException(e.getMessage());
 		}
-		return field instanceof SimpleField;
+		if (!(field instanceof SimpleField)) {
+			String fmt = "Field %s cannot be queried: field is an object";
+			String msg = String.format(fmt, condition.getField());
+			throw new InvalidConditionException(msg);
+		}
+		SimpleField sf = (SimpleField) field;
+		if (sf.getIndex() == Index.NO) {
+			String fmt = "Field %s cannot be queried: field is not indexed";
+			String msg = String.format(fmt, condition.getField());
+			throw new InvalidConditionException(msg);
+		}
 	}
 
 }

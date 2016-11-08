@@ -310,21 +310,31 @@ public class ESUtil {
 	 * 
 	 * @param dt
 	 */
-	public static void createType(DocumentType<?> dt)
+	public static <T extends IDocumentObject> void createType(DocumentType<T> dt)
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
-		logger.info("Creating type {}", type);
+		logger.info("Creating type {} in index {}", type, index);
 		PutMappingRequestBuilder request = indices().preparePutMapping(index);
-		MappingSerializer serializer = new MappingSerializer();
+		MappingSerializer<T> serializer = new MappingSerializer<>();
 		String source = serializer.serialize(dt.getMapping());
 		request.setSource(source);
 		request.setType(type);
-		PutMappingResponse response = request.execute().actionGet();
-		if (!response.isAcknowledged()) {
-			throw new DaoException("Failed to create type " + type);
+		try {
+			PutMappingResponse response = request.execute().actionGet();
+			if (!response.isAcknowledged()) {
+				throw new DaoException("Failed to create type " + type);
+			}
+			logger.info("Created type {}", type);
 		}
-		logger.info("Created type {}", type);
+		catch (Throwable t) {
+			String fmt = "Failed to create type %s: %s";
+			String msg = String.format(fmt, type, t.getMessage());
+			if (logger.isDebugEnabled()) {
+				logger.debug(t);
+			}
+			throw new DaoException(msg);
+		}
 	}
 
 	/**
@@ -340,7 +350,7 @@ public class ESUtil {
 	{
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
-		Class<T> cls = (Class<T>) dt.getJavaType();
+		Class<T> cls = dt.getJavaType();
 		ObjectMapper objectMapper = dt.getObjectMapper();
 		Client client = ESClientManager.getInstance().getClient();
 		GetRequestBuilder grb = client.prepareGet(index, type, id);

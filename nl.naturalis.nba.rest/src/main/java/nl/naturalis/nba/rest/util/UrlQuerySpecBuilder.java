@@ -60,7 +60,7 @@ public class UrlQuerySpecBuilder {
 
 	public QuerySpec build()
 	{
-		logger.info("Extracting QuerySpec object from request URL");
+		logger.info("Extracting QuerySpec object from request");
 		checkParams(uriInfo);
 		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 		List<String> values = params.get(PARAM_QUERY_SPEC);
@@ -85,6 +85,7 @@ public class UrlQuerySpecBuilder {
 				throw new HTTP400Exception(uriInfo, msg);
 			}
 			String value = values.iterator().next();
+			logger.info("Processing parameter {}: \"{}\"", param, value);
 			switch (param) {
 				case "querySpec":
 					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
@@ -132,13 +133,13 @@ public class UrlQuerySpecBuilder {
 		}
 	}
 
-	private static int getIntParam(UriInfo uriInfo, String param, String value)
+	private static Integer getIntParam(UriInfo uriInfo, String param, String value)
 	{
-		if (value.length() != 0) {
-			return 0;
+		if (value.length() == 0) {
+			return null;
 		}
 		try {
-			return Integer.parseInt(value);
+			return Integer.valueOf(value);
 		}
 		catch (NumberFormatException e) {
 			String msg = String.format(ERR_BAD_INT_PARAM, param, value);
@@ -156,8 +157,7 @@ public class UrlQuerySpecBuilder {
 		return EQUALS;
 	}
 
-	private static LogicalOperator getLogicalOperator(UriInfo uriInfo, String param,
-			String value)
+	private static LogicalOperator getLogicalOperator(UriInfo uriInfo, String param, String value)
 	{
 		if (value.length() == 0) {
 			return null;
@@ -173,8 +173,7 @@ public class UrlQuerySpecBuilder {
 		return op;
 	}
 
-	private static List<SortField> getSortFields(UriInfo uriInfo, String param,
-			String value)
+	private static List<SortField> getSortFields(UriInfo uriInfo, String param, String value)
 	{
 		if (value.length() == 0) {
 			return null;

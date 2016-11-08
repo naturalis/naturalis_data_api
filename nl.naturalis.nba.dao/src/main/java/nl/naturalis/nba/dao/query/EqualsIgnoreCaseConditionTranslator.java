@@ -13,15 +13,14 @@ import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.common.es.map.StringField;
-import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.StringField;
 
 class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
-	EqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo inspector)
+	EqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -57,15 +56,13 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 			// Won't happend, already checked
 			assert (false);
 		}
-		if (field.getType() != ESDataType.STRING) {
-			throw new IllegalOperatorException(condition);
-		}
 		if (field instanceof StringField) {
 			StringField af = (StringField) field;
 			if (af.hasMultiField(IGNORE_CASE_MULTIFIELD)) {
 				return;
 			}
 		}
+		throw new IllegalOperatorException(condition);
 	}
 
 	@Override

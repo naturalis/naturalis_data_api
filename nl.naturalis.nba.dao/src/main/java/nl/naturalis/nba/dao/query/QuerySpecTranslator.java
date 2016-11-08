@@ -73,7 +73,7 @@ public class QuerySpecTranslator {
 
 	private void addFields(SearchRequestBuilder request) throws InvalidQueryException
 	{
-		MappingInfo mappingInfo = new MappingInfo(type.getMapping());
+		MappingInfo<?> mappingInfo = new MappingInfo<>(type.getMapping());
 		List<String> fields = spec.getFields();
 		for (String field : fields) {
 			try {

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+
 /**
  * Serializes {@link Mapping} instances to JSON. Used when creating a new
  * document type within an Elasticsearch index.
@@ -17,7 +19,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author Ayco Holleman
  *
  */
-public class MappingSerializer {
+public class MappingSerializer<T extends IDocumentObject> {
 
 	private final ObjectMapper serializer;
 	private final boolean pretty;
@@ -37,7 +39,7 @@ public class MappingSerializer {
 		this.pretty = pretty;
 	}
 
-	public String serialize(Mapping mapping)
+	public String serialize(Mapping<T> mapping)
 	{
 		try {
 			if (pretty) {
@@ -50,7 +52,7 @@ public class MappingSerializer {
 		}
 	}
 
-	public void serialize(OutputStream out, Mapping mapping)
+	public void serialize(OutputStream out, Mapping<T> mapping)
 	{
 		try {
 			if (pretty) {

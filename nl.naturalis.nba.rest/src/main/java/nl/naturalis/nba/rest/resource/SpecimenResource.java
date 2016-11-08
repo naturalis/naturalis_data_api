@@ -149,9 +149,9 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/queryRaw")
+	@Path("/queryData")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryRaw(@Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
@@ -164,12 +164,12 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/dwca/query/{querySpec}")
+	@Path("/dwca/query")
 	@Produces("application/zip")
-	public Response dwcaQuery(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
+	public Response dwcaQuery(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override

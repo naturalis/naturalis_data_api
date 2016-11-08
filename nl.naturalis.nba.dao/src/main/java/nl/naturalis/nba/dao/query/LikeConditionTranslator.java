@@ -14,14 +14,14 @@ import org.elasticsearch.index.query.QueryBuilder;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.common.es.map.StringField;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.es.map.StringField;
 
 class LikeConditionTranslator extends ConditionTranslator {
 
-	LikeConditionTranslator(Condition condition, MappingInfo inspector)
+	LikeConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

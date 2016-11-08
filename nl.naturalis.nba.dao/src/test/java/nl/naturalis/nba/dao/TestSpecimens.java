@@ -53,8 +53,7 @@ class TestSpecimens {
 
 		GatheringSiteCoordinates coords;
 		//coords = new GatheringSiteCoordinates(52.531713, 4.705922);
-		coords = new GatheringSiteCoordinates(5.0, 5.0);
-		//coords.setGeoPoint(new GeoPoint(5.0, 5.0));
+		coords = new GatheringSiteCoordinates(5D, 5D);
 		gathering.setSiteCoordinates(Arrays.asList(coords));
 
 		DefaultClassification classification = new DefaultClassification();

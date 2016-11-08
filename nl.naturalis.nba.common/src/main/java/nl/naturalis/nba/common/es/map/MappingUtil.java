@@ -14,7 +14,6 @@ import org.domainobject.util.ClassUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 class MappingUtil {
@@ -24,7 +23,8 @@ class MappingUtil {
 	}
 
 	/**
-	 * Returns the type argument for a generic type (e.g. Person for List&lt;Person&gt;)
+	 * Returns the type argument for a generic type (e.g. Person for
+	 * List&lt;Person&gt;)
 	 */
 	static Class<?> getClassForTypeArgument(Type t)
 	{
@@ -40,8 +40,9 @@ class MappingUtil {
 	}
 
 	/**
-	 * Returns all getter methods of the specified class and its superclasses (not
-	 * including {@link Object}) that have the {@link Mapped} annotation.
+	 * Returns all getter methods of the specified class and its superclasses
+	 * (not including {@link Object}) that are to be mapped to the document
+	 * store.
 	 * 
 	 * @param cls
 	 * @return
@@ -67,8 +68,8 @@ class MappingUtil {
 	}
 
 	/**
-	 * Returns all non-static fields of the specified class and its superclasses (not
-	 * including {@link Object}).
+	 * Returns all non-static fields of the specified class and its superclasses
+	 * (not including {@link Object}).
 	 * 
 	 * @param cls
 	 * @return
@@ -89,10 +90,11 @@ class MappingUtil {
 				if (Modifier.isStatic(f.getModifiers()))
 					continue;
 				/*
-				 * Do not map the "id" field of the IDocumentObject class itself. This
-				 * field is populated with the system ID of the Elasticsearch document,
-				 * which is not part of the document source. Note though that we
-				 * cannot @JsonIgnore this field because we do want it serialized.
+				 * Do not map the "id" field of the IDocumentObject class
+				 * itself. This field is populated with the system ID of the
+				 * Elasticsearch document, which is not part of the document
+				 * source. Note though that we cannot @JsonIgnore this field
+				 * because we do want it serialized.
 				 */
 				if (ClassUtil.isA(c, IDocumentObject.class) && f.getName().equals("id"))
 					continue;
@@ -105,7 +107,8 @@ class MappingUtil {
 	}
 
 	/**
-	 * Checks whether a getter method is annotated with the {@link Mapped} annotation.
+	 * Checks whether the method is a getter method and is annotated with
+	 * {@link JsonProperty}.
 	 */
 	private static boolean isMappedProperty(Method m)
 	{
@@ -113,27 +116,25 @@ class MappingUtil {
 			return false;
 		if (m.getParameters().length != 0)
 			return false;
-		Class<?> returnType = m.getReturnType();
-		if (returnType == void.class)
+		Class<?> rt = m.getReturnType();
+		if (rt == void.class)
 			return false;
-		String name = m.getName();
-		if (name.startsWith("get")
-				&& (name.charAt(3) == '_' || isUpperCase(name.charAt(3)))) {
-			return null != m.getAnnotation(Mapped.class);
-		}
-		if (name.startsWith("is")
-				&& (name.charAt(2) == '_' || isUpperCase(name.charAt(2)))) {
-			if (returnType == boolean.class || returnType == Boolean.class) {
-				return null != m.getAnnotation(JsonProperty.class);
+		if (m.getAnnotation(JsonProperty.class) != null) {
+			String name = m.getName();
+			if (name.startsWith("get")) {
+				return isUpperCase(name.charAt(3));
+			}
+			if ((rt == boolean.class || rt == Boolean.class) && name.startsWith("is")) {
+				return isUpperCase(name.charAt(2));
 			}
 		}
 		return false;
 	}
 
 	/**
-	 * Chops off the first two or three characters of a getter method name (depending on
-	 * whether it starts with "is" or "get"), makes the first of the remaining characters
-	 * lowercase, and returns the result.
+	 * Chops off the first two or three characters of a getter method name
+	 * (depending on whether it starts with "is" or "get"), makes the first of
+	 * the remaining characters lowercase, and returns the result.
 	 * 
 	 * @param getter
 	 * @return

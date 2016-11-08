@@ -70,4 +70,48 @@ public class SpecimenDaoGeoQueryTest {
 		assertEquals("01", 1, result.size());		
 	}
 
+	@Test
+	public void testQuery_02() throws InvalidQueryException
+	{
+		List<LngLatAlt> list = new ArrayList<>();
+		list.add(new LngLatAlt(0.0, 0.0));
+		list.add(new LngLatAlt(0.0, 10.0));
+		list.add(new LngLatAlt(10.0, 10.0));
+		list.add(new LngLatAlt(10.0, 0.0));
+		list.add(new LngLatAlt(0.0, 0.0));
+		List<List<LngLatAlt>> coords = Arrays.asList(list);
+		Polygon polygon = new Polygon();
+		polygon.setCoordinates(coords);
+		Condition condition;
+		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, polygon);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		System.out.println(JsonUtil.toPrettyJson(result));
+		assertEquals("01", 1, result.size());		
+	}
+
+	//@Test
+	public void testQuery_03() throws InvalidQueryException
+	{
+		List<LngLatAlt> list = new ArrayList<>();
+		list.add(new LngLatAlt(0.0, 0.0));
+		list.add(new LngLatAlt(0.0, 10.0));
+		list.add(new LngLatAlt(10.0, 10.0));
+		list.add(new LngLatAlt(10.0, 0.0));
+		//list.add(new LngLatAlt(0.0, 0.0));
+		List<List<LngLatAlt>> coords = Arrays.asList(list);
+		Polygon polygon = new Polygon();
+		polygon.setCoordinates(coords);
+		Condition condition;
+		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "1003960GEO");
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		System.out.println(JsonUtil.toPrettyJson(result));
+		assertEquals("01", 1, result.size());		
+	}
+
 }

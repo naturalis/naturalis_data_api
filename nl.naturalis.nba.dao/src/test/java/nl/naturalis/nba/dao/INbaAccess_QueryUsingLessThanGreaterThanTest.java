@@ -75,8 +75,8 @@ public class INbaAccess_QueryUsingLessThanGreaterThanTest {
 		 * (GREATER_THAN) we should get back four (all except the one with the
 		 * null value).
 		 */
-		String to = "2000-01-01";
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", GT, to);
+		String from = "2000-01-01";
+		Condition condition = new Condition("gatheringEvent.dateTimeBegin", GT, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

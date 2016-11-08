@@ -116,7 +116,7 @@ public class ConditionTranslatorFactory {
 	{
 		if (val.getClass() == String.class) {
 			String s = val.toString().trim();
-			return s.charAt(0) != '{' && s.charAt(s.length() - 1) != '}';
+			return s.charAt(0) == '{' && s.charAt(s.length() - 1) == '}';
 		}
 		return false;
 	}

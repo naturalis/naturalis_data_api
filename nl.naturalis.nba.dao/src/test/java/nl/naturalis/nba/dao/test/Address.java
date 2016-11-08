@@ -3,9 +3,10 @@ package nl.naturalis.nba.dao.test;
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
-import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.model.GeoPoint;
 
@@ -88,7 +89,7 @@ public class Address {
 		this.location = location;
 	}
 
-	@Mapped
+	@JsonProperty
 	public GeoJsonObject getLocationAsShape()
 	{
 		if (location == null) {

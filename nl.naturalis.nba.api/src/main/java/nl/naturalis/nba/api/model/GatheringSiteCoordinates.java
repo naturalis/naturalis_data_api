@@ -7,7 +7,6 @@ import org.geojson.Polygon;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.naturalis.nba.api.annotations.Mapped;
 import nl.naturalis.nba.api.query.ComparisonOperator;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,19 +32,24 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	}
 
 	/**
-	 * Returns the site coordinates as {@link GeoPoint point}. Use the {@code geoPoint}
-	 * property for regular geo queries using the {@link ComparisonOperator#IN} operator.
-	 * For example:<br>
+	 * <p>
+	 * Returns the site coordinates as {@link GeoPoint point}. Use the
+	 * {@code geoPoint} property for regular geo queries using the
+	 * {@link ComparisonOperator#IN} operator. For example:
+	 * </p>
+	 * <p>
 	 * <code>
 	 * String shape = "{\"type\": \"polygon\", \"coordinates\": [[10,-20],[20,-30],[30,-40],[10,-20]] }";<br>
 	 * Condition condition = new Condition("gatheringEvent.gatheringSiteCoordinates.geoPoint", IN, shape);
-	 * </code><br>
+	 * </code>
+	 * </p>
+	 * <p>
 	 * Instead of the JSON string you could also have provided the corresponding
 	 * {@link GeoJsonObject} (a {@link Polygon} in this example).
+	 * </p>
 	 * 
 	 * @return
 	 */
-	@Mapped
 	@JsonProperty
 	public GeoPoint getGeoPoint()
 	{
@@ -56,18 +60,23 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	}
 
 	/**
+	 * <p>
 	 * Returns the site coordinates as {@link GeoJsonObject shape}. Since the
-	 * {@code GatheringSiteCoordinates} still basically represents a point coordinate, the
-	 * actual return type of this method is a geojson {@link Point}. Use the
-	 * {@code geoShape} property for queries using pre-indexed shapes using the
-	 * {@link ComparisonOperator#IN} operator. For example:<br>
+	 * {@code GatheringSiteCoordinates} still basically represents a point
+	 * coordinate, the actual return type of this method is a geojson
+	 * {@link Point}. Use the {@code geoShape} property for queries using
+	 * pre-indexed shapes using the {@link ComparisonOperator#IN} operator. For
+	 * example:
+	 * </p>
+	 * <p>
 	 * <code>
 	 * Condition condition = new Condition("gatheringEvent.gatheringSiteCoordinates.geoShape", IN, "Montana");
-	 * </code><br/>
+	 * </code>
+	 * </p>
 	 * 
 	 * @return
 	 */
-	@Mapped
+	@JsonProperty
 	public GeoJsonObject getGeoShape()
 	{
 		if (longitudeDecimal == null || latitudeDecimal == null) {

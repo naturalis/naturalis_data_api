@@ -3,6 +3,7 @@ package nl.naturalis.nba.rest.resource;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -18,12 +19,14 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
+import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
 
@@ -102,4 +105,34 @@ public class MultiMediaObjectResource {
 		}
 	}
 
+	@GET
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	public long count(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.count(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getDistinctValues/{field}")
+	@Produces(JSON_CONTENT_TYPE)
+	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
+			return dao.getDistinctValues(field, qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 }

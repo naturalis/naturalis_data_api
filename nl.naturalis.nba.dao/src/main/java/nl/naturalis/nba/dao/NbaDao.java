@@ -108,7 +108,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			logger.debug("Documents found: {}", response.getHits().totalHits());
 		}
 		List<Map<String, Object>> resultSet = new ArrayList<>(hits.length);
-		if (spec.getFields().contains("id")) {
+		if (spec.getFields() != null && spec.getFields().contains("id")) {
 			for (SearchHit hit : hits) {
 				Map<String, Object> source = hit.getSource();
 				source.put("id", hit.getId());

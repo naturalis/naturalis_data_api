@@ -116,7 +116,6 @@ public class UrlQuerySpecBuilder {
 			}
 		}
 		return qs;
-
 	}
 
 	private static void checkParams(UriInfo uriInfo)

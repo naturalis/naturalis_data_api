@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -115,12 +117,43 @@ public class TaxonResource {
 	}
 
 	@GET
-	@Path("/dwca/query/{querySpec}")
-	@Produces("application/zip")
-	public Response dwcaQuery(@PathParam("querySpec") String json, @Context UriInfo uriInfo)
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = JsonUtil.deserialize(json, QuerySpec.class);
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.count(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getDistinctValues/{field}")
+	@Produces(JSON_CONTENT_TYPE)
+	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.getDistinctValues(field, qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/dwca/query")
+	@Produces("application/zip")
+	public Response dwcaQuery(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
@@ -28,6 +29,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
@@ -188,6 +190,37 @@ public class SpecimenResource {
 			response.type("application/zip");
 			response.header("Content-Disposition", "attachment; filename=\"dwca.zip\"");
 			return response.build();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	public long count(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.count(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getDistinctValues/{field}")
+	@Produces(JSON_CONTENT_TYPE)
+	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.getDistinctValues(field, qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

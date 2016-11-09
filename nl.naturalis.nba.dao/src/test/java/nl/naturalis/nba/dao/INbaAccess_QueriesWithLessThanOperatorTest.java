@@ -24,7 +24,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
  *
  */
 @SuppressWarnings("static-method")
-public class INbaAccess_QueryUsingLessThanGreaterThanTest {
+public class INbaAccess_QueriesWithLessThanOperatorTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

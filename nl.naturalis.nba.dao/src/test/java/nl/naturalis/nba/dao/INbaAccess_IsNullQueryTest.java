@@ -19,14 +19,13 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
- * Tests the SpecimenDAO class with conditions that either test for null or not
- * null.
+ * Tests INbaAccess.query for conditions that either test for null or not null.
  * 
  * @author Ayco Holleman
  *
  */
 @SuppressWarnings("static-method")
-public class SpecimenDaoNullChecksTest {
+public class INbaAccess_IsNullQueryTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

@@ -23,7 +23,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
-public class SpecimenDaoGeoQueryTest {
+public class INbaAccess_GeoQueriesTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -67,7 +67,7 @@ public class SpecimenDaoGeoQueryTest {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		System.out.println(JsonUtil.toPrettyJson(result));
-		assertEquals("01", 1, result.size());		
+		assertEquals("01", 1, result.size());
 	}
 
 	@Test
@@ -89,10 +89,10 @@ public class SpecimenDaoGeoQueryTest {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		System.out.println(JsonUtil.toPrettyJson(result));
-		assertEquals("01", 1, result.size());		
+		assertEquals("01", 1, result.size());
 	}
 
-	@Test
+	//@Test
 	public void testQuery_03() throws InvalidQueryException
 	{
 		Condition condition;
@@ -102,7 +102,7 @@ public class SpecimenDaoGeoQueryTest {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		System.out.println(JsonUtil.toPrettyJson(result));
-		assertEquals("01", 1, result.size());		
+		assertEquals("01", 1, result.size());
 	}
 
 }

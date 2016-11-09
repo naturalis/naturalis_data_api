@@ -44,9 +44,9 @@ import nl.naturalis.nba.api.model.Taxon;
  * the response. You can specify multiple fields by separating them with a comma. See
  * {@link #setFields(List) setFields}.
  * <li>The {@code _from} parameter can be used to specify an result set offset. See
- * {@link #setFrom(int) setFrom}.
+ * {@link #setFrom(Integer) setFrom}.
  * <li>The {@code _size} parameter can be used to specify the maximum number of documents
- * to return. See {@link #setSize(int) setSize}.
+ * to return. See {@link #setSize(Integer) setSize}.
  * <li>The {@code _sortFields} parameter can be used to specify the fields on which to
  * sort. You can specify multiple fields as well as sort directions by using commas to
  * separate the fields and colons the separate field from sort direction. See

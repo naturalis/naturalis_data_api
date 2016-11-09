@@ -10,6 +10,7 @@ import nl.naturalis.nba.api.annotations.NotIndexed;
 
 public class GeoArea implements IDocumentObject {
 
+	private String id;
 	private int areaId;
 	@Analyzers({ CASE_INSENSITIVE })
 	private String areaType;
@@ -26,16 +27,14 @@ public class GeoArea implements IDocumentObject {
 	@Override
 	public String getId()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return id;
 	}
 
 	@Override
 	public void setId(String id)
 	{
-		// TODO Auto-generated method stub
+		this.id = id;
 	}
-	
 
 	public int getAreaId()
 	{

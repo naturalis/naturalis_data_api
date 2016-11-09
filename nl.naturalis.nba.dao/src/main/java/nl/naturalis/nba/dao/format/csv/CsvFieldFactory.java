@@ -26,7 +26,7 @@ public class CsvFieldFactory implements IFieldFactory {
 	public IField createEntityDataField(String name, URI term, Path path, DataSource dataSource)
 			throws FieldConfigurationException
 	{
-		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
+		MappingInfo<?> mappingInfo = new MappingInfo<>(dataSource.getMapping());
 		Path fullPath = dataSource.getPath().append(path.getPurePath());
 		ESField esField = null;
 		try {
@@ -43,7 +43,7 @@ public class CsvFieldFactory implements IFieldFactory {
 	public IField createDocumentDataField(String name, URI term, Path path, DataSource dataSource)
 			throws FieldConfigurationException
 	{
-		MappingInfo mappingInfo = new MappingInfo(dataSource.getMapping());
+		MappingInfo<?> mappingInfo = new MappingInfo<>(dataSource.getMapping());
 		ESField esField = null;
 		try {
 			esField = mappingInfo.getField(path.getPurePath());

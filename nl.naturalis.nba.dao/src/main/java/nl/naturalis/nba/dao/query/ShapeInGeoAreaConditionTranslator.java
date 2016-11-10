@@ -25,7 +25,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class ShapeInGeoAreaConditionTranslator extends ConditionTranslator {
 
-	ShapeInGeoAreaConditionTranslator(Condition condition, MappingInfo mappingInfo)
+	ShapeInGeoAreaConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}
@@ -34,9 +34,10 @@ class ShapeInGeoAreaConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		String field = condition.getField();
-		String area = condition.getValue().toString();
-		GeoShapeQueryBuilder query = geoShapeQuery(field, area, GEO_AREA.getName());
-		query.indexedShapePath("geoJson");
+		String id = condition.getValue().toString();
+		GeoShapeQueryBuilder query = geoShapeQuery(field, id, GEO_AREA.getName());
+		//query.indexedShapeIndex(GEO_AREA.getIndexInfo().getName());
+		query.indexedShapeIndex("nba");
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null) {
 			return query;

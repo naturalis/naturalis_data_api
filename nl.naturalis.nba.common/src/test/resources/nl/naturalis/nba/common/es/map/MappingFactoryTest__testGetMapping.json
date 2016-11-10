@@ -168,16 +168,7 @@
         },
         "colors" : {
           "type" : "string",
-          "index" : "no",
-          "fields" : {
-            "analyzed" : {
-              "type" : "string"
-            },
-            "ignoreCase" : {
-              "type" : "string",
-              "analyzer" : "case_insensitive_analyzer"
-            }
-          }
+          "index" : "no"
         }
       }
     },

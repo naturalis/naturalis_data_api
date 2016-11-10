@@ -12,7 +12,7 @@ public class MappingFactoryTest {
 	public void testGetMapping()
 	{
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		MappingSerializer serializer = new MappingSerializer(true);
+		MappingSerializer<TestPerson> serializer = new MappingSerializer<>(true);
 		String json = serializer.serialize(mapping);
 		System.out.println(json);
 		String file = "MappingFactoryTest__testGetMapping.json";

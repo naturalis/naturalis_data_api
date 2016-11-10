@@ -93,10 +93,21 @@ public class SpecimenDao_GeoQueriesTest {
 	}
 
 	//@Test
+	/*
+	 * TODO: Test with pre-indexed shape. This does currently not work because:
+	 * 
+	 * 
+	 * [1] There are no documents in GeoArea in nba_integration_test index. Must
+	 * load one or two shapes (e.g. one for "Netherlands"). For example in
+	 * @Before
+	 * 
+	 * [2] Make sure the siteCoordinates for the specimens lie within the loaded
+	 * shapes.
+	 */
 	public void testQuery_03() throws InvalidQueryException
 	{
 		Condition condition;
-		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "Amsterdam");
+		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "1004050@GEO");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

@@ -2,6 +2,7 @@ package nl.naturalis.nba.common.es.map;
 
 import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
+import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
 import static nl.naturalis.nba.common.es.map.Index.NO;
 import static nl.naturalis.nba.common.es.map.Index.NOT_ANALYZED;
 import static nl.naturalis.nba.common.es.map.MappingUtil.extractFieldFromGetter;
@@ -37,30 +38,33 @@ import nl.naturalis.nba.api.query.Condition;
 
 /**
  * <p>
- * Generates Elasticsearch type mappings from {@link Class} objects. For each instance
- * field in the Java class a counterpart will be created in the Elasticsearch document
- * type, unless it is annotated with {@link JsonIgnore}. Getters are ignored unless they
- * are annotated with {@link JsonProperty}. Furthermore, fields and mapped getters can be
- * annotated with NBA-specific annotations that specify or fine-tune the indexing
- * behaviour for the field. For example: {@link NotIndexed} or {@link Analyzers}.
- * {@link Mapping} objects play an important role not only during data imports (data is
- * guaranteed to fit the document type because the document type was generated from the
- * very class that contains the data); it also plays an important role when querying data.
- * For example, if a field is annotated with {@link NotIndexed}, the query mechanism knows
- * beforehand that a {@link Condition query condition} on that field will fail and won't
- * even bother sending the query to Elasticsearch.
+ * Generates Elasticsearch type mappings from {@link Class} objects. For each
+ * instance field in the Java class a counterpart will be created in the
+ * Elasticsearch document type, unless it is annotated with {@link JsonIgnore}.
+ * Getters are ignored unless they are annotated with {@link JsonProperty}.
+ * Furthermore, fields and mapped getters can be annotated with NBA-specific
+ * annotations that specify or fine-tune the indexing behaviour for the field.
+ * For example: {@link NotIndexed} or {@link Analyzers}. {@link Mapping} objects
+ * play an important role not only during data imports (data is guaranteed to
+ * fit the document type because the document type was generated from the very
+ * class that contains the data); it also plays an important role when querying
+ * data. For example, if a field is annotated with {@link NotIndexed}, the query
+ * mechanism knows beforehand that a {@link Condition query condition} on that
+ * field will fail and won't even bother sending the query to Elasticsearch.
  * </p>
  * <p>
- * {@code Mapping} objects are best consulted through a {@link MappingInfo} instance,
- * which wraps and decorates the {@code Mapping} object with useful extra functionality.
- * Contrary to the {@code Mapping} objects themselves, {@code MappingInfo} objects have
- * negligable instantion costs. {@code Mapping} objects are expensive to create. However,
- * a {@code MappingFactory} caches the {@code Mapping} objects it creates so asking twice
- * for the same {@code Mapping} object is cheap.
+ * {@code Mapping} objects are best consulted through a {@link MappingInfo}
+ * instance, which wraps and decorates the {@code Mapping} object with useful
+ * extra functionality. Contrary to the {@code Mapping} objects themselves,
+ * {@code MappingInfo} objects have negligable instantion costs. {@code Mapping}
+ * objects are expensive to create. However, a {@code MappingFactory} caches the
+ * {@code Mapping} objects it creates so asking twice for the same
+ * {@code Mapping} object is cheap.
  * </p>
  * <p>
- * Note that a {@code Mapping} object <b>is</b> the Elasticsearch document type mapping.
- * That is, if you serialize it to JSON, you have an Elasticsearch document type mapping.
+ * Note that a {@code Mapping} object <b>is</b> the Elasticsearch document type
+ * mapping. That is, if you serialize it to JSON, you have an Elasticsearch
+ * document type mapping.
  * </p>
  * 
  * @author Ayco Holleman
@@ -121,8 +125,8 @@ public class MappingFactory {
 		ESDataType esType = dataTypeMap.getESType(mapToType);
 		if (esType == null) {
 			/*
-			 * Then the Java type does not map to a simple Elasticsearch type; the
-			 * Elastichsearch type is either "object" or "nested".
+			 * Then the Java type does not map to a simple Elasticsearch type;
+			 * the Elastichsearch type is either "object" or "nested".
 			 */
 			if (ancestors.contains(mapToType)) {
 				throw new ClassCircularityException(field, mapToType);
@@ -158,13 +162,17 @@ public class MappingFactory {
 				break;
 			case STRING:
 				sf = new StringField();
-				sf.setIndex(NOT_ANALYZED);
-				addMultiFields((StringField) sf, fm);
 				break;
 			default:
 				sf = new SimpleField(esType);
 		}
-		if (fm.getAnnotation(NotIndexed.class) != null) {
+		if (fm.getAnnotation(NotIndexed.class) == null) {
+			if (esType == STRING) {
+				sf.setIndex(NOT_ANALYZED);
+				addMultiFields((StringField) sf, fm);
+			}
+		}
+		else {
 			sf.setIndex(NO);
 		}
 		return sf;
@@ -211,8 +219,8 @@ public class MappingFactory {
 	}
 
 	/*
-	 * Returns false if the Java field does not contain the @Analyzers annotation.
-	 * Otherwise it returns true.
+	 * Returns false if the Java field does not contain the @Analyzers
+	 * annotation. Otherwise it returns true.
 	 */
 	private static boolean addMultiFields(StringField af, AnnotatedElement fm)
 	{
@@ -246,10 +254,11 @@ public class MappingFactory {
 	}
 
 	/*
-	 * Maps a Java class to another Java class that must be used in its place. The latter
-	 * class is then mapped to an Elasticsearch data type. For example, when mapping
-	 * arrays, it's not the array that is mapped but the class of its elements. No array
-	 * type exists or is required in Elasticsearch; fields are intrinsically multi-valued.
+	 * Maps a Java class to another Java class that must be used in its place.
+	 * The latter class is then mapped to an Elasticsearch data type. For
+	 * example, when mapping arrays, it's not the array that is mapped but the
+	 * class of its elements. No array type exists or is required in
+	 * Elasticsearch; fields are intrinsically multi-valued.
 	 */
 	private static Class<?> mapType(Class<?> type, Type typeArg)
 	{
@@ -280,8 +289,7 @@ public class MappingFactory {
 		return false;
 	}
 
-	private static HashSet<Class<?>> newTree(HashSet<Class<?>> ancestors,
-			Class<?> newType)
+	private static HashSet<Class<?>> newTree(HashSet<Class<?>> ancestors, Class<?> newType)
 	{
 		HashSet<Class<?>> set = new HashSet<>(6);
 		set.addAll(ancestors);

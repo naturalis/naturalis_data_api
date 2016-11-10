@@ -23,7 +23,7 @@ class GeoLoader extends Loader<GeoArea> {
 			@Override
 			public String getId(GeoArea obj)
 			{
-				return getElasticsearchId(GEO, obj.getAreaId());
+				return getElasticsearchId(GEO, obj.getSourceSystemId());
 			}
 		};
 	}

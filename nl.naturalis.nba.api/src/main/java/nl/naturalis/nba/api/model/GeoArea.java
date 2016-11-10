@@ -3,20 +3,19 @@ package nl.naturalis.nba.api.model;
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
-import org.geojson.Geometry;
+import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 
-public class GeoArea implements IDocumentObject {
+public class GeoArea extends NbaTraceableObject implements IDocumentObject {
 
 	private String id;
-	private int areaId;
 	@Analyzers({ CASE_INSENSITIVE })
 	private String areaType;
 	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String locality;
-	private Geometry<?> geoJson;
+	private GeoJsonObject shape;
 	@NotIndexed
 	private String source;
 	@Analyzers({ CASE_INSENSITIVE })
@@ -34,16 +33,6 @@ public class GeoArea implements IDocumentObject {
 	public void setId(String id)
 	{
 		this.id = id;
-	}
-
-	public int getAreaId()
-	{
-		return areaId;
-	}
-
-	public void setAreaId(int areaId)
-	{
-		this.areaId = areaId;
 	}
 
 	public String getAreaType()
@@ -66,14 +55,14 @@ public class GeoArea implements IDocumentObject {
 		this.locality = locality;
 	}
 
-	public Geometry<?> getGeoJson()
+	public GeoJsonObject getShape()
 	{
-		return geoJson;
+		return shape;
 	}
 
-	public void setGeoJson(Geometry<?> geoJson)
+	public void setShape(GeoJsonObject shape)
 	{
-		this.geoJson = geoJson;
+		this.shape = shape;
 	}
 
 	public String getSource()

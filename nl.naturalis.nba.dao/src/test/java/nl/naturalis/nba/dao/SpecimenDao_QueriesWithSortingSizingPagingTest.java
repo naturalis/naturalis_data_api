@@ -15,7 +15,7 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 @SuppressWarnings("static-method")
-public class INbaAccess_QueriesWithSortingSizingPagingTest {
+public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

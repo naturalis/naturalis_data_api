@@ -25,7 +25,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
  *
  */
 @SuppressWarnings("static-method")
-public class INbaAccess_IsNullQueryTest {
+public class SpecimenDao_IsNullQueryTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

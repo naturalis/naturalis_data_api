@@ -26,7 +26,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
-public class SpecimenDaoTest {
+public class SpecimenDao_MiscellaneousTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

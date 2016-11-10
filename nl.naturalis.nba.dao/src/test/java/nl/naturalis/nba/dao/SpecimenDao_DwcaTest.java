@@ -12,7 +12,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.SpecimenDao;
 
 @SuppressWarnings("static-method")
-public class SpecimenDaoDwcaTest {
+public class SpecimenDao_DwcaTest {
 
 	//@Test
 	public void testDynamic() throws InvalidQueryException, IOException

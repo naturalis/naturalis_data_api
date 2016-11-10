@@ -23,7 +23,7 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 @SuppressWarnings("static-method")
-public class INbaAccess_QueriesWithBetweenOperatorTest {
+public class SpecimenDao_QueriesWithBetweenOperatorTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

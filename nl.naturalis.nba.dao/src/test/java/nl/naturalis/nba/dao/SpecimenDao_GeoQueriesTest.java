@@ -23,7 +23,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
-public class INbaAccess_GeoQueriesTest {
+public class SpecimenDao_GeoQueriesTest {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

@@ -35,12 +35,12 @@ import nl.naturalis.nba.dao.util.SwapOutputStreamTest;
 	SwapOutputStreamTest.class,
 	SwapFileOutputStreamTest.class,
 	DocumentFlattenerTest.class,
-	INbaAccess_QueriesWithLessThanOperatorTest.class,
-	INbaAccess_GeoQueriesTest.class,
-	INbaAccess_IsNullQueryTest.class,
-	INbaAccess_QueriesWithBetweenOperatorTest.class,
-	INbaAccess_QueriesWithInOperatorTest.class,
-	SpecimenDaoTest.class
+	SpecimenDao_QueriesWithLessThanOperatorTest.class,
+	SpecimenDao_GeoQueriesTest.class,
+	SpecimenDao_IsNullQueryTest.class,
+	SpecimenDao_QueriesWithBetweenOperatorTest.class,
+	SpecimenDao_QueriesWithInOperatorTest.class,
+	SpecimenDao_MiscellaneousTest.class
 })
 //@formatter:on
 public class AllTests {

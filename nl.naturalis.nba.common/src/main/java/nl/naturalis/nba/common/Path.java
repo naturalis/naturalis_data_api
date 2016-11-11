@@ -201,9 +201,9 @@ public final class Path {
 	 * </p>
 	 * 
 	 */
-	public void validate(Mapping mapping) throws InvalidPathException
+	public void validate(Mapping<?> mapping) throws InvalidPathException
 	{
-		MappingInfo mappingInfo = new MappingInfo(mapping);
+		MappingInfo<?> mappingInfo = new MappingInfo<>(mapping);
 		if (!isPrimitive(mapping)) {
 			String msg = String.format("Incomplete path: %s", this);
 			throw new InvalidPathException(msg);
@@ -216,9 +216,9 @@ public final class Path {
 	 * Whether or not the path denotes a primitive value within the document
 	 * represented by the specified type mapping.
 	 */
-	public boolean isPrimitive(Mapping mapping) throws InvalidPathException
+	public boolean isPrimitive(Mapping<?> mapping) throws InvalidPathException
 	{
-		MappingInfo mappingInfo = new MappingInfo(mapping);
+		MappingInfo<?> mappingInfo = new MappingInfo<>(mapping);
 		ESField esField;
 		try {
 			esField = mappingInfo.getField(getPurePath());
@@ -237,9 +237,9 @@ public final class Path {
 	 * @return
 	 * @throws InvalidPathException
 	 */
-	public boolean isArray(Mapping mapping) throws InvalidPathException
+	public boolean isArray(Mapping<?> mapping) throws InvalidPathException
 	{
-		MappingInfo mappingInfo = new MappingInfo(mapping);
+		MappingInfo<?> mappingInfo = new MappingInfo<>(mapping);
 		ESField esField;
 		try {
 			esField = mappingInfo.getField(getPurePath());
@@ -291,7 +291,7 @@ public final class Path {
 	 * Make sure path elements representing an array are followed by an array
 	 * index.
 	 */
-	private void checkRequiredArrayIndices(MappingInfo mi) throws InvalidPathException
+	private void checkRequiredArrayIndices(MappingInfo<?> mi) throws InvalidPathException
 	{
 		StringBuilder sb = new StringBuilder(elems.length << 4);
 		for (int i = 0; i < elems.length; i++) {
@@ -322,7 +322,7 @@ public final class Path {
 	 * Make sure path elements representing a primitive value are NOT followed
 	 * by array index.
 	 */
-	private void checkIllegalArrayIndices(MappingInfo mi) throws InvalidPathException
+	private void checkIllegalArrayIndices(MappingInfo<?> mi) throws InvalidPathException
 	{
 		StringBuilder sb = new StringBuilder(elems.length << 4);
 		for (int i = 0; i < elems.length; i++) {

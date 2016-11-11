@@ -15,7 +15,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class EqualsConditionTranslator extends ConditionTranslator {
 
-	EqualsConditionTranslator(Condition condition, MappingInfo inspector)
+	EqualsConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

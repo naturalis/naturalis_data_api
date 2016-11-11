@@ -37,13 +37,13 @@ class TranslatorUtil {
 		return new InvalidConditionException(sb.toString());
 	}
 
-	static String getNestedPath(Condition condition, MappingInfo mappingInfo)
+	static String getNestedPath(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		SimpleField pf = getESField(condition, mappingInfo);
 		return MappingInfo.getNestedPath(pf);
 	}
 
-	static SimpleField getESField(Condition condition, MappingInfo mappingInfo)
+	static SimpleField getESField(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		try {
 			return (SimpleField) mappingInfo.getField(condition.getField());
@@ -100,7 +100,7 @@ class TranslatorUtil {
 		return null;
 	}
 
-	static void ensureFieldIsDateOrNumber(Condition condition, MappingInfo mappingInfo)
+	static void ensureFieldIsDateOrNumber(Condition condition, MappingInfo<?> mappingInfo)
 			throws IllegalOperatorException
 	{
 		ESField field = null;
@@ -108,7 +108,7 @@ class TranslatorUtil {
 			field = mappingInfo.getField(condition.getField());
 		}
 		catch (NoSuchFieldException e) {
-			// Won't happend, already checked
+			// Won't happen because already checked in ConditionTranslatorFactory
 			assert (false);
 		}
 		switch (field.getType()) {

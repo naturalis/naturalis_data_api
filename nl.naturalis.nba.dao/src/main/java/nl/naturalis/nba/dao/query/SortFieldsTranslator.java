@@ -20,12 +20,12 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 class SortFieldsTranslator {
 
 	private List<SortField> sortFields;
-	private MappingInfo mappingInfo;
+	private MappingInfo<?> mappingInfo;
 
 	SortFieldsTranslator(List<SortField> sortFields, DocumentType<?> documentType)
 	{
 		this.sortFields = sortFields;
-		this.mappingInfo = new MappingInfo(documentType.getMapping());
+		this.mappingInfo = new MappingInfo<>(documentType.getMapping());
 	}
 
 	SortBuilder[] translate() throws InvalidQueryException

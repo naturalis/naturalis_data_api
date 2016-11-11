@@ -7,7 +7,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class GTConditionTranslator extends RangeConditionTranslator {
 
-	GTConditionTranslator(Condition condition, MappingInfo mappingInfo)
+	GTConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

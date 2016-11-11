@@ -35,7 +35,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 	private static final String ERROR_1 = "When using operator %s, at least "
 			+ "one of the boundary values must not be null";
 
-	BetweenConditionTranslator(Condition condition, MappingInfo inspector)
+	BetweenConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

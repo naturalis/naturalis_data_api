@@ -18,7 +18,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class PointInShapeConditionTranslator extends ConditionTranslator {
 
-	PointInShapeConditionTranslator(Condition condition, MappingInfo mappingInfo)
+	PointInShapeConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

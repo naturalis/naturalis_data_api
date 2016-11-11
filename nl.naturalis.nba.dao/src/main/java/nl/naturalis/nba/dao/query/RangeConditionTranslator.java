@@ -20,7 +20,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 
 abstract class RangeConditionTranslator extends ConditionTranslator {
 
-	RangeConditionTranslator(Condition condition, MappingInfo mappingInfo)
+	RangeConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

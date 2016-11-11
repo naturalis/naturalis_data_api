@@ -77,9 +77,9 @@ public abstract class ConditionTranslator {
 	}
 
 	final Condition condition;
-	final MappingInfo mappingInfo;
+	final MappingInfo<?> mappingInfo;
 
-	ConditionTranslator(Condition condition, MappingInfo mappingInfo)
+	ConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;

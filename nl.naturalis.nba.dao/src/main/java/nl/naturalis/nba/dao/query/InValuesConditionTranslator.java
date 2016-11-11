@@ -26,7 +26,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class InValuesConditionTranslator extends ConditionTranslator {
 
-	InValuesConditionTranslator(Condition condition, MappingInfo inspector)
+	InValuesConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

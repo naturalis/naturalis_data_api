@@ -135,4 +135,32 @@ public class GeoAreaResource {
 		}
 	}
 
+	@GET
+	@Path("/getLocalities")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<String, String> getLocalities(@Context UriInfo uriInfo)
+	{
+		try {
+			GeoAreaDao dao = new GeoAreaDao();
+			return dao.getLocalities();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getIsoCodes")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<String, String> getIsoCodes(@Context UriInfo uriInfo)
+	{
+		try {
+			GeoAreaDao dao = new GeoAreaDao();
+			return dao.getIsoCodes();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 }

@@ -32,7 +32,7 @@ public class ConditionTranslatorFactory {
 	public static ConditionTranslator getTranslator(Condition condition,
 			DocumentType<?> type) throws InvalidConditionException
 	{
-		return getTranslator(condition, new MappingInfo(type.getMapping()));
+		return getTranslator(condition, new MappingInfo<>(type.getMapping()));
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class ConditionTranslatorFactory {
 	 * @throws InvalidConditionException
 	 */
 	public static ConditionTranslator getTranslator(Condition condition,
-			MappingInfo mappingInfo) throws InvalidConditionException
+			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
 		new FieldCheck(condition, mappingInfo).execute();
 		switch (condition.getOperator()) {
@@ -77,7 +77,7 @@ public class ConditionTranslatorFactory {
 	}
 
 	private static ConditionTranslator getInConditionTranslator(Condition condition,
-			MappingInfo mappingInfo) throws InvalidConditionException
+			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
 		Object val = condition.getValue();
 		if (val == null || val.getClass().isArray() || val instanceof Collection) {

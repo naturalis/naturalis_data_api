@@ -37,7 +37,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class ShapeInShapeConditionTranslator extends ConditionTranslator {
 
-	ShapeInShapeConditionTranslator(Condition condition, MappingInfo mappingInfo)
+	ShapeInShapeConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

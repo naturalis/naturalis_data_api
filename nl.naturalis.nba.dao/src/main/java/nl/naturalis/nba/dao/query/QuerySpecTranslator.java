@@ -28,8 +28,9 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 
 /**
- * A {@code QuerySpecTranslator} is responsible for translating an NBA {@link QuerySpec}
- * object into an Elasticsearch {@link SearchRequestBuilder} object.
+ * A {@code QuerySpecTranslator} is responsible for translating an NBA
+ * {@link QuerySpec} object into an Elasticsearch {@link SearchRequestBuilder}
+ * object.
  * 
  * @author Ayco Holleman
  *
@@ -76,6 +77,14 @@ public class QuerySpecTranslator {
 		MappingInfo<?> mappingInfo = new MappingInfo<>(type.getMapping());
 		List<String> fields = spec.getFields();
 		for (String field : fields) {
+			if (field.equals("id")) {
+				/*
+				 * This is a special field that can be used to retrieve the
+				 * Elasticsearch document ID, which is not part of the document
+				 * itself.
+				 */
+				continue;
+			}
 			try {
 				mappingInfo.getField(field);
 			}

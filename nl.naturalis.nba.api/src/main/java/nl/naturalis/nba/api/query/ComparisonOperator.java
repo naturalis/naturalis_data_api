@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.geojson.GeoJsonObject;
 
+import nl.naturalis.nba.api.IGeoAreaAccess;
+import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.GeoPoint;
 
 /**
@@ -140,17 +142,37 @@ public enum ComparisonOperator
 	 * <p>
 	 * Operator used to establish that a field&#39;s value is one of a given set
 	 * of values or, if the field is a {@link GeoPoint} or
-	 * {@link GeoJsonObject}, that it lies within a certain area or shape. When
-	 * using the {@code IN} or {@code NOT_IN} operator in a {@link Condition},
-	 * the {@link Condition#getValue() value} property of the condition
-	 * <b>must</b> be an array or a {@link Collection} object with zero or more
-	 * elements. Example:
-	 * </p>
-	 * <p>
+	 * {@link GeoJsonObject}, that it lies within a certain area. This operator
+	 * is overloaded as follows:
+	 * <ol>
+	 * <li>If the field that is being queried is neither a {@link GeoPoint} nor
+	 * a {@link GeoJsonObject}, the operator is used to establish that the
+	 * field&#39;s value is one of a given set of values specified by the
+	 * {@link Condition#getValue() value} property of the condition. The
+	 * {@code value} property of the condition <b>must</b> be an array or a
+	 * {@link Collection} with zero or more elements. For example:<br>
+	 * <br>
 	 * <code>
 	 * Condition condition = new Condition("phaseOrStage", IN, new String[] {"embryo", "pupa", "larva"});
-	 * </code>
-	 * </p>
+	 * </code><br>
+	 * <br>
+	 * <li>If the field being queried is a {@link GeoPoint}, the {@code value}
+	 * property of the condition <b>must</b> be a GeoJson string or a
+	 * {@link GeoJsonObject}.
+	 * <li>If the field being queried is a {@link GeoJsonObject}, {@code value}
+	 * property <b>must</b> a GeoJson string, a {@link GeoJsonObject}, or the ID
+	 * of a {@link GeoArea} document containing the GeoJson string.For
+	 * example:<br>
+	 * <br>
+	 * <code>
+	 * // Using GeoJson:
+	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "{\"type\": \"polygon\", \"coordinates\": [/&#42; etc. &#42;/]}");
+	 * // Using the ID of a GeoArea document:
+	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "1234@GEO");
+	 * </code><br>
+	 * <br>
+	 * The ID lookups for {@link GeoArea} documents can be done using
+	 * {@link IGeoAreaAccess}.
 	 * 
 	 */
 	IN,

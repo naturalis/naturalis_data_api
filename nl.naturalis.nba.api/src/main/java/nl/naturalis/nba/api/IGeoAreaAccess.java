@@ -42,9 +42,11 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 
 	/**
 	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
-	 * {@link GeoArea} object with the specified locality.
+	 * {@link GeoArea} object with the specified locality. You can use this ID
+	 * when performing geo queries. See {@link ComparisonOperator#IN IN}).
 	 * 
 	 * @see IDocumentObject
+	 * @see ComparisonOperator#IN
 	 * 
 	 * @return
 	 */
@@ -53,9 +55,11 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	/**
 	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
 	 * {@link GeoArea} with the specified ISO code. Note that not all areas in
-	 * the Naturalis area index have an ISO code.
+	 * the Naturalis area index have an ISO code. You can use this ID when
+	 * performing geo queries. See {@link ComparisonOperator#IN IN}).
 	 * 
 	 * @see IDocumentObject
+	 * @see ComparisonOperator#IN
 	 * 
 	 * @return
 	 */

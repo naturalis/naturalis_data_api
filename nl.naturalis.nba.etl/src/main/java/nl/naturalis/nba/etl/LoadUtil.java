@@ -8,10 +8,7 @@ import java.net.URISyntaxException;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import nl.naturalis.nba.api.model.SourceSystem;
-import nl.naturalis.nba.common.json.ObjectMapperLocator;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 
@@ -64,7 +61,7 @@ public final class LoadUtil {
 	 * @param sourceSystem
 	 */
 	@Deprecated
-	public static void truncate(DocumentType documentType, SourceSystem sourceSystem)
+	public static void truncate(DocumentType<?> documentType, SourceSystem sourceSystem)
 	{
 		// ...
 	}
@@ -123,11 +120,6 @@ public final class LoadUtil {
 		catch (URISyntaxException e) {
 			throw new ETLRuntimeException(e);
 		}
-	}
-
-	public static ObjectMapper getObjectMapper(DocumentType type)
-	{
-		return ObjectMapperLocator.getInstance().getObjectMapper(type.getJavaType());
 	}
 
 	private static URIBuilder getPurlBuilder()

@@ -19,11 +19,6 @@
 elasticsearch.cluster.name=ayco-es2
 elasticsearch.transportaddress.host=127.0.0.1
 elasticsearch.transportaddress.port=9300
-elasticsearch.index.0.name=nba
-elasticsearch.index.0.shards=1
-elasticsearch.index.0.replicas=0
-elasticsearch.index.0.types=Specimen,MultiMediaObject,Taxon,GeoArea
-
 
 
 ##########################################################

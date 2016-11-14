@@ -41,9 +41,9 @@ import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 
 abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
-	private static Logger logger = getLogger(NbaDao.class);
+	private static final Logger logger = getLogger(NbaDao.class);
 
-	private DocumentType<T> dt;
+	private final DocumentType<T> dt;
 
 	NbaDao(DocumentType<T> dt)
 	{

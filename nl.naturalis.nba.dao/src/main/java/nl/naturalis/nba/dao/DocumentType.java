@@ -173,7 +173,8 @@ public class DocumentType<T extends IDocumentObject> {
 	}
 
 	/**
-	 * Returns a {@link Mapping mapping object} representing the document type mapping.
+	 * Returns a {@link Mapping mapping object} representing the document type
+	 * mapping.
 	 * 
 	 * @return
 	 */
@@ -214,6 +215,8 @@ public class DocumentType<T extends IDocumentObject> {
 	{
 		DaoRegistry registry = DaoRegistry.getInstance();
 		ConfigObject cfg = registry.getConfiguration();
+		String defaultNumShards = cfg.get("elasticsearch.index.default.shards");
+		String defaultNumReplicas = cfg.get("elasticsearch.index.default.replicas");
 		List<ConfigObject> sections = new ArrayList<>();
 		for (int i = 0;; i++) {
 			String prefix = "elasticsearch.index." + i;
@@ -224,6 +227,12 @@ public class DocumentType<T extends IDocumentObject> {
 			Logger logger = DaoRegistry.getInstance().getLogger(DocumentType.class);
 			String cfgFile = registry.getConfigurationFile().getAbsolutePath();
 			logger.info("Processing section {} of {}", prefix, cfgFile);
+			if (defaultNumShards != null) {
+				section.set("defaultNumShards", defaultNumShards);
+			}
+			if (defaultNumReplicas != null) {
+				section.set("defaultNumReplicas", defaultNumReplicas);
+			}
 			sections.add(section);
 		}
 		if (sections.size() == 0) {

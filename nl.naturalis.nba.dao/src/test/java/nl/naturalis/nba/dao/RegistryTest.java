@@ -15,7 +15,7 @@ public class RegistryTest {
 	@BeforeClass
 	public static void init()
 	{
-		if (!SPECIMEN.getIndexInfo().getName().equals("nba_integration_test")) {
+		if (!SPECIMEN.getIndexInfo().getName().endsWith("integration_test")) {
 			/*
 			 * Unit tests are run against the nba_integration_test index.
 			 * However, some performance test are run against the nba index,

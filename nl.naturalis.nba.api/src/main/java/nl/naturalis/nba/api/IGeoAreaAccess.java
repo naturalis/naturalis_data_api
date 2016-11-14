@@ -21,7 +21,7 @@ import nl.naturalis.nba.api.query.Condition;
  * </p>
  * <p>
  * <code>
- * // Find specimens found in the Netherlands:
+ * // Find specimens found in the Netherlands:<br>
  * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "1004050@GEO");
  * </code>
  * </p>

@@ -158,20 +158,24 @@ public enum ComparisonOperator
 	 * <br>
 	 * <li>If the field being queried is a {@link GeoPoint}, the {@code value}
 	 * property of the condition <b>must</b> be a GeoJson string or a
-	 * {@link GeoJsonObject}.
+	 * {@link GeoJsonObject}. For example:<br>
+	 * <br>
+	 * <code>
+	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoPoint", IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");<br>
+	 * </code><br>
 	 * <li>If the field being queried is a {@link GeoJsonObject}, {@code value}
-	 * property <b>must</b> a GeoJson string, a {@link GeoJsonObject}, or the ID
-	 * of a {@link GeoArea} document containing the GeoJson string.For
+	 * property <b>must</b> be a GeoJson string, a {@link GeoJsonObject}, or the
+	 * ID of a {@link GeoArea} document containing the GeoJson string. For
 	 * example:<br>
 	 * <br>
 	 * <code>
-	 * // Using GeoJson:
-	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "{\"type\": \"polygon\", \"coordinates\": [/&#42; etc. &#42;/]}");
-	 * // Using the ID of a GeoArea document:
+	 * // Using GeoJson:<br>
+	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");<br>
+	 * // Using the ID of a GeoArea document:<br>
 	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "1234@GEO");
 	 * </code><br>
 	 * <br>
-	 * The ID lookups for {@link GeoArea} documents can be done using
+	 * ID lookups for {@link GeoArea} documents can be done using
 	 * {@link IGeoAreaAccess}.
 	 * 
 	 */
@@ -179,7 +183,8 @@ public enum ComparisonOperator
 
 	/**
 	 * Operator used to establish that a field&#39;s value is none of a given
-	 * set of values. See {@link #IN}.
+	 * set of values. See {@link #IN} for the multiple ways in which this
+	 * operator can be used.
 	 */
 	NOT_IN;
 

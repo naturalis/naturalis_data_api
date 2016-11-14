@@ -16,7 +16,6 @@ public class SourceSystem implements INbaModelObject {
 			"NDFF - Nationale Databank Flora en Fauna");
 	public static final SourceSystem GEO = new SourceSystem("GEO", "Naturalis - Geo Areas");
 
-	@Analyzers({})
 	private String code;
 	private String name;
 

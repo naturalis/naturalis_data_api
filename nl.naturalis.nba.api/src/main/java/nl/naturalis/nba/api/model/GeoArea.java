@@ -16,9 +16,8 @@ public class GeoArea extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String locality;
 	private GeoJsonObject shape;
-	@NotIndexed
 	private String source;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String isoCode;
 	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String countryNL;

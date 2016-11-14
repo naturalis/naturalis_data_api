@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api;
 
-import java.util.Map;
+import java.util.List;
 
 import org.geojson.GeoJsonObject;
 
@@ -41,7 +41,37 @@ import nl.naturalis.nba.api.query.Condition;
 public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 
 	/**
-	 * Returns all areas as a map where the key is a
+	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
+	 * {@link GeoArea} object with the specified locality.
+	 * 
+	 * @see IDocumentObject
+	 * 
+	 * @return
+	 */
+	String getIdForLocality(String locality);
+
+	/**
+	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
+	 * {@link GeoArea} with the specified ISO code. Note that not all areas in
+	 * the Naturalis area index have an ISO code.
+	 * 
+	 * @see IDocumentObject
+	 * 
+	 * @return
+	 */
+	String getIdForIsoCode(String isoCode);
+
+	/**
+	 * Returns the coordinates of the area with the specified area ID.
+	 * 
+	 * @see IDocumentObject
+	 * 
+	 * @return
+	 */
+	String getGeoJsonForId(String id);
+
+	/**
+	 * Returns all areas as a list of key-value pairs where the key is a
 	 * {@link GeoArea#getLocality() locality} field and the value is the
 	 * corresponding Elasticsearch document ID. In other words this method
 	 * allows you to lookup a document ID for a locality.
@@ -50,10 +80,10 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * 
 	 * @return
 	 */
-	Map<String, String> getLocalities();
+	List<KeyValuePair<String, String>> getLocalities();
 
 	/**
-	 * Returns all areas as a map where the key is an
+	 * Returns all areas as a list of key-value pairs where the key is an
 	 * {@link GeoArea#getIsoCode() ISO code} and the value is the corresponding
 	 * Elasticsearch document ID. In other words this method allows you to
 	 * lookup a document ID for the ISO code for a geographical area. Note that
@@ -63,6 +93,6 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * 
 	 * @return
 	 */
-	Map<String, String> getIsoCodes();
+	List<KeyValuePair<String, String>> getIsoCodes();
 
 }

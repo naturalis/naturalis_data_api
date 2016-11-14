@@ -264,7 +264,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return apiObjects;
 	}
 
-	private T createDocumentObject(String id, Map<String, Object> data)
+	T createDocumentObject(String id, Map<String, Object> data)
 	{
 		ObjectMapper om = dt.getObjectMapper();
 		T documentObject = om.convertValue(data, dt.getJavaType());
@@ -272,7 +272,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return documentObject;
 	}
 
-	private static Client client()
+	static Client client()
 	{
 		return ESClientManager.getInstance().getClient();
 	}

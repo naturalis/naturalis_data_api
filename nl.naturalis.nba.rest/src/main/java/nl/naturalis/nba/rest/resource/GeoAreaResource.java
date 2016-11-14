@@ -136,9 +136,51 @@ public class GeoAreaResource {
 	}
 
 	@GET
+	@Path("/getIdForLocality/{locality}")
+	@Produces(JSON_CONTENT_TYPE)
+	public String getIdForLocality(@PathParam("locality") String locality, @Context UriInfo uriInfo)
+	{
+		try {
+			GeoAreaDao dao = new GeoAreaDao();
+			return dao.getIdForLocality(locality);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getIdForIsoCode/{iso}")
+	@Produces(JSON_CONTENT_TYPE)
+	public String getIdForIsoCode(@PathParam("iso") String isoCode, @Context UriInfo uriInfo)
+	{
+		try {
+			GeoAreaDao dao = new GeoAreaDao();
+			return dao.getIdForIsoCode(isoCode);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getGeoJsonForId/{id}")
+	@Produces(JSON_CONTENT_TYPE)
+	public String getGeoJsonForId(@PathParam("id") String id, @Context UriInfo uriInfo)
+	{
+		try {
+			GeoAreaDao dao = new GeoAreaDao();
+			return dao.getGeoJsonForId(id);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
 	@Path("/getLocalities")
 	@Produces(JSON_CONTENT_TYPE)
-	public Map<String, String> getLocalities(@Context UriInfo uriInfo)
+	public List<KeyValuePair<String, String>> getLocalities(@Context UriInfo uriInfo)
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
@@ -152,7 +194,7 @@ public class GeoAreaResource {
 	@GET
 	@Path("/getIsoCodes")
 	@Produces(JSON_CONTENT_TYPE)
-	public Map<String, String> getIsoCodes(@Context UriInfo uriInfo)
+	public List<KeyValuePair<String, String>> getIsoCodes(@Context UriInfo uriInfo)
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();

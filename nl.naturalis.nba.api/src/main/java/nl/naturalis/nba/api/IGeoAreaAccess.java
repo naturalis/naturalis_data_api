@@ -13,11 +13,11 @@ import nl.naturalis.nba.api.query.Condition;
 /**
  * <p>
  * Specifies methods for accessing geographical areas and their coordinates.
- * This interface is mainly intended for lookups of GeoArea document IDs. For
- * example, when using operator {@link ComparisonOperator#IN IN} to retrieve
- * specimens found within a certain area, you can either provide the coordinates
- * of the area or you can provide the ID of the GeoArea document for the area.
- * The {@link Condition query condition} would then look like this:
+ * This interface is mainly intended for lookups of GeoArea document IDs. When
+ * using operator {@link ComparisonOperator#IN IN} to retrieve specimens found
+ * within a certain area, you can either provide the coordinates yourself or you
+ * can provide the ID of the GeoArea document specifying the coordinates. The
+ * {@link Condition query condition} would then look like this:
  * </p>
  * <p>
  * <code>
@@ -30,7 +30,8 @@ import nl.naturalis.nba.api.query.Condition;
  * not work for fields of type {@link GeoPoint} (e.g.
  * {@code gatheringEvent.siteCoordinates.geoPoint}). You should not rely on the
  * document ID being stable. You should look it up using, for example,
- * {@link #getLocalities()} or {@link #getIsoCodes()}.
+ * {@link #getIdForLocality(String) getIdForLocality} or
+ * {@link #getIdForIsoCode(String) getIdForIsoCode}.
  * </p>
  * 
  * @see IDocumentObject
@@ -42,8 +43,8 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 
 	/**
 	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
-	 * {@link GeoArea} object with the specified locality. You can use this ID
-	 * when performing geo queries. See {@link ComparisonOperator#IN IN}).
+	 * {@link GeoArea} with the specified locality. You can use this ID when
+	 * performing geo queries. See operator {@link ComparisonOperator#IN IN}).
 	 * 
 	 * @see IDocumentObject
 	 * @see ComparisonOperator#IN
@@ -56,7 +57,7 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
 	 * {@link GeoArea} with the specified ISO code. Note that not all areas in
 	 * the Naturalis area index have an ISO code. You can use this ID when
-	 * performing geo queries. See {@link ComparisonOperator#IN IN}).
+	 * performing geo queries. See operator {@link ComparisonOperator#IN IN}.
 	 * 
 	 * @see IDocumentObject
 	 * @see ComparisonOperator#IN
@@ -76,9 +77,9 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 
 	/**
 	 * Returns all areas as a list of key-value pairs where the key is a
-	 * {@link GeoArea#getLocality() locality} field and the value is the
-	 * corresponding Elasticsearch document ID. In other words this method
-	 * allows you to lookup a document ID for a locality.
+	 * {@link GeoArea#getLocality() locality} and the value is the corresponding
+	 * Elasticsearch document ID. In other words this method allows you to look
+	 * up a document ID for a locality.
 	 * 
 	 * @see IDocumentObject
 	 * 
@@ -89,9 +90,9 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	/**
 	 * Returns all areas as a list of key-value pairs where the key is an
 	 * {@link GeoArea#getIsoCode() ISO code} and the value is the corresponding
-	 * Elasticsearch document ID. In other words this method allows you to
-	 * lookup a document ID for the ISO code for a geographical area. Note that
-	 * not all areas have an ISO code.
+	 * Elasticsearch document ID. In other words this method allows you to look
+	 * up a document ID for the ISO code for a geographical area. Note that not
+	 * all areas have an ISO code.
 	 * 
 	 * @see IDocumentObject
 	 * 

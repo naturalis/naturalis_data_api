@@ -5,7 +5,7 @@
 		<Console name="CONSOLE">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</Console>
-		<File name="FILE" fileName="@@@">
+		<File name="FILE" fileName="${sys:nba.v2.log.file}">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
 		</File>
 	</Appenders>

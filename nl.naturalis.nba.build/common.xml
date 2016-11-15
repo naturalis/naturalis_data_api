@@ -166,7 +166,6 @@
 		</tstamp>
 		<property name="proto.conf.dir"
 		          location="${build.module.location}/proto.conf.dir" />
-		<property name="log4j.config" location="${build.module.location}/log4j2.xml" />
 		<!-- Create nba.properties file in the proto configuration directory -->
 		<copy file="${build.module.location}/nba-test.properties.template"
 		      tofile="${proto.conf.dir}/nba.properties"
@@ -175,22 +174,14 @@
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
-		<copy file="${build.module.location}/log4j2.xml.template"
-		      tofile="${log4j.config}"
-		      overwrite="true">
-		</copy>
-		<replace file="${log4j.config}"
-		         token="@@@"
-		         value="${build.module.location}/log/test.log" />
-		<mkdir dir="${build.module.location}/log/test-reports" />
 		<java classname="org.junit.runner.JUnitCore"
 		      fork="true"
-		      resultproperty="junit.result"
-		      output="${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log"
-		      error="${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log">
+		      resultproperty="junit.result">
 			<arg value="${junit.suite.classname}" />
 			<sysproperty key="log4j.configurationFile"
 			             value="${build.module.location}/log4j2.xml" />
+			<sysproperty key="nba.v2.log.file"
+			             value="${build.module.location}/log/test.${test.datetime}.log" />
 			<sysproperty key="nba.v2.conf.dir" value="${proto.conf.dir}" />
 			<classpath>
 				<fileset dir="build/classpath">
@@ -206,9 +197,8 @@
 		<condition property="junit.ok">
 			<equals arg1="${junit.result}" arg2="0" />
 		</condition>
-		<echo file="${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log" />
 		<fail unless:set="junit.ok"
-		      message="At least one test failed! See ${build.module.location}/log/${junit.suite.classname}.${test.datetime}.log" />
+		      message="At least one test failed! See ${build.module.location}/log/test.${test.datetime}.log" />
 	</target>
 
 	<!--

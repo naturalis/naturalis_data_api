@@ -4,6 +4,7 @@ elasticsearch.transportaddress.port=@elasticsearch.transportaddress.port@
 
 elasticsearch.index.default.shards=1
 elasticsearch.index.default.replicas=0
+
 elasticsearch.index.0.name=specimens
 elasticsearch.index.0.types=Specimen
 elasticsearch.index.1.name=taxa

@@ -26,7 +26,7 @@ public class DaoRegistry {
 	/**
 	 * Name of the system property pointing to the configuration directory
 	 * (&#34;nba.v2.conf.dir&#34;). This directory must at least contain
-	 * nba.properties, but may contain additional configuration related
+	 * nba.properties, but may contain additional configuration-related
 	 * resources.
 	 */
 	public static final String SYSPROP_CONFIG_DIR = "nba.v2.conf.dir";
@@ -158,7 +158,7 @@ public class DaoRegistry {
 	private void loadConfig()
 	{
 		cfgFile = FileUtil.newFile(cfgDir, CONFIG_FILE_NAME);
-		logger.info("Loading " + CONFIG_FILE_NAME);
+		logger.info("NBA configuration file: " + cfgFile.getPath());
 		if (!cfgFile.isFile()) {
 			String msg = String.format("Missing configuration file: %s", cfgFile.getPath());
 			throw new InitializationException(msg);

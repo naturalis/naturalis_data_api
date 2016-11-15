@@ -41,7 +41,7 @@ public class ESUtilTest {
 		int colId = 12345;
 		String esId = getElasticsearchId(COL, colId);
 		logger.info("[testGetElasticsearchId_SourceSystem__int] Generated _id: \"{}\"", esId);
-		String expected = colId + '@' + COL.getCode();
+		String expected = "12345@" + COL.getCode();
 		assertEquals("01", expected, esId);
 	}
 

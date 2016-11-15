@@ -1,6 +1,9 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.util.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -22,7 +25,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
-	private static Logger logger = DaoRegistry.getInstance().getLogger(SpecimenDao.class);
+	private static Logger logger = getLogger(SpecimenDao.class);
 
 	public SpecimenDao()
 	{
@@ -34,12 +37,12 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	{
 		if (logger.isDebugEnabled())
 			logger.debug("exists(\"{}\")", unitID);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
 		request.setQuery(csq);
 		request.setSize(0);
-		SearchResponse response = request.execute().actionGet();
+		SearchResponse response = executeSearchRequest(request);
 		return response.getHits().getTotalHits() != 0;
 	}
 
@@ -48,7 +51,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	{
 		if (logger.isDebugEnabled())
 			logger.debug("findByUnitID(\"{}\")", unitID);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		TermQueryBuilder tqb = termQuery("unitID", unitID);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tqb);
 		request.setQuery(csq);
@@ -63,7 +66,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		TermQueryBuilder tq = termQuery("gatheringEvent.gatheringPersons.fullName", name);
 		NestedQueryBuilder nq = nestedQuery("gatheringEvent.gatheringPersons", tq);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(nq);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		request.setQuery(csq);
 		return processSearchRequest(request);
 	}
@@ -81,14 +84,10 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 			logger.debug("getUnitIDsInCollection(\"{}\")", collectionName);
 		TermQueryBuilder tq = termQuery("theme", collectionName);
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		request.setQuery(csq);
 		request.setNoFields();
-		if (logger.isDebugEnabled())
-			logger.debug("Executing query:\n{}", request);
-		SearchResponse response = request.execute().actionGet();
-		if (logger.isDebugEnabled())
-			logger.debug("Processing response:\n{}", response);
+		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		String[] ids = new String[hits.length];
 		for (int i = 0; i < hits.length; ++i) {

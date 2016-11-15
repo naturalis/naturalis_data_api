@@ -50,7 +50,7 @@ public class GeoAreaResource {
 			GeoAreaDao dao = new GeoAreaDao();
 			GeoArea result = dao.find(id);
 			if (result == null) {
-				throw new HTTP404Exception(uriInfo, DocumentType.SPECIMEN, id);
+				throw new HTTP404Exception(uriInfo, DocumentType.GEO_AREA, id);
 			}
 			return result;
 		}
@@ -142,7 +142,12 @@ public class GeoAreaResource {
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			return dao.getIdForLocality(locality);
+			String id = dao.getIdForLocality(locality);
+			if (id == null) {
+				String msg = String.format("No such locality: \"%s\"", locality);
+				throw new HTTP404Exception(uriInfo, msg);
+			}
+			return id;
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -156,7 +161,12 @@ public class GeoAreaResource {
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			return dao.getIdForIsoCode(isoCode);
+			String id = dao.getIdForIsoCode(isoCode);
+			if (id == null) {
+				String msg = String.format("No such ISO code: \"%s\"", isoCode);
+				throw new HTTP404Exception(uriInfo, msg);
+			}
+			return id;
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -170,7 +180,12 @@ public class GeoAreaResource {
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			return dao.getGeoJsonForId(id);
+			String json = dao.getGeoJsonForId(id);
+			if (json == null) {
+				String msg = String.format("No such ID: \"%s\"", id);
+				throw new HTTP404Exception(uriInfo, msg);
+			}
+			return json;
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

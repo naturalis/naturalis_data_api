@@ -6,7 +6,6 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
-import nl.naturalis.nba.api.annotations.NotIndexed;
 
 public class GeoArea extends NbaTraceableObject implements IDocumentObject {
 

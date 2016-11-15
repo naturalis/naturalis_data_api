@@ -1,31 +1,33 @@
 package nl.naturalis.nba.etl.geo;
 
-import static nl.naturalis.nba.api.model.SourceSystem.*;
-import static nl.naturalis.nba.dao.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.etl.geo.GeoImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
 import org.domainobject.util.ConfigObject;
 import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
-import static nl.naturalis.nba.etl.geo.GeoImportUtil.*;
 
 public class GeoImporter {
 
 	public static void main(String[] args)
 	{
+		boolean bootstrap = Arrays.asList(args).contains("bootstrap");
 		try {
 			GeoImporter importer = new GeoImporter();
-			importer.importData();
+			importer.importData(bootstrap);
 		}
 		finally {
 			ESClientManager.getInstance().closeClient();
@@ -52,7 +54,7 @@ public class GeoImporter {
 	/**
 	 * Imports specimen data from the Geo Area CSV file(s).
 	 */
-	public void importData()
+	public void importData(boolean bootstrap)
 	{
 		long start = System.currentTimeMillis();
 		File[] csvFiles = getCsvFiles();
@@ -62,7 +64,11 @@ public class GeoImporter {
 		}
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			LoadUtil.truncate(GEO_AREA, GEO);
+			if(bootstrap) {
+				ESUtil.deleteIndex(GEO_AREA);
+				ESUtil.createIndex(GEO_AREA);
+				ESUtil.createType(GEO_AREA);
+			}
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}
@@ -90,7 +96,7 @@ public class GeoImporter {
 				if (rec == null)
 					continue;
 				loader.load(transformer.transform(rec));
-				if (rec.getLineNumber() % 500 == 0) {
+				if (rec.getLineNumber() % 100 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}
 			}

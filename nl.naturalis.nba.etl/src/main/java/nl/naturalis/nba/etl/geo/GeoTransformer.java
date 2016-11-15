@@ -39,17 +39,22 @@ class GeoTransformer extends AbstractCSVTransformer<GeoCsvField, GeoArea> {
 	@Override
 	protected List<GeoArea> doTransform()
 	{
-		stats.recordsAccepted++;
 		stats.objectsProcessed++;
+		String geoJson = input.get(geojson);
+		if(geoJson == null) {
+			error("Missing value for field geojson");
+			stats.recordsRejected++;
+			return null;
+		}
+		stats.recordsAccepted++;
 		GeoArea area = new GeoArea();
 		area.setSourceSystem(SourceSystem.GEO);
 		area.setSourceSystemId(input.get(gid));
 		area.setAreaType(input.get(type));
 		area.setCountryNL(input.get(country_nl));
-		String s = input.get(geojson);
 		GeoJsonObject obj;
 		try {
-			obj = mapper.readValue(s, GeoJsonObject.class);
+			obj = mapper.readValue(geoJson, GeoJsonObject.class);
 		}
 		catch (IOException e) {
 			logger.error(e.getMessage());

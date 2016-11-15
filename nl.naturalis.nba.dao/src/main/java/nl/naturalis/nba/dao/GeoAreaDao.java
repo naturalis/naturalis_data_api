@@ -1,8 +1,9 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.DaoUtil.*;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.dao.util.ESUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.util.ESUtil;
 
 public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 
@@ -54,7 +56,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 			// We made this one outselves, so eh ...
 			throw new DaoException(e);
 		}
-		SearchResponse response = request.execute().actionGet();
+		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
 			return null;
@@ -80,7 +82,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 			// We made this one outselves, so eh ...
 			throw new DaoException(e);
 		}
-		SearchResponse response = request.execute().actionGet();
+		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
 			return null;
@@ -94,7 +96,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug("getGeoJsonForId(\"{}\")", id);
 		}
-		GetRequestBuilder request = client().prepareGet();
+		GetRequestBuilder request = ESUtil.esClient().prepareGet();
 		String index = GEO_AREA.getIndexInfo().getName();
 		String type = GEO_AREA.getName();
 		request.setIndex(index);
@@ -108,8 +110,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 			return null;
 		}
 		Map<String, Object> data = response.getSource();
-		Object val = data.get("shape");
-		return val == null ? null : val.toString();
+		return data.get("shape").toString();
 	}
 
 	@Override
@@ -132,7 +133,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 				// We made this one outselves, so eh ...
 				throw new DaoException(e);
 			}
-			SearchResponse response = request.execute().actionGet();
+			SearchResponse response = executeSearchRequest(request);
 			SearchHit[] hits = response.getHits().getHits();
 			localities = new ArrayList<>(hits.length);
 			for (SearchHit hit : hits) {
@@ -166,7 +167,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 				// We made this one outselves, so eh ...
 				throw new DaoException(e);
 			}
-			SearchResponse response = request.execute().actionGet();
+			SearchResponse response = executeSearchRequest(request);
 			SearchHit[] hits = response.getHits().getHits();
 			isoCodes = new ArrayList<>(hits.length);
 			for (SearchHit hit : hits) {

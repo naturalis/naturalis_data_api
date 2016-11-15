@@ -4,13 +4,13 @@ import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
+import static nl.naturalis.nba.dao.util.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -25,7 +25,6 @@ import nl.naturalis.nba.api.query.SortField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.ESClientManager;
 
 /**
  * A {@code QuerySpecTranslator} is responsible for translating an NBA
@@ -40,12 +39,12 @@ public class QuerySpecTranslator {
 	private static final Logger logger = getLogger(QuerySpecTranslator.class);
 
 	private QuerySpec spec;
-	private DocumentType<?> type;
+	private DocumentType<?> dt;
 
 	public QuerySpecTranslator(QuerySpec querySpec, DocumentType<?> documentType)
 	{
 		this.spec = querySpec;
-		this.type = documentType;
+		this.dt = documentType;
 	}
 
 	public SearchRequestBuilder translate() throws InvalidQueryException
@@ -55,7 +54,7 @@ public class QuerySpecTranslator {
 		}
 		QueryBuilder query = translateConditions();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
-		SearchRequestBuilder request = newSearchRequest();
+		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getFields() != null) {
 			addFields(request);
 		}
@@ -64,7 +63,7 @@ public class QuerySpecTranslator {
 		request.setSize(spec.getSize());
 		if (spec.getSortFields() != null) {
 			List<SortField> fields = spec.getSortFields();
-			SortFieldsTranslator sft = new SortFieldsTranslator(fields, type);
+			SortFieldsTranslator sft = new SortFieldsTranslator(fields, dt);
 			for (SortBuilder sb : sft.translate()) {
 				request.addSort(sb);
 			}
@@ -74,7 +73,7 @@ public class QuerySpecTranslator {
 
 	private void addFields(SearchRequestBuilder request) throws InvalidQueryException
 	{
-		MappingInfo<?> mappingInfo = new MappingInfo<>(type.getMapping());
+		MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
 		List<String> fields = spec.getFields();
 		for (String field : fields) {
 			if (field.equals("id")) {
@@ -104,32 +103,20 @@ public class QuerySpecTranslator {
 		}
 		if (conditions.size() == 1) {
 			Condition c = conditions.iterator().next();
-			return getTranslator(c, type).translate();
+			return getTranslator(c, dt).translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		if (spec.getLogicalOperator() == AND) {
 			for (Condition c : conditions) {
-				result.must(getTranslator(c, type).translate());
+				result.must(getTranslator(c, dt).translate());
 			}
 		}
 		else {
 			for (Condition c : conditions) {
-				result.should(getTranslator(c, type).translate());
+				result.should(getTranslator(c, dt).translate());
 			}
 		}
 		return result;
 	}
 
-	private SearchRequestBuilder newSearchRequest()
-	{
-		String index = type.getIndexInfo().getName();
-		if (logger.isDebugEnabled()) {
-			String fmt = "New search request (index={};type={})";
-			logger.debug(fmt, index, type.getName());
-		}
-		Client client = ESClientManager.getInstance().getClient();
-		SearchRequestBuilder request = client.prepareSearch(index);
-		request.setTypes(type.getName());
-		return request;
-	}
 }

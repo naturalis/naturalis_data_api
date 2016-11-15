@@ -117,9 +117,6 @@ public class MappingFactory {
 
 	private static ESField createESField(Field field, HashSet<Class<?>> ancestors)
 	{
-		if (field.getAnnotation(GeoShape.class) != null) {
-			return createSimpleField(field, GEO_SHAPE);
-		}
 		Class<?> realType = field.getType();
 		Class<?> mapToType = mapType(realType, field.getGenericType());
 		ESDataType esType = dataTypeMap.getESType(mapToType);
@@ -138,9 +135,6 @@ public class MappingFactory {
 
 	private static ESField createESField(Method method, HashSet<Class<?>> ancestors)
 	{
-		if (method.getAnnotation(GeoShape.class) != null) {
-			return createSimpleField(method, GEO_SHAPE);
-		}
 		Class<?> realType = method.getReturnType();
 		Class<?> mapToType = mapType(realType, method.getGenericReturnType());
 		ESDataType esType = dataTypeMap.getESType(mapToType);
@@ -159,6 +153,12 @@ public class MappingFactory {
 		switch (esType) {
 			case GEO_SHAPE:
 				sf = new GeoShapeField();
+				if (fm.getAnnotation(GeoShape.class) != null) {
+					GeoShape annotation = fm.getAnnotation(GeoShape.class);
+					GeoShapeField gsf = (GeoShapeField) sf;
+					gsf.setPrecision(annotation.precision());
+					gsf.setPoints_only(annotation.pointsOnly());
+				}
 				break;
 			case STRING:
 				sf = new StringField();

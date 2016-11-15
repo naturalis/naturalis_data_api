@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 import org.geojson.GeoJsonObject;
 
 /**
- * Provides information about the storage of geo shape data. This annotation can only be
- * applied to fields and methods (getters) of type {@link GeoJsonObject}.
+ * Provides information about the storage of geo shape data. This annotation can
+ * only be applied to fields and methods (getters) of type
+ * {@link GeoJsonObject}.
  * 
  * @author Ayco Holleman
  *
@@ -18,6 +19,10 @@ import org.geojson.GeoJsonObject;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface GeoShape {
 
-	String precision() default "5km";
+	public static final String DEFAULT_PRECISION = "5km";
+
+	String precision() default DEFAULT_PRECISION;
+
+	boolean pointsOnly() default false;
 
 }

@@ -7,6 +7,7 @@ import org.geojson.Polygon;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.query.ComparisonOperator;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -77,6 +78,7 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	 * @return
 	 */
 	@JsonProperty
+	@GeoShape(pointsOnly = true)
 	public GeoJsonObject getGeoShape()
 	{
 		if (longitudeDecimal == null || latitudeDecimal == null) {

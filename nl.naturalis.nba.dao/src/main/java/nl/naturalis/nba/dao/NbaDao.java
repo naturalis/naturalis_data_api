@@ -100,9 +100,6 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	{
 		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
 		SearchRequestBuilder request = translator.translate();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing query:\n{}", request);
-		}
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		List<Map<String, Object>> resultSet = new ArrayList<>(hits.length);

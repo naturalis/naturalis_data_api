@@ -42,8 +42,8 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 	 */
 	protected static final String JPEG = "image/jpeg";
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(
-			AbstractMimeTypeCache.class);
+	private static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(AbstractMimeTypeCache.class);
 
 	private final SimpleHttpHead httpHead = new SimpleHttpHead();
 
@@ -58,7 +58,7 @@ public abstract class AbstractMimeTypeCache implements MimeTypeCache {
 
 	AbstractMimeTypeCache(String cacheFileName)
 	{
-		File dir = DaoRegistry.getInstance().getConfigurationDirectory();
+		File dir = DaoRegistry.getInstance().getConfiguration().getDirectory("medialib.data.dir");
 		cacheFile = FileUtil.newFile(dir, cacheFileName);
 		if (!cacheFile.isFile()) {
 			String fmt = "Missing cache file (%s). You should put it in %s.";

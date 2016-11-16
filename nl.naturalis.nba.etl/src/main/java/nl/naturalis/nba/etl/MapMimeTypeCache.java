@@ -26,7 +26,7 @@ import org.domainobject.util.IOUtil;
  * @author Ayco Holleman
  *
  */
-public class MapMimeTypeCache extends AbstractMimeTypeCache {
+class MapMimeTypeCache extends AbstractMimeTypeCache {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(MapMimeTypeCache.class);
 

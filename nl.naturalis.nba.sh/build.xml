@@ -18,7 +18,13 @@
 		<delete dir="${etl.install.dir}/lib" />
 		<mkdir dir="${etl.install.dir}/lib" />
 		<copy todir="${etl.install.dir}/conf" overwrite="false">
-			<fileset dir="etl/conf" />
+			<fileset dir="etl/conf" excludesfile="etl/conf/nba.properties" />
+			<filterset begintoken="@"
+			           endtoken="@"
+			           filtersfile="${build.module.location}/${build.properties.file}" />
+		</copy>
+		<copy todir="${etl.install.dir}/conf" overwrite="true">
+			<fileset file="etl/conf/nba.properties" />
 			<filterset begintoken="@"
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />

@@ -28,7 +28,7 @@ import org.domainobject.util.IOUtil;
  * @author Ayco Holleman
  *
  */
-public class ArrayMimeTypeCache extends AbstractMimeTypeCache {
+class ArrayMimeTypeCache extends AbstractMimeTypeCache {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(ArrayMimeTypeCache.class);
 	private static final int DEFAULT_MAX_ENTRIES = 10000000;

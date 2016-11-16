@@ -35,6 +35,7 @@ import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.util.ESUtil;
 
 /**
  * Manages the assemblage and creation of DarwinCore archives.
@@ -176,11 +177,6 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
 		request.setScroll(TIME_OUT);
 		request.setSize(1000);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing query:\n{}", request);
-		}
-		SearchResponse response = request.execute().actionGet();
-		logger.info("Elasticsearch documents to be processed: {}", response.getHits().totalHits());
-		return response;
+		return ESUtil.executeSearchRequest(request);
 	}
 }

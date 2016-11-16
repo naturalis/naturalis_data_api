@@ -34,6 +34,7 @@ import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
 
 /**
@@ -90,7 +91,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		catch (InvalidQueryException e) {
 			/*
 			 * Not the user's fault but the application maintainer's, because we
-			 * got the QuerySpec from the config file, so we convert the
+			 * got the QuerySpec from the config file. So we convert the
 			 * InvalidQueryException to a DataSetConfigurationException
 			 */
 			fmt = "Invalid query specification for shared data source:\n%s";
@@ -231,12 +232,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
 		request.setScroll(TIME_OUT);
 		request.setSize(1000);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing query:\n{}", request);
-		}
-		SearchResponse response = request.execute().actionGet();
-		logger.info("Elasticsearch documents to be processed: {}", response.getHits().totalHits());
-		return response;
+		return ESUtil.executeSearchRequest(request);
 	}
 
 }

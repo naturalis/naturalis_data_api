@@ -1,3 +1,5 @@
+# NBA configuration file used for integration tests
+
 elasticsearch.cluster.name=@elasticsearch.cluster.name@
 elasticsearch.transportaddress.host=@elasticsearch.transportaddress.host@
 elasticsearch.transportaddress.port=@elasticsearch.transportaddress.port@

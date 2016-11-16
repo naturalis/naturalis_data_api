@@ -55,10 +55,13 @@
 	</target>
 
 	<target name="build" depends="build-rest-module,clean,create-ear-file" />
-	
+
 	<target name="create-conf-file">
 		<property name="proto.conf.dir" value="${build.module.location}/proto.conf.dir" />
-		<!-- Copy nba.properties to configuration dir -->
+		<!--
+			Copy nba.properties to configuration dir (overwrite existing 
+			nba.properties)
+		-->
 		<copy file="${build.module.location}/nba.properties.template"
 		      tofile="${nl.naturalis.nba.conf.dir}/nba.properties"
 		      overwrite="true">
@@ -66,7 +69,10 @@
 			           endtoken="@"
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
-		<!-- Copy DWCA configuration to conf dir, but only if not present yet -->
+		<!--
+			Copy other configuration artefacts (e.g. DwCA config files)to 
+			conf dir (but do not overwrite)
+		-->
 		<copy todir="${nl.naturalis.nba.conf.dir}/dwca" overwrite="false">
 			<fileset dir="${proto.conf.dir}/dwca" />
 		</copy>

@@ -34,12 +34,12 @@ class QuerySpecBuilder {
 		return querySpec;
 	}
 
-	private int getFrom() throws DataSetConfigurationException
+	private Integer getFrom() throws DataSetConfigurationException
 	{
 		if (config.getFrom() == null)
-			return 0;
+			return null;
 		try {
-			return Integer.parseInt(config.getFrom());
+			return Integer.valueOf(config.getFrom());
 		}
 		catch (NumberFormatException e) {
 			String msg = String.format(ERR_NOT_AN_INTEGER, "from");
@@ -47,12 +47,12 @@ class QuerySpecBuilder {
 		}
 	}
 
-	private int getSize() throws DataSetConfigurationException
+	private Integer getSize() throws DataSetConfigurationException
 	{
 		if (config.getSize() == null)
-			return 0;
+			return null;
 		try {
-			return Integer.parseInt(config.getSize());
+			return Integer.valueOf(config.getSize());
 		}
 		catch (NumberFormatException e) {
 			String msg = String.format(ERR_NOT_AN_INTEGER, "size");

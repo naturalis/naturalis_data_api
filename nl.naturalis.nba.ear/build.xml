@@ -70,7 +70,7 @@
 			           filtersfile="${build.module.location}/${build.properties.file}" />
 		</copy>
 		<!--
-			Copy other configuration artefacts (e.g. DwCA config files)to 
+			Copy other configuration artefacts (e.g. DwCA config files) to 
 			conf dir (but do not overwrite)
 		-->
 		<copy todir="${nl.naturalis.nba.conf.dir}/dwca" overwrite="false">

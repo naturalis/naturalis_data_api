@@ -7,7 +7,7 @@
 	<!-- Project dependencies and non-Ivy-managed dependencies -->
 	<path id="non-ivy-dependencies"/>
 
-	<property name="junit.suite.classname" value="nl.naturalis.nba.utils.AllTests" />
+	<!-- property name="junit.suite.classname" value="nl.naturalis.nba.utils.AllTests" / -->
 
 	<target name="build" depends="clean,package" />
 

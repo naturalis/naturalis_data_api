@@ -45,7 +45,6 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
-import nl.naturalis.nba.utils.debug.BeanPrinter;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")
@@ -154,32 +153,33 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
+
 	@POST
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String query_POST_FORM(MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
+	public QueryResult<Specimen> query_POST_FORM(MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
 	{
 		try {
-			
-			return "Hallo";
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.query(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
+
 	@POST
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public String query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<Specimen> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
 	{
-		System.out.println("Hallo");
 		try {
-			BeanPrinter.out(qs);
-			return "Hallo";
+			SpecimenDao dao = new SpecimenDao();
+			return dao.query(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

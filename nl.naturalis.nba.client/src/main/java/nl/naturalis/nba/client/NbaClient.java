@@ -26,6 +26,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpException;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
+import nl.naturalis.nba.utils.http.SimpleHttpPost;
 import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 /**
@@ -95,9 +96,21 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	@Override
 	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		SimpleHttpGet request = newJsonGetRequest();
+//		SimpleHttpGet request = newJsonGetRequest();
+//		request.setPath(rootPath + "query");
+//		request.addQueryParam("_querySpec", toJson(querySpec));
+//		sendRequest(request);
+		
+		SimpleHttpPost request = new SimpleHttpPost();
+		request.setAccept(CT_APPLICATION_JSON);
+		request.setBaseUrl(config.getBaseUrl());
 		request.setPath(rootPath + "query");
-		request.addQueryParam("_querySpec", toJson(querySpec));
+		
+		//request.addFormParam("_querySpec", toJson(querySpec));
+		//request.setContentType(null);
+		
+		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);				
+		
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {

@@ -18,7 +18,10 @@ public class SimpleHttpPost extends SimpleHttpRequest {
 	}
 
 	/**
-	 * Adds a form parameter.
+	 * Adds a form parameter. The first time you call this method the
+	 * Content-Type header will tacitly be set to
+	 * {@link SimpleHttpRequest#CT_X_WWW_FORM_URLENCODED
+	 * application/x-www-form-urlencoded}.
 	 * 
 	 * @param key
 	 * @param value
@@ -26,8 +29,12 @@ public class SimpleHttpPost extends SimpleHttpRequest {
 	 */
 	public SimpleHttpRequest addFormParam(String key, String value)
 	{
+		if (requestBody != null) {
+			throw new SimpleHttpException("Request body and form parameters cannot both be set");
+		}
 		if (formParams == null) {
 			formParams = new ArrayList<>(8);
+			setContentType(CT_X_WWW_FORM_URLENCODED);
 		}
 		formParams.add(new String[] { key, value });
 		return this;

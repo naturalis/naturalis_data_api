@@ -9,11 +9,15 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
@@ -78,10 +82,42 @@ public class MultiMediaObjectResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<MultiMediaObject> query(@Context UriInfo uriInfo)
+	public QueryResult<MultiMediaObject> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public QueryResult<MultiMediaObject> query_POST_FORM(MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public QueryResult<MultiMediaObject> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	{
+		try {
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.query(qs);
 		}

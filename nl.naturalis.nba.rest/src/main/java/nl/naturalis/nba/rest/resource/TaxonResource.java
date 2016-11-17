@@ -13,12 +13,16 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
@@ -89,10 +93,42 @@ public class TaxonResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Taxon> query(@Context UriInfo uriInfo)
+	public QueryResult<Taxon> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public QueryResult<Taxon> query_POST_FORM(MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public QueryResult<Taxon> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	{
+		try {
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
 		}

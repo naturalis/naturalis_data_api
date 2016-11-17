@@ -1,21 +1,17 @@
 package nl.naturalis.nba.client;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
-
-import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.LogicalOperator;
-import nl.naturalis.nba.api.query.QuerySpec;
+import org.domainobject.util.http.SimpleHttpPost;
 
 public class Test {
 
 	public static void main(String[] args)
 	{
-		Condition condition1 = new Condition("gatheringEvent.siteCoordinates.geoShape", IN,
-				"Netherlands");
-		QuerySpec query = new QuerySpec();
-		query.addCondition(condition1);
-		query.setLogicalOperator(LogicalOperator.OR);
-		ClientUtil.printTerse(query);
+		SimpleHttpPost post = new SimpleHttpPost();
+		post.setBaseUrl("http://localhost:8080/v2/specimen/queryPOST");
+		post.addFormParam("user", "ayco");
+		post.setContentType("application/x-www-form-urlencoded");
+		post.addFormParam("password", "strange");
+		post.execute();
 	}
 
 }

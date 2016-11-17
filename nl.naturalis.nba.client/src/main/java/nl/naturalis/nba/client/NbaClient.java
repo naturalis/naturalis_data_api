@@ -97,7 +97,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	{
 		SimpleHttpGet request = newJsonGetRequest();
 		request.setPath(rootPath + "query");
-		request.addParam("_querySpec", toJson(querySpec));
+		request.addQueryParam("_querySpec", toJson(querySpec));
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -112,7 +112,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	{
 		SimpleHttpGet request = newJsonGetRequest();
 		request.setPath(rootPath + "queryRaw");
-		request.addParam("_querySpec", toJson(querySpec));
+		request.addQueryParam("_querySpec", toJson(querySpec));
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {

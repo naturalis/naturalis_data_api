@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.domainobject.util.ConfigObject;
-
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -39,6 +37,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.

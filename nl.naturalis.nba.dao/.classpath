@@ -4,7 +4,6 @@
 	<classpathentry kind="src" output="build/main" path="src/main/resources"/>
 	<classpathentry kind="src" output="build/test" path="src/test/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test/resources"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.elasticsearch.dao&amp;ivyXmlPath=ivy.xml&amp;confs=*">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -21,5 +20,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.utils"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

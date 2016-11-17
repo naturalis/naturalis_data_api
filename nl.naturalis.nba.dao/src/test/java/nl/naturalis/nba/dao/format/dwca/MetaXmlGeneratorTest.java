@@ -4,10 +4,10 @@ import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 
 import java.io.UnsupportedEncodingException;
 
-import org.domainobject.util.FileUtil;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.format.DataSet;
+import nl.naturalis.nba.utils.FileUtil;
 
 @SuppressWarnings("static-method")
 public class MetaXmlGeneratorTest {

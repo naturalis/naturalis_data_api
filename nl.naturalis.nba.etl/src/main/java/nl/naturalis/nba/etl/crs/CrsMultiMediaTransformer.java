@@ -8,11 +8,11 @@ import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
 import static nl.naturalis.nba.etl.MimeTypeCache.MEDIALIB_URL_START;
 import static nl.naturalis.nba.etl.normalize.Normalizer.NOT_MAPPED;
-import static org.domainobject.util.DOMUtil.getChild;
-import static org.domainobject.util.DOMUtil.getDescendant;
-import static org.domainobject.util.DOMUtil.getDescendantValue;
-import static org.domainobject.util.DOMUtil.getDescendants;
-import static org.domainobject.util.StringUtil.rpad;
+import static nl.naturalis.nba.utils.DOMUtil.getChild;
+import static nl.naturalis.nba.utils.DOMUtil.getDescendant;
+import static nl.naturalis.nba.utils.DOMUtil.getDescendantValue;
+import static nl.naturalis.nba.utils.DOMUtil.getDescendants;
+import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import java.net.URI;
 import java.net.URISyntaxException;

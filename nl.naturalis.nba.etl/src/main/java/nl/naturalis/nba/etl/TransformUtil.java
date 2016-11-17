@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.StringUtil;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.Monomial;
@@ -23,6 +22,7 @@ import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.utils.StringUtil;
 
 /**
  * Provides common functionality for the various {@link Transformer}

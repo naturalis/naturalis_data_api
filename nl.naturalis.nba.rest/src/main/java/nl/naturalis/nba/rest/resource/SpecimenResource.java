@@ -32,7 +32,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.debug.BeanPrinter;
 
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.Specimen;
@@ -46,6 +45,7 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
+import nl.naturalis.nba.utils.debug.BeanPrinter;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")

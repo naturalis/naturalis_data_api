@@ -10,8 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.ejb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.dao"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
@@ -21,5 +19,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 10.0 Runtime"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.utils"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

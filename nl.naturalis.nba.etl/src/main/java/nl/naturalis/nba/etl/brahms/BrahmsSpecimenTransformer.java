@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.domainobject.util.ConfigObject;
-
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.util.ESUtil;
@@ -31,6 +29,7 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * The transformer component in the Brahms ETL cycle for specimens.

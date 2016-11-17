@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -19,6 +18,7 @@ import com.ibm.icu.text.CharsetMatch;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.utils.FileUtil;
 
 /**
  * Utility class for determining file encoding of Brahms dumps, and for

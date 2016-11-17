@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequest;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.elasticsearch.client.Client;
@@ -19,6 +18,7 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 import nl.naturalis.nba.dao.exception.ConnectionFailureException;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * A factory for Elasticsearch {@link Client} instances.

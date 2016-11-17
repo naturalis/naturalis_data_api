@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl;
 
 import static nl.naturalis.nba.etl.LoadConstants.PURL_SERVER_BASE_URL;
-import static org.domainobject.util.StringUtil.zpad;
+import static nl.naturalis.nba.utils.StringUtil.zpad;
 
 import java.net.URISyntaxException;
 

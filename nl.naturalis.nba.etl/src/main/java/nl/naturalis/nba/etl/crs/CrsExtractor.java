@@ -13,8 +13,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.XMLRecordInfo;
+import nl.naturalis.nba.utils.DOMUtil;
 
-import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

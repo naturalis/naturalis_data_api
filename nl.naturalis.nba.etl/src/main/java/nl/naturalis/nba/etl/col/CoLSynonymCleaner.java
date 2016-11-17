@@ -6,8 +6,6 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -20,6 +18,8 @@ import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Utility class that set the {@code synonyms} field in taxon documents to null.

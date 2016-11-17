@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.utils.FileUtil;
 
 /**
  * A cache that maps UnitIDs to "themes". Themes are predefined categories of

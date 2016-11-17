@@ -12,7 +12,7 @@ import static nl.naturalis.nba.common.es.map.MappingUtil.getMappedProperties;
 import static nl.naturalis.nba.common.es.map.MultiField.DEFAULT_MULTIFIELD;
 import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
-import static org.domainobject.util.ClassUtil.isA;
+import static nl.naturalis.nba.utils.ClassUtil.isA;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;

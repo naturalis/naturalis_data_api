@@ -11,10 +11,9 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=nl.naturalis.nda.elasticsearch.load&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.domainobject.util.http"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.dao"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.naturalis.nba.utils"/>
 	<classpathentry kind="output" path="build/main"/>
 </classpath>

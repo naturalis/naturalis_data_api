@@ -8,8 +8,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.ESUtil;
@@ -19,6 +17,8 @@ import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.IOUtil;
 
 public class GeoImporter {
 

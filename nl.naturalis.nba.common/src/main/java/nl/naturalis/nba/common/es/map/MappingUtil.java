@@ -9,12 +9,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import org.domainobject.util.ClassUtil;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.utils.ClassUtil;
 
 class MappingUtil {
 

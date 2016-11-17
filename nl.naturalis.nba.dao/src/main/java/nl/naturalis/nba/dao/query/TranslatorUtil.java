@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
-import static org.domainobject.util.ClassUtil.isA;
-import static org.domainobject.util.ClassUtil.isNumber;
+import static nl.naturalis.nba.utils.ClassUtil.isA;
+import static nl.naturalis.nba.utils.ClassUtil.isNumber;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

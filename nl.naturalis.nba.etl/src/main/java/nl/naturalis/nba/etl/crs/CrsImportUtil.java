@@ -4,12 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.http.SimpleHttpGet;
 import org.joda.time.DateTime;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.http.SimpleHttpGet;
 
 /**
  * Class providing common functionality for CRS imports.

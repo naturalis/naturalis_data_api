@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.normalize;
 
-import org.domainobject.util.StringUtil;
+import nl.naturalis.nba.utils.StringUtil;
 
 /**
  * A subclass of {@link Normalizer} that maps values using a mapping file

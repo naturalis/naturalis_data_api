@@ -11,8 +11,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DocumentType;
@@ -26,6 +24,8 @@ import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Manages the import of Brahms specimens and multimedia. Since specimens and

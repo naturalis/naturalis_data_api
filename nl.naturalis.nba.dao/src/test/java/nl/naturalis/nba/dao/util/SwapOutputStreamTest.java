@@ -7,10 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.domainobject.util.ArrayUtil;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.util.SwapOutputStream;
+import nl.naturalis.nba.utils.ArrayUtil;
 
 @SuppressWarnings("static-method")
 public class SwapOutputStreamTest {

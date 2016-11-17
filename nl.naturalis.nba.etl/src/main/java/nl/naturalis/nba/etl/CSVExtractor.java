@@ -1,8 +1,8 @@
 package nl.naturalis.nba.etl;
 
+import static nl.naturalis.nba.utils.StringUtil.lchop;
+import static nl.naturalis.nba.utils.StringUtil.lpad;
 import static org.apache.commons.io.Charsets.UTF_8;
-import static org.domainobject.util.StringUtil.lchop;
-import static org.domainobject.util.StringUtil.lpad;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * A generic CSV extraction component taking raw CSV lines as input and

@@ -9,8 +9,8 @@ import static nl.naturalis.nba.etl.TransformUtil.equalizeNameComponents;
 import static nl.naturalis.nba.etl.TransformUtil.guessMimeType;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
-import static org.domainobject.util.DOMUtil.getDescendants;
-import static org.domainobject.util.DOMUtil.getValue;
+import static nl.naturalis.nba.utils.DOMUtil.getDescendants;
+import static nl.naturalis.nba.utils.DOMUtil.getValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;

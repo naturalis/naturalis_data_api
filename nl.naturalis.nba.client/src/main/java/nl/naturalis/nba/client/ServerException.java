@@ -1,6 +1,6 @@
 package nl.naturalis.nba.client;
 
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NO_CONTENT;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NO_CONTENT;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,8 +9,9 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.StringUtil;
-import org.domainobject.util.debug.BeanPrinter;
+
+import nl.naturalis.nba.utils.StringUtil;
+import nl.naturalis.nba.utils.debug.BeanPrinter;
 
 /**
  * A {@link RuntimeException} thrown when an error condition arose in

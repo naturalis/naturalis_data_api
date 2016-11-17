@@ -3,11 +3,11 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertNotNull;
 
-import org.domainobject.util.ConfigObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
 public class RegistryTest {

@@ -12,13 +12,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.FileUtil;
-import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.IField;
+import nl.naturalis.nba.utils.FileUtil;
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Utility class for the DwCA creation process.

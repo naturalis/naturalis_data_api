@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.domainobject.util.IOUtil;
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * A {@link SwapOutputStream} that swaps to file. The {@link FileOutputStream}

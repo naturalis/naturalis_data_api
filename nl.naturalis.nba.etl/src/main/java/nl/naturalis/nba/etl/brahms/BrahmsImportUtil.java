@@ -39,7 +39,6 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
 import org.joda.time.LocalDate;
 
 import nl.naturalis.nba.api.model.Agent;
@@ -57,6 +56,7 @@ import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.TransformUtil;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Provides common functionality related to the Brahms ETL cycle.

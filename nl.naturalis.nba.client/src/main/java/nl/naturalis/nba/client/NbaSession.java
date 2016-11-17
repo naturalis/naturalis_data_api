@@ -1,13 +1,13 @@
 package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ServerException.newServerException;
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
-import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.MIMETYPE_JSON;
 
 import java.io.UnsupportedEncodingException;
 
-import org.domainobject.util.http.SimpleHttpGet;
+import nl.naturalis.nba.utils.http.SimpleHttpGet;
 
 /**
  * An {@code NBASession} represents a connection to an NBA server instance and

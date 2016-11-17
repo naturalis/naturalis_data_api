@@ -3,11 +3,10 @@ package nl.naturalis.nba.client;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import org.domainobject.util.IOUtil;
-
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.utils.IOUtil;
 
 public class TestDwcaQuery {
 

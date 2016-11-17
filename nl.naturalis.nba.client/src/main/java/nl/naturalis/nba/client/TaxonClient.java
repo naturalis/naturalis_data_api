@@ -2,15 +2,13 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ServerException.newServerException;
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.IOUtil;
-import org.domainobject.util.http.SimpleHttpGet;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -21,6 +19,8 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.utils.IOUtil;
+import nl.naturalis.nba.utils.http.SimpleHttpGet;
 
 /**
  * Client-side implementation of the {@link ITaxonAccess taxon API}.

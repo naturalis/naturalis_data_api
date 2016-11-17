@@ -19,8 +19,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.DOMUtil;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormat;
 import org.w3c.dom.Document;
@@ -28,6 +26,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.DOMUtil;
 
 /**
  * Utility class for searching the locally stored XML files for a value.

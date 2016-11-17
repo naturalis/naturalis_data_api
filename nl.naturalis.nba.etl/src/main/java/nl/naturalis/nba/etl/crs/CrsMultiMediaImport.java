@@ -7,8 +7,6 @@ import static nl.naturalis.nba.etl.crs.CrsImportUtil.callMultimediaService;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -18,6 +16,8 @@ import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.LoadUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Class that manages the import of CRS multimedia, sourced through "live" calls

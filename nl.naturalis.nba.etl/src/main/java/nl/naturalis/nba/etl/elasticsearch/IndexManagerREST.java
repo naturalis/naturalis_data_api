@@ -1,19 +1,19 @@
 package nl.naturalis.nba.etl.elasticsearch;
 
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_NOT_FOUND;
-import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.MIMETYPE_JSON;
 
 import java.util.Collection;
 import java.util.List;
 
 import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.utils.ExceptionUtil;
+import nl.naturalis.nba.utils.http.SimpleHttpDelete;
+import nl.naturalis.nba.utils.http.SimpleHttpGet;
+import nl.naturalis.nba.utils.http.SimpleHttpPut;
+import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ExceptionUtil;
-import org.domainobject.util.http.SimpleHttpDelete;
-import org.domainobject.util.http.SimpleHttpGet;
-import org.domainobject.util.http.SimpleHttpPut;
-import org.domainobject.util.http.SimpleHttpRequest;
 
 /**
  * Implementation of {@link IndexManager} that uses ElasticSearch's REST API to

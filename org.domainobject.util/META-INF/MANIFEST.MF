@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.domainobject.util
+Bundle-SymbolicName: nl.naturalis.nba.utils
+Bundle-Version: 1.0.0
+Export-Package: nl.naturalis.nba.utils,
+ nl.naturalis.nba.utils.debug

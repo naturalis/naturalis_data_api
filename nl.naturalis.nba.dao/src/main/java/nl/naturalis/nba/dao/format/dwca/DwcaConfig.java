@@ -6,10 +6,6 @@ import java.io.File;
 import java.io.OutputStream;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.ConfigObject.MissingPropertyException;
-import org.domainobject.util.ConfigObject.PropertyNotSetException;
-import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.dao.DaoRegistry;
@@ -18,6 +14,10 @@ import nl.naturalis.nba.dao.format.DataSetBuilder;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.csv.CsvFieldFactory;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.FileUtil;
+import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
+import nl.naturalis.nba.utils.ConfigObject.PropertyNotSetException;
 
 /**
  * Captures the information in the XML configuration file for a DarwinCore

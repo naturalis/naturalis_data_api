@@ -5,7 +5,7 @@ import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
-import static org.domainobject.util.StringUtil.rpad;
+import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.model.BioStratigraphy;
@@ -43,6 +42,7 @@ import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
+import nl.naturalis.nba.utils.DOMUtil;
 
 /**
  * The transformer component for the CRS specimen import.

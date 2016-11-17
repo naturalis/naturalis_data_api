@@ -1,6 +1,6 @@
 package nl.naturalis.nba.client;
 
-import org.domainobject.util.http.SimpleHttpPost;
+import nl.naturalis.nba.utils.http.SimpleHttpPost;
 
 public class Test {
 

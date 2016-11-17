@@ -6,7 +6,8 @@ import java.io.InputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
+
+import nl.naturalis.nba.utils.ConfigObject;
 
 public class NDA {
 

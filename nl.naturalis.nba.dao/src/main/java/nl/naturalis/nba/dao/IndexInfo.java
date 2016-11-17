@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
 
 import nl.naturalis.nba.dao.exception.InitializationException;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Provides information about an Elasticsearch index, for example the document

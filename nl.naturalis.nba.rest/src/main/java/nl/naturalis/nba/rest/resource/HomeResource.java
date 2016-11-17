@@ -13,8 +13,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.IOUtil;
 
 @Path("/")
 @Stateless

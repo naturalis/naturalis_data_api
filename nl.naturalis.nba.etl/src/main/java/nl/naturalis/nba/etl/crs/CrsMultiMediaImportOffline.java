@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.IOUtil;
 import org.xml.sax.SAXException;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
@@ -26,6 +24,8 @@ import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.IOUtil;
 
 
 

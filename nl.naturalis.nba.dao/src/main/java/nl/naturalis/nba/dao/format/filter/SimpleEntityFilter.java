@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.domainobject.util.ConfigObject;
-
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.format.EntityFilterException;
 import nl.naturalis.nba.dao.format.EntityFilterInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IEntityFilter;
+import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * A generic entity filter that will suit for many use cases. The {@link Map}

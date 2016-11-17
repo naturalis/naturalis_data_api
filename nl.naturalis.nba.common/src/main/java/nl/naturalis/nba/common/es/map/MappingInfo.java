@@ -10,11 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.domainobject.util.CollectionUtil;
-import org.domainobject.util.convert.Stringifier;
-
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.utils.CollectionUtil;
+import nl.naturalis.nba.utils.convert.Stringifier;
 
 /**
  * A {@code MappingInfo} object provides easy, programmatic access to various

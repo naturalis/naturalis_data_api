@@ -3,9 +3,8 @@ package nl.naturalis.nba.client;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import org.domainobject.util.IOUtil;
-
 import nl.naturalis.nba.api.NoSuchDataSetException;
+import nl.naturalis.nba.utils.IOUtil;
 
 public class TestDwcaGetDataSet {
 

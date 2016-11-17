@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ExceptionUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -44,6 +43,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.utils.ExceptionUtil;
 
 /**
  * An implementation of {@link IndexManager} that uses ElasticSearch's Native

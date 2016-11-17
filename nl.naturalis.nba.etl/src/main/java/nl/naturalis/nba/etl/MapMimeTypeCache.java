@@ -16,7 +16,8 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.IOUtil;
+
+import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Implementation of {@link MimeTypeCache} that uses a {@link TreeMap} as

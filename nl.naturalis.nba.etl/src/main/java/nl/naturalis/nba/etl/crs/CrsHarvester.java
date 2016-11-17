@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.etl.crs.CrsImportUtil.callMultimediaService;
 import static nl.naturalis.nba.etl.crs.CrsImportUtil.callSpecimenService;
-import static org.domainobject.util.FileUtil.setContents;
+import static nl.naturalis.nba.utils.FileUtil.setContents;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -11,12 +11,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.FileUtil;
 
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.FileUtil;
 
 /**
  * Harvests the CRS OAI service and saves its output to files on the local file

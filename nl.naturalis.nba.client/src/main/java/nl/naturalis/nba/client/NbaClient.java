@@ -4,8 +4,8 @@ import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ClientUtil.getQueryResult;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
-import static org.domainobject.util.http.SimpleHttpRequest.HTTP_OK;
-import static org.domainobject.util.http.SimpleHttpRequest.MIMETYPE_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.MIMETYPE_JSON;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,9 +14,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.http.SimpleHttpException;
-import org.domainobject.util.http.SimpleHttpGet;
-import org.domainobject.util.http.SimpleHttpRequest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -27,6 +24,9 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.utils.http.SimpleHttpException;
+import nl.naturalis.nba.utils.http.SimpleHttpGet;
+import nl.naturalis.nba.utils.http.SimpleHttpRequest;
 
 /**
  * Abstract base class for all client-side implementations of the NBA API.

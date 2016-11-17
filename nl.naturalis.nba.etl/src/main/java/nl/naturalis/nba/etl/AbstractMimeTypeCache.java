@@ -6,11 +6,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.ConfigObject;
-import org.domainobject.util.FileUtil;
-import org.domainobject.util.http.SimpleHttpHead;
 
 import nl.naturalis.nba.dao.DaoRegistry;
+import nl.naturalis.nba.utils.ConfigObject;
+import nl.naturalis.nba.utils.FileUtil;
+import nl.naturalis.nba.utils.http.SimpleHttpHead;
 
 /**
  * Abstract base class for mimetype caches. Provides the public interface of a

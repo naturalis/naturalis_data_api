@@ -6,10 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-import org.domainobject.util.ArrayUtil;
 import org.junit.Test;
 
 import nl.naturalis.nba.dao.util.SwapFileOutputStream;
+import nl.naturalis.nba.utils.ArrayUtil;
 
 @SuppressWarnings("static-method")
 public class SwapFileOutputStreamTest {

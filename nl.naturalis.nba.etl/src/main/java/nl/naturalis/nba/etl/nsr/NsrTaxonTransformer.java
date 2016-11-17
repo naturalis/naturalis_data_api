@@ -8,8 +8,8 @@ import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
-import static org.domainobject.util.DOMUtil.getChild;
-import static org.domainobject.util.DOMUtil.getChildren;
+import static nl.naturalis.nba.utils.DOMUtil.getChild;
+import static nl.naturalis.nba.utils.DOMUtil.getChildren;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.domainobject.util.DOMUtil;
 import org.w3c.dom.Element;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
@@ -35,6 +34,7 @@ import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.utils.DOMUtil;
 
 /**
  * The transformer component in the NSR ETL cycle for taxa.

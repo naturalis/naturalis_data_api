@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl;
 
-import static org.domainobject.util.StringUtil.lpad;
-import static org.domainobject.util.StringUtil.rpad;
+import static nl.naturalis.nba.utils.StringUtil.lpad;
+import static nl.naturalis.nba.utils.StringUtil.rpad;
 
 import org.apache.logging.log4j.Logger;
 

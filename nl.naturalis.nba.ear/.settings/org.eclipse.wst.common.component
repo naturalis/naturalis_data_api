@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="nl.naturalis.nba.ear">
         <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
-        <dependent-module archiveName="org.domainobject.util.jar" deploy-path="/lib" handle="module:/resource/org.domainobject.util/org.domainobject.util">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="nl.naturalis.nba.api.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nba.api/nl.naturalis.nba.api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -19,6 +16,9 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="nl.naturalis.nba.common.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nba.common/nl.naturalis.nba.common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="nl.naturalis.nba.utils.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nba.utils/nl.naturalis.nba.utils">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

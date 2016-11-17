@@ -2,6 +2,7 @@ package nl.naturalis.nba.rest.util;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
+import static nl.naturalis.nba.utils.ConfigObject.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +13,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.domainobject.util.CollectionUtil;
-import static org.domainobject.util.ConfigObject.*;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
@@ -21,6 +20,7 @@ import nl.naturalis.nba.api.query.LogicalOperator;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.api.query.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
+import nl.naturalis.nba.utils.CollectionUtil;
 
 /**
  * Extracts {@link QuerySpec} objects from request URLs.

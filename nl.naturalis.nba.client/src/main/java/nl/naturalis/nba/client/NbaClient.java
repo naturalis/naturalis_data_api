@@ -5,7 +5,7 @@ import static nl.naturalis.nba.client.ClientUtil.getQueryResult;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.MIMETYPE_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -146,7 +146,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
-		request.setAccept(MIMETYPE_JSON);
+		request.setAccept(CT_APPLICATION_JSON);
 		return request;
 	}
 

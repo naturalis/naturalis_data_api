@@ -43,13 +43,28 @@ public abstract class SimpleHttpRequest {
 	public static final int HTTP_BAD_REQUEST = 400;
 	public static final int HTTP_NOT_FOUND = 404;
 
-	public static final String MIMETYPE_PLAIN = "text/plain";
-	public static final String MIMETYPE_JSON = "application/json";
+	/**
+	 * Content-Type header key: &#34;Content-Type&#34;.
+	 */
+	public static final String HDR_CONTENT_TYPE = "Content-Type";
+	/**
+	 * Accept header key: &#34;Accept&#34;
+	 */
+	public static final String HDR_ACCEPT = "Accept";
+	/**
+	 * Content-Type header value: &#34;text/plain&#34;.
+	 */
+	public static final String CT_TEXT_PLAIN = "text/plain";
+	/**
+	 * Content-Type header value: &#34;application/json&#34;.
+	 */
+	public static final String CT_APPLICATION_JSON = "application/json";
+	/**
+	 * Content-Type header value: &#34;application/x-www-form-urlencoded&#34;.
+	 */
+	public static final String CT_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
 	private static final String CHARSET_UTF8 = "UTF-8";
-
-	private static final String HDR_CONTENT_TYPE = "Content-Type";
-	private static final String HDR_ACCEPT = "Accept";
 
 	private static HttpClient sharedHttpClient;
 
@@ -81,9 +96,10 @@ public abstract class SimpleHttpRequest {
 	}
 
 	/**
-	 * Create a {@code SimpleHttpRequest}. When specifying true, this instance
-	 * will share Apache's {@code HttpClient} with other instances. When
-	 * specifying false, this instance will use a privately maintained
+	 * Create a {@code SimpleHttpRequest}. When specifying true for
+	 * {@code shareHttpClient}, this instance will share Apache's
+	 * {@code HttpClient} with other instances of {@code SimpleHttpRequest}.
+	 * When specifying false, this instance will use a privately maintained
 	 * {@code HttpClient}. The content type of the request body (if any) is
 	 * initialized to text/plain. The character set of the request URL and
 	 * request body is initialized to UTF-8.
@@ -96,7 +112,7 @@ public abstract class SimpleHttpRequest {
 	public SimpleHttpRequest(boolean shareHttpClient)
 	{
 		this.shareHttpClient = shareHttpClient;
-		setContentType(MIMETYPE_PLAIN);
+		setContentType(CT_TEXT_PLAIN);
 		charset = CHARSET_UTF8;
 	}
 
@@ -110,14 +126,15 @@ public abstract class SimpleHttpRequest {
 	{
 		baseUrl = null;
 		path = null;
-		queryParams = null;
 		query = null;
+		queryParams = null;
+		formParams = null;
 		fragment = null;
 		requestBody = null;
 		httpResponse = null;
 		headers = null;
 		charset = CHARSET_UTF8;
-		setContentType(MIMETYPE_PLAIN);
+		setContentType(CT_TEXT_PLAIN);
 		if (request != null) {
 			request.reset();
 		}
@@ -125,12 +142,11 @@ public abstract class SimpleHttpRequest {
 
 	/**
 	 * Sets the base URL (scheme, user info, host, port). You can, in fact, also
-	 * use this method to set the entire URL to execute, including path, query
-	 * and fragment. Or you can use it to set the base URL plus the context root
-	 * (plus, possibly, some more unchanging path elements). In short, this
-	 * method simply allows you to set the start of the URL. This is the only
-	 * property that must be set in order to successfully {@link #execute()
-	 * execute} an HTTP request.
+	 * use this method to set the entire URL, including path, query and
+	 * fragment. Or you can use it to set the base URL plus the context root. In
+	 * short, this method simply allows you to set the start of the URL. This is
+	 * the only property that <b>must</b> be set in order to successfully
+	 * {@link #execute() execute} an HTTP request.
 	 * 
 	 * @param baseUrl
 	 *            The base URL or complete URL
@@ -181,6 +197,9 @@ public abstract class SimpleHttpRequest {
 	 */
 	public SimpleHttpRequest addQueryParam(String key, String value)
 	{
+		if (query != null) {
+			throw new SimpleHttpException("Query string and query parameters cannot both be set");
+		}
 		if (queryParams == null) {
 			queryParams = new ArrayList<>(8);
 		}
@@ -211,6 +230,9 @@ public abstract class SimpleHttpRequest {
 	 */
 	public SimpleHttpRequest setQuery(String query)
 	{
+		if (queryParams != null) {
+			throw new SimpleHttpException("Query string and query parameters cannot both be set");
+		}
 		this.query = query;
 		return this;
 	}
@@ -262,18 +284,7 @@ public abstract class SimpleHttpRequest {
 
 	public SimpleHttpRequest setContentType(String contentType)
 	{
-		if (contentType == null) {
-			if (headers != null) {
-				headers.remove(HDR_CONTENT_TYPE);
-			}
-		}
-		else {
-			if (headers == null) {
-				headers = new LinkedHashMap<String, String>();
-			}
-			headers.put(HDR_CONTENT_TYPE, contentType);
-		}
-		return this;
+		return setHeader(HDR_CONTENT_TYPE, contentType);
 	}
 
 	/**
@@ -300,11 +311,7 @@ public abstract class SimpleHttpRequest {
 	 */
 	public SimpleHttpRequest setAccept(String accept)
 	{
-		if (headers == null) {
-			headers = new LinkedHashMap<String, String>();
-		}
-		headers.put(HDR_ACCEPT, accept);
-		return this;
+		return setHeader(HDR_ACCEPT, accept);
 	}
 
 	/**
@@ -324,7 +331,8 @@ public abstract class SimpleHttpRequest {
 	/**
 	 * Sets an arbitrary header on the request. Just like any other element the
 	 * request (except the request body), the headers you set here will survive
-	 * request executions.
+	 * request executions. Passing {@code null} as value for the header will
+	 * remove the header from the request.
 	 * 
 	 * @param key
 	 *            The name of the header
@@ -334,10 +342,17 @@ public abstract class SimpleHttpRequest {
 	 */
 	public SimpleHttpRequest setHeader(String key, String value)
 	{
-		if (headers == null) {
-			headers = new LinkedHashMap<String, String>();
+		if (value == null) {
+			if (headers != null) {
+				headers.remove(key);
+			}
 		}
-		headers.put(key, value);
+		else {
+			if (headers == null) {
+				headers = new LinkedHashMap<String, String>();
+			}
+			headers.put(key, value);
+		}
 		return this;
 	}
 
@@ -377,12 +392,18 @@ public abstract class SimpleHttpRequest {
 	 * 
 	 * @param body
 	 *            The contents of the request body
+	 * @param contentType
+	 *            The content type of the request body
 	 * 
 	 * @return This {@code SimpleHttpRequest}
 	 */
-	public SimpleHttpRequest setRequestBody(String body)
+	public SimpleHttpRequest setRequestBody(String body, String contentType)
 	{
+		if (formParams != null) {
+			throw new SimpleHttpException("Request body and form parameters cannot both be set");
+		}
 		this.requestBody = body;
+		setContentType(contentType);
 		return this;
 	}
 
@@ -391,13 +412,16 @@ public abstract class SimpleHttpRequest {
 	 * 
 	 * @param body
 	 *            The contents of the request body
+	 * @param contentType
+	 *            The content type of the request body
 	 * @param charset
 	 *            The character set used for the request body
 	 * @return This {@code SimpleHttpRequest}
 	 */
-	public SimpleHttpRequest setRequestBody(String body, String charset)
+	public SimpleHttpRequest setRequestBody(String body, String contentType, String charset)
 	{
 		this.requestBody = body;
+		setContentType(contentType);
 		this.charset = charset;
 		return this;
 	}

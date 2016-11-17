@@ -18,5 +18,8 @@
         <dependent-module archiveName="nl.naturalis.nba.common.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nba.common/nl.naturalis.nba.common">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="nl.naturalis.nba.utils.jar" deploy-path="/lib" handle="module:/resource/nl.naturalis.nba.utils/nl.naturalis.nba.utils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>

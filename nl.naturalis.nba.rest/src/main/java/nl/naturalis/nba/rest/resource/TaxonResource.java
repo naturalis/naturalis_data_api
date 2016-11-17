@@ -39,7 +39,7 @@ import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
-import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 
 @SuppressWarnings("static-method")
 @Path("/taxon")
@@ -92,7 +92,7 @@ public class TaxonResource {
 	public QueryResult<Taxon> query(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
 		}
@@ -107,7 +107,7 @@ public class TaxonResource {
 	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.queryData(qs);
 		}
@@ -122,7 +122,7 @@ public class TaxonResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
 		}
@@ -138,7 +138,7 @@ public class TaxonResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -153,7 +153,7 @@ public class TaxonResource {
 	public Response dwcaQuery(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override

@@ -27,7 +27,7 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.GeoAreaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
-import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 
 @Path("/geo")
 @Stateless
@@ -80,7 +80,7 @@ public class GeoAreaResource {
 	public QueryResult<GeoArea> query(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.query(qs);
 		}
@@ -95,7 +95,7 @@ public class GeoAreaResource {
 	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.queryData(qs);
 		}
@@ -110,7 +110,7 @@ public class GeoAreaResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.count(qs);
 		}
@@ -126,7 +126,7 @@ public class GeoAreaResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.getDistinctValues(field, qs);
 		}

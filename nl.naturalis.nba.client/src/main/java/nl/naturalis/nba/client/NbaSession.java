@@ -3,7 +3,7 @@ package nl.naturalis.nba.client;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.MIMETYPE_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 
 import java.io.UnsupportedEncodingException;
 
@@ -89,7 +89,7 @@ public class NbaSession {
 	{
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(cfg.getBaseUrl());
-		request.setAccept(MIMETYPE_JSON);
+		request.setAccept(CT_APPLICATION_JSON);
 		request.setPath("/ping");
 		NbaClient.sendRequest(request);
 		int status = request.getStatus();

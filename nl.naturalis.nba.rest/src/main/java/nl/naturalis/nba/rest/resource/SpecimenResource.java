@@ -44,7 +44,7 @@ import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
-import nl.naturalis.nba.rest.util.UrlQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.debug.BeanPrinter;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
@@ -143,10 +143,10 @@ public class SpecimenResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Specimen> query(@Context UriInfo uriInfo)
+	public QueryResult<Specimen> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.query(qs);
 		}
@@ -156,14 +156,29 @@ public class SpecimenResource {
 	}
 	
 	@POST
-	@Path("/queryPOST")
+	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String queryPOST(MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
+	public String query_POST_FORM(MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
+	{
+		try {
+			
+			return "Hallo";
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+	
+	@POST
+	@Path("/query")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public String query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
 	{
 		System.out.println("Hallo");
 		try {
-			BeanPrinter.out(form);
+			BeanPrinter.out(qs);
 			return "Hallo";
 		}
 		catch (Throwable t) {
@@ -177,7 +192,7 @@ public class SpecimenResource {
 	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.queryData(qs);
 		}
@@ -192,7 +207,7 @@ public class SpecimenResource {
 	public Response dwcaQuery(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override
@@ -223,7 +238,7 @@ public class SpecimenResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.count(qs);
 		}
@@ -239,7 +254,7 @@ public class SpecimenResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new UrlQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getDistinctValues(field, qs);
 		}

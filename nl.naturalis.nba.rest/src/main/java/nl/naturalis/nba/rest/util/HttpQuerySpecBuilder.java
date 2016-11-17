@@ -1,8 +1,9 @@
 package nl.naturalis.nba.rest.util;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
-import static nl.naturalis.nba.utils.ConfigObject.*;
+import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,14 +24,14 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
 
 /**
- * Extracts {@link QuerySpec} objects from request URLs.
+ * Extracts {@link QuerySpec} objects from HTTP requests.
  * 
  * @see QuerySpec
  * 
  * @author Ayco Holleman
  *
  */
-public class UrlQuerySpecBuilder {
+public class HttpQuerySpecBuilder {
 
 	public static final String PARAM_QUERY_SPEC = "_querySpec";
 	public static final String PARAM_FIELDS = "_fields";
@@ -49,12 +50,32 @@ public class UrlQuerySpecBuilder {
 	private static final String ERR_SORT_PARAM = "Parameter %s: sort order must be \"ASC\" or \"DESC\"";
 	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
 
-	private static final Logger logger = LogManager.getLogger(UrlQuerySpecBuilder.class);
+	private static final Logger logger = LogManager.getLogger(HttpQuerySpecBuilder.class);
 
 	private UriInfo uriInfo;
+	private MultivaluedMap<String, String> params;
 
-	public UrlQuerySpecBuilder(UriInfo uriInfo)
+	/**
+	 * Creates a {@link QuerySpec} from the query parameters present in the URL.
+	 * 
+	 * @param uriInfo
+	 */
+	public HttpQuerySpecBuilder(UriInfo uriInfo)
 	{
+		this.uriInfo = uriInfo;
+		this.params = uriInfo.getQueryParameters();
+	}
+
+	/**
+	 * Creates a {@link QuerySpec} from the form data in a x-www-form-urlencoded
+	 * request body.
+	 * 
+	 * @param formData
+	 * @param uriInfo
+	 */
+	public HttpQuerySpecBuilder(MultivaluedMap<String, String> formData, UriInfo uriInfo)
+	{
+		this.params = formData;
 		this.uriInfo = uriInfo;
 	}
 
@@ -62,19 +83,9 @@ public class UrlQuerySpecBuilder {
 	{
 		logger.info("Extracting QuerySpec object from request");
 		checkParams(uriInfo);
-		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 		List<String> values = params.get(PARAM_QUERY_SPEC);
 		if (values != null) {
-			if (values.size() != 1) {
-				String msg = String.format(ERR_DUPLICATE_PARAM, PARAM_QUERY_SPEC);
-				throw new HTTP400Exception(uriInfo, msg);
-			}
-			String json = values.iterator().next().trim();
-			if (json.isEmpty()) {
-				String msg = String.format(ERR_BAD_PARAM, PARAM_QUERY_SPEC, json);
-				throw new HTTP400Exception(uriInfo, msg);
-			}
-			return deserialize(json, QuerySpec.class);
+			return buildFromQuerySpecParam(values);
 		}
 		QuerySpec qs = new QuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
@@ -92,16 +103,16 @@ public class UrlQuerySpecBuilder {
 				case PARAM_IGNORE_CASE:
 					break;
 				case PARAM_SORT_FIELDS:
-					qs.setSortFields(getSortFields(uriInfo, param, value));
+					qs.setSortFields(getSortFields(value));
 					break;
 				case PARAM_FROM:
-					qs.setFrom(getIntParam(uriInfo, param, value));
+					qs.setFrom(getIntParam(param, value));
 					break;
 				case PARAM_SIZE:
-					qs.setSize(getIntParam(uriInfo, param, value));
+					qs.setSize(getIntParam(param, value));
 					break;
 				case PARAM_OPERATOR:
-					qs.setLogicalOperator(getLogicalOperator(uriInfo, param, value));
+					qs.setLogicalOperator(getLogicalOperator(value));
 					break;
 				case PARAM_FIELDS:
 					qs.setFields(getFields(value));
@@ -118,9 +129,22 @@ public class UrlQuerySpecBuilder {
 		return qs;
 	}
 
-	private static void checkParams(UriInfo uriInfo)
+	private QuerySpec buildFromQuerySpecParam(List<String> values)
 	{
-		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+		if (values.size() != 1) {
+			String msg = String.format(ERR_DUPLICATE_PARAM, PARAM_QUERY_SPEC);
+			throw new HTTP400Exception(uriInfo, msg);
+		}
+		String json = values.iterator().next().trim();
+		if (json.isEmpty()) {
+			String msg = String.format(ERR_BAD_PARAM, PARAM_QUERY_SPEC, json);
+			throw new HTTP400Exception(uriInfo, msg);
+		}
+		return deserialize(json, QuerySpec.class);
+	}
+
+	private void checkParams(UriInfo uriInfo)
+	{
 		if (params.containsKey(PARAM_QUERY_SPEC)) {
 			List<String> forbidden = Arrays.asList(PARAM_FIELDS, PARAM_FROM, PARAM_SIZE,
 					PARAM_SORT_FIELDS, PARAM_OPERATOR);
@@ -132,7 +156,10 @@ public class UrlQuerySpecBuilder {
 		}
 	}
 
-	private static Integer getIntParam(UriInfo uriInfo, String param, String value)
+	/*
+	 * Returns the value of _from or _size query parameter.
+	 */
+	private Integer getIntParam(String param, String value)
 	{
 		if (value.length() == 0) {
 			return null;
@@ -146,9 +173,12 @@ public class UrlQuerySpecBuilder {
 		}
 	}
 
+	/*
+	 * Return EQUALS_IC if _ignoreCase query parameter is present and equal to
+	 * "true", "1", "on", or "yes". Otherwise EQUALS.
+	 */
 	private ComparisonOperator getComparisonOperator()
 	{
-		MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 		String ignoreCase = params.getFirst(PARAM_IGNORE_CASE);
 		if (isTrueValue(ignoreCase)) {
 			return EQUALS_IC;
@@ -156,7 +186,10 @@ public class UrlQuerySpecBuilder {
 		return EQUALS;
 	}
 
-	private static LogicalOperator getLogicalOperator(UriInfo uriInfo, String param, String value)
+	/*
+	 * Returns value of _logicalOperator query parameter.
+	 */
+	private LogicalOperator getLogicalOperator(String value)
 	{
 		if (value.length() == 0) {
 			return null;
@@ -166,13 +199,16 @@ public class UrlQuerySpecBuilder {
 			op = LogicalOperator.parse(value);
 		}
 		catch (IllegalArgumentException e) {
-			String msg = String.format(ERR_BAD_PARAM, param, value);
+			String msg = String.format(ERR_BAD_PARAM, PARAM_OPERATOR, value);
 			throw new HTTP400Exception(uriInfo, msg);
 		}
 		return op;
 	}
 
-	private static List<SortField> getSortFields(UriInfo uriInfo, String param, String value)
+	/*
+	 * Returns value of _sortFields query parameter.
+	 */
+	private List<SortField> getSortFields(String value)
 	{
 		if (value.length() == 0) {
 			return null;
@@ -198,7 +234,7 @@ public class UrlQuerySpecBuilder {
 						sortFields.add(new SortField(path, false));
 					}
 					else {
-						String msg = String.format(ERR_SORT_PARAM, param, value);
+						String msg = String.format(ERR_SORT_PARAM, PARAM_SORT_FIELDS, value);
 						throw new HTTP400Exception(uriInfo, msg);
 					}
 				}
@@ -207,6 +243,9 @@ public class UrlQuerySpecBuilder {
 		return sortFields;
 	}
 
+	/*
+	 * Returns value of _fields query parameter.
+	 */
 	private static List<String> getFields(String value)
 	{
 		if (value.length() == 0) {

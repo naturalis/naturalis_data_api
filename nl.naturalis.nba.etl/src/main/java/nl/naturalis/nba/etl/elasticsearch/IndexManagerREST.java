@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.elasticsearch;
 
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.MIMETYPE_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 
 import java.util.Collection;
 import java.util.List;
@@ -146,13 +146,13 @@ public class IndexManagerREST implements IndexManager {
 	@Override
 	public void addType(String name, String mapping)
 	{
-		lastRequest = httpPut;
-		httpPut.setPath(indexName + "/" + name + "/_mapping");
-		httpPut.setRequestBody(mapping);
-		execute();
-		if (!isSuccess()) {
-			throw createIndexException();
-		}
+//		lastRequest = httpPut;
+//		httpPut.setPath(indexName + "/" + name + "/_mapping");
+//		httpPut.setRequestBody(mapping);
+//		execute();
+//		if (!isSuccess()) {
+//			throw createIndexException();
+//		}
 	}
 
 	@Override
@@ -202,14 +202,14 @@ public class IndexManagerREST implements IndexManager {
 	@Override
 	public void saveDocument(String type, String json, String id)
 	{
-		lastRequest = httpPut;
-		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
-		httpPut.setPath(sb.toString());
-		httpPut.setRequestBody(json);
-		execute();
-		if (!isSuccess()) {
-			throw createIndexException();
-		}
+//		lastRequest = httpPut;
+//		StringBuilder sb = new StringBuilder(32).append(indexName).append('/').append(type).append('/').append(id);
+//		httpPut.setPath(sb.toString());
+//		httpPut.setRequestBody(json);
+//		execute();
+//		if (!isSuccess()) {
+//			throw createIndexException();
+//		}
 	}
 
 	@Override

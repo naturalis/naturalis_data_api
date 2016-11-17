@@ -7,11 +7,9 @@
 	<!-- Project dependencies and non-Ivy-managed dependencies -->
 	<path id="non-ivy-dependencies">
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
+		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 		<filelist dir="${common.module.location}/build"
 		          files="${common.module.artifact}" />
-		<filelist dir="${build.module.location}/lib">
-			<file name="org.domainobject.util.jar" />
-		</filelist>
 	</path>
 
 	<property name="junit.suite.classname" value="nl.naturalis.nba.dao.AllTests" />

@@ -10,7 +10,6 @@
 		<project>nl.naturalis.nba.rest</project>
 		<project>nl.naturalis.nba.dao</project>
 		<project>nl.naturalis.nba.common</project>
-		<project>nl.naturalis.nba.utils</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -23,6 +23,14 @@
 		     target="build" />
 	</target>
 
+	<target name="build-utils-module">
+		<ant antfile="${utils.module.location}/build.xml"
+		     useNativeBasedir="true"
+		     inheritAll="false"
+		     inheritRefs="false"
+		     target="build" />
+	</target>
+
 	<target name="build-dao-module">
 		<ant antfile="${dao.module.location}/build.xml"
 		     useNativeBasedir="true"

@@ -7,12 +7,9 @@
 	<!-- Project dependencies and non-Ivy-managed dependencies -->
 	<path id="non-ivy-dependencies">
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
+		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 		<filelist dir="${common.module.location}/build" files="${common.module.artifact}" />
 		<filelist dir="${dao.module.location}/build" files="${dao.module.artifact}" />
-		<filelist dir="${build.module.location}/lib">
-			<file name="org.domainobject.util.jar" />
-			<file name="org.domainobject.util.http.jar" />
-		</filelist>
 	</path>
 
 	<target name="build" depends="build-dao-module,clean,package" />

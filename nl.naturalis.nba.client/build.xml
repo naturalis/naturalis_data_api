@@ -8,14 +8,10 @@
 	<path id="non-ivy-dependencies">
 		<!-- project dependencies -->
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
-		<!-- required libraries not inside the lib directory -->
-		<filelist dir="${build.module.location}/lib">
-			<file name="org.domainobject.util.jar" />
-			<file name="org.domainobject.util.http.jar" />
-		</filelist>
+		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 	</path>
 
-	<target name="build" depends="build-api-module,clean,package" />
+	<target name="build" depends="build-api-module,build-utils-module,clean,package" />
 
 
 </project>

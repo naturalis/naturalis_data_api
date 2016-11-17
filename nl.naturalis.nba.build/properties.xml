@@ -42,6 +42,10 @@
 	<property name="common.module.location" location="${home}/${common.module.name}" />
 	<property name="common.module.artifact" value="${common.module.name}.jar" />
 
+	<property name="utils.module.name" value="nl.naturalis.nba.utils" />
+	<property name="utils.module.location" location="${home}/${utils.module.name}" />
+	<property name="utils.module.artifact" value="${utils.module.name}.jar" />
+
 	<property name="client.module.name" value="nl.naturalis.nba.client" />
 	<property name="client.module.location" location="${home}/${client.module.name}" />
 	<property name="client.module.artifact" value="${client.module.name}.jar" />

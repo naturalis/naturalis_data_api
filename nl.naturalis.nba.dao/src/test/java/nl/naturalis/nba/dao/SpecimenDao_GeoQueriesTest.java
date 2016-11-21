@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -31,8 +31,8 @@ public class SpecimenDao_GeoQueriesTest {
 	static Specimen tRex;
 	static Specimen mSylvestris;
 
-	@Before
-	public void before()
+	@BeforeClass
+	public static void before()
 	{
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
@@ -99,6 +99,7 @@ public class SpecimenDao_GeoQueriesTest {
 	 * 
 	 * [1] There are no documents in GeoArea in nba_integration_test index. Must
 	 * load one or two shapes (e.g. one for "Netherlands"). For example in
+	 * 
 	 * @Before
 	 * 
 	 * [2] Make sure the siteCoordinates for the specimens lie within the loaded

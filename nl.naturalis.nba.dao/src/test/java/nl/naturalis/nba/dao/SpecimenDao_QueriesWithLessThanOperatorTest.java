@@ -1,13 +1,14 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.GT;
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.query.ComparisonOperator.GTE;
+import static nl.naturalis.nba.api.query.ComparisonOperator.LT;
 import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -28,8 +29,8 @@ public class SpecimenDao_QueriesWithLessThanOperatorTest {
 	static Specimen tRex;
 	static Specimen mSylvestris;
 
-	@Before
-	public void before()
+	@BeforeClass
+	public static void before()
 	{
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);

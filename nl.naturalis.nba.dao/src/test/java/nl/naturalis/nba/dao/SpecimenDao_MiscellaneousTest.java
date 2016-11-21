@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Agent;
@@ -34,8 +34,8 @@ public class SpecimenDao_MiscellaneousTest {
 	static Specimen tRex;
 	static Specimen mSylvestris;
 
-	@Before
-	public void before()
+	@BeforeClass
+	public static void before()
 	{
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);

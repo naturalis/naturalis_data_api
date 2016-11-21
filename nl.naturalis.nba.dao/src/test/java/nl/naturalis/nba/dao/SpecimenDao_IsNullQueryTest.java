@@ -9,7 +9,7 @@ import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -33,8 +33,8 @@ public class SpecimenDao_IsNullQueryTest {
 	static Specimen tRex;
 	static Specimen mSylvestris;
 
-	@Before
-	public void before()
+	@BeforeClass
+	public static void before()
 	{
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);

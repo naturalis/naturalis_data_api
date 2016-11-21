@@ -96,21 +96,11 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	@Override
 	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
 	{
-//		SimpleHttpGet request = newJsonGetRequest();
-//		request.setPath(rootPath + "query");
-//		request.addQueryParam("_querySpec", toJson(querySpec));
-//		sendRequest(request);
-		
 		SimpleHttpPost request = new SimpleHttpPost();
 		request.setAccept(CT_APPLICATION_JSON);
 		request.setBaseUrl(config.getBaseUrl());
 		request.setPath(rootPath + "query");
-		
-		//request.addFormParam("_querySpec", toJson(querySpec));
-		//request.setContentType(null);
-		
 		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);				
-		
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -123,16 +113,18 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	public QueryResult<Map<String, Object>> queryData(QuerySpec querySpec)
 			throws InvalidQueryException
 	{
-		SimpleHttpGet request = newJsonGetRequest();
-		request.setPath(rootPath + "queryRaw");
-		request.addQueryParam("_querySpec", toJson(querySpec));
+		TypeReference<QueryResult<Map<String, Object>>> typeRef;
+		typeRef = new TypeReference<QueryResult<Map<String, Object>>>() {};
+		SimpleHttpPost request = new SimpleHttpPost();
+		request.setAccept(CT_APPLICATION_JSON);
+		request.setBaseUrl(config.getBaseUrl());
+		request.setPath(rootPath + "queryData");
+		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);				
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
-		TypeReference<QueryResult<Map<String, Object>>> typeRef;
-		typeRef = new TypeReference<QueryResult<Map<String, Object>>>() {};
 		return getQueryResult(request.getResponseBody(), typeRef);
 	}
 

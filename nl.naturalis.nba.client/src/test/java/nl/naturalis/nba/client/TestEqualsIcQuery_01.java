@@ -2,6 +2,8 @@ package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 
+import java.util.Map;
+
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -18,9 +20,10 @@ public class TestEqualsIcQuery_01 {
 		Condition condition1 = new Condition("sourceSystem.code", EQUALS, "CRS");
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition1);
-		QueryResult<Specimen> result = null;
+		//QueryResult<Specimen> result = null;
+		QueryResult<Map<String,Object>> result = null;
 		try {
-			result = client.query(query);
+			result = client.queryData(query);
 		}
 		catch (InvalidQueryException e) {
 			System.err.println(e.getMessage());

@@ -129,7 +129,7 @@ public class MultiMediaObjectResource {
 	@GET
 	@Path("/queryData")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryData_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
@@ -140,6 +140,39 @@ public class MultiMediaObjectResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+	
+	@POST
+	@Path("/queryData")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public QueryResult<Map<String, Object>> queryData_POST_FORM(MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
+			return dao.queryData(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/queryData")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	{
+		try {
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
+			return dao.queryData(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+	
 
 	@GET
 	@Path("/count")

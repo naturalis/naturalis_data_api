@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 //@formatter:off
 @SuiteClasses({ 
 	StringUtilTest.class,
-	ArrayUtilTest.class
+	ArrayUtilTest.class,
+	ConfigObjectTest.class
 	
 })
 //@formatter:on

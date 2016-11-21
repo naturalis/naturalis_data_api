@@ -63,7 +63,7 @@
 		<sleep seconds="3" />
 	</target>
 
-	<target name="install-service" depends="-verify">
+	<target name="install-service">
 		<ant antfile="${ear.module.location}/build.xml"
 		     useNativeBasedir="true"
 		     inheritAll="false"
@@ -71,7 +71,7 @@
 		     target="install" />
 	</target>
 
-	<target name="install-etl-module" depends="-verify">
+	<target name="install-etl-module">
 		<ant antfile="${sh.module.location}/build.xml"
 		     useNativeBasedir="true"
 		     inheritAll="false"

@@ -33,6 +33,7 @@ import nl.naturalis.nba.dao.MultiMediaObjectDao;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
+import nl.naturalis.nba.utils.StringUtil;
 
 @SuppressWarnings("static-method")
 @Path("/multimedia")
@@ -70,7 +71,7 @@ public class MultiMediaObjectResource {
 	public MultiMediaObject[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
-			String[] idArray = JsonUtil.deserialize(ids, String[].class);
+			String[] idArray = StringUtil.split(ids, ",");
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.find(idArray);
 		}

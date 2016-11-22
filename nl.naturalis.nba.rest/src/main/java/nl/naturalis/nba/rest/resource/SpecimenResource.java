@@ -45,6 +45,7 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
+import nl.naturalis.nba.utils.StringUtil;
 import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")
@@ -86,7 +87,7 @@ public class SpecimenResource {
 	public Specimen[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
-			String[] idArray = JsonUtil.deserialize(ids, String[].class);
+			String[] idArray = StringUtil.split(ids, ",");
 			SpecimenDao dao = new SpecimenDao();
 			return dao.find(idArray);
 		}

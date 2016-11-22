@@ -28,6 +28,7 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.GeoAreaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
+import nl.naturalis.nba.utils.StringUtil;
 
 @Path("/geo")
 @Stateless
@@ -65,7 +66,7 @@ public class GeoAreaResource {
 	public GeoArea[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
-			String[] idArray = JsonUtil.deserialize(ids, String[].class);
+			String[] idArray = StringUtil.split(ids, ",");
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.find(idArray);
 		}

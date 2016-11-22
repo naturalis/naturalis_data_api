@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
 public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
+	 * <p>
 	 * Returns the data model object with the specified system ID, or
 	 * {@code null} if there is no data model object with the specified system
 	 * ID. The system ID is not part of the Elasticsearch document from which
@@ -32,6 +33,25 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * field, which is retrieved separately from the document source. You can
 	 * get the value of this field through {@link IDocumentObject#getId()
 	 * IDocumentObject.getId}.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/find/{id}
+	 * </code>
+	 * </p>
+	 * <p>
+	 * For example:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/specimen/find/ZMA.MAM.123456@CRS
+	 * </code>
+	 * </p>
 	 * 
 	 * @see IDocumentObject
 	 * 
@@ -42,8 +62,28 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	DOCUMENT_OBJECT find(String id);
 
 	/**
+	 * <p>
 	 * Returns the data model objects with the specified system IDs, or a
 	 * zero-length array no specimens were found.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/findByIds/{id-0},{id-1},{id-2},{id-n}
+	 * </code>
+	 * </p>
+	 * <p>
+	 * For example:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/specimen/findByIds/ZMA.MAM.123,ZMA.MAM.456,ZMA.MAM.789
+	 * </code>
+	 * </p>
 	 * 
 	 * @param id
 	 *            The NBA system IDs of the requested data model objects
@@ -52,7 +92,35 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	DOCUMENT_OBJECT[] find(String[] ids);
 
 	/**
+	 * <p>
 	 * Returns the documents conforming to the provided query specification.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET and a POST request
+	 * with the following endpoint
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/query
+	 * </code>
+	 * </p>
+	 * <p>
+	 * See {@link QuerySpec} for an explanation of how to encode the
+	 * {@code QuerySpec} object in the URL (for GET requests) or in the request
+	 * body (for POST requests). When using a POST request you actually have two
+	 * options:
+	 * <ol>
+	 * <li>Set the Content-Type header of the request to
+	 * application/x-www-form-urlencoded (or leave it empty) and encode the
+	 * {@code QuerySpec} object in the request body as described in
+	 * {@link QuerySpec}.
+	 * <li>Set the Content-Type header of the request to application/json and
+	 * set the request body to the unadorned JSON represention of the
+	 * {@code QuerySpec} object (<i>without</i> using the {@code _querySpec}
+	 * form parameter).
+	 * </ol>
+	 * </p>
 	 * 
 	 * @param querySpec
 	 * @return

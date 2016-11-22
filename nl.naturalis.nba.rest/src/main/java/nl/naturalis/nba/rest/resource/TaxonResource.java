@@ -44,6 +44,7 @@ import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
+import nl.naturalis.nba.utils.StringUtil;
 
 @SuppressWarnings("static-method")
 @Path("/taxon")
@@ -81,7 +82,7 @@ public class TaxonResource {
 	public Taxon[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
-			String[] idArray = JsonUtil.deserialize(ids, String[].class);
+			String[] idArray = StringUtil.split(ids, ",");
 			TaxonDao dao = new TaxonDao();
 			return dao.find(idArray);
 		}

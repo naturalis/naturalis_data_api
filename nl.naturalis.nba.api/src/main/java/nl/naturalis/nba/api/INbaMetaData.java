@@ -20,7 +20,7 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * This is equivalent to the Elasticsearch REST API call
 	 * <code>GET &lt;index&gt;/&lt;document-type&gt;/_mapping</code>.
 	 * </p>
-	 * <h3>REST API</h3>
+	 * <h4>REST API</h4>
 	 * <p>
 	 * The NBA REST API exposes this method through a GET request with the
 	 * following end point:

@@ -1,6 +1,5 @@
 package nl.naturalis.nba.common.es.map;
 
-import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
 import static nl.naturalis.nba.common.es.map.Index.NO;

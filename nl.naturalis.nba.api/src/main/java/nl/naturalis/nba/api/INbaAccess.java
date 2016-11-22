@@ -13,8 +13,8 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
- * Specifies a common set of methods that can be called against any type of
- * document within the NBA document store.
+ * Specifies a common set of data access methods that can be called against any
+ * type of document within the NBA document store.
  * 
  * @author Ayco Holleman
  *
@@ -138,21 +138,4 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	List<KeyValuePair<String, Long>> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException;
 
-	/*
-	 * Returns the raw JSON source (converted to a
-	 * <code>Map&lt;String,Object&gt;</code> instance) of the documents
-	 * conforming to the provided query specification. See {@link
-	 * #queryRaw(QuerySpec)}. This method requires more client-side programming
-	 * but responds as soon as the first documents from Elasticsearch arrive.
-	 * Also this method requires less server-side memory and places no limit on
-	 * the amount of documents being processed per call (see {@link
-	 * QuerySpec#setSize(int)}).
-	 * 
-	 * @param spec
-	 * 
-	 * @param out
-	 * 
-	 * @throws InvalidQueryException
-	 */
-	//void queryRaw(QuerySpec spec, OutputStream out) throws InvalidQueryException;
 }

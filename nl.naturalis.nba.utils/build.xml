@@ -4,7 +4,7 @@
 	<import file="../nl.naturalis.nba.build/common.xml" />
 	<import file="../nl.naturalis.nba.build/modules.xml" />
 
-	<!-- Project dependencies and non-Ivy-managed dependencies -->
+	<!-- Project dependencies -->
 	<path id="non-ivy-dependencies"/>
 
 	<!-- property name="junit.suite.classname" value="nl.naturalis.nba.utils.AllTests" / -->

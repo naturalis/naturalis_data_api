@@ -3,6 +3,10 @@
 	<name>nl.naturalis.nba.rest</name>
 	<comment></comment>
 	<projects>
+		<project>nl.naturalis.nba.api</project>
+		<project>nl.naturalis.nba.dao</project>
+		<project>nl.naturalis.nba.utils</project>
+		<project>nl.naturalis.nba.common</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -46,7 +46,6 @@ import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
-import nl.naturalis.nda.ejb.service.SpecimenService;
 
 @SuppressWarnings("static-method")
 @Path("/specimen")
@@ -56,9 +55,6 @@ public class SpecimenResource {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenResource.class);
-
-	@EJB
-	SpecimenService service;
 
 	@EJB
 	Registry registry;

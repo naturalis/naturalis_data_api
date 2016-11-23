@@ -4,9 +4,8 @@
 	<import file="../nl.naturalis.nba.build/common.xml" />
 	<import file="../nl.naturalis.nba.build/modules.xml" />
 
-	<!-- Dependencies not managed by Ivy and not in project's lib dir -->
+	<!-- Project dependencies -->
 	<path id="non-ivy-dependencies">
-		<!-- project dependencies -->
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
 		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 	</path>

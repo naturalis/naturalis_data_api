@@ -30,9 +30,8 @@ elasticsearch.transportaddress.port=9300
 # services).
 nl.naturalis.nba.conf.dir=<NBA_CONF_DIR>
 
-# Full path (including file name !) of the NBA ear file
-ear.install.path=/path/to/wildfly/standalone/deployments/nba.ear
-war.install.path=/home/ayco/programs/wildfly-10.0.0.Final/standalone/deployments/nba.war
+# Full path (including file name !) of the NBA war file
+war.install.path=/path/to/wildfly/standalone/deployments/nba.war
 
 
 ##########################################################

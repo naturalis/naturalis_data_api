@@ -109,7 +109,7 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * 
 	 * @return
 	 */
-	String getGeoJsonForId(String id);
+	GeoJsonObject getGeoJsonForId(String id);
 
 	/**
 	 * <p>
@@ -150,7 +150,7 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getLocalities
+	 * http://api.biodiversitydata.nl/v2/geo/getIsoCodes
 	 * </code>
 	 * </p>
 	 * 

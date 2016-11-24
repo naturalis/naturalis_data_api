@@ -20,7 +20,7 @@ import nl.naturalis.nba.api.query.QuerySpec;
  *
  * @param <DOCUMENT_OBJECT>
  *            The class representing the Elasticsearch document that you are
- *            given access to through an implementation of this interface.
+ *            given access to.
  */
 public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 

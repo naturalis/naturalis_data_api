@@ -1,20 +1,18 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.dao.DaoUtil.*;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
-import static nl.naturalis.nba.dao.util.ESUtil.*;
+import static nl.naturalis.nba.dao.util.ESUtil.executeSearchRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.get.GetRequestBuilder;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
+import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
 import nl.naturalis.nba.api.KeyValuePair;
@@ -24,7 +22,6 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
-import nl.naturalis.nba.dao.util.ESUtil;
 
 public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 
@@ -91,26 +88,16 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 	}
 
 	@Override
-	public String getGeoJsonForId(String id)
+	public GeoJsonObject getGeoJsonForId(String id)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("getGeoJsonForId(\"{}\")", id);
 		}
-		GetRequestBuilder request = ESUtil.esClient().prepareGet();
-		String index = GEO_AREA.getIndexInfo().getName();
-		String type = GEO_AREA.getName();
-		request.setIndex(index);
-		request.setType(type);
-		request.setId(id);
-		GetResponse response = request.execute().actionGet();
-		if (!response.isExists()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("{} with id \"{}\" not found", GEO_AREA, id);
-			}
+		GeoArea area = find(id);
+		if (area == null) {
 			return null;
 		}
-		Map<String, Object> data = response.getSource();
-		return data.get("shape").toString();
+		return area.getShape();
 	}
 
 	@Override

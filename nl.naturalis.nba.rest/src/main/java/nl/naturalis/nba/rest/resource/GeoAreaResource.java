@@ -18,12 +18,12 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.GeoAreaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
@@ -177,11 +177,11 @@ public class GeoAreaResource {
 	@GET
 	@Path("/getGeoJsonForId/{id}")
 	@Produces(JSON_CONTENT_TYPE)
-	public String getGeoJsonForId(@PathParam("id") String id, @Context UriInfo uriInfo)
+	public GeoJsonObject getGeoJsonForId(@PathParam("id") String id, @Context UriInfo uriInfo)
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			String json = dao.getGeoJsonForId(id);
+			GeoJsonObject json = dao.getGeoJsonForId(id);
 			if (json == null) {
 				String msg = String.format("No such ID: \"%s\"", id);
 				throw new HTTP404Exception(uriInfo, msg);

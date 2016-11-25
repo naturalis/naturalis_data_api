@@ -1,8 +1,8 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -11,9 +11,18 @@ import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
-class EqualsConditionTranslator extends ConditionTranslator {
+/**
+ * This ConditionTranslator is called when Condition.operator is NOT_EQUALS and
+ * Condition.value is null. By not having this situation handled by the
+ * {@link EqualsConditionTranslator}, we keep our code and the generated
+ * Elasticsearch query easier to read.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class IsNotNullConditionTranslator extends ConditionTranslator {
 
-	EqualsConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	IsNotNullConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -22,12 +31,11 @@ class EqualsConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		String field = condition.getField();
-		Object value = condition.getValue();
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null) {
-			return termQuery(field, value);
+			return existsQuery(field);
 		}
-		return nestedQuery(nestedPath, termQuery(field, value));
+		return nestedQuery(nestedPath, existsQuery(field));
 	}
 
 	@Override

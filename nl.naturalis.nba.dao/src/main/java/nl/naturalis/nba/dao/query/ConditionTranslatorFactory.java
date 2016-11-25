@@ -1,14 +1,18 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getESFieldType;
 
 import java.util.Collection;
 
+import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
@@ -16,45 +20,81 @@ import nl.naturalis.nba.dao.DocumentType;
 
 public class ConditionTranslatorFactory {
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = getLogger(ConditionTranslatorFactory.class);
+
 	private ConditionTranslatorFactory()
 	{
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link Condition condition}
-	 * and the specified {@link DocumentType document type}.
+	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
+	 * condition} and the specified {@link DocumentType document type}.
 	 * 
 	 * @param condition
 	 * @param type
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition,
-			DocumentType<?> type) throws InvalidConditionException
+	public static ConditionTranslator getTranslator(Condition condition, DocumentType<?> type)
+			throws InvalidConditionException
 	{
 		return getTranslator(condition, new MappingInfo<>(type.getMapping()));
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link Condition condition}
-	 * and the specified {@link MappingInfo} object.
+	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
+	 * condition} and the specified {@link MappingInfo} object.
 	 * 
 	 * @param condition
 	 * @param mappingInfo
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition,
-			MappingInfo<?> mappingInfo) throws InvalidConditionException
+	public static ConditionTranslator getTranslator(Condition condition, MappingInfo<?> mappingInfo)
+			throws InvalidConditionException
 	{
 		new FieldCheck(condition, mappingInfo).execute();
 		switch (condition.getOperator()) {
 			case EQUALS:
-			case NOT_EQUALS:
+				if (condition.getValue() == null) {
+					return new IsNullConditionTranslator(condition, mappingInfo);
+				}
 				return new EqualsConditionTranslator(condition, mappingInfo);
+			case NOT_EQUALS:
+				if (condition.getValue() == null) {
+					return new IsNotNullConditionTranslator(condition, mappingInfo);
+				}
+				return new NotEqualsConditionTranslator(condition, mappingInfo);
 			case EQUALS_IC:
+				if (condition.getValue() == null) {
+					return new IsNullConditionTranslator(condition, mappingInfo);
+				}
+				if (getESFieldType(condition, mappingInfo) == ESDataType.STRING) {
+					return new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
+				}
+				/*
+				 * This is a gesture to the user. The equals-ignore-case
+				 * comparator naturally only makes sense for strings. So for
+				 * numbers, dates, etc. we tacitly submit the condition to the
+				 * EqualsConditionTranslator instead of the
+				 * EqualsIgnoreCaseConditionTranslator. This also allows for a
+				 * high-level instruction like "Do a case-insensitive query" -
+				 * i.e. ALL conditions in the QuerySpec should be handled in a
+				 * case-insensitive manner WHERE APPLICABLE (which is in case of
+				 * string fields). This is what the _ignoreCase query parameter
+				 * achieves. See the HttpQuerySpecBuilder class in the rest
+				 * module.
+				 */
+				return new EqualsConditionTranslator(condition, mappingInfo);
 			case NOT_EQUALS_IC:
-				return new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
+				if (condition.getValue() == null) {
+					return new IsNotNullConditionTranslator(condition, mappingInfo);
+				}
+				if (getESFieldType(condition, mappingInfo) == ESDataType.STRING) {
+					return new NotEqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
+				}
+				return new NotEqualsConditionTranslator(condition, mappingInfo);
 			case GT:
 				return new GTConditionTranslator(condition, mappingInfo);
 			case GTE:
@@ -108,9 +148,9 @@ public class ConditionTranslatorFactory {
 	}
 
 	/*
-	 * Whether or not we must assume that Condition.value is a JSON string, or at least
-	 * not a geographical name like "Amsterdam". The assumption is that no geographical
-	 * name starts with '{' and ends with '}', which seems safe.
+	 * Whether or not we must assume that Condition.value is a JSON string, or
+	 * at least not a geographical name like "Amsterdam". The assumption is that
+	 * no geographical name starts with '{' and ends with '}', which seems safe.
 	 */
 	private static boolean isJson(Object val)
 	{
@@ -121,8 +161,7 @@ public class ConditionTranslatorFactory {
 		return false;
 	}
 
-	private static GeoJsonObject getGeoJsonObject(Object val)
-			throws InvalidConditionException
+	private static GeoJsonObject getGeoJsonObject(Object val) throws InvalidConditionException
 	{
 		try {
 			return deserialize(val.toString(), GeoJsonObject.class);
@@ -132,7 +171,6 @@ public class ConditionTranslatorFactory {
 			String msg = String.format(fmt, e.getMessage(), val);
 			throw new InvalidConditionException(msg);
 		}
-
 	}
 
 }

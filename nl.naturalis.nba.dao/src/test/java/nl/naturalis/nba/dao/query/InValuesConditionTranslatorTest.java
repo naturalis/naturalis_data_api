@@ -23,13 +23,13 @@ import nl.naturalis.nba.dao.test.TestPerson;
 
 public class InValuesConditionTranslatorTest {
 
-	private static MappingInfo mappingInfo;
+	private static MappingInfo<TestPerson> mappingInfo;
 
 	@BeforeClass
 	public static void init()
 	{
 		Mapping<TestPerson> m = MappingFactory.getMapping(TestPerson.class);
-		mappingInfo = new MappingInfo(m);
+		mappingInfo = new MappingInfo<>(m);
 	}
 
 	/*

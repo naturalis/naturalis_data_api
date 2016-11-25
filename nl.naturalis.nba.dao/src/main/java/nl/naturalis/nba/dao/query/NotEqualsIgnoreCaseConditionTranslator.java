@@ -4,7 +4,7 @@ import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsString;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -15,9 +15,9 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.StringField;
 
-class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
+class NotEqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
-	EqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	NotEqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -30,9 +30,9 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		String multiField = field + '.' + IGNORE_CASE_MULTIFIELD.getName();
 		if (nestedPath == null) {
-			return termQuery(multiField, value);
+			return boolQuery().mustNot(termQuery(multiField, value));
 		}
-		return nestedQuery(nestedPath, termQuery(multiField, value));
+		return boolQuery().mustNot(nestedQuery(nestedPath, termQuery(multiField, value)));
 	}
 
 	@Override

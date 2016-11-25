@@ -1,13 +1,5 @@
 {
-  "bool" : {
-    "must_not" : {
-      "bool" : {
-        "must_not" : {
-          "exists" : {
-            "field" : "firstName"
-          }
-        }
-      }
-    }
+  "exists" : {
+    "field" : "firstName"
   }
 }

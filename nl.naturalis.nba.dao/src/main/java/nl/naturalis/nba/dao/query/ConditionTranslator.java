@@ -1,17 +1,16 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
-import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -32,6 +31,8 @@ import nl.naturalis.nba.dao.DocumentType;
  *
  */
 public abstract class ConditionTranslator {
+
+	private static final Logger logger = getLogger(ConditionTranslator.class);
 
 	/**
 	 * Translates the conditions in the provided {@link QuerySpec} instance.
@@ -67,13 +68,18 @@ public abstract class ConditionTranslator {
 
 	/*
 	 * Negating operators are operators that are translated by replacing them
-	 * with their opposite (e.g. NOT_EQUALS with EQUALS) and then wrapping them
-	 * within a BoolQuery.mustNot() query.
+	 * with their opposite (e.g. NOT_BETWEEN with BETWEEN) and then wrapping the
+	 * resulting query within a BoolQuery.mustNot() query. Note that NOT_EQUALS
+	 * and NOT_EQUALS_IC are not included here! For them separate
+	 * ConditionTranslator subclasses have been made. This is because they
+	 * require special code for NULL handling, and also because NOT having them
+	 * handled separately can result in valid but awkward Elasticsearch queries
+	 * (mustNot within mustNot within mustNot queries).
 	 */
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_EQUALS, NOT_EQUALS_IC, NOT_BETWEEN, NOT_LIKE, NOT_IN);
+		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN);
 	}
 
 	final Condition condition;
@@ -214,6 +220,26 @@ public abstract class ConditionTranslator {
 	private static QueryBuilder not(QueryBuilder qb)
 	{
 		return boolQuery().mustNot(qb);
+	}
+
+	private static ConditionTranslator getTranslator(Condition condition, DocumentType<?> dt)
+			throws InvalidConditionException
+	{
+		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, dt);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Translating condition using {}", ct.getClass().getSimpleName());
+		}
+		return ct;
+	}
+
+	private static ConditionTranslator getTranslator(Condition condition,
+			MappingInfo<?> mappingInfo) throws InvalidConditionException
+	{
+		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Translating condition using {}", ct.getClass().getSimpleName());
+		}
+		return ct;
 	}
 
 	/*

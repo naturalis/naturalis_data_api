@@ -19,7 +19,7 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
- * Tests INbaAccess.query for conditions that either test for null or not null.
+ * Tests INbaAccess.query for conditions that either test for NULL or NOT NULL.
  * 
  * @author Ayco Holleman
  *
@@ -57,7 +57,7 @@ public class SpecimenDao_IsNullQueryTest {
 	}
 
 	/*
-	 * Test with condition that tests for null.
+	 * Test with condition that tests for null on string field.
 	 */
 	@Test
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
@@ -73,7 +73,7 @@ public class SpecimenDao_IsNullQueryTest {
 	}
 
 	/*
-	 * Test with a negated condition that tests for null.
+	 * Test with a negated condition that tests for null on string field.
 	 */
 	@Test
 	public void testQuery__QuerySpec__02() throws InvalidQueryException
@@ -88,7 +88,7 @@ public class SpecimenDao_IsNullQueryTest {
 	}
 
 	/*
-	 * Test with a condition that tests for not null.
+	 * Test with a condition that tests for not null on string field.
 	 */
 	@Test
 	public void testQuery__QuerySpec__03() throws InvalidQueryException
@@ -102,7 +102,7 @@ public class SpecimenDao_IsNullQueryTest {
 	}
 
 	/*
-	 * Test with a negated condition that tests for not null.
+	 * Test with a negated condition that tests for not null on string field.
 	 */
 	@Test
 	public void testQuery__QuerySpec__04() throws InvalidQueryException
@@ -130,4 +130,53 @@ public class SpecimenDao_IsNullQueryTest {
 		assertEquals("01", 1, result.size());
 	}
 
+	/*
+	 * Test with a condition that tests for null on number field.
+	 */
+	@Test
+	public void testQuery__QuerySpec__06() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
+		Condition condition = new Condition(field, EQUALS, null);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// Only parusMajorSpecimen01 has site coordinates, so all 
+		// other specimens (4) should be returned.
+		assertEquals("01", 4, result.size());
+	}
+
+	/*
+	 * Test with a condition that tests for not null on number field.
+	 */
+	@Test
+	public void testQuery__QuerySpec__07() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
+		Condition condition = new Condition(field, NOT_EQUALS, null);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// Only parusMajorSpecimen01 has site coordinates
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with negated IS-NOT-NULL.
+	 */
+	@Test
+	public void testQuery__QuerySpec__08() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
+		Condition condition = new Condition(NOT, field, NOT_EQUALS, null);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// Only parusMajorSpecimen01 has site coordinates, so all 
+		// other specimens (4) should be returned.
+		assertEquals("01", 4, result.size());
+	}
 }

@@ -10,6 +10,7 @@ import java.util.Date;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
@@ -39,8 +40,13 @@ class TranslatorUtil {
 
 	static String getNestedPath(Condition condition, MappingInfo<?> mappingInfo)
 	{
-		SimpleField pf = getESField(condition, mappingInfo);
-		return MappingInfo.getNestedPath(pf);
+		SimpleField sf = getESField(condition, mappingInfo);
+		return MappingInfo.getNestedPath(sf);
+	}
+
+	static ESDataType getESFieldType(Condition condition, MappingInfo<?> mappingInfo)
+	{
+		return getESField(condition, mappingInfo).getType();
 	}
 
 	static SimpleField getESField(Condition condition, MappingInfo<?> mappingInfo)

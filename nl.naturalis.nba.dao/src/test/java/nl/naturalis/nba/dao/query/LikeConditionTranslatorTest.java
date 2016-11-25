@@ -16,13 +16,13 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 @SuppressWarnings("static-method")
 public class LikeConditionTranslatorTest {
 
-	private static MappingInfo inspector;
+	private static MappingInfo<LikeTestObject> inspector;
 
 	@BeforeClass
 	public static void init()
 	{
 		Mapping<LikeTestObject> m = MappingFactory.getMapping(LikeTestObject.class);
-		inspector = new MappingInfo(m);
+		inspector = new MappingInfo<>(m);
 	}
 
 	/*

@@ -93,7 +93,6 @@ public class ESTestUtils {
 		DocumentType<?> dt = DocumentType.forClass(obj.getClass());
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
-		String source = JsonUtil.toJson(obj);
 		IndexRequestBuilder irb = client().prepareIndex(index, type);
 		if (id != null) {
 			irb.setId(id);
@@ -101,7 +100,8 @@ public class ESTestUtils {
 		if (parentId != null) {
 			irb.setParent(parentId);
 		}
-		irb.setSource(source);
+		byte[] data = JsonUtil.serialize(obj);
+		irb.setSource(data);
 		irb.execute().actionGet();
 		if (refreshIndex) {
 			ESUtil.refreshIndex(dt);

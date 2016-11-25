@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.dao.MultiMediaObjectMetaDataDao;
 
 @SuppressWarnings("static-method")
@@ -24,7 +26,8 @@ import nl.naturalis.nba.dao.MultiMediaObjectMetaDataDao;
 public class MultiMediaObjectMetaDataResource {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(MultiMediaObjectMetaDataResource.class);
+	private static final Logger logger = LogManager
+			.getLogger(MultiMediaObjectMetaDataResource.class);
 
 	@EJB
 	Registry registry;
@@ -37,6 +40,22 @@ public class MultiMediaObjectMetaDataResource {
 		try {
 			MultiMediaObjectMetaDataDao dao = new MultiMediaObjectMetaDataDao();
 			return dao.getMapping();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/isOperatorAllowed/{field}/{operator}")
+	@Produces(JSON_CONTENT_TYPE)
+	public boolean isOperatorAllowed(@PathParam("field") String field,
+			@PathParam("operator") String operator, @Context UriInfo uriInfo)
+	{
+		try {
+			ComparisonOperator op = ComparisonOperator.parse(operator);
+			MultiMediaObjectMetaDataDao dao = new MultiMediaObjectMetaDataDao();
+			return dao.isOperatorAllowed(field, op);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

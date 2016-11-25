@@ -10,7 +10,7 @@ public class NoSuchFieldException extends Exception {
 
 	public NoSuchFieldException(Path path, String field)
 	{
-		super(format("Field \"%s\" in %s does not exist", field, path));
+		super(format("Field \"%s\" in %s does not exist or cannot be queried", field, path));
 		this.path = path;
 		this.field = field;
 	}

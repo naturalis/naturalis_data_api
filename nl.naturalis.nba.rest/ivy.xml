@@ -13,6 +13,7 @@
 		<dependency org="javax.enterprise" name="cdi-api" rev="1.2"/>
 		<dependency org="javax.ejb" name="javax.ejb-api" rev="3.2"/>
 		<dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0.1"/>
+		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
 		<!-- dependency org="com.fasterxml.jackson.jaxrs" name="jackson-jaxrs-json-provider" rev="2.7.4"/ -->
 	</dependencies>
 </ivy-module>

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -55,6 +56,7 @@ public class ConditionTranslatorFactory {
 			throws InvalidConditionException
 	{
 		new FieldCheck(condition, mappingInfo).execute();
+		checkOperator(condition, mappingInfo);
 		switch (condition.getOperator()) {
 			case EQUALS:
 				if (condition.getValue() == null) {
@@ -173,4 +175,12 @@ public class ConditionTranslatorFactory {
 		}
 	}
 
+	private static void checkOperator(Condition condition, MappingInfo<?> mappingInfo)
+			throws IllegalOperatorException
+	{
+		SimpleField field = getESField(condition, mappingInfo);
+		if (!OperatorCheck.isOperatorAllowed(field, condition.getOperator())) {
+			throw new IllegalOperatorException(condition);
+		}
+	}
 }

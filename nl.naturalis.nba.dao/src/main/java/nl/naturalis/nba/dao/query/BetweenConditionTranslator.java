@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureFieldIsDateOrNumber;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.invalidConditionException;
@@ -16,7 +15,6 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -77,12 +75,6 @@ class BetweenConditionTranslator extends ConditionTranslator {
 			return query;
 		}
 		return nestedQuery(nestedPath, query);
-	}
-
-	@Override
-	void checkOperatorFieldCombi() throws IllegalOperatorException
-	{
-		ensureFieldIsDateOrNumber(condition, mappingInfo);
 	}
 
 	@Override

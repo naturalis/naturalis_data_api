@@ -9,11 +9,8 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.StringField;
 
 class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
@@ -33,19 +30,6 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 			return termQuery(multiField, value);
 		}
 		return nestedQuery(nestedPath, termQuery(multiField, value));
-	}
-
-	@Override
-	void checkOperatorFieldCombi() throws IllegalOperatorException
-	{
-		ESField field = TranslatorUtil.getESField(condition, mappingInfo);
-		if (field instanceof StringField) {
-			StringField stringField = (StringField) field;
-			if (stringField.hasMultiField(IGNORE_CASE_MULTIFIELD)) {
-				return; /* OK */
-			}
-		}
-		throw new IllegalOperatorException(condition);
 	}
 
 	@Override

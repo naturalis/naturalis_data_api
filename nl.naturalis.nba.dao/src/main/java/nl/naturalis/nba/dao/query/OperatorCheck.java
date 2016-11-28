@@ -25,6 +25,8 @@ import static nl.naturalis.nba.common.es.map.ESDataType.INTEGER;
 import static nl.naturalis.nba.common.es.map.ESDataType.LONG;
 import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
 import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
+import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
+import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -37,12 +39,13 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
+import nl.naturalis.nba.common.es.map.StringField;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Checks whether the {@link ComparisonOperator operator} used in a
  * {@link Condition query condition} is valid given the type of the field being
- * queried.
+ * queried and given the analyzers on that field.
  * 
  * @author Ayco Holleman
  *
@@ -74,23 +77,25 @@ public class OperatorCheck {
 		t2o.put(GEO_POINT, EnumSet.of(IN, NOT_IN));
 		t2o.put(GEO_SHAPE, EnumSet.of(IN, NOT_IN));
 	}
-
-	public static boolean isOperatorAllowed(ESDataType dataType, ComparisonOperator operator)
-	{
-		EnumSet<ComparisonOperator> ops = t2o.get(dataType);
-		if (ops == null) {
-			/*
-			 * Data type is OBJECT or NESTED and no condition/comparison is
-			 * allowed using these types of fields, whatever the operator.
-			 */
-			return false;
-		}
-		return ops.contains(operator);
-	}
-
+	
 	public static boolean isOperatorAllowed(SimpleField field, ComparisonOperator operator)
 	{
-		return isOperatorAllowed(field.getType(), operator);
+		if (isOperatorAllowed(field.getType(), operator)) {
+			if (operator == LIKE || operator == NOT_LIKE) {
+				if (field instanceof StringField) {
+					return ((StringField) field).hasMultiField(LIKE_MULTIFIELD);
+				}
+				return false;
+			}
+			if (operator == EQUALS_IC || operator == NOT_EQUALS_IC) {
+				if (field instanceof StringField) {
+					return ((StringField) field).hasMultiField(IGNORE_CASE_MULTIFIELD);
+				}
+				// Otherwise (e.g. with numbers) EQUALS_IC is treated like EQUALS
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public static <T extends IDocumentObject> boolean isOperatorAllowed(String field,
@@ -104,4 +109,16 @@ public class OperatorCheck {
 		return isOperatorAllowed((SimpleField) esField, operator);
 	}
 
+	private static boolean isOperatorAllowed(ESDataType dataType, ComparisonOperator operator)
+	{
+		EnumSet<ComparisonOperator> ops = t2o.get(dataType);
+		if (ops == null) {
+			/*
+			 * Data type is OBJECT or NESTED and no condition/comparison is
+			 * allowed using these types of fields, whatever the operator.
+			 */
+			return false;
+		}
+		return ops.contains(operator);
+	}
 }

@@ -13,7 +13,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -36,11 +35,6 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 			return query;
 		}
 		return nestedQuery(nestedPath, query);
-	}
-
-	@Override
-	void checkOperatorFieldCombi() throws IllegalOperatorException
-	{
 	}
 
 	@Override

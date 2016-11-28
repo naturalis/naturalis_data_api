@@ -17,7 +17,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -110,12 +109,6 @@ public abstract class ConditionTranslator {
 	 */
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
-	/*
-	 * Implement any up-front/fail-fast field-operator compatibility check you
-	 * can think of. Throw an InvalidConditionException if field is not
-	 * compatible with operator.
-	 */
-	abstract void checkOperatorFieldCombi() throws IllegalOperatorException;
 
 	/*
 	 * Implement any up-front/fail-fast operator-value compatibility check you
@@ -126,7 +119,6 @@ public abstract class ConditionTranslator {
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
-		checkOperatorFieldCombi();
 		checkOperatorValueCombi();
 		List<Condition> and = condition.getAnd();
 		List<Condition> or = condition.getOr();
@@ -250,5 +242,6 @@ public abstract class ConditionTranslator {
 	{
 		return negatingOperators.contains(condition.getOperator());
 	}
+	
 
 }

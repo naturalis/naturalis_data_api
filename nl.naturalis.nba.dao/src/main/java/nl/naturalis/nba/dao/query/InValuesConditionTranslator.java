@@ -13,7 +13,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 
 import nl.naturalis.nba.api.query.Condition;
-import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -52,11 +51,6 @@ class InValuesConditionTranslator extends ConditionTranslator {
 			return query;
 		}
 		return nestedQuery(nestedPath, query);
-	}
-
-	@Override
-	void checkOperatorFieldCombi() throws IllegalOperatorException
-	{
 	}
 
 	@Override

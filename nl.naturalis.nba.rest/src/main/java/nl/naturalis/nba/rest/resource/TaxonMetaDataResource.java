@@ -46,6 +46,20 @@ public class TaxonMetaDataResource {
 	}
 
 	@GET
+	@Path("/getPaths")
+	@Produces(JSON_CONTENT_TYPE)
+	public String[] getPaths(@Context UriInfo uriInfo)
+	{
+		try {
+			TaxonMetaDataDao dao = new TaxonMetaDataDao();
+			return dao.getPaths();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
 	@Path("/isOperatorAllowed/{field}/{operator}")
 	@Produces(JSON_CONTENT_TYPE)
 	public boolean isOperatorAllowed(@PathParam("field") String field,

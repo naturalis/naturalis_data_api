@@ -109,8 +109,6 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

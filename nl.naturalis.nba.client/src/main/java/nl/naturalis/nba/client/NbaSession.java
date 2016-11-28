@@ -1,9 +1,9 @@
 package nl.naturalis.nba.client;
 
 import static nl.naturalis.nba.client.ServerException.newServerException;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_NOT_FOUND;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 
 import java.io.UnsupportedEncodingException;
 
@@ -77,6 +77,16 @@ public class NbaSession {
 	public TaxonClient getTaxonClient()
 	{
 		return new TaxonClient(cfg, "taxon/");
+	}
+
+	/**
+	 * Returns a client for taxon-related data.
+	 * 
+	 * @return
+	 */
+	public GeoAreaClient getGeoAreaClient()
+	{
+		return new GeoAreaClient(cfg, "geo/");
 	}
 
 	/**

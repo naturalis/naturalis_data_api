@@ -21,7 +21,7 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * This is equivalent to the Elasticsearch REST API call
 	 * <code>GET &lt;index&gt;/&lt;document-type&gt;/_mapping</code>.
 	 * </p>
-	 * <h4>REST API</h4>
+	 * <h5>REST API</h5>
 	 * <p>
 	 * The NBA REST API exposes this method through a GET request with the
 	 * following end point:
@@ -47,10 +47,41 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
 	 * <p>
+	 * Returns all fields within a document. The fields are displayed using
+	 * their full path. For example: "gatheringEvent.gatheringPersons.fullName".
+	 * Note that non-indexed fields are also returned. In other words not all of
+	 * the returned fields are necessarily queryable.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getPaths
+	 * </code>
+	 * </p>
+	 * <p>
+	 * For example:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/multimedia/getPaths
+	 * </code>
+	 * </p>
+	 * 
+	 * 
+	 * @return
+	 */
+	String[] getPaths();
+
+	/**
+	 * <p>
 	 * Verifies that the specified operator can be used in a query condition for
 	 * the specified field.
 	 * </p>
-	 * <h4>REST API</h4>
+	 * <h5>REST API</h5>
 	 * <p>
 	 * The NBA REST API exposes this method through a GET request with the
 	 * following end point:

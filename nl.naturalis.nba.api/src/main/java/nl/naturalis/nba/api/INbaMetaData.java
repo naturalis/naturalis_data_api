@@ -49,8 +49,7 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * <p>
 	 * Returns all fields within a document. The fields are displayed using
 	 * their full path. For example: "gatheringEvent.gatheringPersons.fullName".
-	 * Note that non-indexed fields are also returned. In other words not all of
-	 * the returned fields are necessarily queryable.
+	 * Note that only indexed (queryable) fields are returned.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -63,18 +62,21 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </code>
 	 * </p>
 	 * <p>
-	 * For example:
+	 * Examples:
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/multimedia/getPaths
+	 * http://api.biodiversitydata.nl/v2/multimedia/getPaths<br>
+	 * http://api.biodiversitydata.nl/v2/taxon/getPaths/?sorted=true
 	 * </code>
 	 * </p>
 	 * 
-	 * 
+	 * @param sorted
+	 *            If {@code true} paths are displayed in alphabetical order.
+	 *            Otherwise they appear in the same order as in the document.
 	 * @return
 	 */
-	String[] getPaths();
+	String[] getPaths(boolean sorted);
 
 	/**
 	 * <p>

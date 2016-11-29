@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,14 +57,18 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 	}
 
 	@Override
-	public String[] getPaths()
+	public String[] getPaths(boolean sorted)
 	{
 		List<String> paths = new ArrayList<>(100);
 		LinkedHashMap<String, ESField> properties = dt.getMapping().getProperties();
 		for (Map.Entry<String, ESField> property : properties.entrySet()) {
 			addPath(paths, null, property.getKey(), property.getValue());
 		}
-		return paths.toArray(new String[paths.size()]);
+		String[] result = paths.toArray(new String[paths.size()]);
+		if (sorted) {
+			Arrays.sort(result);
+		}
+		return result;
 	}
 
 	private static void addPath(List<String> paths, String parent, String child, ESField field)

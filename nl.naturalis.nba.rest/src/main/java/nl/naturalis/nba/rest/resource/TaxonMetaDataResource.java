@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.dao.TaxonMetaDataDao;
+import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
 @Path("/taxon/metadata")
@@ -52,7 +53,9 @@ public class TaxonMetaDataResource {
 	{
 		try {
 			TaxonMetaDataDao dao = new TaxonMetaDataDao();
-			return dao.getPaths();
+			String s = uriInfo.getQueryParameters().getFirst("sorted");
+			boolean sorted = ConfigObject.isTrueValue(s);
+			return dao.getPaths(sorted);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

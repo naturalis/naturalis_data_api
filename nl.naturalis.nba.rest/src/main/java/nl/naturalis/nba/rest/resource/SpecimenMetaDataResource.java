@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.dao.SpecimenMetaDataDao;
+import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
 @Path("/specimen/metadata")
@@ -52,7 +53,9 @@ public class SpecimenMetaDataResource {
 	{
 		try {
 			SpecimenMetaDataDao dao = new SpecimenMetaDataDao();
-			return dao.getPaths();
+			String s = uriInfo.getQueryParameters().getFirst("sorted");
+			boolean sorted = ConfigObject.isTrueValue(s);
+			return dao.getPaths(sorted);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

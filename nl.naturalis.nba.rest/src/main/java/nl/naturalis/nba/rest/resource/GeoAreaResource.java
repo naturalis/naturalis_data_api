@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
@@ -148,7 +149,7 @@ public class GeoAreaResource {
 				String msg = String.format("No such locality: \"%s\"", locality);
 				throw new HTTP404Exception(uriInfo, msg);
 			}
-			return id;
+			return "\"" + StringEscapeUtils.escapeJson(id) + "\"";
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

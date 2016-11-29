@@ -7,6 +7,9 @@ import nl.naturalis.nba.dao.DocumentType;
 import javax.ws.rs.core.UriInfo;
 
 /**
+ * Thrown when a resource (a Taxon document, Specimen document, etc&#46;) could
+ * not be found for a client-provided ID.
+ * 
  * @author Ayco Holleman
  *
  */

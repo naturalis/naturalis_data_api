@@ -8,16 +8,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 /**
- * Base {@code Exception} thrown by resource methods. Resource methods must trap
- * any error condition within a try/catch-all block and wrap the
- * {@code Exception} in a {@code RESTException}. A {@code RESTApplication}
- * maintains information about the HTTP request that resulted in the error
- * condition.
+ * Base {@code Exception} thrown by resource methods. Resource methods (i.e.
+ * methods with an {@link Path &#64;Path} annotation) <b>must</b> trap any error
+ * condition within a try/catch-all block and wrap the {@code Exception} in a
+ * {@code RESTException}. A {@code RESTApplication} maintains information about
+ * the HTTP request that resulted in the error condition.
  * 
  * @author Ayco Holleman
  *
@@ -26,6 +27,7 @@ public class RESTException extends RuntimeException {
 
 	private final Status status;
 	private final UriInfo request;
+	@SuppressWarnings("unused")
 	private final MultivaluedMap<String, String> formParams;
 
 	public RESTException(UriInfo request, Status status)
@@ -74,20 +76,20 @@ public class RESTException extends RuntimeException {
 	/**
 	 * 
 	 * <code>
-	 * 	info: {
-	 * 		requestUri: (string),
-	 * 		httpStatus: {
-	 * 			code: (int),
-	 * 			message: (string)
-	 * 		},
-	 * 		exception: {
-	 * 			message: (string),
-	 * 			cause: (string),
-	 * 			rootCause: (string),
-	 * 			stackTrace: (string[])
-	 * 		},
-	 * 		params: (map)
-	 * 	}
+	 * 	info: {<br>
+	 * 		requestUri: (string),<br>
+	 * 		httpStatus: {<br>
+	 * 			code: (int),<br>
+	 * 			message: (string)<br>
+	 * 		},<br>
+	 * 		exception: {<br>
+	 * 			message: (string),<br>
+	 * 			cause: (string),<br>
+	 * 			rootCause: (string),<br>
+	 * 			stackTrace: (string[])<br>
+	 * 		},<br>
+	 * 		params: (map)<br>
+	 * 	}<br>
 	 * </code>
 	 * 
 	 * @return
@@ -122,13 +124,13 @@ public class RESTException extends RuntimeException {
 		}
 		exceptionInfo.put("stackTrace", trace);
 
-//		QueryParams params = new QueryParams();
-//		params.addParams(request.getPathParameters());
-//		params.addParams(request.getQueryParameters());
-//		if (formParams != null) {
-//			params.addParams(formParams);
-//		}
-//		info.put("queryParams", params);
+		//		QueryParams params = new QueryParams();
+		//		params.addParams(request.getPathParameters());
+		//		params.addParams(request.getQueryParameters());
+		//		if (formParams != null) {
+		//			params.addParams(formParams);
+		//		}
+		//		info.put("queryParams", params);
 
 		return info;
 	}

@@ -1,5 +1,9 @@
 package nl.naturalis.nba.client;
 
+import static nl.naturalis.nba.client.ClientUtil.*;
+import static nl.naturalis.nba.client.ServerException.newServerException;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +14,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import nl.naturalis.nba.api.IGeoAreaAccess;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.GeoArea;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.utils.http.SimpleHttpGet;
 
 public class GeoAreaClient extends NbaClient<GeoArea> implements IGeoAreaAccess {
 
@@ -67,8 +73,12 @@ public class GeoAreaClient extends NbaClient<GeoArea> implements IGeoAreaAccess 
 	@Override
 	public String getIdForLocality(String locality)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		SimpleHttpGet request = getJson("geo/getIdForLocality/" + locality);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getString(request.getResponseBody());
 	}
 
 	@Override

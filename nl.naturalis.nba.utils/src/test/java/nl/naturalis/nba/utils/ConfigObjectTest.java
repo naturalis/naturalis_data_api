@@ -6,17 +6,10 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.apache.commons.io.IOUtils;
-
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +21,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -42,6 +36,8 @@ import nl.naturalis.nba.utils.ConfigObject.MissingPropertyException;
 
 public class ConfigObjectTest {
 
+	static final String resource = "testbuild.v2.properties";
+	
 	private String getFileWithUtil(String fileName) {
 
 		String result = "";
@@ -61,7 +57,6 @@ public class ConfigObjectTest {
 	public void testForResource()
 	{
 		Properties prop = new Properties();
-		String resource = "testbuild.v2.properties";
 		InputStream input;
 		try {
 			input = ConfigObjectTest.class.getResourceAsStream(resource);
@@ -139,7 +134,6 @@ public class ConfigObjectTest {
 	public void testIsEnabledString()
 	{
 		Properties prop = new Properties();
-		String resource = "testbuild.v2.properties";
 		InputStream input;
 		try {
 			input = ConfigObjectTest.class.getResourceAsStream(resource);
@@ -155,7 +149,6 @@ public class ConfigObjectTest {
 	public void testIsEnabledPropertiesString()
 	{
 		Properties prop = new Properties();
-		String resource = "testbuild.v2.properties";
 		InputStream input;
 		try {
 			input = ConfigObjectTest.class.getResourceAsStream(resource);
@@ -172,7 +165,6 @@ public class ConfigObjectTest {
 	public void testIsEnabledStringBoolean()
 	{
 		Properties prop = new Properties();
-		String resource = "testbuild.v2.properties";
 		InputStream input;
 		try {
 			input = ConfigObjectTest.class.getResourceAsStream(resource);
@@ -188,7 +180,6 @@ public class ConfigObjectTest {
 	public void testIsEnabledPropertiesStringBoolean()
 	{
 		Properties prop = new Properties();
-		String resource = "testbuild.v2.properties";
 		InputStream input;
 		try {
 			input = ConfigObjectTest.class.getResourceAsStream(resource);
@@ -206,7 +197,6 @@ public class ConfigObjectTest {
 	public void testConfigObjectFile()
 	{
 		Properties prop = new Properties();
-		final String resource = "testbuild.v2.properties";
 		ConfigObject config;
 		File cfgFile;
 		
@@ -235,43 +225,99 @@ public class ConfigObjectTest {
 	@Test
 	public void testConfigObjectInputStream()
 	{
-		fail("Not yet implemented");
+		ConfigObject config;
+		InputStream input;
+		input = ConfigObjectTest.class.getResourceAsStream(resource);
+		config = new ConfigObject(input);
+		assertNotNull(config);
 	}
 
 	@Test
 	public void testConfigObjectString()
 	{
-		fail("Not yet implemented");
+		ConfigObject config;
+		final String path =  ConfigObjectTest.class.getResource(resource).getPath();
+		config = new ConfigObject(path);
+		assertNotNull(config);
 	}
 
 	@Test
 	public void testConfigObjectProperties()
 	{
-		fail("Not yet implemented");
+		Properties prop = new Properties();
+		ConfigObject config = new ConfigObject(prop);
+		assertNotNull(config);
 	}
 
 	@Test
 	public void testHasProperty()
 	{
-		fail("Not yet implemented");
+		ConfigObject config = null;
+		InputStream input;
+		input = ConfigObjectTest.class.getResourceAsStream(resource);
+		config = new ConfigObject(input);
+		assertFalse(config.hasProperty("test.boolean.property.4"));
+		assertTrue(config.hasProperty("test.boolean.property.3"));
 	}
 
 	@Test
 	public void testGetPropertyNames()
 	{
-		fail("Not yet implemented");
+		ConfigObject config = null;
+		Properties prop = new Properties();
+		InputStream input;
+		try {
+			input = ConfigObjectTest.class.getResourceAsStream(resource);
+			prop.load(input);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		config = new ConfigObject(prop);
+		List<String> actual = config.getPropertyNames();
+		
+		assertThat(actual, not(IsEmptyCollection.empty()));
 	}
 
 	@Test
 	public void testGetProperties()
 	{
-		fail("Not yet implemented");
+		ConfigObject config = null;
+		Properties prop = new Properties();
+		InputStream input;
+		try {
+			input = ConfigObjectTest.class.getResourceAsStream(resource);
+			prop.load(input);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		config = new ConfigObject(prop);
+		List<String> actual = new ArrayList<>(); 
+		actual.add(config.getProperties().toString());
+		assertThat(actual, not(IsEmptyCollection.empty()));
 	}
 
 	@Test
 	public void testGetString()
 	{
-		fail("Not yet implemented");
+		String descriptionNotPassed = "Property does not exists";
+		String descriptionPassed = "Property does exists";
+		ConfigObject config = null;
+		InputStream input;
+		input = ConfigObjectTest.class.getResourceAsStream(resource);
+		config = new ConfigObject(input);
+		try
+		{
+			assertNull(descriptionNotPassed,  config.get("test.boolean.property.4"));
+			assertNotNull(descriptionPassed, config.get("test.boolean.property.3"));
+			System.out.println(descriptionPassed + " - passed");
+	     }catch(AssertionError e){
+	          System.out.println(descriptionNotPassed + " - failed");
+	        throw e;
+	     }
 	}
 
 	@Test

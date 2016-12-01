@@ -1,5 +1,11 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
+
 /**
  * A {@code Monomial} represents a node in a taxon hierarchy. It has a
  * {@code rank} (e.g. "kingdom") and a {@code name} (e.g. "Plantae").
@@ -14,7 +20,9 @@ package nl.naturalis.nba.api.model;
  */
 public class Monomial implements INbaModelObject {
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String rank;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String name;
 
 	public Monomial()

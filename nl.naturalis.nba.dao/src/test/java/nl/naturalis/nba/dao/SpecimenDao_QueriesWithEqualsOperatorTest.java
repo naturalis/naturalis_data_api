@@ -73,7 +73,7 @@ public class SpecimenDao_QueriesWithEqualsOperatorTest {
 
 	/*
 	 * Test with "odd" characters in search term and with comparison on field
-	 * within or descending from a nested objects (pathering persons).
+	 * within or descending from a "nested" object (gatheringPersons).
 	 */
 	@Test
 	public void testQuery__02() throws InvalidQueryException

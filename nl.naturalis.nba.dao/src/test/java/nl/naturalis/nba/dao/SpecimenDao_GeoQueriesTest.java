@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
+import static nl.naturalis.nba.dao.TestGeoAreas.Aalten;
 import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
@@ -15,6 +16,7 @@ import org.geojson.Polygon;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -31,6 +33,8 @@ public class SpecimenDao_GeoQueriesTest {
 	static Specimen tRex;
 	static Specimen mSylvestris;
 
+	static GeoArea aalten;
+
 	@BeforeClass
 	public static void before()
 	{
@@ -46,6 +50,12 @@ public class SpecimenDao_GeoQueriesTest {
 		tRex = TestSpecimens.tRexSpecimen01();
 		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
 		ESTestUtils.saveSpecimens(pMajor);
+
+		aalten = Aalten();
+
+		ESTestUtils.saveGeoArea(aalten, true);
+
+		createType(DocumentType.GEO_AREA);
 	}
 
 	@Test

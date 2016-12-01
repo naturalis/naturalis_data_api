@@ -10,6 +10,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.QueryBuilder;
 
+import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
@@ -75,6 +76,12 @@ public class ESTestUtils {
 	{
 		String id = specimen.getUnitID() + "@" + specimen.getSourceSystem().getCode();
 		saveObject(id, null, specimen, refreshIndex);
+	}
+
+	public static void saveGeoArea(GeoArea area, boolean refreshIndex)
+	{
+		String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();
+		saveObject(id, null, area, refreshIndex);
 	}
 
 	public static void saveObject(IDocumentObject object, boolean refreshIndex)

@@ -1,10 +1,9 @@
 package nl.naturalis.nba.client;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 
 import java.util.Map;
 
-import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
@@ -17,7 +16,7 @@ public class TestEqualsIcQuery_01 {
 		String baseUrl = "http://localhost:8080/v2";
 		NbaSession session = new NbaSession(new ClientConfig(baseUrl));
 		SpecimenClient client = session.getSpecimenClient();
-		Condition condition1 = new Condition("sourceSystem.code", EQUALS, "CRS");
+		Condition condition1 = new Condition("gatheringEvent.localityText", NOT_LIKE, "ji; Ro");
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition1);
 		//QueryResult<Specimen> result = null;
@@ -29,7 +28,6 @@ public class TestEqualsIcQuery_01 {
 			System.err.println(e.getMessage());
 		}
 		ClientUtil.printTerse(result);
-		System.out.println("Number of specimens found: " + result.size());
 	}
 
 }

@@ -152,7 +152,7 @@ class TestSpecimens {
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Hiversum");
 		gathering.setDateTimeBegin(datetime("2008/04/03 13:04"));
-		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
+		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg(), vonSiebold()));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -285,21 +285,44 @@ class TestSpecimens {
 		return specimen;
 	}
 
-	private static Person ruudAltenBurg()
+	static Person ruudAltenBurg()
 	{
 		Person person = new Person("Altenburg, R.");
 		person.setAgentText("Also likes David Bowie");
 		return person;
 	}
 
-	private static Person edwinVanHuis()
+	static Person edwinVanHuis()
 	{
 		Person person = new Person("E. van Huis");
 		person.setAgentText("Director of NBC Naturalis");
 		return person;
 	}
 
-	private static Person nathanielWallich()
+	static Person vonSiebold()
+	{
+		Person person = new Person("Philipp Franz von Siebold");
+		person.setAgentText("Philipp Franz von Siebold werkte als "
+				+ "arts in Japan en was, samen met Heinrich Bürger "
+				+ "de enige die tussen 1823 en 1829 verzamelde in "
+				+ "het land. De collectie die Von Siebold op zijn "
+				+ "twee reizen naar Japan bijeenbracht, omvat "
+				+ "tienduizenden objecten. De voorwerpen zijn "
+				+ "verspreid over Nederland en Duitsland maar er "
+				+ "zijn ook voorwerpen in Rusland, Japan en Engeland "
+				+ "terecht gekomen. Het grootste deel van de objecten "
+				+ "van de eerste reis naar Japan bevindt zich in Leiden. "
+				+ "De etnografische objecten staan in het Rijksmuseum "
+				+ "voor Volkenkunde en de mineralen, botanische en "
+				+ "zoölogische voorwerpen zijn in Naturalis te vinden. "
+				+ "Deze unieke verzameling geeft een beeld van de flora "
+				+ "en fauna in het Japan van de negentiende eeuw maar "
+				+ "ook van de toewijding van Von Siebold aan zijn "
+				+ "onderzoek en zijn enorme verzameldrang.");
+		return person;
+	}
+
+	static Person nathanielWallich()
 	{
 		Person person = new Person("Nathaniel Wallich");
 		person.setAgentText(null);

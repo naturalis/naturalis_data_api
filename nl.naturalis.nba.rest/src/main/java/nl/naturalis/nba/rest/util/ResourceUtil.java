@@ -4,6 +4,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import nl.naturalis.nba.rest.exception.RESTException;
 
 public class ResourceUtil {
@@ -24,6 +26,20 @@ public class ResourceUtil {
 			return (RESTException) throwable;
 		}
 		return new RESTException(request, throwable);
+	}
+
+	/**
+	 * Quotes and escapes the specified {@link String} so it becomes a JSON
+	 * string value. Strangely, when resource methods that {@link Produces
+	 * produce} application/json return a string, Wildfly/RESTeasy does not
+	 * automatically JSONify the string. Hence this method.
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String stringAsJson(String s)
+	{
+		return "\"" + StringEscapeUtils.escapeJson(s) + "\"";
 	}
 
 }

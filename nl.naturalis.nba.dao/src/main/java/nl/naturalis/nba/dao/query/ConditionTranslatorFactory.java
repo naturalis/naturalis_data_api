@@ -128,13 +128,12 @@ public class ConditionTranslatorFactory {
 		SimpleField pf = getESField(condition, mappingInfo);
 		switch (pf.getType()) {
 			case GEO_POINT:
-				if (val instanceof GeoJsonObject) {
-					return new PointInShapeConditionTranslator(condition, mappingInfo);
-				}
-				if (isJson(val)) {
-					condition.setValue(getGeoJsonObject(val));
-					return new PointInShapeConditionTranslator(condition, mappingInfo);
-				}
+				/*
+				 * NB we currently don't have any fields of type GeoPoint in our
+				 * data model, so this is just for the sake of completeness:
+				 */
+				String msg = "IN operator not allowed for geo_point fields";
+				throw new InvalidConditionException(msg);
 			case GEO_SHAPE:
 				if (val instanceof GeoJsonObject) {
 					return new ShapeInShapeConditionTranslator(condition, mappingInfo);

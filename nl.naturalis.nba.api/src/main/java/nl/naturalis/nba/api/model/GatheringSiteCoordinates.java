@@ -2,7 +2,6 @@ package nl.naturalis.nba.api.model;
 
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
-import org.geojson.Polygon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,34 +29,6 @@ public class GatheringSiteCoordinates implements INbaModelObject {
 	{
 		this.longitudeDecimal = longitude;
 		this.latitudeDecimal = latitude;
-	}
-
-	/**
-	 * <p>
-	 * Returns the site coordinates as {@link GeoPoint point}. Use the
-	 * {@code geoPoint} property for regular geo queries using the
-	 * {@link ComparisonOperator#IN} operator. For example:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * String shape = "{\"type\": \"polygon\", \"coordinates\": [[10,-20],[20,-30],[30,-40],[10,-20]] }";<br>
-	 * Condition condition = new Condition("gatheringEvent.gatheringSiteCoordinates.geoPoint", IN, shape);
-	 * </code>
-	 * </p>
-	 * <p>
-	 * Instead of the JSON string you could also have provided the corresponding
-	 * {@link GeoJsonObject} (a {@link Polygon} in this example).
-	 * </p>
-	 * 
-	 * @return
-	 */
-	@JsonProperty
-	public GeoPoint getGeoPoint()
-	{
-		if (longitudeDecimal == null || latitudeDecimal == null) {
-			return null;
-		}
-		return new GeoPoint(latitudeDecimal, longitudeDecimal);
 	}
 
 	/**

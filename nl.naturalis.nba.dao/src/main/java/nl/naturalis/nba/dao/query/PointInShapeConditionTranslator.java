@@ -15,6 +15,7 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
+@Deprecated
 class PointInShapeConditionTranslator extends ConditionTranslator {
 
 	PointInShapeConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)

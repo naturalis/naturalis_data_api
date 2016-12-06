@@ -3,8 +3,8 @@ package nl.naturalis.nba.rest.resource;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -23,8 +23,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
@@ -140,7 +140,7 @@ public class MultiMediaObjectResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
+
 	@POST
 	@Path("/queryData")
 	@Produces(JSON_CONTENT_TYPE)
@@ -162,7 +162,8 @@ public class MultiMediaObjectResource {
 	@Path("/queryData")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
@@ -172,7 +173,6 @@ public class MultiMediaObjectResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
 
 	@GET
 	@Path("/count")
@@ -192,7 +192,7 @@ public class MultiMediaObjectResource {
 	@GET
 	@Path("/getDistinctValues/{field}")
 	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+	public Map<String, Long> getDistinctValues(@PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -204,4 +204,26 @@ public class MultiMediaObjectResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+
+	@GET
+	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<Object, Set<Object>> getDistinctValuesPerGroup(
+			@PathParam("keyField") String keyField, @PathParam("valuesField") String valuesField,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			Condition[] conditions = null;
+			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
+				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
+			}
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
+			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 }

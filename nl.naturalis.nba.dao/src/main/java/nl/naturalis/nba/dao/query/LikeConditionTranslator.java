@@ -34,7 +34,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkOperatorValueCombi() throws InvalidConditionException
+	void checkCondition() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
 		ensureValueIsString(condition);

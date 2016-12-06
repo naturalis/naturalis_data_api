@@ -4,13 +4,13 @@ import static nl.naturalis.nba.client.ClientUtil.getObject;
 import static nl.naturalis.nba.client.ClientUtil.getQueryResult;
 import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
-import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
+import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.INbaAccess;
-import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -100,7 +100,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		request.setAccept(CT_APPLICATION_JSON);
 		request.setBaseUrl(config.getBaseUrl());
 		request.setPath(rootPath + "query");
-		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);				
+		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -119,7 +119,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		request.setAccept(CT_APPLICATION_JSON);
 		request.setBaseUrl(config.getBaseUrl());
 		request.setPath(rootPath + "queryData");
-		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);				
+		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
 		sendRequest(request);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -135,8 +135,15 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public List<KeyValuePair<String, Long>> getDistinctValues(String forField, QuerySpec spec)
+	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec)
 			throws InvalidQueryException
+	{
+		return null;
+	}
+
+	@Override
+	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
+			Condition... conditions) throws InvalidQueryException
 	{
 		return null;
 	}

@@ -12,9 +12,8 @@ import nl.naturalis.nba.api.model.SourceSystem;
 
 public class TestGeoAreas {
 
-	public TestGeoAreas()
+	private TestGeoAreas()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	static GeoArea Aalten()
@@ -24,6 +23,16 @@ public class TestGeoAreas {
 		area.setSourceSystemId("001");
 		area.setLocality("Aalten");
 		area.setShape(loadShape("aalten.geojson.txt"));
+		return area;
+	}
+
+	static GeoArea NoordHolland()
+	{
+		GeoArea area = new GeoArea();
+		area.setSourceSystem(SourceSystem.GEO);
+		area.setSourceSystemId("002");
+		area.setLocality("Noord-Holland");
+		area.setShape(loadShape("noord-holland.geojson.txt"));
 		return area;
 	}
 

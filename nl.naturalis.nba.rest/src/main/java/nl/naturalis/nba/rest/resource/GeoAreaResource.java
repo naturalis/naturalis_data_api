@@ -2,10 +2,9 @@ package nl.naturalis.nba.rest.resource;
 
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
-import static nl.naturalis.nba.rest.util.ResourceUtil.stringAsJson;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -21,8 +20,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.GeoArea;
+import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
@@ -124,7 +123,7 @@ public class GeoAreaResource {
 	@GET
 	@Path("/getDistinctValues/{field}")
 	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+	public Map<String, Long> getDistinctValues(@PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -138,37 +137,20 @@ public class GeoAreaResource {
 	}
 
 	@GET
-	@Path("/getIdForLocality/{locality}")
+	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
 	@Produces(JSON_CONTENT_TYPE)
-	public String getIdForLocality(@PathParam("locality") String locality, @Context UriInfo uriInfo)
+	public Map<Object, Set<Object>> getDistinctValuesPerGroup(
+			@PathParam("keyField") String keyField, @PathParam("valuesField") String valuesField,
+			@Context UriInfo uriInfo)
 	{
 		try {
-			GeoAreaDao dao = new GeoAreaDao();
-			String id = dao.getIdForLocality(locality);
-			if (id == null) {
-				String msg = String.format("No such locality: \"%s\"", locality);
-				throw new HTTP404Exception(uriInfo, msg);
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			Condition[] conditions = null;
+			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
+				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
 			}
-			return stringAsJson(id);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/getIdForIsoCode/{iso}")
-	@Produces(JSON_CONTENT_TYPE)
-	public String getIdForIsoCode(@PathParam("iso") String isoCode, @Context UriInfo uriInfo)
-	{
-		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			String id = dao.getIdForIsoCode(isoCode);
-			if (id == null) {
-				String msg = String.format("No such ISO code: \"%s\"", isoCode);
-				throw new HTTP404Exception(uriInfo, msg);
-			}
-			return stringAsJson(id);
+			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -182,40 +164,12 @@ public class GeoAreaResource {
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			GeoJsonObject json = dao.getGeoJsonForId(id);
+			GeoJsonObject json = dao.getGeoJsonForLocality(id);
 			if (json == null) {
 				String msg = String.format("No such ID: \"%s\"", id);
 				throw new HTTP404Exception(uriInfo, msg);
 			}
 			return json;
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/getLocalities")
-	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<String, String>> getLocalities(@Context UriInfo uriInfo)
-	{
-		try {
-			GeoAreaDao dao = new GeoAreaDao();
-			return dao.getLocalities();
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/getIsoCodes")
-	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<String, String>> getIsoCodes(@Context UriInfo uriInfo)
-	{
-		try {
-			GeoAreaDao dao = new GeoAreaDao();
-			return dao.getIsoCodes();
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

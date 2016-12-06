@@ -30,7 +30,7 @@ class EqualsConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkOperatorValueCombi() throws InvalidConditionException
+	void checkCondition() throws InvalidConditionException
 	{
 	}
 }

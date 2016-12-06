@@ -109,17 +109,15 @@ public abstract class ConditionTranslator {
 	 */
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
-
 	/*
-	 * Implement any up-front/fail-fast operator-value compatibility check you
-	 * can think of. Throw an InvalidConditionException if value is not
-	 * compatible with operator.
+	 * Implement any up-front/fail-fast checks you can think of. Throw an
+	 * InvalidConditionException if value is not compatible with operator.
 	 */
-	abstract void checkOperatorValueCombi() throws InvalidConditionException;
+	abstract void checkCondition() throws InvalidConditionException;
 
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
-		checkOperatorValueCombi();
+		checkCondition();
 		List<Condition> and = condition.getAnd();
 		List<Condition> or = condition.getOr();
 		QueryBuilder result;
@@ -242,6 +240,5 @@ public abstract class ConditionTranslator {
 	{
 		return negatingOperators.contains(condition.getOperator());
 	}
-	
 
 }

@@ -1,7 +1,5 @@
 package nl.naturalis.nba.api.model;
 
-import nl.naturalis.nba.api.annotations.Analyzers;
-
 public class SourceSystem implements INbaModelObject {
 
 	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS",

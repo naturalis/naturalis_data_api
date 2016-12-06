@@ -41,7 +41,7 @@ class PointInShapeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkOperatorValueCombi() throws InvalidConditionException
+	void checkCondition() throws InvalidConditionException
 	{
 		if (condition.getValue().getClass() != Polygon.class) {
 			String msg = "Search term must be GeoJSON object of type \"polygon\"";

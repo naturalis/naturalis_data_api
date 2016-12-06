@@ -6,8 +6,6 @@ import java.util.HashSet;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
-import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.api.model.GeoPoint;
 
 /**
  * Symbolic constants for the operators that can be used in a {@link Condition
@@ -141,47 +139,50 @@ public enum ComparisonOperator
 	/**
 	 * <p>
 	 * Operator used to establish that a field&#39;s value is one of a given set
-	 * of values or, if the field is a {@link GeoPoint} or
-	 * {@link GeoJsonObject}, that it lies within a certain area. This operator
-	 * is overloaded as follows:
+	 * of values or, if the field is a {@link GeoJsonObject}, that it lies
+	 * within a certain geographical area. More precisely, this operator is
+	 * overloaded as follows:
 	 * <ol>
-	 * <li>If the field being queried is neither a {@link GeoPoint} nor a
-	 * {@link GeoJsonObject}, the operator is used to establish that the
-	 * field&#39;s value is one of a given set of values specified by the
-	 * {@link Condition#getValue() value} property of the condition. The
-	 * {@code value} property of the condition <b>must</b> be an array or a
-	 * {@link Collection} with zero or more elements. For example:<br>
+	 * <li>If the field being queried is <i>not</i> a {@link GeoJsonObject}, the
+	 * operator is used to establish that the field&#39;s value is one of a
+	 * given set of values specified by the condition's
+	 * {@link Condition#getValue() value}. The condition's value <b>must</b> be
+	 * an array or a {@link Collection} with zero or more elements. For
+	 * example:<br>
 	 * <br>
 	 * <code>
-	 * Condition condition = new Condition("phaseOrStage", IN, new String[] {"embryo", "pupa", "larva"});
+	 * Condition condition0 = new Condition("phaseOrStage", IN, new String[] {"embryo", "pupa", "larva"});<br>
+	 * Condition condition1 = new Condition("numberOfSpecimen", IN, new int[] {1, 3, 5, 7, 9});
 	 * </code><br>
 	 * <br>
-	 * <li>If the field being queried is a {@link GeoPoint}, the {@code value}
-	 * property of the condition <b>must</b> be a GeoJson string or a
-	 * {@link GeoJsonObject}. For example:<br>
+	 * <li>If the field being queried is a {@link GeoJsonObject} <i>and</i> the
+	 * condition's value is a GeoJSON string or a {@code GeoJsonObject},
+	 * documents are returned where coordinates specified by the field lie
+	 * within the shape specified by the GeoJSON string/object. The condition's
+	 * value <b>must not</b> be an array or {@link Collection} object. For
+	 * example:<br>
 	 * <br>
 	 * <code>
-	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoPoint", IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");<br>
-	 * </code><br>
-	 * <li>If the field being queried is a {@link GeoJsonObject}, the
-	 * {@code value} property <b>must</b> be a GeoJson string, a
-	 * {@link GeoJsonObject}, <b>or</b> the ID of a {@link GeoArea} document
-	 * containing the GeoJson string. For example:<br>
-	 * <br>
-	 * <code>
-	 * // Using GeoJson:<br>
-	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");<br><br>
+	 * // Using a GeoJSON string:<br>
+	 * String field = "gatheringEvent.siteCoordinates.geoShape";<br>
+	 * Condition condition = new Condition(field, IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");<br><br>
 	 * // Using a GeoJsonObject:<br>
 	 * Polygon polygon = new Polygon();<br>
 	 * polygon.setCoordinates( /&#42; etc. &#42;/ );<br>
-	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, polygon);<br><br>
-	 * // Using the ID of a GeoArea document:<br>
-	 * Condition condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "12345@GEO");
+	 * Condition condition = new Condition(field, IN, polygon);<br><br>
 	 * </code><br>
 	 * <br>
-	 * ID lookups for {@link GeoArea} documents can be done using
-	 * {@link IGeoAreaAccess}.
-	 * 
+	 * <li>If the field being queried is a {@link GeoJsonObject} <i>and</i> the
+	 * condition's value is a regular (non-JSON) string or string array, the
+	 * condition's value is assumed to denote one or more pre-defined
+	 * localities. See {@link IGeoAreaAccess#getLocalities()}. For example:<br>
+	 * <br>
+	 * <code>
+	 * String field = "gatheringEvent.siteCoordinates.geoShape";<br>
+	 * Condition condition0 = new Condition(field, IN, "Amsterdam");<br>
+	 * Condition condition1 = new Condition(field, IN, new String[] {"Amsterdam", "Berlin"});<br><br>
+	 * </code>
+	 * </ol>
 	 */
 	IN,
 

@@ -2,6 +2,7 @@ package nl.naturalis.nba.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
@@ -98,7 +99,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * <h5>REST API</h5>
 	 * <p>
 	 * The NBA REST API exposes this method through a GET and a POST request
-	 * with the following endpoint
+	 * with the following endpoint:
 	 * </p>
 	 * <p>
 	 * <code>
@@ -149,15 +150,36 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	QueryResult<Map<String, Object>> queryData(QuerySpec spec) throws InvalidQueryException;
+	QueryResult<Map<String, Object>> queryData(QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
+	 * <p>
 	 * Returns the number of documents conforming to the provided query
 	 * specification. You may specify {@code null} for the {@code querySpec}
 	 * argument if you simply want a total document count. Otherwise you should
 	 * only set the query conditions and (possibly) the {@link LogicalOperator
 	 * logical operator} on the {@code QuerySpec}. Setting anything else on the
-	 * {@code QuerySpec} has no effect on the result and may harm performance.
+	 * {@code QuerySpec} has no effect.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following endpoint:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/count
+	 * </code>
+	 * </p>
+	 * <p>
+	 * For example:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/taxon/count<br>
+	 * http://api.biodiversitydata.nl/v2/specimen/count/?sourceSystem.code=BRAHMS
+	 * </code>
+	 * </p>
 	 * 
 	 * @param querySpec
 	 * @return
@@ -173,37 +195,83 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * with that particular value. Note that if the specified field is a
 	 * multi-valued field (i.e. it translates into a {@link List} or array), the
 	 * sum of the document counts may add up to more than the total number of
-	 * documents for the applicable document type. You can provide a
-	 * {@link QuerySpec} to specify one or more {@link Condition query
-	 * conditions}. You should only set the query conditions and (possibly) the
-	 * {@link LogicalOperator logical operator} on the {@code QuerySpec}.
-	 * Setting anything else on the {@code QuerySpec} has no effect on the
-	 * result and may harm performance. You may specify {@code null} for the
-	 * {@code querySpec} argument. Example output:
+	 * documents for the applicable document type. You may specify {@code null}
+	 * for the {@code querySpec} argument if you simply want a total document
+	 * count. Otherwise you should only set the query conditions and (possibly)
+	 * the {@link LogicalOperator logical operator} on the {@code QuerySpec}.
+	 * Setting anything else on the {@code QuerySpec} has no effect.
 	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following endpoint:
+	 * </p>
+	 * <p>
 	 * <code>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;[<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"key" : "Preserved specimen",<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"value" : 2<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"key" : "FossileSpecimen",<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"value" : 1<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"key" : "Herbarium sheet",<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"value" : 1<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-	 *&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValues/{forField}
 	 * </code>
+	 * </p>
+	 * <p>
+	 * For example:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValues/recordBasis<br>
+	 * </code>
+	 * </p>
 	 * 
 	 * @param forField
 	 * @param querySpec
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	List<KeyValuePair<String, Long>> getDistinctValues(String forField, QuerySpec querySpec)
+	Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException;
+
+	/**
+	 * <p>
+	 * Returns the unique values of the specified field, grouping them using
+	 * another field . The group is specified using the {@code groupField}
+	 * argument. The field to collect the values from is specified using the
+	 * {@code valuesField}. The result is returned as a {@link Map} where each
+	 * key is a group and each value is the set of unique values for that group.
+	 * Null values are excluded, both for the {@code groupField} and for the
+	 * {@code valuesField}.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getDistinctValuesPerGroup/{groupField}/{valuesField}
+	 * </code>
+	 * </p>
+	 * <p>
+	 * For example:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/geo/getDistinctValuesPerGroup/areaType/locality<br>
+	 * http://api.biodiversitydata.nl/v2/specimen/getDistinctValuesPerGroup/recordBasis/phaseOrStage
+	 * </code>
+	 * </p>
+	 * <p>
+	 * The {@code conditions} argument can be encoded in the URL using a
+	 * {@code _querySpec} query parameter. See {@link QuerySpec} for more
+	 * details. Only the {@link QuerySpec#getConditions() conditions} of the
+	 * {@code QuerySpec} object are taken into account; all other properties are
+	 * ignored).
+	 * </p>
+	 * 
+	 * @param groupField
+	 * @param valuesField
+	 * @param conditions
+	 * @return
+	 * @throws InvalidQueryException
+	 */
+	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
+			Condition... conditions) throws InvalidQueryException;
 
 }

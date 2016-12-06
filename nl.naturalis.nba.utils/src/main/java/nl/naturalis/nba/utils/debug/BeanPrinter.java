@@ -764,7 +764,7 @@ public class BeanPrinter {
 		indent(level, '}');
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private void printEnum(Object obj, int level)
 	{
 		printClassAndId(obj, obj.getClass());

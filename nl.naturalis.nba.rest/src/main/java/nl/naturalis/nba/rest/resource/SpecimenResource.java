@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
@@ -33,8 +33,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -279,7 +279,7 @@ public class SpecimenResource {
 	@GET
 	@Path("/getDistinctValues/{field}")
 	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+	public Map<String, Long> getDistinctValues(@PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -291,6 +291,29 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
+	
+
+	@GET
+	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<Object, Set<Object>> getDistinctValuesPerGroup(
+			@PathParam("keyField") String keyField, @PathParam("valuesField") String valuesField,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			Condition[] conditions = null;
+			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
+				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
+			}
+			SpecimenDao dao = new SpecimenDao();
+			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+	
 
 	@GET
 	@Path("/dwca/dataset/{dataset}")

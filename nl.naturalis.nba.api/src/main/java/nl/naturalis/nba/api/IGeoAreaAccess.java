@@ -1,7 +1,5 @@
 package nl.naturalis.nba.api;
 
-import java.util.List;
-
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.model.GeoArea;
@@ -43,9 +41,8 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 
 	/**
 	 * <p>
-	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
-	 * {@link GeoArea} with the specified locality. You can use this ID when
-	 * performing geo queries. See operator {@link ComparisonOperator#IN IN}).
+	 * Returns the coordinates of the area with the specified
+	 * {@link GeoArea#getLocality() locality}.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>
@@ -54,110 +51,13 @@ public interface IGeoAreaAccess extends INbaAccess<GeoArea> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getIdForLocality/{locality}
+	 * http://api.biodiversitydata.nl/v2/geo/getGeoJsonForLocality/{locality}
 	 * </code>
 	 * </p>
 	 * 
-	 * @see IDocumentObject
-	 * @see ComparisonOperator#IN
-	 * 
 	 * @return
 	 */
-	String getIdForLocality(String locality);
+	GeoJsonObject getGeoJsonForLocality(String locality);
 
-	/**
-	 * <p>
-	 * Returns the {@link IDocumentObject#getId() Elasticsearch ID} of the
-	 * {@link GeoArea} with the specified ISO code. Note that not all areas in
-	 * the Naturalis area index have an ISO code. You can use this ID when
-	 * performing geo queries. See operator {@link ComparisonOperator#IN IN}.
-	 * </p>
-	 * <h5>REST API</h5>
-	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following end point:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getIdForIsoCode/{isoCode}
-	 * </code>
-	 * </p>
-	 * 
-	 * @see IDocumentObject
-	 * @see ComparisonOperator#IN
-	 * 
-	 * @return
-	 */
-	String getIdForIsoCode(String isoCode);
-
-	/**
-	 * <p>
-	 * Returns the coordinates of the area with the specified area ID.
-	 * </p>
-	 * <h5>REST API</h5>
-	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following end point:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getGeoJsonForId/{id}
-	 * </code>
-	 * </p>
-	 * 
-	 * @see IDocumentObject
-	 * 
-	 * @return
-	 */
-	GeoJsonObject getGeoJsonForId(String id);
-
-	/**
-	 * <p>
-	 * Returns all areas as a list of key-value pairs where the key is a
-	 * {@link GeoArea#getLocality() locality} and the value is the corresponding
-	 * Elasticsearch document ID. In other words this method allows you to look
-	 * up a document ID for a locality.
-	 * </p>
-	 * <h5>REST API</h5>
-	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following end point:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getLocalities
-	 * </code>
-	 * </p>
-	 * 
-	 * @see IDocumentObject
-	 * 
-	 * @return
-	 */
-	List<KeyValuePair<String, String>> getLocalities();
-
-	/**
-	 * <p>
-	 * Returns all areas as a list of key-value pairs where the key is an
-	 * {@link GeoArea#getIsoCode() ISO code} and the value is the corresponding
-	 * Elasticsearch document ID. In other words this method allows you to look
-	 * up a document ID for the ISO code for a geographical area. Note that not
-	 * all areas have an ISO code.
-	 * </p>
-	 * <h5>REST API</h5>
-	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following end point:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/geo/getIsoCodes
-	 * </code>
-	 * </p>
-	 * 
-	 * @see IDocumentObject
-	 * 
-	 * @return
-	 */
-	List<KeyValuePair<String, String>> getIsoCodes();
 
 }

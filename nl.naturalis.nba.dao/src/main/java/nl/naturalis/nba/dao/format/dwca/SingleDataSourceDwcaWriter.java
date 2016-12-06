@@ -46,7 +46,7 @@ import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
 class SingleDataSourceDwcaWriter implements IDwcaWriter {
 
 	private static final Logger logger = getLogger(SingleDataSourceDwcaWriter.class);
-	private static final TimeValue TIME_OUT = new TimeValue(5000);
+	private static final TimeValue TIME_OUT = new TimeValue(500);
 
 	private DwcaConfig dwcaConfig;
 	private OutputStream out;

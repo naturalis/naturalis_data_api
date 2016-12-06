@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -31,13 +31,12 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
@@ -174,7 +173,8 @@ public class TaxonResource {
 	@Path("/queryData")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			TaxonDao dao = new TaxonDao();
@@ -203,13 +203,34 @@ public class TaxonResource {
 	@GET
 	@Path("/getDistinctValues/{field}")
 	@Produces(JSON_CONTENT_TYPE)
-	public List<KeyValuePair<String, Long>> getDistinctValues(@PathParam("field") String field,
+	public Map<String, Long> getDistinctValues(@PathParam("field") String field,
 			@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValues(field, qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<Object, Set<Object>> getDistinctValuesPerGroup(
+			@PathParam("keyField") String keyField, @PathParam("valuesField") String valuesField,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			Condition[] conditions = null;
+			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
+				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
+			}
+			TaxonDao dao = new TaxonDao();
+			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

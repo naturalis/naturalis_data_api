@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
+import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
@@ -23,9 +24,9 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  * @author Ayco Holleman
  *
  */
-class InValuesConditionTranslator extends ConditionTranslator {
+class InConditionTranslator extends ConditionTranslator {
 
-	InValuesConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	InConditionTranslator(Condition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -54,8 +55,9 @@ class InValuesConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkOperatorValueCombi() throws InvalidConditionException
+	void checkCondition() throws InvalidConditionException
 	{
+		ensureValueIsNotNull(condition);
 	}
 
 	private QueryBuilder isNullOrOneOf(List<?> values)

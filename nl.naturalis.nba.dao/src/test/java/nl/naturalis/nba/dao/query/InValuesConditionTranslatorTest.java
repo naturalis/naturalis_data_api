@@ -21,6 +21,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.test.TestPerson;
 
 
+@SuppressWarnings("static-method")
 public class InValuesConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;
@@ -33,18 +34,15 @@ public class InValuesConditionTranslatorTest {
 	}
 
 	/*
-	 * Test with Condition.value is null.
+	 * Test with Condition.value is null (should cause an error)
 	 */
-	@Test
+	@Test(expected=InvalidConditionException.class)
 	public void testTranslate_01a() throws InvalidConditionException
 	{
 		Condition condition = new Condition("firstName", IN, null);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
-		QueryBuilder query = ct.translate();
+		ct.translate();
 		// System.out.println(query);
-		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "InConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	/*

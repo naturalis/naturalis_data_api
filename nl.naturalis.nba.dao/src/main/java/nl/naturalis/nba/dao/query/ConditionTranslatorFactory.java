@@ -5,8 +5,6 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getESFieldType;
 
-import java.util.Collection;
-
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
@@ -121,10 +119,6 @@ public class ConditionTranslatorFactory {
 	private static ConditionTranslator getInConditionTranslator(Condition condition,
 			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
-		Object val = condition.getValue();
-		if (val == null || val.getClass().isArray() || val instanceof Collection) {
-			return new InValuesConditionTranslator(condition, mappingInfo);
-		}
 		SimpleField pf = getESField(condition, mappingInfo);
 		switch (pf.getType()) {
 			case GEO_POINT:
@@ -135,16 +129,16 @@ public class ConditionTranslatorFactory {
 				String msg = "IN operator not allowed for geo_point fields";
 				throw new InvalidConditionException(msg);
 			case GEO_SHAPE:
-				if (val instanceof GeoJsonObject) {
+				if (condition.getValue() instanceof GeoJsonObject) {
 					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
-				if (isJson(val)) {
-					condition.setValue(getGeoJsonObject(val));
+				if (isJson(condition.getValue())) {
+					condition.setValue(getGeoJsonObject(condition.getValue()));
 					return new ShapeInShapeConditionTranslator(condition, mappingInfo);
 				}
-				return new ShapeInGeoAreaConditionTranslator(condition, mappingInfo);
+				return new ShapeInLocalityConditionTranslator(condition, mappingInfo);
 			default:
-				return new InValuesConditionTranslator(condition, mappingInfo);
+				return new InConditionTranslator(condition, mappingInfo);
 		}
 	}
 

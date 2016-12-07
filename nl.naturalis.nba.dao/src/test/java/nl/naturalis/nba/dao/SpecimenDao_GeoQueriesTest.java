@@ -1,18 +1,18 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
+import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.ESTestUtils.saveGeoAreas;
+import static nl.naturalis.nba.dao.ESTestUtils.saveSpecimens;
 import static nl.naturalis.nba.dao.TestGeoAreas.Aalten;
+import static nl.naturalis.nba.dao.TestGeoAreas.*;
+import static nl.naturalis.nba.dao.TestGeoAreas.Uitgeest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.geojson.LngLatAlt;
-import org.geojson.Polygon;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,7 +22,6 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
 public class SpecimenDao_GeoQueriesTest {
@@ -34,13 +33,21 @@ public class SpecimenDao_GeoQueriesTest {
 	static Specimen mSylvestris;
 
 	static GeoArea aalten;
+	static GeoArea uitgeest;
+	static GeoArea noordHolland;
+	static GeoArea netherlands;
 
 	@BeforeClass
 	public static void before()
 	{
-		deleteIndex(DocumentType.SPECIMEN);
-		createIndex(DocumentType.SPECIMEN);
-		createType(DocumentType.SPECIMEN);
+		deleteIndex(SPECIMEN);
+		createIndex(SPECIMEN);
+		createType(SPECIMEN);
+
+		deleteIndex(GEO_AREA);
+		createIndex(GEO_AREA);
+		createType(GEO_AREA);
+
 		/*
 		 * Insert 5 test specimens.
 		 */
@@ -49,60 +56,94 @@ public class SpecimenDao_GeoQueriesTest {
 		lFuscus2 = TestSpecimens.larusFuscusSpecimen02();
 		tRex = TestSpecimens.tRexSpecimen01();
 		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
-		ESTestUtils.saveSpecimens(pMajor);
+		saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 
+		/*
+		 * Insert 4 test geo areas.
+		 */
 		aalten = Aalten();
-
-		ESTestUtils.saveGeoArea(aalten, true);
-
-		createType(DocumentType.GEO_AREA);
+		uitgeest = Uitgeest();
+		noordHolland = NoordHolland();
+		netherlands = Netherlands();
+		saveGeoAreas(aalten, uitgeest, noordHolland);
 	}
 
 	@Test
-	public void testQuery_02() throws InvalidQueryException
+	public void testQuery_01a() throws InvalidQueryException
 	{
-		List<LngLatAlt> list = new ArrayList<>();
-		list.add(new LngLatAlt(0.0, 0.0));
-		list.add(new LngLatAlt(0.0, 10.0));
-		list.add(new LngLatAlt(10.0, 10.0));
-		list.add(new LngLatAlt(10.0, 0.0));
-		list.add(new LngLatAlt(0.0, 0.0));
-		List<List<LngLatAlt>> coords = Arrays.asList(list);
-		Polygon polygon = new Polygon();
-		polygon.setCoordinates(coords);
-		Condition condition;
-		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, polygon);
+		String field = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(field, IN, aalten.getShape());
+		// That's lFuscus1
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		System.out.println(JsonUtil.toPrettyJson(result));
 		assertEquals("01", 1, result.size());
 	}
 
-	//@Test
-	/*
-	 * TODO: Test with pre-indexed shape. This does currently not work because:
-	 * 
-	 * 
-	 * [1] There are no documents in GeoArea in nba_integration_test index. Must
-	 * load one or two shapes (e.g. one for "Netherlands"). For example in
-	 * 
-	 * @Before
-	 * 
-	 * [2] Make sure the siteCoordinates for the specimens lie within the loaded
-	 * shapes.
-	 */
-	public void testQuery_03() throws InvalidQueryException
+	@Test
+	public void testQuery_01b() throws InvalidQueryException
 	{
-		Condition condition;
-		condition = new Condition("gatheringEvent.siteCoordinates.geoShape", IN, "1004050@GEO");
+		String field = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(field, IN, uitgeest.getShape());
+		// That's pMajor and lFuscus2
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		System.out.println(JsonUtil.toPrettyJson(result));
+		assertEquals("01", 2, result.size());
+	}
+
+	@Test
+	public void testQuery_01c() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(field, IN, netherlands.getShape());
+		// That's pMajor and lFuscus2
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 3, result.size());
+	}
+
+	@Test
+	public void testQuery_02a() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(field, IN, "Aalten");
+		// That's lFuscus1
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
+	}
+
+	@Test
+	public void testQuery_02b() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(field, IN, "Uitgeest");
+		// That's pMajor and lFuscus2
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 2, result.size());
+	}
+
+	@Test
+	public void testQuery_02c() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(field, IN, "Netherlands");
+		// That's pMajor and lFuscus2
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 3, result.size());
 	}
 
 }

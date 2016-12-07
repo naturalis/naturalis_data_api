@@ -158,15 +158,16 @@ public class GeoAreaResource {
 	}
 
 	@GET
-	@Path("/getGeoJsonForId/{id}")
+	@Path("/getGeoJsonForLocality/{locality}")
 	@Produces(JSON_CONTENT_TYPE)
-	public GeoJsonObject getGeoJsonForId(@PathParam("id") String id, @Context UriInfo uriInfo)
+	public GeoJsonObject getGeoJsonForLocality(@PathParam("locality") String locality,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			GeoAreaDao dao = new GeoAreaDao();
-			GeoJsonObject json = dao.getGeoJsonForLocality(id);
+			GeoJsonObject json = dao.getGeoJsonForLocality(locality);
 			if (json == null) {
-				String msg = String.format("No such ID: \"%s\"", id);
+				String msg = String.format("No such locality: \"%s\"", locality);
 				throw new HTTP404Exception(uriInfo, msg);
 			}
 			return json;

@@ -51,10 +51,9 @@ class TestSpecimens {
 		gathering.setDateTimeBegin(datetime("2010/04/03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
 
-		GatheringSiteCoordinates coords;
-		//coords = new GatheringSiteCoordinates(52.531713, 4.705922);
-		coords = new GatheringSiteCoordinates(5D, 5D);
-		gathering.setSiteCoordinates(Arrays.asList(coords));
+		GatheringSiteCoordinates uitgeestCoordinates;
+		uitgeestCoordinates = new GatheringSiteCoordinates(52.531713, 4.705922);
+		gathering.setSiteCoordinates(Arrays.asList(uitgeestCoordinates));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -101,11 +100,15 @@ class TestSpecimens {
 		specimen.setRecordBasis("Preserved specimen");
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setProjectTitle("Vogels der Lage Landen");
-		gathering.setLocalityText("In de duinen, nabij Uitgeest");
+		gathering.setLocalityText("In de bossen nabij Aalten");
 		gathering.setCountry("Netherlands");
-		gathering.setCity("Uitgeest");
+		gathering.setCity("Aalten");
 		gathering.setDateTimeBegin(datetime("2009/04/03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg()));
+
+		GatheringSiteCoordinates aaltenCoordinates;
+		aaltenCoordinates = new GatheringSiteCoordinates(51.9266666, 6.5806785);
+		gathering.setSiteCoordinates(Arrays.asList(aaltenCoordinates));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
@@ -150,9 +153,13 @@ class TestSpecimens {
 		specimen.setPhaseOrStage(EGG);
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setCountry("Netherlands");
-		gathering.setCity("Hiversum");
+		gathering.setCity("Uitgeest");
 		gathering.setDateTimeBegin(datetime("2008/04/03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(ruudAltenBurg(), vonSiebold()));
+
+		GatheringSiteCoordinates uitgeestCoordinates;
+		uitgeestCoordinates = new GatheringSiteCoordinates(52.531713, 4.705922);
+		gathering.setSiteCoordinates(Arrays.asList(uitgeestCoordinates));
 
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");

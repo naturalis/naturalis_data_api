@@ -142,9 +142,9 @@ public class SpecimenDao_IsNullQueryTest {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		// Only parusMajorSpecimen01 has site coordinates, so all 
-		// other specimens (4) should be returned.
-		assertEquals("01", 4, result.size());
+		// pMajor, lFuscus1 and lFuscus2 have site coordinates, so only
+		// tRex and mSylvestris (2 specimens) should be returned.
+		assertEquals("01", 2, result.size());
 	}
 
 	/*
@@ -159,24 +159,25 @@ public class SpecimenDao_IsNullQueryTest {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		// Only parusMajorSpecimen01 has site coordinates
-		assertEquals("01", 1, result.size());
+		// pMajor, lFuscus1 and lFuscus2 have site coordinates, the other specimens don't.
+		assertEquals("01", 3, result.size());
 	}
 
 	/*
-	 * Test with negated IS-NOT-NULL.
+	 * Test with double negative.
 	 */
 	@Test
 	public void testQuery__QuerySpec__08() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
 		Condition condition = new Condition(NOT, field, NOT_EQUALS, null);
+		// In other words: field EQUALS null
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		// Only parusMajorSpecimen01 has site coordinates, so all 
-		// other specimens (4) should be returned.
-		assertEquals("01", 4, result.size());
+		// pMajor, lFuscus1 and lFuscus2 have site coordinates, so only
+		// tRex and mSylvestris (2 specimens) should be returned.
+		assertEquals("01", 2, result.size());
 	}
 }

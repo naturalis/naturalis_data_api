@@ -78,6 +78,16 @@ public class ESTestUtils {
 		saveObject(id, null, specimen, refreshIndex);
 	}
 
+	public static void saveGeoAreas(GeoArea... areas)
+	{
+		DocumentType<?> dt = DocumentType.forClass(GeoArea.class);
+		ESUtil.disableAutoRefresh(dt.getIndexInfo());
+		for (GeoArea area : areas) {
+			saveGeoArea(area, false);
+		}
+		ESUtil.refreshIndex(dt.getIndexInfo());
+	}
+
 	public static void saveGeoArea(GeoArea area, boolean refreshIndex)
 	{
 		String id = area.getSourceSystemId() + "@" + area.getSourceSystem().getCode();

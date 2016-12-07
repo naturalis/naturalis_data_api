@@ -14,6 +14,7 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
@@ -270,9 +271,14 @@ public class ESUtil {
 	 */
 	public static void refreshIndex(IndexInfo indexInfo)
 	{
+		logger.info("Refreshing index " + indexInfo.getName());
 		String index = indexInfo.getName();
 		RefreshRequestBuilder request = indices().prepareRefresh(index);
 		request.execute().actionGet();
+		RefreshResponse response = request.execute().actionGet();
+		if (response.getFailedShards() != 0) {
+			logger.error("Index refresh failed index " + indexInfo.getName());
+		}
 	}
 
 	/**

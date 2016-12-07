@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
-import static nl.naturalis.nba.dao.util.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
 import org.apache.logging.log4j.Logger;

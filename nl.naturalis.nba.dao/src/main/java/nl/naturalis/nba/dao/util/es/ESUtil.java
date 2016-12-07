@@ -1,4 +1,4 @@
-package nl.naturalis.nba.dao.util;
+package nl.naturalis.nba.dao.util.es;
 
 import java.io.IOException;
 import java.io.InputStream;

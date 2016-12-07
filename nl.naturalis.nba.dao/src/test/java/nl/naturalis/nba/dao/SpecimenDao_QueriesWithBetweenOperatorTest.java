@@ -2,9 +2,9 @@ package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.ESUtil.createType;
-import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import java.time.Instant;

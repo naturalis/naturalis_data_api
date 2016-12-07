@@ -1,18 +1,16 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.dao.util.ESUtil.executeSearchRequest;
-import static nl.naturalis.nba.dao.util.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
@@ -24,10 +22,7 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollRequestBuilder;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -35,12 +30,11 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
-import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.sort.SortParseElement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -48,7 +42,8 @@ import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.dao.util.es.Scroller;
 
 abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
@@ -192,9 +187,8 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getDistinctValuesPerGroup", keyField, valuesField, conditions));
 		}
-		if (keyField.equals(valuesField)) {
-			throw new IllegalArgumentException("Key field must not be equal to values field");
-		}
+		DistinctValuesPerGroupSearchHitHandler handler;
+		handler = new DistinctValuesPerGroupSearchHitHandler(keyField, valuesField);
 		QuerySpec qs = new QuerySpec();
 		qs.setFields(Arrays.asList(keyField, valuesField));
 		if (conditions != null && conditions.length != 0) {
@@ -204,48 +198,14 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		qs.addCondition(new Condition(valuesField, "!=", null));
 		QuerySpecTranslator translator = new QuerySpecTranslator(qs, dt);
 		SearchRequestBuilder request = translator.translate();
-		TimeValue timeout = new TimeValue(1000);
-		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
-		request.setScroll(timeout);
-		request.setSize(10000);
-		SearchResponse response = executeSearchRequest(request);
-		Map<Object, Set<Object>> result = new TreeMap<>();
-		do {
-			for (SearchHit hit : response.getHits().getHits()) {
-				Map<String, Object> source = hit.getSource();
-				Object key = source.get(keyField);
-				if (key == null) {
-					continue;
-				}
-				Object value = source.get(valuesField);
-				Set<Object> values = result.get(key);
-				if (values == null) {
-					if (result.size() == 100) {
-						String fmt = "Number of unique values for field (%s) exceeds maximum of 100";
-						String msg = String.format(fmt, keyField);
-						throw new InvalidQueryException(msg);
-					}
-					values = new TreeSet<>();
-					result.put(key, values);
-				}
-				if (value instanceof Collection) {
-					values.addAll((Collection<?>) value);
-					if (values.size() > 1000) {
-						String fmt = "Number of unique values for field (%s) exceeds maximum of 1000";
-						String msg = String.format(fmt, valuesField);
-						throw new InvalidQueryException(msg);
-					}
-				}
-				else if (value != null) {
-					values.add(value);
-				}
-			}
-			String scrollId = response.getScrollId();
-			Client client = ESClientManager.getInstance().getClient();
-			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-			response = ssrb.setScroll(timeout).execute().actionGet();
-		} while (response.getHits().getHits().length != 0);
-		return result;
+		Scroller scroller = new Scroller(request, handler);
+		try {
+			scroller.scroll();
+		}
+		catch (NbaException e) {
+			throw (InvalidQueryException) e;
+		}
+		return handler.getDistinctValuesPerGroup();
 	}
 
 	public String save(T apiObject, boolean immediate)

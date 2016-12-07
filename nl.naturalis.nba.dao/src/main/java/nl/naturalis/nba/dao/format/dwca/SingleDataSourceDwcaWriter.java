@@ -34,8 +34,8 @@ import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvPrinter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
-import nl.naturalis.nba.dao.util.ESUtil;
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
  * Manages the assemblage and creation of DarwinCore archives.

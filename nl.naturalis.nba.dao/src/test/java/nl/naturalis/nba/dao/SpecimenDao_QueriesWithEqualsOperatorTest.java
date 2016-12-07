@@ -1,9 +1,6 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.ESUtil.createType;
-import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -16,6 +13,9 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import static nl.naturalis.nba.dao.TestSpecimens.*;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 
 /**
  * Tests queries with EQUALS operator using the {@link SpecimenDao}.

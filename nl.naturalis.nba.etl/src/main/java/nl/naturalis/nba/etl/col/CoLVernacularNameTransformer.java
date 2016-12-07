@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.language;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.taxonID;
 import static nl.naturalis.nba.etl.col.CoLVernacularNameCsvField.vernacularName;
@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;

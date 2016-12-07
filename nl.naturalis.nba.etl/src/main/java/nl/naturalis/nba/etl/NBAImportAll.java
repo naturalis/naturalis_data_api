@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;

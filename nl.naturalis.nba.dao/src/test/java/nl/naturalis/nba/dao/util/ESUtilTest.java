@@ -3,13 +3,13 @@ package nl.naturalis.nba.dao.util;
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.ESUtil.createAllIndices;
-import static nl.naturalis.nba.dao.util.ESUtil.deleteAllIndices;
-import static nl.naturalis.nba.dao.util.ESUtil.disableAutoRefresh;
-import static nl.naturalis.nba.dao.util.ESUtil.getAutoRefreshInterval;
-import static nl.naturalis.nba.dao.util.ESUtil.getDistinctIndices;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
-import static nl.naturalis.nba.dao.util.ESUtil.setAutoRefreshInterval;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createAllIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteAllIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.disableAutoRefresh;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getAutoRefreshInterval;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.setAutoRefreshInterval;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.IndexInfo;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /*
  * We can't test that much here because we very much depend on how Elasticsearch

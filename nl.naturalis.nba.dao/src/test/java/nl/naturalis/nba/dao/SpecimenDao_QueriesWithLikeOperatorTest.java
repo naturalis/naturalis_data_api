@@ -1,9 +1,9 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.*;
-import static nl.naturalis.nba.dao.util.ESUtil.createIndex;
-import static nl.naturalis.nba.dao.util.ESUtil.createType;
-import static nl.naturalis.nba.dao.util.ESUtil.deleteIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
+import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.*;
 
 import org.junit.After;

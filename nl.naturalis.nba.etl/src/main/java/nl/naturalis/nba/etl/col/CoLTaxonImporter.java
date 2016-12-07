@@ -11,7 +11,7 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;

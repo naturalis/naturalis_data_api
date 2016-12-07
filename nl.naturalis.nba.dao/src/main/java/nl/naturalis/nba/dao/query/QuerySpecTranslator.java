@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
-import static nl.naturalis.nba.dao.util.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
 import java.util.List;

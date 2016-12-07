@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.geo;
 
 import static nl.naturalis.nba.api.model.SourceSystem.GEO;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.etl.ETLStatistics;

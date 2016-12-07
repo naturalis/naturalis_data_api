@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.util.ESUtil.getDistinctIndices;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
@@ -16,7 +16,7 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.IndexInfo;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;

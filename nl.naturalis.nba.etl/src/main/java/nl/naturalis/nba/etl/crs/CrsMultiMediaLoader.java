@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.crs;
 
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;

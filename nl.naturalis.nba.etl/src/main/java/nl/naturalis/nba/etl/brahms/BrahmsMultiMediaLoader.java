@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.etl.ETLStatistics;

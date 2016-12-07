@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.ETLStatistics;

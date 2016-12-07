@@ -2,7 +2,7 @@ package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.api.model.SourceSystem.COL;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.genericName;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.infraspecificEpithet;
@@ -17,7 +17,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.dao.util.ESUtil;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;

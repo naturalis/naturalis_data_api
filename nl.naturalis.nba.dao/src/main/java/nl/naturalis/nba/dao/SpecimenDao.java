@@ -2,8 +2,8 @@ package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.util.ESUtil.executeSearchRequest;
-import static nl.naturalis.nba.dao.util.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;

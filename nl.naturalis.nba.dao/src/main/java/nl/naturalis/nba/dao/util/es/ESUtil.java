@@ -87,7 +87,12 @@ public class ESUtil {
 	public static SearchResponse executeSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Executing search request:\n{}", request);
+			if (request.request().source().length() < 1000) {
+				logger.debug("Executing search request:\n{}", request);
+			}
+			else {
+				logger.debug("Executing search request (too large to be logged)");
+			}
 		}
 		SearchResponse response = request.execute().actionGet();
 		if (logger.isDebugEnabled()) {

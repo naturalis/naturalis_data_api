@@ -65,7 +65,7 @@ public class SpecimenDao_GeoQueriesTest {
 		uitgeest = Uitgeest();
 		noordHolland = NoordHolland();
 		netherlands = Netherlands();
-		saveGeoAreas(aalten, uitgeest, noordHolland);
+		saveGeoAreas(aalten, uitgeest, noordHolland, netherlands);
 	}
 
 	@Test
@@ -98,13 +98,13 @@ public class SpecimenDao_GeoQueriesTest {
 	public void testQuery_01c() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.geoShape";
-		Condition condition = new Condition(field, IN, netherlands.getShape());
+		Condition condition = new Condition(field, IN, noordHolland.getShape());
 		// That's pMajor and lFuscus2
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		assertEquals("01", 3, result.size());
+		assertEquals("01", 2, result.size());
 	}
 
 	@Test
@@ -136,8 +136,8 @@ public class SpecimenDao_GeoQueriesTest {
 	@Test
 	public void testQuery_02c() throws InvalidQueryException
 	{
-		String field = "gatheringEvent.siteCoordinates.geoShape";
-		Condition condition = new Condition(field, IN, "Netherlands");
+		String site = "gatheringEvent.siteCoordinates.geoShape";
+		Condition condition = new Condition(site, IN, "Netherlands");
 		// That's pMajor and lFuscus2
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

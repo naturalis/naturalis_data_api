@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
@@ -13,6 +14,7 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -38,6 +40,8 @@ import nl.naturalis.nba.dao.exception.DaoException;
  *
  */
 class ShapeInLocalityConditionTranslator extends ConditionTranslator {
+
+	private static final Logger logger = getLogger(ShapeInLocalityConditionTranslator.class);
 
 	ShapeInLocalityConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
@@ -89,8 +93,11 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		ensureValueIsNotNull(condition);
 	}
 
-	private static String getIdForLocality(String locality)
+	private static String getIdForLocality(String locality) throws InvalidConditionException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Looking up document ID for locality \"{}\"", locality);
+		}
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(new Condition("locality", EQUALS, locality));
 		QuerySpecTranslator translator = new QuerySpecTranslator(qs, GEO_AREA);
@@ -100,13 +107,15 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 			request.setNoFields();
 		}
 		catch (InvalidQueryException e) {
-			// We made this one outselves, so eh ...
+			// We made this one ourselves, so eh ...
 			throw new DaoException(e);
 		}
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
-			return null;
+			String fmt = "No such locality: \"%s\"";
+			String msg = String.format(fmt, locality);
+			throw new InvalidConditionException(msg);
 		}
 		return hits[0].getId();
 	}

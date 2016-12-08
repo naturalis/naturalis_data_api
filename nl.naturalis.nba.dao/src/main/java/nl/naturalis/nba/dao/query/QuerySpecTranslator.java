@@ -26,6 +26,8 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
+import static nl.naturalis.nba.dao.DaoUtil.*;
+
 /**
  * A {@code QuerySpecTranslator} is responsible for translating an NBA
  * {@link QuerySpec} object into an Elasticsearch {@link SearchRequestBuilder}
@@ -50,7 +52,7 @@ public class QuerySpecTranslator {
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Translating QuerySpec:\n{}", toPrettyJson(spec));
+			logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
 		}
 		QueryBuilder query = translateConditions();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);

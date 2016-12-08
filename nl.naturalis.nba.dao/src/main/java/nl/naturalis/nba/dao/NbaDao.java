@@ -104,17 +104,18 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public QueryResult<Map<String, Object>> queryData(QuerySpec spec) throws InvalidQueryException
+	public QueryResult<Map<String, Object>> queryData(QuerySpec querySpec)
+			throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("queryData", spec));
+			logger.debug(printCall("queryData", querySpec));
 		}
-		QuerySpecTranslator translator = new QuerySpecTranslator(spec, dt);
+		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 		SearchRequestBuilder request = translator.translate();
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		List<Map<String, Object>> resultSet = new ArrayList<>(hits.length);
-		if (spec.getFields() != null && spec.getFields().contains("id")) {
+		if (querySpec.getFields() != null && querySpec.getFields().contains("id")) {
 			for (SearchHit hit : hits) {
 				Map<String, Object> source = hit.getSource();
 				source.put("id", hit.getId());

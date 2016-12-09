@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.format;
 
-public class DataSetWriteException extends Exception {
+import nl.naturalis.nba.api.NbaException;
+
+public class DataSetWriteException extends NbaException {
 
 	public DataSetWriteException(String message)
 	{

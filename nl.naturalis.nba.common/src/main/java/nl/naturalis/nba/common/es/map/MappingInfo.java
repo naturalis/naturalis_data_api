@@ -4,11 +4,13 @@ import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
 import static nl.naturalis.nba.common.es.map.ESDataType.OBJECT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.Path;
@@ -186,6 +188,41 @@ public class MappingInfo<T extends IDocumentObject> {
 	public String getNestedPath(String path) throws NoSuchFieldException
 	{
 		return getNestedPath(getField(path));
+	}
+
+	/**
+	 * Returns all fields within a document using their full path.
+	 * 
+	 * @param sorted
+	 * @return
+	 */
+	public String[] getPathStrings(boolean sorted)
+	{
+		List<String> paths = new ArrayList<>(100);
+		LinkedHashMap<String, ESField> properties = mapping.getProperties();
+		for (Map.Entry<String, ESField> property : properties.entrySet()) {
+			addPath(paths, null, property.getKey(), property.getValue());
+		}
+		String[] result = paths.toArray(new String[paths.size()]);
+		if (sorted) {
+			Arrays.sort(result);
+		}
+		return result;
+	}
+
+	private static void addPath(List<String> paths, String parent, String child, ESField field)
+	{
+		String path = parent == null ? child : parent + '.' + child;
+		if (field instanceof SimpleField) {
+			paths.add(path);
+		}
+		else {
+			ComplexField cf = (ComplexField) field;
+			LinkedHashMap<String, ESField> fields = cf.getProperties();
+			for (Entry<String, ESField> e : fields.entrySet()) {
+				addPath(paths, path, e.getKey(), e.getValue());
+			}
+		}
 	}
 
 	/**

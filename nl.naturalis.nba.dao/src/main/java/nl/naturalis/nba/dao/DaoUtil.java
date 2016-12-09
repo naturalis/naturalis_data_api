@@ -9,6 +9,12 @@ import org.geojson.GeoJsonObject;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.QuerySpec;
 
+/**
+ * Utility class providing common functionality for classes in the dao package.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DaoUtil {
 
 	private static Logger logger = getLogger(DaoUtil.class);
@@ -17,6 +23,12 @@ public class DaoUtil {
 	{
 	}
 
+	/**
+	 * Returns a log4j logger for the specified class.
+	 * 
+	 * @param cls
+	 * @return
+	 */
 	public static Logger getLogger(Class<?> cls)
 	{
 		return DaoRegistry.getInstance().getLogger(cls);
@@ -27,10 +39,9 @@ public class DaoUtil {
 	 * only contain reasonably-sized {@link Condition#getValue() search terms}.
 	 * Some type of search terms (especially GeoJSON strings for complicated
 	 * shapes) can easily become so large that even printing them as part of a
-	 * DEBUG message is too expensive. This method is only meant to be called
-	 * when passing a {@code QuerySpec} object to {@code logger.debug()}. If the
-	 * specified {@code QuerySpec} instance does not contain any conditions, no
-	 * copy is made; the instance itself is returned.
+	 * DEBUG message is too expensive. This method is meant for debug purposes
+	 * only, notably when passing a {@code QuerySpec} object to
+	 * {@code logger.debug()}.
 	 * 
 	 * @param qs
 	 * @return
@@ -54,6 +65,13 @@ public class DaoUtil {
 		return copy;
 	}
 
+	/**
+	 * Creates a copy of the specified conditions such that the search terms in
+	 * the copies are reasonably-sized. See {@link #prune(QuerySpec)}.
+	 * 
+	 * @param conditions
+	 * @return
+	 */
 	public static Condition[] prune(Condition[] conditions)
 	{
 		if (conditions == null || conditions.length == 0) {
@@ -91,7 +109,7 @@ public class DaoUtil {
 
 	private static Condition createCopy(Condition original, String newValue)
 	{
-		logger.debug("Value of field {} truncated or nullified in log file!", original.getField());
+		logger.debug("Value of field {} truncated or nullified for log file!", original.getField());
 		Condition copy = new Condition();
 		copy.setNot(original.getNot());
 		copy.setField(original.getField());

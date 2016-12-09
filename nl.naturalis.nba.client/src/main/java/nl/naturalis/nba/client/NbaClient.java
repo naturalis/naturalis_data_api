@@ -7,6 +7,7 @@ import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -126,6 +127,11 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return getQueryResult(request.getResponseBody(), typeRef);
+	}
+
+	@Override
+	public void csvQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
+	{
 	}
 
 	@Override

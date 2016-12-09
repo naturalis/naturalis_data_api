@@ -29,6 +29,11 @@ public class DocumentFlattener {
 	private Path pathToEntity;
 	private int entitiesPerDocument;
 
+	public DocumentFlattener()
+	{
+		this(null, 1);
+	}
+
 	/**
 	 * Creates a new {@code DocumentFlattener}.
 	 * 

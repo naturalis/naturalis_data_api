@@ -1,8 +1,9 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.LogicalOperator.AND;
+import static nl.naturalis.nba.api.query.LogicalOperator.OR;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.DaoUtil.prune;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
@@ -26,8 +27,6 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
-import static nl.naturalis.nba.dao.DaoUtil.*;
-
 /**
  * A {@code QuerySpecTranslator} is responsible for translating an NBA
  * {@link QuerySpec} object into an Elasticsearch {@link SearchRequestBuilder}
@@ -39,6 +38,8 @@ import static nl.naturalis.nba.dao.DaoUtil.*;
 public class QuerySpecTranslator {
 
 	private static final Logger logger = getLogger(QuerySpecTranslator.class);
+	private static final int DEFAULT_FROM = 0;
+	private static final int DEFAULT_SIZE = 10;
 
 	private QuerySpec spec;
 	private DocumentType<?> dt;
@@ -61,8 +62,8 @@ public class QuerySpecTranslator {
 			addFields(request);
 		}
 		request.setQuery(csq);
-		request.setFrom(spec.getFrom());
-		request.setSize(spec.getSize());
+		request.setFrom(spec.getFrom() == null ? DEFAULT_FROM : spec.getFrom());
+		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 		if (spec.getSortFields() != null) {
 			List<SortField> fields = spec.getSortFields();
 			SortFieldsTranslator sft = new SortFieldsTranslator(fields, dt);
@@ -108,14 +109,14 @@ public class QuerySpecTranslator {
 			return getTranslator(c, dt).translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
-		if (spec.getLogicalOperator() == AND) {
+		if (spec.getLogicalOperator() == OR) {
 			for (Condition c : conditions) {
-				result.must(getTranslator(c, dt).translate());
+				result.should(getTranslator(c, dt).translate());
 			}
 		}
 		else {
 			for (Condition c : conditions) {
-				result.should(getTranslator(c, dt).translate());
+				result.must(getTranslator(c, dt).translate());
 			}
 		}
 		return result;

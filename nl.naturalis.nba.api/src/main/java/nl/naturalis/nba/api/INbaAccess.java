@@ -1,5 +1,6 @@
 package nl.naturalis.nba.api;
 
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -181,6 +182,16 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @throws InvalidQueryException
 	 */
 	QueryResult<Map<String, Object>> queryData(QuerySpec querySpec) throws InvalidQueryException;
+
+	/**
+	 * Writes CSV records extracted from documents satisfying the specified
+	 * query specification to the specified output stream.
+	 * 
+	 * @param querySpec
+	 * @param out
+	 * @throws InvalidQueryException
+	 */
+	void csvQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException;
 
 	/**
 	 * <p>

@@ -16,12 +16,12 @@ import nl.naturalis.nba.dao.format.IField;
  * @author Ayco Holleman
  *
  */
-public class CsvPrinter {
+public class CsvRecordWriter {
 
 	private IField[] fields;
 	private PrintStream ps;
 
-	public CsvPrinter(IField[] fields, OutputStream out)
+	public CsvRecordWriter(IField[] fields, OutputStream out)
 	{
 		this.fields = fields;
 		if (out instanceof PrintStream) {

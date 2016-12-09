@@ -33,7 +33,7 @@ import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
-import nl.naturalis.nba.dao.format.csv.CsvPrinter;
+import nl.naturalis.nba.dao.format.csv.CsvRecordWriter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
@@ -137,7 +137,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		Path path = entity.getDataSource().getPath();
 		DocumentFlattener flattener = new DocumentFlattener(path);
 		IField[] fields = entity.getFields();
-		CsvPrinter csvPrinter = new CsvPrinter(fields, zos);
+		CsvRecordWriter csvPrinter = new CsvRecordWriter(fields, zos);
 		csvPrinter.printBOM();
 		csvPrinter.printHeader();
 		int processed = 0;

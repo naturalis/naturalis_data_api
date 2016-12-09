@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.util.es;
 
+import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -34,7 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingSerializer;
-import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.IndexInfo;
@@ -49,7 +50,7 @@ import nl.naturalis.nba.dao.exception.DaoException;
  */
 public class ESUtil {
 
-	private static final Logger logger = DaoRegistry.getInstance().getLogger(ESUtil.class);
+	private static final Logger logger = getLogger(ESUtil.class);
 
 	private ESUtil()
 	{
@@ -84,6 +85,12 @@ public class ESUtil {
 		return request;
 	}
 
+	/**
+	 * Executes the specified search request.
+	 * 
+	 * @param request
+	 * @return
+	 */
 	public static SearchResponse executeSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
@@ -94,7 +101,7 @@ public class ESUtil {
 				logger.debug("Executing search request (too large to be logged)");
 			}
 		}
-		SearchResponse response = request.execute().actionGet();
+		SearchResponse response = request.get();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Documents found: {}", response.getHits().totalHits());
 		}

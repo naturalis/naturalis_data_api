@@ -32,7 +32,7 @@ import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
-import nl.naturalis.nba.dao.format.csv.CsvPrinter;
+import nl.naturalis.nba.dao.format.csv.CsvRecordWriter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.RandomEntryZipOutputStream;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -48,8 +48,8 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	private static final Logger logger = getLogger(SingleDataSourceDwcaWriter.class);
 	private static final TimeValue TIME_OUT = new TimeValue(500);
 
-	private DwcaConfig dwcaConfig;
-	private OutputStream out;
+	private final DwcaConfig dwcaConfig;
+	private final OutputStream out;
 
 	SingleDataSourceDwcaWriter(DwcaConfig dwcaConfig, OutputStream out)
 	{
@@ -62,11 +62,9 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
-		SearchResponse response = executeQuery(querySpec);
-		RandomEntryZipOutputStream rezos;
 		try {
-			rezos = createZipStream();
-			writeCsvFiles(response, rezos);
+			RandomEntryZipOutputStream rezos = createZipStream();
+			writeCsvFiles(querySpec, rezos);
 			ZipOutputStream zos = rezos.mergeEntries();
 			writeMetaXml(dwcaConfig, zos);
 			writeEmlXml(dwcaConfig, zos);
@@ -84,30 +82,25 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";
 		logger.info(fmt, dwcaConfig.getDataSetName());
 		QuerySpec query = dwcaConfig.getDataSet().getSharedDataSource().getQuerySpec();
-		SearchResponse response;
 		try {
-			response = executeQuery(query);
+			RandomEntryZipOutputStream rezos = createZipStream();
+			logger.info("Adding CSV files");
+			writeCsvFiles(query, rezos);
+			ZipOutputStream zos = rezos.mergeEntries();
+			writeMetaXml(dwcaConfig, zos);
+			writeEmlXml(dwcaConfig, zos);
+			zos.finish();
 		}
 		catch (InvalidQueryException e) {
 			/*
-			 * Not the user's fault but the application maintainer's, because we
-			 * got the QuerySpec from the config file. So we convert the
+			 * Not the user's fault but the application maintainer's: the query
+			 * was defined in the XML configuration file. So we convert the
 			 * InvalidQueryException to a DataSetConfigurationException
 			 */
 			fmt = "Invalid query specification for shared data source:\n%s";
 			String queryString = JsonUtil.toPrettyJson(query);
 			String msg = String.format(fmt, queryString);
 			throw new DataSetConfigurationException(msg);
-		}
-		RandomEntryZipOutputStream rezos;
-		try {
-			rezos = createZipStream();
-			logger.info("Adding CSV files");
-			writeCsvFiles(response, rezos);
-			ZipOutputStream zos = rezos.mergeEntries();
-			writeMetaXml(dwcaConfig, zos);
-			writeEmlXml(dwcaConfig, zos);
-			zos.finish();
 		}
 		catch (IOException e) {
 			throw new DataSetWriteException(e);
@@ -116,10 +109,12 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		logger.info(fmt, dwcaConfig.getDataSetName());
 	}
 
-	private void writeCsvFiles(SearchResponse response, RandomEntryZipOutputStream rezos)
-			throws DataSetConfigurationException, DataSetWriteException, IOException
+	private void writeCsvFiles(QuerySpec querySpec, RandomEntryZipOutputStream rezos)
+			throws DataSetConfigurationException, DataSetWriteException, IOException,
+			InvalidQueryException
 	{
-		CsvPrinter[] printers = getPrinters(rezos);
+		SearchResponse response = executeQuery(querySpec);
+		CsvRecordWriter[] printers = getPrinters(rezos);
 		DocumentFlattener[] flatteners = getFlatteners();
 		String[] fileNames = getCsvFileNames();
 		for (int i = 0; i < printers.length; i++) {
@@ -193,13 +188,13 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		return rezos;
 	}
 
-	private CsvPrinter[] getPrinters(OutputStream out)
+	private CsvRecordWriter[] getPrinters(OutputStream out)
 	{
 		Entity[] entities = dwcaConfig.getDataSet().getEntities();
-		CsvPrinter[] printers = new CsvPrinter[entities.length];
+		CsvRecordWriter[] printers = new CsvRecordWriter[entities.length];
 		for (int i = 0; i < entities.length; i++) {
 			IField[] fields = entities[i].getFields();
-			printers[i] = new CsvPrinter(fields, out);
+			printers[i] = new CsvRecordWriter(fields, out);
 		}
 		return printers;
 	}

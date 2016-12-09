@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.format.csv.CsvWriter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.Scroller;
@@ -131,6 +133,15 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		result.setTotalSize(response.getHits().totalHits());
 		result.setResultSet(resultSet);
 		return result;
+	}
+
+	public void csvQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("csvQuery", querySpec, out));
+		}
+		CsvWriter<T> writer = new CsvWriter<>(out, dt);
+		writer.writeCsv(querySpec);
 	}
 
 	@Override

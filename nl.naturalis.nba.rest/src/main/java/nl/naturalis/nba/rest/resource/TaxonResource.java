@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -238,6 +239,49 @@ public class TaxonResource {
 	}
 
 	@GET
+	@Path("/csv/query")
+	public Response csvQuery_GET(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			long count = dao.count(qs);
+			StreamingOutput stream = new StreamingOutput() {
+
+				public void write(OutputStream out) throws IOException
+				{
+					try {
+						if (count > 100) {
+							dao.csvQuery(qs, out);
+						}
+						else {
+							dao.csvQuery(qs, new ZipOutputStream(out));
+						}
+					}
+					catch (InvalidQueryException e) {
+						throw new HTTP400Exception(uriInfo, e.getMessage());
+					}
+					catch (Throwable e) {
+						throw new RESTException(uriInfo, e);
+					}
+				}
+			};
+			ResponseBuilder response = Response.ok(stream);
+			if (count > 100) {
+				response.type("application/zip");
+				response.header("Content-Disposition", "attachment; filename=\"nba.csv.zip\"");
+			}
+			else {
+				response.type("text/csv");
+			}
+			return response.build();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
 	@Path("/dwca/query")
 	@Produces("application/zip")
 	public Response dwcaQuery(@Context UriInfo uriInfo)
@@ -246,7 +290,6 @@ public class TaxonResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
-				@Override
 				public void write(OutputStream out) throws IOException
 				{
 					TaxonDao dao = new TaxonDao();

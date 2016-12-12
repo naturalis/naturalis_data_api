@@ -22,11 +22,11 @@ import org.apache.logging.log4j.Logger;
  * intermediate storage. Once you are done writing data for the entries managed
  * by the {@code RandomEntryZipOutputStream}, you call {@link #mergeEntries()}.
  * This will produce a regular {@code ZipOutputStream} that you can use as you
- * see fit (e.g. to start writing zip entries in a serial fashion again). Most
- * notably, {@code RandomEntryZipOutputStream} will not have called
+ * see fit (e.g. to start writing other zip entries in a serial fashion again).
+ * Most notably, {@code RandomEntryZipOutputStream} will not have called
  * {@link ZipOutputStream#close() close} or {@link ZipOutputStream#finish()
- * finish} on the {@code ZipOutputStream}. These tasks are explicitly left to
- * the client. {@code RandomEntryZipOutputStream} internally uses a
+ * finish} on the {@code ZipOutputStream} it produces.
+ * {@code RandomEntryZipOutputStream} internally uses a
  * {@link CompressedSwapFileOutputStream} as intermediate storage for zip
  * entries (for each zip entry a separate {@code CompressedSwapFileOutputStream}
  * is created). This class will try to keep data for a zip entry in memory and

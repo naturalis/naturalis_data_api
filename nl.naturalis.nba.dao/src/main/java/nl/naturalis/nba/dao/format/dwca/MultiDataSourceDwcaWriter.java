@@ -38,7 +38,8 @@ import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
- * Manages the assemblage and creation of DarwinCore archives.
+ * Manages the assembly and creation of DarwinCore archives. Use this class if
+ * you cannot generate all CSV files from a single query.
  * 
  * @author Ayco Holleman
  *

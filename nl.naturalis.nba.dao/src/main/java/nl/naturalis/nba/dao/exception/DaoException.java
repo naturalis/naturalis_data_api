@@ -1,5 +1,11 @@
 package nl.naturalis.nba.dao.exception;
 
+/**
+ * Base class for runtime exceptions emanating from the DAO module.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class DaoException extends RuntimeException {
 
 	public DaoException(String message)
@@ -16,5 +22,5 @@ public class DaoException extends RuntimeException {
 	{
 		super(message, cause);
 	}
-	
+
 }

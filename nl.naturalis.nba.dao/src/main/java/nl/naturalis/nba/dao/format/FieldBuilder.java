@@ -17,6 +17,7 @@ import nl.naturalis.nba.dao.format.config.PluginParamXmlConfig;
 
 class FieldBuilder {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger(FieldBuilder.class);
 
 	/* Pick an arbitrary class from the package containing the calculators */
@@ -138,10 +139,6 @@ class FieldBuilder {
 					}
 				}
 				fullPath = fullPath.append(path);
-			}
-			if (logger.isDebugEnabled()) {
-				String fmt = "Constructing validatable path for field {}: {}";
-				logger.debug(fmt, fieldName, fullPath.getPathString());
 			}
 			fullPath.validate(ds.getMapping());
 		}

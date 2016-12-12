@@ -86,19 +86,19 @@ public class Scroller {
 	public Scroller(QuerySpec querySpec, DocumentType<?> documentType,
 			SearchHitHandler searchHitHandler) throws InvalidQueryException
 	{
-		if (querySpec.getSize() != null) {
-			size = querySpec.getSize().intValue();
-			if (logger.isDebugEnabled()) {
-				logger.debug("Property \"size\" ({}) copied and nullified on QuerySpec", size);
-			}
-			querySpec.setSize(null);
-		}
 		if (querySpec.getFrom() != null) {
 			from = querySpec.getFrom().intValue();
 			if (logger.isDebugEnabled()) {
-				logger.debug("Property \"from\" ({}) copied and nullified on QuerySpec", from);
+				logger.debug("QuerySpec property \"from\" ({}) copied and nullified", from);
 			}
 			querySpec.setFrom(null);
+		}
+		if (querySpec.getSize() != null) {
+			size = querySpec.getSize().intValue();
+			if (logger.isDebugEnabled()) {
+				logger.debug("QuerySpec property \"size\" ({}) copied and nullified", size);
+			}
+			querySpec.setSize(null);
 		}
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
@@ -125,22 +125,21 @@ public class Scroller {
 		int size = this.size;
 		int to = from + size;
 		int i = 0;
-		LOOP: do {
+		Client client = ESClientManager.getInstance().getClient();
+		SCROLL_LOOP: do {
 			if (i + response.getHits().hits().length < from) {
 				i += response.getHits().hits().length;
 			}
-			else {
-				for (SearchHit hit : response.getHits().hits()) {
-					if (size != 0 && i >= to) {
-						break LOOP;
-					}
-					if (i >= from) {
-						handler.handle(hit);
-					}
+			for (SearchHit hit : response.getHits().hits()) {
+				if (size != 0 && i >= to) {
+					break SCROLL_LOOP;
 				}
+				if (i >= from) {
+					handler.handle(hit);
+				}
+				i += 1;
 			}
 			String scrollId = response.getScrollId();
-			Client client = ESClientManager.getInstance().getClient();
 			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
 			response = ssrb.setScroll(tv).execute().actionGet();
 		} while (response.getHits().getHits().length != 0);

@@ -21,7 +21,7 @@ import nl.naturalis.nba.utils.ConfigObject.PropertyNotSetException;
 
 /**
  * Captures the information in the XML configuration file for a DarwinCore
- * archive. A {@code DwcaConfig} is used by {@link IDwcaWriter} instances to
+ * archive. {@link IDwcaWriter} instances use a {@code DwcaConfig} instance to
  * drive the generation of DarwinCore archives. At the same time, the
  * {@code DwcaConfig} class functions as a factory for {@code IDwcaWriter}
  * instances since different configurations require different implementations of

@@ -135,7 +135,9 @@ public class Scroller {
 					break SCROLL_LOOP;
 				}
 				if (i >= from) {
-					handler.handle(hit);
+					if (!handler.handle(hit)) {
+						break SCROLL_LOOP;
+					}
 				}
 				i += 1;
 			}

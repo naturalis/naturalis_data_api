@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipOutputStream;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
@@ -219,7 +221,8 @@ public class SpecimenResource {
 	@Path("/queryData")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			SpecimenDao dao = new SpecimenDao();
@@ -291,7 +294,6 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
 
 	@GET
 	@Path("/getDistinctValuesPerGroup/{keyField}/{valuesField}")
@@ -313,7 +315,23 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
+
+	@GET
+	@Path("/getGroups/{groupByField}")
+	@Produces(JSON_CONTENT_TYPE)
+	public List<KeyValuePair<Object, Integer>> getGroups(
+			@PathParam("groupByField") String groupByField,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.getGroups(groupByField, qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 
 	@GET
 	@Path("/dwca/dataset/{dataset}")

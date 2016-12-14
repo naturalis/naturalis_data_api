@@ -35,6 +35,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.query.Condition;
@@ -42,6 +43,7 @@ import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.csv.CsvWriter;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -163,6 +165,53 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return response.getHits().totalHits();
 	}
 
+	/*
+	 * NB Paging is notoriously not possible for aggregations. See
+	 * https://github.com/elastic/elasticsearch/issues/4915. Also note Byron's
+	 * contribution/solution on that page. This solution is not practical for us
+	 * since we often want to group on fields with very high cardinality (e.g.
+	 * the scientific name field), where the number of groups is close to the
+	 * total number of documents. In other words you might as well do a regular
+	 * (non-aggregation) query and then collect the documents per group
+	 * manually.
+	 */
+	@Override
+	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
+			throws InvalidQueryException
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("group", groupByField, querySpec));
+		}
+		int from = 0;
+		int size = 0;
+		if (querySpec != null) {
+			if (querySpec.getFrom() != null) {
+				from = querySpec.getFrom();
+				querySpec.setFrom(null);
+			}
+			if (querySpec.getSize() != null) {
+				size = querySpec.getSize();
+				querySpec.setSize(null);
+			}
+		}
+		else {
+			querySpec = new QuerySpec();
+		}
+		querySpec.setFields(Arrays.asList(groupByField));
+		querySpec.addCondition(new Condition(groupByField, "!=", null));
+		querySpec.sortBy(groupByField);
+		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
+		Scroller scroller = new Scroller(querySpec, dt, handler);
+		try {
+			scroller.scroll();
+		}
+		catch (NbaException e) {
+			// Should not happen - handler does not throw exceptions
+			throw new DaoException(e);
+		}
+		return handler.getGroups();
+	}
+
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException
@@ -180,6 +229,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		}
 		TermsBuilder termsBuilder = AggregationBuilders.terms(forField);
 		termsBuilder.field(forField);
+		termsBuilder.size(100);
 		request.setSize(0);
 		request.addAggregation(termsBuilder);
 		SearchResponse response = executeSearchRequest(request);
@@ -208,9 +258,8 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		}
 		qs.addCondition(new Condition(keyField, "!=", null));
 		qs.addCondition(new Condition(valuesField, "!=", null));
-		QuerySpecTranslator translator = new QuerySpecTranslator(qs, dt);
-		SearchRequestBuilder request = translator.translate();
-		Scroller scroller = new Scroller(request, handler);
+		qs.sortBy(keyField, false);
+		Scroller scroller = new Scroller(qs, dt, handler);
 		try {
 			scroller.scroll();
 		}

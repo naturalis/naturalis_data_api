@@ -22,12 +22,13 @@ class CsvWriterSearchHitHandler implements SearchHitHandler {
 	}
 
 	@Override
-	public void handle(SearchHit hit) throws NbaException
+	public boolean handle(SearchHit hit) throws NbaException
 	{
 		List<EntityObject> eos = flattener.flatten(hit.getSource());
 		for (EntityObject eo : eos) {
 			printer.printRecord(eo);
 		}
+		return true;
 	}
 
 }

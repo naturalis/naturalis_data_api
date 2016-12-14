@@ -8,7 +8,6 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -48,12 +47,6 @@ public class SpecimenDao_IsNullQueryTest {
 		tRex = TestSpecimens.tRexSpecimen01();
 		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
 		ESTestUtils.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
-	}
-
-	@After
-	public void after()
-	{
-		// dropIndex(Specimen.class);
 	}
 
 	/*

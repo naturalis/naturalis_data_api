@@ -36,7 +36,7 @@ class MultiDataSourceSearchHitHandler implements SearchHitHandler {
 	}
 
 	@Override
-	public void handle(SearchHit hit) throws NbaException
+	public boolean handle(SearchHit hit) throws NbaException
 	{
 		List<EntityObject> eos = flattener.flatten(hit.getSource());
 		LOOP: for (EntityObject eo : eos) {
@@ -50,6 +50,7 @@ class MultiDataSourceSearchHitHandler implements SearchHitHandler {
 		if (++processed % 10000 == 0) {
 			printer.flush();
 		}
+		return true;
 	}
 
 }

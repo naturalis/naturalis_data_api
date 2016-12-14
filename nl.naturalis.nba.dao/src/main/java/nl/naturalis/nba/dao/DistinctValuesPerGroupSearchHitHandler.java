@@ -28,17 +28,17 @@ class DistinctValuesPerGroupSearchHitHandler implements SearchHitHandler {
 	}
 
 	@Override
-	public void handle(SearchHit hit) throws InvalidQueryException
+	public boolean handle(SearchHit hit) throws InvalidQueryException
 	{
 		Map<String, Object> source = hit.getSource();
 		Object key = source.get(keyField);
 		if (key == null) {
-			return;
+			return true;
 		}
 		Object value = source.get(valuesField);
 		Set<Object> values = result.get(key);
 		if (values == null) {
-			if (result.size() == 100) {
+			if (result.size() == 10000000) {
 				String fmt = "Number of unique values for field (%s) exceeds maximum of 100";
 				String msg = String.format(fmt, keyField);
 				throw new InvalidQueryException(msg);
@@ -48,7 +48,7 @@ class DistinctValuesPerGroupSearchHitHandler implements SearchHitHandler {
 		}
 		if (value instanceof Collection) {
 			values.addAll((Collection<?>) value);
-			if (values.size() > 1000) {
+			if (values.size() > 10000000) {
 				String fmt = "Number of unique values for field (%s) exceeds maximum of 1000";
 				String msg = String.format(fmt, valuesField);
 				throw new InvalidQueryException(msg);
@@ -57,6 +57,7 @@ class DistinctValuesPerGroupSearchHitHandler implements SearchHitHandler {
 		else if (value != null) {
 			values.add(value);
 		}
+		return true;
 	}
 
 	Map<Object, Set<Object>> getDistinctValuesPerGroup()

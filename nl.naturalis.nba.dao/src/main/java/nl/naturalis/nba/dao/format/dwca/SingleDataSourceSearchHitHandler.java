@@ -51,7 +51,7 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 	}
 
 	@Override
-	public void handle(SearchHit hit) throws DataSetWriteException
+	public boolean handle(SearchHit hit) throws DataSetWriteException
 	{
 		try {
 			for (int i = 0; i < entities.length; i++) {
@@ -80,6 +80,7 @@ final class SingleDataSourceSearchHitHandler implements SearchHitHandler {
 		if (logger.isDebugEnabled() && processed % 100000 == 0) {
 			logger.debug("Documents processed: " + processed);
 		}
+		return true;
 	}
 
 	void printHeaders() throws IOException

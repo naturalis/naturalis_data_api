@@ -18,6 +18,6 @@ public interface SearchHitHandler {
 	 * @param hit
 	 * @throws NbaException
 	 */
-	void handle(SearchHit hit) throws NbaException;
+	boolean handle(SearchHit hit) throws NbaException;
 
 }

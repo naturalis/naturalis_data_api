@@ -21,6 +21,8 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
 
+import static nl.naturalis.nba.dao.util.es.ESUtil.*;
+
 /**
  * Utility class for using Elasticsearch's scroll API. Note that when using this
  * API, the {@code from} property of the {@link SearchRequest} is ignored (you
@@ -47,6 +49,17 @@ public class Scroller {
 	private int size = 0;
 
 	/**
+	 * Creates a scroller for the specified document type. The sc
+	 * 
+	 * @param documentType
+	 * @param searchHitHandler
+	 */
+	public Scroller(DocumentType<?> documentType, SearchHitHandler searchHitHandler)
+	{
+		this(newSearchRequest(documentType), searchHitHandler);
+	}
+
+	/**
 	 * Creates a scroller for the specified search request, using the specified
 	 * search hit handler to process the resulting documents. Documents will be
 	 * sorted in a way that's optimal for scrolling. In other words, any sort
@@ -64,9 +77,8 @@ public class Scroller {
 	 * Creates a scroller for the specified search request, using the specified
 	 * search hit handler to process the resulting documents. When specifying
 	 * {@code false} for {@code keepSortOrder}, Documents will be sorted in a
-	 * way that's optimal for scrolling. In other words, any sort field
-	 * specified in the search request will be overwritten. When specifying
-	 * {@code true} the sort field, if any, in the search request will be used.
+	 * way that's optimal for scrolling. When specifying {@code true} the sort
+	 * field, if any, in the search request will be used.
 	 * 
 	 * @param searchRequest
 	 * @param searchHitHandler
@@ -143,7 +155,7 @@ public class Scroller {
 			}
 			String scrollId = response.getScrollId();
 			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
-			response = ssrb.setScroll(tv).execute().actionGet();
+			response = ssrb.setScroll(tv).get();
 		} while (response.getHits().getHits().length != 0);
 	}
 

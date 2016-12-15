@@ -3,10 +3,17 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XScientificName implements IDocumentObject {
+public class Name implements IDocumentObject {
+
+	public static enum Type
+	{
+		SCIENTIFIC, SYNONYM, VERNACULAR, RANK, NAME_PART
+	}
 
 	private String id;
-	private String scientificName;
+	private String name;
+	private Type type;
+	private String rankOrNamePart;
 	private List<String> taxonIds;
 	private List<String> specimenIds;
 	private List<String> multimediaIds;
@@ -47,14 +54,34 @@ public class XScientificName implements IDocumentObject {
 		multimediaIds.add(id);
 	}
 
-	public String getScientificName()
+	public String getName()
 	{
-		return scientificName;
+		return name;
 	}
 
-	public void setScientificName(String scientificName)
+	public void setName(String name)
 	{
-		this.scientificName = scientificName;
+		this.name = name;
+	}
+
+	public Type getType()
+	{
+		return type;
+	}
+
+	public void setType(Type type)
+	{
+		this.type = type;
+	}
+
+	public String getRankOrNamePart()
+	{
+		return rankOrNamePart;
+	}
+
+	public void setRankOrNamePart(String rankOrNamePart)
+	{
+		this.rankOrNamePart = rankOrNamePart;
 	}
 
 	public List<String> getTaxonIds()

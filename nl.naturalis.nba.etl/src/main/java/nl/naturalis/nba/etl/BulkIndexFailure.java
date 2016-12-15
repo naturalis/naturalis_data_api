@@ -1,4 +1,4 @@
-package nl.naturalis.nba.etl.elasticsearch;
+package nl.naturalis.nba.etl;
 
 import org.elasticsearch.action.bulk.BulkItemResponse;
 
@@ -8,14 +8,14 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
  * @author Ayco Holleman
  *
  */
-public class IndexRequestFailure {
+class BulkIndexFailure {
 
 	private String index;
 	private String type;
 	private Object object;
 	private String message;
 
-	public IndexRequestFailure(BulkItemResponse response, Object obj)
+	BulkIndexFailure(BulkItemResponse response, Object obj)
 	{
 		this.index = response.getIndex();
 		this.type = response.getType();
@@ -28,7 +28,7 @@ public class IndexRequestFailure {
 	 * 
 	 * @return
 	 */
-	public String getIndex()
+	String getIndex()
 	{
 		return index;
 	}
@@ -38,7 +38,7 @@ public class IndexRequestFailure {
 	 * 
 	 * @return
 	 */
-	public String getType()
+	String getType()
 	{
 		return type;
 	}
@@ -48,7 +48,7 @@ public class IndexRequestFailure {
 	 * 
 	 * @return
 	 */
-	public Object getObject()
+	Object getObject()
 	{
 		return object;
 	}
@@ -58,9 +58,8 @@ public class IndexRequestFailure {
 	 * 
 	 * @return
 	 */
-	public String getMessage()
+	String getMessage()
 	{
 		return message;
 	}
-
 }

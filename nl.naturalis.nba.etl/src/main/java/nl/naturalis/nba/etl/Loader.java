@@ -13,8 +13,6 @@ import nl.naturalis.nba.etl.col.CoLReferenceImporter;
 import nl.naturalis.nba.etl.col.CoLSynonymImporter;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
 import nl.naturalis.nba.etl.col.CoLVernacularNameImporter;
-import nl.naturalis.nba.etl.elasticsearch.BulkIndexException;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
  * <p>
@@ -82,10 +80,9 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(Loader.class);
 
-	private final DocumentType<T> type;
+	private final BulkIndexer<T> indexer;
 	private final int tresh;
 	private final ETLStatistics stats;
-	private final IndexManagerNative idxMgr;
 	private final ArrayList<T> objs;
 	private final ArrayList<String> ids;
 	private final ArrayList<String> parIds;
@@ -99,17 +96,15 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 * time the number of objects added to the loader exceeds the specified
 	 * treshold.
 	 * 
-	 * @param type
+	 * @param dt
 	 * @param treshold
 	 * @param stats
 	 */
-	public Loader(DocumentType<T> type, int treshold, ETLStatistics stats)
+	public Loader(DocumentType<T> dt, int treshold, ETLStatistics stats)
 	{
-		this.type = type;
+		this.indexer = new BulkIndexer<>(dt);
 		this.tresh = treshold;
 		this.stats = stats;
-		this.idxMgr = ETLRegistry.getInstance().getIndexManager(type);
-		this.idxMgr.setObjectMapper(type.getObjectMapper());
 		/*
 		 * Make all lists a bit bigger than the treshold, because the
 		 * treshold-tipping call to load() may actually fill them beyond the
@@ -145,8 +140,9 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 */
 	public final void load(List<T> objects)
 	{
-		if (objects == null || objects.size() == 0)
+		if (objects == null || objects.size() == 0) {
 			return;
+		}
 		objs.addAll(objects);
 		if (ids != null) {
 			for (T item : objects) {
@@ -158,8 +154,9 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}
-		if (objs.size() >= tresh)
+		if (objs.size() >= tresh) {
 			flush();
+		}
 	}
 
 	/**
@@ -179,7 +176,6 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 */
 	public T findInQueue(String id)
 	{
-		assert (ids != null);
 		int i;
 		for (i = 0; i < ids.size(); ++i) {
 			if (ids.get(i).equals(id)) {
@@ -209,7 +205,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	{
 		if (!objs.isEmpty()) {
 			try {
-				idxMgr.saveObjects(type.getName(), objs, ids, parIds);
+				indexer.index(objs, ids, parIds);
 				stats.documentsIndexed += objs.size();
 			}
 			catch (BulkIndexException e) {

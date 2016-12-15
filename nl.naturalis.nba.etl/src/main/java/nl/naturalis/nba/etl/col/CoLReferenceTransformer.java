@@ -20,11 +20,9 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.Transformer;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
  * Subclass of {@link CSVTransformer} that transforms CSV records into
@@ -35,13 +33,11 @@ import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
  */
 class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvField, Taxon> {
 
-	private final IndexManagerNative index;
 	private final CoLTaxonLoader loader;
 
 	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
-		this.index = ETLRegistry.getInstance().getIndexManager(TAXON);
 		this.loader = loader;
 	}
 
@@ -121,7 +117,7 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 			String id = getElasticsearchId(COL, objectID);
 			Taxon taxon = loader.findInQueue(id);
 			if (taxon == null) {
-				taxon = index.get(TAXON.getName(), id, Taxon.class);
+				taxon = ESUtil.find(TAXON, id);
 				if (taxon != null && taxon.getReferences() != null) {
 					stats.objectsAccepted++;
 					taxon.setReferences(null);

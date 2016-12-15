@@ -2,14 +2,6 @@ package nl.naturalis.nba.etl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.Client;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.naturalis.nba.common.json.ObjectMapperLocator;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.etl.elasticsearch.IndexManagerNative;
 
 /**
  * Class providing centralized access to core services such as logging and
@@ -50,6 +42,7 @@ public class ETLRegistry {
 	 * @param cls
 	 * @return
 	 */
+	@SuppressWarnings("static-method")
 	public Logger getLogger(Class<?> cls)
 	{
 		/*
@@ -61,22 +54,6 @@ public class ETLRegistry {
 		 * for in one place (here).
 		 */
 		return LogManager.getLogger(cls);
-	}
-
-	/**
-	 * Get an index manager for the NBA index.
-	 * 
-	 * @return
-	 */
-	public IndexManagerNative getIndexManager(DocumentType documentType)
-	{
-		Client client = ESClientManager.getInstance().getClient();
-		String index = documentType.getIndexInfo().getName();
-		IndexManagerNative idxMgr = new IndexManagerNative(client, index);
-		ObjectMapperLocator oml = ObjectMapperLocator.getInstance();
-		ObjectMapper om = oml.getObjectMapper(documentType.getJavaType());
-		idxMgr.setObjectMapper(om);
-		return new IndexManagerNative(client, index);
 	}
 
 }

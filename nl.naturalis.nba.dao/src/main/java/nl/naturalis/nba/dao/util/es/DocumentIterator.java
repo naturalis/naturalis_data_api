@@ -15,11 +15,18 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 
-import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 
-public class DocumentIterator<T extends IDocumentObject> implements Iterator<Map<String, Object>> {
+/**
+ * An {@link Iterator} implementation that iterates over Elasticsearch
+ * documents.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+public class DocumentIterator
+		implements Iterator<Map<String, Object>>, Iterable<Map<String, Object>> {
 
 	private int batchSize = 10000;
 	private TimeValue timeout = new TimeValue(500);
@@ -32,7 +39,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<Map
 	private int hitCnt;
 	private String scrollId;
 
-	public DocumentIterator(DocumentType<T> dt)
+	public DocumentIterator(DocumentType<?> dt)
 	{
 		SearchRequestBuilder request = newSearchRequest(dt);
 		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
@@ -62,6 +69,12 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<Map
 		}
 		docCnt++;
 		return hits[hitCnt++].getSource();
+	}
+
+	@Override
+	public Iterator<Map<String, Object>> iterator()
+	{
+		return this;
 	}
 
 }

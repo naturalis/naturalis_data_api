@@ -26,6 +26,10 @@
 		"_default_": {
 			"_all": {
 				"enabled": false
+			},
+			"_source" : {
+				"enabled": false
+			
 			}
 		}
 	}

@@ -1,22 +1,30 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Name implements IDocumentObject {
 
-	public static enum Type
+	private String id;
+	private String value;
+	private Set<NameInfo> sources;
+
+	public Name()
 	{
-		SCIENTIFIC, SYNONYM, VERNACULAR, RANK, NAME_PART
 	}
 
-	private String id;
-	private String name;
-	private Type type;
-	private String rankOrNamePart;
-	private List<String> taxonIds;
-	private List<String> specimenIds;
-	private List<String> multimediaIds;
+	public Name(String value)
+	{
+		this.value = value;
+	}
+
+	public void addNameInfo(NameInfo source)
+	{
+		if (sources == null) {
+			sources = new HashSet<>(8);
+		}
+		sources.add(source);
+	}
 
 	@Override
 	public String getId()
@@ -30,88 +38,24 @@ public class Name implements IDocumentObject {
 		this.id = id;
 	}
 
-	public void addTaxonId(String id)
-	{
-		if (taxonIds == null) {
-			taxonIds = new ArrayList<>(4);
-		}
-		taxonIds.add(id);
-	}
-
-	public void addSpecimenId(String id)
-	{
-		if (specimenIds == null) {
-			specimenIds = new ArrayList<>();
-		}
-		specimenIds.add(id);
-	}
-
-	public void addMultiMediaId(String id)
-	{
-		if (multimediaIds == null) {
-			multimediaIds = new ArrayList<>();
-		}
-		multimediaIds.add(id);
-	}
-
 	public String getName()
 	{
-		return name;
+		return value;
 	}
 
 	public void setName(String name)
 	{
-		this.name = name;
+		this.value = name;
 	}
 
-	public Type getType()
+	public Set<NameInfo> getNameInfos()
 	{
-		return type;
+		return sources;
 	}
 
-	public void setType(Type type)
+	public void setNameInfos(Set<NameInfo> sources)
 	{
-		this.type = type;
-	}
-
-	public String getRankOrNamePart()
-	{
-		return rankOrNamePart;
-	}
-
-	public void setRankOrNamePart(String rankOrNamePart)
-	{
-		this.rankOrNamePart = rankOrNamePart;
-	}
-
-	public List<String> getTaxonIds()
-	{
-		return taxonIds;
-	}
-
-	public void setTaxonIds(List<String> taxonIds)
-	{
-		this.taxonIds = taxonIds;
-	}
-
-	public List<String> getSpecimenIds()
-	{
-		return specimenIds;
-	}
-
-	public void setSpecimenIds(List<String> specimenIds)
-	{
-		this.specimenIds = specimenIds;
-	}
-
-	public List<String> getMultimediaIds()
-	{
-		return multimediaIds;
-	}
-
-	public void setMultimediaIds(List<String> multimediaIds)
-	{
-		this.multimediaIds = multimediaIds;
+		this.sources = sources;
 	}
 
 }

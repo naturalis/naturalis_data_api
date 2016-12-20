@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
+import nl.naturalis.nba.api.model.Name;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.es.map.Mapping;
@@ -53,6 +54,10 @@ public class DocumentType<T extends IDocumentObject> {
 	 * A {@code DocumentType} instance representing the GeoArea document type.
 	 */
 	public static final DocumentType<GeoArea> GEO_AREA;
+	/**
+	 * A {@code DocumentType} instance representing the Name document type.
+	 */
+	public static final DocumentType<Name> NAME;
 
 	static {
 
@@ -60,6 +65,7 @@ public class DocumentType<T extends IDocumentObject> {
 		TAXON = new DocumentType<>(Taxon.class);
 		MULTI_MEDIA_OBJECT = new DocumentType<>(MultiMediaObject.class);
 		GEO_AREA = new DocumentType<>(GeoArea.class);
+		NAME = new DocumentType<>(Name.class);
 
 		try {
 			for (ConfigObject cfg : getIndexSections()) {
@@ -96,6 +102,8 @@ public class DocumentType<T extends IDocumentObject> {
 			return MULTI_MEDIA_OBJECT;
 		if (GEO_AREA.name.equalsIgnoreCase(name))
 			return GEO_AREA;
+		if (NAME.name.equalsIgnoreCase(name))
+			return NAME;
 		throw new DaoException("No such document type: \"" + name + '"');
 	}
 
@@ -115,6 +123,8 @@ public class DocumentType<T extends IDocumentObject> {
 			return MULTI_MEDIA_OBJECT;
 		if (GEO_AREA.javaType == cls)
 			return GEO_AREA;
+		if (NAME.javaType == cls)
+			return NAME;
 		throw new DaoException("No document type corresponding to " + cls);
 	}
 

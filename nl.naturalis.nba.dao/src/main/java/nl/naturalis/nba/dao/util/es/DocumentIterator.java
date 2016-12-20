@@ -4,7 +4,6 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -15,6 +14,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 
@@ -25,56 +27,82 @@ import nl.naturalis.nba.dao.ESClientManager;
  * @author Ayco Holleman
  *
  */
-public class DocumentIterator
-		implements Iterator<Map<String, Object>>, Iterable<Map<String, Object>> {
+public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>, Iterable<T> {
 
-	private int batchSize = 10000;
+	private final Client client;
+	private final DocumentType<T> dt;
+
 	private TimeValue timeout = new TimeValue(500);
+	private int batchSize = 10000;
 
-	private final Client client = ESClientManager.getInstance().getClient();
-
-	private long total;
-	private long docCnt;
+	private boolean ready = false;
+	private long size;
+	private long docCounter;
 	private SearchHit[] hits;
-	private int hitCnt;
+	private int hitCounter;
 	private String scrollId;
 
-	public DocumentIterator(DocumentType<?> dt)
+	public DocumentIterator(DocumentType<T> dt)
 	{
-		SearchRequestBuilder request = newSearchRequest(dt);
-		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
-		request.setScroll(timeout);
-		request.setSize(batchSize);
-		SearchResponse response = executeSearchRequest(request);
-		total = response.getHits().getTotalHits();
-		scrollId = response.getScrollId();
-		hits = response.getHits().hits();
+		this.client = ESClientManager.getInstance().getClient();
+		this.dt = dt;
+	}
+
+	public long size()
+	{
+		checkReady();
+		return size;
 	}
 
 	@Override
 	public boolean hasNext()
 	{
-		return docCnt < total;
+		checkReady();
+		return docCounter < size;
 	}
 
 	@Override
-	public Map<String, Object> next()
+	public T next()
 	{
-		if (hitCnt == hits.length) {
+		checkReady();
+		if (hitCounter == hits.length) {
 			SearchScrollRequestBuilder ssrb = client.prepareSearchScroll(scrollId);
 			SearchResponse response = ssrb.setScroll(timeout).get();
 			scrollId = response.getScrollId();
 			hits = response.getHits().hits();
-			hitCnt = 0;
+			hitCounter = 0;
 		}
-		docCnt++;
-		return hits[hitCnt++].getSource();
+		docCounter++;
+		return newDocumentObject(hits[hitCounter++]);
 	}
 
 	@Override
-	public Iterator<Map<String, Object>> iterator()
+	public Iterator<T> iterator()
 	{
 		return this;
+	}
+
+	private T newDocumentObject(SearchHit hit)
+	{
+		ObjectMapper om = dt.getObjectMapper();
+		T documentObject = om.convertValue(hit.getSource(), dt.getJavaType());
+		documentObject.setId(hit.getId());
+		return documentObject;
+	}
+
+	private void checkReady()
+	{
+		if (!ready) {
+			SearchRequestBuilder request = newSearchRequest(this.dt);
+			request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+			request.setScroll(timeout);
+			request.setSize(batchSize);
+			SearchResponse response = executeSearchRequest(request);
+			size = response.getHits().getTotalHits();
+			scrollId = response.getScrollId();
+			hits = response.getHits().hits();
+			ready = true;
+		}
 	}
 
 }

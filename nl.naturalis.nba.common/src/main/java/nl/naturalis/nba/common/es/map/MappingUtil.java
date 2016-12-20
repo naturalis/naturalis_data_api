@@ -49,10 +49,10 @@ class MappingUtil {
 	static ArrayList<Method> getMappedProperties(Class<?> cls)
 	{
 		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
-		do {
+		while (cls != Object.class) {
 			hierarchy.add(cls);
 			cls = cls.getSuperclass();
-		} while (cls != Object.class);
+		}
 		ArrayList<Method> props = new ArrayList<>(4);
 		for (int i = hierarchy.size() - 1; i >= 0; i--) {
 			cls = hierarchy.get(i);
@@ -77,10 +77,10 @@ class MappingUtil {
 	{
 		ArrayList<Class<?>> hierarchy = new ArrayList<>(3);
 		Class<?> c = cls;
-		do {
+		while (c != Object.class) {
 			hierarchy.add(c);
 			c = c.getSuperclass();
-		} while (c != Object.class);
+		}
 		ArrayList<Field> allFields = new ArrayList<>();
 		for (int i = hierarchy.size() - 1; i >= 0; i--) {
 			c = hierarchy.get(i);

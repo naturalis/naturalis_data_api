@@ -138,7 +138,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 * 
 	 * @param objects
 	 */
-	public final void load(List<T> objects)
+	public final void queue(List<T> objects)
 	{
 		if (objects == null || objects.size() == 0) {
 			return;
@@ -194,7 +194,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	/**
 	 * Flushes the contents of the internal object buffer to ElasticSearch.
 	 * While processing your source data, you don't have to call this method
-	 * explicitly as it is done implicitly by the {@link #load(List) load}
+	 * explicitly as it is done implicitly by the {@link #queue(List) load}
 	 * method (once the queue size reaches the treshold). However, you
 	 * <b>must</b> call this method yourself once all records have been
 	 * processed to make sure any remaining objects in the queue are written to

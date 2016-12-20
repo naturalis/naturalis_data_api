@@ -6,9 +6,9 @@ import nl.naturalis.nba.api.model.Name;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
-public class NameLoader extends Loader<Name> {
+class NameLoader extends Loader<Name> {
 
-	public NameLoader(int treshold, ETLStatistics stats)
+	NameLoader(int treshold, ETLStatistics stats)
 	{
 		super(NAME, treshold, stats);
 	}

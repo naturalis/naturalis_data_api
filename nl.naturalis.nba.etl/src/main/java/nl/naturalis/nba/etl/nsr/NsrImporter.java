@@ -97,10 +97,10 @@ public class NsrImporter {
 				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
 					List<Taxon> taxa = tTransformer.transform(extracted);
-					taxonLoader.load(taxa);
+					taxonLoader.queue(taxa);
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
-					mediaLoader.load(multimedia);
+					mediaLoader.queue(multimedia);
 					if (++i % 5000 == 0)
 						logger.info("Records processed: " + i);
 				}
@@ -140,7 +140,7 @@ public class NsrImporter {
 				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, stats)) {
 					List<Taxon> transformed = transformer.transform(extracted);
-					loader.load(transformed);
+					loader.queue(transformed);
 					if (++i % 5000 == 0)
 						logger.info("Records processed: " + i);
 				}
@@ -190,7 +190,7 @@ public class NsrImporter {
 					List<Taxon> taxa = ntt.transform(extracted);
 					transformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = transformer.transform(extracted);
-					loader.load(multimedia);
+					loader.queue(multimedia);
 					if (stats.recordsProcessed % 5000 == 0)
 						logger.info("Records processed: " + stats.recordsProcessed);
 				}

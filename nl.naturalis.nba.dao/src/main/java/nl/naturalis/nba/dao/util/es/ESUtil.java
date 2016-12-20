@@ -151,6 +151,7 @@ public class ESUtil {
 		result.add(DocumentType.TAXON.getIndexInfo());
 		result.add(DocumentType.MULTI_MEDIA_OBJECT.getIndexInfo());
 		result.add(DocumentType.GEO_AREA.getIndexInfo());
+		result.add(DocumentType.NAME.getIndexInfo());
 		return result;
 	}
 
@@ -236,7 +237,8 @@ public class ESUtil {
 	}
 
 	/**
-	 * Creates the specified index.
+	 * Creates the specified index plus all document types it is configured to
+	 * host.
 	 * 
 	 * @param indexInfo
 	 */
@@ -258,7 +260,6 @@ public class ESUtil {
 		if (!response.isAcknowledged()) {
 			throw new DaoException("Failed to create index " + index);
 		}
-		logger.info("Created index {}", index);
 		for (DocumentType<?> dt : indexInfo.getTypes()) {
 			createType(dt);
 		}
@@ -386,7 +387,6 @@ public class ESUtil {
 			if (!response.isAcknowledged()) {
 				throw new DaoException("Failed to create type " + type);
 			}
-			logger.info("Created type {}", type);
 		}
 		catch (Throwable t) {
 			String fmt = "Failed to create type %s: %s";

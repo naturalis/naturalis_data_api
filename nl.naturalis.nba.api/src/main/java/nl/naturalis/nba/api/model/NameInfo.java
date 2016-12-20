@@ -6,7 +6,7 @@ public class NameInfo implements INbaModelObject {
 	private String field;
 	private String documentId;
 	private String contextField0;
-	private Object contextValue0;
+	private String contextValue0;
 	private String sourceSystemCode;
 
 	public NameInfo()
@@ -90,12 +90,12 @@ public class NameInfo implements INbaModelObject {
 		this.contextField0 = contextField0;
 	}
 
-	public Object getContextValue0()
+	public String getContextValue0()
 	{
 		return contextValue0;
 	}
 
-	public void setContextValue0(Object contextValue0)
+	public void setContextValue0(String contextValue0)
 	{
 		this.contextValue0 = contextValue0;
 	}

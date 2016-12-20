@@ -86,7 +86,7 @@ public class BrahmsMultiMediaImporter {
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				multimediaLoader.load(multimediaTransformer.transform(rec));
+				multimediaLoader.queue(multimediaTransformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}

@@ -190,8 +190,8 @@ public class BrahmsImportAll {
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				specimenLoader.load(specimenTransformer.transform(rec));
-				multimediaLoader.load(multimediaTransformer.transform(rec));
+				specimenLoader.queue(specimenTransformer.transform(rec));
+				multimediaLoader.queue(multimediaTransformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0)
 					logger.info("Records processed: " + rec.getLineNumber());
 			}

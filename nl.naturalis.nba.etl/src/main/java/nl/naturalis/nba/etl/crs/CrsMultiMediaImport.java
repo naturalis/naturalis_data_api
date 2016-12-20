@@ -95,7 +95,7 @@ public class CrsMultiMediaImport {
 		CrsExtractor extractor = new CrsExtractor(bytes, stats);
 		for (XMLRecordInfo extracted : extractor) {
 			List<MultiMediaObject> transformed = transformer.transform(extracted);
-			loader.load(transformed);
+			loader.queue(transformed);
 			if (stats.recordsProcessed % 50000 == 0) {
 				logger.info("Records processed: " + stats.recordsProcessed);
 			}

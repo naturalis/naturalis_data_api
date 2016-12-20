@@ -89,7 +89,7 @@ public class NdffSpecimenImporter {
 			for (CSVRecordInfo<NdffCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				loader.load(transformer.transform(rec));
+				loader.queue(transformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}

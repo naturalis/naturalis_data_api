@@ -1,8 +1,10 @@
 package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.dao.DocumentType.NAME;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.Monomial;
@@ -14,7 +16,13 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLStatistics;
 
-public class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
+/**
+ * Transforms Taxon documents into Name documents.
+ * 
+ * @author Ayco Holleman
+ *
+ */
+class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 
 	static final String FLD_ACCEPTED_FULL_NAME = "acceptedName.fullScientificName";
 	static final String FLD_ACCEPTED_GENUS = "acceptedName.genusOrMonomial";
@@ -31,9 +39,9 @@ public class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 	static final String FLD_MONOMIAL_RANK = "systemClassification.rank";
 	static final String FLD_MONOMIAL_NAME = "systemClassification.name";
 
-	private final NameLoader loader;
+	private NameLoader loader;
 
-	public TaxonNameTransformer(ETLStatistics stats, NameLoader loader)
+	TaxonNameTransformer(ETLStatistics stats, NameLoader loader)
 	{
 		super(stats);
 		this.loader = loader;
@@ -76,12 +84,15 @@ public class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 
 	private List<Name> getNonAcceptedNames()
 	{
+		if (input.getSynonyms() == null) {
+			return Collections.emptyList();
+		}
 		List<Name> names = new ArrayList<>(4);
 		for (ScientificName syn : input.getSynonyms()) {
 			Name name = getName(syn.getFullScientificName());
 			NameInfo nameInfo = newNameInfo(FLD_SYNONYM_FULL_NAME);
 			nameInfo.setContextField0(FLD_SYNONYM_TAXONOMIC_STATUS);
-			nameInfo.setContextValue0(syn.getTaxonomicStatus());
+			nameInfo.setContextValue0(syn.getTaxonomicStatus().toString());
 			name.addNameInfo(nameInfo);
 			names.add(name);
 			names.addAll(getSynonymNameParts(syn));
@@ -147,6 +158,9 @@ public class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 
 	private List<Name> getVernacularNames()
 	{
+		if (input.getVernacularNames() == null) {
+			return Collections.emptyList();
+		}
 		List<Name> names = new ArrayList<>(4);
 		for (VernacularName vn : input.getVernacularNames()) {
 			Name name = getName(vn.getName());
@@ -159,6 +173,7 @@ public class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 	private NameInfo newNameInfo(String field)
 	{
 		NameInfo nameInfo = new NameInfo();
+		nameInfo.setDocumentType(TAXON.getName());
 		nameInfo.setSourceSystemCode(input.getSourceSystem().getCode());
 		nameInfo.setDocumentId(input.getId());
 		nameInfo.setField(field);

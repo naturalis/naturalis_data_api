@@ -1,20 +1,21 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.DocumentType.NAME;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Name;
 import nl.naturalis.nba.api.model.NameInfo;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLStatistics;
 
-class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
+class MultiMediaObjectNameTransformer extends AbstractNameTransformer<MultiMediaObject> {
 
 	static final String FLD_SCIENTIFIC = "identifications.scientificName.fullScientificName";
 	static final String FLD_GENUS = "identifications.scientificName.genusOrMonomial";
@@ -26,7 +27,7 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 
 	private NameLoader loader;
 
-	SpecimenNameTransformer(ETLStatistics stats, NameLoader loader)
+	MultiMediaObjectNameTransformer(ETLStatistics stats, NameLoader loader)
 	{
 		super(stats);
 		this.loader = loader;
@@ -59,11 +60,11 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 	private List<Name> getScientificNames()
 	{
 		List<Name> names = new ArrayList<>(4);
-		for (SpecimenIdentification si : input.getIdentifications()) {
-			Name name = getName(si.getScientificName().getFullScientificName());
+		for (MultiMediaContentIdentification mmci : input.getIdentifications()) {
+			Name name = getName(mmci.getScientificName().getFullScientificName());
 			name.addNameInfo(newNameInfo(FLD_SCIENTIFIC));
 			names.add(name);
-			names.addAll(getAcceptedNameNameParts(si.getScientificName()));
+			names.addAll(getAcceptedNameNameParts(mmci.getScientificName()));
 		}
 		return names;
 	}
@@ -71,8 +72,8 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 	private List<Name> getRanks()
 	{
 		List<Name> ranks = new ArrayList<>(8);
-		for (SpecimenIdentification si : input.getIdentifications()) {
-			for (Monomial m : si.getSystemClassification()) {
+		for (MultiMediaContentIdentification mmci : input.getIdentifications()) {
+			for (Monomial m : mmci.getSystemClassification()) {
 				Name name = getName(m.getName());
 				NameInfo nameInfo = newNameInfo(FLD_MONOMIAL_NAME);
 				nameInfo.setContextField0(FLD_MONOMIAL_RANK);
@@ -112,7 +113,7 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 	private NameInfo newNameInfo(String field)
 	{
 		NameInfo nameInfo = new NameInfo();
-		nameInfo.setDocumentType(SPECIMEN.getName());
+		nameInfo.setDocumentType(MULTI_MEDIA_OBJECT.getName());
 		nameInfo.setSourceSystemCode(input.getSourceSystem().getCode());
 		nameInfo.setDocumentId(input.getId());
 		nameInfo.setField(field);

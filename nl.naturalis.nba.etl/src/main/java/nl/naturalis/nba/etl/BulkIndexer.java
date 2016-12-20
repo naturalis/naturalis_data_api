@@ -14,6 +14,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 
 class BulkIndexer<T extends IDocumentObject> {
 

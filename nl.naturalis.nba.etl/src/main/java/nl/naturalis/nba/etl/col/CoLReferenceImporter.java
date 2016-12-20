@@ -84,7 +84,7 @@ public class CoLReferenceImporter {
 				if (rec == null)
 					continue;
 				List<Taxon> taxa = transformer.transform(rec);
-				loader.load(taxa);
+				loader.queue(taxa);
 				if (rec.getLineNumber() % 50000 == 0)
 					logger.info("Records processed: " + rec.getLineNumber());
 			}

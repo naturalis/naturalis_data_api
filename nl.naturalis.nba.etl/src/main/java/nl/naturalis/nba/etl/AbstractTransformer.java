@@ -9,8 +9,8 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
- * Abstract base class for all transformation components within the ETL cycle. Provides
- * functionality for uniform error reporting.
+ * Abstract base class for all transformation components within the ETL cycle.
+ * Provides functionality for uniform error reporting.
  * 
  * @author Ayco Holleman
  *
@@ -36,19 +36,19 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	protected boolean suppressErrors;
 
 	/**
-	 * The source record. Currently either an instance of a commons-csv CSVRecord instance
-	 * or a w3c Element instance.
+	 * The source record. Currently either an instance of a commons-csv
+	 * CSVRecord instance or a w3c Element instance.
 	 */
 	protected INPUT input;
 	/**
-	 * The ID of the object to be indexed. Must be extracted from the {@link #input input
-	 * record} by subclasses.
+	 * The ID of the object to be indexed. Must be extracted from the
+	 * {@link #input input record} by subclasses.
 	 */
 	protected String objectID;
 
 	/**
-	 * Creates a transformer that will update the counters of the specified statistics
-	 * object.
+	 * Creates a transformer that will update the counters of the specified
+	 * statistics object.
 	 * 
 	 * @param stats
 	 */
@@ -60,12 +60,12 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 
 	/**
 	 * This class provides a final implementation of the method defined by the
-	 * {@link Transformer} interface while providing a template for subclassess to do the
-	 * heavy-lifting through three template methods:
+	 * {@link Transformer} interface while providing a template for subclassess
+	 * to do the heavy-lifting through three template methods:
 	 * <ol>
 	 * <li>{@link #skipRecord()} to determine if the record should be skipped
-	 * <li>{@link #getObjectID()} to extract the object ID from the currently processed
-	 * record (needed for logging purposes)
+	 * <li>{@link #getObjectID()} to extract the object ID from the currently
+	 * processed record (needed for logging purposes)
 	 * <li>{@link #doTransform()} to validate the input and produce the output
 	 * </ol>
 	 */
@@ -90,10 +90,11 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Whether or not to skip the current record. By default all records are processed,
-	 * but subclasses can override this method to discard records before they are even
-	 * handed over to the {@link #doTransform()} method. Subclasses can inspect the
-	 * protected {@link #input} field to determine if the record should be skipped.
+	 * Whether or not to skip the current record. By default all records are
+	 * processed, but subclasses can override this method to discard records
+	 * before they are even handed over to the {@link #doTransform()} method.
+	 * Subclasses can inspect the protected {@link #input} field to determine if
+	 * the record should be skipped.
 	 * 
 	 * @return
 	 */
@@ -104,8 +105,9 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Get the ID of the currently processed record. Subclasses can use the protected
-	 * {@link #input} field, holding the currently processed record, to retrieve the ID.
+	 * Get the ID of the currently processed record. Subclasses can use the
+	 * protected {@link #input} field, holding the currently processed record,
+	 * to retrieve the ID.
 	 * 
 	 * @return
 	 * 
@@ -142,12 +144,13 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Whether or not to suppress errors. With error suppression, INFO messages are let
-	 * through while most ERROR and all WARN messages are suppressed. This may make the
-	 * log file more readable if you expect huge amounts of well-known, anticipated
-	 * errors. There is some intelligence in <i>which</i> error messages are suppressed.
-	 * If the import program generates the error (meaning it sort of already anticipated
-	 * the error condition), the error message is suppressed. However if the error is
+	 * Whether or not to suppress errors. With error suppression, INFO messages
+	 * are let through while most ERROR and all WARN messages are suppressed.
+	 * This may make the log file more readable if you expect huge amounts of
+	 * well-known, anticipated errors. There is some intelligence in
+	 * <i>which</i> error messages are suppressed. If the import program
+	 * generates the error (meaning it sort of already anticipated the error
+	 * condition), the error message is suppressed. However if the error is
 	 * caught in a catch-all block, the error is always logged, even with error
 	 * suppression enabled.
 	 * 
@@ -161,15 +164,17 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Handles a validation error. Increases the {@link ETLStatistics#objectsRejected
-	 * objectsRejected} counter by one and logs a standardized error message. The error
-	 * message is logged <i>even</i> if error suppression is enabled, because the
-	 * assumption is that this method is called only for unexpected errors, mostly likely
-	 * caught in a catch-all block, that you do not want to miss. If DEBUG is enabled the
-	 * specified throwable's stack trace is logged as well.
+	 * Handles a validation error. Increases the
+	 * {@link ETLStatistics#objectsRejected objectsRejected} counter by one and
+	 * logs a standardized error message. The error message is logged
+	 * <i>even</i> if error suppression is enabled, because the assumption is
+	 * that this method is called only for unexpected errors, mostly likely
+	 * caught in a catch-all block, that you do not want to miss. If DEBUG is
+	 * enabled the specified throwable's stack trace is logged as well.
 	 * 
 	 * @param t
-	 *            An (unanticipated) exception thrown while transformer the XML input
+	 *            An (unanticipated) exception thrown while transformer the XML
+	 *            input
 	 * 
 	 * @see #setSuppressErrors(boolean)
 	 * 
@@ -177,15 +182,23 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	protected void handleError(Throwable t)
 	{
 		stats.objectsRejected++;
-		error(t.toString());
+		/* Let's not leave ourselves in the dark about the dreaded NPE */
+		if (t instanceof NullPointerException) {
+			StackTraceElement ste = t.getStackTrace()[0];
+			String msg = "NullPointerException at " + ste.toString();
+			error(msg);
+		}
+		else {
+			error(t.toString());
+		}
 		if (logger.isDebugEnabled()) {
 			debug("Stacktrace:", t);
 		}
 	}
 
 	/**
-	 * Logs a error message, prefixing a standardized {@link #messagePrefix() message
-	 * prefix} to the custom error message.
+	 * Logs a error message, prefixing a standardized {@link #messagePrefix()
+	 * message prefix} to the custom error message.
 	 * 
 	 * @param pattern
 	 *            The message pattern
@@ -207,8 +220,8 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Logs a error message, prefixing a standardized {@link #messagePrefix() message
-	 * prefix} to the custom error message.
+	 * Logs a error message, prefixing a standardized {@link #messagePrefix()
+	 * message prefix} to the custom error message.
 	 * 
 	 * @param pattern
 	 *            The message pattern
@@ -230,8 +243,8 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Logs a error message, prefixing a standardized {@link #messagePrefix() message
-	 * prefix} to the custom error message.
+	 * Logs a error message, prefixing a standardized {@link #messagePrefix()
+	 * message prefix} to the custom error message.
 	 * 
 	 * @param pattern
 	 *            The message pattern
@@ -253,8 +266,8 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * Logs a error message, prefixing a standardized {@link #messagePrefix() message
-	 * prefix} to the custom error message.
+	 * Logs a error message, prefixing a standardized {@link #messagePrefix()
+	 * message prefix} to the custom error message.
 	 * 
 	 * @param pattern
 	 *            The message pattern
@@ -276,10 +289,11 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	}
 
 	/**
-	 * A standard prefix for all messages logged using one of the specialized log methods
-	 * in this class. The idea is that any message is by default prefixed with the ID of
-	 * the object for which the message was generated. By default the message prefix is a
-	 * right-padded column containing the object ID of the validated object.
+	 * A standard prefix for all messages logged using one of the specialized
+	 * log methods in this class. The idea is that any message is by default
+	 * prefixed with the ID of the object for which the message was generated.
+	 * By default the message prefix is a right-padded column containing the
+	 * object ID of the validated object.
 	 * 
 	 * @return
 	 * 

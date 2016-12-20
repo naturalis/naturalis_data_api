@@ -95,7 +95,7 @@ public class GeoImporter {
 			for (CSVRecordInfo<GeoCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				loader.load(transformer.transform(rec));
+				loader.queue(transformer.transform(rec));
 				if (rec.getLineNumber() % 100 == 0) {
 					logger.info("Records processed: " + rec.getLineNumber());
 				}

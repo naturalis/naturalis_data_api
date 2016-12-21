@@ -16,7 +16,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -46,7 +46,7 @@ public class GeoImporter {
 	public GeoImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("geo.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "10");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -77,7 +77,7 @@ public class GeoImporter {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
 		stats.logStatistics(logger, "Geo Areas");
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 	private void processFile(File f, ETLStatistics globalStats)
@@ -106,7 +106,7 @@ public class GeoImporter {
 		}
 		fileStats.logStatistics(logger, "Geo Areas");
 		globalStats.add(fileStats);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 		logger.info(" ");
 		logger.info(" ");
 	}

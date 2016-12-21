@@ -13,7 +13,7 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -57,7 +57,7 @@ public class CrsSpecimenImport {
 	public CrsSpecimenImport()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -68,11 +68,11 @@ public class CrsSpecimenImport {
 	public void importSpecimens()
 	{
 		long start = System.currentTimeMillis();
-		LoadUtil.truncate(SPECIMEN, CRS);
+		ETLUtil.truncate(SPECIMEN, CRS);
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		loader = new CrsSpecimenLoader(stats, esBulkRequestSize);
+		loader = new CrsSpecimenLoader(esBulkRequestSize, stats);
 		ThemeCache.getInstance().resetMatchCounters();
 		try {
 			String resumptionToken = null;
@@ -86,7 +86,7 @@ public class CrsSpecimenImport {
 		}
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 	private String processResponse(byte[] bytes)

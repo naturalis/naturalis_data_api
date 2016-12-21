@@ -18,7 +18,10 @@ import nl.naturalis.nba.dao.DocumentType;
  * @author Ayco Holleman
  *
  */
-public final class LoadUtil {
+public final class ETLUtil {
+
+	@SuppressWarnings("unused")
+	private static final Logger logger = getLogger(Loader.class);
 
 	private static final URIBuilder purlBuilder;
 	private static final String purlSpecimenPath;
@@ -28,7 +31,7 @@ public final class LoadUtil {
 		purlSpecimenPath = purlBuilder.getPath() + "/naturalis/specimen/";
 	}
 
-	private LoadUtil()
+	private ETLUtil()
 	{
 	}
 
@@ -41,8 +44,9 @@ public final class LoadUtil {
 	 */
 	public static Throwable getRootCause(Throwable t)
 	{
-		while (t.getCause() != null)
+		while (t.getCause() != null) {
 			t = t.getCause();
+		}
 		return t;
 	}
 
@@ -120,6 +124,11 @@ public final class LoadUtil {
 		catch (URISyntaxException e) {
 			throw new ETLRuntimeException(e);
 		}
+	}
+
+	public static Logger getLogger(Class<?> forClass)
+	{
+		return ETLRegistry.getInstance().getLogger(forClass);
 	}
 
 	private static URIBuilder getPurlBuilder()

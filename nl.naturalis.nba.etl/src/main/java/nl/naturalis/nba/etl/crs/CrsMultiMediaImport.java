@@ -13,7 +13,7 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -57,7 +57,7 @@ public class CrsMultiMediaImport {
 	public CrsMultiMediaImport()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -68,12 +68,12 @@ public class CrsMultiMediaImport {
 	public void importMultimedia()
 	{
 		long start = System.currentTimeMillis();
-		LoadUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		loader = new CrsMultiMediaLoader(stats, esBulkRequestSize);
+		loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
 		ThemeCache.getInstance().resetMatchCounters();
 		try {
 			String resumptionToken = null;
@@ -87,7 +87,7 @@ public class CrsMultiMediaImport {
 		}
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 	private String processResponse(byte[] bytes)

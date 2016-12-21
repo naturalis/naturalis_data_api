@@ -17,7 +17,7 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
@@ -63,7 +63,7 @@ public class CrsSpecimenImportOffline {
 	public CrsSpecimenImportOffline()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -80,11 +80,11 @@ public class CrsSpecimenImportOffline {
 			logger.error("No specimen oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		LoadUtil.truncate(SPECIMEN, CRS);
+		ETLUtil.truncate(SPECIMEN, CRS);
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		loader = new CrsSpecimenLoader(stats, esBulkRequestSize);
+		loader = new CrsSpecimenLoader(esBulkRequestSize, stats);
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();
@@ -101,7 +101,7 @@ public class CrsSpecimenImportOffline {
 		PhaseOrStageNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 	private void importFile(File f)

@@ -234,37 +234,6 @@ public class SpecimenResource {
 	}
 
 	@GET
-	@Path("/dwca/query")
-	@Produces("application/zip")
-	public Response dwcaQuery(@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			StreamingOutput stream = new StreamingOutput() {
-
-				@Override
-				public void write(OutputStream out) throws IOException, WebApplicationException
-				{
-					SpecimenDao dao = new SpecimenDao();
-					try {
-						dao.dwcaQuery(qs, new ZipOutputStream(out));
-					}
-					catch (InvalidQueryException e) {
-						throw new HTTP400Exception(uriInfo, e.getMessage());
-					}
-				}
-			};
-			ResponseBuilder response = Response.ok(stream);
-			response.type("application/zip");
-			response.header("Content-Disposition", "attachment; filename=\"dwca.zip\"");
-			return response.build();
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
 	public long count(@Context UriInfo uriInfo)
@@ -320,13 +289,43 @@ public class SpecimenResource {
 	@Path("/getGroups/{groupByField}")
 	@Produces(JSON_CONTENT_TYPE)
 	public List<KeyValuePair<Object, Integer>> getGroups(
-			@PathParam("groupByField") String groupByField,
-			@Context UriInfo uriInfo)
+			@PathParam("groupByField") String groupByField, @Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getGroups(groupByField, qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/dwca/query")
+	@Produces("application/zip")
+	public Response dwcaQuery(@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			StreamingOutput stream = new StreamingOutput() {
+
+				@Override
+				public void write(OutputStream out) throws IOException, WebApplicationException
+				{
+					SpecimenDao dao = new SpecimenDao();
+					try {
+						dao.dwcaQuery(qs, new ZipOutputStream(out));
+					}
+					catch (InvalidQueryException e) {
+						throw new HTTP400Exception(uriInfo, e.getMessage());
+					}
+				}
+			};
+			ResponseBuilder response = Response.ok(stream);
+			response.type("application/zip");
+			response.header("Content-Disposition", "attachment; filename=\"nba.dwca.zip\"");
+			return response.build();
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

@@ -16,9 +16,9 @@ import nl.naturalis.nba.etl.Loader;
  */
 class NsrTaxonLoader extends Loader<Taxon> {
 
-	public NsrTaxonLoader(int treshold, ETLStatistics stats)
+	public NsrTaxonLoader(int queueSize, ETLStatistics stats)
 	{
-		super(TAXON, treshold, stats);
+		super(TAXON, queueSize, stats);
 	}
 
 	@Override

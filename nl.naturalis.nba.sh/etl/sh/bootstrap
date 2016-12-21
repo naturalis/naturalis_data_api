@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# WATCH OUT! Running this script will delete the entire NDA ElasticSearch
-# index and all its contents. Afterwards an empty index is created with the
-# mappings for the Taxon, Specimen and MultiMediaObject document types.
+# WATCH OUT! Running this script will delete all NBA indexes.
 
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${root_package}.NBAImportAll bootstrap
+java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll bootstrap
 

@@ -15,7 +15,7 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -44,7 +44,7 @@ public class NdffSpecimenImporter {
 	public NdffSpecimenImporter()
 	{
 		suppressErrors = ConfigObject.isEnabled("ndff.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -62,7 +62,7 @@ public class NdffSpecimenImporter {
 		}
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			LoadUtil.truncate(SPECIMEN, NDFF);
+			ETLUtil.truncate(SPECIMEN, NDFF);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}
@@ -71,7 +71,7 @@ public class NdffSpecimenImporter {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
 		stats.logStatistics(logger, "Specimens");
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 	private void processFile(File f, ETLStatistics globalStats)
@@ -100,7 +100,7 @@ public class NdffSpecimenImporter {
 		}
 		fileStats.logStatistics(logger, "Specimens");
 		globalStats.add(fileStats);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 		logger.info(" ");
 		logger.info(" ");
 	}

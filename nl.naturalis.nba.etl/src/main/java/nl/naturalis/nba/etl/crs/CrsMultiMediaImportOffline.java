@@ -17,7 +17,7 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -66,7 +66,7 @@ public class CrsMultiMediaImportOffline {
 	public CrsMultiMediaImportOffline()
 	{
 		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -83,13 +83,13 @@ public class CrsMultiMediaImportOffline {
 			logger.error("No multimedia oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		LoadUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
-		loader = new CrsMultiMediaLoader(stats, esBulkRequestSize);
+		loader = new CrsMultiMediaLoader(esBulkRequestSize, stats);
 		SexNormalizer.getInstance().resetStatistics();
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		PhaseOrStageNormalizer.getInstance().resetStatistics();
@@ -106,7 +106,7 @@ public class CrsMultiMediaImportOffline {
 		PhaseOrStageNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 		int cacheFailuresEnd = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		if (cacheFailuresBegin != cacheFailuresEnd) {
 			int misses = cacheFailuresEnd - cacheFailuresBegin;

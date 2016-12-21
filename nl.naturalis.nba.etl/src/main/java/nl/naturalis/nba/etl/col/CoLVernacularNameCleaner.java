@@ -13,7 +13,7 @@ import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -44,7 +44,7 @@ public class CoLVernacularNameCleaner {
 	public CoLVernacularNameCleaner()
 	{
 		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -91,7 +91,7 @@ public class CoLVernacularNameCleaner {
 			IOUtil.close(loader);
 		}
 		stats.logStatistics(logger);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 

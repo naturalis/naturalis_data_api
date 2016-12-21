@@ -1,6 +1,8 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import java.io.File;
 import java.util.List;
@@ -13,12 +15,8 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -28,7 +26,7 @@ import nl.naturalis.nba.utils.IOUtil;
  * @author Ayco Holleman
  *
  */
-public class CoLSynonymImporter {
+public class CoLSynonymImporter extends CoLImporter {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -43,18 +41,11 @@ public class CoLSynonymImporter {
 		}
 	}
 
-	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(CoLSynonymImporter.class);
-
-	private final boolean suppressErrors;
-	private final int esBulkRequestSize;
+	private static final Logger logger = getLogger(CoLSynonymImporter.class);
 
 	public CoLSynonymImporter()
 	{
-		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
-		String val = System.getProperty(key, "5000");
-		esBulkRequestSize = Integer.parseInt(val);
+		super();
 	}
 
 	/**
@@ -76,18 +67,20 @@ public class CoLSynonymImporter {
 			stats = new ETLStatistics();
 			stats.setNested(true);
 			extractor = createExtractor(stats, f);
-			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
+			loader = new CoLTaxonLoader(stats, loaderQueueSize);
+			loader.enableQueueLookups(true);
+			loader.suppressErrors(suppressErrors);
 			transformer = new CoLSynonymTransformer(stats);
 			transformer.setSuppressErrors(suppressErrors);
 			transformer.setLoader(loader);
-			logger.info("Processing file " + f.getAbsolutePath());
+			logger.info("Processing file {}", f.getAbsolutePath());
 			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
 				List<Taxon> taxa = transformer.transform(rec);
 				loader.queue(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
-					logger.info("Records processed: " + rec.getLineNumber());
+					logger.info("Records processed: {}", rec.getLineNumber());
 				}
 			}
 		}
@@ -99,7 +92,7 @@ public class CoLSynonymImporter {
 		}
 		stats.logStatistics(logger);
 		logger.info("(NB skipped records are accepted names)");
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 
 	}
 

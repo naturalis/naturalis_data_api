@@ -17,9 +17,9 @@ import nl.naturalis.nba.etl.Loader;
  */
 class CrsMultiMediaLoader extends Loader<MultiMediaObject> {
 
-	CrsMultiMediaLoader(ETLStatistics stats, int treshold)
+	CrsMultiMediaLoader(int queueSize, ETLStatistics stats)
 	{
-		super(MULTI_MEDIA_OBJECT, treshold, stats);
+		super(MULTI_MEDIA_OBJECT, queueSize, stats);
 	}
 
 	@Override

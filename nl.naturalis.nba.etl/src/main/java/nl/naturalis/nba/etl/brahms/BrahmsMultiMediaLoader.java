@@ -25,9 +25,9 @@ class BrahmsMultiMediaLoader extends Loader<MultiMediaObject> {
 		}
 	};
 
-	public BrahmsMultiMediaLoader(ETLStatistics stats)
+	public BrahmsMultiMediaLoader(int queueSize, ETLStatistics stats)
 	{
-		super(MULTI_MEDIA_OBJECT, 1000, stats);
+		super(MULTI_MEDIA_OBJECT, queueSize, stats);
 	}
 
 	@Override

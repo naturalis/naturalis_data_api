@@ -2,10 +2,6 @@
 
 . ./include.sh
 
-suppress_errors=false
-
-JAVA_OPTS="$JAVA_OPTS -Dbrahms.suppress-errors=${suppress_errors}"
-
 action="${1}"
 
 if [ "$action" = specimens ]

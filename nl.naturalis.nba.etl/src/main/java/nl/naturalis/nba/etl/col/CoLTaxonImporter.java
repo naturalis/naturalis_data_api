@@ -1,6 +1,8 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.ETLUtil.truncate;
 
 import java.io.File;
 import java.util.List;
@@ -17,9 +19,6 @@ import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLRuntimeException;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
-import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 /**
@@ -31,7 +30,7 @@ import nl.naturalis.nba.utils.IOUtil;
  * @author Ayco Holleman
  *
  */
-public class CoLTaxonImporter {
+public class CoLTaxonImporter extends CoLImporter {
 
 	public static void main(String[] args) throws Exception
 	{
@@ -49,16 +48,11 @@ public class CoLTaxonImporter {
 	private static final Logger logger = ETLRegistry.getInstance()
 			.getLogger(CoLTaxonImporter.class);
 
-	private final boolean suppressErrors;
-	private final int esBulkRequestSize;
 	private final String colYear;
 
 	public CoLTaxonImporter()
 	{
-		suppressErrors = ConfigObject.isEnabled("col.suppress-errors");
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
-		String val = System.getProperty(key, "5000");
-		esBulkRequestSize = Integer.parseInt(val);
+		super();
 		colYear = DaoRegistry.getInstance().getConfiguration().required("col.year");
 	}
 
@@ -78,22 +72,22 @@ public class CoLTaxonImporter {
 			File f = new File(path);
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
-			LoadUtil.truncate(TAXON, SourceSystem.COL);
+			truncate(TAXON, SourceSystem.COL);
 			stats = new ETLStatistics();
 			extractor = createExtractor(stats, f);
 			transformer = new CoLTaxonTransformer(stats);
 			transformer.setColYear(colYear);
 			transformer.setSuppressErrors(suppressErrors);
-			loader = new CoLTaxonLoader(stats, esBulkRequestSize);
-			logger.info("Processing file " + f.getAbsolutePath());
+			loader = new CoLTaxonLoader(stats, loaderQueueSize);
+			loader.suppressErrors(suppressErrors);
+			logger.info("Processing file {}", f.getAbsolutePath());
 			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
-				if (rec == null) {
+				if (rec == null)
 					continue;
-				}
 				List<Taxon> taxa = transformer.transform(rec);
 				loader.queue(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
-					logger.info("Records processed: " + rec.getLineNumber());
+					logger.info("Records processed: {}", rec.getLineNumber());
 				}
 			}
 		}
@@ -105,7 +99,7 @@ public class CoLTaxonImporter {
 		}
 		stats.logStatistics(logger);
 		logger.info("(NB skipped records are synonyms or higher taxa)");
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 	}
 
 	private CSVExtractor<CoLTaxonCsvField> createExtractor(ETLStatistics stats, File f)

@@ -3,6 +3,10 @@ package nl.naturalis.nba.etl.brahms;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
+import static nl.naturalis.nba.etl.ETLUtil.getDuration;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.backup;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.removeBackupExtension;
@@ -21,7 +25,7 @@ import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -70,13 +74,17 @@ public class BrahmsImportAll {
 
 	private final boolean backup;
 	private final boolean parallel;
+
+	private final int loaderQueueSize;
 	private final boolean suppressErrors;
 
 	public BrahmsImportAll()
 	{
 		backup = ConfigObject.isEnabled("brahms.backup", true);
 		parallel = ConfigObject.isEnabled("brahms.parallel", true);
-		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
+		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
+		loaderQueueSize = Integer.parseInt(val);
 	}
 
 	/**
@@ -85,10 +93,12 @@ public class BrahmsImportAll {
 	 */
 	public void importAll()
 	{
-		if (parallel)
+		if (parallel) {
 			importPerFile();
-		else
+		}
+		else {
 			importPerType();
+		}
 	}
 
 	/**
@@ -122,14 +132,14 @@ public class BrahmsImportAll {
 		}
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
-		// Global statistics for specimen import
+		/* Global statistics for specimen import (across all files) */
 		ETLStatistics sStats = new ETLStatistics();
-		// Global statistics for multimedia import
+		/* Global statistics for multimedia import (across all files) */
 		ETLStatistics mStats = new ETLStatistics();
 		mStats.setOneToMany(true);
 		try {
-			LoadUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
-			LoadUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+			ETLUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
+			ETLUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, sStats, mStats);
 			}
@@ -144,13 +154,14 @@ public class BrahmsImportAll {
 		ThemeCache.getInstance().logMatchInfo();
 		sStats.logStatistics(logger, "Specimens");
 		mStats.logStatistics(logger, "Multimedia");
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 	}
 
 	/**
 	 * Backs up the CSV files in the Brahms data directory by appending a
 	 * "&#46;imported" extension to the file name.
 	 */
+	@SuppressWarnings("static-method")
 	public void backupSourceFiles()
 	{
 		backup();
@@ -161,6 +172,7 @@ public class BrahmsImportAll {
 	 * Brahms data directory. Nice for repitive testing. Not meant for
 	 * production purposes.
 	 */
+	@SuppressWarnings("static-method")
 	public void reset()
 	{
 		removeBackupExtension();
@@ -169,8 +181,10 @@ public class BrahmsImportAll {
 	private void processFile(File f, ETLStatistics sStats, ETLStatistics mStats)
 	{
 		long start = System.currentTimeMillis();
-		logger.info("Processing file " + f.getAbsolutePath());
+		logger.info("Processing file {}", f.getAbsolutePath());
+		/* Statistics for specimen import (current file) */
 		ETLStatistics specimenStats = new ETLStatistics();
+		/* Statistics for multimedia import (current file) */
 		ETLStatistics multimediaStats = new ETLStatistics();
 		multimediaStats.setOneToMany(true);
 		ETLStatistics extractionStats = new ETLStatistics();
@@ -182,18 +196,18 @@ public class BrahmsImportAll {
 		try {
 			extractor = createExtractor(f, extractionStats);
 			specimenTransformer = new BrahmsSpecimenTransformer(specimenStats);
-			specimenLoader = new BrahmsSpecimenLoader(specimenStats);
-			specimenLoader.setSuppressErrors(suppressErrors);
+			specimenLoader = new BrahmsSpecimenLoader(loaderQueueSize, specimenStats);
+			specimenLoader.suppressErrors(suppressErrors);
 			multimediaTransformer = new BrahmsMultiMediaTransformer(multimediaStats);
-			multimediaLoader = new BrahmsMultiMediaLoader(multimediaStats);
-			multimediaLoader.setSuppressErrors(suppressErrors);
+			multimediaLoader = new BrahmsMultiMediaLoader(loaderQueueSize, multimediaStats);
+			multimediaLoader.suppressErrors(suppressErrors);
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
 				specimenLoader.queue(specimenTransformer.transform(rec));
 				multimediaLoader.queue(multimediaTransformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0)
-					logger.info("Records processed: " + rec.getLineNumber());
+					logger.info("Records processed: {}", rec.getLineNumber());
 			}
 		}
 		finally {
@@ -205,7 +219,7 @@ public class BrahmsImportAll {
 		multimediaStats.logStatistics(logger, "Multimedia");
 		sStats.add(specimenStats);
 		mStats.add(multimediaStats);
-		logger.info("Importing " + f.getName() + " took " + LoadUtil.getDuration(start));
+		logger.info("Importing {} took {}", f.getName(), getDuration(start));
 		logger.info(" ");
 		logger.info(" ");
 	}

@@ -20,7 +20,7 @@ import nl.naturalis.nba.etl.nsr.NsrImporter;
  * @author Ayco Holleman
  * 
  */
-public class NBAImportAll {
+public class NbaImportAll {
 
 	public static void main(String[] args)
 	{
@@ -29,7 +29,7 @@ public class NBAImportAll {
 				bootstrap();
 			}
 			if (args.length == 0 || Arrays.asList(args).contains("import")) {
-				NBAImportAll nbaImportAll = new NBAImportAll();
+				NbaImportAll nbaImportAll = new NbaImportAll();
 				nbaImportAll.importAll();
 			}
 		}
@@ -41,7 +41,7 @@ public class NBAImportAll {
 		}
 	}
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(NBAImportAll.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(NbaImportAll.class);
 
 	/**
 	 * Runs all individual import programs in the following order: NSR, Brahms,
@@ -79,7 +79,7 @@ public class NBAImportAll {
 			logger.error("NBA Import failed!");
 		}
 		finally {
-			LoadUtil.logDuration(logger, getClass(), start);
+			ETLUtil.logDuration(logger, getClass(), start);
 			ESClientManager.getInstance().closeClient();
 		}
 
@@ -100,43 +100,5 @@ public class NBAImportAll {
 	{
 		ESUtil.deleteAllIndices();
 		ESUtil.createAllIndices();
-//		index.delete();
-//		Registry registry = Registry.getInstance();
-//		File settingsFile = registry.getFile("es-settings.json");
-//		String settings = FileUtil.getContents(settingsFile);
-//		logger.debug("Creating index using\n" + settings);
-//		index.create(settings);
-//		MappingFactory mappingFactory = new MappingFactory();
-//		MappingSerializer serializer = MappingSerializer.getInstance();
-//		if (logger.isDebugEnabled()) {
-//			serializer.setPretty(true);
-//		}
-//
-//		Mapping mapping = mappingFactory.getMapping(ESSpecimen.class);
-//		String json = serializer.serialize(mapping);
-//		if (logger.isDebugEnabled()) {
-//			logger.debug("*********************************************");
-//			logger.debug("Mapping for type Specimen:\n" + json);
-//			logger.debug("*********************************************");
-//		}
-//		index.addType(LUCENE_TYPE_SPECIMEN, json);
-//
-//		mapping = mappingFactory.getMapping(ESMultiMediaObject.class);
-//		json = serializer.serialize(mapping);
-//		if (logger.isDebugEnabled()) {
-//			logger.debug("*********************************************");
-//			logger.debug("Mapping for type MultiMediaObject:\n" + json);
-//			logger.debug("*********************************************");
-//		}
-//		index.addType(LUCENE_TYPE_MULTIMEDIA_OBJECT, json);
-//
-//		mapping = mappingFactory.getMapping(ESTaxon.class);
-//		json = serializer.serialize(mapping);
-//		if (logger.isDebugEnabled()) {
-//			logger.debug("*********************************************");
-//			logger.debug("Mapping for type Taxon:\n" + json);
-//			logger.debug("*********************************************");
-//		}
-//		index.addType(LUCENE_TYPE_TAXON, json);
 	}
 }

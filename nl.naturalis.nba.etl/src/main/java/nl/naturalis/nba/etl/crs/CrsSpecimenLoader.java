@@ -16,9 +16,9 @@ import nl.naturalis.nba.etl.Loader;
  */
 class CrsSpecimenLoader extends Loader<Specimen> {
 
-	CrsSpecimenLoader(ETLStatistics stats, int treshold)
+	CrsSpecimenLoader(int queueSize, ETLStatistics stats)
 	{
-		super(SPECIMEN, treshold, stats);
+		super(SPECIMEN, queueSize, stats);
 	}
 
 	@Override

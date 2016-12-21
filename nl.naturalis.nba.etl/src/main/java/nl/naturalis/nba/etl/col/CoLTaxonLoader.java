@@ -21,9 +21,9 @@ import nl.naturalis.nba.etl.Loader;
  */
 public class CoLTaxonLoader extends Loader<Taxon> {
 
-	public CoLTaxonLoader(ETLStatistics stats, int treshold)
+	public CoLTaxonLoader(ETLStatistics stats, int queueSize)
 	{
-		super(TAXON, treshold, stats);
+		super(TAXON, queueSize, stats);
 	}
 
 	@Override

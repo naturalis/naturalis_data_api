@@ -2,6 +2,10 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
@@ -11,9 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -33,13 +36,16 @@ public class BrahmsSpecimenImporter {
 		importer.importCsvFiles();
 	}
 
-	static Logger logger = ETLRegistry.getInstance().getLogger(BrahmsSpecimenImporter.class);
+	private static final Logger logger = getLogger(BrahmsSpecimenImporter.class);
 
+	private final int loaderQueueSize;
 	private final boolean suppressErrors;
 
 	public BrahmsSpecimenImporter()
 	{
-		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
+		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
+		loaderQueueSize = Integer.parseInt(val);
 	}
 
 	/**
@@ -58,7 +64,7 @@ public class BrahmsSpecimenImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			LoadUtil.truncate(SPECIMEN, BRAHMS);
+			ETLUtil.truncate(SPECIMEN, BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}
@@ -69,13 +75,13 @@ public class BrahmsSpecimenImporter {
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger, "Specimens");
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 	}
 
 	private void processFile(File f, ETLStatistics globalStats)
 	{
 		long start = System.currentTimeMillis();
-		logger.info("Processing file " + f.getAbsolutePath());
+		logger.info("Processing file {}", f.getAbsolutePath());
 		ETLStatistics myStats = new ETLStatistics();
 		CSVExtractor<BrahmsCsvField> extractor = null;
 		BrahmsSpecimenTransformer transformer = null;
@@ -83,13 +89,13 @@ public class BrahmsSpecimenImporter {
 		try {
 			extractor = createExtractor(f, myStats);
 			transformer = new BrahmsSpecimenTransformer(myStats);
-			loader = new BrahmsSpecimenLoader(myStats);
+			loader = new BrahmsSpecimenLoader(loaderQueueSize, myStats);
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
 				loader.queue(transformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0) {
-					logger.info("Records processed: " + rec.getLineNumber());
+					logger.info("Records processed: {}", rec.getLineNumber());
 				}
 			}
 		}
@@ -98,7 +104,7 @@ public class BrahmsSpecimenImporter {
 		}
 		myStats.logStatistics(logger, "Specimens");
 		globalStats.add(myStats);
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 		logger.info(" ");
 		logger.info(" ");
 	}

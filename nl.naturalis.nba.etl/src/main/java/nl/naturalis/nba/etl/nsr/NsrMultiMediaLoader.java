@@ -16,9 +16,9 @@ import nl.naturalis.nba.etl.Loader;
  */
 public class NsrMultiMediaLoader extends Loader<MultiMediaObject> {
 
-	public NsrMultiMediaLoader(int treshold, ETLStatistics stats)
+	public NsrMultiMediaLoader(int queueSize, ETLStatistics stats)
 	{
-		super(MULTI_MEDIA_OBJECT, treshold, stats);
+		super(MULTI_MEDIA_OBJECT, queueSize, stats);
 	}
 
 	@Override

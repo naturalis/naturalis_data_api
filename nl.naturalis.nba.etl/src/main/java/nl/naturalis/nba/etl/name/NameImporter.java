@@ -11,7 +11,7 @@ import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.IOUtil;
 
 abstract class NameImporter<T extends IDocumentObject> {
@@ -24,7 +24,7 @@ abstract class NameImporter<T extends IDocumentObject> {
 	NameImporter(DocumentType<T> dt)
 	{
 		this.dt = dt;
-		String key = LoadConstants.SYSPROP_ES_BULK_REQUEST_SIZE;
+		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -56,7 +56,7 @@ abstract class NameImporter<T extends IDocumentObject> {
 			IOUtil.close(loader);
 		}
 		stats.logStatistics(logger);
-		LoadUtil.logDuration(logger, getClass(), start);
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 	abstract AbstractNameTransformer<T> createTransformer(ETLStatistics stats, NameLoader loader);

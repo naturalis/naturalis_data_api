@@ -12,7 +12,14 @@ public interface LoadConstants {
 	 * Optional system property that can be used to fine-tune bulk indexing (the
 	 * number of documents indexed at once).
 	 */
-	String SYSPROP_ES_BULK_REQUEST_SIZE = "es.bulk.request.size";
+	String SYSPROP_LOADER_QUEUE_SIZE = "queueSize";
+	/**
+	 * Optional system property that causes the ETL programs to suppress ERROR
+	 * and WARN messages while still letting through INFO messages. This can
+	 * sometimes be helpful if you expect very large numbers of well-known
+	 * errors that cause you to miss interesting INFO messages in the log files.
+	 */
+	String SYSPROP_SUPPRESS_ERRORS = "suppressErrors";
 	/**
 	 * Naturalis Biodiversity Center
 	 */

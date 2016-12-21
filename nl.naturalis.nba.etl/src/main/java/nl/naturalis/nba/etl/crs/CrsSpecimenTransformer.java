@@ -35,7 +35,7 @@ import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
@@ -150,7 +150,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			ThemeCache tsc = ThemeCache.getInstance();
 			List<String> themes = tsc.lookup(objectID, SPECIMEN, CRS);
 			specimen.setTheme(themes);
-			specimen.setUnitGUID(LoadUtil.getSpecimenPurl(objectID));
+			specimen.setUnitGUID(ETLUtil.getSpecimenPurl(objectID));
 			specimen.setCollectorsFieldNumber(val(record, "abcd:CollectorsFieldNumber"));
 			specimen.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 			specimen.setOwner(SOURCE_INSTITUTION_ID);

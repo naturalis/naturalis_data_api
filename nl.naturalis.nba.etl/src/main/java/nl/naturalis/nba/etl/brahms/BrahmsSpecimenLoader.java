@@ -25,9 +25,9 @@ class BrahmsSpecimenLoader extends Loader<Specimen> {
 		}
 	};
 
-	public BrahmsSpecimenLoader(ETLStatistics stats)
+	public BrahmsSpecimenLoader(int queueSize, ETLStatistics stats)
 	{
-		super(SPECIMEN, 1000, stats);
+		super(SPECIMEN, queueSize, stats);
 	}
 
 	@Override

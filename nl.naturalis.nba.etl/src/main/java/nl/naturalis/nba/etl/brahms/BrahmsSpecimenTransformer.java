@@ -7,7 +7,7 @@ import static nl.naturalis.nba.etl.LoadConstants.BRAHMS_ABCD_SOURCE_ID;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nba.etl.LoadUtil.getSpecimenPurl;
+import static nl.naturalis.nba.etl.ETLUtil.getSpecimenPurl;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CATEGORY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.NOTONLINE;

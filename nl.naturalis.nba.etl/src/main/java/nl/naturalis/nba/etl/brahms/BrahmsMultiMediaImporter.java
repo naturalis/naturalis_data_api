@@ -1,5 +1,9 @@
 package nl.naturalis.nba.etl.brahms;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getCsvFiles;
 
 import java.io.File;
@@ -11,9 +15,8 @@ import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -33,13 +36,16 @@ public class BrahmsMultiMediaImporter {
 		importer.importCsvFiles();
 	}
 
-	static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsMultiMediaImporter.class);
+	private static final Logger logger = getLogger(BrahmsMultiMediaImporter.class);
 
+	private final int loaderQueueSize;
 	private final boolean suppressErrors;
 
 	public BrahmsMultiMediaImporter()
 	{
-		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
+		String val = System.getProperty(SYSPROP_LOADER_QUEUE_SIZE, "1000");
+		loaderQueueSize = Integer.parseInt(val);
 	}
 
 	/**
@@ -58,7 +64,7 @@ public class BrahmsMultiMediaImporter {
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		try {
-			LoadUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+			ETLUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}
@@ -69,37 +75,37 @@ public class BrahmsMultiMediaImporter {
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();
 		stats.logStatistics(logger, "Multimedia");
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 	}
 
 	private void processFile(File f, ETLStatistics globalStats)
 	{
 		long start = System.currentTimeMillis();
-		logger.info("Processing file " + f.getAbsolutePath());
+		logger.info("Processing file {}", f.getAbsolutePath());
 		ETLStatistics myStats = new ETLStatistics();
 		myStats.setOneToMany(true);
-		BrahmsMultiMediaLoader multimediaLoader = null;
+		CSVExtractor<BrahmsCsvField> extractor = null;
+		BrahmsMultiMediaTransformer transformer = null;
+		BrahmsMultiMediaLoader loader = null;
 		try {
-			BrahmsMultiMediaTransformer multimediaTransformer = new BrahmsMultiMediaTransformer(myStats);
-			multimediaLoader = new BrahmsMultiMediaLoader(myStats);
-			CSVExtractor<BrahmsCsvField> extractor = createExtractor(f, myStats);
+			extractor = createExtractor(f, myStats);
+			transformer = new BrahmsMultiMediaTransformer(myStats);
+			loader = new BrahmsMultiMediaLoader(loaderQueueSize, myStats);
 			for (CSVRecordInfo<BrahmsCsvField> rec : extractor) {
 				if (rec == null)
 					continue;
-				multimediaLoader.queue(multimediaTransformer.transform(rec));
+				loader.queue(transformer.transform(rec));
 				if (rec.getLineNumber() % 50000 == 0) {
-					logger.info("Records processed: " + rec.getLineNumber());
+					logger.info("Records processed: {}", rec.getLineNumber());
 				}
 			}
 		}
 		finally {
-			// Important! Flushes the remaining objects in the ES bulk request
-			// batch.
-			IOUtil.close(multimediaLoader);
+			IOUtil.close(loader);
 		}
 		globalStats.add(myStats);
 		myStats.logStatistics(logger, "Multimedia");
-		LoadUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 		logger.info(" ");
 		logger.info(" ");
 	}

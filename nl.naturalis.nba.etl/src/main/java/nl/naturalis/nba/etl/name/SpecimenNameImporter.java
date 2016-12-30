@@ -13,9 +13,9 @@ class SpecimenNameImporter extends NameImporter<Specimen> {
 	}
 
 	@Override
-	AbstractNameTransformer<Specimen> createTransformer(ETLStatistics stats, NameLoader loader)
+	AbstractNameTransformer<Specimen> createTransformer(ETLStatistics stats)
 	{
-		return new SpecimenNameTransformer(stats, loader);
+		return new SpecimenNameTransformer(stats);
 	}
 
 }

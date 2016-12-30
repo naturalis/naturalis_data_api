@@ -13,9 +13,9 @@ class TaxonNameImporter extends NameImporter<Taxon> {
 	}
 
 	@Override
-	AbstractNameTransformer<Taxon> createTransformer(ETLStatistics stats, NameLoader loader)
+	AbstractNameTransformer<Taxon> createTransformer(ETLStatistics stats)
 	{
-		return new TaxonNameTransformer(stats, loader);
+		return new TaxonNameTransformer(stats);
 	}
 
 }

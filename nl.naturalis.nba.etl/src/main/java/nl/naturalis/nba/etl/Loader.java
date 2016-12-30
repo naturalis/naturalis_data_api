@@ -5,6 +5,7 @@ import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,18 +90,18 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	private final ArrayList<String> ids;
 	private final ArrayList<String> parIds;
 
-	private int tresh = 1000;
+	private int tresh;
 	private boolean suppressErrors;
-	private int flushCounter;
 
 	private HashMap<String, T> idObjMap;
 
-
 	/**
-	 * Creates a loader that uses the specified index manager for indexing
-	 * documents of the specified document type. Indexing is triggered every
-	 * time the number of objects added to the loader exceeds the specified
-	 * treshold.
+	 * Creates a loader for the specified document type. Indexing is triggered
+	 * every time the number of objects in the loader's internal queue exceeds a
+	 * certain treshold, specified by the {@code queueSize} argument. Specifying
+	 * 0 (zero) for {@code queueSize} effectively disables this trigger and you
+	 * must explicitly call {@link #flush()} yourself in order to avoid an
+	 * {@link OutOfMemoryError}.
 	 * 
 	 * @param dt
 	 * @param queueSize
@@ -112,39 +113,37 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 		this.tresh = queueSize;
 		this.stats = stats;
 		/*
-		 * Make all lists a bit bigger than treshold, because the treshold
-		 * tipping call to queue() may actually fill them slightly beyond the
+		 * Make all lists slightly bigger than queueSize, because the
+		 * treshold-tipping call to queue() may actually fill them beyond the
 		 * treshold.
 		 */
-		objs = new ArrayList<>(queueSize + 16);
-		if (getIdGenerator() != null) {
-			ids = new ArrayList<>(queueSize + 16);
+		int sz = queueSize == 0 ? 256 : queueSize + 16;
+		objs = new ArrayList<>(sz);
+		if (getIdGenerator() == null) {
+			ids = null;
 		}
 		else {
-			ids = null;
+			ids = new ArrayList<>(sz);
 		}
 		if (getParentIdGenerator() == null) {
 			parIds = null;
 		}
 		else {
-			parIds = new ArrayList<>(queueSize + 16);
+			parIds = new ArrayList<>(sz);
 		}
 	}
 
 	/**
-	 * Adds the specified objects to a queue of to-be-indexed objects. When the
-	 * size of the queue reaches the treshold, all objects in the queue are
-	 * flushed at once to ElasticSearch. In other words, calling {@code queue}
-	 * does not necessarily immediately trigger the specified objects to be
-	 * indexed. The specified list of objects is most likely retrieved from a
-	 * call to {@link Transformer#transform(Object)}, which is allowed to return
-	 * an empty list or {@code null} if no output can or should be produced from
-	 * the input object. Therefore, this method accepts both empty lists and
-	 * {@code null} arguments (resulting in a no-op).
+	 * Adds the specified objects to a queue of objects waiting to be indexed.
+	 * When the size of the queue reaches a certain treshold (specified through
+	 * the {@code queueSize} parameter of the constructor), all objects in the
+	 * queue are flushed at once to Elasticsearch. In other words, calling
+	 * {@code queue} does not necessarily immediately trigger the specified
+	 * objects to be indexed.
 	 * 
 	 * @param objects
 	 */
-	public final void queue(List<T> objects)
+	public final void queue(Collection<T> objects)
 	{
 		if (objects == null || objects.size() == 0) {
 			return;
@@ -165,24 +164,26 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 				parIds.add(getParentIdGenerator().getParentId(item));
 			}
 		}
-		if (objs.size() >= tresh) {
+		if (tresh != 0 && tresh < objs.size()) {
 			flush();
 		}
 	}
 
 	/**
 	 * Checks if the specified id belongs to a queued object and, if so, returns
-	 * the object. This functionality is needed for import programs that enrich
-	 * existing documents rather than creating new ones. This applies to all CoL
-	 * import programs except the {@link CoLTaxonImporter taxon importer}. The
-	 * {@link CoLSynonymImporter synonym importer}, {@link CoLReferenceImporter
-	 * literature reference importer} and {@link CoLVernacularNameImporter
-	 * vernacular name importer} all enrich taxon documents rather than creating
-	 * their own type of documents. In order to enrich the taxon document, they
-	 * first need to get hold of one. They first need to check if it is still in
-	 * queue, because a preceding CSV record synonym/reference/vernacular name
-	 * 
-	 * and not there, they ask Elasticsearch for the document.
+	 * the object. You must explicitly enable queue lookups by calling
+	 * {@link #enableQueueLookups(boolean) enableQueueLookups}, because they
+	 * require some extra internal administration. Queue lookups needed for
+	 * import programs that enrich existing documents rather than create new
+	 * ones. This applies to all CoL import programs except the
+	 * {@link CoLTaxonImporter taxon importer}. The {@link CoLSynonymImporter
+	 * synonym importer}, {@link CoLReferenceImporter literature reference
+	 * importer} and {@link CoLVernacularNameImporter vernacular name importer}
+	 * all enrich taxon documents rather than create their own type of
+	 * documents. In order to enrich the taxon document, they first need to get
+	 * hold of one. This requires that they first check if it is already queued,
+	 * because the preceding CSV record might have wanted to enrich the same
+	 * taxon document.
 	 * 
 	 * @param id
 	 * @return
@@ -216,9 +217,6 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 			try {
 				indexer.index(objs, ids, parIds);
 				stats.documentsIndexed += objs.size();
-				if (++flushCounter % 50 == 0) {
-					logger.info("Documents indexed: {}", stats.documentsIndexed);
-				}
 			}
 			catch (BulkIndexException e) {
 				stats.documentsRejected += e.getFailureCount();
@@ -227,14 +225,15 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 					logger.warn(e.getMessage());
 				}
 			}
-			finally {
-				objs.clear();
-				if (ids != null)
-					ids.clear();
-				if (parIds != null)
-					parIds.clear();
-				if (idObjMap != null)
-					idObjMap.clear();
+			objs.clear();
+			if (ids != null) {
+				ids.clear();
+			}
+			if (parIds != null) {
+				parIds.clear();
+			}
+			if (idObjMap != null) {
+				idObjMap.clear();
 			}
 		}
 	}
@@ -282,7 +281,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	public void enableQueueLookups(boolean enableQueueLookups)
 	{
 		if (enableQueueLookups) {
-			idObjMap = new HashMap<String, T>((int) ((tresh + 16) / .75F), 1F);
+			idObjMap = new HashMap<String, T>(objs.size());
 		}
 		else {
 			idObjMap = null;

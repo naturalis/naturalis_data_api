@@ -1,12 +1,20 @@
 package nl.naturalis.nba.api.model;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotIndexed;
+
 public class NameInfo implements INbaModelObject {
 
+	@Analyzers({})
 	private String documentType;
+	@Analyzers({})
 	private String field;
+	@NotIndexed
 	private String documentId;
+	@Analyzers({})
 	private String contextField0;
 	private String contextValue0;
+	@Analyzers({})
 	private String sourceSystemCode;
 
 	public NameInfo()

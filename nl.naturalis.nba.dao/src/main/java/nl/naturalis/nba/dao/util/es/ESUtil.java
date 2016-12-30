@@ -4,8 +4,12 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -30,6 +34,9 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.IdsQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -412,19 +419,56 @@ public class ESUtil {
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
 		Class<T> cls = dt.getJavaType();
-		ObjectMapper objectMapper = dt.getObjectMapper();
 		Client client = ESClientManager.getInstance().getClient();
 		GetRequestBuilder grb = client.prepareGet(index, type, id);
 		GetResponse response = grb.execute().actionGet();
+		ObjectMapper om = dt.getObjectMapper();
 		if (response.isExists()) {
 			try {
-				return objectMapper.readValue(response.getSourceAsBytes(), cls);
+				/*
+				 * NB we don't put the id back on the IDocumentObject instance.
+				 * The reason is we only use this method in the ETL module (e.g.
+				 * see CoLSynonymTransformer) to load the object, enrich it with
+				 * some new data and then save it back to Elasticsearch.
+				 * Therefore the id field must be blank, because it corresponds
+				 * to the document ID (_id), which is not part of the document
+				 * itself. If the id field would be set, you would get an error
+				 * when saving the IDocumentObject instance, because there is no
+				 * id field in the document type mapping. Therefore this method
+				 * is of limited use. TODO: think some more about this.
+				 */
+				return om.readValue(response.getSourceAsBytes(), cls);
 			}
 			catch (IOException e) {
 				throw new DaoException(e);
 			}
 		}
 		return null;
+	}
+
+	public static <T extends IDocumentObject> List<T> find(DocumentType<T> dt,
+			Collection<String> ids)
+	{
+		SearchRequestBuilder request = newSearchRequest(dt);
+		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
+		query.ids(ids);
+		request.setQuery(query);
+		SearchResponse response = executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0) {
+			return Collections.emptyList();
+		}
+		List<T> objs = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			/*
+			 * NB again, we don't put the id back on the IDocumentObject
+			 * instance. See above.
+			 */
+			T obj = om.convertValue(hit.getSource(), dt.getJavaType());
+			objs.add(obj);
+		}
+		return objs;
 	}
 
 	private static IndicesAdminClient indices()

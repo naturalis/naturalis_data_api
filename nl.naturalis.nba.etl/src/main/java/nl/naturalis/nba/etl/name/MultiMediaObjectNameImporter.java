@@ -13,10 +13,9 @@ class MultiMediaObjectNameImporter extends NameImporter<MultiMediaObject> {
 	}
 
 	@Override
-	AbstractNameTransformer<MultiMediaObject> createTransformer(ETLStatistics stats,
-			NameLoader loader)
+	AbstractNameTransformer<MultiMediaObject> createTransformer(ETLStatistics stats)
 	{
-		return new MultiMediaObjectNameTransformer(stats, loader);
+		return new MultiMediaObjectNameTransformer(stats);
 	}
 
 }

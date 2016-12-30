@@ -41,10 +41,9 @@ class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 
 	private NameLoader loader;
 
-	TaxonNameTransformer(ETLStatistics stats, NameLoader loader)
+	TaxonNameTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		this.loader = loader;
 	}
 
 	@Override
@@ -190,6 +189,13 @@ class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 			name = new Name(id);
 		}
 		return name;
+	}
+
+	@Override
+	void initializeOutputObjects(List<Taxon> inputObjects)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

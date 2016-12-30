@@ -1,5 +1,9 @@
 package nl.naturalis.nba.etl.name;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
+
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -8,25 +12,21 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Name;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
-import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
-import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 abstract class NameImporter<T extends IDocumentObject> {
 
-	static final Logger logger = ETLRegistry.getInstance().getLogger(NameImporter.class);
+	private static final Logger logger = getLogger(NameImporter.class);
 
-	private DocumentType<T> dt;
-	private int esBulkRequestSize;
+	private final DocumentType<T> dt;
+	private final boolean suppressErrors;
 
 	NameImporter(DocumentType<T> dt)
 	{
 		this.dt = dt;
-		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
-		String val = System.getProperty(key, "1000");
-		esBulkRequestSize = Integer.parseInt(val);
+		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 	}
 
 	void importNames()
@@ -37,16 +37,28 @@ abstract class NameImporter<T extends IDocumentObject> {
 		AbstractNameTransformer<T> transformer;
 		NameLoader loader = null;
 		try {
+			logger.info("Initializing extractor for {}", dt.getName());
 			extractor = new DocumentIterator<T>(dt);
-			loader = new NameLoader(esBulkRequestSize, stats);
-			transformer = createTransformer(stats, loader);
-			int i = 0;
-			for (T specimen : extractor) {
-				List<Name> names = transformer.transform(specimen);
-				loader.queue(names);
-				if (++i % 100000 == 0) {
-					logger.info("{} documents processed: {}", dt.getName(), i);
+			extractor.setBatchSize(100);
+			extractor.setTimeout(50000);
+			loader = new NameLoader(0, stats);
+			loader.suppressErrors(suppressErrors);
+			transformer = createTransformer(stats);
+			transformer.setSuppressErrors(suppressErrors);
+			List<T> batch = extractor.nextBatch();
+			logger.info("Number of {} documents to process: {}", dt.getName(), extractor.size());
+			int batchNo = 0;
+			while (batch != null) {
+				transformer.initializeOutputObjects(batch);
+				for (T inputObject : batch) {
+					List<Name> outputObjects = transformer.transform(inputObject);
+					loader.queue(outputObjects);
 				}
+				if (++batchNo % 1 == 0) {
+					//logger.info("Documents processed: {}", extractor.getDocCounter());
+					loader.flush();
+				}
+				batch = extractor.nextBatch();
 			}
 		}
 		catch (Throwable t) {
@@ -56,9 +68,9 @@ abstract class NameImporter<T extends IDocumentObject> {
 			IOUtil.close(loader);
 		}
 		stats.logStatistics(logger);
-		ETLUtil.logDuration(logger, getClass(), start);
+		logDuration(logger, getClass(), start);
 	}
 
-	abstract AbstractNameTransformer<T> createTransformer(ETLStatistics stats, NameLoader loader);
+	abstract AbstractNameTransformer<T> createTransformer(ETLStatistics stats);
 
 }

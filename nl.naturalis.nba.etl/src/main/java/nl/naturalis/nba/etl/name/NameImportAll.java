@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME;
+import static nl.naturalis.nba.dao.DocumentType.*;
 
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -8,7 +8,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 public class NameImportAll {
 
 	public static void main(String[] args) throws Exception
-	{
+	{		
 		try {
 			NameImportAll nameImportAll = new NameImportAll();
 			nameImportAll.importNames();
@@ -25,10 +25,10 @@ public class NameImportAll {
 		ESUtil.deleteIndex(NAME.getIndexInfo());
 		ESUtil.createIndex(NAME.getIndexInfo());
 		NameImporter<?> importer;
-//		importer = new SpecimenNameImporter();
-//		importer.importNames();
-		importer = new TaxonNameImporter();
+		importer = new SpecimenNameImporter();
 		importer.importNames();
+//		importer = new TaxonNameImporter();
+//		importer.importNames();
 //		importer = new MultiMediaObjectNameImporter();
 //		importer.importNames();
 	}

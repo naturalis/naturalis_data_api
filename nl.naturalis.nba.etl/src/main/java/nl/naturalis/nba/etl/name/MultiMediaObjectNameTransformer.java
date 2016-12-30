@@ -27,10 +27,9 @@ class MultiMediaObjectNameTransformer extends AbstractNameTransformer<MultiMedia
 
 	private NameLoader loader;
 
-	MultiMediaObjectNameTransformer(ETLStatistics stats, NameLoader loader)
+	MultiMediaObjectNameTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		this.loader = loader;
 	}
 
 	@Override
@@ -130,6 +129,13 @@ class MultiMediaObjectNameTransformer extends AbstractNameTransformer<MultiMedia
 			name = new Name(id);
 		}
 		return name;
+	}
+
+	@Override
+	void initializeOutputObjects(List<MultiMediaObject> inputObjects)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

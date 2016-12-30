@@ -88,6 +88,7 @@ public class CoLTaxonImporter extends CoLImporter {
 				loader.queue(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: {}", rec.getLineNumber());
+					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}
 			}
 		}

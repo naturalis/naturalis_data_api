@@ -38,7 +38,6 @@ public class CoLReferenceImporter extends CoLImporter {
 		finally {
 			ESUtil.refreshIndex(TAXON);
 			ESClientManager.getInstance().closeClient();
-
 		}
 	}
 
@@ -81,6 +80,7 @@ public class CoLReferenceImporter extends CoLImporter {
 				loader.queue(taxa);
 				if (rec.getLineNumber() % 50000 == 0) {
 					logger.info("Records processed: {}", rec.getLineNumber());
+					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}
 			}
 		}

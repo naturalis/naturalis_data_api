@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,18 +72,20 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 				for (Monomial m : si.getSystemClassification()) {
 					objs.put(m.getName(), null);
 				}
-				ScientificName sn = si.getScientificName();
-				if (sn.getGenusOrMonomial() != null) {
-					objs.put(sn.getGenusOrMonomial(), null);
-				}
-				if (sn.getSubgenus() != null) {
-					objs.put(sn.getSubgenus(), null);
-				}
-				if (sn.getSpecificEpithet() != null) {
-					objs.put(sn.getSpecificEpithet(), null);
-				}
-				if (sn.getInfraspecificEpithet() != null) {
-					objs.put(sn.getInfraspecificEpithet(), null);
+				if (importNameParts) {
+					ScientificName sn = si.getScientificName();
+					if (sn.getGenusOrMonomial() != null) {
+						objs.put(sn.getGenusOrMonomial(), null);
+					}
+					if (sn.getSubgenus() != null) {
+						objs.put(sn.getSubgenus(), null);
+					}
+					if (sn.getSpecificEpithet() != null) {
+						objs.put(sn.getSpecificEpithet(), null);
+					}
+					if (sn.getInfraspecificEpithet() != null) {
+						objs.put(sn.getInfraspecificEpithet(), null);
+					}
 				}
 			}
 		}
@@ -111,7 +114,9 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 			Name name = nameObjects.get(si.getScientificName().getFullScientificName());
 			name.addNameInfo(newNameInfo(FLD_SCIENTIFIC));
 			names.add(name);
-			names.addAll(getAcceptedNameNameParts(si.getScientificName()));
+			if (importNameParts) {
+				names.addAll(getNameParts(si.getScientificName()));
+			}
 		}
 		return names;
 	}
@@ -132,7 +137,7 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 		return ranks;
 	}
 
-	private List<Name> getAcceptedNameNameParts(ScientificName sn)
+	private List<Name> getNameParts(ScientificName sn)
 	{
 		List<Name> parts = new ArrayList<>(4);
 		if (sn.getGenusOrMonomial() != null) {
@@ -161,9 +166,10 @@ class SpecimenNameTransformer extends AbstractNameTransformer<Specimen> {
 	{
 		NameInfo nameInfo = new NameInfo();
 		nameInfo.setDocumentType(SPECIMEN.getName());
-		nameInfo.setSourceSystemCode(input.getSourceSystem().getCode());
-		nameInfo.setDocumentId(input.getId());
 		nameInfo.setField(field);
+		Set<String> ids = new HashSet<>(1);
+		ids.add(input.getId());
+		nameInfo.setDocumentIds(ids);
 		return nameInfo;
 	}
 

@@ -4,8 +4,11 @@ import static nl.naturalis.nba.dao.DocumentType.NAME;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.Name;
@@ -173,9 +176,9 @@ class TaxonNameTransformer extends AbstractNameTransformer<Taxon> {
 	{
 		NameInfo nameInfo = new NameInfo();
 		nameInfo.setDocumentType(TAXON.getName());
-		nameInfo.setSourceSystemCode(input.getSourceSystem().getCode());
-		nameInfo.setDocumentId(input.getId());
 		nameInfo.setField(field);
+		Set<String> ids = new HashSet<>(Arrays.asList(input.getId()));
+		nameInfo.setDocumentIds(ids);
 		return nameInfo;
 	}
 

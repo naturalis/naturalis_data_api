@@ -1,13 +1,13 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Name implements IDocumentObject {
 
 	private String id;
 	private String value;
-	private Set<NameInfo> sources;
+	private List<NameInfo> sources;
 
 	public Name()
 	{
@@ -18,12 +18,18 @@ public class Name implements IDocumentObject {
 		this.value = value;
 	}
 
-	public void addNameInfo(NameInfo source)
+	public void addNameInfo(NameInfo nameInfo)
 	{
 		if (sources == null) {
-			sources = new HashSet<>(8);
+			sources = new ArrayList<>(8);
 		}
-		sources.add(source);
+		NameInfo src = find(nameInfo);
+		if (src == null) {
+			sources.add(nameInfo);
+		}
+		else {
+			src.getDocumentIds().addAll(nameInfo.getDocumentIds());
+		}
 	}
 
 	@Override
@@ -48,14 +54,25 @@ public class Name implements IDocumentObject {
 		this.value = name;
 	}
 
-	public Set<NameInfo> getNameInfos()
+	public List<NameInfo> getNameInfos()
 	{
 		return sources;
 	}
 
-	public void setNameInfos(Set<NameInfo> sources)
+	public void setNameInfos(List<NameInfo> sources)
 	{
 		this.sources = sources;
+	}
+
+	private NameInfo find(NameInfo nameInfo)
+	{
+		List<NameInfo> srcs = this.sources;
+		for (NameInfo src : srcs) {
+			if (src.equals(nameInfo)) {
+				return src;
+			}
+		}
+		return null;
 	}
 
 }

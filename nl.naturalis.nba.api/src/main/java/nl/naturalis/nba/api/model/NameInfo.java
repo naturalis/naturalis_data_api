@@ -1,5 +1,9 @@
 package nl.naturalis.nba.api.model;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 
@@ -9,13 +13,12 @@ public class NameInfo implements INbaModelObject {
 	private String documentType;
 	@Analyzers({})
 	private String field;
-	@NotIndexed
-	private String documentId;
 	@Analyzers({})
 	private String contextField0;
 	private String contextValue0;
-	@Analyzers({})
-	private String sourceSystemCode;
+
+	@NotIndexed
+	private Set<String> documentIds;
 
 	public NameInfo()
 	{
@@ -28,23 +31,28 @@ public class NameInfo implements INbaModelObject {
 		}
 		if (obj.getClass() == NameInfo.class) {
 			NameInfo other = (NameInfo) obj;
-			return documentId.equals(other.documentId) && field.equals(other.field)
-					&& eq(contextValue0, other.contextValue0)
+			return field.equals(other.field) && eq(contextValue0, other.contextValue0)
 					&& eq(contextField0, other.contextField0)
 					&& documentType.equals(other.documentType);
 		}
 		return false;
 	}
 
+	@JsonIgnore
+	private int hash = 0;
+
 	public int hashCode()
 	{
-		int hash = 17;
-		hash = (hash * 31) + documentId.hashCode();
-		hash = (hash * 31) + field.hashCode();
-		hash = (hash * 31) + (contextValue0 == null ? 0 : contextValue0.hashCode());
-		hash = (hash * 31) + (contextField0 == null ? 0 : contextField0.hashCode());
-		hash = (hash * 31) + documentType.hashCode();
-		return hash;
+		int h = hash;
+		if (h == 0) {
+			h = 17;
+			h = (h * 31) + field.hashCode();
+			h = (h * 31) + (contextValue0 == null ? 0 : contextValue0.hashCode());
+			h = (h * 31) + (contextField0 == null ? 0 : contextField0.hashCode());
+			h = (h * 31) + documentType.hashCode();
+			hash = h;
+		}
+		return h;
 	}
 
 	private static boolean eq(Object obj0, Object obj1)
@@ -66,16 +74,6 @@ public class NameInfo implements INbaModelObject {
 	public void setDocumentType(String documentType)
 	{
 		this.documentType = documentType;
-	}
-
-	public String getDocumentId()
-	{
-		return documentId;
-	}
-
-	public void setDocumentId(String documentId)
-	{
-		this.documentId = documentId;
 	}
 
 	public String getField()
@@ -108,14 +106,14 @@ public class NameInfo implements INbaModelObject {
 		this.contextValue0 = contextValue0;
 	}
 
-	public String getSourceSystemCode()
+	public Set<String> getDocumentIds()
 	{
-		return sourceSystemCode;
+		return documentIds;
 	}
 
-	public void setSourceSystemCode(String sourceSystemCode)
+	public void setDocumentIds(Set<String> documentIds)
 	{
-		this.sourceSystemCode = sourceSystemCode;
+		this.documentIds = documentIds;
 	}
 
 }

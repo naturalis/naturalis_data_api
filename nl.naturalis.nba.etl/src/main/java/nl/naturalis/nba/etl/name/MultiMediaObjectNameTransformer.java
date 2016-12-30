@@ -4,7 +4,10 @@ import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.NAME;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import nl.naturalis.nba.api.model.Monomial;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
@@ -113,9 +116,9 @@ class MultiMediaObjectNameTransformer extends AbstractNameTransformer<MultiMedia
 	{
 		NameInfo nameInfo = new NameInfo();
 		nameInfo.setDocumentType(MULTI_MEDIA_OBJECT.getName());
-		nameInfo.setSourceSystemCode(input.getSourceSystem().getCode());
-		nameInfo.setDocumentId(input.getId());
 		nameInfo.setField(field);
+		Set<String> ids = new HashSet<>(Arrays.asList(input.getId()));
+		nameInfo.setDocumentIds(ids);
 		return nameInfo;
 	}
 
@@ -135,7 +138,7 @@ class MultiMediaObjectNameTransformer extends AbstractNameTransformer<MultiMedia
 	void initializeOutputObjects(List<MultiMediaObject> inputObjects)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

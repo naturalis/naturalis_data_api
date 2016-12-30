@@ -1,14 +1,18 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.*;
+import static nl.naturalis.nba.dao.DocumentType.NAME;
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+
+import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.ETLUtil;
 
 public class NameImportAll {
 
 	public static void main(String[] args) throws Exception
-	{		
+	{
 		try {
 			NameImportAll nameImportAll = new NameImportAll();
 			nameImportAll.importNames();
@@ -19,18 +23,21 @@ public class NameImportAll {
 		}
 	}
 
-	@SuppressWarnings("static-method")
+	private static final Logger logger = getLogger(NameImportAll.class);
+
 	public void importNames()
 	{
+		long start = System.currentTimeMillis();
 		ESUtil.deleteIndex(NAME.getIndexInfo());
 		ESUtil.createIndex(NAME.getIndexInfo());
 		NameImporter<?> importer;
 		importer = new SpecimenNameImporter();
 		importer.importNames();
-//		importer = new TaxonNameImporter();
-//		importer.importNames();
-//		importer = new MultiMediaObjectNameImporter();
-//		importer.importNames();
+		//		importer = new TaxonNameImporter();
+		//		importer.importNames();
+		//		importer = new MultiMediaObjectNameImporter();
+		//		importer.importNames();
+		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 }

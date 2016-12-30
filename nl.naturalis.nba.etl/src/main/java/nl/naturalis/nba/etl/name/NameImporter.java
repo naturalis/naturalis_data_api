@@ -39,7 +39,7 @@ abstract class NameImporter<T extends IDocumentObject> {
 		try {
 			logger.info("Initializing extractor for {}", dt.getName());
 			extractor = new DocumentIterator<T>(dt);
-			extractor.setBatchSize(100);
+			extractor.setBatchSize(500);
 			extractor.setTimeout(50000);
 			loader = new NameLoader(0, stats);
 			loader.suppressErrors(suppressErrors);
@@ -54,9 +54,9 @@ abstract class NameImporter<T extends IDocumentObject> {
 					List<Name> outputObjects = transformer.transform(inputObject);
 					loader.queue(outputObjects);
 				}
-				if (++batchNo % 1 == 0) {
-					//logger.info("Documents processed: {}", extractor.getDocCounter());
-					loader.flush();
+				loader.flush();
+				if (++batchNo % 20 == 0) {
+					logger.info("Documents processed: {}", extractor.getDocCounter());
 				}
 				batch = extractor.nextBatch();
 			}

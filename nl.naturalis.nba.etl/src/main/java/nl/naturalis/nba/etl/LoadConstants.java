@@ -21,6 +21,11 @@ public interface LoadConstants {
 	 */
 	String SYSPROP_SUPPRESS_ERRORS = "suppressErrors";
 	/**
+	 * Whether or not the name import program should import the individual name
+	 * parts of a scientific name.
+	 */
+	String SYSPROP_IMPORT_NAME_PARTS = "nl.naturalis.nba.etl.name.importNameParts";
+	/**
 	 * Naturalis Biodiversity Center
 	 */
 	String SOURCE_INSTITUTION_ID = "Naturalis Biodiversity Center";

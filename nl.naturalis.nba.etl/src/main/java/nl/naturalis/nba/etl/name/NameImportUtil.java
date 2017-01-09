@@ -1,8 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import nl.naturalis.nba.api.model.Name;
-
-public class NameImportUtil {
+class NameImportUtil {
 
 	static long longHashCode(String s)
 	{
@@ -11,11 +9,6 @@ public class NameImportUtil {
 			h = 31 * h + s.charAt(i);
 		}
 		return h;
-	}
-
-	static Name findName(String name)
-	{
-		return null;
 	}
 
 	private NameImportUtil()

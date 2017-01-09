@@ -3,11 +3,14 @@ package nl.naturalis.nba.api.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.NotIndexed;
+
 public class Name implements IDocumentObject {
 
 	private String id;
-	private String value;
-	private List<NameInfo> sources;
+	private String name;
+	@NotIndexed
+	private List<String> specimenUnitIDs;
 
 	public Name()
 	{
@@ -15,20 +18,22 @@ public class Name implements IDocumentObject {
 
 	public Name(String value)
 	{
-		this.value = value;
+		this.name = value;
 	}
 
-	public void addNameInfo(NameInfo nameInfo)
+	public void addSpecimenUnitID(String id)
 	{
-		if (sources == null) {
-			sources = new ArrayList<>(8);
-		}
-		NameInfo src = find(nameInfo);
-		if (src == null) {
-			sources.add(nameInfo);
+		if (specimenUnitIDs == null) {
+			specimenUnitIDs = new ArrayList<>(4);
+			specimenUnitIDs.add(id);
 		}
 		else {
-			src.getDocumentIds().addAll(nameInfo.getDocumentIds());
+			for (String e : specimenUnitIDs) {
+				if (e.equals(id)) {
+					return;
+				}
+			}
+			specimenUnitIDs.add(id);
 		}
 	}
 
@@ -46,33 +51,22 @@ public class Name implements IDocumentObject {
 
 	public String getName()
 	{
-		return value;
+		return name;
 	}
 
 	public void setName(String name)
 	{
-		this.value = name;
+		this.name = name;
 	}
 
-	public List<NameInfo> getNameInfos()
+	public List<String> getSpecimenUnitIDs()
 	{
-		return sources;
+		return specimenUnitIDs;
 	}
 
-	public void setNameInfos(List<NameInfo> sources)
+	public void setSpecimenUnitIDs(List<String> specimenUnitIDs)
 	{
-		this.sources = sources;
-	}
-
-	private NameInfo find(NameInfo nameInfo)
-	{
-		List<NameInfo> srcs = this.sources;
-		for (NameInfo src : srcs) {
-			if (src.equals(nameInfo)) {
-				return src;
-			}
-		}
-		return null;
+		this.specimenUnitIDs = specimenUnitIDs;
 	}
 
 }

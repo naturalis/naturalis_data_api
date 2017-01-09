@@ -30,13 +30,8 @@ public class NameImportAll {
 		long start = System.currentTimeMillis();
 		ESUtil.deleteIndex(NAME.getIndexInfo());
 		ESUtil.createIndex(NAME.getIndexInfo());
-		NameImporter<?> importer;
-		importer = new SpecimenNameImporter();
+		NameImporter importer = new NameImporter();
 		importer.importNames();
-		//		importer = new TaxonNameImporter();
-		//		importer.importNames();
-		//		importer = new MultiMediaObjectNameImporter();
-		//		importer.importNames();
 		ETLUtil.logDuration(logger, getClass(), start);
 	}
 

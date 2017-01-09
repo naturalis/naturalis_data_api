@@ -99,6 +99,8 @@ public class NsrImporter {
 					mediaLoader.queue(multimedia);
 					if (++i % 5000 == 0) {
 						logger.info("Records processed: {}", i);
+						logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
+						logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
 					}
 				}
 				backupXmlFile(f);
@@ -140,6 +142,7 @@ public class NsrImporter {
 					loader.queue(transformed);
 					if (++i % 5000 == 0) {
 						logger.info("Records processed: {}", i);
+						logger.info("Documents indexed: {}", stats.documentsIndexed);
 					}
 				}
 			}
@@ -191,6 +194,7 @@ public class NsrImporter {
 					loader.queue(multimedia);
 					if (stats.recordsProcessed % 5000 == 0) {
 						logger.info("Records processed: {}", stats.recordsProcessed);
+						logger.info("Documents indexed: {}", stats.documentsIndexed);
 					}
 				}
 			}

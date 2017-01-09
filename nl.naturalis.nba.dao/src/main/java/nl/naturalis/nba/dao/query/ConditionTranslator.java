@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.query.ComparisonOperator.*;
 import static nl.naturalis.nba.api.query.LogicalOperator.AND;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
@@ -66,19 +66,19 @@ public abstract class ConditionTranslator {
 	}
 
 	/*
-	 * Negating operators are operators that are translated by replacing them
-	 * with their opposite (e.g. NOT_BETWEEN with BETWEEN) and then wrapping the
-	 * resulting query within a BoolQuery.mustNot() query. Note that NOT_EQUALS
-	 * and NOT_EQUALS_IC are not included here! For them separate
-	 * ConditionTranslator subclasses have been made. This is because they
-	 * require special code for NULL handling, and also because NOT having them
-	 * handled separately can result in valid but awkward Elasticsearch queries
-	 * (mustNot within mustNot within mustNot queries).
+	 * Negating operators are operators that are translated just like their
+	 * opposite (e.g. NOT_BETWEEN <-> BETWEEN), but then wrapped into a
+	 * BoolQuery.mustNot() query. Note that NOT_EQUALS and NOT_EQUALS_IC are not
+	 * included here! For them separate ConditionTranslator subclasses have been
+	 * made. This is because they require special code for NULL handling, and
+	 * also because not having them handled separately results in valid but
+	 * awkward Elasticsearch queries (mustNot within mustNot within mustNot
+	 * queries).
 	 */
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
 	static {
-		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN);
+		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN, NOT_MATCHES);
 	}
 
 	final Condition condition;

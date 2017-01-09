@@ -18,11 +18,12 @@ public enum ComparisonOperator
 {
 
 	/**
-	 * Operator used to establish that search term and field value are equal.
-	 * For text fields the comparison is done in a case sensitive way. The
-	 * EQUALS operator also allows you to search for null values by providing a
-	 * search term that is {@code null}. This is equivalent to using the
-	 * <code>IS NULL</code> operator in SQL. For example:<br>
+	 * Operator used to establish that {@link Condition#getValue() query value}
+	 * and {@link Condition#getField() field value} are equal. For text fields
+	 * the comparison is done in a case sensitive way. The EQUALS operator also
+	 * allows you to search for null values by providing a query value that is
+	 * {@code null}. This is equivalent to using the <code>IS NULL</code>
+	 * operator in SQL. For example:<br>
 	 * <code>
 	 * // Retrieves all documents in which taxonRank is not set<br>
 	 * Condition condition = new Condition("taxonRank", EQUALS, null);
@@ -31,10 +32,10 @@ public enum ComparisonOperator
 	EQUALS("="),
 
 	/**
-	 * Operator used to establish that search term and field value are not
+	 * Operator used to establish that query value and field value are not
 	 * equal. For text fields the comparison is done in a case sensitive way.
 	 * The NOT_EQUALS operator also allows you to search for non-null values by
-	 * providing a search term that is {@code null}. This is equivalent to using
+	 * providing a query value that is {@code null}. This is equivalent to using
 	 * the <code>IS NOT NULL</code> operator in SQL. For example:<br>
 	 * <code>
 	 * // Retrieves all documents in which taxonRank is set<br>
@@ -45,8 +46,8 @@ public enum ComparisonOperator
 
 	/**
 	 * <code>EQUALS IGNORE CASE</code>&#46; Operator used to establish that
-	 * search term and field value are equal ignoring case. Can only be used for
-	 * text fields. The search term may be null when using the EQUALS operator.
+	 * query value and field value are equal ignoring case. Can only be used for
+	 * text fields. The query value may be null when using the EQUALS operator.
 	 * This is equivalent to using the <code>IS NULL</code> operator in SQL.
 	 * Although it only makes sense to use this operator with text fields, no
 	 * exception is thrown if you use it with other types of fields. It behaves
@@ -56,8 +57,8 @@ public enum ComparisonOperator
 
 	/**
 	 * <code>NOT EQUALS IGNORE CASE</code>&#46; Operator used to establish that
-	 * search term and field value are not equal, even when ignoring case. Can
-	 * only be used for text fields. The search term may be null when using the
+	 * query value and field value are not equal, even when ignoring case. Can
+	 * only be used for text fields. The query value may be null when using the
 	 * EQUALS operator. This is equivalent to using the <code>IS NOT NULL</code>
 	 * operator in SQL. Although it only makes sense to use this operator with
 	 * text fields, no exception is thrown if you use it with other types of
@@ -67,43 +68,43 @@ public enum ComparisonOperator
 	NOT_EQUALS_IC,
 
 	/**
-	 * Operator used to establish that a field contains the search term. Can
+	 * Operator used to establish that a field contains the query value. Can
 	 * only be used for text fields. Search term and field value are compared in
-	 * a case insensitive way. The search term must not be null.
+	 * a case insensitive way. The query value must not be null.
 	 */
 	LIKE,
 
 	/**
-	 * Operator used to establish that the a field does not contain the search
-	 * term. Can only be used for text fields. Search term and field value are
-	 * compared in a case insensitive way. The search term must not be null.
+	 * Operator used to establish that a field does not contain the query
+	 * string. Can only be used for text fields. Search term and field value are
+	 * compared in a case insensitive way. The query value must not be null.
 	 */
 	NOT_LIKE,
 
 	/**
 	 * <code>LESS THAN</code>&#46; Operator used to establish that a field&#39;s
-	 * value is less than the search term. Can only be used for number fields
+	 * value is less than the query value. Can only be used for number fields
 	 * and date fields.
 	 */
 	LT("<"),
 
 	/**
 	 * <code>LESS THAN OR EQUAL</code>&#46; Operator used to establish that a
-	 * field&#39;s value is less than or equal to the search term. Can only be
+	 * field&#39;s value is less than or equal to the query value. Can only be
 	 * used for number fields and date fields.
 	 */
 	LTE("<="),
 
 	/**
 	 * <code>GREATER THAN</code>&#46; Operator used to establish that a
-	 * field&#39;s value is greater than the search term. Can only be used for
+	 * field&#39;s value is greater than the query value. Can only be used for
 	 * number fields and date fields.
 	 */
 	GT(">"),
 
 	/**
 	 * <code>GREATER THAN OR EQUAL</code>&#46; Operator used to establish that a
-	 * field&#39;s value is greater than or equal to the search term. Can only
+	 * field&#39;s value is greater than or equal to the query value. Can only
 	 * be used for number fields and date fields.
 	 */
 	GTE(">="),
@@ -191,7 +192,24 @@ public enum ComparisonOperator
 	 * set of values. See {@link #IN} for the multiple ways in which this
 	 * operator can be used.
 	 */
-	NOT_IN;
+	NOT_IN,
+
+	/**
+	 * Operator used to trigger a full-text search. Can only be used for text
+	 * fields. The {@link Condition#getValue() query value} is broken up along
+	 * word boundaries (commas, periods, space characters, etc.) with each word
+	 * constituting a separate search term. A match exists if any of the search
+	 * terms matches the targeted field. See the <a href=
+	 * "https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html">Elasticsearch
+	 * documentation</a>.
+	 */
+	MATCHES,
+
+	/**
+	 * Operator used to trigger a full-text search (negating its outcome). Can
+	 * only be used for text fields. See {@link #MATCHES}.
+	 */
+	NOT_MATCHES;
 
 	/**
 	 * Returns the {@link ComparisonOperator} corresponding to the specified

@@ -96,8 +96,9 @@ public class GeoImporter {
 				if (rec == null)
 					continue;
 				loader.queue(transformer.transform(rec));
-				if (rec.getLineNumber() % 100 == 0) {
-					logger.info("Records processed: " + rec.getLineNumber());
+				if (fileStats.recordsProcessed % 100 == 0) {
+					logger.info("Records processed: {}", fileStats.recordsProcessed);
+					logger.info("Documents indexed: {}", fileStats.documentsIndexed);
 				}
 			}
 		}

@@ -9,11 +9,13 @@ import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
 import static nl.naturalis.nba.api.query.ComparisonOperator.LT;
 import static nl.naturalis.nba.api.query.ComparisonOperator.LTE;
+import static nl.naturalis.nba.api.query.ComparisonOperator.MATCHES;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.common.es.map.ESDataType.BOOLEAN;
 import static nl.naturalis.nba.common.es.map.ESDataType.BYTE;
 import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
@@ -52,7 +54,10 @@ import nl.naturalis.nba.dao.DocumentType;
  */
 public class OperatorCheck {
 
-	/* A type-to-operator map */
+	/*
+	 * A type-to-operator map. For each data type it maintains a set of allowed
+	 * operators.
+	 */
 	private static final EnumMap<ESDataType, EnumSet<ComparisonOperator>> t2o = new EnumMap<>(
 			ESDataType.class);
 
@@ -73,11 +78,19 @@ public class OperatorCheck {
 		t2o.put(DATE, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
 		t2o.put(STRING, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LIKE,
-				NOT_LIKE));
+				NOT_LIKE, MATCHES, NOT_MATCHES));
 		t2o.put(GEO_POINT, EnumSet.of(IN, NOT_IN));
 		t2o.put(GEO_SHAPE, EnumSet.of(IN, NOT_IN));
 	}
-	
+
+	/**
+	 * Checks whether the specified operator can be used for query conditions on
+	 * the specified field.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @return
+	 */
 	public static boolean isOperatorAllowed(SimpleField field, ComparisonOperator operator)
 	{
 		if (isOperatorAllowed(field.getType(), operator)) {
@@ -98,6 +111,19 @@ public class OperatorCheck {
 		return false;
 	}
 
+	/**
+	 * Checks whether the specified operator can be used for query conditions on
+	 * the specified field.
+	 * 
+	 * @param field
+	 *            The full path of the field
+	 * @param operator
+	 *            The operator to check
+	 * @param dt
+	 *            The document type containing the field
+	 * @return
+	 * @throws NoSuchFieldException
+	 */
 	public static <T extends IDocumentObject> boolean isOperatorAllowed(String field,
 			ComparisonOperator operator, DocumentType<T> dt) throws NoSuchFieldException
 	{

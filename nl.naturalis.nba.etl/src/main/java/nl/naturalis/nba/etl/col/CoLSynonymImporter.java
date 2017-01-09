@@ -79,8 +79,8 @@ public class CoLSynonymImporter extends CoLImporter {
 					continue;
 				List<Taxon> taxa = transformer.transform(rec);
 				loader.queue(taxa);
-				if (rec.getLineNumber() % 50000 == 0) {
-					logger.info("Records processed: {}", rec.getLineNumber());
+				if (stats.recordsProcessed % 50000 == 0) {
+					logger.info("Records processed: {}", stats.recordsProcessed);
 					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}
 			}

@@ -1,0 +1,8 @@
+{
+  "match" : {
+    "firstName.analyzed" : {
+      "query" : "john",
+      "type" : "boolean"
+    }
+  }
+}

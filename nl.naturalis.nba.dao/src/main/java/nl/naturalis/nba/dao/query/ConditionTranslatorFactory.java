@@ -112,6 +112,9 @@ public class ConditionTranslatorFactory {
 			case IN:
 			case NOT_IN:
 				return getInConditionTranslator(condition, mappingInfo);
+			case MATCHES:
+			case NOT_MATCHES:
+				return new MatchesConditionTranslator(condition, mappingInfo);
 		}
 		return null;
 	}

@@ -206,9 +206,10 @@ public class BrahmsImportAll {
 					continue;
 				specimenLoader.queue(specimenTransformer.transform(rec));
 				multimediaLoader.queue(multimediaTransformer.transform(rec));
-				if (sStats.recordsProcessed % 50000 == 0) {
-					logger.info("Records processed: {}", sStats.recordsProcessed);
-					logger.info("Documents indexed: {}", sStats.documentsIndexed);
+				if (extractionStats.recordsProcessed % 50000 == 0) {
+					logger.info("Records processed: {}", extractionStats.recordsProcessed);
+					logger.info("Specimen documents indexed: {}", sStats.documentsIndexed);
+					logger.info("Multimedia documents indexed: {}", mStats.documentsIndexed);
 				}
 			}
 		}

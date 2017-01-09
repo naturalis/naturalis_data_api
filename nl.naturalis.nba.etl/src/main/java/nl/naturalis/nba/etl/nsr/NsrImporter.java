@@ -90,17 +90,17 @@ public class NsrImporter {
 			mediaLoader = new NsrMultiMediaLoader(loaderQueueSize, mediaStats);
 			for (File f : xmlFiles) {
 				logger.info("Processing file {}", f.getAbsolutePath());
-				int i = 0;
 				for (XMLRecordInfo extracted : new NsrExtractor(f, taxonStats)) {
 					List<Taxon> taxa = tTransformer.transform(extracted);
 					taxonLoader.queue(taxa);
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
 					mediaLoader.queue(multimedia);
-					if (++i % 5000 == 0) {
-						logger.info("Records processed: {}", i);
+					if (taxonStats.recordsProcessed % 5000 == 0) {
+						logger.info("Records processed: {}", taxonStats.recordsProcessed);
 						logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
-						logger.info("Multimedia documents indexed: {}", mediaStats.documentsIndexed);
+						logger.info("Multimedia documents indexed: {}",
+								mediaStats.documentsIndexed);
 					}
 				}
 				backupXmlFile(f);

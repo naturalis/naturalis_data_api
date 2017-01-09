@@ -27,8 +27,6 @@ import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
-
-
 /**
  * Class that manages the import of CRS multimedia, sourced from files on the
  * local file system. These files have most likely been put there by means of
@@ -118,7 +116,7 @@ public class CrsMultiMediaImportOffline {
 
 	private void importFile(File f)
 	{
-		logger.info("Processing file " + f.getName());
+		logger.info("Processing file {}", f.getName());
 		CrsExtractor extractor;
 		try {
 			extractor = new CrsExtractor(f, stats);
@@ -132,7 +130,8 @@ public class CrsMultiMediaImportOffline {
 			List<MultiMediaObject> transformed = transformer.transform(extracted);
 			loader.queue(transformed);
 			if (stats.recordsProcessed % 50000 == 0) {
-				logger.info("Records processed: " + stats.recordsProcessed);
+				logger.info("Records processed: {}", stats.recordsProcessed);
+				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}
 		}
 	}

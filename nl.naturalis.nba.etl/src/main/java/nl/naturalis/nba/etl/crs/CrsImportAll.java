@@ -37,6 +37,7 @@ public class CrsImportAll {
 	 * 
 	 * @throws Exception
 	 */
+	@SuppressWarnings("static-method")
 	public void importAll() throws Exception
 	{
 		CrsSpecimenImportOffline specimenImporter = new CrsSpecimenImportOffline();

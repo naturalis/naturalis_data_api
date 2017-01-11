@@ -15,8 +15,8 @@ import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -64,7 +64,7 @@ public class GeoImporter {
 		}
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			if(bootstrap) {
+			if (bootstrap) {
 				ESUtil.deleteIndex(GEO_AREA);
 				ESUtil.createIndex(GEO_AREA);
 				ESUtil.createType(GEO_AREA);
@@ -96,7 +96,7 @@ public class GeoImporter {
 				if (rec == null)
 					continue;
 				loader.queue(transformer.transform(rec));
-				if (fileStats.recordsProcessed % 100 == 0) {
+				if (fileStats.recordsProcessed != 0 && fileStats.recordsProcessed % 100 == 0) {
 					logger.info("Records processed: {}", fileStats.recordsProcessed);
 					logger.info("Documents indexed: {}", fileStats.documentsIndexed);
 				}

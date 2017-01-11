@@ -30,6 +30,8 @@ import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 import nl.naturalis.nba.utils.ConfigObject;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
+
 
 /**
  * The transformer component in the Brahms ETL cycle for specimens.
@@ -53,7 +55,7 @@ class BrahmsSpecimenTransformer extends AbstractCSVTransformer<BrahmsCsvField, S
 	public BrahmsSpecimenTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 	}
 
 	@Override

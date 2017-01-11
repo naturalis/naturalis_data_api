@@ -96,7 +96,8 @@ public class NsrImporter {
 					mTransformer.setTaxon(taxa == null ? null : taxa.get(0));
 					List<MultiMediaObject> multimedia = mTransformer.transform(extracted);
 					mediaLoader.queue(multimedia);
-					if (taxonStats.recordsProcessed % 5000 == 0) {
+					if (taxonStats.recordsProcessed != 0
+							&& taxonStats.recordsProcessed % 5000 == 0) {
 						logger.info("Records processed: {}", taxonStats.recordsProcessed);
 						logger.info("Taxon documents indexed: {}", taxonStats.documentsIndexed);
 						logger.info("Multimedia documents indexed: {}",

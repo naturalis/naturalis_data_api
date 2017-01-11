@@ -1,21 +1,21 @@
 package nl.naturalis.nba.dao.query;
 
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import java.util.List;
 
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.sort.SortBuilders;
 
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.SortField;
-import nl.naturalis.nba.common.es.map.SimpleField;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.SimpleField;
+import nl.naturalis.nba.dao.DocumentType;
 
 class SortFieldsTranslator {
 
@@ -34,20 +34,24 @@ class SortFieldsTranslator {
 		int i = 0;
 		for (SortField sf : sortFields) {
 			String path = sf.getPath();
+			String nestedPath;
 			try {
 				ESField f = mappingInfo.getField(path);
 				if (!(f instanceof SimpleField)) {
 					throw invalidSortField(path);
 				}
-				if (MappingInfo.isOrDescendsFromArray(f)) {
-					throw sortOnMultiValuedField(path);
-				}
+				nestedPath = MappingInfo.getNestedPath(f);
 			}
 			catch (NoSuchFieldException e) {
 				throw invalidSortField(sf.getPath());
 			}
-			SortOrder order = sf.isAscending() ? ASC : DESC;
-			result[i++] = fieldSort(path).order(order);
+			FieldSortBuilder sb = SortBuilders.fieldSort(path);
+			sb.order(sf.isAscending() ? ASC : DESC);
+			sb.sortMode(sf.isAscending() ? "min" : "max");
+			if(nestedPath != null) {
+				sb.setNestedPath(nestedPath);
+			}
+			result[i++] = sb;
 		}
 		return result;
 	}
@@ -59,11 +63,4 @@ class SortFieldsTranslator {
 		return new InvalidQueryException(msg);
 	}
 
-	private static InvalidQueryException sortOnMultiValuedField(String field)
-	{
-		String fmt = "Invalid sort field: \"%s\". The field is multi-valued "
-				+ "or embedded within an object array.";
-		String msg = String.format(fmt, field);
-		return new InvalidQueryException(msg);
-	}
 }

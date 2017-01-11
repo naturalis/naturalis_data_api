@@ -103,12 +103,57 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 		String rank = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(new Condition(rank, NOT_MATCHES, "bossen"));
-		/*
-		 * That's all but larusFuscusSpecimen01
-		 */
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
+
+	/*
+	 * Test happy flow
+	 */
+	@Test
+	public void testQuery__04() throws InvalidQueryException
+	{
+		String rank = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new Condition(rank, MATCHES, "   bossen  one two three"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test happy flow
+	 */
+	@Test
+	public void testQuery__05() throws InvalidQueryException
+	{
+		String rank = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new Condition(rank, MATCHES, "   nabij"));
+		/*
+		 * That's larusFuscusSpecimen01 &parusMajorSpecimen01
+		 */
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 2, result.size());
+	}
+	
+	/*
+	 * Test happy flow
+	 */
+	@Test
+	public void testQuery__06() throws InvalidQueryException
+	{
+		String rank = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new Condition(rank, NOT_MATCHES, "   nabij"));
+		/*
+		 * That's all but larusFuscusSpecimen01 &parusMajorSpecimen01
+		 */
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 3, result.size());
+	}
 }

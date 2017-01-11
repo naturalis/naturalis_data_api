@@ -119,7 +119,7 @@ public class CrsSpecimenImportOffline {
 		for (XMLRecordInfo extracted : extractor) {
 			List<Specimen> transformed = transformer.transform(extracted);
 			loader.queue(transformed);
-			if (stats.recordsProcessed % 50000 == 0) {
+			if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
 				logger.info("Records processed: {}", stats.recordsProcessed);
 				logger.info("Documents indexed: {}", stats.documentsIndexed);
 			}

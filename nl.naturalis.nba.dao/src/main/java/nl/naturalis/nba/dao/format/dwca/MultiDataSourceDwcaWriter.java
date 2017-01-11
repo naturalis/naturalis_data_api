@@ -39,7 +39,8 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
  * Manages the assembly and creation of DarwinCore archives. Use this class if
- * you cannot generate all CSV files from a single query.
+ * you cannot generate all CSV files from a single query (each CSV file requires
+ * a new query to be executed).
  * 
  * @author Ayco Holleman
  *

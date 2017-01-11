@@ -69,7 +69,7 @@ public class CoLVernacularNameImporter extends CoLImporter {
 					continue;
 				List<Taxon> taxa = transformer.transform(rec);
 				loader.queue(taxa);
-				if (stats.recordsProcessed % 50000 == 0) {
+				if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
 					logger.info("Records processed: {}", stats.recordsProcessed);
 					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}

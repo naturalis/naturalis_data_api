@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.IMAGELIST;
@@ -59,7 +60,7 @@ class BrahmsMultiMediaTransformer
 	public BrahmsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 	}
 
 	@Override

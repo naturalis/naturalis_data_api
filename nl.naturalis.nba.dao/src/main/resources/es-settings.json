@@ -20,7 +20,7 @@
 		}
 	},
 	"index": {
-		"refresh_interval": "8s"
+		"refresh_interval": "30s"
 	},
 	"mappings": {
 		"_default_": {

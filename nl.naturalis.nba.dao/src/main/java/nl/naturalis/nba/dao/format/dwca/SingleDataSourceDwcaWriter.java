@@ -115,6 +115,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 			String msg = "Unsupported data set type: " + cfg.getDataSetType();
 			throw new DaoException(msg);
 		}
+		scroller.setTimeout(1000);
 		handler.printHeaders();
 		try {
 			scroller.scroll();

@@ -82,6 +82,31 @@ public class Condition {
 	}
 
 	/**
+	 * Copy constructor.
+	 * 
+	 * @param other
+	 */
+	public Condition(Condition other)
+	{
+		not = other.not;
+		field = other.field;
+		operator = other.operator;
+		value = other.value;
+		if (other.and != null) {
+			and = new ArrayList<>(other.and.size());
+			for (Condition c : other.and) {
+				and.add(new Condition(c));
+			}
+		}
+		if (other.or != null) {
+			or = new ArrayList<>(other.or.size());
+			for (Condition c : other.or) {
+				or.add(new Condition(c));
+			}
+		}
+	}
+
+	/**
 	 * Creates a condition for the specified field, comparing it to the
 	 * specified value using the specified operator.
 	 * 

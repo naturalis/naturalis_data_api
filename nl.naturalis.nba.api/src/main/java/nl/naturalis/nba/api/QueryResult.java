@@ -14,12 +14,12 @@ import java.util.List;
 public class QueryResult<T> implements Iterable<T> {
 
 	private long totalSize;
-	private List<T> resultSet;
+	private List<T> items;
 
 	@Override
 	public Iterator<T> iterator()
 	{
-		return resultSet.iterator();
+		return items.iterator();
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class QueryResult<T> implements Iterable<T> {
 	 */
 	public int size()
 	{
-		return resultSet.size();
+		return items.size();
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class QueryResult<T> implements Iterable<T> {
 	 */
 	public T get(int index)
 	{
-		return resultSet.get(index);
+		return items.get(index);
 	}
 
 	/**
@@ -70,11 +70,11 @@ public class QueryResult<T> implements Iterable<T> {
 	 * Sets the result set of this {@code QueryResult}. Not meant to be called
 	 * by clients.
 	 * 
-	 * @param resultSet
+	 * @param items
 	 */
-	public void setResultSet(List<T> resultSet)
+	public void setItems(List<T> items)
 	{
-		this.resultSet = resultSet;
+		this.items = items;
 	}
 
 }

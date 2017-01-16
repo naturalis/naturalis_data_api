@@ -133,7 +133,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		}
 		QueryResult<Map<String, Object>> result = new QueryResult<>();
 		result.setTotalSize(response.getHits().totalHits());
-		result.setResultSet(resultSet);
+		result.setItems(resultSet);
 		return result;
 	}
 
@@ -319,7 +319,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		QueryResult<T> result = new QueryResult<>();
 		result.setTotalSize(response.getHits().totalHits());
 		T[] documentObjects = processSearchResponse(response);
-		result.setResultSet(Arrays.asList(documentObjects));
+		result.setItems(Arrays.asList(documentObjects));
 		return result;
 	}
 

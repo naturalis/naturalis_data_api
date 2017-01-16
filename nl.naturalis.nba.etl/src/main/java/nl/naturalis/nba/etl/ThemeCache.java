@@ -27,12 +27,16 @@ import nl.naturalis.nba.utils.FileUtil;
  */
 public class ThemeCache {
 
-	private class Theme {
+	private static class Theme {
+
+		Theme()
+		{
+		}
 
 		String code;
 		String file;
 		String identifier;
-		List<DocumentType> types;
+		List<DocumentType<?>> types;
 		List<String> ids;
 		List<SourceSystem> systems;
 		int matches = 0;
@@ -69,7 +73,7 @@ public class ThemeCache {
 	 * @param type
 	 * @return
 	 */
-	public List<String> lookup(String id, DocumentType type, SourceSystem system)
+	public List<String> lookup(String id, DocumentType<?> type, SourceSystem system)
 	{
 		if (id == null) {
 			return null;
@@ -130,7 +134,7 @@ public class ThemeCache {
 				String type = props.getProperty(code + ".type");
 				if (type != null && type.length() != 0) {
 					String[] types = type.split(",");
-					List<DocumentType> documentTypes = new ArrayList<>(types.length);
+					List<DocumentType<?>> documentTypes = new ArrayList<>(types.length);
 					for (String t : types) {
 						documentTypes.add(DocumentType.forName(t.trim()));
 					}
@@ -227,8 +231,8 @@ public class ThemeCache {
 			logger.warn(msg);
 			return null;
 		}
-		File propertyFile = new File(thematicSearchDir.getAbsolutePath()
-				+ "/thematic-search.properties");
+		File propertyFile = new File(
+				thematicSearchDir.getAbsolutePath() + "/thematic-search.properties");
 		if (!propertyFile.isFile()) {
 			String fmt = "Missing file \"%s\". Themes will not be indexed!";
 			String msg = String.format(fmt, propertyFile.getAbsolutePath());

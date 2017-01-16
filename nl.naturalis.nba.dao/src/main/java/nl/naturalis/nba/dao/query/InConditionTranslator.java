@@ -48,7 +48,7 @@ class InConditionTranslator extends ConditionTranslator {
 			query = isOneOf(ivb.getValues());
 		}
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return query;
 		}
 		return nestedQuery(nestedPath, query);

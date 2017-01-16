@@ -26,7 +26,7 @@ class MatchesConditionTranslator extends ConditionTranslator {
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		String multiField = condition.getField() + '.' + DEFAULT_MULTIFIELD.getName();
 		String value = condition.getValue().toString().toLowerCase();
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return matchQuery(multiField, value);
 		}
 		return nestedQuery(nestedPath, matchQuery(multiField, value));

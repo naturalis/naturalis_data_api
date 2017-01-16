@@ -24,7 +24,7 @@ class NotEqualsConditionTranslator extends ConditionTranslator {
 		String field = condition.getField();
 		Object value = condition.getValue();
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return boolQuery().mustNot(termQuery(field, value));
 		}
 		return boolQuery().mustNot(nestedQuery(nestedPath, termQuery(field, value)));

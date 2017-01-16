@@ -27,7 +27,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		String multiField = condition.getField() + '.' + LIKE_MULTIFIELD.getName();
 		String value = condition.getValue().toString().toLowerCase();
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return termQuery(multiField, value);
 		}
 		return nestedQuery(nestedPath, termQuery(multiField, value));

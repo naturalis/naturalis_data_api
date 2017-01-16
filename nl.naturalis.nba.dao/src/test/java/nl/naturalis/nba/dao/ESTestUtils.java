@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -63,6 +64,16 @@ public class ESTestUtils {
 	}
 
 	public static void saveSpecimens(Specimen... specimens)
+	{
+		DocumentType<?> dt = DocumentType.forClass(Specimen.class);
+		ESUtil.disableAutoRefresh(dt.getIndexInfo());
+		for (Specimen specimen : specimens) {
+			saveSpecimen(specimen, false);
+		}
+		ESUtil.refreshIndex(dt.getIndexInfo());
+	}
+
+	public static void saveSpecimens(List<Specimen> specimens)
 	{
 		DocumentType<?> dt = DocumentType.forClass(Specimen.class);
 		ESUtil.disableAutoRefresh(dt.getIndexInfo());

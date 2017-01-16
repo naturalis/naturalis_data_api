@@ -26,7 +26,7 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 		String value = condition.getValue().toString().toLowerCase();
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		String multiField = field + '.' + IGNORE_CASE_MULTIFIELD.getName();
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return termQuery(multiField, value);
 		}
 		return nestedQuery(nestedPath, termQuery(multiField, value));

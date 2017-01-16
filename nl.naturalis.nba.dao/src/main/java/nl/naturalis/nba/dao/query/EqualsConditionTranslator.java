@@ -23,7 +23,7 @@ class EqualsConditionTranslator extends ConditionTranslator {
 		String field = condition.getField();
 		Object value = condition.getValue();
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return termQuery(field, value);
 		}
 		return nestedQuery(nestedPath, termQuery(field, value));

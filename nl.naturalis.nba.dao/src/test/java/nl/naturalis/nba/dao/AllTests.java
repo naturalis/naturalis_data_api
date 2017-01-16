@@ -41,6 +41,7 @@ import nl.naturalis.nba.dao.util.SwapOutputStreamTest;
 	SpecimenDao_QueriesWithBetweenOperatorTest.class,
 	SpecimenDao_QueriesWithInOperatorTest.class,
 	SpecimenDao_QueriesWithMatchesOperatorTest.class,
+	SpecimenDao_QueriesWithSortingSizingPagingTest.class,
 	SpecimenDao_GeoQueriesTest.class,
 	SpecimenDao_IsNullQueryTest.class,
 	SpecimenDao_MiscellaneousTest.class

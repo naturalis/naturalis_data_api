@@ -31,7 +31,7 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 		RangeQueryBuilder query = QueryBuilders.rangeQuery(field);
 		setRange(query);
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return query;
 		}
 		return nestedQuery(nestedPath, query);

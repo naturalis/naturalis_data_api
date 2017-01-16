@@ -2,8 +2,8 @@ package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
-import static nl.naturalis.nba.api.query.LogicalOperator.AND;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
@@ -13,14 +13,11 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 
 import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
@@ -32,38 +29,6 @@ import nl.naturalis.nba.dao.DocumentType;
 public abstract class ConditionTranslator {
 
 	private static final Logger logger = getLogger(ConditionTranslator.class);
-
-	/**
-	 * Translates the conditions in the provided {@link QuerySpec} instance.
-	 * 
-	 * @param qs
-	 * @param type
-	 * @return
-	 * @throws InvalidConditionException
-	 */
-	public static QueryBuilder translate(QuerySpec qs, DocumentType<?> type)
-			throws InvalidConditionException
-	{
-		List<Condition> conditions = qs.getConditions();
-		if (conditions == null || conditions.size() == 0) {
-			return QueryBuilders.matchAllQuery();
-		}
-		if (conditions.size() == 1) {
-			return getTranslator(conditions.get(0), type).translate();
-		}
-		BoolQueryBuilder result = QueryBuilders.boolQuery();
-		if (qs.getLogicalOperator() == AND) {
-			for (Condition c : conditions) {
-				result.must(getTranslator(c, type).translate());
-			}
-		}
-		else {
-			for (Condition c : conditions) {
-				result.should(getTranslator(c, type).translate());
-			}
-		}
-		return result;
-	}
 
 	/*
 	 * Negating operators are operators that are translated just like their
@@ -84,10 +49,18 @@ public abstract class ConditionTranslator {
 	final Condition condition;
 	final MappingInfo<?> mappingInfo;
 
+	boolean forSortField = false;
+
 	ConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;
+	}
+
+	public ConditionTranslator forSortField()
+	{
+		this.forSortField = true;
+		return this;
 	}
 
 	/**
@@ -212,20 +185,11 @@ public abstract class ConditionTranslator {
 		return boolQuery().mustNot(qb);
 	}
 
-	private static ConditionTranslator getTranslator(Condition condition, DocumentType<?> dt)
+	private ConditionTranslator getTranslator(Condition condition, MappingInfo<?> mappingInfo)
 			throws InvalidConditionException
 	{
-		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, dt);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Translating condition using {}", ct.getClass().getSimpleName());
-		}
-		return ct;
-	}
-
-	private static ConditionTranslator getTranslator(Condition condition,
-			MappingInfo<?> mappingInfo) throws InvalidConditionException
-	{
 		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);
+		ct.forSortField = forSortField;
 		if (logger.isDebugEnabled()) {
 			logger.debug("Translating condition using {}", ct.getClass().getSimpleName());
 		}

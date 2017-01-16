@@ -22,7 +22,6 @@ import nl.naturalis.nba.api.query.Condition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.api.query.SortField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
@@ -65,8 +64,7 @@ public class QuerySpecTranslator {
 		request.setFrom(spec.getFrom() == null ? DEFAULT_FROM : spec.getFrom());
 		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 		if (spec.getSortFields() != null) {
-			List<SortField> fields = spec.getSortFields();
-			SortFieldsTranslator sft = new SortFieldsTranslator(fields, dt);
+			SortFieldsTranslator sft = new SortFieldsTranslator(spec, dt);
 			for (SortBuilder sb : sft.translate()) {
 				request.addSort(sb);
 			}

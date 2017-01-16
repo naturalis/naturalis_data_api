@@ -34,7 +34,7 @@ class PointInShapeConditionTranslator extends ConditionTranslator {
 			}
 		}
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return query;
 		}
 		return nestedQuery(nestedPath, query);

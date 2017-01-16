@@ -81,7 +81,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 			boolQuery.must(query);
 		}
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return boolQuery;
 		}
 		return nestedQuery(nestedPath, boolQuery);

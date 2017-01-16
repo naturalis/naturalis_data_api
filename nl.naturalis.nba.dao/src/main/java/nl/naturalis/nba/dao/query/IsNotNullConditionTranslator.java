@@ -31,7 +31,7 @@ class IsNotNullConditionTranslator extends ConditionTranslator {
 	{
 		String field = condition.getField();
 		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		if (nestedPath == null || forSortField) {
 			return existsQuery(field);
 		}
 		return nestedQuery(nestedPath, existsQuery(field));

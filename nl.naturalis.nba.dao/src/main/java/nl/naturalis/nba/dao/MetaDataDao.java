@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.INbaMetaData;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.ComparisonOperator;
 import nl.naturalis.nba.common.es.map.ComplexField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;

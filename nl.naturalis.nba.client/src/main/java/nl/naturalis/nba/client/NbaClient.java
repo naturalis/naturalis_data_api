@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -151,7 +151,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 
 	@Override
 	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
-			Condition... conditions) throws InvalidQueryException
+			QueryCondition... conditions) throws InvalidQueryException
 	{
 		return null;
 	}

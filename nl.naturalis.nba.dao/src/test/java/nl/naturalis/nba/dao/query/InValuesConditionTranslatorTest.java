@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
+import static nl.naturalis.nba.api.ComparisonOperator.IN;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
@@ -13,7 +13,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -39,7 +39,7 @@ public class InValuesConditionTranslatorTest {
 	@Test(expected=InvalidConditionException.class)
 	public void testTranslate_01a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", IN, null);	
+		QueryCondition condition = new QueryCondition("firstName", IN, null);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 		// System.out.println(query);
@@ -51,7 +51,7 @@ public class InValuesConditionTranslatorTest {
 	@Test
 	public void testTranslate_01b() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", IN, new Integer[] { null, null, null });		
+		QueryCondition condition = new QueryCondition("firstName", IN, new Integer[] { null, null, null });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -66,7 +66,7 @@ public class InValuesConditionTranslatorTest {
 	@Test
 	public void testTranslate_02() throws InvalidConditionException
 	{
-		Condition condition = new Condition("pets.name", IN, new String[] { "Napoleon", "Max" });		
+		QueryCondition condition = new QueryCondition("pets.name", IN, new String[] { "Napoleon", "Max" });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -85,7 +85,7 @@ public class InValuesConditionTranslatorTest {
 		values.add("Napoleon");
 		values.add("Max");
 		values.add(null);
-		Condition condition = new Condition("pets.name", IN, values);	
+		QueryCondition condition = new QueryCondition("pets.name", IN, values);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);

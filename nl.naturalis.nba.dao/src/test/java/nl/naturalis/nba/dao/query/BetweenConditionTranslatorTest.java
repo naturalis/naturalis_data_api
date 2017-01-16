@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.BETWEEN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
+import static nl.naturalis.nba.api.ComparisonOperator.BETWEEN;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
@@ -16,7 +16,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -42,7 +42,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", BETWEEN, "John");
+		QueryCondition condition = new QueryCondition("firstName", BETWEEN, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -53,7 +53,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01b() throws InvalidConditionException
 	{
-		Condition condition = new Condition("smoker", BETWEEN, true);
+		QueryCondition condition = new QueryCondition("smoker", BETWEEN, true);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -64,7 +64,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01c() throws InvalidConditionException
 	{
-		Condition condition = new Condition("address", BETWEEN, new Address());
+		QueryCondition condition = new QueryCondition("address", BETWEEN, new Address());
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -75,7 +75,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("numChildren", BETWEEN, new int[] { 0 });
+		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, new int[] { 0 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -86,7 +86,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02b() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", BETWEEN, new int[] { 0, 1, 2 });
+		QueryCondition condition = new QueryCondition("firstName", BETWEEN, new int[] { 0, 1, 2 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -97,7 +97,7 @@ public class BetweenConditionTranslatorTest {
 	@Test
 	public void testTranslate_03a() throws InvalidConditionException
 	{
-		Condition condition = new Condition("numChildren", BETWEEN, new int[] { 2, 8 });
+		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, new int[] { 2, 8 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		System.out.println(query);
@@ -112,7 +112,7 @@ public class BetweenConditionTranslatorTest {
 	@Test
 	public void testTranslate_03b() throws InvalidConditionException
 	{
-		Condition condition = new Condition("numChildren", BETWEEN, Arrays.asList(2, 8));
+		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, Arrays.asList(2, 8));
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -128,7 +128,7 @@ public class BetweenConditionTranslatorTest {
 	public void testTranslate_04a() throws InvalidConditionException
 	{
 		Set<Integer> set = new LinkedHashSet<>(Arrays.asList(30, 40));
-		Condition condition = new Condition("address.country.dialNumber", NOT_BETWEEN,
+		QueryCondition condition = new QueryCondition("address.country.dialNumber", NOT_BETWEEN,
 				set);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();

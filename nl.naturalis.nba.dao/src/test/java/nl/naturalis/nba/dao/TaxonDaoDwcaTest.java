@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.NoSuchDataSetException;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -18,7 +18,7 @@ public class TaxonDaoDwcaTest {
 	public void testDynamic() throws InvalidQueryException, IOException
 	{
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("sourceSystem.code", "=", "NSR"));
+		qs.addCondition(new QueryCondition("sourceSystem.code", "=", "NSR"));
 		TaxonDao dao = new TaxonDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca-dynamic.zip");

@@ -2,6 +2,8 @@ package nl.naturalis.nba.api.query;
 
 import static java.lang.String.format;
 
+import nl.naturalis.nba.api.ComparisonOperator;
+
 /**
  * Thrown when a {@link ComparisonOperator query operator} is used for a field
  * that does not does not support that operator (e&#46;g&#46; when you use
@@ -12,7 +14,7 @@ import static java.lang.String.format;
  */
 public class IllegalOperatorException extends InvalidConditionException {
 
-	public IllegalOperatorException(Condition condition)
+	public IllegalOperatorException(QueryCondition condition)
 	{
 		this(condition.getField(), condition.getOperator());
 	}

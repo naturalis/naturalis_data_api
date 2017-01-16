@@ -1,21 +1,21 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.BETWEEN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.api.query.ComparisonOperator.GT;
-import static nl.naturalis.nba.api.query.ComparisonOperator.GTE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LT;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LTE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.MATCHES;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.BETWEEN;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.GT;
+import static nl.naturalis.nba.api.ComparisonOperator.GTE;
+import static nl.naturalis.nba.api.ComparisonOperator.IN;
+import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.LT;
+import static nl.naturalis.nba.api.ComparisonOperator.LTE;
+import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.common.es.map.ESDataType.BOOLEAN;
 import static nl.naturalis.nba.common.es.map.ESDataType.BYTE;
 import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
@@ -33,9 +33,9 @@ import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 import java.util.EnumMap;
 import java.util.EnumSet;
 
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.ComparisonOperator;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -46,7 +46,7 @@ import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Checks whether the {@link ComparisonOperator operator} used in a
- * {@link Condition query condition} is valid given the type of the field being
+ * {@link QueryCondition query condition} is valid given the type of the field being
  * queried and given the analyzers on that field.
  * 
  * @author Ayco Holleman

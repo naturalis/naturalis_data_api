@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
@@ -35,7 +36,7 @@ import nl.naturalis.nba.api.model.Taxon;
  * <p>
  * <ol>
  * <li>Every query parameter that does not start with an underscore is turned
- * into a {@link Condition query condition}. For example:<br>
+ * into a {@link QueryCondition query condition}. For example:<br>
  * <code>
  * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen<br>
  * </code>
@@ -139,7 +140,7 @@ import nl.naturalis.nba.api.model.Taxon;
 public class QuerySpec {
 
 	private List<String> fields;
-	private List<Condition> conditions;
+	private List<QueryCondition> conditions;
 	private LogicalOperator logicalOperator;
 	private List<SortField> sortFields;
 	private Integer from;
@@ -172,7 +173,7 @@ public class QuerySpec {
 	 * 
 	 * @param condition
 	 */
-	public void addCondition(Condition condition)
+	public void addCondition(QueryCondition condition)
 	{
 		if (conditions == null) {
 			conditions = new ArrayList<>(5);
@@ -230,7 +231,7 @@ public class QuerySpec {
 	 * strings, dates and objects, zero for number fields and {@code false} for
 	 * boolean fields). Thus, the value of a non-selected field has no relation
 	 * to its actual value in the NBA data store. This is especially confusing
-	 * if you also specified a {@link Condition} for that field (e.g. you
+	 * if you also specified a {@link QueryCondition} for that field (e.g. you
 	 * specified it to be {@code true} but in the query result it appears to be
 	 * {@code false} - the default boolean value). Therefore: <i>do not read
 	 * values of fields you did not select!</i>
@@ -248,7 +249,7 @@ public class QuerySpec {
 	 * 
 	 * @return
 	 */
-	public List<Condition> getConditions()
+	public List<QueryCondition> getConditions()
 	{
 		return conditions;
 	}
@@ -259,7 +260,7 @@ public class QuerySpec {
 	 * 
 	 * @param conditions
 	 */
-	public void setConditions(List<Condition> conditions)
+	public void setConditions(List<QueryCondition> conditions)
 	{
 		this.conditions = conditions;
 	}

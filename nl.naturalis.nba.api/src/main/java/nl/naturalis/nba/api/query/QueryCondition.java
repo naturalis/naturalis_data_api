@@ -5,6 +5,8 @@ import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nba.api.ComparisonOperator;
+
 /**
  * <p>
  * Class modeling a query condition. A condition consists of a field name, a
@@ -68,16 +70,16 @@ import java.util.List;
  * @author Ayco Holleman
  *
  */
-public class Condition {
+public class QueryCondition {
 
 	private UnaryBooleanOperator not;
 	private String field;
 	private ComparisonOperator operator;
 	private Object value;
-	private List<Condition> and;
-	private List<Condition> or;
+	private List<QueryCondition> and;
+	private List<QueryCondition> or;
 
-	public Condition()
+	public QueryCondition()
 	{
 	}
 
@@ -86,7 +88,7 @@ public class Condition {
 	 * 
 	 * @param other
 	 */
-	public Condition(Condition other)
+	public QueryCondition(QueryCondition other)
 	{
 		not = other.not;
 		field = other.field;
@@ -94,14 +96,14 @@ public class Condition {
 		value = other.value;
 		if (other.and != null) {
 			and = new ArrayList<>(other.and.size());
-			for (Condition c : other.and) {
-				and.add(new Condition(c));
+			for (QueryCondition c : other.and) {
+				and.add(new QueryCondition(c));
 			}
 		}
 		if (other.or != null) {
 			or = new ArrayList<>(other.or.size());
-			for (Condition c : other.or) {
-				or.add(new Condition(c));
+			for (QueryCondition c : other.or) {
+				or.add(new QueryCondition(c));
 			}
 		}
 	}
@@ -114,7 +116,7 @@ public class Condition {
 	 * @param operator
 	 * @param value
 	 */
-	public Condition(String field, String operator, Object value)
+	public QueryCondition(String field, String operator, Object value)
 	{
 		this.field = field;
 		this.operator = ComparisonOperator.parse(operator);
@@ -129,7 +131,7 @@ public class Condition {
 	 * @param operator
 	 * @param value
 	 */
-	public Condition(String field, ComparisonOperator operator, Object value)
+	public QueryCondition(String field, ComparisonOperator operator, Object value)
 	{
 		this.field = field;
 		this.operator = operator;
@@ -145,7 +147,7 @@ public class Condition {
 	 * @param operator
 	 * @param value
 	 */
-	public Condition(UnaryBooleanOperator not, String field, String operator, Object value)
+	public QueryCondition(UnaryBooleanOperator not, String field, String operator, Object value)
 	{
 		this.not = not;
 		this.field = field;
@@ -162,7 +164,7 @@ public class Condition {
 	 * @param operator
 	 * @param value
 	 */
-	public Condition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
+	public QueryCondition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
 			Object value)
 	{
 		this.not = not;
@@ -179,9 +181,9 @@ public class Condition {
 	 * @param value
 	 * @return
 	 */
-	public Condition and(String field, String operator, Object value)
+	public QueryCondition and(String field, String operator, Object value)
 	{
-		return and(new Condition(field, operator, value));
+		return and(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -192,9 +194,9 @@ public class Condition {
 	 * @param value
 	 * @return
 	 */
-	public Condition and(String field, ComparisonOperator operator, Object value)
+	public QueryCondition and(String field, ComparisonOperator operator, Object value)
 	{
-		return and(new Condition(field, operator, value));
+		return and(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -203,7 +205,7 @@ public class Condition {
 	 * @param sibling
 	 * @return
 	 */
-	public Condition and(Condition sibling)
+	public QueryCondition and(QueryCondition sibling)
 	{
 		if (and == null) {
 			and = new ArrayList<>(5);
@@ -220,9 +222,9 @@ public class Condition {
 	 * @param value
 	 * @return
 	 */
-	public Condition or(String field, String operator, Object value)
+	public QueryCondition or(String field, String operator, Object value)
 	{
-		return or(new Condition(field, operator, value));
+		return or(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -233,9 +235,9 @@ public class Condition {
 	 * @param value
 	 * @return
 	 */
-	public Condition or(String field, ComparisonOperator operator, Object value)
+	public QueryCondition or(String field, ComparisonOperator operator, Object value)
 	{
-		return or(new Condition(field, operator, value));
+		return or(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -244,7 +246,7 @@ public class Condition {
 	 * @param sibling
 	 * @return
 	 */
-	public Condition or(Condition sibling)
+	public QueryCondition or(QueryCondition sibling)
 	{
 		if (or == null) {
 			or = new ArrayList<>(5);
@@ -260,7 +262,7 @@ public class Condition {
 	 * 
 	 * @return
 	 */
-	public Condition negate()
+	public QueryCondition negate()
 	{
 		not = (not == null ? NOT : null);
 		return this;
@@ -365,7 +367,7 @@ public class Condition {
 	 * 
 	 * @return
 	 */
-	public List<Condition> getAnd()
+	public List<QueryCondition> getAnd()
 	{
 		return and;
 	}
@@ -375,7 +377,7 @@ public class Condition {
 	 * 
 	 * @param and
 	 */
-	public void setAnd(List<Condition> and)
+	public void setAnd(List<QueryCondition> and)
 	{
 		this.and = and;
 	}
@@ -385,7 +387,7 @@ public class Condition {
 	 * 
 	 * @return
 	 */
-	public List<Condition> getOr()
+	public List<QueryCondition> getOr()
 	{
 		return or;
 	}
@@ -395,7 +397,7 @@ public class Condition {
 	 * 
 	 * @param or
 	 */
-	public void setOr(List<Condition> or)
+	public void setOr(List<QueryCondition> or)
 	{
 		this.or = or;
 	}

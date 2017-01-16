@@ -1,7 +1,7 @@
 package nl.naturalis.nba.api.query;
 
 /**
- * Throw when a {@link Condition query condition} contains an error.
+ * Throw when a {@link QueryCondition query condition} contains an error.
  * 
  * @author Ayco Holleman
  *

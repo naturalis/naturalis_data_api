@@ -1,7 +1,6 @@
 package nl.naturalis.nba.api;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.ComparisonOperator;
 
 /**
  * Specifies a common set of metadata retrieval methods that can be called for

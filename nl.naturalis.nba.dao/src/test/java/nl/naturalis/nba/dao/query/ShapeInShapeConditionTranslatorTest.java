@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertEquals;
@@ -16,7 +16,7 @@ import org.geojson.Polygon;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -44,7 +44,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
-		Condition condition = new Condition("address.locationAsShape", IN, polygon);
+		QueryCondition condition = new QueryCondition("address.locationAsShape", IN, polygon);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();
@@ -66,7 +66,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
-		Condition condition = new Condition("address.locationAsShape", NOT_IN, polygon);
+		QueryCondition condition = new QueryCondition("address.locationAsShape", NOT_IN, polygon);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();

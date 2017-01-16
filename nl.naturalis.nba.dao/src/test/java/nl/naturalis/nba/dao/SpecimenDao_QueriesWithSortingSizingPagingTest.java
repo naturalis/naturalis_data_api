@@ -1,8 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -19,7 +17,7 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.LogicalOperator;
 import nl.naturalis.nba.api.query.QueryResult;
@@ -130,7 +128,7 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		qs.addCondition(new Condition(field, LIKE, "Larus"));
+		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
@@ -149,8 +147,8 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		qs.addCondition(new Condition(field, LIKE, "Larus"));
-		qs.addCondition(new Condition(field, MATCHES, "Larus"));
+		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
+		qs.addCondition(new QueryCondition(field, MATCHES, "Larus"));
 		qs.setLogicalOperator(LogicalOperator.AND);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
@@ -170,8 +168,8 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		qs.addCondition(new Condition(field, LIKE, "Larus"));
-		qs.addCondition(new Condition(field, MATCHES, "Larus"));
+		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
+		qs.addCondition(new QueryCondition(field, MATCHES, "Larus"));
 		qs.setLogicalOperator(LogicalOperator.OR);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
@@ -191,8 +189,8 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		Condition condition = new Condition(field, LIKE, "Larus");
-		condition.and(new Condition(field, MATCHES, "Larus"));
+		QueryCondition condition = new QueryCondition(field, LIKE, "Larus");
+		condition.and(new QueryCondition(field, MATCHES, "Larus"));
 		qs.addCondition(condition);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
@@ -214,9 +212,9 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		qs.addCondition(new Condition(field, LIKE, "Larus"));
-		qs.addCondition(new Condition(field, MATCHES, "Larus"));
-		qs.addCondition(new Condition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
+		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
+		qs.addCondition(new QueryCondition(field, MATCHES, "Larus"));
+		qs.addCondition(new QueryCondition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
 		qs.setLogicalOperator(LogicalOperator.AND);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
@@ -237,9 +235,9 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		Condition condition = new Condition(field, LIKE, "Larus");
-		condition.and(new Condition(field, MATCHES, "Larus"));
-		condition.or(new Condition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
+		QueryCondition condition = new QueryCondition(field, LIKE, "Larus");
+		condition.and(new QueryCondition(field, MATCHES, "Larus"));
+		condition.or(new QueryCondition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
 		qs.addCondition(condition);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
@@ -260,9 +258,9 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		Condition root = new Condition(field, LIKE, "Larus");
-		Condition nested = new Condition(field, MATCHES, "Larus");
-		nested.or(new Condition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
+		QueryCondition root = new QueryCondition(field, LIKE, "Larus");
+		QueryCondition nested = new QueryCondition(field, MATCHES, "Larus");
+		nested.or(new QueryCondition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
 		root.and(nested);
 		qs.addCondition(root);
 		qs.sortBy(field);

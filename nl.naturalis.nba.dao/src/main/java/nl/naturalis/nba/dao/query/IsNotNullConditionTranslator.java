@@ -6,7 +6,7 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -21,7 +21,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class IsNotNullConditionTranslator extends ConditionTranslator {
 
-	IsNotNullConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	IsNotNullConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

@@ -9,7 +9,7 @@ import java.util.Set;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.LogicalOperator;
 import nl.naturalis.nba.api.query.QueryResult;
@@ -300,7 +300,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </code>
 	 * </p>
 	 * <p>
-	 * For consistency's sake, even though you can only pass {@link Condition
+	 * For consistency's sake, even though you can only pass {@link QueryCondition
 	 * conditions} to this method, when accessing this method through the REST
 	 * API you still can and should do so via the {@code _querySpec} query
 	 * parameter, as described {@link QuerySpec here}. Only the conditions of
@@ -315,7 +315,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @throws InvalidQueryException
 	 */
 	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
-			Condition... conditions) throws InvalidQueryException;
+			QueryCondition... conditions) throws InvalidQueryException;
 
 	List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
 			throws InvalidQueryException;

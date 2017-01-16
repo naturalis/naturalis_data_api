@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.format.dwca;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
@@ -26,7 +26,7 @@ public class DwcaWriterTest {
 	{
 		DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.TAXON);
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("defaultClassification.genus", EQUALS_IC, "LARUS"));
+		qs.addCondition(new QueryCondition("defaultClassification.genus", EQUALS_IC, "LARUS"));
 		FileOutputStream fos = new FileOutputStream(
 				"/home/ayco/tmp/DwcaWriterTest.testWriteDwcaForQuery_01.zip");
 		MultiDataSourceDwcaWriter writer = new MultiDataSourceDwcaWriter(config, fos);

@@ -12,14 +12,14 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 abstract class RangeConditionTranslator extends ConditionTranslator {
 
-	RangeConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	RangeConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

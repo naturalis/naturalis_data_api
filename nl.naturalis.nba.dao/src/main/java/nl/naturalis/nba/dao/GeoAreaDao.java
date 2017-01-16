@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
@@ -10,7 +10,7 @@ import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
 import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -32,7 +32,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 			logger.debug(printCall("getGeoJsonForLocality", locality));
 		}
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("locality", EQUALS, locality));
+		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
 		QueryResult<GeoArea> areas;
 		try {
 			areas = query(qs);

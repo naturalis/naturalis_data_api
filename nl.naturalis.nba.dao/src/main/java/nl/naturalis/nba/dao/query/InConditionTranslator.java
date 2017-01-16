@@ -13,7 +13,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -26,7 +26,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class InConditionTranslator extends ConditionTranslator {
 
-	InConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	InConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

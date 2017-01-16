@@ -1,10 +1,10 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS_IC;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -170,7 +170,7 @@ public class SpecimenDao_MiscellaneousTest {
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
 	{
 		String unitID = pMajor.getUnitID();
-		Condition condition = new Condition("unitID", EQUALS, unitID);
+		QueryCondition condition = new QueryCondition("unitID", EQUALS, unitID);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -187,7 +187,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition(genus, "=", "Parus");
+		QueryCondition condition = new QueryCondition(genus, "=", "Parus");
 		condition.and(species, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -205,7 +205,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition(genus, EQUALS, "Parus");
+		QueryCondition condition = new QueryCondition(genus, EQUALS, "Parus");
 		condition.and(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -222,7 +222,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition(genus, EQUALS, "Parus");
+		QueryCondition condition = new QueryCondition(genus, EQUALS, "Parus");
 		condition.or(species, EQUALS, "major");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -239,7 +239,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition(genus, EQUALS, "Parus");
+		QueryCondition condition = new QueryCondition(genus, EQUALS, "Parus");
 		condition.or(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -257,7 +257,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		Condition condition = new Condition(genus, EQUALS, "BLA DI BLA");
+		QueryCondition condition = new QueryCondition(genus, EQUALS, "BLA DI BLA");
 		condition.or(species, EQUALS, "BLA DI BLA");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -273,7 +273,7 @@ public class SpecimenDao_MiscellaneousTest {
 	public void testQuery__QuerySpec__07() throws InvalidQueryException
 	{
 		String collector = "gatheringEvent.gatheringPersons.fullName";
-		Condition condition = new Condition(collector, LIKE, "AlTeNbU");
+		QueryCondition condition = new QueryCondition(collector, LIKE, "AlTeNbU");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -289,7 +289,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		String genus = "identifications.defaultClassification.genus";
 		// This excludes pMajorSpecimen01 (so 4 remaining)
-		Condition condition = new Condition(NOT, genus, EQUALS, "Parus");
+		QueryCondition condition = new QueryCondition(NOT, genus, EQUALS, "Parus");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -306,9 +306,9 @@ public class SpecimenDao_MiscellaneousTest {
 		String genus = "identifications.defaultClassification.genus";
 		String collector = "gatheringEvent.gatheringPersons.fullName";
 		String sourceSystem = "sourceSystem.code";
-		Condition condition = new Condition(genus, EQUALS, "Larus");
+		QueryCondition condition = new QueryCondition(genus, EQUALS, "Larus");
 		condition.and(collector, LIKE, "altenburg");
-		condition.and(new Condition(NOT, sourceSystem, EQUALS, "NDFF"));
+		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "NDFF"));
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -325,11 +325,11 @@ public class SpecimenDao_MiscellaneousTest {
 		String genus = "identifications.defaultClassification.genus";
 		String sourceSystem = "sourceSystem.code";
 		// This excludes larusFuscusSpecimen01 and larusFuscusSpecimen02
-		Condition condition = new Condition(genus, NOT_EQUALS, "Larus");
+		QueryCondition condition = new QueryCondition(genus, NOT_EQUALS, "Larus");
 		// This excludes parusMajorSpecimen01 and tRexSpecimen01
-		condition.and(new Condition(NOT, sourceSystem, EQUALS, "CRS"));
+		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "CRS"));
 		// This excludes (again) larusFuscusSpecimen02
-		condition.and(new Condition(NOT, sourceSystem, EQUALS, "NDFF"));
+		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "NDFF"));
 		// Remains: malusSylvestrisSpecimen01
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -344,7 +344,7 @@ public class SpecimenDao_MiscellaneousTest {
 	@Test
 	public void testQuery__QuerySpec__11() throws InvalidQueryException
 	{
-		Condition condition = new Condition("recordBasis", EQUALS_IC, "PrEsErVeD sPeCiMeN");
+		QueryCondition condition = new QueryCondition("recordBasis", EQUALS_IC, "PrEsErVeD sPeCiMeN");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -360,7 +360,7 @@ public class SpecimenDao_MiscellaneousTest {
 	{
 		// This excludes pMajorSpecimen01, tRexSpecimen01 and
 		// larusFuscusSpecimen01 (2 remaining).
-		Condition condition = new Condition("recordBasis", NOT_EQUALS_IC, "PrEsErVeD sPeCiMeN");
+		QueryCondition condition = new QueryCondition("recordBasis", NOT_EQUALS_IC, "PrEsErVeD sPeCiMeN");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -378,17 +378,17 @@ public class SpecimenDao_MiscellaneousTest {
 		String system = "sourceSystem.code";
 		String country = "gatheringEvent.country";
 		String locality = "gatheringEvent.localityText";
-		Condition condition1, condition2, condition3, condition4;
+		QueryCondition condition1, condition2, condition3, condition4;
 		// This leaves 2 specimens (tRexSpecimen01 and
 		// malusSylvestrisSpecimen01)
-		condition1 = new Condition("sex", EQUALS, "female");
+		condition1 = new QueryCondition("sex", EQUALS, "female");
 		// This still leaves tRexSpecimen01 and malusSylvestrisSpecimen01
-		condition2 = new Condition(system, "=", "BRAHMS").or(system, "=", "CRS");
+		condition2 = new QueryCondition(system, "=", "BRAHMS").or(system, "=", "CRS");
 		// This exludes malusSylvestrisSpecimen01 (collected in United Kingdom)
-		condition3 = new Condition(country, "=", "United States");
+		condition3 = new QueryCondition(country, "=", "United States");
 		condition3.and(locality, LIKE, "Montana");
 		// This exludes tRexSpecimen01 (collected in United States)
-		condition4 = new Condition(country, "=", "United Kingdom");
+		condition4 = new QueryCondition(country, "=", "United Kingdom");
 		condition4.and(locality, LIKE, "Dorchester");
 		// But this will include them both again: condition3.or(condition4);
 		condition1.and(condition2).and(condition3.or(condition4));

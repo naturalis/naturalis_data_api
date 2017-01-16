@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
@@ -36,7 +36,7 @@ public class DaoUtil {
 
 	/**
 	 * Creates a copy of the specified {@link QuerySpec} with conditions that
-	 * only contain reasonably-sized {@link Condition#getValue() search terms}.
+	 * only contain reasonably-sized {@link QueryCondition#getValue() search terms}.
 	 * Some type of search terms (especially GeoJSON strings for complicated
 	 * shapes) can easily become so large that even printing them as part of a
 	 * DEBUG message is too expensive. This method is meant for debug purposes
@@ -57,9 +57,9 @@ public class DaoUtil {
 		copy.setSize(qs.getSize());
 		copy.setLogicalOperator(qs.getLogicalOperator());
 		copy.setSortFields(qs.getSortFields());
-		List<Condition> siblings = new ArrayList<>(qs.getConditions().size());
+		List<QueryCondition> siblings = new ArrayList<>(qs.getConditions().size());
 		copy.setConditions(siblings);
-		for (Condition c : qs.getConditions()) {
+		for (QueryCondition c : qs.getConditions()) {
 			prune(c, siblings);
 		}
 		return copy;
@@ -72,19 +72,19 @@ public class DaoUtil {
 	 * @param conditions
 	 * @return
 	 */
-	public static Condition[] prune(Condition[] conditions)
+	public static QueryCondition[] prune(QueryCondition[] conditions)
 	{
 		if (conditions == null || conditions.length == 0) {
 			return conditions;
 		}
-		List<Condition> copies = new ArrayList<>(conditions.length);
-		for (Condition c : conditions) {
+		List<QueryCondition> copies = new ArrayList<>(conditions.length);
+		for (QueryCondition c : conditions) {
 			prune(c, copies);
 		}
-		return copies.toArray(new Condition[copies.size()]);
+		return copies.toArray(new QueryCondition[copies.size()]);
 	}
 
-	private static void prune(Condition condition, List<Condition> siblings)
+	private static void prune(QueryCondition condition, List<QueryCondition> siblings)
 	{
 		Object val = condition.getValue();
 		if (val == null) {
@@ -107,25 +107,25 @@ public class DaoUtil {
 		}
 	}
 
-	private static Condition createCopy(Condition original, String newValue)
+	private static QueryCondition createCopy(QueryCondition original, String newValue)
 	{
 		logger.debug("Value of field {} truncated or nullified for log file!", original.getField());
-		Condition copy = new Condition();
+		QueryCondition copy = new QueryCondition();
 		copy.setNot(original.getNot());
 		copy.setField(original.getField());
 		copy.setOperator(original.getOperator());
 		copy.setValue(newValue);
 		if (original.getAnd() != null) {
-			List<Condition> andCopy = new ArrayList<>(original.getAnd().size());
+			List<QueryCondition> andCopy = new ArrayList<>(original.getAnd().size());
 			copy.setAnd(andCopy);
-			for (Condition c : original.getAnd()) {
+			for (QueryCondition c : original.getAnd()) {
 				prune(c, andCopy);
 			}
 		}
 		if (original.getOr() != null) {
-			List<Condition> orCopy = new ArrayList<>(original.getOr().size());
+			List<QueryCondition> orCopy = new ArrayList<>(original.getOr().size());
 			copy.setOr(orCopy);
-			for (Condition c : original.getOr()) {
+			for (QueryCondition c : original.getOr()) {
 				prune(c, orCopy);
 			}
 		}

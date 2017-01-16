@@ -6,13 +6,13 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class EqualsConditionTranslator extends ConditionTranslator {
 
-	EqualsConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	EqualsConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

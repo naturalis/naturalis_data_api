@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 
 /**
- * Converts a condition's {@link Condition#getValue() value} to a {@link List}
+ * Converts a condition's {@link QueryCondition#getValue() value} to a {@link List}
  * of nun-null values.
  * 
  * @author Ayco Holleman
@@ -21,7 +21,7 @@ class InValuesBuilder {
 
 	/**
 	 * Create a new {@link InValuesBuilder} for the specified value, supposedly
-	 * coming from {@link Condition#getValue()}.
+	 * coming from {@link QueryCondition#getValue()}.
 	 * 
 	 * @param value
 	 */
@@ -44,7 +44,7 @@ class InValuesBuilder {
 
 	/**
 	 * Returns a list of non-null values, extracted from a condition's
-	 * {@link Condition#getValue() value}.
+	 * {@link QueryCondition#getValue() value}.
 	 * 
 	 * @return
 	 */
@@ -54,7 +54,7 @@ class InValuesBuilder {
 	}
 
 	/**
-	 * Whether or not a condition's {@link Condition#getValue() value} <i>is</i>
+	 * Whether or not a condition's {@link QueryCondition#getValue() value} <i>is</i>
 	 * or <i>contains</i> a null value.
 	 * 
 	 * @return

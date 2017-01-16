@@ -9,13 +9,13 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class NotEqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
-	NotEqualsIgnoreCaseConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	NotEqualsIgnoreCaseConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

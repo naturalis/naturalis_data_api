@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
@@ -145,9 +145,9 @@ public class GeoAreaResource {
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			Condition[] conditions = null;
+			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
+				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
 			}
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);

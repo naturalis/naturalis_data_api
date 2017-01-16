@@ -1,12 +1,12 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
@@ -31,7 +31,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01() throws InvalidConditionException
 	{
-		Condition c = new Condition("firstName", LIKE, new Object());
+		QueryCondition c = new QueryCondition("firstName", LIKE, new Object());
 		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
@@ -43,7 +43,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = IllegalOperatorException.class)
 	public void testTranslate_02() throws InvalidConditionException
 	{
-		Condition c = new Condition("age", LIKE, "foo");
+		QueryCondition c = new QueryCondition("age", LIKE, "foo");
 		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
@@ -55,7 +55,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_03() throws InvalidConditionException
 	{
-		Condition c = new Condition("firstName", LIKE, "12");
+		QueryCondition c = new QueryCondition("firstName", LIKE, "12");
 		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
@@ -67,7 +67,7 @@ public class LikeConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_04() throws InvalidConditionException
 	{
-		Condition c = new Condition("firstName", LIKE, "12345678901234567890");
+		QueryCondition c = new QueryCondition("firstName", LIKE, "12345678901234567890");
 		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}
@@ -80,7 +80,7 @@ public class LikeConditionTranslatorTest {
 	public void testTranslate_05() throws InvalidConditionException
 	{
 		// address field has no @Analyzers annotation
-		Condition c = new Condition("address", LIKE, "foo");
+		QueryCondition c = new QueryCondition("address", LIKE, "foo");
 		ConditionTranslator ct = getTranslator(c, inspector);
 		ct.translate();
 	}

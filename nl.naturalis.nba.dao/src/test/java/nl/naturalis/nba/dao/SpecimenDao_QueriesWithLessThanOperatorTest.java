@@ -1,8 +1,8 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.GT;
-import static nl.naturalis.nba.api.query.ComparisonOperator.GTE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.LT;
+import static nl.naturalis.nba.api.ComparisonOperator.GT;
+import static nl.naturalis.nba.api.ComparisonOperator.GTE;
+import static nl.naturalis.nba.api.ComparisonOperator.LT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -55,7 +55,7 @@ public class SpecimenDao_QueriesWithLessThanOperatorTest {
 		 * (LESS_THAN) we should get back nothing
 		 */
 		String to = "2000-01-01";
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", LT, to);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -73,7 +73,7 @@ public class SpecimenDao_QueriesWithLessThanOperatorTest {
 		 * null value).
 		 */
 		String from = "2000-01-01";
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", GT, from);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -90,7 +90,7 @@ public class SpecimenDao_QueriesWithLessThanOperatorTest {
 		 * lFuscus2 should come back
 		 */
 		String from = "2008/04/03 13:04";
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", GTE, from);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -107,7 +107,7 @@ public class SpecimenDao_QueriesWithLessThanOperatorTest {
 		 * tRex should come back (mSylvestris
 		 */
 		String from = "2008/04/03 13:04";
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", GTE, from);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

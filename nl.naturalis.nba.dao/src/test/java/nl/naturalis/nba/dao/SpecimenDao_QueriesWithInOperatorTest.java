@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.IN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
+import static nl.naturalis.nba.api.ComparisonOperator.IN;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
@@ -18,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -68,7 +68,7 @@ public class SpecimenDao_QueriesWithInOperatorTest {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", IN, options);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -90,7 +90,7 @@ public class SpecimenDao_QueriesWithInOperatorTest {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", NOT_IN, options);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", NOT_IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -111,7 +111,7 @@ public class SpecimenDao_QueriesWithInOperatorTest {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		Condition condition = new Condition(NOT, "gatheringEvent.dateTimeBegin", IN, options);
+		QueryCondition condition = new QueryCondition(NOT, "gatheringEvent.dateTimeBegin", IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -133,7 +133,7 @@ public class SpecimenDao_QueriesWithInOperatorTest {
 		 * Wallich, but excludes Edwin van Huis, so 4 specimens should be
 		 * returned.
 		 */
-		Condition condition = new Condition(field, IN, options);
+		QueryCondition condition = new QueryCondition(field, IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -151,7 +151,7 @@ public class SpecimenDao_QueriesWithInOperatorTest {
 	{
 		String field = "gatheringEvent.gatheringPersons.agentText";
 		String[] options = new String[] { "Also likes David Bowie", null };
-		Condition condition = new Condition(field, NOT_IN, options);
+		QueryCondition condition = new QueryCondition(field, NOT_IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

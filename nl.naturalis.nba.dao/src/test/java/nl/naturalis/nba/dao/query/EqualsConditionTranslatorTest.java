@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
@@ -14,7 +14,7 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -38,7 +38,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_01() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", EQUALS, null);
+		QueryCondition condition = new QueryCondition("firstName", EQUALS, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -54,7 +54,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_02() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition("firstName", NOT_EQUALS, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ct.getClass(), IsNotNullConditionTranslator.class);
 		QueryBuilder query = ct.translate();
@@ -71,7 +71,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_03() throws InvalidConditionException
 	{
-		Condition condition = new Condition(NOT, "firstName", EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, "firstName", EQUALS, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -87,7 +87,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_04() throws InvalidConditionException
 	{
-		Condition condition = new Condition(NOT, "firstName", NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, "firstName", NOT_EQUALS, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ct.getClass(), IsNotNullConditionTranslator.class);
 		QueryBuilder query = ct.translate();
@@ -104,7 +104,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_05() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", EQUALS, "Smith");
+		QueryCondition condition = new QueryCondition("firstName", EQUALS, "Smith");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -119,7 +119,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_06() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", EQUALS, "John");
+		QueryCondition condition = new QueryCondition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
@@ -135,7 +135,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_07() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", NOT_EQUALS, "John");
+		QueryCondition condition = new QueryCondition("firstName", NOT_EQUALS, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
@@ -150,7 +150,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_08() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", EQUALS, "John");
+		QueryCondition condition = new QueryCondition("firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
 		condition.and("married", NOT_EQUALS, true);
 		condition.and("favouritePet", NOT_EQUALS, "dog");
@@ -169,7 +169,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_09() throws InvalidConditionException
 	{
-		Condition condition = new Condition(NOT, "firstName", EQUALS, "John");
+		QueryCondition condition = new QueryCondition(NOT, "firstName", EQUALS, "John");
 		condition.and("lastName", EQUALS, "Smith");
 		condition.and("age", EQUALS, 40);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
@@ -186,14 +186,14 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_10() throws InvalidConditionException
 	{
-		Condition isJohnSmith = new Condition("firstName", "=", "John");
+		QueryCondition isJohnSmith = new QueryCondition("firstName", "=", "John");
 		isJohnSmith.and("lastName", "=", "Smith");
 
-		Condition inNetherlands = new Condition("country", "=", "Netherlands");
-		inNetherlands.and(new Condition("city", "=", "Amsterdam").or("city", "=", "Rotterdam"));
+		QueryCondition inNetherlands = new QueryCondition("country", "=", "Netherlands");
+		inNetherlands.and(new QueryCondition("city", "=", "Amsterdam").or("city", "=", "Rotterdam"));
 
-		Condition inGermany = new Condition("country", "=", "Germany");
-		inGermany.and(new Condition("city", "=", "Berlin").or("city", "=", "Hanover"));
+		QueryCondition inGermany = new QueryCondition("country", "=", "Germany");
+		inGermany.and(new QueryCondition("city", "=", "Berlin").or("city", "=", "Hanover"));
 
 		isJohnSmith.and(inNetherlands.or(inGermany));
 
@@ -211,7 +211,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_11() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", "=", "John");
+		QueryCondition condition = new QueryCondition("firstName", "=", "John");
 		condition.or("firstName", "=", "Peter").or("firstName", "=", "Mark");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
@@ -227,7 +227,7 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testTranslate_12() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", "=", "John");
+		QueryCondition condition = new QueryCondition("firstName", "=", "John");
 		condition.and("lastName", "=", "Smith").and("favouriteFood", "=", "Chinese");
 		condition.or("city", "=", "Amsterdam").or("city", "=", "Rotterdam").or("city", "=",
 				"Leiden");

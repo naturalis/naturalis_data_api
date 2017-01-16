@@ -13,8 +13,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
-import nl.naturalis.nba.api.query.ComparisonOperator;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -33,7 +33,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 	private static final String ERROR_1 = "When using operator %s, at least "
 			+ "one of the boundary values must not be null";
 
-	BetweenConditionTranslator(Condition condition, MappingInfo<?> inspector)
+	BetweenConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

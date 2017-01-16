@@ -2,8 +2,8 @@ package nl.naturalis.nba.common.es.map;
 
 import java.util.LinkedHashMap;
 
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.annotations.Analyzer;
-import nl.naturalis.nba.api.query.ComparisonOperator;
 
 /**
  * An {@code StringField} is a {@link SimpleField} with data type

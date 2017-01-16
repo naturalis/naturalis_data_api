@@ -9,13 +9,13 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class MatchesConditionTranslator extends ConditionTranslator {
 
-	MatchesConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	MatchesConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

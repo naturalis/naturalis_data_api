@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api.annotations;
 
-import nl.naturalis.nba.api.query.ComparisonOperator;
+import nl.naturalis.nba.api.ComparisonOperator;
 
 /**
  * Symbolic constants for the Elasticsearch analyzers defined within NBA's

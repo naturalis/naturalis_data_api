@@ -13,11 +13,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
-import nl.naturalis.nba.api.query.ComparisonOperator;
 
 public class ObjectMapperLocator {
 

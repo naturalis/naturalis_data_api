@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.es.map.ESField;
@@ -9,7 +9,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 
 /**
- * Ensures the a {@link Condition} specifies an existing field and that it is a
+ * Ensures the a {@link QueryCondition} specifies an existing field and that it is a
  * primitive field (not an object).
  * 
  * @author Ayco Holleman
@@ -17,10 +17,10 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
  */
 class FieldCheck {
 
-	private Condition condition;
+	private QueryCondition condition;
 	private MappingInfo<?> mappingInfo;
 
-	FieldCheck(Condition condition, MappingInfo<?> mappingInfo)
+	FieldCheck(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;

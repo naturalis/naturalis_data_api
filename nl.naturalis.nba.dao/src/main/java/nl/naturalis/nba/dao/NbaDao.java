@@ -38,7 +38,7 @@ import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -198,7 +198,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			querySpec = new QuerySpec();
 		}
 		querySpec.setFields(Arrays.asList(groupByField));
-		querySpec.addCondition(new Condition(groupByField, "!=", null));
+		querySpec.addCondition(new QueryCondition(groupByField, "!=", null));
 		querySpec.sortBy(groupByField);
 		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
 		Scroller scroller = new Scroller(querySpec, dt, handler);
@@ -244,7 +244,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
 	@Override
 	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String keyField, String valuesField,
-			Condition... conditions) throws InvalidQueryException
+			QueryCondition... conditions) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getDistinctValuesPerGroup", keyField, valuesField, conditions));
@@ -256,8 +256,8 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		if (conditions != null && conditions.length != 0) {
 			qs.setConditions(Arrays.asList(conditions));
 		}
-		qs.addCondition(new Condition(keyField, "!=", null));
-		qs.addCondition(new Condition(valuesField, "!=", null));
+		qs.addCondition(new QueryCondition(keyField, "!=", null));
+		qs.addCondition(new QueryCondition(valuesField, "!=", null));
 		qs.sortBy(keyField, false);
 		Scroller scroller = new Scroller(qs, dt, handler);
 		try {

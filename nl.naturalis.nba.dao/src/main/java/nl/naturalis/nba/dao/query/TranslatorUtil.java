@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESDataType;
@@ -27,7 +27,7 @@ class TranslatorUtil {
 	private static final SimpleDateFormat[] acceptedDateFormats = new SimpleDateFormat[] { SDF0,
 			SDF1, SDF2, SDF3, SDF4 };
 
-	static InvalidConditionException invalidConditionException(Condition condition, String msg,
+	static InvalidConditionException invalidConditionException(QueryCondition condition, String msg,
 			Object... msgArgs)
 	{
 		StringBuilder sb = new StringBuilder(100);
@@ -38,18 +38,18 @@ class TranslatorUtil {
 		return new InvalidConditionException(sb.toString());
 	}
 
-	static String getNestedPath(Condition condition, MappingInfo<?> mappingInfo)
+	static String getNestedPath(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		SimpleField sf = getESField(condition, mappingInfo);
 		return MappingInfo.getNestedPath(sf);
 	}
 
-	static ESDataType getESFieldType(Condition condition, MappingInfo<?> mappingInfo)
+	static ESDataType getESFieldType(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		return getESField(condition, mappingInfo).getType();
 	}
 
-	static SimpleField getESField(Condition condition, MappingInfo<?> mappingInfo)
+	static SimpleField getESField(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		try {
 			return (SimpleField) mappingInfo.getField(condition.getField());
@@ -60,20 +60,20 @@ class TranslatorUtil {
 		}
 	}
 
-	static InvalidConditionException searchTermMustNotBeNull(Condition condition)
+	static InvalidConditionException searchTermMustNotBeNull(QueryCondition condition)
 	{
 		String fmt = "Search term must not be null when using operator %s";
 		return invalidConditionException(condition, fmt, condition.getOperator());
 	}
 
-	static InvalidConditionException searchTermHasWrongType(Condition condition)
+	static InvalidConditionException searchTermHasWrongType(QueryCondition condition)
 	{
 		String type = condition.getValue().getClass().getName();
 		String fmt = "Search term has wrong type for query condition on field %s: %s";
 		return invalidConditionException(condition, fmt, condition.getField(), type);
 	}
 
-	static void ensureValueIsNotNull(Condition condition) throws InvalidConditionException
+	static void ensureValueIsNotNull(QueryCondition condition) throws InvalidConditionException
 	{
 		if (condition.getValue() == null) {
 			String fmt = "Search term must not be null when using operator %s";
@@ -81,14 +81,14 @@ class TranslatorUtil {
 		}
 	}
 
-	static void ensureValueIsString(Condition condition) throws InvalidConditionException
+	static void ensureValueIsString(QueryCondition condition) throws InvalidConditionException
 	{
 		if (condition.getValue().getClass() != String.class) {
 			throw searchTermHasWrongType(condition);
 		}
 	}
 
-	static void ensureValueIsDateOrNumber(Condition condition) throws InvalidConditionException
+	static void ensureValueIsDateOrNumber(QueryCondition condition) throws InvalidConditionException
 	{
 		if (!isNumber(condition.getValue()) && !isA(condition.getValue(), Date.class)) {
 			throw searchTermHasWrongType(condition);
@@ -106,7 +106,7 @@ class TranslatorUtil {
 		return null;
 	}
 
-	static void ensureFieldIsDateOrNumber(Condition condition, MappingInfo<?> mappingInfo)
+	static void ensureFieldIsDateOrNumber(QueryCondition condition, MappingInfo<?> mappingInfo)
 			throws IllegalOperatorException
 	{
 		ESField field = null;

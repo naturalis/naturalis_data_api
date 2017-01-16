@@ -18,7 +18,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -98,22 +98,22 @@ public class QuerySpecTranslator {
 
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{
-		List<Condition> conditions = spec.getConditions();
+		List<QueryCondition> conditions = spec.getConditions();
 		if (conditions == null || conditions.size() == 0) {
 			return QueryBuilders.matchAllQuery();
 		}
 		if (conditions.size() == 1) {
-			Condition c = conditions.iterator().next();
+			QueryCondition c = conditions.iterator().next();
 			return getTranslator(c, dt).translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		if (spec.getLogicalOperator() == OR) {
-			for (Condition c : conditions) {
+			for (QueryCondition c : conditions) {
 				result.should(getTranslator(c, dt).translate());
 			}
 		}
 		else {
-			for (Condition c : conditions) {
+			for (QueryCondition c : conditions) {
 				result.must(getTranslator(c, dt).translate());
 			}
 		}

@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.format;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.LogicalOperator;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.api.query.SortField;
@@ -60,10 +60,10 @@ class QuerySpecBuilder {
 		}
 	}
 
-	private List<Condition> getConditions() throws DataSetConfigurationException
+	private List<QueryCondition> getConditions() throws DataSetConfigurationException
 	{
 		ConditionsXmlConfig cxcs = config.getConditions();
-		List<Condition> conditions = new ArrayList<>(cxcs.getCondition().size());
+		List<QueryCondition> conditions = new ArrayList<>(cxcs.getCondition().size());
 		for (ConditionXmlConfig cxc : cxcs.getCondition()) {
 			conditions.add(new ConditionBuilder(cxc).build());
 		}

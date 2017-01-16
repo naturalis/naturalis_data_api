@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
@@ -23,7 +23,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -32,7 +32,7 @@ import nl.naturalis.nba.dao.exception.DaoException;
 
 /**
  * Translates conditions with an IN or NOT_IN operator when used with fields of
- * type {@link GeoJsonObject} and with a {@link Condition#getValue() search term
+ * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue() search term
  * of type {@link String}, supposedly specifying a geographical name like
  * "Amsterdam" or "France".
  * 
@@ -43,7 +43,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 
 	private static final Logger logger = getLogger(ShapeInLocalityConditionTranslator.class);
 
-	ShapeInLocalityConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	ShapeInLocalityConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}
@@ -99,7 +99,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 			logger.debug("Looking up document ID for locality \"{}\"", locality);
 		}
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition("locality", EQUALS, locality));
+		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
 		QuerySpecTranslator translator = new QuerySpecTranslator(qs, GEO_AREA);
 		SearchRequestBuilder request;
 		try {

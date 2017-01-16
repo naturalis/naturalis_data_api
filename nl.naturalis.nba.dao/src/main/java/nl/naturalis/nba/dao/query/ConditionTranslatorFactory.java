@@ -8,7 +8,7 @@ import static nl.naturalis.nba.dao.query.TranslatorUtil.getESFieldType;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.IllegalOperatorException;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.ESDataType;
@@ -27,7 +27,7 @@ public class ConditionTranslatorFactory {
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
+	 * Returns a {@link ConditionTranslator} for the specified {@link QueryCondition
 	 * condition} and the specified {@link DocumentType document type}.
 	 * 
 	 * @param condition
@@ -35,14 +35,14 @@ public class ConditionTranslatorFactory {
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition, DocumentType<?> type)
+	public static ConditionTranslator getTranslator(QueryCondition condition, DocumentType<?> type)
 			throws InvalidConditionException
 	{
 		return getTranslator(condition, new MappingInfo<>(type.getMapping()));
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link Condition
+	 * Returns a {@link ConditionTranslator} for the specified {@link QueryCondition
 	 * condition} and the specified {@link MappingInfo} object.
 	 * 
 	 * @param condition
@@ -50,7 +50,7 @@ public class ConditionTranslatorFactory {
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	public static ConditionTranslator getTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 			throws InvalidConditionException
 	{
 		new FieldCheck(condition, mappingInfo).execute();
@@ -119,7 +119,7 @@ public class ConditionTranslatorFactory {
 		return null;
 	}
 
-	private static ConditionTranslator getInConditionTranslator(Condition condition,
+	private static ConditionTranslator getInConditionTranslator(QueryCondition condition,
 			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
 		SimpleField pf = getESField(condition, mappingInfo);
@@ -171,7 +171,7 @@ public class ConditionTranslatorFactory {
 		}
 	}
 
-	private static void checkOperator(Condition condition, MappingInfo<?> mappingInfo)
+	private static void checkOperator(QueryCondition condition, MappingInfo<?> mappingInfo)
 			throws IllegalOperatorException
 	{
 		SimpleField field = getESField(condition, mappingInfo);

@@ -3,7 +3,7 @@ package nl.naturalis.nba.client;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.utils.IOUtil;
@@ -17,7 +17,7 @@ public class TestDwcaQuery {
 		TaxonClient client = session.getTaxonClient();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca.zip");
 		QuerySpec querySpec = new QuerySpec();
-		querySpec.addCondition(new Condition("defaultClassification.genus", "EQUALS", "Larus"));
+		querySpec.addCondition(new QueryCondition("defaultClassification.genus", "EQUALS", "Larus"));
 		client.dwcaQuery(querySpec, fos);
 		IOUtil.close(fos);
 	}

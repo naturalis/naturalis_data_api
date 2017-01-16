@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -8,10 +7,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
+
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.TestSpecimens.*;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
@@ -62,7 +63,7 @@ public class SpecimenDao_QueriesWithEqualsOperatorTest {
 	public void testQuery__01() throws InvalidQueryException
 	{
 		// Should yield mSylvestris:
-		Condition condition = new Condition("gatheringEvent.localityText", EQUALS,
+		QueryCondition condition = new QueryCondition("gatheringEvent.localityText", EQUALS,
 				"Dorchester, U.K.");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -79,7 +80,7 @@ public class SpecimenDao_QueriesWithEqualsOperatorTest {
 	public void testQuery__02() throws InvalidQueryException
 	{
 		// Should yield pMajor, lFuscus1, lFuscus2:
-		Condition condition = new Condition("gatheringEvent.gatheringPersons.fullName", EQUALS,
+		QueryCondition condition = new QueryCondition("gatheringEvent.gatheringPersons.fullName", EQUALS,
 				"Altenburg, R.");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -97,7 +98,7 @@ public class SpecimenDao_QueriesWithEqualsOperatorTest {
 	public void testQuery__03() throws InvalidQueryException
 	{
 		// Should yield lFuscus2:
-		Condition condition = new Condition("gatheringEvent.gatheringPersons.fullName", EQUALS,
+		QueryCondition condition = new QueryCondition("gatheringEvent.gatheringPersons.fullName", EQUALS,
 				"Philipp Franz von Siebold");
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
@@ -113,7 +114,7 @@ public class SpecimenDao_QueriesWithEqualsOperatorTest {
 	public void testQuery__04() throws InvalidQueryException
 	{
 		// Should yield lFuscus2 (collected by ruudAltenBurg() and vonSiebold()
-		Condition condition = new Condition("gatheringEvent.gatheringPersons.agentText", EQUALS,
+		QueryCondition condition = new QueryCondition("gatheringEvent.gatheringPersons.agentText", EQUALS,
 				vonSiebold().getAgentText());
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

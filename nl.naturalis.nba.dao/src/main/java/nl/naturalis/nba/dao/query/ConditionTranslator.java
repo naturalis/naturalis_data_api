@@ -1,9 +1,9 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_IN;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_LIKE;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
@@ -14,13 +14,13 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
-import nl.naturalis.nba.api.query.ComparisonOperator;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 /**
- * Converts a {@link Condition} to an Elasticsearch {@link QueryBuilder}
+ * Converts a {@link QueryCondition} to an Elasticsearch {@link QueryBuilder}
  * instance.
  * 
  * @author Ayco Holleman
@@ -46,12 +46,12 @@ public abstract class ConditionTranslator {
 		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN, NOT_MATCHES);
 	}
 
-	final Condition condition;
+	final QueryCondition condition;
 	final MappingInfo<?> mappingInfo;
 
 	boolean forSortField = false;
 
-	ConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	ConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;
@@ -64,8 +64,8 @@ public abstract class ConditionTranslator {
 	}
 
 	/**
-	 * Converts the {@link Condition} passed in through the
-	 * {@link #ConditionTranslator(Condition) constructor} to an Elasticsearch
+	 * Converts the {@link QueryCondition} passed in through the
+	 * {@link #ConditionTranslator(QueryCondition) constructor} to an Elasticsearch
 	 * {@link QueryBuilder} instance.
 	 * 
 	 * @return
@@ -91,8 +91,8 @@ public abstract class ConditionTranslator {
 	private QueryBuilder translate(boolean nested) throws InvalidConditionException
 	{
 		checkCondition();
-		List<Condition> and = condition.getAnd();
-		List<Condition> or = condition.getOr();
+		List<QueryCondition> and = condition.getAnd();
+		List<QueryCondition> or = condition.getOr();
 		QueryBuilder result;
 		if (and == null && or == null) {
 			if (!nested && mustNegate()) {
@@ -132,7 +132,7 @@ public abstract class ConditionTranslator {
 		else {
 			boolQuery.must(translateCondition());
 		}
-		for (Condition sibling : condition.getAnd()) {
+		for (QueryCondition sibling : condition.getAnd()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.mustNegate()) {
 				boolQuery.mustNot(translator.translate(true));
@@ -153,7 +153,7 @@ public abstract class ConditionTranslator {
 		else {
 			boolQuery.should(translateCondition());
 		}
-		for (Condition sibling : condition.getOr()) {
+		for (QueryCondition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.mustNegate()) {
 				boolQuery.should(not(translator.translate(true)));
@@ -168,7 +168,7 @@ public abstract class ConditionTranslator {
 	private BoolQueryBuilder translateOrSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		for (Condition sibling : condition.getOr()) {
+		for (QueryCondition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
 			if (translator.mustNegate()) {
 				boolQuery.should(not(translator.translate(true)));
@@ -185,7 +185,7 @@ public abstract class ConditionTranslator {
 		return boolQuery().mustNot(qb);
 	}
 
-	private ConditionTranslator getTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	private ConditionTranslator getTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 			throws InvalidConditionException
 	{
 		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);

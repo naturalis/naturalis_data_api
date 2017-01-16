@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -273,9 +273,9 @@ public class SpecimenResource {
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			Condition[] conditions = null;
+			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
+				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
 			}
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);

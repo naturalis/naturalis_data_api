@@ -2,8 +2,8 @@ package nl.naturalis.nba.api.query;
 
 /**
  * Defines a single constant representing the unary boolean operator NOT. This
- * constant can be used to negate a {@link Condition query condition}. See
- * {@link Condition#setNot(UnaryBooleanOperator) Condition.setNot}.
+ * constant can be used to negate a {@link QueryCondition query condition}. See
+ * {@link QueryCondition#setNot(UnaryBooleanOperator) Condition.setNot}.
  * 
  * @author Ayco Holleman
  *

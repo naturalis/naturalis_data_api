@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +12,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -33,7 +33,7 @@ public class MatchesConditionTranslatorTest {
 	@Test
 	public void testTranslate_01() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", MATCHES, "John");
+		QueryCondition condition = new QueryCondition("firstName", MATCHES, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		System.out.println(query.getClass());
@@ -45,7 +45,7 @@ public class MatchesConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", MATCHES, null);
+		QueryCondition condition = new QueryCondition("firstName", MATCHES, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		System.out.println(query.getClass());
@@ -57,7 +57,7 @@ public class MatchesConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_03() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", MATCHES, 7);
+		QueryCondition condition = new QueryCondition("firstName", MATCHES, 7);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		System.out.println(query.getClass());
@@ -69,7 +69,7 @@ public class MatchesConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_04() throws InvalidConditionException
 	{
-		Condition condition = new Condition("firstName", MATCHES, new Date());
+		QueryCondition condition = new QueryCondition("firstName", MATCHES, new Date());
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		System.out.println(query.getClass());

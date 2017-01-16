@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -61,7 +61,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	public void testQuery__01()
 	{
 		String name = "identifications.systemClassification.name";
-		Condition condition = new Condition(name, LIKE, null);
+		QueryCondition condition = new QueryCondition(name, LIKE, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -85,8 +85,8 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		String rank = "identifications.systemClassification.rank";
 		String name = "identifications.systemClassification.name";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(rank, LIKE, "ingdo")); /* kingdom */
-		qs.addCondition(new Condition(name, LIKE, "nimali")); /* Animalia */
+		qs.addCondition(new QueryCondition(rank, LIKE, "ingdo")); /* kingdom */
+		qs.addCondition(new QueryCondition(name, LIKE, "nimali")); /* Animalia */
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// Only mSylvestris is a plant, so should get 4 specimens
@@ -102,7 +102,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		String author = "identifications.scientificName.authorshipVerbatim";
 		QuerySpec qs = new QuerySpec();
 		// Should yield mSylvestris only:
-		qs.addCondition(new Condition(author, LIKE, ".) Mill."));
+		qs.addCondition(new QueryCondition(author, LIKE, ".) Mill."));
 		/* (L.) Mill. */
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
@@ -119,7 +119,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		QuerySpec qs = new QuerySpec();
 		// Should yield tRex only:
 		qs.addCondition(
-				new Condition(author, LIKE, "orn, 190")); /* Osborn, 1905 */
+				new QueryCondition(author, LIKE, "orn, 190")); /* Osborn, 1905 */
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
@@ -134,7 +134,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		String author = "identifications.scientificName.authorshipVerbatim";
 		QuerySpec qs = new QuerySpec();
 		// Should yield everything but tRex (4 specimens)
-		qs.addCondition(new Condition(author, NOT_LIKE, "orn, 190"));
+		qs.addCondition(new QueryCondition(author, NOT_LIKE, "orn, 190"));
 		/* Osborn, 1905 */
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
@@ -156,7 +156,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		 * is LIKE Animalia! (But of course that's still only mSylvestris - the
 		 * only plant in the test specimens).
 		 */
-		qs.addCondition(new Condition(name, NOT_LIKE, "Animalia"));
+		qs.addCondition(new QueryCondition(name, NOT_LIKE, "Animalia"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
@@ -171,7 +171,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	{
 		String name = "identifications.systemClassification.name";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(name, LIKE, "animal"));
+		qs.addCondition(new QueryCondition(name, LIKE, "animal"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
@@ -185,7 +185,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	{
 		String name = "identifications.systemClassification.name";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(name, NOT_LIKE, "animal"));
+		qs.addCondition(new QueryCondition(name, NOT_LIKE, "animal"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());

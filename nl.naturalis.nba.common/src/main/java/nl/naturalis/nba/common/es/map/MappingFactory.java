@@ -33,7 +33,7 @@ import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 
 /**
  * <p>
@@ -48,7 +48,7 @@ import nl.naturalis.nba.api.query.Condition;
  * fit the document type because the document type was generated from the very
  * class that contains the data); it also plays an important role when querying
  * data. For example, if a field is annotated with {@link NotIndexed}, the query
- * mechanism knows beforehand that a {@link Condition query condition} on that
+ * mechanism knows beforehand that a {@link QueryCondition query condition} on that
  * field will fail and won't even bother sending the query to Elasticsearch.
  * </p>
  * <p>

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.*;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -61,7 +61,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 	public void testQuery__01()
 	{
 		String name = "identifications.systemClassification.name";
-		Condition condition = new Condition(name, MATCHES, null);
+		QueryCondition condition = new QueryCondition(name, MATCHES, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -83,7 +83,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 	{
 		String rank = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(rank, MATCHES, "bossen"));
+		qs.addCondition(new QueryCondition(rank, MATCHES, "bossen"));
 		/*
 		 * That's larusFuscusSpecimen01 : "bossen" MATCHES
 		 * "In de bossen nabij Aalten"
@@ -102,7 +102,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 	{
 		String rank = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(rank, NOT_MATCHES, "bossen"));
+		qs.addCondition(new QueryCondition(rank, NOT_MATCHES, "bossen"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
@@ -117,7 +117,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 	{
 		String rank = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(rank, MATCHES, "   bossen  one two three"));
+		qs.addCondition(new QueryCondition(rank, MATCHES, "   bossen  one two three"));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
@@ -131,7 +131,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 	{
 		String rank = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(rank, MATCHES, "   nabij"));
+		qs.addCondition(new QueryCondition(rank, MATCHES, "   nabij"));
 		/*
 		 * That's larusFuscusSpecimen01 &parusMajorSpecimen01
 		 */
@@ -148,7 +148,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 	{
 		String rank = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new Condition(rank, NOT_MATCHES, "   nabij"));
+		qs.addCondition(new QueryCondition(rank, NOT_MATCHES, "   nabij"));
 		/*
 		 * That's all but larusFuscusSpecimen01 &parusMajorSpecimen01
 		 */

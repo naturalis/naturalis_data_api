@@ -1,14 +1,14 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.IGeoAreaAccess;
+import nl.naturalis.nba.api.query.QueryCondition;
 
 /**
- * Symbolic constants for the operators that can be used in a {@link Condition
+ * Symbolic constants for the operators that can be used in a {@link QueryCondition
  * query condition}.
  * 
  * @author Ayco Holleman

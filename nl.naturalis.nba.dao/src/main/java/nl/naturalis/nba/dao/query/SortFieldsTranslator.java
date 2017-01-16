@@ -14,7 +14,7 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -76,12 +76,12 @@ class SortFieldsTranslator {
 
 	private QueryBuilder translateConditions(String sortField) throws InvalidConditionException
 	{
-		List<Condition> conditions = querySpec.getConditions();
+		List<QueryCondition> conditions = querySpec.getConditions();
 		if (conditions == null || conditions.size() == 0) {
 			return null;
 		}
 		if (conditions.size() == 1) {
-			Condition c = conditions.iterator().next();
+			QueryCondition c = conditions.iterator().next();
 			if (c.getField().equals(sortField)) {
 				checkCondition(c, sortField);
 				return getTranslator(c, dt).forSortField().translate();
@@ -90,7 +90,7 @@ class SortFieldsTranslator {
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		boolean hasConditionWithSortField = false;
-		for (Condition c : conditions) {
+		for (QueryCondition c : conditions) {
 			if (c.getField().equals(sortField)) {
 				hasConditionWithSortField = true;
 				checkCondition(c, sortField);
@@ -105,10 +105,10 @@ class SortFieldsTranslator {
 		return hasConditionWithSortField ? result : null;
 	}
 
-	private static void checkCondition(Condition c, String path) throws InvalidConditionException
+	private static void checkCondition(QueryCondition c, String path) throws InvalidConditionException
 	{
 		if (c.getAnd() != null) {
-			for (Condition condition : c.getAnd()) {
+			for (QueryCondition condition : c.getAnd()) {
 				if (!condition.getField().equals(path)) {
 					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
 					throw new InvalidConditionException(msg);
@@ -117,7 +117,7 @@ class SortFieldsTranslator {
 			}
 		}
 		if (c.getOr() != null) {
-			for (Condition condition : c.getOr()) {
+			for (QueryCondition condition : c.getOr()) {
 				if (!condition.getField().equals(path)) {
 					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
 					throw new InvalidConditionException(msg);

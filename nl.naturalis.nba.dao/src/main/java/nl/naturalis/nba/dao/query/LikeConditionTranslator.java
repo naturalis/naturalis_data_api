@@ -10,13 +10,13 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
 
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidConditionException;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class LikeConditionTranslator extends ConditionTranslator {
 
-	LikeConditionTranslator(Condition condition, MappingInfo<?> mappingInfo)
+	LikeConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

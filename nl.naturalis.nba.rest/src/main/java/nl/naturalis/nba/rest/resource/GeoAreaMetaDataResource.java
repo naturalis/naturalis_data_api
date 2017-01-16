@@ -16,7 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.query.ComparisonOperator;
+import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.dao.GeoAreaMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 

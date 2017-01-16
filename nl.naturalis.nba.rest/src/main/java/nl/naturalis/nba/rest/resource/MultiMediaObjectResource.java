@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
@@ -214,9 +214,9 @@ public class MultiMediaObjectResource {
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			Condition[] conditions = null;
+			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new Condition[qs.getConditions().size()]);
+				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
 			}
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);

@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.NOT_EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.InvalidQueryException;
 import nl.naturalis.nba.api.query.QueryResult;
 import nl.naturalis.nba.api.query.QuerySpec;
@@ -57,7 +57,7 @@ public class SpecimenDao_IsNullQueryTest {
 	{
 		// UnitGUID is null in all test specimens, so query should return them
 		// all.
-		Condition condition = new Condition("unitGUID", EQUALS, null);
+		QueryCondition condition = new QueryCondition("unitGUID", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -72,7 +72,7 @@ public class SpecimenDao_IsNullQueryTest {
 	public void testQuery__QuerySpec__02() throws InvalidQueryException
 	{
 		// UnitGUID is always null, so query should return 0 specimens.
-		Condition condition = new Condition(NOT, "unitGUID", EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, "unitGUID", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -86,7 +86,7 @@ public class SpecimenDao_IsNullQueryTest {
 	@Test
 	public void testQuery__QuerySpec__03() throws InvalidQueryException
 	{
-		Condition condition = new Condition("unitGUID", NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition("unitGUID", NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -100,7 +100,7 @@ public class SpecimenDao_IsNullQueryTest {
 	@Test
 	public void testQuery__QuerySpec__04() throws InvalidQueryException
 	{
-		Condition condition = new Condition(NOT, "unitGUID", NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, "unitGUID", NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -114,7 +114,7 @@ public class SpecimenDao_IsNullQueryTest {
 	@Test
 	public void testQuery__QuerySpec__05() throws InvalidQueryException
 	{
-		Condition condition = new Condition("gatheringEvent.dateTimeBegin", EQUALS, null);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -130,7 +130,7 @@ public class SpecimenDao_IsNullQueryTest {
 	public void testQuery__QuerySpec__06() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
-		Condition condition = new Condition(field, EQUALS, null);
+		QueryCondition condition = new QueryCondition(field, EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -147,7 +147,7 @@ public class SpecimenDao_IsNullQueryTest {
 	public void testQuery__QuerySpec__07() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
-		Condition condition = new Condition(field, NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition(field, NOT_EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -163,7 +163,7 @@ public class SpecimenDao_IsNullQueryTest {
 	public void testQuery__QuerySpec__08() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
-		Condition condition = new Condition(NOT, field, NOT_EQUALS, null);
+		QueryCondition condition = new QueryCondition(NOT, field, NOT_EQUALS, null);
 		// In other words: field EQUALS null
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);

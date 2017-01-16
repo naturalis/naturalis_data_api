@@ -1,7 +1,7 @@
 package nl.naturalis.nba.rest.util;
 
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS;
-import static nl.naturalis.nba.api.query.ComparisonOperator.EQUALS_IC;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
 import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
 import static nl.naturalis.nba.utils.ConfigObject.isTrueValue;
 
@@ -15,8 +15,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.query.ComparisonOperator;
-import nl.naturalis.nba.api.query.Condition;
+import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.api.query.LogicalOperator;
 import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.api.query.SortField;
@@ -122,7 +122,7 @@ public class HttpQuerySpecBuilder {
 						String msg = String.format(ERR_ILLEGAL_PARAM, param);
 						throw new HTTP400Exception(uriInfo, msg);
 					}
-					qs.addCondition(new Condition(param, operator, value));
+					qs.addCondition(new QueryCondition(param, operator, value));
 					break;
 			}
 		}

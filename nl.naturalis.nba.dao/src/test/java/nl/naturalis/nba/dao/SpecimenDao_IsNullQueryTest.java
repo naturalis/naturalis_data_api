@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
+import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -11,11 +11,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
  * Tests INbaAccess.query for conditions that either test for NULL or NOT NULL.

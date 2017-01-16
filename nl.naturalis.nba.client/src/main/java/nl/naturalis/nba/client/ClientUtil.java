@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.query.QueryResult;
+import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.common.json.ObjectMapperLocator;
 
 /**

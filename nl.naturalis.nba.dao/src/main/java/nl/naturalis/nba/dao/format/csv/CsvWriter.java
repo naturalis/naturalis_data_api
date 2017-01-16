@@ -6,10 +6,10 @@ import java.io.OutputStream;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NbaException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.format.IField;

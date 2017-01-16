@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.format.dwca;
 
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 

@@ -35,13 +35,13 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.INbaAccess;
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.csv.CsvWriter;

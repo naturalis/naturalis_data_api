@@ -16,8 +16,8 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;

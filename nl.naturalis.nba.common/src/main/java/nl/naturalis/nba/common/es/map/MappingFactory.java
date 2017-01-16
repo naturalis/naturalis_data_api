@@ -27,13 +27,13 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.GeoShape;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.QueryCondition;
 
 /**
  * <p>

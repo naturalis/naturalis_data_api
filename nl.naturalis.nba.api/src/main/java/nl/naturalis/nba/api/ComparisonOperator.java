@@ -5,8 +5,6 @@ import java.util.HashSet;
 
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-
 /**
  * Symbolic constants for the operators that can be used in a {@link QueryCondition
  * query condition}.

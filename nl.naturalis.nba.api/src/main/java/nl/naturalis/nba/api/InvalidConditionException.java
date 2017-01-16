@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 /**
  * Throw when a {@link QueryCondition query condition} contains an error.

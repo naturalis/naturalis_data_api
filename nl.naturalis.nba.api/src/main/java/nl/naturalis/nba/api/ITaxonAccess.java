@@ -3,8 +3,6 @@ package nl.naturalis.nba.api;
 import java.io.OutputStream;
 
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
  * Specifies methods for accessing taxon and species related data.

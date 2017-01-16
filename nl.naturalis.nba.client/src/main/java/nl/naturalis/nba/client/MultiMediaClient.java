@@ -3,8 +3,8 @@ package nl.naturalis.nba.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.IMultiMediaObjectAccess;
+import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.query.QueryResult;
 
 public class MultiMediaClient extends NbaClient<MultiMediaObject>
 		implements IMultiMediaObjectAccess {

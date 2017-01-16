@@ -9,11 +9,6 @@ import java.util.Set;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.LogicalOperator;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
  * Specifies a common set of data access methods that can be called against any

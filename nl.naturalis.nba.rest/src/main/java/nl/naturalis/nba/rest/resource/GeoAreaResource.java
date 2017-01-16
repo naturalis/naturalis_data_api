@@ -20,10 +20,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.GeoAreaDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;

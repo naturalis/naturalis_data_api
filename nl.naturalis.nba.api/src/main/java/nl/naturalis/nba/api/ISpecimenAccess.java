@@ -3,8 +3,6 @@ package nl.naturalis.nba.api;
 import java.util.zip.ZipOutputStream;
 
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
 
 /**
  * Specifies methods for accessing specimen-related data.

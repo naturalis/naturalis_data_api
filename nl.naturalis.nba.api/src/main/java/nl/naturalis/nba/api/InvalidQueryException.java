@@ -1,6 +1,4 @@
-package nl.naturalis.nba.api.query;
-
-import nl.naturalis.nba.api.NbaException;
+package nl.naturalis.nba.api;
 
 /**
  * Thrown when {@link QuerySpec query specification} contains an error.

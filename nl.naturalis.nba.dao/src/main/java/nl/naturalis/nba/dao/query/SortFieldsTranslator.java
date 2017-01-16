@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.query;
 
-import static nl.naturalis.nba.api.query.LogicalOperator.OR;
+import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
@@ -14,11 +14,11 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.api.query.SortField;
+import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;

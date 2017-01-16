@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 /**
  * Defines a single constant representing the unary boolean operator NOT. This

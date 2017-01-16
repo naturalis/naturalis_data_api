@@ -5,8 +5,8 @@ import org.geojson.GeoJsonObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
+import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.api.query.QueryResult;
 
 public class GeoAreaClient extends NbaClient<GeoArea> implements IGeoAreaAccess {
 

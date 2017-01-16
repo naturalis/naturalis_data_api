@@ -16,10 +16,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.LogicalOperator;
-import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.api.query.SortField;
+import nl.naturalis.nba.api.LogicalOperator;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
 

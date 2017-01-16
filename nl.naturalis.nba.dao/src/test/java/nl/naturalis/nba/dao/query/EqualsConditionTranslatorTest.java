@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
-import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
+import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
 import static nl.naturalis.nba.dao.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.*;
@@ -14,8 +14,8 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;

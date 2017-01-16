@@ -20,8 +20,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.sort.SortParseElement;
 
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;

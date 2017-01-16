@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.query.QueryCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.dao.format.config.ConditionXmlConfig;
 
 class ConditionBuilder {

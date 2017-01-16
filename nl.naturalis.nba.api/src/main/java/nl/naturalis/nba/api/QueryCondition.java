@@ -1,11 +1,9 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
-import static nl.naturalis.nba.api.query.UnaryBooleanOperator.NOT;
+import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import nl.naturalis.nba.api.ComparisonOperator;
 
 /**
  * <p>

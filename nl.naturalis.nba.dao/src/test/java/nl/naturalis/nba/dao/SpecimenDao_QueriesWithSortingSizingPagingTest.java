@@ -15,13 +15,13 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.LogicalOperator;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.LogicalOperator;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 
 @SuppressWarnings("static-method")
 public class SpecimenDao_QueriesWithSortingSizingPagingTest {

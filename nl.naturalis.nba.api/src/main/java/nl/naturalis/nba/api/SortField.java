@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 /**
  * Represents a field that you want a set of documents to be sorted on. See

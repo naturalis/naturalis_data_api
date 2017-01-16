@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 import java.util.Iterator;
 import java.util.List;

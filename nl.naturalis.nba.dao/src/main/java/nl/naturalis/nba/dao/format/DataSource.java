@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.format;
 
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.es.map.Mapping;
 

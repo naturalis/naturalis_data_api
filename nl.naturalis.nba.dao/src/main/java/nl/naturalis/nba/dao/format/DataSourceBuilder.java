@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.format;
 
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.dao.DocumentType;

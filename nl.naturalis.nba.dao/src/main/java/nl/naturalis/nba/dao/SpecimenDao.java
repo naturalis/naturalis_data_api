@@ -19,9 +19,9 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.ISpecimenAccess;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 

@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 import org.elasticsearch.search.SearchHit;
 
-import nl.naturalis.nba.api.query.InvalidQueryException;
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.dao.util.es.SearchHitHandler;
 
 class DistinctValuesPerGroupSearchHitHandler implements SearchHitHandler {

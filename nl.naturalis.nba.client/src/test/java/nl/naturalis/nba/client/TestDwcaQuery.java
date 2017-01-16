@@ -3,9 +3,9 @@ package nl.naturalis.nba.client;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.utils.IOUtil;
 
 public class TestDwcaQuery {

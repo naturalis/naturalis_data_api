@@ -1,9 +1,6 @@
-package nl.naturalis.nba.api.search;
+package nl.naturalis.nba.api;
 
 import java.util.List;
-
-import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.query.UnaryBooleanOperator;
 
 public class SearchCondition {
 

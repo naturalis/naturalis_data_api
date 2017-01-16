@@ -11,8 +11,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 @Deprecated

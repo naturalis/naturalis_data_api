@@ -9,11 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.dao.exception.DaoException;
 
 public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {

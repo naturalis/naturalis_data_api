@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.query;
 
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
-import nl.naturalis.nba.api.query.QueryCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class GTConditionTranslator extends RangeConditionTranslator {

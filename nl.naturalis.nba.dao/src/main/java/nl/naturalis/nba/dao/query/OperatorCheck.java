@@ -34,8 +34,8 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.api.query.QueryCondition;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;

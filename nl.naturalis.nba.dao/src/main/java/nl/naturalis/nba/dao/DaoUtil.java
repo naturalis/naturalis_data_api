@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 
 /**
  * Utility class providing common functionality for classes in the dao package.

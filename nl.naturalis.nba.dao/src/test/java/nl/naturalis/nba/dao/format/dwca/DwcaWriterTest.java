@@ -8,9 +8,9 @@ import java.io.FileOutputStream;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.dwca.DwcaConfig;

@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 /**
  * Symbolic constants for the two logical operators (AND and OR). Logical

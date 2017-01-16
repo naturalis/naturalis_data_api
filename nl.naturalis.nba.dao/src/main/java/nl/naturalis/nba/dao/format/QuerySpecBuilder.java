@@ -3,10 +3,10 @@ package nl.naturalis.nba.dao.format;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.LogicalOperator;
-import nl.naturalis.nba.api.query.QuerySpec;
-import nl.naturalis.nba.api.query.SortField;
+import nl.naturalis.nba.api.LogicalOperator;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.dao.format.config.ConditionXmlConfig;
 import nl.naturalis.nba.dao.format.config.ConditionsXmlConfig;
 import nl.naturalis.nba.dao.format.config.QuerySpecXmlConfig;

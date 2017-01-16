@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.search;
+package nl.naturalis.nba.api;
 
 public class SearchField {
 

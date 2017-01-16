@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import nl.naturalis.nba.api.query.QueryCondition;
+import nl.naturalis.nba.api.QueryCondition;
 
 /**
  * Converts a condition's {@link QueryCondition#getValue() value} to a {@link List}

@@ -1,8 +1,6 @@
-package nl.naturalis.nba.api.query;
+package nl.naturalis.nba.api;
 
 import static java.lang.String.format;
-
-import nl.naturalis.nba.api.ComparisonOperator;
 
 /**
  * Thrown when a {@link ComparisonOperator query operator} is used for a field

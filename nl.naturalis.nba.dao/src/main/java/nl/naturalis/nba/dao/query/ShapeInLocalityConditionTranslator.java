@@ -23,10 +23,10 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QuerySpec;
+import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
 

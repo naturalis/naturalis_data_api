@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.query;
 
-import nl.naturalis.nba.api.query.QueryCondition;
-import nl.naturalis.nba.api.query.InvalidConditionException;
+import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.Index;

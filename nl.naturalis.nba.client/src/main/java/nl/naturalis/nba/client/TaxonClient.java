@@ -13,11 +13,11 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.ITaxonAccess;
+import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.api.query.InvalidQueryException;
-import nl.naturalis.nba.api.query.QueryResult;
-import nl.naturalis.nba.api.query.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.IOUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;

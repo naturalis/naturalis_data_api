@@ -3,13 +3,17 @@ package nl.naturalis.nba.api;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.naturalis.nba.api.model.IDocumentObject;
+
 /**
- * Java bean representing the result from a search request.
+ * Java bean representing the result from a {@link SearchSpec search request}.
  * 
  * @author Ayco Holleman
  *
  * @param <T>
- *            The type of object returned by the search request.
+ *            The type of object returned by the search request. This can be a
+ *            plain, unmodified Elasticsearch document (i.e. an implementation
+ *            of {@link IDocumentObject}), but that is required by this class.
  */
 public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 
@@ -21,7 +25,6 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	{
 		return items.iterator();
 	}
-
 
 	/**
 	 * Returns the number of documents in this {@code QueryResult}.

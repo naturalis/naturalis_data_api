@@ -20,6 +20,7 @@ import nl.naturalis.nba.api.annotations.Analyzers;
  */
 public class Monomial implements INbaModelObject {
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String rank;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String name;

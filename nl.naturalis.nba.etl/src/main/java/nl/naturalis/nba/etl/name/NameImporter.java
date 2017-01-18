@@ -57,7 +57,7 @@ class NameImporter {
 					loader.queue(outputObjects);
 				}
 				loader.flush();
-				if (stats.recordsProcessed % 100000 == 0) {
+				if (stats.recordsProcessed % 50000 == 0) {
 					logger.info("Documents processed: {}", stats.recordsProcessed);
 					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}

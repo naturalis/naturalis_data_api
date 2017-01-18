@@ -1,9 +1,16 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.List;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class VernacularName implements INbaModelObject {
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String name;
 	private String language;
 	private Boolean preferred;

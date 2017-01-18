@@ -1,5 +1,25 @@
 #!/bin/bash
 
+start=$(date)
+
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll bootstrap import
+java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll bootstrap
+java -cp ${classpath} $JAVA_OPTS ${root_package}.nsr.NsrImporter reset
+java -cp ${classpath} $JAVA_OPTS ${root_package}.nsr.NsrImporter specimens
+java -cp ${classpath} $JAVA_OPTS ${root_package}.nsr.NsrImporter multimedia
+java -cp ${classpath} ${JAVA_OPTS} ${root_package}.col.CoLImportAll
+java -cp ${classpath} $JAVA_OPTS ${root_package}.geo.GeoImporter
+java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsImportAll reset
+java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsSpecimenImporter
+java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsMultiMediaImporter
+java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsSpecimenImportOffline
+java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsMultiMediaImportOffline
+java -cp ${classpath} $JAVA_OPTS ${root_package}.name.NameImportAll
+
+finish=$(date)
+
+echo "Import started at ${start}"
+echo "Import finished at ${finish}"
+
+

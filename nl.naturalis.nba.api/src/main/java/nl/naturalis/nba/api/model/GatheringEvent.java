@@ -12,15 +12,24 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class GatheringEvent implements INbaModelObject {
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String projectTitle;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String worldRegion;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String continent;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String country;
 	private String iso3166Code;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String provinceState;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String island;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String locality;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String city;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String sublocality;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String localityText;

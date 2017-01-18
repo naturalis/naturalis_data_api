@@ -1,11 +1,11 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.api.annotations.NotNested;
 
 public class ScientificNameSummary implements IDocumentObject {
 
@@ -60,12 +60,82 @@ public class ScientificNameSummary implements IDocumentObject {
 			this.recordBasis = recordBasis;
 		}
 
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj instanceof SpecimenSummary)
+				return ((SpecimenSummary) obj).id.equals(id);
+			return false;
+		}
+
+		public int hashCode()
+		{
+			return id.hashCode();
+		}
+	}
+
+	public static class TaxonSummary implements INbaModelObject {
+
+		@NotIndexed
+		private String id;
+		@NotIndexed
+		private String sourceSystem;
+		@NotIndexed
+		private String rank;
+
+		public String getId()
+		{
+			return id;
+		}
+
+		public void setId(String id)
+		{
+			this.id = id;
+		}
+
+		public String getSourceSystem()
+		{
+			return sourceSystem;
+		}
+
+		public void setSourceSystem(String sourceSystem)
+		{
+			this.sourceSystem = sourceSystem;
+		}
+
+		public String getRank()
+		{
+			return rank;
+		}
+
+		public void setRank(String rank)
+		{
+			this.rank = rank;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj instanceof TaxonSummary)
+				return ((TaxonSummary) obj).id.equals(id);
+			return false;
+		}
+
+		public int hashCode()
+		{
+			return id.hashCode();
+		}
 	}
 
 	private String id;
 	private String fullScientificName;
 
 	private Set<String> vernacularNames;
+	private Set<String> synonyms;
 	private Set<String> kingdoms;
 	private Set<String> phylae;
 	private Set<String> classes;
@@ -75,16 +145,10 @@ public class ScientificNameSummary implements IDocumentObject {
 	private Set<String> specificEpithets;
 	private Set<String> infraspecificEpithets;
 
-	@NotIndexed
-	private List<String> specimenDocumentIds;
-	@NotIndexed
-	private List<String> specimenUnitIDs;
-	@NotIndexed
-	private List<String> specimenSourceSystems;
-	@NotIndexed
-	private List<String> specimenRecordBases;
-	@NotIndexed
-	private List<String> taxonDocumentIds;
+	@NotNested
+	private Set<SpecimenSummary> specimens;
+	@NotNested
+	private Set<TaxonSummary> taxa;
 
 	public ScientificNameSummary()
 	{
@@ -100,6 +164,13 @@ public class ScientificNameSummary implements IDocumentObject {
 		if (vernacularNames == null)
 			vernacularNames = new HashSet<>(8);
 		vernacularNames.add(vernacularName);
+	}
+
+	public void addSynonym(String synonym)
+	{
+		if (synonyms == null)
+			synonyms = new HashSet<>(8);
+		synonyms.add(synonym);
 	}
 
 	public void addKingdom(String kingdom)
@@ -158,39 +229,18 @@ public class ScientificNameSummary implements IDocumentObject {
 		infraspecificEpithets.add(infraspecificEpithet);
 	}
 
-	public void addSpecimenSourceSystem(String specimenSourceSystem)
+	public void addSpecimen(SpecimenSummary specimen)
 	{
-		if (specimenSourceSystems == null)
-			specimenSourceSystems = new ArrayList<>(8);
-		specimenSourceSystems.add(specimenSourceSystem);
+		if (specimens == null)
+			specimens = new LinkedHashSet<>(8);
+		specimens.add(specimen);
 	}
 
-	public void addSpecimenDocumentId(String specimenDocumentId)
+	public void addTaxon(TaxonSummary taxon)
 	{
-		if (specimenDocumentIds == null)
-			specimenDocumentIds = new ArrayList<>(8);
-		specimenDocumentIds.add(specimenDocumentId);
-	}
-
-	public void addSpecimenUnitID(String id)
-	{
-		if (specimenUnitIDs == null)
-			specimenUnitIDs = new ArrayList<>(8);
-		specimenUnitIDs.add(id);
-	}
-
-	public void addSpecimenRecordBasis(String specimenRecordBasis)
-	{
-		if (specimenRecordBases == null)
-			specimenRecordBases = new ArrayList<>(8);
-		specimenRecordBases.add(specimenRecordBasis);
-	}
-
-	public void addTaxonDocumentId(String taxonDocumentId)
-	{
-		if (taxonDocumentIds == null)
-			taxonDocumentIds = new ArrayList<>(4);
-		taxonDocumentIds.add(taxonDocumentId);
+		if (taxa == null)
+			taxa = new LinkedHashSet<>(4);
+		taxa.add(taxon);
 	}
 
 	@Override
@@ -223,6 +273,16 @@ public class ScientificNameSummary implements IDocumentObject {
 	public void setVernacularNames(Set<String> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
+	}
+
+	public Set<String> getSynonyms()
+	{
+		return synonyms;
+	}
+
+	public void setSynonyms(Set<String> synonyms)
+	{
+		this.synonyms = synonyms;
 	}
 
 	public Set<String> getKingdoms()
@@ -305,54 +365,24 @@ public class ScientificNameSummary implements IDocumentObject {
 		this.infraspecificEpithets = infraspecificEpithets;
 	}
 
-	public List<String> getSpecimenDocumentIds()
+	public Set<SpecimenSummary> getSpecimens()
 	{
-		return specimenDocumentIds;
+		return specimens;
 	}
 
-	public void setSpecimenDocumentIds(List<String> specimenDocumentIds)
+	public void setSpecimens(Set<SpecimenSummary> specimens)
 	{
-		this.specimenDocumentIds = specimenDocumentIds;
+		this.specimens = specimens;
 	}
 
-	public List<String> getSpecimenUnitIDs()
+	public Set<TaxonSummary> getTaxa()
 	{
-		return specimenUnitIDs;
+		return taxa;
 	}
 
-	public void setSpecimenUnitIDs(List<String> specimenUnitIDs)
+	public void setTaxa(Set<TaxonSummary> taxa)
 	{
-		this.specimenUnitIDs = specimenUnitIDs;
-	}
-
-	public List<String> getSpecimenSourceSystems()
-	{
-		return specimenSourceSystems;
-	}
-
-	public void setSpecimenSourceSystems(List<String> specimenSourceSystems)
-	{
-		this.specimenSourceSystems = specimenSourceSystems;
-	}
-
-	public List<String> getSpecimenRecordBases()
-	{
-		return specimenRecordBases;
-	}
-
-	public void setSpecimenRecordBases(List<String> specimenRecordBases)
-	{
-		this.specimenRecordBases = specimenRecordBases;
-	}
-
-	public List<String> getTaxonDocumentIds()
-	{
-		return taxonDocumentIds;
-	}
-
-	public void setTaxonDocumentIds(List<String> taxonDocumentIds)
-	{
-		this.taxonDocumentIds = taxonDocumentIds;
+		this.taxa = taxa;
 	}
 
 }

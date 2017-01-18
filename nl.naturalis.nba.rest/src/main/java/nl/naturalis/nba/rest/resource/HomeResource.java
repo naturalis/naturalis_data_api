@@ -69,6 +69,22 @@ public class HomeResource {
 	}
 
 	@GET
+	@Path("/release-notes")
+	@Produces("text/plain;charset=UTF-8")
+	public String releaseNote(@Context UriInfo uriInfo)
+	{
+		try {
+			InputStream in = getClass().getResourceAsStream("release-notes.txt");
+			String s = new String(IOUtil.readAllBytes(in));
+			in.close();
+			return s;
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
 	@Path("/ping")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String ping(@Context UriInfo uriInfo)

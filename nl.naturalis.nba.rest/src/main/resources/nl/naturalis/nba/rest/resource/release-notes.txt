@@ -1,0 +1,16 @@
+RELEASE NOTES V 2.06
+
+* Solved issue 61. Sorting on nested fields now enabled.
+
+* A new service with endpoint /release-notes has been
+  created.
+
+* A new document type, ScientificNameSummary, is introduced
+  and exposed through the IScientificNameSummaryAccess API.
+
+* A import program and shell script have been created to
+  populate the ScientificNameSummary index.
+  
+* The import-all shell script has been modified. It still
+  imports all data sources, but now generates a different 
+  log file for each data source.

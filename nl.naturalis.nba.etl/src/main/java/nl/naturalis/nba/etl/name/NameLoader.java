@@ -1,27 +1,27 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_SUMMARY;
 
-import nl.naturalis.nba.api.model.Name;
+import nl.naturalis.nba.api.model.ScientificNameSummary;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.Loader;
 
-class NameLoader extends Loader<Name> {
+class NameLoader extends Loader<ScientificNameSummary> {
 
 	NameLoader(int treshold, ETLStatistics stats)
 	{
-		super(NAME, treshold, stats);
+		super(SCIENTIFIC_NAME_SUMMARY, treshold, stats);
 	}
 
 	@Override
-	protected IdGenerator<Name> getIdGenerator()
+	protected IdGenerator<ScientificNameSummary> getIdGenerator()
 	{
-		return new IdGenerator<Name>() {
+		return new IdGenerator<ScientificNameSummary>() {
 
 			@Override
-			public String getId(Name obj)
+			public String getId(ScientificNameSummary obj)
 			{
-				return obj.getName();
+				return obj.getFullScientificName();
 			}
 		};
 	}

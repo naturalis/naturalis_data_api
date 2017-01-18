@@ -1,0 +1,1 @@
+Solved issue 61. Sorting on nested fields now enabled.

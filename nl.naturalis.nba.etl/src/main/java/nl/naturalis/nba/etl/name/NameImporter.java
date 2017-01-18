@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.Name;
+import nl.naturalis.nba.api.model.ScientificNameSummary;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
@@ -52,8 +52,8 @@ class NameImporter {
 			transformer.setSuppressErrors(suppressErrors);
 			List<Specimen> batch = extractor.nextBatch();
 			while (batch != null) {
-				for (Specimen inputObject : batch) {
-					List<Name> outputObjects = transformer.transform(inputObject);
+				for (Specimen specimen : batch) {
+					List<ScientificNameSummary> outputObjects = transformer.transform(specimen);
 					loader.queue(outputObjects);
 				}
 				loader.flush();

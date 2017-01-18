@@ -49,10 +49,10 @@ import nl.naturalis.nba.rest.exception.RESTException;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
 
-@SuppressWarnings("static-method")
 @Path("/specimen")
 @Stateless
 @LocalBean
+@SuppressWarnings("static-method")
 public class SpecimenResource {
 
 	@SuppressWarnings("unused")

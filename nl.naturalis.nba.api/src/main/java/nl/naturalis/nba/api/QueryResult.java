@@ -13,17 +13,18 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  * @param <T>
  *            The type of object returned by the query request. This can be a
  *            plain, unmodified Elasticsearch document (i.e. an implementation
- *            of {@link IDocumentObject}), but that is required by this class.
+ *            of {@link IDocumentObject}), but that is no requirement for the
+ *            {@code QueryResult} class.
  */
 public class QueryResult<T> implements Iterable<T> {
 
 	private long totalSize;
-	private List<T> items;
+	private List<T> resultSet;
 
 	@Override
 	public Iterator<T> iterator()
 	{
-		return items.iterator();
+		return resultSet.iterator();
 	}
 
 	/**
@@ -33,18 +34,7 @@ public class QueryResult<T> implements Iterable<T> {
 	 */
 	public int size()
 	{
-		return items.size();
-	}
-
-	/**
-	 * Returns the document with the specified index.
-	 * 
-	 * @param index
-	 * @return
-	 */
-	public T get(int index)
-	{
-		return items.get(index);
+		return resultSet.size();
 	}
 
 	/**
@@ -56,6 +46,17 @@ public class QueryResult<T> implements Iterable<T> {
 	public long getTotalSize()
 	{
 		return totalSize;
+	}
+
+	/**
+	 * Returns the document with the specified index.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public T get(int index)
+	{
+		return resultSet.get(index);
 	}
 
 	/**
@@ -76,9 +77,9 @@ public class QueryResult<T> implements Iterable<T> {
 	 * 
 	 * @param items
 	 */
-	public void setItems(List<T> items)
+	public void setResultSet(List<T> items)
 	{
-		this.items = items;
+		this.resultSet = items;
 	}
 
 }

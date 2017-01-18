@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_SUMMARY;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 
 import org.apache.logging.log4j.Logger;
@@ -18,7 +18,7 @@ public class NameImportAll {
 			nameImportAll.importNames();
 		}
 		finally {
-			ESUtil.refreshIndex(NAME);
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_SUMMARY);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -28,8 +28,8 @@ public class NameImportAll {
 	public void importNames()
 	{
 		long start = System.currentTimeMillis();
-		ESUtil.deleteIndex(NAME.getIndexInfo());
-		ESUtil.createIndex(NAME.getIndexInfo());
+		ESUtil.deleteIndex(SCIENTIFIC_NAME_SUMMARY.getIndexInfo());
+		ESUtil.createIndex(SCIENTIFIC_NAME_SUMMARY.getIndexInfo());
 		NameImporter importer = new NameImporter();
 		importer.importNames();
 		ETLUtil.logDuration(logger, getClass(), start);

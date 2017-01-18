@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -153,12 +154,12 @@ public class ESUtil {
 	 */
 	public static Set<IndexInfo> getDistinctIndices()
 	{
-		Set<IndexInfo> result = new HashSet<>(3);
+		Set<IndexInfo> result = new HashSet<>(8);
 		result.add(DocumentType.SPECIMEN.getIndexInfo());
 		result.add(DocumentType.TAXON.getIndexInfo());
 		result.add(DocumentType.MULTI_MEDIA_OBJECT.getIndexInfo());
 		result.add(DocumentType.GEO_AREA.getIndexInfo());
-		result.add(DocumentType.NAME.getIndexInfo());
+		result.add(DocumentType.SCIENTIFIC_NAME_SUMMARY.getIndexInfo());
 		return result;
 	}
 
@@ -469,6 +470,20 @@ public class ESUtil {
 			objs.add(obj);
 		}
 		return objs;
+	}
+
+	public static List<String> lookup(DocumentType<?> dt, String field, String value)
+	{
+		SearchRequestBuilder request = newSearchRequest(dt);
+		request.setQuery(termQuery(field, value));
+		request.setNoFields();
+		SearchResponse response = executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		List<String> ids = new ArrayList<>(hits.length);
+		for (SearchHit hit : hits) {
+			ids.add(hit.getId());
+		}
+		return ids;
 	}
 
 	private static IndicesAdminClient indices()

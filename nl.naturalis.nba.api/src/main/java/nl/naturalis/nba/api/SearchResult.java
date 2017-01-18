@@ -18,12 +18,12 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 
 	private long totalSize;
-	private List<SearchResultItem<T>> items;
+	private List<SearchResultItem<T>> resultSet;
 
 	@Override
 	public Iterator<SearchResultItem<T>> iterator()
 	{
-		return items.iterator();
+		return resultSet.iterator();
 	}
 
 	/**
@@ -33,7 +33,7 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	 */
 	public int size()
 	{
-		return items.size();
+		return resultSet.size();
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	 */
 	public SearchResultItem<T> get(int index)
 	{
-		return items.get(index);
+		return resultSet.get(index);
 	}
 
 	/**
@@ -76,8 +76,8 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	 * 
 	 * @param items
 	 */
-	public void setItems(List<SearchResultItem<T>> items)
+	public void setResultSet(List<SearchResultItem<T>> items)
 	{
-		this.items = items;
+		this.resultSet = items;
 	}
 }

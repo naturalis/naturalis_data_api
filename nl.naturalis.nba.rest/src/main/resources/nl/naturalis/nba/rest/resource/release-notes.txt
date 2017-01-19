@@ -14,3 +14,7 @@ RELEASE NOTES V 2.06
 * The import-all shell script has been modified. It still
   imports all data sources, but now generates a different 
   log file for each data source.
+  
+* More fields can now be queries using the LIKE operator.
+  As a rule of thumb: a name-ish fields can now be queried
+  using the LIKE operator.

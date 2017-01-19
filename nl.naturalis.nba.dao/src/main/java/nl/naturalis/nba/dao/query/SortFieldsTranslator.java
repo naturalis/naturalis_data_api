@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortMode;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -61,7 +62,7 @@ class SortFieldsTranslator {
 			}
 			FieldSortBuilder sb = SortBuilders.fieldSort(path);
 			sb.order(sf.isAscending() ? ASC : DESC);
-			sb.sortMode(sf.isAscending() ? "min" : "max");
+			sb.sortMode(sf.isAscending() ? SortMode.MIN : SortMode.MAX);
 			if (nestedPath != null) {
 				sb.setNestedPath(nestedPath);
 				QueryBuilder query = translateConditions(path);
@@ -105,7 +106,8 @@ class SortFieldsTranslator {
 		return hasConditionWithSortField ? result : null;
 	}
 
-	private static void checkCondition(QueryCondition c, String path) throws InvalidConditionException
+	private static void checkCondition(QueryCondition c, String path)
+			throws InvalidConditionException
 	{
 		if (c.getAnd() != null) {
 			for (QueryCondition condition : c.getAnd()) {

@@ -8,6 +8,7 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.Date;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -34,7 +35,7 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query);
+		return nestedQuery(nestedPath, query, ScoreMode.None);
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -30,7 +31,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -92,7 +93,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		String type = dt.getName();
 		SearchRequestBuilder request = newSearchRequest(dt);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(type);
-		query.ids(ids);
+		query.addIds(ids);
 		request.setQuery(query);
 		return processSearchRequest(request);
 	}
@@ -227,11 +228,11 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 			request = translator.translate();
 		}
-		TermsBuilder termsBuilder = AggregationBuilders.terms(forField);
-		termsBuilder.field(forField);
-		termsBuilder.size(100);
+		TermsAggregationBuilder aggregation = AggregationBuilders.terms(forField);
+		aggregation.field(forField);
+		aggregation.size(100);
 		request.setSize(0);
-		request.addAggregation(termsBuilder);
+		request.addAggregation(aggregation);
 		SearchResponse response = executeSearchRequest(request);
 		Terms terms = response.getAggregations().get(forField);
 		List<Bucket> buckets = terms.getBuckets();
@@ -302,7 +303,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			RefreshRequestBuilder rrb = iac.prepareRefresh(index);
 			rrb.execute().actionGet();
 		}
-		return response.isFound();
+		return response.getResult() == Result.DELETED;
 	}
 
 	abstract T[] createDocumentObjectArray(int length);

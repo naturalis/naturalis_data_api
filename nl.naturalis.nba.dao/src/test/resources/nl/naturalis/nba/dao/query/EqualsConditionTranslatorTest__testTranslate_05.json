@@ -1,5 +1,8 @@
 {
   "term" : {
-    "firstName" : "Smith"
+    "firstName" : {
+      "value" : "Smith",
+      "boost" : 1.0
+    }
   }
 }

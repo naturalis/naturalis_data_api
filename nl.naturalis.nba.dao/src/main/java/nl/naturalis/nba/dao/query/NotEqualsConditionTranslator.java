@@ -5,7 +5,9 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -24,10 +26,11 @@ class NotEqualsConditionTranslator extends ConditionTranslator {
 		String field = condition.getField();
 		Object value = condition.getValue();
 		String nestedPath = getNestedPath(condition, mappingInfo);
+		TermQueryBuilder query = termQuery(field, value);
 		if (nestedPath == null || forSortField) {
-			return boolQuery().mustNot(termQuery(field, value));
+			return boolQuery().mustNot(query);
 		}
-		return boolQuery().mustNot(nestedQuery(nestedPath, termQuery(field, value)));
+		return boolQuery().mustNot(nestedQuery(nestedPath, query, ScoreMode.None));
 	}
 
 	@Override

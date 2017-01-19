@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.util.es;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
@@ -11,8 +12,8 @@ import org.elasticsearch.action.search.SearchScrollRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.sort.SortParseElement;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NbaException;
@@ -20,8 +21,6 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.query.QuerySpecTranslator;
-
-import static nl.naturalis.nba.dao.util.es.ESUtil.*;
 
 /**
  * Utility class for using Elasticsearch's scroll API. Note that when using this
@@ -89,7 +88,7 @@ public class Scroller {
 	{
 		request = searchRequest;
 		if (!keepSortOrder) {
-			request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 		}
 		handler = searchHitHandler;
 
@@ -115,7 +114,7 @@ public class Scroller {
 		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
 		if (querySpec.getSortFields() == null || querySpec.getSortFields().size() == 0) {
-			request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 		}
 		handler = searchHitHandler;
 	}

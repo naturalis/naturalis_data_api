@@ -36,10 +36,10 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query.getClass());
+		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	@Test(expected = InvalidConditionException.class)
@@ -48,10 +48,10 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, null);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query.getClass());
+		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	@Test(expected = InvalidConditionException.class)
@@ -60,10 +60,10 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, 7);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query.getClass());
+		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	@Test(expected = InvalidConditionException.class)
@@ -72,10 +72,10 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, new Date());
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query.getClass());
+		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 }

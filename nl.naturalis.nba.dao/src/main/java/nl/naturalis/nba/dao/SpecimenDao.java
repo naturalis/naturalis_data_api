@@ -58,19 +58,6 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		return processSearchRequest(request);
 	}
 
-	// @Override
-	public Specimen[] findByCollector(String name)
-	{
-		if (logger.isDebugEnabled())
-			logger.debug("findByCollector(\"{}\")", name);
-		TermQueryBuilder tq = termQuery("gatheringEvent.gatheringPersons.fullName", name);
-		NestedQueryBuilder nq = nestedQuery("gatheringEvent.gatheringPersons", tq);
-		ConstantScoreQueryBuilder csq = constantScoreQuery(nq);
-		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
-		request.setQuery(csq);
-		return processSearchRequest(request);
-	}
-
 	@Override
 	public String[] getNamedCollections()
 	{
@@ -86,7 +73,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		ConstantScoreQueryBuilder csq = constantScoreQuery(tq);
 		SearchRequestBuilder request = newSearchRequest(SPECIMEN);
 		request.setQuery(csq);
-		request.setNoFields();
+		request.setFetchSource(false);
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		String[] ids = new String[hits.length];

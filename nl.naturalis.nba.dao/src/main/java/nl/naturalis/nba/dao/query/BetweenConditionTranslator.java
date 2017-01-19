@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -74,7 +75,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query);
+		return nestedQuery(nestedPath, query, ScoreMode.None);
 	}
 
 	@Override

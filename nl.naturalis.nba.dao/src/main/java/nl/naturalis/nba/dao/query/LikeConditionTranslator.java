@@ -8,6 +8,7 @@ import static nl.naturalis.nba.dao.query.TranslatorUtil.invalidConditionExceptio
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -30,7 +31,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return termQuery(multiField, value);
 		}
-		return nestedQuery(nestedPath, termQuery(multiField, value));
+		return nestedQuery(nestedPath, termQuery(multiField, value), ScoreMode.None);
 	}
 
 	@Override

@@ -102,7 +102,7 @@ public class ESUtil {
 	public static SearchResponse executeSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
-			if (request.request().source().length() < 1000) {
+			if (request.request().source().toString().length() < 1000) {
 				logger.debug("Executing search request:\n{}", request);
 			}
 			else {
@@ -257,8 +257,13 @@ public class ESUtil {
 		// First load non-user-configurable settings
 		String resource = "/es-settings.json";
 		InputStream is = ESUtil.class.getResourceAsStream(resource);
-		Builder builder = Settings.settingsBuilder();
-		builder.loadFromStream(resource, is);
+		Builder builder = Settings.builder();
+		try {
+			builder.loadFromStream(resource, is);
+		}
+		catch (IOException e) {
+			throw new DaoException(e);
+		}
 		// Then add user-configurable settings
 		builder.put("index.number_of_shards", indexInfo.getNumShards());
 		builder.put("index.number_of_replicas", indexInfo.getNumReplicas());
@@ -338,7 +343,7 @@ public class ESUtil {
 		logger.info("Disabling auto-refresh for index " + index);
 		String origValue = getAutoRefreshInterval(indexInfo);
 		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
-		Builder builder = Settings.settingsBuilder();
+		Builder builder = Settings.builder();
 		builder.put("index.refresh_interval", -1);
 		request.settings(builder.build());
 		UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
@@ -364,7 +369,7 @@ public class ESUtil {
 		String index = indexInfo.getName();
 		logger.info("Updating index refresh interval for index " + index);
 		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
-		Builder builder = Settings.settingsBuilder();
+		Builder builder = Settings.builder();
 		builder.put("index.refresh_interval", interval);
 		request.settings(builder.build());
 		UpdateSettingsResponse response = indices().updateSettings(request).actionGet();
@@ -452,7 +457,7 @@ public class ESUtil {
 	{
 		SearchRequestBuilder request = newSearchRequest(dt);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
-		query.ids(ids);
+		query.addIds(ids.toArray(new String[ids.size()]));
 		request.setQuery(query);
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
@@ -504,7 +509,7 @@ public class ESUtil {
 	{
 		SearchRequestBuilder request = newSearchRequest(dt);
 		request.setQuery(termQuery(field, value));
-		request.setNoFields();
+		request.setFetchSource(false);
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		List<String> ids = new ArrayList<>(hits.length);

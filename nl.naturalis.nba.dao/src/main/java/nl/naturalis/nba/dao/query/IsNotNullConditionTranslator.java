@@ -4,6 +4,7 @@ import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -34,7 +35,7 @@ class IsNotNullConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return existsQuery(field);
 		}
-		return nestedQuery(nestedPath, existsQuery(field));
+		return nestedQuery(nestedPath, existsQuery(field), ScoreMode.None);
 	}
 
 	@Override

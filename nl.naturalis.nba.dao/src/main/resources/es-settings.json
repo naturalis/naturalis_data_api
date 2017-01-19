@@ -21,16 +21,5 @@
 	},
 	"index": {
 		"refresh_interval": "30s"
-	},
-	"mappings": {
-		"_default_": {
-			"_all": {
-				"enabled": false
-			},
-			"_source" : {
-				"enabled": false
-			
-			}
-		}
 	}
 }

@@ -100,10 +100,10 @@ public class BetweenConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, new int[] { 2, 8 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query);
+		//System.out.println(query);
 		assertTrue("01", query instanceof RangeQueryBuilder);
 		String file = "BetweenConditionTranslatorTest__testTranslate_03.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	/*
@@ -115,10 +115,10 @@ public class BetweenConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, Arrays.asList(2, 8));
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		// System.out.println(query);
+		//System.out.println(query);
 		assertTrue("01", query instanceof RangeQueryBuilder);
 		String file = "BetweenConditionTranslatorTest__testTranslate_03.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 
 	/*
@@ -132,9 +132,9 @@ public class BetweenConditionTranslatorTest {
 				set);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		// System.out.println(query);
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "BetweenConditionTranslatorTest__testTranslate_04.json";
-		assertTrue("01", queryEquals(getClass(), query, file));
+		assertTrue("02", queryEquals(getClass(), query, file));
 	}
 }

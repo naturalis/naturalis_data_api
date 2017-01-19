@@ -41,6 +41,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		list.add(new LngLatAlt(40, -70));
 		list.add(new LngLatAlt(30, -80));
 		list.add(new LngLatAlt(20, -90));
+		list.add(new LngLatAlt(40, -70));
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
@@ -63,6 +64,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		list.add(new LngLatAlt(40, -70));
 		list.add(new LngLatAlt(30, -80));
 		list.add(new LngLatAlt(20, -90));
+		list.add(new LngLatAlt(40, -70));
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
@@ -70,7 +72,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
+		// System.out.println(query);
 		String file = "ShapeInShapeConditionTranslatorTest__testTranslate_02.json";
 		assertTrue("02", queryEquals(getClass(), query, file));
 	}

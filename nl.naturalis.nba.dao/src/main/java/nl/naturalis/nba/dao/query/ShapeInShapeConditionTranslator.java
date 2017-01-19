@@ -1,17 +1,18 @@
 package nl.naturalis.nba.dao.query;
 
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
-import static org.elasticsearch.common.geo.builders.ShapeBuilder.newMultiPolygon;
-import static org.elasticsearch.common.geo.builders.ShapeBuilder.newPolygon;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
+import org.elasticsearch.common.geo.builders.ShapeBuilders;
 import org.elasticsearch.index.query.GeoShapeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.GeoJsonObject;
@@ -24,12 +25,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.dao.exception.DaoException;
 
 /**
- * Translates conditions with an IN or NOT_IN operator when used with fields of type
- * {@link GeoJsonObject} and with a {@link QueryCondition#getValue() search term that is also a
- * {@link GeoJsonObject} (or a JSON string that deserializes into a
- * {@link GeoJsonObject}).
+ * Translates conditions with an IN or NOT_IN operator when used with fields of
+ * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue() search
+ * term that is also a {@link GeoJsonObject} (or a JSON string that deserializes
+ * into a {@link GeoJsonObject}).
  * 
  * @author Ayco Holleman
  *
@@ -44,12 +46,18 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		GeoShapeQueryBuilder query = geoShapeQuery(condition.getField(), getShape());
+		GeoShapeQueryBuilder query;
+		try {
+			query = geoShapeQuery(condition.getField(), getShape());
+		}
+		catch (IOException e) {
+			throw new DaoException(e);
+		}
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null || forSortField) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query);
+		return nestedQuery(nestedPath, query, ScoreMode.None);
 	}
 
 	@Override
@@ -63,24 +71,22 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 		Class<?> cls = value.getClass();
 		if (cls == Polygon.class) {
 			Polygon polygon = (Polygon) value;
-			PolygonBuilder shape = newPolygon();
-			shape.points(convert(polygon.getCoordinates()));
+			PolygonBuilder shape = ShapeBuilders.newPolygon(convert(polygon.getCoordinates()));
 			return shape;
 		}
 		else if (cls == MultiPolygon.class) {
 			MultiPolygon polygon = (MultiPolygon) value;
-			MultiPolygonBuilder shape = newMultiPolygon();
+			MultiPolygonBuilder shape = ShapeBuilders.newMultiPolygon();
 			List<List<List<LngLatAlt>>> multiPolygonCoords = polygon.getCoordinates();
 			for (List<List<LngLatAlt>> polygonCoords : multiPolygonCoords) {
-				shape.polygon(newPolygon().points(convert(polygonCoords)));
+				shape.polygon(ShapeBuilders.newPolygon(convert(polygonCoords)));
 			}
 			return shape;
 		}
-		throw new InvalidConditionException(
-				"Unsupported geo shape: " + cls.getSimpleName());
+		throw new InvalidConditionException("Unsupported geo shape: " + cls.getSimpleName());
 	}
 
-	private static Coordinate[] convert(List<List<LngLatAlt>> polyonCoords)
+	private static List<Coordinate> convert(List<List<LngLatAlt>> polyonCoords)
 	{
 		List<Coordinate> coordinates = new ArrayList<>();
 		for (List<LngLatAlt> lngLatAlts : polyonCoords) {
@@ -90,6 +96,6 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 				coordinates.add(new Coordinate(lon, lat));
 			}
 		}
-		return coordinates.toArray(new Coordinate[coordinates.size()]);
+		return coordinates;
 	}
 }

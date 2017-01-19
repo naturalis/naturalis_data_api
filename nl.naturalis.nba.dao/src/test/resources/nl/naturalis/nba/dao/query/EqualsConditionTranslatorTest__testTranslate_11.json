@@ -1,17 +1,33 @@
 {
   "bool" : {
-    "should" : [ {
-      "term" : {
-        "firstName" : "John"
+    "should" : [
+      {
+        "term" : {
+          "firstName" : {
+            "value" : "John",
+            "boost" : 1.0
+          }
+        }
+      },
+      {
+        "term" : {
+          "firstName" : {
+            "value" : "Peter",
+            "boost" : 1.0
+          }
+        }
+      },
+      {
+        "term" : {
+          "firstName" : {
+            "value" : "Mark",
+            "boost" : 1.0
+          }
+        }
       }
-    }, {
-      "term" : {
-        "firstName" : "Peter"
-      }
-    }, {
-      "term" : {
-        "firstName" : "Mark"
-      }
-    } ]
+    ],
+    "disable_coord" : false,
+    "adjust_pure_negative" : true,
+    "boost" : 1.0
   }
 }

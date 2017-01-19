@@ -20,8 +20,6 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.Agent;
-import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 
@@ -140,27 +138,6 @@ public class SpecimenDao_MiscellaneousTest {
 		Specimen[] result = dao.findByUnitID("BLA DI BLA");
 		assertNotNull("01", result);
 		assertEquals("02", 0, result.length);
-	}
-
-	/*
-	 * Tests findByCollector using Parus major specimen.
-	 */
-	@Test
-	public void testFindByCollector_01()
-	{
-		SpecimenDao dao = new SpecimenDao();
-		Person person = pMajor.getGatheringEvent().getGatheringPersons().get(0);
-		String collector = person.getFullName();
-		Specimen[] result = dao.findByCollector(collector);
-		assertNotNull("01", result);
-		assertNotNull("02", result[0]);
-		assertNotNull("03", result[0].getGatheringEvent());
-		assertNotNull("04", result[0].getGatheringEvent().getGatheringPersons());
-		Agent agent = result[0].getGatheringEvent().getGatheringPersons().get(0);
-		assertNotNull("05", agent);
-		assertEquals("06", Person.class, agent.getClass());
-		Person personOut = (Person) agent;
-		assertEquals("07", person, personOut);
 	}
 
 	/*

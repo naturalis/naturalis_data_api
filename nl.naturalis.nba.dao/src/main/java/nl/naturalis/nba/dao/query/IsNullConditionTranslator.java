@@ -5,6 +5,7 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -45,7 +46,7 @@ class IsNullConditionTranslator extends ConditionTranslator {
 		 * you do it the other way round, you will not get the desired &
 		 * expected result.
 		 */
-		return boolQuery().mustNot(nestedQuery(nestedPath, existsQuery(field)));
+		return boolQuery().mustNot(nestedQuery(nestedPath, existsQuery(field), ScoreMode.None));
 	}
 
 	@Override

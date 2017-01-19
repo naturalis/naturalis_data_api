@@ -1,13 +1,24 @@
 {
   "bool" : {
-    "must_not" : {
-      "bool" : {
-        "must_not" : {
-          "exists" : {
-            "field" : "firstName"
-          }
+    "must_not" : [
+      {
+        "bool" : {
+          "must_not" : [
+            {
+              "exists" : {
+                "field" : "firstName",
+                "boost" : 1.0
+              }
+            }
+          ],
+          "disable_coord" : false,
+          "adjust_pure_negative" : true,
+          "boost" : 1.0
         }
       }
-    }
+    ],
+    "disable_coord" : false,
+    "adjust_pure_negative" : true,
+    "boost" : 1.0
   }
 }

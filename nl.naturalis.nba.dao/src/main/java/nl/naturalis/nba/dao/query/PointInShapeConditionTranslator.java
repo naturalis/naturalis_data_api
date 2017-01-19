@@ -4,8 +4,11 @@ import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.geoPolygonQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.GeoPolygonQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.LngLatAlt;
@@ -26,18 +29,19 @@ class PointInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		GeoPolygonQueryBuilder query = geoPolygonQuery(condition.getField());
 		Polygon polygon = (Polygon) condition.getValue();
+		List<GeoPoint> points = new ArrayList<>(128);
 		for (List<LngLatAlt> lngLatAlts : polygon.getCoordinates()) {
 			for (LngLatAlt coord : lngLatAlts) {
-				query.addPoint(coord.getLatitude(), coord.getLongitude());
+				points.add(new GeoPoint(coord.getLatitude(), coord.getLongitude()));
 			}
 		}
+		GeoPolygonQueryBuilder query = geoPolygonQuery(condition.getField(),points);
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		if (nestedPath == null || forSortField) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query);
+		return nestedQuery(nestedPath, query, ScoreMode.None);
 	}
 
 	@Override

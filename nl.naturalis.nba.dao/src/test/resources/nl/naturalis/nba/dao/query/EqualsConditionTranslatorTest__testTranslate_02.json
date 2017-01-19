@@ -1,5 +1,6 @@
 {
   "exists" : {
-    "field" : "firstName"
+    "field" : "firstName",
+    "boost" : 1.0
   }
 }

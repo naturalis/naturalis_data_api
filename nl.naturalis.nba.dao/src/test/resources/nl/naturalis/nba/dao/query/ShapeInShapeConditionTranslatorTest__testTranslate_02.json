@@ -1,15 +1,42 @@
 {
   "bool" : {
-    "must_not" : {
-      "geo_shape" : {
-        "address.locationAsShape" : {
-          "shape" : {
-            "type" : "polygon",
-            "coordinates" : [ [ [ 40.0, -70.0 ], [ 30.0, -80.0 ], [ 20.0, -90.0 ], [ 40.0, -70.0 ] ] ]
-          }
-        },
-        "_name" : null
+    "must_not" : [
+      {
+        "geo_shape" : {
+          "address.locationAsShape" : {
+            "shape" : {
+              "type" : "polygon",
+              "orientation" : "right",
+              "coordinates" : [
+                [
+                  [
+                    40.0,
+                    -70.0
+                  ],
+                  [
+                    30.0,
+                    -80.0
+                  ],
+                  [
+                    20.0,
+                    -90.0
+                  ],
+                  [
+                    40.0,
+                    -70.0
+                  ]
+                ]
+              ]
+            },
+            "relation" : "intersects"
+          },
+          "ignore_unmapped" : false,
+          "boost" : 1.0
+        }
       }
-    }
+    ],
+    "disable_coord" : false,
+    "adjust_pure_negative" : true,
+    "boost" : 1.0
   }
 }

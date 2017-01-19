@@ -16,6 +16,7 @@ import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import nl.naturalis.nba.dao.exception.ConnectionFailureException;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -97,11 +98,11 @@ public class ESClientManager {
 
 	private Client createClient()
 	{
-		Builder builder = Settings.settingsBuilder();
+		Builder builder = Settings.builder();
 		String cluster = config.required("elasticsearch.cluster.name");
 		builder.put("cluster.name", cluster);
 		Settings settings = builder.build();
-		return TransportClient.builder().settings(settings).build();
+		return new PreBuiltTransportClient(settings);
 	}
 
 	private InetAddress[] getHosts()

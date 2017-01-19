@@ -15,8 +15,8 @@ import org.elasticsearch.action.search.SearchScrollRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.sort.SortParseElement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -140,7 +140,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 				batchSize = DEFAULT_BATCH_SIZE;
 			}
 			SearchRequestBuilder request = newSearchRequest(this.dt);
-			request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 			request.setScroll(timeout);
 			request.setSize(batchSize);
 			SearchResponse response = executeSearchRequest(request);

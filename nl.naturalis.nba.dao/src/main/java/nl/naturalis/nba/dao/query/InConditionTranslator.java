@@ -9,6 +9,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.util.List;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
@@ -51,7 +52,7 @@ class InConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query);
+		return nestedQuery(nestedPath, query, ScoreMode.None);
 	}
 
 	@Override

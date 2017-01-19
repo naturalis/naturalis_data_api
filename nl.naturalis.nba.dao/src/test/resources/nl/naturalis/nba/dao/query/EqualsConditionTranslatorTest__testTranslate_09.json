@@ -1,21 +1,42 @@
 {
   "bool" : {
-    "must_not" : {
-      "bool" : {
-        "must" : [ {
-          "term" : {
-            "firstName" : "John"
-          }
-        }, {
-          "term" : {
-            "lastName" : "Smith"
-          }
-        }, {
-          "term" : {
-            "age" : 40
-          }
-        } ]
+    "must_not" : [
+      {
+        "bool" : {
+          "must" : [
+            {
+              "term" : {
+                "firstName" : {
+                  "value" : "John",
+                  "boost" : 1.0
+                }
+              }
+            },
+            {
+              "term" : {
+                "lastName" : {
+                  "value" : "Smith",
+                  "boost" : 1.0
+                }
+              }
+            },
+            {
+              "term" : {
+                "age" : {
+                  "value" : 40,
+                  "boost" : 1.0
+                }
+              }
+            }
+          ],
+          "disable_coord" : false,
+          "adjust_pure_negative" : true,
+          "boost" : 1.0
+        }
       }
-    }
+    ],
+    "disable_coord" : false,
+    "adjust_pure_negative" : true,
+    "boost" : 1.0
   }
 }

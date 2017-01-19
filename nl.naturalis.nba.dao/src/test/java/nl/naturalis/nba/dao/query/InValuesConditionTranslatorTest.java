@@ -54,7 +54,7 @@ public class InValuesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", IN, new Integer[] { null, null, null });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		// System.out.println(query);
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "InConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(getClass(), query, file));
@@ -69,7 +69,7 @@ public class InValuesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("pets.name", IN, new String[] { "Napoleon", "Max" });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		// System.out.println(query);
+		//System.out.println(query);
 		String file = "InConditionTranslatorTest__testTranslate_02.json";
 		assertTrue("01", queryEquals(getClass(), query, file));
 	}
@@ -88,7 +88,7 @@ public class InValuesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("pets.name", IN, values);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		//System.out.println(query);
+		System.out.println(query);
 		String file = "InConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("01", queryEquals(getClass(), query, file));
 	}

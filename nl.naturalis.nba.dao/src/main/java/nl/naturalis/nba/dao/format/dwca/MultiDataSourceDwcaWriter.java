@@ -17,8 +17,8 @@ import org.elasticsearch.action.search.SearchScrollRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.sort.SortParseElement;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
@@ -176,7 +176,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	{
 		QuerySpecTranslator qst = new QuerySpecTranslator(spec, DocumentType.TAXON);
 		SearchRequestBuilder request = qst.translate();
-		request.addSort(SortParseElement.DOC_FIELD_NAME, SortOrder.ASC);
+		request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 		request.setScroll(TIME_OUT);
 		request.setSize(1000);
 		return ESUtil.executeSearchRequest(request);

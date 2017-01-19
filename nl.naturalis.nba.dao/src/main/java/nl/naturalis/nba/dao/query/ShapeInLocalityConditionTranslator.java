@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -61,7 +62,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 			if (nestedPath == null) {
 				return query;
 			}
-			return nestedQuery(nestedPath, query);
+			return nestedQuery(nestedPath, query, ScoreMode.None);
 		}
 		Collection<?> localities;
 		if (value.getClass().isArray()) {
@@ -84,7 +85,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return boolQuery;
 		}
-		return nestedQuery(nestedPath, boolQuery);
+		return nestedQuery(nestedPath, boolQuery, ScoreMode.None);
 	}
 
 	@Override
@@ -104,7 +105,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		SearchRequestBuilder request;
 		try {
 			request = translator.translate();
-			request.setNoFields();
+			request.setFetchSource(false);
 		}
 		catch (InvalidQueryException e) {
 			// We made this one ourselves, so eh ...

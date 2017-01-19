@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -29,7 +30,7 @@ class MatchesConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return matchQuery(multiField, value);
 		}
-		return nestedQuery(nestedPath, matchQuery(multiField, value));
+		return nestedQuery(nestedPath, matchQuery(multiField, value), ScoreMode.None);
 	}
 
 	@Override

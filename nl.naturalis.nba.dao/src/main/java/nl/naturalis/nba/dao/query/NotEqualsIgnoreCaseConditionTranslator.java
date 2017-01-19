@@ -7,7 +7,9 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
@@ -27,10 +29,11 @@ class NotEqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 		String value = condition.getValue().toString().toLowerCase();
 		String nestedPath = getNestedPath(condition, mappingInfo);
 		String multiField = field + '.' + IGNORE_CASE_MULTIFIELD.getName();
+		TermQueryBuilder query = termQuery(multiField, value);
 		if (nestedPath == null || forSortField) {
-			return boolQuery().mustNot(termQuery(multiField, value));
+			return boolQuery().mustNot(query);
 		}
-		return boolQuery().mustNot(nestedQuery(nestedPath, termQuery(multiField, value)));
+		return boolQuery().mustNot(nestedQuery(nestedPath, query, ScoreMode.None));
 	}
 
 	@Override

@@ -51,6 +51,7 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 					 * names OK?
 					 */
 					warn("Missing scientific name");
+					stats.objectsRejected++;
 					continue;
 				}
 				ScientificNameSummary sns = loader.findInQueue(fsn);
@@ -66,6 +67,10 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 				addTaxa(sns, fsn);
 				if (!queued) {
 					result.add(sns);
+					stats.objectsAccepted++;
+				}
+				else {
+					stats.objectsSkipped++;
 				}
 			}
 			return result;

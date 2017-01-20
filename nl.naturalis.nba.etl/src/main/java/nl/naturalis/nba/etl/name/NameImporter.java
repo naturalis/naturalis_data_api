@@ -35,6 +35,7 @@ class NameImporter {
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = new ETLStatistics();
+		stats.setOneToMany(true);
 		DocumentIterator<Specimen> extractor;
 		NameTransformer transformer;
 		NameLoader loader = null;

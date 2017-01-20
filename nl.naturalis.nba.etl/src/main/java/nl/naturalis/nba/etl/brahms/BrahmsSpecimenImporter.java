@@ -94,9 +94,9 @@ public class BrahmsSpecimenImporter {
 				if (rec == null)
 					continue;
 				loader.queue(transformer.transform(rec));
-				if (globalStats.recordsProcessed % 50000 == 0) {
-					logger.info("Records processed: {}", globalStats.recordsProcessed);
-					logger.info("Documents indexed: {}", globalStats.documentsIndexed);
+				if (myStats.recordsProcessed != 0 && myStats.recordsProcessed % 50000 == 0) {
+					logger.info("Records processed: {}", myStats.recordsProcessed);
+					logger.info("Documents indexed: {}", myStats.documentsIndexed);
 				}
 			}
 		}

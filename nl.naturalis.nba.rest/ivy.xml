@@ -7,8 +7,8 @@
         status="integration">
 	</info>
 	<dependencies>
-		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.5" />
-		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.5" />
+		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.7" />
+		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" />
 		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0"/>
 		<dependency org="javax.enterprise" name="cdi-api" rev="1.2"/>
 		<dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0.1"/>

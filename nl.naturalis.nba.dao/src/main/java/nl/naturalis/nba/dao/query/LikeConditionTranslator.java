@@ -44,8 +44,8 @@ class LikeConditionTranslator extends ConditionTranslator {
 			String fmt = "Search term must contain at least 3 characters with operator %s";
 			throw invalidConditionException(condition, fmt, condition.getOperator());
 		}
-		if (value.length() > 10) {
-			String fmt = "Search term may contain no more than 10 characters with operator %s";
+		if (value.length() > 15) {
+			String fmt = "Search term may contain no more than 15 characters with operator %s";
 			throw invalidConditionException(condition, fmt, condition.getOperator());
 		}
 	}

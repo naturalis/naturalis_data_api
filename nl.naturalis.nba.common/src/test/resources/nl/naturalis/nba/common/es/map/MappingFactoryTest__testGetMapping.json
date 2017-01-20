@@ -27,7 +27,8 @@
       }
     },
     "birthDate" : {
-      "type" : "date"
+      "type" : "date",
+      "format" : "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
     },
     "numChildren" : {
       "type" : "integer"

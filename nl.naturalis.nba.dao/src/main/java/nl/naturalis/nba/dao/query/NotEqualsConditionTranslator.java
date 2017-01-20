@@ -1,5 +1,8 @@
 package nl.naturalis.nba.dao.query;
 
+import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.convertValueForDateField;
+import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -11,6 +14,7 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class NotEqualsConditionTranslator extends ConditionTranslator {
@@ -36,5 +40,9 @@ class NotEqualsConditionTranslator extends ConditionTranslator {
 	@Override
 	void checkCondition() throws InvalidConditionException
 	{
+		ESField field = getESField(condition, mappingInfo);
+		if (field.getType() == DATE) {
+			convertValueForDateField(condition);
+		}
 	}
 }

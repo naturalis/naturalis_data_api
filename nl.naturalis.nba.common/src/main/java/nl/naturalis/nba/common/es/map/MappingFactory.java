@@ -1,7 +1,7 @@
 package nl.naturalis.nba.common.es.map;
 
 import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
-import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
+import static nl.naturalis.nba.common.es.map.ESDataType.*;
 import static nl.naturalis.nba.common.es.map.Index.NO;
 import static nl.naturalis.nba.common.es.map.Index.NOT_ANALYZED;
 import static nl.naturalis.nba.common.es.map.MappingUtil.extractFieldFromGetter;
@@ -48,8 +48,9 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  * fit the document type because the document type was generated from the very
  * class that contains the data); it also plays an important role when querying
  * data. For example, if a field is annotated with {@link NotIndexed}, the query
- * mechanism knows beforehand that a {@link QueryCondition query condition} on that
- * field will fail and won't even bother sending the query to Elasticsearch.
+ * mechanism knows beforehand that a {@link QueryCondition query condition} on
+ * that field will fail and won't even bother sending the query to
+ * Elasticsearch.
  * </p>
  * <p>
  * {@code Mapping} objects are best consulted through a {@link MappingInfo}
@@ -150,6 +151,12 @@ public class MappingFactory {
 	{
 		SimpleField sf;
 		switch (esType) {
+			case STRING:
+				sf = new StringField();
+				break;
+			case DATE:
+				sf = new DateField();
+				break;
 			case GEO_SHAPE:
 				sf = new GeoShapeField();
 				if (fm.getAnnotation(GeoShape.class) != null) {
@@ -158,9 +165,6 @@ public class MappingFactory {
 					gsf.setPrecision(annotation.precision());
 					gsf.setPoints_only(annotation.pointsOnly());
 				}
-				break;
-			case STRING:
-				sf = new StringField();
 				break;
 			default:
 				sf = new SimpleField(esType);

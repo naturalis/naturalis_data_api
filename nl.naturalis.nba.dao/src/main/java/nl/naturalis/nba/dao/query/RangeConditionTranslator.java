@@ -1,12 +1,11 @@
 package nl.naturalis.nba.dao.query;
 
+import static nl.naturalis.nba.dao.query.TranslatorUtil.convertValueForDateField;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getESField;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.query.TranslatorUtil.searchTermHasWrongType;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-
-import java.util.Date;
 
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -45,12 +44,12 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 		ESField field = getESField(condition, mappingInfo);
 		switch (field.getType()) {
 			case DATE:
-				handleDateField();
+				convertValueForDateField(condition);
 				break;
+			case INTEGER:
 			case BYTE:
 			case DOUBLE:
 			case FLOAT:
-			case INTEGER:
 			case LONG:
 			case SHORT:
 				Object val = condition.getValue();
@@ -68,26 +67,7 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 				throw searchTermHasWrongType(condition);
 		}
 	}
-
-	private void handleDateField() throws InvalidConditionException
-	{
-		Object val = condition.getValue();
-		if (val instanceof Date) {
-			return;
-		}
-		if (val instanceof String) {
-			Date date = TranslatorUtil.asDate(val.toString());
-			if (date == null) {
-				String fmt = "Invalid date for query condition on field %s: %s";
-				String msg = String.format(fmt, condition.getField());
-				throw new InvalidConditionException(msg);
-			}
-			condition.setValue(date);
-			return;
-		}
-		throw searchTermHasWrongType(condition);
-	}
-
+	
 	abstract void setRange(RangeQueryBuilder query);
 
 }

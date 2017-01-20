@@ -7,6 +7,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -58,12 +59,16 @@ public class SpecimenDao_QueriesWithBetweenOperatorTest {
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
 	{
 		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
+		System.out.println("XXXXXXXXXXXXXXXXXXXXXXX: "
+				+ new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(gatheringDate));
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
 		OffsetDateTime two = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime t = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
+		System.out.println("XXXX: " + t);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { two, t };
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
+				fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -83,7 +88,8 @@ public class SpecimenDao_QueriesWithBetweenOperatorTest {
 		OffsetDateTime from = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime to = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", NOT_BETWEEN, fromTo);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", NOT_BETWEEN,
+				fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -102,7 +108,8 @@ public class SpecimenDao_QueriesWithBetweenOperatorTest {
 		String from = "2007-04-01";
 		String to = "2007-05-01";
 		String[] fromTo = new String[] { from, to };
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
+				fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -119,7 +126,8 @@ public class SpecimenDao_QueriesWithBetweenOperatorTest {
 		String from = "2007-04-01T00:00:00Z";
 		String to = "2007-05-01T23:50:00Z";
 		String[] fromTo = new String[] { from, to };
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN, fromTo);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
+				fromTo);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

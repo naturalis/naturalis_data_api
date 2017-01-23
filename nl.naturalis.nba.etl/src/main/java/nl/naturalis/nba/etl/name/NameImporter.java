@@ -42,7 +42,7 @@ class NameImporter {
 		try {
 			logger.info("Initializing extractor");
 			extractor = new DocumentIterator<>(DocumentType.SPECIMEN);
-			extractor.setBatchSize(2000);
+			extractor.setBatchSize(1000);
 			extractor.setTimeout(50000);
 			logger.info("Initializing loader");
 			loader = new NameLoader(loaderQueueSize, stats);

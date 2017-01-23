@@ -2,20 +2,35 @@
 
 start=$(date)
 
-. ./include.sh
+scripts=" \
+	bootstrap \
+	nsr-import_reset \
+	nsr-import_taxa \
+	nsr-import_multimedia \
+	col-import \
+	geo-import \
+	brahms-import_reset \
+	brahms-import_specimens \
+	brahms-import_multimedia \
+	crs-import_specimens \
+	crs-import_multimedia \
+	"
 
-java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll bootstrap
-java -cp ${classpath} $JAVA_OPTS ${root_package}.nsr.NsrImporter reset
-java -cp ${classpath} $JAVA_OPTS ${root_package}.nsr.NsrImporter specimens
-java -cp ${classpath} $JAVA_OPTS ${root_package}.nsr.NsrImporter multimedia
-java -cp ${classpath} ${JAVA_OPTS} ${root_package}.col.CoLImportAll
-java -cp ${classpath} $JAVA_OPTS ${root_package}.geo.GeoImporter
-java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsImportAll reset
-java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsSpecimenImporter
-java -cp ${classpath} ${JAVA_OPTS} ${root_package}.brahms.BrahmsMultiMediaImporter
-java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsSpecimenImportOffline
-java -cp ${classpath} $JAVA_OPTS ${root_package}.crs.CrsMultiMediaImportOffline
-java -cp ${classpath} $JAVA_OPTS ${root_package}.name.NameImportAll
+for script in $scripts
+do
+  script=${script/_/ }
+  echo Executing $script ...
+  script="./${script}"
+  $script
+  result=$?
+  if [ "$result" != 0 ]
+  then
+    Error while executing $script. Import aborted
+	echo "Import started at ${start}"
+	echo "Import aborted at ${finish}"
+    exit $result
+  fi
+done
 
 finish=$(date)
 

@@ -1,12 +1,13 @@
 RELEASE NOTES V 2.06
 
-* Solved issue 61. Sorting on nested fields now enabled.
+* NBAVTWO-61. Sorting on nested fields now enabled.
 
 * A new service with endpoint /release-notes has been
   created.
 
-* A new document type, ScientificNameSummary, is introduced
-  and exposed through the IScientificNameSummaryAccess API.
+* NBAVTWO-291 A new document type, ScientificNameSummary,
+  is introduced and exposed through the
+  IScientificNameSummaryAccess API.
 
 * A import program and shell script have been created to
   populate the ScientificNameSummary index.
@@ -18,3 +19,5 @@ RELEASE NOTES V 2.06
 * More fields can now be queries using the LIKE operator.
   As a rule of thumb: a name-ish fields can now be queried
   using the LIKE operator.
+  
+* NBA Version now runs on Elasticsearch V5

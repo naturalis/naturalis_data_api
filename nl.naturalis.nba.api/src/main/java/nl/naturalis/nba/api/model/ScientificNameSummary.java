@@ -1,148 +1,42 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.annotations.NotNested;
 
 public class ScientificNameSummary implements IDocumentObject {
 
-	public static class SpecimenSummary implements INbaModelObject {
-
-		@NotIndexed
-		String id;
-		@NotIndexed
-		String unitID;
-		@NotIndexed
-		String sourceSystem;
-		@NotIndexed
-		String recordBasis;
-
-		public String getId()
-		{
-			return id;
-		}
-
-		public void setId(String id)
-		{
-			this.id = id;
-		}
-
-		public String getUnitID()
-		{
-			return unitID;
-		}
-
-		public void setUnitID(String unitID)
-		{
-			this.unitID = unitID;
-		}
-
-		public String getSourceSystem()
-		{
-			return sourceSystem;
-		}
-
-		public void setSourceSystem(String sourceSystem)
-		{
-			this.sourceSystem = sourceSystem;
-		}
-
-		public String getRecordBasis()
-		{
-			return recordBasis;
-		}
-
-		public void setRecordBasis(String recordBasis)
-		{
-			this.recordBasis = recordBasis;
-		}
-
-		@Override
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-				return true;
-			if (obj instanceof SpecimenSummary)
-				return ((SpecimenSummary) obj).id.equals(id);
-			return false;
-		}
-
-		public int hashCode()
-		{
-			return id.hashCode();
-		}
-	}
-
-	public static class TaxonSummary implements INbaModelObject {
-
-		@NotIndexed
-		private String id;
-		@NotIndexed
-		private String sourceSystem;
-		@NotIndexed
-		private String rank;
-
-		public String getId()
-		{
-			return id;
-		}
-
-		public void setId(String id)
-		{
-			this.id = id;
-		}
-
-		public String getSourceSystem()
-		{
-			return sourceSystem;
-		}
-
-		public void setSourceSystem(String sourceSystem)
-		{
-			this.sourceSystem = sourceSystem;
-		}
-
-		public String getRank()
-		{
-			return rank;
-		}
-
-		public void setRank(String rank)
-		{
-			this.rank = rank;
-		}
-
-		@Override
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-				return true;
-			if (obj instanceof TaxonSummary)
-				return ((TaxonSummary) obj).id.equals(id);
-			return false;
-		}
-
-		public int hashCode()
-		{
-			return id.hashCode();
-		}
-	}
-
 	private String id;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String fullScientificName;
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> vernacularNames;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> synonyms;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> kingdoms;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> phylae;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> classes;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> orders;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> families;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> genera;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> specificEpithets;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> infraspecificEpithets;
 
 	@NotNested
@@ -383,6 +277,128 @@ public class ScientificNameSummary implements IDocumentObject {
 	public void setTaxa(Set<TaxonSummary> taxa)
 	{
 		this.taxa = taxa;
+	}
+
+	public static class SpecimenSummary implements INbaModelObject {
+
+		@NotIndexed
+		String id;
+		@NotIndexed
+		String unitID;
+		@NotIndexed
+		String sourceSystem;
+		@NotIndexed
+		String recordBasis;
+
+		public String getId()
+		{
+			return id;
+		}
+
+		public void setId(String id)
+		{
+			this.id = id;
+		}
+
+		public String getUnitID()
+		{
+			return unitID;
+		}
+
+		public void setUnitID(String unitID)
+		{
+			this.unitID = unitID;
+		}
+
+		public String getSourceSystem()
+		{
+			return sourceSystem;
+		}
+
+		public void setSourceSystem(String sourceSystem)
+		{
+			this.sourceSystem = sourceSystem;
+		}
+
+		public String getRecordBasis()
+		{
+			return recordBasis;
+		}
+
+		public void setRecordBasis(String recordBasis)
+		{
+			this.recordBasis = recordBasis;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj instanceof SpecimenSummary)
+				return ((SpecimenSummary) obj).id.equals(id);
+			return false;
+		}
+
+		public int hashCode()
+		{
+			return id.hashCode();
+		}
+	}
+
+	public static class TaxonSummary implements INbaModelObject {
+
+		@NotIndexed
+		private String id;
+		@NotIndexed
+		private String sourceSystem;
+		@NotIndexed
+		private String rank;
+
+		public String getId()
+		{
+			return id;
+		}
+
+		public void setId(String id)
+		{
+			this.id = id;
+		}
+
+		public String getSourceSystem()
+		{
+			return sourceSystem;
+		}
+
+		public void setSourceSystem(String sourceSystem)
+		{
+			this.sourceSystem = sourceSystem;
+		}
+
+		public String getRank()
+		{
+			return rank;
+		}
+
+		public void setRank(String rank)
+		{
+			this.rank = rank;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj instanceof TaxonSummary)
+				return ((TaxonSummary) obj).id.equals(id);
+			return false;
+		}
+
+		public int hashCode()
+		{
+			return id.hashCode();
+		}
 	}
 
 }

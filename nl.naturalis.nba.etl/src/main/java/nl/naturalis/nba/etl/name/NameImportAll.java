@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import nl.naturalis.nba.etl.ETLUtil;
 
 public class NameImportAll {
 
@@ -23,16 +22,16 @@ public class NameImportAll {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(NameImportAll.class);
 
+	@SuppressWarnings("static-method")
 	public void importNames()
 	{
-		long start = System.currentTimeMillis();
 		ESUtil.deleteIndex(SCIENTIFIC_NAME_SUMMARY.getIndexInfo());
 		ESUtil.createIndex(SCIENTIFIC_NAME_SUMMARY.getIndexInfo());
 		NameImporter importer = new NameImporter();
 		importer.importNames();
-		ETLUtil.logDuration(logger, getClass(), start);
 	}
 
 }

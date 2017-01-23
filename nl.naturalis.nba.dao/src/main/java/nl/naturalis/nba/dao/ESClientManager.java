@@ -73,7 +73,7 @@ public class ESClientManager {
 				addr = new InetSocketTransportAddress(host, port);
 				((TransportClient) client).addTransportAddress(addr);
 			}
-			ping();
+			//ping();
 		}
 		return client;
 	}
@@ -148,6 +148,7 @@ public class ESClientManager {
 		throw new ConnectionFailureException(msg);
 	}
 
+	@SuppressWarnings("unused")
 	private void ping()
 	{
 		ClusterStatsRequest request = new ClusterStatsRequest();

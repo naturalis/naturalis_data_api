@@ -1,11 +1,10 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_SUMMARY;
-import static nl.naturalis.nba.dao.DocumentType.TAXON;
-import static nl.naturalis.nba.dao.util.es.ESUtil.find;
-
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -21,12 +20,14 @@ import nl.naturalis.nba.etl.ETLStatistics;
 
 class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNameSummary> {
 
-	private final NameLoader loader;
+	private HashMap<String, ScientificNameSummary> nameCache;
+	private HashMap<String, List<Taxon>> taxonCache;
 
-	NameTransformer(ETLStatistics stats, NameLoader loader)
+	NameTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		this.loader = loader;
+		this.nameCache = new HashMap<>(NameImporter.BATCH_SIZE * 4);
+		this.taxonCache = new HashMap<>(NameImporter.BATCH_SIZE);
 	}
 
 	@Override
@@ -42,8 +43,10 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			List<ScientificNameSummary> result = new ArrayList<>(input.getIdentifications().size());
-			for (SpecimenIdentification si : input.getIdentifications()) {
+			List<SpecimenIdentification> identifications = input.getIdentifications();
+			List<ScientificNameSummary> result = new ArrayList<>(identifications.size());
+			Set<String> names = new HashSet<>(identifications.size());
+			for (SpecimenIdentification si : identifications) {
 				String fsn = si.getScientificName().getFullScientificName();
 				if (fsn == null) {
 					/*
@@ -54,24 +57,14 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 					stats.objectsRejected++;
 					continue;
 				}
-				ScientificNameSummary sns = loader.findInQueue(fsn);
-				boolean queued = true;
-				if (sns == null) {
-					queued = false;
-					sns = find(SCIENTIFIC_NAME_SUMMARY, fsn);
-					if (sns == null) {
-						sns = new ScientificNameSummary(fsn);
-					}
-				}
+				ScientificNameSummary sns = nameCache.get(fsn);
 				addSpecimen(sns, si);
 				addTaxa(sns, fsn);
-				if (!queued) {
+				if (!names.contains(fsn)) {
 					result.add(sns);
-					stats.objectsAccepted++;
+					names.add(fsn);
 				}
-				else {
-					stats.objectsSkipped++;
-				}
+				stats.objectsAccepted++;
 			}
 			return result;
 		}
@@ -125,9 +118,12 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 		}
 	}
 
-	private static void addTaxa(ScientificNameSummary sns, String fullScientificName)
+	private void addTaxa(ScientificNameSummary sns, String fullScientificName)
 	{
-		List<Taxon> taxa = find(TAXON, "acceptedName.fullScientificName", fullScientificName);
+		List<Taxon> taxa = taxonCache.get(fullScientificName);
+		if (taxa == null) {
+			return;
+		}
 		for (Taxon taxon : taxa) {
 			TaxonSummary summary = new TaxonSummary();
 			summary.setId(taxon.getId());
@@ -144,6 +140,43 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 					sns.addSynonym(sn.getFullScientificName());
 				}
 			}
+		}
+	}
+
+	void prepareForBatch(List<Specimen> specimens)
+	{
+		nameCache.clear();
+		taxonCache.clear();
+		/*
+		 * Let's assume we have around 3 identification per specimen on average.
+		 */
+		List<String> ids = new ArrayList<>(NameImporter.BATCH_SIZE * 3);
+		for (Specimen specimen : specimens) {
+			for (SpecimenIdentification si : specimen.getIdentifications()) {
+				ids.add(si.getScientificName().getFullScientificName());
+			}
+		}
+		List<ScientificNameSummary> names = NameImportUtil.loadNames(ids);
+		for (ScientificNameSummary name : names) {
+			nameCache.put(name.getFullScientificName(), name);
+		}
+		for (Specimen specimen : specimens) {
+			for (SpecimenIdentification si : specimen.getIdentifications()) {
+				String key = si.getScientificName().getFullScientificName();
+				if (!nameCache.containsKey(key)) {
+					nameCache.put(key, new ScientificNameSummary(key));
+				}
+			}
+		}
+		List<Taxon> taxa = NameImportUtil.loadTaxa(ids);
+		for (Taxon taxon : taxa) {
+			String key = taxon.getAcceptedName().getFullScientificName();
+			List<Taxon> value = taxonCache.get(key);
+			if (value == null) {
+				value = new ArrayList<>(2); // Either COL or NSR
+				taxonCache.put(key, value);
+			}
+			value.add(taxon);
 		}
 	}
 

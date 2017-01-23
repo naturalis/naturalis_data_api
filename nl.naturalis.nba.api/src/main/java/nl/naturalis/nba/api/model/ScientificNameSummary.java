@@ -17,11 +17,13 @@ public class ScientificNameSummary implements IDocumentObject {
 	private String id;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String fullScientificName;
+	private long nameHash;
 
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> vernacularNames;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> synonyms;
+
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> kingdoms;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
@@ -157,6 +159,16 @@ public class ScientificNameSummary implements IDocumentObject {
 	public void setFullScientificName(String fullScientificName)
 	{
 		this.fullScientificName = fullScientificName;
+	}
+
+	public long getNameHash()
+	{
+		return nameHash;
+	}
+
+	public void setNameHash(long nameHash)
+	{
+		this.nameHash = nameHash;
 	}
 
 	public Set<String> getVernacularNames()

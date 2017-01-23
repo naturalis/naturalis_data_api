@@ -21,3 +21,6 @@ RELEASE NOTES V 2.06
   using the LIKE operator.
   
 * NBA Version now runs on Elasticsearch V5
+
+* NBAVTWO-292 Name of log file in etl import script now
+  includes name of imported document type

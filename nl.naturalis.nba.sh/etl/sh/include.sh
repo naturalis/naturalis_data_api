@@ -29,8 +29,18 @@ do
 done
 #echo CLASSPATH: $classpath
 
-dt=$(date +%Y_%m_%d_%H_%m)
-log_file="${log_dir}/${0:2}.${dt}.log"
+# Generate path for log file
+log_file="${0:2}"
+if [ "x$1" != "x" ]
+then
+  log_file="${log_file}__${1}"
+fi
+if [ "x$2" != "x" ]
+then
+  log_file="${log_file}__${2}"
+fi
+dt=$(date +%Y%m%d%H%m)
+log_file="${log_dir}/${log_file}.${dt}.log"
 echo "Log file: ${log_file}"
 
 JAVA_OPTS="-Xms1536m -Xmx1536m"

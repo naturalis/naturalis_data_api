@@ -21,17 +21,20 @@ public class ScientificName implements INbaModelObject {
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String fullScientificName;
 	private TaxonomicStatus taxonomicStatus;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String genusOrMonomial;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String subgenus;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String specificEpithet;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String infraspecificEpithet;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String infraspecificMarker;
 	private String nameAddendum;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String authorshipVerbatim;
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String author;
 	private String year;
 

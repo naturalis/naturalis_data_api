@@ -1,6 +1,10 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.*;
+
 import java.util.List;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
 
 /**
  * A {@code DefaultClassification} classifies a specimen or species according to
@@ -42,17 +46,27 @@ public class DefaultClassification implements INbaModelObject {
 		return dc;
 	}
 
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String kingdom;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String phylum;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String className;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String order;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String superFamily;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String family;
-	// private String tribe;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String genus;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String subgenus;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String specificEpithet;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String infraspecificEpithet;
+	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String infraspecificRank;
 
 	/**

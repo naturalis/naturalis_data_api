@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
+
 public class SourceSystem implements INbaModelObject {
 
 	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS",
@@ -14,7 +16,9 @@ public class SourceSystem implements INbaModelObject {
 			"NDFF - Nationale Databank Flora en Fauna");
 	public static final SourceSystem GEO = new SourceSystem("GEO", "Naturalis - Geo Areas");
 
+	@Analyzers({})
 	private String code;
+	@Analyzers({})
 	private String name;
 
 	public SourceSystem()

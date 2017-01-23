@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
+
 public enum TaxonomicStatus implements INbaModelObject
 {
 
@@ -25,6 +27,7 @@ public enum TaxonomicStatus implements INbaModelObject
 		return null;
 	}
 
+	@Analyzers({})
 	private final String name;
 
 	private TaxonomicStatus(String name)

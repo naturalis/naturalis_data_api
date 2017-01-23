@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
+
 public enum PhaseOrStage implements INbaModelObject
 {
 
@@ -18,6 +20,7 @@ public enum PhaseOrStage implements INbaModelObject
 		return null;
 	}
 
+	@Analyzers({})
 	private final String name;
 
 	private PhaseOrStage(String name)

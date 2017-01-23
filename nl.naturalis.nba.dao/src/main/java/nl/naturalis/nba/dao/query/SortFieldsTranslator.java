@@ -11,7 +11,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortMode;
 
@@ -41,10 +40,10 @@ class SortFieldsTranslator {
 		this.dt = documentType;
 	}
 
-	SortBuilder[] translate() throws InvalidQueryException
+	FieldSortBuilder[] translate() throws InvalidQueryException
 	{
 		List<SortField> sortFields = querySpec.getSortFields();
-		SortBuilder[] result = new SortBuilder[sortFields.size()];
+		FieldSortBuilder[] result = new FieldSortBuilder[sortFields.size()];
 		int i = 0;
 		for (SortField sf : sortFields) {
 			String path = sf.getPath();

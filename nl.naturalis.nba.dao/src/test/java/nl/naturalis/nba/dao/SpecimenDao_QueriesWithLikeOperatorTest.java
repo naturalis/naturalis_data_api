@@ -85,7 +85,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		String rank = "identifications.systemClassification.rank";
 		String name = "identifications.systemClassification.name";
 		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition(rank, LIKE, "ingdo")); /* kingdom */
+		qs.addCondition(new QueryCondition(rank, EQUALS, "kingdom"));
 		qs.addCondition(new QueryCondition(name, LIKE, "nimali")); /* Animalia */
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);

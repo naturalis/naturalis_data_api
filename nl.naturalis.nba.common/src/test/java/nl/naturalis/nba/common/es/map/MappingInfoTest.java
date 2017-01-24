@@ -48,7 +48,7 @@ public class MappingInfoTest {
 	{
 		ESField f = personInfo.getField("lastName");
 		assertNotNull("01", f);
-		assertTrue("02", f instanceof StringField);
+		assertTrue("02", f instanceof KeywordField);
 	}
 
 	@Test(expected = NoSuchFieldException.class)
@@ -94,7 +94,7 @@ public class MappingInfoTest {
 	public void testGetType_06() throws NoSuchFieldException
 	{
 		ESDataType type = personInfo.getType("hobbies");
-		assertEquals("01", ESDataType.STRING, type);
+		assertEquals("01", ESDataType.KEYWORD, type);
 	}
 
 	@Test

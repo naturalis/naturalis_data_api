@@ -10,7 +10,7 @@ import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.INTEGER;
 import static nl.naturalis.nba.common.es.map.ESDataType.LONG;
 import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
-import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
+import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
 
 import java.net.URI;
 import java.net.URL;
@@ -47,12 +47,12 @@ class DataTypeMap {
 	private DataTypeMap()
 	{
 		/* Stringy types */
-		java2es.put(String.class, STRING);
-		java2es.put(char.class, STRING);
-		java2es.put(Character.class, STRING);
-		java2es.put(URI.class, STRING);
-		java2es.put(URL.class, STRING);
-		java2es.put(Enum.class, STRING);
+		java2es.put(String.class, KEYWORD);
+		java2es.put(char.class, KEYWORD);
+		java2es.put(Character.class, KEYWORD);
+		java2es.put(URI.class, KEYWORD);
+		java2es.put(URL.class, KEYWORD);
+		java2es.put(Enum.class, KEYWORD);
 		/* Number types */
 		java2es.put(byte.class, BYTE);
 		java2es.put(Byte.class, BYTE);

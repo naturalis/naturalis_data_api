@@ -1,28 +1,26 @@
 {
   "properties" : {
     "firstName" : {
-      "type" : "string",
-      "index" : "not_analyzed",
+      "type" : "keyword",
       "fields" : {
-        "analyzed" : {
-          "type" : "string"
-        },
         "ignoreCase" : {
-          "type" : "string",
+          "type" : "text",
           "analyzer" : "case_insensitive_analyzer"
+        },
+        "analyzed" : {
+          "type" : "text"
         }
       }
     },
     "lastName" : {
-      "type" : "string",
-      "index" : "not_analyzed",
+      "type" : "keyword",
       "fields" : {
-        "analyzed" : {
-          "type" : "string"
-        },
         "ignoreCase" : {
-          "type" : "string",
+          "type" : "text",
           "analyzer" : "case_insensitive_analyzer"
+        },
+        "analyzed" : {
+          "type" : "text"
         }
       }
     },
@@ -42,49 +40,46 @@
     "address" : {
       "properties" : {
         "street" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "analyzed" : {
-              "type" : "string"
+              "type" : "text"
             },
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             },
             "like" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "like_analyzer"
             }
           }
         },
         "number" : {
           "type" : "integer",
-          "index" : "no"
+          "index" : false
         },
         "postalCode" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             }
           }
         },
         "city" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "analyzed" : {
-              "type" : "string"
+              "type" : "text"
             },
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             },
             "like" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "like_analyzer"
             }
           }
@@ -92,24 +87,22 @@
         "country" : {
           "properties" : {
             "name" : {
-              "type" : "string",
-              "index" : "not_analyzed",
+              "type" : "keyword",
               "fields" : {
-                "analyzed" : {
-                  "type" : "string"
-                },
                 "ignoreCase" : {
-                  "type" : "string",
+                  "type" : "text",
                   "analyzer" : "case_insensitive_analyzer"
+                },
+                "analyzed" : {
+                  "type" : "text"
                 }
               }
             },
             "isoCode" : {
-              "type" : "string",
-              "index" : "not_analyzed",
+              "type" : "keyword",
               "fields" : {
                 "ignoreCase" : {
-                  "type" : "string",
+                  "type" : "text",
                   "analyzer" : "case_insensitive_analyzer"
                 }
               }
@@ -122,15 +115,14 @@
       }
     },
     "hobbies" : {
-      "type" : "string",
-      "index" : "not_analyzed",
+      "type" : "keyword",
       "fields" : {
-        "analyzed" : {
-          "type" : "string"
-        },
         "ignoreCase" : {
-          "type" : "string",
+          "type" : "text",
           "analyzer" : "case_insensitive_analyzer"
+        },
+        "analyzed" : {
+          "type" : "text"
         }
       }
     },
@@ -138,38 +130,36 @@
       "type" : "nested",
       "properties" : {
         "name" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "analyzed" : {
-              "type" : "string"
+              "type" : "text"
             },
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             },
             "like" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "like_analyzer"
             }
           }
         },
         "species" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
-            "analyzed" : {
-              "type" : "string"
-            },
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
+            },
+            "analyzed" : {
+              "type" : "text"
             }
           }
         },
         "colors" : {
-          "type" : "string",
-          "index" : "no"
+          "type" : "keyword",
+          "index" : false
         }
       }
     },
@@ -180,49 +170,46 @@
       "type" : "nested",
       "properties" : {
         "street" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "analyzed" : {
-              "type" : "string"
+              "type" : "text"
             },
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             },
             "like" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "like_analyzer"
             }
           }
         },
         "number" : {
           "type" : "integer",
-          "index" : "no"
+          "index" : false
         },
         "postalCode" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             }
           }
         },
         "city" : {
-          "type" : "string",
-          "index" : "not_analyzed",
+          "type" : "keyword",
           "fields" : {
             "analyzed" : {
-              "type" : "string"
+              "type" : "text"
             },
             "ignoreCase" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "case_insensitive_analyzer"
             },
             "like" : {
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "like_analyzer"
             }
           }
@@ -230,24 +217,22 @@
         "country" : {
           "properties" : {
             "name" : {
-              "type" : "string",
-              "index" : "not_analyzed",
+              "type" : "keyword",
               "fields" : {
-                "analyzed" : {
-                  "type" : "string"
-                },
                 "ignoreCase" : {
-                  "type" : "string",
+                  "type" : "text",
                   "analyzer" : "case_insensitive_analyzer"
+                },
+                "analyzed" : {
+                  "type" : "text"
                 }
               }
             },
             "isoCode" : {
-              "type" : "string",
-              "index" : "not_analyzed",
+              "type" : "keyword",
               "fields" : {
                 "ignoreCase" : {
-                  "type" : "string",
+                  "type" : "text",
                   "analyzer" : "case_insensitive_analyzer"
                 }
               }

@@ -70,7 +70,7 @@ public class ConditionTranslatorFactory {
 				if (condition.getValue() == null) {
 					return new IsNullConditionTranslator(condition, mappingInfo);
 				}
-				if (getESFieldType(condition, mappingInfo) == ESDataType.STRING) {
+				if (getESFieldType(condition, mappingInfo) == ESDataType.KEYWORD) {
 					return new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
 				}
 				/*
@@ -91,7 +91,7 @@ public class ConditionTranslatorFactory {
 				if (condition.getValue() == null) {
 					return new IsNotNullConditionTranslator(condition, mappingInfo);
 				}
-				if (getESFieldType(condition, mappingInfo) == ESDataType.STRING) {
+				if (getESFieldType(condition, mappingInfo) == ESDataType.KEYWORD) {
 					return new NotEqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
 				}
 				return new NotEqualsConditionTranslator(condition, mappingInfo);

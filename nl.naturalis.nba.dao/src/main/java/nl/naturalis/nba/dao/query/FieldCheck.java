@@ -2,15 +2,14 @@ package nl.naturalis.nba.dao.query;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.es.map.ESField;
-import nl.naturalis.nba.common.es.map.Index;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.SimpleField;
 
 /**
- * Ensures the a {@link QueryCondition} specifies an existing field and that it is a
- * primitive field (not an object).
+ * Ensures the a {@link QueryCondition} specifies an existing field and that it
+ * is a primitive field (not an object).
  * 
  * @author Ayco Holleman
  *
@@ -41,7 +40,7 @@ class FieldCheck {
 			throw new InvalidConditionException(msg);
 		}
 		SimpleField sf = (SimpleField) field;
-		if (sf.getIndex() == Index.NO) {
+		if (sf.getIndex() == Boolean.FALSE) {
 			String fmt = "Field %s cannot be queried: field is not indexed";
 			String msg = String.format(fmt, condition.getField());
 			throw new InvalidConditionException(msg);

@@ -7,35 +7,26 @@ import nl.naturalis.nba.api.annotations.Analyzer;
 
 /**
  * An {@code StringField} is a {@link SimpleField} with data type
- * {@link ESDataType#STRING}. This type of field can be indexed in multiple ways through
- * {@link Analyzer analyzers}. The field itself always remains unanalyzed (meaning you can
- * always create {@link ComparisonOperator#EQUALS} queries for it. Other indexes are
- * specified through a virtual {@link MultiField multi-field} underneath it.
+ * {@link ESDataType#KEYWORD}. This type of field can be indexed in multiple
+ * ways through {@link Analyzer analyzers}. The field itself always remains
+ * unanalyzed (meaning you can always create {@link ComparisonOperator#EQUALS}
+ * queries for it. Other indexes are specified through a virtual
+ * {@link MultiField multi-field} underneath it.
  * 
  * @author Ayco Holleman
  *
  */
-public class StringField extends SimpleField implements IAnalyzable {
+public class KeywordField extends SimpleField {
 
 	protected String analyzer;
 	private LinkedHashMap<String, MultiField> fields;
 
-	public StringField()
+	public KeywordField()
 	{
-		super(ESDataType.STRING);
+		super(ESDataType.KEYWORD);
 	}
 
-	public String getAnalyzer()
-	{
-		return analyzer;
-	}
-
-	public void setAnalyzer(String analyzer)
-	{
-		this.analyzer = analyzer;
-	}
-
-	public LinkedHashMap<String, MultiField> getFields()
+	public LinkedHashMap<String, MultiField> getMultiFields()
 	{
 		return fields;
 	}

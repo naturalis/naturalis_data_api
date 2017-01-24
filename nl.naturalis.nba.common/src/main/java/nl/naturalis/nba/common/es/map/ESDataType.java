@@ -5,24 +5,28 @@ import java.util.HashMap;
 public enum ESDataType
 {
 
-	STRING("string"),
-	INTEGER("integer"),
-	BOOLEAN("boolean"),
-	DATE("date"),
-	BYTE("byte"),
-	SHORT("short"),
-	LONG("long"),
-	FLOAT("float"),
-	DOUBLE("double"),
-	GEO_POINT("geo_point"),
-	GEO_SHAPE("geo_shape"),
-	OBJECT("object"),
-	NESTED("nested");
+	KEYWORD,
+	TEXT,
+	INTEGER,
+	BOOLEAN,
+	DATE,
+	BYTE,
+	SHORT,
+	LONG,
+	FLOAT,
+	DOUBLE,
+	GEO_POINT,
+	GEO_SHAPE,
+	OBJECT,
+	NESTED;
 
+	/*
+	 * Map data type names to enum constants.
+	 */
 	private static final HashMap<String, ESDataType> reverse;
 
 	static {
-		reverse = new HashMap<String, ESDataType>(12, 1);
+		reverse = new HashMap<String, ESDataType>(16, 1);
 		for (ESDataType t : values()) {
 			reverse.put(t.esName, t);
 		}
@@ -34,6 +38,11 @@ public enum ESDataType
 	}
 
 	private final String esName;
+
+	private ESDataType()
+	{
+		this.esName = name().toLowerCase();
+	}
 
 	private ESDataType(String esName)
 	{

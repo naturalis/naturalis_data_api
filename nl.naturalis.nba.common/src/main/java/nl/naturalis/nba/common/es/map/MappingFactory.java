@@ -1,9 +1,7 @@
 package nl.naturalis.nba.common.es.map;
 
+import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
 import static nl.naturalis.nba.common.es.map.ESDataType.NESTED;
-import static nl.naturalis.nba.common.es.map.ESDataType.*;
-import static nl.naturalis.nba.common.es.map.Index.NO;
-import static nl.naturalis.nba.common.es.map.Index.NOT_ANALYZED;
 import static nl.naturalis.nba.common.es.map.MappingUtil.extractFieldFromGetter;
 import static nl.naturalis.nba.common.es.map.MappingUtil.getClassForTypeArgument;
 import static nl.naturalis.nba.common.es.map.MappingUtil.getFields;
@@ -151,8 +149,8 @@ public class MappingFactory {
 	{
 		SimpleField sf;
 		switch (esType) {
-			case STRING:
-				sf = new StringField();
+			case KEYWORD:
+				sf = new KeywordField();
 				break;
 			case DATE:
 				sf = new DateField();
@@ -170,13 +168,12 @@ public class MappingFactory {
 				sf = new SimpleField(esType);
 		}
 		if (fm.getAnnotation(NotIndexed.class) == null) {
-			if (esType == STRING) {
-				sf.setIndex(NOT_ANALYZED);
-				addMultiFields((StringField) sf, fm);
+			if (esType == KEYWORD) {
+				addMultiFields((KeywordField) sf, fm);
 			}
 		}
 		else {
-			sf.setIndex(NO);
+			sf.setIndex(Boolean.FALSE);
 		}
 		return sf;
 	}
@@ -225,12 +222,12 @@ public class MappingFactory {
 	 * Returns false if the Java field does not contain the @Analyzers
 	 * annotation. Otherwise it returns true.
 	 */
-	private static boolean addMultiFields(StringField af, AnnotatedElement fm)
+	private static boolean addMultiFields(KeywordField af, AnnotatedElement fm)
 	{
 		Analyzers annotation = fm.getAnnotation(Analyzers.class);
 		if (annotation == null) {
-			af.addMultiField(DEFAULT_MULTIFIELD);
 			af.addMultiField(IGNORE_CASE_MULTIFIELD);
+			af.addMultiField(DEFAULT_MULTIFIELD);
 			return false;
 		}
 		if (annotation.value().length == 0) {

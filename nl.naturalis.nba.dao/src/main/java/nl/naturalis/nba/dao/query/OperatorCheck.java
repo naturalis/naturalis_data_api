@@ -26,7 +26,7 @@ import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.INTEGER;
 import static nl.naturalis.nba.common.es.map.ESDataType.LONG;
 import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
-import static nl.naturalis.nba.common.es.map.ESDataType.STRING;
+import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
 import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 
@@ -41,7 +41,7 @@ import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
-import nl.naturalis.nba.common.es.map.StringField;
+import nl.naturalis.nba.common.es.map.KeywordField;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
@@ -77,7 +77,7 @@ public class OperatorCheck {
 				LTE, GT, GTE, BETWEEN, NOT_BETWEEN));
 		t2o.put(DATE, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
-		t2o.put(STRING, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LIKE,
+		t2o.put(KEYWORD, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LIKE,
 				NOT_LIKE, MATCHES, NOT_MATCHES));
 		t2o.put(GEO_POINT, EnumSet.of(IN, NOT_IN));
 		t2o.put(GEO_SHAPE, EnumSet.of(IN, NOT_IN));
@@ -95,14 +95,14 @@ public class OperatorCheck {
 	{
 		if (isOperatorAllowed(field.getType(), operator)) {
 			if (operator == LIKE || operator == NOT_LIKE) {
-				if (field instanceof StringField) {
-					return ((StringField) field).hasMultiField(LIKE_MULTIFIELD);
+				if (field instanceof KeywordField) {
+					return ((KeywordField) field).hasMultiField(LIKE_MULTIFIELD);
 				}
 				return false;
 			}
 			if (operator == EQUALS_IC || operator == NOT_EQUALS_IC) {
-				if (field instanceof StringField) {
-					return ((StringField) field).hasMultiField(IGNORE_CASE_MULTIFIELD);
+				if (field instanceof KeywordField) {
+					return ((KeywordField) field).hasMultiField(IGNORE_CASE_MULTIFIELD);
 				}
 				// Otherwise (e.g. with numbers) EQUALS_IC is treated like EQUALS
 			}

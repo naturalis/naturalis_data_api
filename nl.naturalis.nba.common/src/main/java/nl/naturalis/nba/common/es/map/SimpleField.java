@@ -9,19 +9,19 @@ package nl.naturalis.nba.common.es.map;
  */
 public class SimpleField extends ESField {
 
-	protected Index index;
+	protected Boolean index;
 
 	public SimpleField(ESDataType type)
 	{
 		this.type = type;
 	}
 
-	public Index getIndex()
+	public Boolean getIndex()
 	{
 		return index;
 	}
 
-	public void setIndex(Index index)
+	public void setIndex(Boolean index)
 	{
 		this.index = index;
 	}

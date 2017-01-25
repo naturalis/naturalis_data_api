@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotNested;
 
 public class Specimen extends NbaTraceableObject implements IDocumentObject {
 
@@ -41,6 +42,9 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
 	private List<String> theme;
+
+	@NotNested
+	private List<TaxonomicEnrichment> taxonomicEnrichments;
 
 	public void addIndentification(SpecimenIdentification identification)
 	{
@@ -320,6 +324,16 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	public void setTheme(List<String> theme)
 	{
 		this.theme = theme;
+	}
+
+	public List<TaxonomicEnrichment> getTaxonomicEnrichments()
+	{
+		return taxonomicEnrichments;
+	}
+
+	public void setTaxonomicEnrichments(List<TaxonomicEnrichment> taxonomicEnrichments)
+	{
+		this.taxonomicEnrichments = taxonomicEnrichments;
 	}
 
 }

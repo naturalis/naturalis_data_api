@@ -101,6 +101,7 @@ public class ESClientManager {
 		Builder builder = Settings.builder();
 		String cluster = config.required("elasticsearch.cluster.name");
 		builder.put("cluster.name", cluster);
+		builder.put("client.transport.ping_timeout", "20s");
 		Settings settings = builder.build();
 		return new PreBuiltTransportClient(settings);
 	}

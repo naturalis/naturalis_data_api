@@ -6,6 +6,7 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,8 @@ import nl.naturalis.nba.dao.exception.DaoException;
 
 class BulkIndexer<T extends IDocumentObject> {
 
+	private static final TimeValue REQUEST_TIMEOUT = TimeValue.timeValueMinutes(5);
+
 	private final DocumentType<T> dt;
 
 	BulkIndexer(DocumentType<T> dt)
@@ -24,14 +27,14 @@ class BulkIndexer<T extends IDocumentObject> {
 		this.dt = dt;
 	}
 
-	void index(List<T> objs, List<String> ids, List<String> parentIds)
-			throws BulkIndexException
+	void index(List<T> objs, List<String> ids, List<String> parentIds) throws BulkIndexException
 	{
 		Client client = ESClientManager.getInstance().getClient();
 		String index = dt.getIndexInfo().getName();
 		String type = dt.getName();
 		ObjectMapper om = dt.getObjectMapper();
 		BulkRequestBuilder brb = client.prepareBulk();
+		brb.setTimeout(REQUEST_TIMEOUT);
 		for (int i = 0; i < objs.size(); ++i) {
 			IndexRequestBuilder irb = client.prepareIndex(index, type);
 			try {

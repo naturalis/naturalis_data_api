@@ -100,8 +100,8 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 * every time the number of objects in the loader's internal queue exceeds a
 	 * certain treshold, specified by the {@code queueSize} argument. Specifying
 	 * 0 (zero) for {@code queueSize} effectively disables this trigger and you
-	 * must explicitly call {@link #flush()} yourself in order to avoid an
-	 * {@link OutOfMemoryError}.
+	 * <b>must</b> explicitly call {@link #flush()} yourself in order to avoid
+	 * an {@link OutOfMemoryError}.
 	 * 
 	 * @param dt
 	 * @param queueSize

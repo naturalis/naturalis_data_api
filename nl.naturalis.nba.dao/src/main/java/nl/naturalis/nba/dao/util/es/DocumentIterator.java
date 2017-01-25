@@ -125,9 +125,9 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	private T newDocumentObject(SearchHit hit)
 	{
 		ObjectMapper om = dt.getObjectMapper();
-		T documentObject = om.convertValue(hit.getSource(), dt.getJavaType());
-		documentObject.setId(hit.getId());
-		return documentObject;
+		T obj = om.convertValue(hit.getSource(), dt.getJavaType());
+		obj.setId(hit.getId());
+		return obj;
 	}
 
 	private void checkReady()

@@ -1,7 +1,12 @@
-package nl.naturalis.nba.etl.enrich01;
+package nl.naturalis.nba.etl.enrich;
 
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,37 +32,63 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
-import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.BulkIndexException;
+import nl.naturalis.nba.etl.BulkUpdater;
 
 public class TaxonomicEnricher {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
-
-	}
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = getLogger(TaxonomicEnricher.class);
-
-	public TaxonomicEnricher()
-	{
-	}
-
-	public void addTaxonomicEnrichments()
-	{
-		long start = System.currentTimeMillis();
-		DocumentIterator<Specimen> extractor = new DocumentIterator<>(DocumentType.SPECIMEN);
-		List<Specimen> batch = extractor.nextBatch();
-		while (batch != null) {
-			enrichSpecimens(batch);
+		TaxonomicEnricher enricher = new TaxonomicEnricher();
+		try {
+			enricher.enrich();
 		}
+		catch (Throwable t) {
+			logger.error(t.getMessage());
+			System.exit(1);
+		}
+		finally {
+			ESClientManager.getInstance().closeClient();
+		}
+		System.exit(0);
 	}
 
-	private static void enrichSpecimens(List<Specimen> specimens)
+	private static final Logger logger = getLogger(TaxonomicEnricher.class);
+	private static final int BATCH_SIZE = 1000;
+
+	public void enrich() throws BulkIndexException
+	{
+		logger.info("Starting taxonomic enrichment of Specimen documents");
+		long start = System.currentTimeMillis();
+		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
+		extractor.setBatchSize(BATCH_SIZE);
+		BulkUpdater<Specimen> updater = new BulkUpdater<>(SPECIMEN);
+		List<Specimen> batch = extractor.nextBatch();
+		int processed = 0;
+		int updated = 0;
+		while (batch != null) {
+			updated += enrichBatch(batch);
+			updater.update(batch);
+			processed += batch.size();
+			if (processed % 100000 == 0) {
+				logger.info("Specimen documents processed: {}", processed);
+				logger.info("Specimen documents updated: {}", updated);
+			}
+			batch = extractor.nextBatch();
+		}
+		refreshIndex(SPECIMEN);
+		logger.info("Specimen documents processed: {}", processed);
+		logger.info("Specimen documents updated: {}", updated);
+		logDuration(logger, getClass(), start);
+	}
+
+	private static int enrichBatch(List<Specimen> specimens)
 	{
 		Set<String> names = extractNames(specimens);
 		HashMap<String, Taxon> taxonCache = cacheTaxa(names);
+		int updates = 0;
 		for (Specimen specimen : specimens) {
 			if (specimen.getIdentifications() == null) {
 				continue;
@@ -81,9 +112,13 @@ public class TaxonomicEnricher {
 					copyTaxonAttrs(taxon, enrichment, i);
 				}
 			}
-			List<TaxonomicEnrichment> enrichments = new ArrayList<>(myEnrichments.values());
-			specimen.setTaxonomicEnrichments(enrichments);
+			if (myEnrichments.size() > 0) {
+				List<TaxonomicEnrichment> enrichments = new ArrayList<>(myEnrichments.values());
+				specimen.setTaxonomicEnrichments(enrichments);
+				updates++;
+			}
 		}
+		return updates;
 	}
 
 	private static boolean copyTaxonAttrs(Taxon taxon, TaxonomicEnrichment enrichment,
@@ -130,11 +165,11 @@ public class TaxonomicEnricher {
 	private static List<Taxon> loadTaxa(Collection<String> names)
 	{
 		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+		SearchRequestBuilder request = newSearchRequest(dt);
 		String field = "acceptedName.fullScientificName";
 		TermsQueryBuilder query = QueryBuilders.termsQuery(field, names);
 		request.setQuery(query);
-		SearchResponse response = ESUtil.executeSearchRequest(request);
+		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
 			return Collections.emptyList();

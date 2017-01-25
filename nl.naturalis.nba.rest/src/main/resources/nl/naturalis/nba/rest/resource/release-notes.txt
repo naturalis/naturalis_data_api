@@ -10,17 +10,33 @@ RELEASE NOTES V 2.06
   IScientificNameSummaryAccess API.
 
 * A import program and shell script have been created to
-  populate the ScientificNameSummary index.
+  populate the ScientificNameSummary index. The import
+  program also runs as part of the import-all script.
   
 * The import-all shell script has been modified. It still
   imports all data sources, but now generates a different 
   log file for each data source.
   
-* More fields can now be queries using the LIKE operator.
+* More fields can now be queried using the LIKE operator.
   As a rule of thumb: a name-ish fields can now be queried
   using the LIKE operator.
+  
+* Less fields can now be queried using the MATCHES
+  operator. All fields whose values are controlled and
+  all fields that can possibly only contain a single
+  word (e.g. rank names like "genus", "kingdom", etc.)
+  are not analyzed using Elasticsearch's standard
+  analyzer any longer and can therefore not be queried
+  using the MATCHES operator.
   
 * NBA Version now runs on Elasticsearch V5
 
 * NBAVTWO-292 Name of log file in etl import script now
-  includes name of imported document type
+  includes name of imported document type.
+  
+* NBAVTWO-285 The specimen document type now contains
+  a new object taxonomicEnrichments, which contains
+  vernacular names and synonyms from associated taxa
+  in our taxonomic systems (currently Catalogue of
+  Life and Dutch Species Registry). This allows you
+  to search for specimens using taxonomic attributes.

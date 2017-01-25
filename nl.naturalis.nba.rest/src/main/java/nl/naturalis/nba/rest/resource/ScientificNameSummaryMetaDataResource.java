@@ -21,7 +21,7 @@ import nl.naturalis.nba.dao.ScientificNameSummaryMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
-@Path("/taxon/metadata")
+@Path("/names/metadata")
 @Stateless
 @LocalBean
 public class ScientificNameSummaryMetaDataResource {

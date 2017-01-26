@@ -1,6 +1,9 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -95,6 +98,7 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameAscending();
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificName.fullScientificName");
+		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
@@ -111,6 +115,7 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 		List<Specimen> expected = sortByScientificNameDescending();
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificName.fullScientificName", false);
+		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
@@ -119,157 +124,52 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 	}
 
 //	/*
-//	 * Test with sort on nested field (ascending) with a single query conditions
+//	 * Test with sort on nested field (descending) with a single query condition
 //	 * on that same field.
 //	 */
 //	@Test
 //	public void testQuery__QuerySpec__05() throws InvalidQueryException
 //	{
-//		List<Specimen> expected = sortByScientificNameAscending();
+//		List<Specimen> expected = sortByScientificNameDescending();
 //		QuerySpec qs = new QuerySpec();
 //		String field = "identifications.scientificName.fullScientificName";
-//		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
-//		qs.sortBy(field);
+//		qs.addCondition(new QueryCondition(field, EQUALS, "Larus f. fuscus"));
+//		qs.sortBy(field, false);
+//		qs.sortBy("unitID");
 //		SpecimenDao dao = new SpecimenDao();
 //		QueryResult<Specimen> result = dao.query(qs);
+//		assertEquals("01",result.size(),2);
 //		for (int i = 0; i < result.size(); i++) {
-//			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
+//			assertEquals(("0"+(i+2)), expected.get(i).getUnitID(), result.get(i).getUnitID());
 //		}
 //	}
-//
+
 //	/*
-//	 * Test with sort on nested field (descending) with a multiple query
-//	 * conditions (joined with AND) on that same field.
+//	 * Test with sort on nested field with a multiple query conditions (joined
+//	 * with OR) on that same field. This is worth testing because of the
+//	 * "nested_filter" that gets generated within the "sort" field of the
+//	 * Elasticsearch query.
 //	 */
 //	@Test
 //	public void testQuery__QuerySpec__06() throws InvalidQueryException
 //	{
-//		List<Specimen> expected = sortByScientificNameAscending();
+//		List<Specimen> expected = sortByScientificNameDescending();
 //		QuerySpec qs = new QuerySpec();
 //		String field = "identifications.scientificName.fullScientificName";
-//		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
-//		qs.addCondition(new QueryCondition(field, MATCHES, "Larus"));
-//		qs.setLogicalOperator(LogicalOperator.AND);
-//		qs.sortBy(field);
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		for (int i = 0; i < result.size(); i++) {
-//			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
-//		}
-//	}
-//
-//	/*
-//	 * Test with sort on nested field (descending) with a multiple query
-//	 * conditions (joined with OR) on that same field.
-//	 */
-//	@Test
-//	public void testQuery__QuerySpec__07() throws InvalidQueryException
-//	{
-//		List<Specimen> expected = sortByScientificNameAscending();
-//		QuerySpec qs = new QuerySpec();
-//		String field = "identifications.scientificName.fullScientificName";
-//		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
-//		qs.addCondition(new QueryCondition(field, MATCHES, "Larus"));
+//		/*
+//		 * A bogus query (the 2nd condition is superfluous)
+//		 */
+//		qs.addCondition(new QueryCondition(field, EQUALS, "Larus f. fuscus"));
+//		qs.addCondition(new QueryCondition(field, NOT_EQUALS, "Malus sylvestris"));
 //		qs.setLogicalOperator(LogicalOperator.OR);
-//		qs.sortBy(field);
+//		qs.sortBy(field, false);
+//		qs.sortBy("unitID");
 //		SpecimenDao dao = new SpecimenDao();
 //		QueryResult<Specimen> result = dao.query(qs);
 //		for (int i = 0; i < result.size(); i++) {
 //			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
 //		}
 //	}
-//
-//	/*
-//	 * Test with sort on nested field (descending) with a single query condition
-//	 * containing an AND sibling condition, both on the same nested field.
-//	 */
-//	@Test
-//	public void testQuery__QuerySpec__08() throws InvalidQueryException
-//	{
-//		List<Specimen> expected = sortByScientificNameAscending();
-//		QuerySpec qs = new QuerySpec();
-//		String field = "identifications.scientificName.fullScientificName";
-//		QueryCondition condition = new QueryCondition(field, LIKE, "Larus");
-//		condition.and(new QueryCondition(field, MATCHES, "Larus"));
-//		qs.addCondition(condition);
-//		qs.sortBy(field);
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		for (int i = 0; i < result.size(); i++) {
-//			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
-//		}
-//	}
-//
-//	/*
-//	 * Test with sort on nested field (descending) with a multiple query
-//	 * conditions, some on the same nested field, others on a different field.
-//	 * Should not be a problem; only the conditions on the nested field should
-//	 * end up in the "nested_filter" within the sort field (see log output).
-//	 */
-//	@Test
-//	public void testQuery__QuerySpec__09() throws InvalidQueryException
-//	{
-//		List<Specimen> expected = sortByScientificNameAscending();
-//		QuerySpec qs = new QuerySpec();
-//		String field = "identifications.scientificName.fullScientificName";
-//		qs.addCondition(new QueryCondition(field, LIKE, "Larus"));
-//		qs.addCondition(new QueryCondition(field, MATCHES, "Larus"));
-//		qs.addCondition(new QueryCondition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
-//		qs.setLogicalOperator(LogicalOperator.AND);
-//		qs.sortBy(field);
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		for (int i = 0; i < result.size(); i++) {
-//			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
-//		}
-//	}
-//
-	/*
-	 * Test with sort on nested field (descending) with a single query condition
-	 * on the same nested field, but the condition contains an OR sibling on a
-	 * different field (unitID). Now we expect an exception!
-	 */
-	@Test(expected = InvalidQueryException.class)
-	public void testQuery__QuerySpec__10() throws InvalidQueryException
-	{
-		List<Specimen> expected = sortByScientificNameAscending();
-		QuerySpec qs = new QuerySpec();
-		String field = "identifications.scientificName.fullScientificName";
-		QueryCondition condition = new QueryCondition(field, LIKE, "Larus");
-		condition.and(new QueryCondition(field, MATCHES, "Larus"));
-		condition.or(new QueryCondition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
-		qs.addCondition(condition);
-		qs.sortBy(field);
-		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
-		for (int i = 0; i < result.size(); i++) {
-			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
-		}
-	}
-
-	/*
-	 * Test with sort on nested field (descending) with a single query condition
-	 * on the same nested field, but the condition contains a deeply nested
-	 * sibling on a different field (unitID). Now we expect an exception!
-	 */
-	@Test(expected = InvalidQueryException.class)
-	public void testQuery__QuerySpec__11() throws InvalidQueryException
-	{
-		List<Specimen> expected = sortByScientificNameAscending();
-		QuerySpec qs = new QuerySpec();
-		String field = "identifications.scientificName.fullScientificName";
-		QueryCondition root = new QueryCondition(field, LIKE, "Larus");
-		QueryCondition nested = new QueryCondition(field, MATCHES, "Larus");
-		nested.or(new QueryCondition("unitID", NOT_EQUALS, "XXX.YYY.12345"));
-		root.and(nested);
-		qs.addCondition(root);
-		qs.sortBy(field);
-		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
-		for (int i = 0; i < result.size(); i++) {
-			assertEquals("01", expected.get(i).getUnitID(), result.get(i).getUnitID());
-		}
-	}
 
 	private static List<Specimen> sortByUnitIDAscending()
 	{
@@ -333,7 +233,11 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 						.getFullScientificName();
 				String fsn2 = o2.getIdentifications().get(0).getScientificName()
 						.getFullScientificName();
-				return fsn1.compareTo(fsn2);
+				int i = fsn1.compareTo(fsn2);
+				if (i == 0) {
+					return o1.getUnitID().compareTo(o2.getUnitID());
+				}
+				return i;
 			}
 		});
 		return specimens;
@@ -373,10 +277,15 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 						.getFullScientificName();
 				String fsn2 = o2.getIdentifications().get(0).getScientificName()
 						.getFullScientificName();
-				return fsn2.compareTo(fsn1);
+				int i = fsn2.compareTo(fsn1);
+				if (i == 0) {
+					return o1.getUnitID().compareTo(o2.getUnitID());
+				}
+				return i;
 			}
 		});
 		return specimens;
 	}
+
 
 }

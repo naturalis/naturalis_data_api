@@ -53,147 +53,138 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	{
 		// dropIndex(Specimen.class);
 	}
-	
+
 	@Test
-	public void test() {
-		
+	public void test()
+	{
+
 	}
 
-//	/*
-//	 * Test with null (should get error).
-//	 */
-//	@Test
-//	public void testQuery__01()
-//	{
-//		String name = "identifications.systemClassification.name";
-//		QueryCondition condition = new QueryCondition(name, LIKE, null);
-//		QuerySpec qs = new QuerySpec();
-//		qs.addCondition(condition);
-//		SpecimenDao dao = new SpecimenDao();
-//		try {
-//			dao.query(qs);
-//			fail("Expected an InvalidQueryException");
-//		}
-//		catch (InvalidQueryException e) {
-//			assertTrue(e.getMessage()
-//					.contains("Search term must not be null when using operator LIKE"));
-//		}
-//	}
-//
-//	/*
-//	 * Test with comparison on field within or descending from a "nested" object
-//	 * (both identifications as systemClassification have data type "nested").
-//	 */
-//	@Test
-//	public void testQuery__02() throws InvalidQueryException
-//	{
-//		String rank = "identifications.systemClassification.rank";
-//		String name = "identifications.systemClassification.name";
-//		QuerySpec qs = new QuerySpec();
-//		qs.addCondition(new QueryCondition(rank, EQUALS, "kingdom"));
-//		qs.addCondition(new QueryCondition(name, LIKE, "nimali")); /* Animalia */
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		// Only mSylvestris is a plant, so should get 4 specimens
-//		assertEquals("01", 4, result.size());
-//	}
-//
-//	/*
-//	 * Test with odd characters
-//	 */
-//	@Test
-//	public void testQuery__03() throws InvalidQueryException
-//	{
-//		String author = "identifications.scientificName.authorshipVerbatim";
-//		QuerySpec qs = new QuerySpec();
-//		// Should yield mSylvestris only:
-//		qs.addCondition(new QueryCondition(author, LIKE, ".) Mill."));
-//		/* (L.) Mill. */
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 1, result.size());
-//	}
-//
-//	/*
-//	 * Test with odd characters
-//	 */
-//	@Test
-//	public void testQuery__04() throws InvalidQueryException
-//	{
-//		String author = "identifications.scientificName.authorshipVerbatim";
-//		QuerySpec qs = new QuerySpec();
-//		// Should yield tRex only:
-//		qs.addCondition(
-//				new QueryCondition(author, LIKE, "orn, 190")); /* Osborn, 1905 */
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 1, result.size());
-//	}
-//
-//	/*
-//	 * Test with odd characters and NOT_LIKE
-//	 */
-//	@Test
-//	public void testQuery__05() throws InvalidQueryException
-//	{
-//		String author = "identifications.scientificName.authorshipVerbatim";
-//		QuerySpec qs = new QuerySpec();
-//		// Should yield everything but tRex (4 specimens)
-//		qs.addCondition(new QueryCondition(author, NOT_LIKE, "orn, 190"));
-//		/* Osborn, 1905 */
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 4, result.size());
-//	}
-//
-//	/*
-//	 * Test with NOT_LIKE and multi-valued field. NOT_LIKE is expected to mean:
-//	 * NONE of the values of the multi-valued field are LIKE the search term.
-//	 */
-//	@Test
-//	public void testQuery__06() throws InvalidQueryException
-//	{
-//		String name = "identifications.systemClassification.name";
-//		QuerySpec qs = new QuerySpec();
-//		/*
-//		 * NB so in fact we are asking here for specimens where NONE of the
-//		 * monomials in the system classification (kingdom, phylum, class, etc)
-//		 * is LIKE Animalia! (But of course that's still only mSylvestris - the
-//		 * only plant in the test specimens).
-//		 */
-//		qs.addCondition(new QueryCondition(name, NOT_LIKE, "Animalia"));
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 1, result.size());
-//		assertEquals("02", "L   100", result.iterator().next().getUnitID());
-//	}
-//
-//	/*
-//	 * Make sure LIKE ignores case.
-//	 */
-//	@Test
-//	public void testQuery__07() throws InvalidQueryException
-//	{
-//		String name = "identifications.systemClassification.name";
-//		QuerySpec qs = new QuerySpec();
-//		qs.addCondition(new QueryCondition(name, LIKE, "animal"));
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 4, result.size());
-//	}
-//
-//	/*
-//	 * Make sure LIKE ignores case.
-//	 */
-//	@Test
-//	public void testQuery__08() throws InvalidQueryException
-//	{
-//		String name = "identifications.systemClassification.name";
-//		QuerySpec qs = new QuerySpec();
-//		qs.addCondition(new QueryCondition(name, NOT_LIKE, "animal"));
-//		SpecimenDao dao = new SpecimenDao();
-//		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", 1, result.size());
-//	}
-//
+	/*
+	 * Test with null (should get error).
+	 */
+	@Test
+	public void testQuery__01()
+	{
+		String expecting = "Search term must not be null when using operator LIKE";
+		String field = "identifications.scientificName.genusOrMonomial";
+		QueryCondition condition = new QueryCondition(field, LIKE, null);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		try {
+			dao.query(qs);
+			fail("Expected an InvalidQueryException");
+		}
+		catch (InvalidQueryException e) {
+			assertTrue(e.getMessage().contains(expecting));
+		}
+	}
+
+	/*
+	 * Test with comparison on field within or descending from a "nested"
+	 * object.
+	 */
+	@Test
+	public void testQuery__02() throws InvalidQueryException
+	{
+		String field0 = "identifications.scientificName.genusOrMonomial";
+		String field1 = "identifications.scientificName.specificEpithet";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field0, LIKE, "aru"));
+		qs.addCondition(new QueryCondition(field1, LIKE, "ajor"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// Parus major!
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with odd characters
+	 */
+	@Test
+	public void testQuery__03() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, LIKE, "Dorchester,"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// M. sylvestris!
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with odd characters
+	 */
+	@Test
+	public void testQuery__04() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, LIKE, ", U.S.A"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// T. rex!
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with odd characters and NOT_LIKE
+	 */
+	@Test
+	public void testQuery__05() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, NOT_LIKE, "Dorchester,"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// All but M. sylvestris
+		assertEquals("01", 4, result.size());
+	}
+
+	/*
+	 * Test with NOT_LIKE and multi-valued field. NOT_LIKE is expected to mean:
+	 * NONE of the values of the multi-valued field are LIKE the search term.
+	 */
+	@Test
+	public void testQuery__06() throws InvalidQueryException
+	{
+		/*
+		 * Can't do this test any longer because we don't have multi-valued
+		 * fields with the like_analyzer any longer.
+		 */
+	}
+
+	/*
+	 * Make sure LIKE ignores case.
+	 */
+	@Test
+	public void testQuery__07() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, LIKE, "dorchester"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// M. sylvestris!
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Make sure NOT_LIKE ignores case.
+	 */
+	@Test
+	public void testQuery__08() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.localityText";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, NOT_LIKE, "dorchester"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// All but M. sylvestris
+		assertEquals("01", 4, result.size());
+	}
+
 }

@@ -97,6 +97,8 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 				name.addFamily(dc.getFamily());
 			if (dc.getGenus() != null)
 				name.addGenus(dc.getGenus());
+			if (dc.getSubgenus() != null)
+				name.addSubgenus(dc.getSubgenus());
 			if (dc.getSpecificEpithet() != null)
 				name.addSpecificEpithet(dc.getSpecificEpithet());
 			if (dc.getInfraspecificEpithet() != null)

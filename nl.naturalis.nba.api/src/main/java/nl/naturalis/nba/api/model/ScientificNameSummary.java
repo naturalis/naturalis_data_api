@@ -112,6 +112,13 @@ public class ScientificNameSummary implements IDocumentObject {
 		genera.add(genus);
 	}
 
+	public void addSubgenus(String subgenus)
+	{
+		if (subgenera == null)
+			subgenera = new HashSet<>(4);
+		subgenera.add(subgenus);
+	}
+
 	public void addSpecificEpithet(String specificEpithet)
 	{
 		if (specificEpithets == null)

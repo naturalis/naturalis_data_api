@@ -57,6 +57,7 @@ public class TaxonomicEnricher {
 
 	private static final Logger logger = getLogger(TaxonomicEnricher.class);
 	private static final int BATCH_SIZE = 1000;
+	private static final int FLUSH_TRESHOLD = 1000;
 
 	public void enrich() throws BulkIndexException
 	{
@@ -65,12 +66,18 @@ public class TaxonomicEnricher {
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
 		extractor.setBatchSize(BATCH_SIZE);
 		BulkUpdater<Specimen> updater = new BulkUpdater<>(SPECIMEN);
-		List<Specimen> batch = extractor.nextBatch();
 		int processed = 0;
 		int updated = 0;
+		List<Specimen> queue = new ArrayList<>(FLUSH_TRESHOLD + BATCH_SIZE);
+		List<Specimen> batch = extractor.nextBatch();
 		while (batch != null) {
-			updated += enrichBatch(batch);
-			updater.update(batch);
+			List<Specimen> enrichedSpecimens = enrichBatch(batch);
+			updated += enrichedSpecimens.size();
+			queue.addAll(enrichedSpecimens);
+			if (queue.size() >= FLUSH_TRESHOLD) {
+				updater.update(enrichedSpecimens);
+				queue.clear();
+			}
 			processed += batch.size();
 			if (processed % 100000 == 0) {
 				logger.info("Specimen documents processed: {}", processed);
@@ -84,16 +91,16 @@ public class TaxonomicEnricher {
 		logDuration(logger, getClass(), start);
 	}
 
-	private static int enrichBatch(List<Specimen> specimens)
+	private static List<Specimen> enrichBatch(List<Specimen> specimens)
 	{
 		Set<String> names = extractNames(specimens);
 		HashMap<String, Taxon> taxonCache = cacheTaxa(names);
-		int updates = 0;
+		List<Specimen> enriched = new ArrayList<>(specimens.size());
 		for (Specimen specimen : specimens) {
 			if (specimen.getIdentifications() == null) {
 				continue;
 			}
-			HashMap<String, TaxonomicEnrichment> myEnrichments = new HashMap<>(8);
+			HashMap<String, TaxonomicEnrichment> enrichments = new HashMap<>(8);
 			for (int i = 0; i < specimen.getIdentifications().size(); i++) {
 				SpecimenIdentification si = specimen.getIdentifications().get(i);
 				String fsn = si.getScientificName().getFullScientificName();
@@ -101,24 +108,23 @@ public class TaxonomicEnricher {
 				if (taxon == null) {
 					continue;
 				}
-				TaxonomicEnrichment enrichment = myEnrichments.get(fsn);
+				TaxonomicEnrichment enrichment = enrichments.get(fsn);
 				if (enrichment == null) {
 					enrichment = new TaxonomicEnrichment();
 					if (copyTaxonAttrs(taxon, enrichment, i)) {
-						myEnrichments.put(fsn, enrichment);
+						enrichments.put(fsn, enrichment);
 					}
 				}
 				else {
 					copyTaxonAttrs(taxon, enrichment, i);
 				}
 			}
-			if (myEnrichments.size() > 0) {
-				List<TaxonomicEnrichment> enrichments = new ArrayList<>(myEnrichments.values());
-				specimen.setTaxonomicEnrichments(enrichments);
-				updates++;
+			if (enrichments.size() != 0) {
+				specimen.setTaxonomicEnrichments(new ArrayList<>(enrichments.values()));
+				enriched.add(specimen);
 			}
 		}
-		return updates;
+		return enriched;
 	}
 
 	private static boolean copyTaxonAttrs(Taxon taxon, TaxonomicEnrichment enrichment,
@@ -142,8 +148,9 @@ public class TaxonomicEnricher {
 			enriched = true;
 		}
 		if (enriched) {
-			if (enrichment.getIdentifications() == null)
+			if (enrichment.getIdentifications() == null) {
 				enrichment.setIdentifications(new ArrayList<Integer>(4));
+			}
 			enrichment.getIdentifications().add(identification);
 			enrichment.setTaxonId(taxon.getId());
 			enrichment.setTaxonSourceSystem(taxon.getSourceSystem().getName());

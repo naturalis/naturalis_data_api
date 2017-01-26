@@ -21,6 +21,7 @@ import nl.naturalis.nba.api.model.ScientificNameSummary;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 class NameImportUtil {
 
@@ -42,9 +43,8 @@ class NameImportUtil {
 		request.setQuery(query);
 		SearchResponse response = ESUtil.executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
+		if (hits.length == 0)
 			return Collections.emptyList();
-		}
 		List<ScientificNameSummary> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
@@ -58,19 +58,18 @@ class NameImportUtil {
 	{
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		TermsQueryBuilder query = QueryBuilders.termsQuery("acceptedName.fullScientificName",
-				names);
+		TermsQueryBuilder query = termsQuery("acceptedName.fullScientificName", names);
 		request.setQuery(query);
 		SearchResponse response = ESUtil.executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
+		if (hits.length == 0)
 			return Collections.emptyList();
-		}
 		List<Taxon> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			Taxon sns = om.convertValue(hit.getSource(), dt.getJavaType());
-			result.add(sns);
+			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+			taxon.setId(hit.getId());
+			result.add(taxon);
 		}
 		return result;
 	}

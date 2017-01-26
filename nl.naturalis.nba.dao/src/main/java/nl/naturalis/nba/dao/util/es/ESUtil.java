@@ -102,7 +102,7 @@ public class ESUtil {
 	public static SearchResponse executeSearchRequest(SearchRequestBuilder request)
 	{
 		if (logger.isDebugEnabled()) {
-			if (request.request().source().toString().length() < 1000) {
+			if (request.request().source().toString().length() < 3000) {
 				logger.debug("Executing search request:\n{}", request);
 			}
 			else {

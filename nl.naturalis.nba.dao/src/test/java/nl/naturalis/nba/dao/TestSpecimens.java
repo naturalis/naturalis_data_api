@@ -75,6 +75,8 @@ class TestSpecimens {
 
 		ScientificName scientificName = new ScientificName();
 		scientificName.setFullScientificName("Parus major");
+		scientificName.setGenusOrMonomial("Parus");
+		scientificName.setSpecificEpithet("major");
 		scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
 
 		SpecimenIdentification identification = new SpecimenIdentification();
@@ -132,6 +134,8 @@ class TestSpecimens {
 
 		ScientificName scientificName = new ScientificName();
 		scientificName.setFullScientificName("Larus f. fuscus");
+		scientificName.setGenusOrMonomial("Larus");
+		scientificName.setSpecificEpithet("fuscus");
 		scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
 
 		SpecimenIdentification identification = new SpecimenIdentification();
@@ -183,6 +187,8 @@ class TestSpecimens {
 
 		ScientificName scientificName = new ScientificName();
 		scientificName.setFullScientificName("Larus f. fuscus");
+		scientificName.setGenusOrMonomial("Larus");
+		scientificName.setSpecificEpithet("fuscus");
 		scientificName.setAuthorshipVerbatim("Linnaeus, 1752");
 
 		SpecimenIdentification identification = new SpecimenIdentification();
@@ -233,6 +239,8 @@ class TestSpecimens {
 
 		ScientificName scientificName = new ScientificName();
 		scientificName.setFullScientificName("Tyrannosaurus rex");
+		scientificName.setGenusOrMonomial("Tyrannosaurus");
+		scientificName.setSpecificEpithet("rex");
 		scientificName.setAuthorshipVerbatim("Osborn, 1905");
 
 		SpecimenIdentification identification = new SpecimenIdentification();
@@ -280,6 +288,8 @@ class TestSpecimens {
 
 		ScientificName scientificName = new ScientificName();
 		scientificName.setFullScientificName("Malus sylvestris");
+		scientificName.setGenusOrMonomial("Malus");
+		scientificName.setSpecificEpithet("sylvestris");
 		scientificName.setAuthorshipVerbatim("(L.) Mill.");
 
 		SpecimenIdentification identification = new SpecimenIdentification();

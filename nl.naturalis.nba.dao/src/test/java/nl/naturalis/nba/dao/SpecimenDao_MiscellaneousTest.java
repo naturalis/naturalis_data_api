@@ -243,20 +243,20 @@ public class SpecimenDao_MiscellaneousTest {
 		assertEquals("01", 0, result.size());
 	}
 
-	/*
-	 * Test query method with LIKE operator.
-	 */
-	@Test
-	public void testQuery__QuerySpec__07() throws InvalidQueryException
-	{
-		String collector = "gatheringEvent.gatheringPersons.fullName";
-		QueryCondition condition = new QueryCondition(collector, LIKE, "AlTeNbU");
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(condition);
-		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
-		assertEquals("01", 3, result.size());
-	}
+//	/*
+//	 * Test query method with LIKE operator.
+//	 */
+//	@Test
+//	public void testQuery__QuerySpec__07() throws InvalidQueryException
+//	{
+//		String collector = "gatheringEvent.gatheringPersons.fullName";
+//		QueryCondition condition = new QueryCondition(collector, LIKE, "AlTeNbU");
+//		QuerySpec qs = new QuerySpec();
+//		qs.addCondition(condition);
+//		SpecimenDao dao = new SpecimenDao();
+//		QueryResult<Specimen> result = dao.query(qs);
+//		assertEquals("01", 3, result.size());
+//	}
 
 	/*
 	 * Tests query method with using NOT
@@ -274,24 +274,24 @@ public class SpecimenDao_MiscellaneousTest {
 		assertEquals("01", 4, result.size());
 	}
 
-	/*
-	 * Tests query method with using AND NOT
-	 */
-	@Test
-	public void testQuery__QuerySpec__09() throws InvalidQueryException
-	{
-		String genus = "identifications.defaultClassification.genus";
-		String collector = "gatheringEvent.gatheringPersons.fullName";
-		String sourceSystem = "sourceSystem.code";
-		QueryCondition condition = new QueryCondition(genus, EQUALS, "Larus");
-		condition.and(collector, LIKE, "altenburg");
-		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "NDFF"));
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(condition);
-		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
-		assertEquals("01", 1, result.size());
-	}
+//	/*
+//	 * Tests query method with using AND NOT
+//	 */
+//	@Test
+//	public void testQuery__QuerySpec__09() throws InvalidQueryException
+//	{
+//		String genus = "identifications.defaultClassification.genus";
+//		String collector = "gatheringEvent.gatheringPersons.fullName";
+//		String sourceSystem = "sourceSystem.code";
+//		QueryCondition condition = new QueryCondition(genus, EQUALS, "Larus");
+//		condition.and(collector, LIKE, "altenburg");
+//		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "NDFF"));
+//		QuerySpec qs = new QuerySpec();
+//		qs.addCondition(condition);
+//		SpecimenDao dao = new SpecimenDao();
+//		QueryResult<Specimen> result = dao.query(qs);
+//		assertEquals("01", 1, result.size());
+//	}
 
 	/*
 	 * Tests query method using negated conditions

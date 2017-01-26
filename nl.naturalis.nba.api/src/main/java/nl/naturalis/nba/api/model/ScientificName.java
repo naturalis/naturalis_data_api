@@ -18,23 +18,17 @@ import nl.naturalis.nba.api.annotations.Analyzers;
  */
 public class ScientificName implements INbaModelObject {
 
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String fullScientificName;
 	private TaxonomicStatus taxonomicStatus;
-	@Analyzers({ CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String genusOrMonomial;
-	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String subgenus;
-	@Analyzers({ CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String specificEpithet;
-	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String infraspecificEpithet;
-	@Analyzers({ CASE_INSENSITIVE, LIKE })
 	private String infraspecificMarker;
 	private String nameAddendum;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String authorshipVerbatim;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String author;
 	private String year;
 

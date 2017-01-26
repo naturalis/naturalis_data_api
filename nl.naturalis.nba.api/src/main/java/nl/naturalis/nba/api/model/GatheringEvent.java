@@ -12,26 +12,17 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class GatheringEvent implements INbaModelObject {
 
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String projectTitle;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String worldRegion;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String continent;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String country;
 	private String iso3166Code;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String provinceState;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String island;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String locality;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String city;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String sublocality;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String localityText;
 	private Date dateTimeBegin;
 	private Date dateTimeEnd;
@@ -40,11 +31,11 @@ public class GatheringEvent implements INbaModelObject {
 	private String altitudeUnifOfMeasurement;
 	private String depth;
 	private String depthUnitOfMeasurement;
-	
+
 	private List<Person> gatheringPersons;
 	private List<Organization> gatheringOrganizations;
 	private List<GatheringSiteCoordinates> siteCoordinates;
-	
+
 	private List<ChronoStratigraphy> chronoStratigraphy;
 	private List<BioStratigraphy> bioStratigraphy;
 	private List<LithoStratigraphy> lithoStratigraphy;
@@ -83,14 +74,14 @@ public class GatheringEvent implements INbaModelObject {
 	}
 
 	/**
-	 * This is not strictly ABCD, but this information is provided by some Naturalis data
-	 * sources, and the meaning and specifity of continent is rather more obvious than
-	 * world region. If a data source provides a continent, but not a world region,
-	 * {@code content} and {@code
-	 * worldRegion} will both be set to the provided continent. If a data source provides
-	 * a world region, but not a continent, only the {@code
-	 * worldRegion} field will be set to the world region, unless a continent could be
-	 * parsed out of the world region.
+	 * This is not strictly ABCD, but this information is provided by some
+	 * Naturalis data sources, and the meaning and specifity of continent is
+	 * rather more obvious than world region. If a data source provides a
+	 * continent, but not a world region, {@code content} and {@code
+	 * worldRegion} will both be set to the provided continent. If a data source
+	 * provides a world region, but not a continent, only the {@code
+	 * worldRegion} field will be set to the world region, unless a continent
+	 * could be parsed out of the world region.
 	 */
 	public String getContinent()
 	{
@@ -154,11 +145,11 @@ public class GatheringEvent implements INbaModelObject {
 
 	/**
 	 * This is not strictly ABCD, but it enables the generation of IPTC data
-	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s. If a Naturalis data
-	 * source happens to provide a city but not a locality, both {@code city} and
-	 * {@code locality} will be set to the provided locality. If a locality was provided
-	 * but not a city, only the {@code locality} field will be set, unless a city could be
-	 * parsed out of the locality.
+	 * ({@link Iptc4xmpExt} objects) from {@link GatheringEvent}s. If a
+	 * Naturalis data source happens to provide a city but not a locality, both
+	 * {@code city} and {@code locality} will be set to the provided locality.
+	 * If a locality was provided but not a city, only the {@code locality}
+	 * field will be set, unless a city could be parsed out of the locality.
 	 */
 	public String getCity()
 	{

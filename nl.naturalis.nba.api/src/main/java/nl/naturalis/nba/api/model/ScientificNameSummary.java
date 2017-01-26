@@ -15,7 +15,7 @@ import nl.naturalis.nba.api.annotations.NotNested;
 public class ScientificNameSummary implements IDocumentObject {
 
 	private String id;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE })
 	private String fullScientificName;
 
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
@@ -23,21 +23,23 @@ public class ScientificNameSummary implements IDocumentObject {
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> synonyms;
 
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({})
 	private Set<String> kingdoms;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({})
 	private Set<String> phylae;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({})
 	private Set<String> classes;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({})
 	private Set<String> orders;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({})
 	private Set<String> families;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> genera;
+	@Analyzers({})
+	private Set<String> subgenera;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> specificEpithets;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({})
 	private Set<String> infraspecificEpithets;
 
 	@NotNested

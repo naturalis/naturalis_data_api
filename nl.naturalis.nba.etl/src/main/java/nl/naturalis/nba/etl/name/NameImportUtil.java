@@ -2,6 +2,9 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_SUMMARY;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
+import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
+import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +24,6 @@ import nl.naturalis.nba.api.model.ScientificNameSummary;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 class NameImportUtil {
 
@@ -45,6 +47,27 @@ class NameImportUtil {
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0)
 			return Collections.emptyList();
+		List<ScientificNameSummary> result = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			ScientificNameSummary sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			result.add(sns);
+		}
+		return result;
+	}
+
+	static List<ScientificNameSummary> loadNames2(Collection<String> names)
+	{
+		DocumentType<ScientificNameSummary> dt = SCIENTIFIC_NAME_SUMMARY;
+		SearchRequestBuilder request = newSearchRequest(dt);
+		String field = "fullScientificName";
+		TermsQueryBuilder query = QueryBuilders.termsQuery(field, names);
+		request.setQuery(query);
+		SearchResponse response = executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0) {
+			return Collections.emptyList();
+		}
 		List<ScientificNameSummary> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {

@@ -48,6 +48,7 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.IndexInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.utils.debug.BeanPrinter;
 
 /**
  * Methods for interacting with Elasticsearch, mostly intended to be used for
@@ -109,11 +110,17 @@ public class ESUtil {
 				logger.debug("Executing search request (too large to be logged)");
 			}
 		}
-		SearchResponse response = request.get();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Documents found: {}", response.getHits().totalHits());
+		try {
+			SearchResponse response = request.get();
+			if (logger.isDebugEnabled()) {
+				logger.debug("Documents found: {}", response.getHits().totalHits());
+			}
+			return response;
 		}
-		return response;
+		catch (NullPointerException e) {
+			BeanPrinter.out(request);
+			throw e;
+		}
 	}
 
 	/**

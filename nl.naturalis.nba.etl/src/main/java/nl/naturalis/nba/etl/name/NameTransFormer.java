@@ -49,11 +49,7 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 			for (SpecimenIdentification si : identifications) {
 				String fsn = si.getScientificName().getFullScientificName();
 				if (fsn == null) {
-					/*
-					 * It happens, but should it? Are empty full scientific
-					 * names OK?
-					 */
-					warn("Missing scientific name");
+					//warn("Missing scientific name");
 					stats.objectsRejected++;
 					continue;
 				}
@@ -152,10 +148,12 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 		/*
 		 * Let's assume we have around 3 identification per specimen on average.
 		 */
-		List<String> ids = new ArrayList<>(NameImporter.BATCH_SIZE * 3);
+		Set<String> ids = new HashSet<>(NameImporter.BATCH_SIZE * 3);
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				ids.add(si.getScientificName().getFullScientificName());
+				if (si.getScientificName().getFullScientificName() != null) {
+					ids.add(si.getScientificName().getFullScientificName());
+				}
 			}
 		}
 		List<ScientificNameSummary> names = NameImportUtil.loadNames(ids);

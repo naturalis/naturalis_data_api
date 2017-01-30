@@ -1,7 +1,5 @@
 package nl.naturalis.nba.api;
 
-import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,12 +66,9 @@ import java.util.List;
  * @author Ayco Holleman
  *
  */
-public class QueryCondition {
+public class QueryCondition extends AbstractSearchCondition {
 
-	private UnaryBooleanOperator not;
 	private String field;
-	private ComparisonOperator operator;
-	private Object value;
 	private List<QueryCondition> and;
 	private List<QueryCondition> or;
 
@@ -254,53 +249,6 @@ public class QueryCondition {
 	}
 
 	/**
-	 * Negates the condition. That is, if it already was a negated condition, it
-	 * becomes a non-negated condition again, otherwise it becomes a negated
-	 * condition.
-	 * 
-	 * @return
-	 */
-	public QueryCondition negate()
-	{
-		not = (not == null ? NOT : null);
-		return this;
-	}
-
-	/**
-	 * Returns whether or not this is a negated condition. Equivalent to
-	 * <code>getNot() != null</code>.
-	 * 
-	 * @return
-	 */
-	public boolean isNegated()
-	{
-		return not != null;
-	}
-
-	/**
-	 * Returns {@link UnaryBooleanOperator#NOT NOT} if the condition is negated,
-	 * {@code null} otherwise.
-	 * 
-	 * @return
-	 */
-	public UnaryBooleanOperator getNot()
-	{
-		return not;
-	}
-
-	/**
-	 * Determines whether or not to negate the condition. Passing
-	 * {@link UnaryBooleanOperator#NOT NOT} will make it a negated condition.
-	 * Passing {@code null} effectively makes it a non-negated condition.
-	 * 
-	 * @param not
-	 */
-	public void setNot(UnaryBooleanOperator not)
-	{
-		this.not = not;
-	}
-
-	/**
 	 * Returns the field to which the condition applies.
 	 * 
 	 * @return
@@ -318,46 +266,6 @@ public class QueryCondition {
 	public void setField(String field)
 	{
 		this.field = field;
-	}
-
-	/**
-	 * Returns the opeator with which to compare the field to a value.
-	 * 
-	 * @return
-	 */
-	public ComparisonOperator getOperator()
-	{
-		return operator;
-	}
-
-	/**
-	 * Sets the opeator with which to compare the field to a value.
-	 * 
-	 * @param operator
-	 */
-	public void setOperator(ComparisonOperator operator)
-	{
-		this.operator = operator;
-	}
-
-	/**
-	 * Returns the value to compare the field with.
-	 * 
-	 * @return
-	 */
-	public Object getValue()
-	{
-		return value;
-	}
-
-	/**
-	 * Sets the value to compare the field with.
-	 * 
-	 * @param value
-	 */
-	public void setValue(Object value)
-	{
-		this.value = value;
 	}
 
 	/**

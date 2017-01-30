@@ -1,16 +1,11 @@
 package nl.naturalis.nba.api;
 
-import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchCondition {
+public class SearchCondition extends AbstractSearchCondition {
 
-	private UnaryBooleanOperator not;
 	private List<SearchField> fields;
-	private ComparisonOperator operator;
-	private Object value;
 	private List<SearchCondition> and;
 	private List<SearchCondition> or;
 
@@ -160,41 +155,9 @@ public class SearchCondition {
 		return this;
 	}
 
-	/**
-	 * Negates the condition. That is, if it already was a negated condition, it
-	 * becomes a non-negated condition again, otherwise it becomes a negated
-	 * condition.
-	 * 
-	 * @return
-	 */
-	public SearchCondition negate()
-	{
-		not = (not == null ? NOT : null);
-		return this;
-	}
-
-	/**
-	 * Returns whether or not this is a negated condition. Equivalent to
-	 * <code>getNot() != null</code>.
-	 * 
-	 * @return
-	 */
-	public boolean isNegated()
-	{
-		return not != null;
-	}
+	
 
 	// GETTERS & SETTERS:
-
-	public UnaryBooleanOperator getNot()
-	{
-		return not;
-	}
-
-	public void setNot(UnaryBooleanOperator not)
-	{
-		this.not = not;
-	}
 
 	public List<SearchField> getFields()
 	{
@@ -204,26 +167,6 @@ public class SearchCondition {
 	public void setFields(List<SearchField> fields)
 	{
 		this.fields = fields;
-	}
-
-	public ComparisonOperator getOperator()
-	{
-		return operator;
-	}
-
-	public void setOperator(ComparisonOperator operator)
-	{
-		this.operator = operator;
-	}
-
-	public Object getValue()
-	{
-		return value;
-	}
-
-	public void setValue(Object value)
-	{
-		this.value = value;
 	}
 
 	public List<SearchCondition> getAnd()

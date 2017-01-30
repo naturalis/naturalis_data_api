@@ -3,11 +3,9 @@ package nl.naturalis.nba.api;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchCondition extends AbstractSearchCondition {
+public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 
 	private List<SearchField> fields;
-	private List<SearchCondition> and;
-	private List<SearchCondition> or;
 
 	public SearchCondition()
 	{
@@ -155,10 +153,6 @@ public class SearchCondition extends AbstractSearchCondition {
 		return this;
 	}
 
-	
-
-	// GETTERS & SETTERS:
-
 	public List<SearchField> getFields()
 	{
 		return fields;
@@ -167,26 +161,6 @@ public class SearchCondition extends AbstractSearchCondition {
 	public void setFields(List<SearchField> fields)
 	{
 		this.fields = fields;
-	}
-
-	public List<SearchCondition> getAnd()
-	{
-		return and;
-	}
-
-	public void setAnd(List<SearchCondition> and)
-	{
-		this.and = and;
-	}
-
-	public List<SearchCondition> getOr()
-	{
-		return or;
-	}
-
-	public void setOr(List<SearchCondition> or)
-	{
-		this.or = or;
 	}
 
 }

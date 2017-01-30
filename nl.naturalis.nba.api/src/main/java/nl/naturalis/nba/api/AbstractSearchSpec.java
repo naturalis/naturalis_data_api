@@ -7,7 +7,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 
-public class AbstractSearchSpec<T extends AbstractSearchCondition> {
+public abstract class AbstractSearchSpec<T extends AbstractSearchCondition<T>> {
 
 	private List<String> fields;
 	private List<T> conditions;

@@ -1,7 +1,6 @@
 package nl.naturalis.nba.api;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
@@ -66,11 +65,9 @@ import java.util.List;
  * @author Ayco Holleman
  *
  */
-public class QueryCondition extends AbstractSearchCondition {
+public class QueryCondition extends AbstractSearchCondition<QueryCondition> {
 
 	private String field;
-	private List<QueryCondition> and;
-	private List<QueryCondition> or;
 
 	public QueryCondition()
 	{
@@ -266,46 +263,6 @@ public class QueryCondition extends AbstractSearchCondition {
 	public void setField(String field)
 	{
 		this.field = field;
-	}
-
-	/**
-	 * Returns the AND sibling conditions.
-	 * 
-	 * @return
-	 */
-	public List<QueryCondition> getAnd()
-	{
-		return and;
-	}
-
-	/**
-	 * Sets the AND sibling conditions.
-	 * 
-	 * @param and
-	 */
-	public void setAnd(List<QueryCondition> and)
-	{
-		this.and = and;
-	}
-
-	/**
-	 * Returns the OR sibling conditions.
-	 * 
-	 * @return
-	 */
-	public List<QueryCondition> getOr()
-	{
-		return or;
-	}
-
-	/**
-	 * Sets the OR sibling conditions.
-	 * 
-	 * @param or
-	 */
-	public void setOr(List<QueryCondition> or)
-	{
-		this.or = or;
 	}
 
 }

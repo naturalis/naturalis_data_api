@@ -2,17 +2,21 @@ package nl.naturalis.nba.api;
 
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 
-public class AbstractSearchCondition {
+import java.util.List;
 
-	protected UnaryBooleanOperator not;
-	protected ComparisonOperator operator;
-	protected Object value;
+public abstract class AbstractSearchCondition<T extends AbstractSearchCondition<T>> {
+
+	UnaryBooleanOperator not;
+	ComparisonOperator operator;
+	Object value;
+	List<T> and;
+	List<T> or;
 
 	public AbstractSearchCondition()
 	{
 		super();
 	}
-
+	
 	/**
 	 * Negates the condition. That is, if it already was a negated condition, it
 	 * becomes a non-negated condition again, otherwise it becomes a negated
@@ -20,7 +24,7 @@ public class AbstractSearchCondition {
 	 * 
 	 * @return
 	 */
-	public AbstractSearchCondition negate()
+	public AbstractSearchCondition<T> negate()
 	{
 		not = (not == null ? NOT : null);
 		return this;
@@ -65,6 +69,26 @@ public class AbstractSearchCondition {
 	public void setValue(Object value)
 	{
 		this.value = value;
+	}
+
+	public List<T> getAnd()
+	{
+		return and;
+	}
+
+	public void setAnd(List<T> and)
+	{
+		this.and = and;
+	}
+
+	public List<T> getOr()
+	{
+		return or;
+	}
+
+	public void setOr(List<T> or)
+	{
+		this.or = or;
 	}
 
 }

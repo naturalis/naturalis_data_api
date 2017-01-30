@@ -20,7 +20,7 @@ import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
 
 /**
  * Utility class for using Elasticsearch's scroll API. Note that when using this

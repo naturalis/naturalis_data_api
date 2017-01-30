@@ -46,7 +46,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.csv.CsvWriter;
-import nl.naturalis.nba.dao.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.Scroller;
 

@@ -34,7 +34,7 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvRecordWriter;
-import nl.naturalis.nba.dao.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**

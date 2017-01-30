@@ -20,7 +20,7 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.query.OperatorCheck;
+import nl.naturalis.nba.dao.translate.query.OperatorCheck;
 
 abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T> {
 

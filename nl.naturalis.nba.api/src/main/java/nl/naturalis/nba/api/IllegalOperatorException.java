@@ -17,6 +17,11 @@ public class IllegalOperatorException extends InvalidConditionException {
 		this(condition.getField(), condition.getOperator());
 	}
 
+	public IllegalOperatorException(Path field, ComparisonOperator operator)
+	{
+		this(field.toString(), operator);
+	}
+
 	public IllegalOperatorException(String field, ComparisonOperator operator)
 	{
 		super(format("Operator %s not allowed for field %s", operator, field));

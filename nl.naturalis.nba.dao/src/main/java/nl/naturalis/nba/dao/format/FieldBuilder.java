@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.common.InvalidPathException;
 import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.common.PathUtil;
 import nl.naturalis.nba.dao.format.calc.VerbatimEventDateCalculator;
 import nl.naturalis.nba.dao.format.config.FieldXmlConfig;
 import nl.naturalis.nba.dao.format.config.PluginParamXmlConfig;
@@ -130,7 +131,7 @@ class FieldBuilder {
 				fullPath = new Path();
 				for (int i = 0; i < ds.getPath().countElements(); i++) {
 					fullPath = fullPath.append(ds.getPath().element(i));
-					if (fullPath.isArray(ds.getMapping())) {
+					if (PathUtil.isArray(fullPath, ds.getMapping())) {
 						/*
 						 * Append an arbitrary array index to the path so we can
 						 * call Path.validate() later on
@@ -140,7 +141,7 @@ class FieldBuilder {
 				}
 				fullPath = fullPath.append(path);
 			}
-			Path.validate(fullPath,ds.getMapping());
+			PathUtil.validate(fullPath, ds.getMapping());
 		}
 		catch (InvalidPathException e) {
 			throw new FieldConfigurationException(fieldName, e.getMessage());

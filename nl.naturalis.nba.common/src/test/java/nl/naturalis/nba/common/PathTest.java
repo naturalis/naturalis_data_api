@@ -61,7 +61,7 @@ public class PathTest {
 	{
 		// Happy flow, no exception shouild be thrown
 		Path path = new Path("pets.0.name");
-		path.validate(MappingFactory.getMapping(TestPerson.class));
+		Path.validate(path, MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test(expected = InvalidPathException.class)
@@ -69,7 +69,7 @@ public class PathTest {
 	{
 		// Missing array index
 		Path path = new Path("pets.colors.0");
-		path.validate(MappingFactory.getMapping(TestPerson.class));
+		Path.validate(path, MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test(expected = InvalidPathException.class)
@@ -77,7 +77,7 @@ public class PathTest {
 	{
 		// Illegal array index
 		Path path = new Path("pets.0.name.0");
-		path.validate(MappingFactory.getMapping(TestPerson.class));
+		Path.validate(path, MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class PathTest {
 	{
 		// Happy flow, no exception shouild be thrown
 		Path path = new Path("pets.2.colors.3");
-		path.validate(MappingFactory.getMapping(TestPerson.class));
+		Path.validate(path, MappingFactory.getMapping(TestPerson.class));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class PathTest {
 	{
 		Path path = new Path("pets.0.name");
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		assertTrue("01", path.isPrimitive(mapping));
+		assertTrue("01", Path.isPrimitive(path, mapping));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class PathTest {
 	{
 		Path path = new Path("pets.name");
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		assertTrue("01", path.isPrimitive(mapping));
+		assertTrue("01", Path.isPrimitive(path, mapping));
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class PathTest {
 	{
 		Path path = new Path("luckyNumbers");
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		assertTrue("01", path.isPrimitive(mapping));
+		assertTrue("01", Path.isPrimitive(path, mapping));
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class PathTest {
 	{
 		Path path = new Path("hobbies");
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		assertTrue("01", path.isPrimitive(mapping));
+		assertTrue("01", Path.isPrimitive(path, mapping));
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class PathTest {
 	{
 		Path path = new Path("smoker");
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		assertTrue("01", path.isPrimitive(mapping));
+		assertTrue("01", Path.isPrimitive(path, mapping));
 	}
 
 	@Test
@@ -133,7 +133,7 @@ public class PathTest {
 	{
 		Path path = new Path("addressBook");
 		Mapping<TestPerson> mapping = MappingFactory.getMapping(TestPerson.class);
-		assertFalse("01", path.isPrimitive(mapping));
+		assertFalse("01", Path.isPrimitive(path, mapping));
 	}
 
 	@Test

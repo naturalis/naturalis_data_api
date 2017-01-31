@@ -140,7 +140,7 @@ class FieldBuilder {
 				}
 				fullPath = fullPath.append(path);
 			}
-			fullPath.validate(ds.getMapping());
+			Path.validate(fullPath,ds.getMapping());
 		}
 		catch (InvalidPathException e) {
 			throw new FieldConfigurationException(fieldName, e.getMessage());

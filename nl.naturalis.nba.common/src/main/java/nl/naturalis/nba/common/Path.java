@@ -201,27 +201,27 @@ public final class Path {
 	 * </p>
 	 * 
 	 */
-	public void validate(Mapping<?> mapping) throws InvalidPathException
+	public static void validate(Path path, Mapping<?> mapping) throws InvalidPathException
 	{
 		MappingInfo<?> mappingInfo = new MappingInfo<>(mapping);
-		if (!isPrimitive(mapping)) {
-			String msg = String.format("Incomplete path: %s", this);
+		if (!isPrimitive(path, mapping)) {
+			String msg = String.format("Incomplete path: %s", path);
 			throw new InvalidPathException(msg);
 		}
-		checkRequiredArrayIndices(mappingInfo);
-		checkIllegalArrayIndices(mappingInfo);
+		checkRequiredArrayIndices(path, mappingInfo);
+		checkIllegalArrayIndices(path, mappingInfo);
 	}
 
 	/**
 	 * Whether or not the path denotes a primitive value within the document
 	 * represented by the specified type mapping.
 	 */
-	public boolean isPrimitive(Mapping<?> mapping) throws InvalidPathException
+	public static boolean isPrimitive(Path path, Mapping<?> mapping) throws InvalidPathException
 	{
 		MappingInfo<?> mappingInfo = new MappingInfo<>(mapping);
 		ESField esField;
 		try {
-			esField = mappingInfo.getField(getPurePath());
+			esField = mappingInfo.getField(path.getPurePath());
 		}
 		catch (NoSuchFieldException e) {
 			throw new InvalidPathException(e.getMessage());
@@ -291,11 +291,13 @@ public final class Path {
 	 * Make sure path elements representing an array are followed by an array
 	 * index.
 	 */
-	private void checkRequiredArrayIndices(MappingInfo<?> mi) throws InvalidPathException
+	public static void checkRequiredArrayIndices(Path path, MappingInfo<?> mi)
+			throws InvalidPathException
 	{
-		StringBuilder sb = new StringBuilder(elems.length << 4);
-		for (int i = 0; i < elems.length; i++) {
-			String element = elems[i];
+		int len = path.countElements();
+		StringBuilder sb = new StringBuilder(len << 4);
+		for (int i = 0; i < len; i++) {
+			String element = path.getElement(i);
 			if (isInteger(element))
 				continue;
 			if (i != 0)
@@ -309,7 +311,7 @@ public final class Path {
 				throw new InvalidPathException(e.getMessage());
 			}
 			if (esField.isArray()) {
-				if (i == elems.length - 1 || !isInteger(elems[i + 1])) {
+				if (i == len - 1 || !isInteger(path.getElement(i + 1))) {
 					String fmt = "Array index required after multi-valued field %s";
 					String msg = String.format(fmt, sb.toString());
 					throw new InvalidPathException(msg);
@@ -322,11 +324,13 @@ public final class Path {
 	 * Make sure path elements representing a primitive value are NOT followed
 	 * by array index.
 	 */
-	private void checkIllegalArrayIndices(MappingInfo<?> mi) throws InvalidPathException
+	public static void checkIllegalArrayIndices(Path path, MappingInfo<?> mi)
+			throws InvalidPathException
 	{
-		StringBuilder sb = new StringBuilder(elems.length << 4);
-		for (int i = 0; i < elems.length; i++) {
-			String element = elems[i];
+		int len = path.countElements();
+		StringBuilder sb = new StringBuilder(len << 4);
+		for (int i = 0; i < len; i++) {
+			String element = path.getElement(i);
 			if (isInteger(element))
 				continue;
 			if (i != 0)
@@ -340,7 +344,7 @@ public final class Path {
 				throw new InvalidPathException(e.getMessage());
 			}
 			if (!esField.isArray()) {
-				if (i < elems.length - 1 && isInteger(elems[i + 1])) {
+				if (i < len - 1 && isInteger(path.getElement(i + 1))) {
 					String fmt = "Illegal array index following single-valued field: %s";
 					String msg = String.format(fmt, sb.toString());
 					throw new InvalidPathException(msg);

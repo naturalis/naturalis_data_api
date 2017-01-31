@@ -30,7 +30,7 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 		if (nestedPath == null || forSortField) {
 			return termQuery(multiField, value);
 		}
-		return nestedQuery(nestedPath, termQuery(field, value), ScoreMode.None);
+		return nestedQuery(nestedPath, termQuery(multiField, value), ScoreMode.None);
 	}
 
 	@Override

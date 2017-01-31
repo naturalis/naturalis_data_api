@@ -1,5 +1,6 @@
 package nl.naturalis.nba.common;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.Mapping;

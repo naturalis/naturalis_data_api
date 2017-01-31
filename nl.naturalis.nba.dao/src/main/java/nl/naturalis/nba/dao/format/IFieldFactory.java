@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.format;
 
 import java.net.URI;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 
 /**
  * A {@code ITypedFieldFactory} produces format-specific versions of data set

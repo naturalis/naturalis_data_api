@@ -1,13 +1,14 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 import static nl.naturalis.nba.dao.format.FormatUtil.formatDate;
 
 import java.util.Map;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.ICalculator;
@@ -32,11 +33,11 @@ public class VerbatimEventDateCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity)
 	{
-		Object beginDate = beginDatePath.read(entity.getData());
+		Object beginDate = readField(entity.getData(), beginDatePath);
 		if (beginDate == MISSING_VALUE) {
 			return EMPTY_STRING;
 		}
-		Object endDate = endDatePath.read(entity.getData());
+		Object endDate = readField(entity.getData(), endDatePath);
 		if (endDate == MISSING_VALUE || beginDate.equals(endDate)) {
 			return formatDate(beginDate.toString());
 		}

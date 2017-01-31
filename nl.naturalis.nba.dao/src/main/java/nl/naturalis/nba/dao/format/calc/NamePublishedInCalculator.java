@@ -1,11 +1,12 @@
 package nl.naturalis.nba.dao.format.calc;
 
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
@@ -62,15 +63,15 @@ public class NamePublishedInCalculator implements ICalculator {
 		String title = EMPTY_STRING;
 		String author = EMPTY_STRING;
 		String date = EMPTY_STRING;
-		Object value = titlePath.read(entity.getData());
+		Object value = readField(entity.getData(), titlePath);
 		if (value != JsonUtil.MISSING_VALUE) {
 			title = value.toString();
 		}
-		value = authorPath.read(entity.getData());
+		value = readField(entity.getData(), authorPath);
 		if (value != JsonUtil.MISSING_VALUE) {
 			author = value.toString();
 		}
-		value = datePath.read(entity.getData());
+		value = readField(entity.getData(), datePath);
 		if (value != JsonUtil.MISSING_VALUE) {
 			date = FormatUtil.formatDate(value.toString());
 		}

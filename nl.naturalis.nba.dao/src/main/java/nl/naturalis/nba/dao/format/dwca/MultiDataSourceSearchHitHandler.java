@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.DocumentFlattener;
 import nl.naturalis.nba.dao.format.Entity;
 import nl.naturalis.nba.dao.format.EntityObject;

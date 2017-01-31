@@ -9,8 +9,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.InvalidPathException;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.PathUtil;
 import nl.naturalis.nba.dao.format.calc.VerbatimEventDateCalculator;
 import nl.naturalis.nba.dao.format.config.FieldXmlConfig;

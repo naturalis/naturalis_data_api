@@ -1,11 +1,13 @@
 package nl.naturalis.nba.dao.format.csv;
 
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
+
 import java.net.URI;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.FieldWriteException;
 import nl.naturalis.nba.dao.format.IField;
@@ -36,8 +38,8 @@ class CsvField implements IField {
 	@Override
 	public String getValue(EntityObject entity) throws FieldWriteException
 	{
-		Object value = path.read(entity.getData());
-		if (value == JsonUtil.MISSING_VALUE) {
+		Object value = readField(entity.getData(), path);
+		if (value == MISSING_VALUE) {
 			return "";
 		}
 		return StringEscapeUtils.escapeCsv(value.toString());

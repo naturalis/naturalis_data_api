@@ -1,12 +1,13 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -55,15 +56,15 @@ public class ScientificNameAuthorshipCalculator implements ICalculator {
 	@Override
 	public Object calculateValue(EntityObject entity) throws CalculationException
 	{
-		Object value = authorPath.read(entity.getData());
+		Object value = readField(entity.getData(), authorPath);
 		if (value == MISSING_VALUE) {
-			value = verbatimPath.read(entity.getData());
+			value = readField(entity.getData(), verbatimPath);
 			if (value == MISSING_VALUE) {
 				return EMPTY_STRING;
 			}
 			return value;
 		}
-		Object year = yearPath.read(entity.getData());
+		Object year = readField(entity.getData(), yearPath);
 		if (year == MISSING_VALUE) {
 			return value;
 		}

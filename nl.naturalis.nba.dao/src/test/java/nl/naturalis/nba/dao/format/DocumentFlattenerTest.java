@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.DocumentFlattener;
 import nl.naturalis.nba.dao.format.EntityObject;
 

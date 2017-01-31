@@ -16,7 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.config.DataSetXmlConfig;
 import nl.naturalis.nba.dao.format.config.DataSourceXmlConfig;
 import nl.naturalis.nba.dao.format.config.EntityXmlConfig;

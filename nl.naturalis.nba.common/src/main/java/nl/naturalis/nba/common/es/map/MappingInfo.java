@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.utils.CollectionUtil;
 import nl.naturalis.nba.utils.convert.Stringifier;
 

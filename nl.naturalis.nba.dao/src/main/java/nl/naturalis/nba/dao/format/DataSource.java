@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.format;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.es.map.Mapping;
 
 public class DataSource {

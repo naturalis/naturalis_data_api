@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 
 import java.util.ArrayList;
@@ -10,12 +11,11 @@ import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.util.es.SearchHitHandler;
 
 class GetGroupsSearchHitHandler implements SearchHitHandler {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(GetGroupsSearchHitHandler.class);
 
 	private Path path;
@@ -46,7 +46,7 @@ class GetGroupsSearchHitHandler implements SearchHitHandler {
 			return false;
 		}
 		KeyValuePair<Object, Integer> last = r.size() == 0 ? null : r.get(r.size() - 1);
-		Object val = path.read(hit.getSource());
+		Object val = readField(hit.getSource(), path);
 		if (last == null && groupCounter++ >= from) {
 			r.add(new KeyValuePair<>(val, 1));
 		}

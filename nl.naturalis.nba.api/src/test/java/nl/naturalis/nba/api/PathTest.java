@@ -1,8 +1,10 @@
-package nl.naturalis.nba.common;
+package nl.naturalis.nba.api;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import nl.naturalis.nba.api.Path;
 
 @SuppressWarnings("static-method")
 public class PathTest {

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.test.TestPerson;

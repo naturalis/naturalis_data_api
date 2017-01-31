@@ -1,12 +1,13 @@
 package nl.naturalis.nba.dao.format.calc;
 
 import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.format.FormatUtil.EMPTY_STRING;
 
 import java.util.Map;
 
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.Taxon;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.dao.format.CalculationException;
 import nl.naturalis.nba.dao.format.CalculatorInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -56,11 +57,11 @@ public class TaxonomicExpertCalculator implements ICalculator {
 	{
 		String name = null;
 		String org = null;
-		Object value = namePath.read(entity.getData());
+		Object value = readField(entity.getData(), namePath);
 		if (value != MISSING_VALUE) {
 			name = value.toString();
 		}
-		value = orgPath.read(entity.getData());
+		value = readField(entity.getData(), orgPath);
 		if (value != MISSING_VALUE) {
 			org = value.toString();
 		}

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 
 /**
  * A {@code DocumentFlattener} flattens an Elasticsearch document. It produces a

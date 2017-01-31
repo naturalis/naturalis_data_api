@@ -12,7 +12,6 @@ import nl.naturalis.nba.common.json.JsonUtilTest;
 //@formatter:off
 @SuiteClasses({
 	JsonUtilTest.class,
-	PathTest.class,
 	PathUtilTest.class,
 	MappingFactoryTest.class,
 	MappingInfoTest.class

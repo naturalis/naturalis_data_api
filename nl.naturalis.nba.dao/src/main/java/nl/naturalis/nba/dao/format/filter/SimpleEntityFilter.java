@@ -1,11 +1,13 @@
 package nl.naturalis.nba.dao.format.filter;
 
+import static nl.naturalis.nba.common.json.JsonUtil.MISSING_VALUE;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import nl.naturalis.nba.common.Path;
-import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.EntityFilterException;
 import nl.naturalis.nba.dao.format.EntityFilterInitializationException;
 import nl.naturalis.nba.dao.format.EntityObject;
@@ -88,8 +90,8 @@ public class SimpleEntityFilter implements IEntityFilter {
 	public boolean accept(EntityObject entity) throws EntityFilterException
 	{
 		boolean accept = !invert;
-		Object value = path.read(entity.getData());
-		if (value == JsonUtil.MISSING_VALUE) {
+		Object value = readField(entity.getData(), path);
+		if (value == MISSING_VALUE) {
 			return containsNullString ? accept : !accept;
 		}
 		if (ignoreCase) {

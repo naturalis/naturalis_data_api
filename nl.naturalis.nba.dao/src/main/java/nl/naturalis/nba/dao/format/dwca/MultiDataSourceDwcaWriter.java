@@ -21,8 +21,8 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.common.Path;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;

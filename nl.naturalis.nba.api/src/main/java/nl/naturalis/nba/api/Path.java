@@ -1,12 +1,10 @@
-package nl.naturalis.nba.common;
+package nl.naturalis.nba.api;
 
 import static java.lang.System.arraycopy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-
-import nl.naturalis.nba.common.json.JsonUtil;
 
 /**
  * Immutable class representing a path within an Elasticsearch document. A path
@@ -173,21 +171,6 @@ public final class Path {
 		String[] shifted = new String[elems.length - 1];
 		arraycopy(elems, 1, shifted, 0, elems.length - 1);
 		return new Path(shifted);
-	}
-
-	/**
-	 * Extracts the value of field represented by this {@code Path} from the
-	 * specified map. Equivalent to {@link JsonUtil#readField(Map, String)
-	 * JsonUtil.readField(data, this)}. Note that the {@code Map<String,Object>}
-	 * instance you pass to this method is precisely what is handed to you when
-	 * making the Elasticsearch API call {@code SearchHit.getSource}.
-	 * 
-	 * @param data
-	 * @return
-	 */
-	public Object read(Map<String, Object> data)
-	{
-		return JsonUtil.readField(data, this);
 	}
 
 	@Override

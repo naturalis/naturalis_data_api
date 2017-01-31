@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.format.csv;
 
 import java.net.URI;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;

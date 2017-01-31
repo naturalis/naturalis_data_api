@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.search.SearchHit;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;

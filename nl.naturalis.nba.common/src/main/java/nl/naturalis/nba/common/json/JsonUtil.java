@@ -18,7 +18,7 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 
 public class JsonUtil {
 

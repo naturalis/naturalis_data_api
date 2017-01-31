@@ -1,7 +1,8 @@
 package nl.naturalis.nba.common.es.map;
 
-import nl.naturalis.nba.common.Path;
 import static java.lang.String.*;
+
+import nl.naturalis.nba.api.Path;
 
 public class NoSuchFieldException extends Exception {
 

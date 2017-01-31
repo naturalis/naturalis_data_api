@@ -8,7 +8,7 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeCsv;
 
 import java.net.URI;
 
-import nl.naturalis.nba.common.Path;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.dao.format.AbstractField;
 import nl.naturalis.nba.dao.format.EntityObject;
 

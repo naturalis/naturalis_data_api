@@ -10,12 +10,12 @@ import nl.naturalis.nba.api.Path;
 public class PathTest {
 
 	@Test
-	public void testGetPathString()
+	public void testToString()
 	{
 		String[] elements = new String[] { "identifications", "0", "defaultClassification",
 				"kingdom" };
 		Path path = new Path(elements);
-		assertEquals("01", "identifications.0.defaultClassification.kingdom", path.getPathString());
+		assertEquals("01", "identifications.0.defaultClassification.kingdom", path.toString());
 	}
 
 	@Test

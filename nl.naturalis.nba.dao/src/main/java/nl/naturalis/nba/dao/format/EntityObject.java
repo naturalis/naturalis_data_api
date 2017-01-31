@@ -18,7 +18,7 @@ import nl.naturalis.nba.dao.DocumentType;
  * multiple collectors associated with a specimen, one specimen document may
  * yield multiple specimen collector records.
  * 
- * See also {@link Entity#getPathString()}.
+ * See also {@link Entity#toString()}.
  * 
  * @author Ayco Holleman
  *

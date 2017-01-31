@@ -4,7 +4,9 @@ import static java.lang.System.arraycopy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Immutable class representing a path within an Elasticsearch document. A path
@@ -22,6 +24,9 @@ public final class Path {
 
 	private final String[] elems;
 
+	// Caches value for toString()
+	private String str;
+
 	/**
 	 * Creates a new empty {@code Path}.
 	 */
@@ -35,9 +40,10 @@ public final class Path {
 	 * 
 	 * @param path
 	 */
+	@JsonCreator
 	public Path(String path)
 	{
-		this.elems = split(path);
+		this.elems = split(str = path);
 	}
 
 	/**
@@ -63,20 +69,14 @@ public final class Path {
 	}
 
 	/**
-	 * Returns this {@code Path} as a string with all path elements joined and
-	 * separated using the dot character.
+	 * Returns the path element at the specified index as a new {@code Path}.
 	 * 
+	 * @param index
 	 * @return
 	 */
-	public String getPathString()
+	public Path element(int index)
 	{
-		StringBuilder sb = new StringBuilder(elems.length << 4);
-		for (String e : elems) {
-			if (sb.length() != 0)
-				sb.append('.');
-			sb.append(e);
-		}
-		return sb.toString();
+		return new Path(elems[index]);
 	}
 
 	/**
@@ -98,17 +98,6 @@ public final class Path {
 	public int countElements()
 	{
 		return elems.length;
-	}
-
-	/**
-	 * Returns the path element at the specified index as a new {@code Path}.
-	 * 
-	 * @param index
-	 * @return
-	 */
-	public Path element(int index)
-	{
-		return new Path(new String[] { elems[index] });
 	}
 
 	/**
@@ -189,10 +178,26 @@ public final class Path {
 		return Arrays.deepHashCode(elems);
 	}
 
+	/**
+	 * Returns this {@code Path} as a string with all path elements joined and
+	 * separated using the dot character.
+	 * 
+	 * @return
+	 */
 	@Override
+	@JsonValue
 	public String toString()
 	{
-		return getPathString();
+		if (str == null) {
+			StringBuilder sb = new StringBuilder(elems.length << 4);
+			for (String e : elems) {
+				if (sb.length() != 0)
+					sb.append('.');
+				sb.append(e);
+			}
+			return (str = sb.toString());
+		}
+		return str;
 	}
 
 	private static String[] split(String path)

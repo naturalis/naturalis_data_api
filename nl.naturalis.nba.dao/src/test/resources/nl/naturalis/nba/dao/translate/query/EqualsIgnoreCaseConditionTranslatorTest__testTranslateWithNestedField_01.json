@@ -1,0 +1,16 @@
+{
+  "nested" : {
+    "query" : {
+      "term" : {
+        "addressBook.street.ignoreCase" : {
+          "value" : "market street",
+          "boost" : 1.0
+        }
+      }
+    },
+    "path" : "addressBook",
+    "ignore_unmapped" : false,
+    "score_mode" : "none",
+    "boost" : 1.0
+  }
+}

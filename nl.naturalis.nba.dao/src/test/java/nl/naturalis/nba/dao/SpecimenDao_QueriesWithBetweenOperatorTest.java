@@ -7,7 +7,6 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -59,13 +58,10 @@ public class SpecimenDao_QueriesWithBetweenOperatorTest {
 	public void testQuery__QuerySpec__01() throws InvalidQueryException
 	{
 		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
-		System.out.println("XXXXXXXXXXXXXXXXXXXXXXX: "
-				+ new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(gatheringDate));
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
 		OffsetDateTime two = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime t = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
-		System.out.println("XXXX: " + t);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { two, t };
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
 				fromTo);

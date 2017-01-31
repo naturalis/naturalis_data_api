@@ -2,10 +2,13 @@ package nl.naturalis.nba.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import static java.lang.Boolean.*;
 
 public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 
-	private List<SearchField> fields;
+	private List<Path> fields;
+	private Boolean filter;
+	private Float boost;
 
 	public SearchCondition()
 	{
@@ -49,7 +52,7 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		this(null, field, operator, value);
 	}
 
-	public SearchCondition(SearchField field, ComparisonOperator operator, Object value)
+	public SearchCondition(Path field, ComparisonOperator operator, Object value)
 	{
 		this(null, field, operator, value);
 	}
@@ -66,10 +69,10 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 	public SearchCondition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
 			Object value)
 	{
-		this(not, new SearchField(field), operator, value);
+		this(not, new Path(field), operator, value);
 	}
 
-	public SearchCondition(UnaryBooleanOperator not, SearchField field, ComparisonOperator operator,
+	public SearchCondition(UnaryBooleanOperator not, Path field, ComparisonOperator operator,
 			Object value)
 	{
 		this.not = not;
@@ -84,16 +87,7 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		if (fields == null) {
 			fields = new ArrayList<>(8);
 		}
-		fields.add(new SearchField(field));
-		return this;
-	}
-
-	public SearchCondition addSearchField(String field, float boost)
-	{
-		if (fields == null) {
-			fields = new ArrayList<>(8);
-		}
-		fields.add(new SearchField(field, boost));
+		fields.add(new Path(field));
 		return this;
 	}
 
@@ -153,14 +147,34 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		return this;
 	}
 
-	public List<SearchField> getFields()
+	public List<Path> getFields()
 	{
 		return fields;
 	}
 
-	public void setFields(List<SearchField> fields)
+	public void setFields(List<Path> fields)
 	{
 		this.fields = fields;
+	}
+
+	public Boolean isFilter()
+	{
+		return filter == TRUE ? TRUE : FALSE;
+	}
+
+	public void setFilter(Boolean filter)
+	{
+		this.filter = filter;
+	}
+
+	public Float getBoost()
+	{
+		return boost;
+	}
+
+	public void setBoost(Float boost)
+	{
+		this.boost = boost;
 	}
 
 }

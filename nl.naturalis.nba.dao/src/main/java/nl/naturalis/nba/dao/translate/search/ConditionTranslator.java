@@ -88,14 +88,14 @@ public abstract class ConditionTranslator {
 	 */
 	abstract void checkCondition() throws InvalidConditionException;
 
-	private QueryBuilder translate(boolean nested) throws InvalidConditionException
+	private QueryBuilder translate(boolean isSibling) throws InvalidConditionException
 	{
 		checkCondition();
 		List<SearchCondition> and = condition.getAnd();
 		List<SearchCondition> or = condition.getOr();
 		QueryBuilder result;
 		if (and == null && or == null) {
-			if (!nested && mustNegate()) {
+			if (!isSibling && mustNegate()) {
 				result = not(translateCondition());
 			}
 			else {

@@ -36,6 +36,7 @@ import nl.naturalis.nba.dao.DocumentType;
  */
 public class SearchSpecTranslator {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(SearchSpecTranslator.class);
 	private static final int DEFAULT_FROM = 0;
 	private static final int DEFAULT_SIZE = 10;
@@ -51,16 +52,15 @@ public class SearchSpecTranslator {
 
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("Translating SearchSpec:\n{}", toPrettyJson(prune(spec)));
-		}
 		QueryBuilder query = translateConditions();
-		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
+		if (spec.isNonScoring()) {
+			query = constantScoreQuery(query);
+		}
 		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getFields() != null) {
 			addFields(request);
 		}
-		request.setQuery(csq);
+		request.setQuery(query);
 		request.setFrom(spec.getFrom() == null ? DEFAULT_FROM : spec.getFrom());
 		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 		if (spec.getSortFields() != null) {

@@ -16,8 +16,8 @@ import org.elasticsearch.search.sort.SortMode;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -31,10 +31,10 @@ class SortFieldsTranslator {
 			+ "you cannot nest a query condition on field %1$s within a query condition "
 			+ "on field %1$s";
 
-	private QuerySpec querySpec;
+	private SearchSpec querySpec;
 	private DocumentType<?> dt;
 
-	SortFieldsTranslator(QuerySpec querySpec, DocumentType<?> documentType)
+	SortFieldsTranslator(SearchSpec querySpec, DocumentType<?> documentType)
 	{
 		this.querySpec = querySpec;
 		this.dt = documentType;
@@ -76,56 +76,57 @@ class SortFieldsTranslator {
 
 	private QueryBuilder translateConditions(String sortField) throws InvalidConditionException
 	{
-		List<QueryCondition> conditions = querySpec.getConditions();
-		if (conditions == null || conditions.size() == 0) {
-			return null;
-		}
-		if (conditions.size() == 1) {
-			QueryCondition c = conditions.iterator().next();
-			if (c.getField().equals(sortField)) {
-				checkCondition(c, sortField);
-				return getTranslator(c, dt).forSortField().translate();
-			}
-			return null;
-		}
-		BoolQueryBuilder result = QueryBuilders.boolQuery();
-		boolean hasConditionWithSortField = false;
-		for (QueryCondition c : conditions) {
-			if (c.getField().equals(sortField)) {
-				hasConditionWithSortField = true;
-				checkCondition(c, sortField);
-				if (querySpec.getLogicalOperator() == OR) {
-					result.should(getTranslator(c, dt).forSortField().translate());
-				}
-				else {
-					result.must(getTranslator(c, dt).forSortField().translate());
-				}
-			}
-		}
-		return hasConditionWithSortField ? result : null;
+		return null;
+//		List<SearchCondition> conditions = querySpec.getConditions();
+//		if (conditions == null || conditions.size() == 0) {
+//			return null;
+//		}
+//		if (conditions.size() == 1) {
+//			SearchCondition c = conditions.iterator().next();
+//			if (c.getField().equals(sortField)) {
+//				checkCondition(c, sortField);
+//				return getTranslator(c, dt).forSortField().translate();
+//			}
+//			return null;
+//		}
+//		BoolQueryBuilder result = QueryBuilders.boolQuery();
+//		boolean hasConditionWithSortField = false;
+//		for (SearchCondition c : conditions) {
+//			if (c.getField().equals(sortField)) {
+//				hasConditionWithSortField = true;
+//				checkCondition(c, sortField);
+//				if (querySpec.getLogicalOperator() == OR) {
+//					result.should(getTranslator(c, dt).forSortField().translate());
+//				}
+//				else {
+//					result.must(getTranslator(c, dt).forSortField().translate());
+//				}
+//			}
+//		}
+//		return hasConditionWithSortField ? result : null;
 	}
 
-	private static void checkCondition(QueryCondition c, String path)
+	private static void checkCondition(SearchCondition c, String path)
 			throws InvalidConditionException
 	{
-		if (c.getAnd() != null) {
-			for (QueryCondition condition : c.getAnd()) {
-				if (!condition.getField().equals(path)) {
-					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
-					throw new InvalidConditionException(msg);
-				}
-				checkCondition(condition, path);
-			}
-		}
-		if (c.getOr() != null) {
-			for (QueryCondition condition : c.getOr()) {
-				if (!condition.getField().equals(path)) {
-					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
-					throw new InvalidConditionException(msg);
-				}
-				checkCondition(condition, path);
-			}
-		}
+//		if (c.getAnd() != null) {
+//			for (SearchCondition condition : c.getAnd()) {
+//				if (!condition.getField().equals(path)) {
+//					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
+//					throw new InvalidConditionException(msg);
+//				}
+//				checkCondition(condition, path);
+//			}
+//		}
+//		if (c.getOr() != null) {
+//			for (SearchCondition condition : c.getOr()) {
+//				if (!condition.getField().equals(path)) {
+//					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
+//					throw new InvalidConditionException(msg);
+//				}
+//				checkCondition(condition, path);
+//			}
+//		}
 	}
 
 	private static InvalidQueryException invalidSortField(String field)

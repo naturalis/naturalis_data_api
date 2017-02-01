@@ -1,14 +1,10 @@
 package nl.naturalis.nba.dao.translate.search;
 
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.geoPolygonQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.LngLatAlt;
@@ -38,22 +34,7 @@ class PointInShapeConditionTranslator extends ConditionTranslator {
 			}
 		}
 		Path path = condition.getFields().iterator().next();
-		QueryBuilder query = geoPolygonQuery(path.toString(),points);
-		
-		if(forSortField) {
-			return query;
-		}
-		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.None);
-		}
-		if (condition.isFilter().booleanValue()) {
-			query = constantScoreQuery(query);
-		}
-		else if (condition.getBoost() != null) {
-			query.boost(condition.getBoost());
-		}
-		return query;
+		return geoPolygonQuery(path.toString(),points);
 	}
 
 	@Override

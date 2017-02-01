@@ -1,9 +1,7 @@
 package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.api.LogicalOperator.OR;
-import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.dao.DaoUtil.prune;
 import static nl.naturalis.nba.dao.translate.search.ConditionTranslatorFactory.getTranslator;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
@@ -13,7 +11,6 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -50,17 +47,28 @@ public class SearchSpecTranslator {
 		this.dt = documentType;
 	}
 
+	/**
+	 * Translates the {@link SearchSpec} object into an Elasticsearch query.
+	 * 
+	 * @return
+	 * @throws InvalidQueryException
+	 */
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
-		QueryBuilder query = translateConditions();
-		if (spec.isNonScoring()) {
-			query = constantScoreQuery(query);
-		}
 		SearchRequestBuilder request = newSearchRequest(dt);
+		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
+			QueryBuilder query;
+			if (spec.isNonScoring()) {
+				query = constantScoreQuery(translateConditions());
+			}
+			else {
+				query = translateConditions();
+			}
+			request.setQuery(query);
+		}
 		if (spec.getFields() != null) {
 			addFields(request);
 		}
-		request.setQuery(query);
 		request.setFrom(spec.getFrom() == null ? DEFAULT_FROM : spec.getFrom());
 		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 		if (spec.getSortFields() != null) {
@@ -99,8 +107,10 @@ public class SearchSpecTranslator {
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{
 		List<SearchCondition> conditions = spec.getConditions();
-		if (conditions == null || conditions.size() == 0) {
-			return QueryBuilders.matchAllQuery();
+		if (spec.isNonScoring()) {
+			for (SearchCondition c : conditions) {
+				turnIntoFilter(c);
+			}
 		}
 		if (conditions.size() == 1) {
 			SearchCondition c = conditions.iterator().next();
@@ -118,6 +128,21 @@ public class SearchSpecTranslator {
 			}
 		}
 		return result;
+	}
+
+	private static void turnIntoFilter(SearchCondition condition)
+	{
+		condition.setFilter(Boolean.TRUE);
+		if (condition.getAnd() != null) {
+			for (SearchCondition c : condition.getAnd()) {
+				turnIntoFilter(c);
+			}
+		}
+		if (condition.getOr() != null) {
+			for (SearchCondition c : condition.getOr()) {
+				turnIntoFilter(c);
+			}
+		}
 	}
 
 }

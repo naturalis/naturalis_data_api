@@ -8,24 +8,25 @@ import java.util.List;
 import nl.naturalis.nba.api.QueryCondition;
 
 /**
- * Converts a condition's {@link QueryCondition#getValue() value} to a {@link List}
- * of nun-null values.
+ * Converts a condition's {@link QueryCondition#getValue() value} to a
+ * {@link List} of nun-null values.
  * 
  * @author Ayco Holleman
  *
  */
-class InValuesBuilder {
+class StringExploder {
 
-	private List<Object> values;
+	private List<String> values;
 	private boolean containsNull;
+	private boolean containsNonCharSequence;
 
 	/**
-	 * Create a new {@link InValuesBuilder} for the specified value, supposedly
+	 * Create a new {@link StringExploder} for the specified value, supposedly
 	 * coming from {@link QueryCondition#getValue()}.
 	 * 
 	 * @param value
 	 */
-	InValuesBuilder(Object value)
+	StringExploder(Object value)
 	{
 		if (value == null) {
 			values = new ArrayList<>(0);
@@ -38,7 +39,10 @@ class InValuesBuilder {
 			handleArray((Object[]) value);
 		}
 		else {
-			values = Arrays.asList(value);
+			if (!(value instanceof CharSequence)) {
+				containsNonCharSequence = true;
+			}
+			values = Arrays.asList(value.toString());
 		}
 	}
 
@@ -48,14 +52,14 @@ class InValuesBuilder {
 	 * 
 	 * @return
 	 */
-	List<Object> getValues()
+	List<String> getValues()
 	{
 		return values;
 	}
 
 	/**
-	 * Whether or not a condition's {@link QueryCondition#getValue() value} <i>is</i>
-	 * or <i>contains</i> a null value.
+	 * Whether or not a condition's {@link QueryCondition#getValue() value}
+	 * <i>is</i> or <i>contains</i> a null value.
 	 * 
 	 * @return
 	 */
@@ -64,14 +68,24 @@ class InValuesBuilder {
 		return containsNull;
 	}
 
+	boolean containsNonCharSequence()
+	{
+		return containsNonCharSequence;
+	}
+
 	private void handleCollection(Collection<?> objs)
 	{
 		values = new ArrayList<>(objs.size());
 		for (Object obj : objs) {
-			if (obj == null)
+			if (obj == null) {
 				containsNull = true;
-			else
-				values.add(obj);
+			}
+			else {
+				if (!(obj instanceof CharSequence)) {
+					containsNonCharSequence = true;
+				}
+				values.add(obj.toString());
+			}
 		}
 	}
 
@@ -79,10 +93,15 @@ class InValuesBuilder {
 	{
 		values = new ArrayList<>(objs.length);
 		for (Object obj : objs) {
-			if (obj == null)
+			if (obj == null) {
 				containsNull = true;
-			else
-				values.add(obj);
+			}
+			else {
+				if (!(obj instanceof CharSequence)) {
+					containsNonCharSequence = true;
+				}
+				values.add(obj.toString());
+			}
 		}
 	}
 

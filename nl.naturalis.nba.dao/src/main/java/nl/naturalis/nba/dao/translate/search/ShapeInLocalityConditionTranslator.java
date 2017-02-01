@@ -4,18 +4,14 @@ import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.searchTermHasWrongType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -26,7 +22,6 @@ import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SearchCondition;
@@ -55,32 +50,14 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		QueryBuilder query;
-		String[] localities = getLocality(condition.getValue());
+		String[] localities = getLocalities(condition.getValue());
 		if (localities.length == 1) {
-			query = createQueryForLocality(localities[0]);
+			return createQueryForLocality(localities[0]);
 		}
-		else {
-			query = boolQuery();
-			for (String locality : localities) {
-				QueryBuilder qb = createQueryForLocality(locality);
-				((BoolQueryBuilder) query).should(qb);
-			}
-		}
-
-		if (forSortField) {
-			return query;
-		}
-		Path path = condition.getFields().iterator().next();
-		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.None);
-		}
-		if (condition.isFilter().booleanValue()) {
-			query = constantScoreQuery(query);
-		}
-		else if (condition.getBoost() != null) {
-			query.boost(condition.getBoost());
+		BoolQueryBuilder query = boolQuery();
+		for (String locality : localities) {
+			QueryBuilder qb = createQueryForLocality(locality);
+			query.should(qb);
 		}
 		return query;
 	}
@@ -91,7 +68,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		ensureValueIsNotNull(condition);
 	}
 
-	private String[] getLocality(Object value) throws InvalidConditionException
+	private String[] getLocalities(Object value) throws InvalidConditionException
 	{
 		String[] localities;
 		if (value instanceof CharSequence) {

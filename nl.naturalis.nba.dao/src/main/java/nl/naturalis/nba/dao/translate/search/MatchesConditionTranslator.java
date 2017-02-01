@@ -2,14 +2,11 @@ package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.MultiField.DEFAULT_MULTIFIELD;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.LinkedHashSet;
 
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -30,36 +27,18 @@ class MatchesConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		QueryBuilder query;
 		if (condition.getFields().size() == 1) {
 			Path path = condition.getFields().iterator().next();
 			String field = path.append(MY_MULTIFIELD).toString();
 			String value = condition.getValue().toString().toLowerCase();
-			query = matchQuery(field, value);
+			return matchQuery(field, value);
 		}
-		else {
-			String[] fields = new String[condition.getFields().size()];
-			int i = 0;
-			for (Path path : condition.getFields()) {
-				fields[i++] = path.append(MY_MULTIFIELD).toString();
-			}
-			query = multiMatchQuery(condition.getValue(), fields);
+		String[] fields = new String[condition.getFields().size()];
+		int i = 0;
+		for (Path path : condition.getFields()) {
+			fields[i++] = path.append(MY_MULTIFIELD).toString();
 		}
-		if (forSortField) {
-			return query;
-		}
-		Path path = condition.getFields().iterator().next();
-		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.None);
-		}
-		if (condition.isFilter().booleanValue()) {
-			query = constantScoreQuery(query);
-		}
-		else if (condition.getBoost() != null) {
-			query.boost(condition.getBoost());
-		}
-		return query;
+		return multiMatchQuery(condition.getValue(), fields);
 	}
 
 	@Override

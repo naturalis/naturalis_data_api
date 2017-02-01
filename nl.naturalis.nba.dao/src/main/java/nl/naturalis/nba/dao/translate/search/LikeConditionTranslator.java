@@ -2,14 +2,9 @@ package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsString;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidConditionException;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
@@ -18,6 +13,8 @@ import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class LikeConditionTranslator extends ConditionTranslator {
+
+	private static final String MY_MULTIFIELD = LIKE_MULTIFIELD.getName();
 
 	LikeConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
 	{
@@ -28,30 +25,15 @@ class LikeConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		Path path = condition.getFields().iterator().next();
-		String field = path.append(LIKE_MULTIFIELD.getName()).toString();
+		String field = path.append(MY_MULTIFIELD).toString();
 		String value = condition.getValue().toString().toLowerCase();
-		QueryBuilder query = termQuery(field, value);
-		if (forSortField) {
-			return query;
-		}
-		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.None);
-		}
-		if (condition.isFilter().booleanValue()) {
-			query = constantScoreQuery(query);
-		}
-		else if (condition.getBoost() != null) {
-			query.boost(condition.getBoost());
-		}
-		return query;
+		return termQuery(field, value);
 	}
 
 	@Override
 	void checkCondition() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
-		ensureValueIsString(condition);
 		String value = condition.getValue().toString();
 		//TODO: soft code upper and lower bounds of n-gram size
 		if (value.length() < 3) {

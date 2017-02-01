@@ -5,17 +5,22 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -65,8 +70,8 @@ public abstract class ConditionTranslator {
 
 	/**
 	 * Converts the {@link SearchCondition} passed in through the
-	 * {@link #ConditionTranslator(SearchCondition) constructor} to an Elasticsearch
-	 * {@link QueryBuilder} instance.
+	 * {@link #ConditionTranslator(SearchCondition) constructor} to an
+	 * Elasticsearch {@link QueryBuilder} instance.
 	 * 
 	 * @return
 	 * @throws InvalidConditionException
@@ -88,39 +93,46 @@ public abstract class ConditionTranslator {
 	 */
 	abstract void checkCondition() throws InvalidConditionException;
 
-	private QueryBuilder translate(boolean isSibling) throws InvalidConditionException
+	private QueryBuilder translate(boolean sibling) throws InvalidConditionException
 	{
 		checkCondition();
 		List<SearchCondition> and = condition.getAnd();
 		List<SearchCondition> or = condition.getOr();
-		QueryBuilder result;
+		QueryBuilder query;
 		if (and == null && or == null) {
-			if (!isSibling && mustNegate()) {
-				result = not(translateCondition());
+			query = translateCondition();
+			if (!sibling && mustNegate()) {
+				query = not(translateCondition());
 			}
-			else {
-				result = translateCondition();
+			Path path = condition.getFields().iterator().next();
+			String nestedPath = getNestedPath(path, mappingInfo);
+			if (nestedPath != null) {
+				query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+			}
+			if (condition.isFilter() && !condition.isNegated()) {
+				query = constantScoreQuery(query);
+			}
+			else if (condition.getBoost() != null) {
+				query.boost(condition.getBoost());
 			}
 		}
 		else if (or != null) {
 			if (and == null) {
-				result = translateWithOrSiblings();
+				query = translateWithOrSiblings();
 			}
 			else {
-				result = translateOrSiblings();
-				BoolQueryBuilder meWithAndSiblings = translateWithAndSiblings();
-				((BoolQueryBuilder) result).should(meWithAndSiblings);
+				query = translateOrSiblings().should(translateWithAndSiblings());
 			}
 		}
 		else {
-			result = translateWithAndSiblings();
+			query = translateWithAndSiblings();
 		}
 		/*
 		 * Condition might be negated using operator NOT as well as use a
 		 * negating comparison operator like NOT_BETWEEN, causing the condition
 		 * to be doubly negated.
 		 */
-		return condition.isNegated() ? not(result) : result;
+		return condition.isNegated() ? not(query) : query;
 	}
 
 	private BoolQueryBuilder translateWithAndSiblings() throws InvalidConditionException
@@ -180,9 +192,9 @@ public abstract class ConditionTranslator {
 		return boolQuery;
 	}
 
-	private static QueryBuilder not(QueryBuilder qb)
+	private static QueryBuilder not(QueryBuilder query)
 	{
-		return boolQuery().mustNot(qb);
+		return boolQuery().mustNot(query);
 	}
 
 	private ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)

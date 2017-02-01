@@ -4,17 +4,13 @@ import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.convertValuesForDateField;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getESField;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidConditionException;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.ComparisonOperator;
@@ -74,22 +70,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		}
 		Path path = condition.getFields().iterator().next();
 		String field = path.toString();
-		QueryBuilder query = rangeQuery(field).from(min).to(max);
-
-		if (forSortField) {
-			return query;
-		}
-		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.None);
-		}
-		if (condition.isFilter().booleanValue()) {
-			query = constantScoreQuery(query);
-		}
-		else if (condition.getBoost() != null) {
-			query.boost(condition.getBoost());
-		}
-		return query;
+		return rangeQuery(field).from(min).to(max);
 	}
 
 	@Override

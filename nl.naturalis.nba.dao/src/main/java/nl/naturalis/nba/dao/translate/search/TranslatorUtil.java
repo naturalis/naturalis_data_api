@@ -86,7 +86,7 @@ class TranslatorUtil {
 	{
 		String type = condition.getValue().getClass().getName();
 		String fmt = "Search term has wrong type for query condition on field %s: %s";
-		return invalidConditionException(condition, fmt, condition.getField(), type);
+		return invalidConditionException(condition, fmt, firstField(condition), type);
 	}
 
 	static void ensureValueIsNotNull(SearchCondition condition) throws InvalidConditionException
@@ -197,7 +197,7 @@ class TranslatorUtil {
 	{
 		ESField field = null;
 		try {
-			field = mappingInfo.getField(condition.getField());
+			field = mappingInfo.getField(firstField(condition));
 		}
 		catch (NoSuchFieldException e) {
 			// Won't happen because already checked in ConditionTranslatorFactory
@@ -213,7 +213,7 @@ class TranslatorUtil {
 			case SHORT:
 				break;
 			default:
-				throw new IllegalOperatorException(condition);
+				throw new IllegalOperatorException(firstField(condition), condition.getOperator());
 		}
 	}
 }

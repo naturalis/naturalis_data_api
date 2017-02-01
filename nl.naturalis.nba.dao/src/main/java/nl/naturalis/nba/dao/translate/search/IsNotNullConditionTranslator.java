@@ -1,6 +1,8 @@
 package nl.naturalis.nba.dao.translate.search;
 
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
@@ -8,7 +10,8 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 /**
@@ -22,7 +25,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class IsNotNullConditionTranslator extends ConditionTranslator {
 
-	IsNotNullConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
+	IsNotNullConditionTranslator(SearchCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -30,12 +33,23 @@ class IsNotNullConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		String field = condition.getField();
-		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null || forSortField) {
-			return existsQuery(field);
+		Path path = condition.getFields().iterator().next();
+		QueryBuilder query = existsQuery(path.toString());
+		if (forSortField) {
+			return query;
 		}
-		return nestedQuery(nestedPath, existsQuery(field), ScoreMode.None);
+		String nestedPath = getNestedPath(path, mappingInfo);
+		if (nestedPath != null) {
+			query = nestedQuery(nestedPath, query, ScoreMode.None);
+		}
+		query = boolQuery().mustNot(query);
+		if (condition.isFilter().booleanValue()) {
+			query = constantScoreQuery(query);
+		}
+		else if (condition.getBoost() != null) {
+			query.boost(condition.getBoost());
+		}
+		return query;
 	}
 
 	@Override

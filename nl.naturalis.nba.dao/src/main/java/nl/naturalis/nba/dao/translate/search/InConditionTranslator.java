@@ -1,11 +1,12 @@
 package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.convertValuesForDateField;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.getESField;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.convertValuesForDateField;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getESField;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
@@ -18,7 +19,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -31,7 +33,7 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
  */
 class InConditionTranslator extends ConditionTranslator {
 
-	InConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
+	InConditionTranslator(SearchCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -52,11 +54,18 @@ class InConditionTranslator extends ConditionTranslator {
 		else {
 			query = isOneOf(ivb.getValues());
 		}
-		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null || forSortField) {
-			return query;
+		Path path = condition.getFields().iterator().next();
+		String nestedPath = getNestedPath(path, mappingInfo);
+		if (nestedPath != null) {
+			query = nestedQuery(nestedPath, query, ScoreMode.None);
 		}
-		return nestedQuery(nestedPath, query, ScoreMode.None);
+		if (condition.isFilter().booleanValue()) {
+			query = constantScoreQuery(query);
+		}
+		else if (condition.getBoost() != null) {
+			query.boost(condition.getBoost());
+		}
+		return query;
 	}
 
 	@Override
@@ -79,12 +88,13 @@ class InConditionTranslator extends ConditionTranslator {
 
 	private TermsQueryBuilder isOneOf(List<?> values)
 	{
-		return termsQuery(condition.getField(), values);
+		String field = condition.getFields().iterator().next().toString();
+		return termsQuery(field, values);
 	}
 
 	private BoolQueryBuilder isNull()
 	{
-		String field = condition.getField();
+		String field = condition.getFields().iterator().next().toString();
 		return boolQuery().mustNot(existsQuery(field));
 	}
 

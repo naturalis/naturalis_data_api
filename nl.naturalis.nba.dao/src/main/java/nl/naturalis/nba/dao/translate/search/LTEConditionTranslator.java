@@ -2,12 +2,12 @@ package nl.naturalis.nba.dao.translate.search;
 
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class LTEConditionTranslator extends RangeConditionTranslator {
 
-	LTEConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
+	LTEConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

@@ -1,23 +1,26 @@
 package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.ensureValueIsString;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsString;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class NotEqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
-	NotEqualsIgnoreCaseConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
+	private static final String MY_MULTIFIELD = IGNORE_CASE_MULTIFIELD.getName();
+
+	NotEqualsIgnoreCaseConditionTranslator(SearchCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -25,15 +28,25 @@ class NotEqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		String field = condition.getField();
+		Path path = condition.getFields().iterator().next();
+		String field = path.append(MY_MULTIFIELD).toString();
 		String value = condition.getValue().toString().toLowerCase();
-		String nestedPath = getNestedPath(condition, mappingInfo);
-		String multiField = field + '.' + IGNORE_CASE_MULTIFIELD.getName();
-		TermQueryBuilder query = termQuery(multiField, value);
-		if (nestedPath == null || forSortField) {
-			return boolQuery().mustNot(query);
+		QueryBuilder query = termQuery(field, value);
+		query = boolQuery().mustNot(query);
+		if (forSortField) {
+			return query;
 		}
-		return boolQuery().mustNot(nestedQuery(nestedPath, query, ScoreMode.None));
+		String nestedPath = getNestedPath(path, mappingInfo);
+		if (nestedPath != null) {
+			query = nestedQuery(nestedPath, query, ScoreMode.None);
+		}
+		if (condition.isFilter().booleanValue()) {
+			query = constantScoreQuery(query);
+		}
+		else if (condition.getBoost() != null) {
+			query.boost(condition.getBoost());
+		}
+		return query;
 	}
 
 	@Override

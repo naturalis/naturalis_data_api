@@ -4,7 +4,7 @@ import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DaoUtil.prune;
-import static nl.naturalis.nba.dao.translate.query.ConditionTranslatorFactory.getTranslator;
+import static nl.naturalis.nba.dao.translate.search.ConditionTranslatorFactory.getTranslator;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
@@ -20,30 +20,30 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
- * A {@code QuerySpecTranslator} is responsible for translating an NBA
- * {@link QuerySpec} object into an Elasticsearch {@link SearchRequestBuilder}
+ * A {@code SearchSpecTranslator} is responsible for translating an NBA
+ * {@link SearchSpec} object into an Elasticsearch {@link SearchRequestBuilder}
  * object.
  * 
  * @author Ayco Holleman
  *
  */
-public class QuerySpecTranslator {
+public class SearchSpecTranslator {
 
-	private static final Logger logger = getLogger(QuerySpecTranslator.class);
+	private static final Logger logger = getLogger(SearchSpecTranslator.class);
 	private static final int DEFAULT_FROM = 0;
 	private static final int DEFAULT_SIZE = 10;
 
-	private QuerySpec spec;
+	private SearchSpec spec;
 	private DocumentType<?> dt;
 
-	public QuerySpecTranslator(QuerySpec querySpec, DocumentType<?> documentType)
+	public SearchSpecTranslator(SearchSpec querySpec, DocumentType<?> documentType)
 	{
 		this.spec = querySpec;
 		this.dt = documentType;
@@ -52,7 +52,7 @@ public class QuerySpecTranslator {
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
+			logger.debug("Translating SearchSpec:\n{}", toPrettyJson(prune(spec)));
 		}
 		QueryBuilder query = translateConditions();
 		ConstantScoreQueryBuilder csq = constantScoreQuery(query);
@@ -98,22 +98,22 @@ public class QuerySpecTranslator {
 
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{
-		List<QueryCondition> conditions = spec.getConditions();
+		List<SearchCondition> conditions = spec.getConditions();
 		if (conditions == null || conditions.size() == 0) {
 			return QueryBuilders.matchAllQuery();
 		}
 		if (conditions.size() == 1) {
-			QueryCondition c = conditions.iterator().next();
+			SearchCondition c = conditions.iterator().next();
 			return getTranslator(c, dt).translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		if (spec.getLogicalOperator() == OR) {
-			for (QueryCondition c : conditions) {
+			for (SearchCondition c : conditions) {
 				result.should(getTranslator(c, dt).translate());
 			}
 		}
 		else {
-			for (QueryCondition c : conditions) {
+			for (SearchCondition c : conditions) {
 				result.must(getTranslator(c, dt).translate());
 			}
 		}

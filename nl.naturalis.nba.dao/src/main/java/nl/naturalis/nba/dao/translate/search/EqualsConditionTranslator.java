@@ -29,14 +29,18 @@ class EqualsConditionTranslator extends ConditionTranslator {
 	{
 		Path path = condition.getFields().iterator().next();
 		QueryBuilder query = termQuery(path.toString(), condition.getValue());
+		
+		if(forSortField) {
+			return query;
+		}
 		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null && !forSortField) {
+		if (nestedPath != null) {
 			query = nestedQuery(nestedPath, query, ScoreMode.None);
 		}
 		if (condition.isFilter().booleanValue()) {
 			query = constantScoreQuery(query);
 		}
-		else {
+		else if (condition.getBoost() != null) {
 			query.boost(condition.getBoost());
 		}
 		return query;

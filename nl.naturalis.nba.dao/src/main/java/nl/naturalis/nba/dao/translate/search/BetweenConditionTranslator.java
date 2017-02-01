@@ -1,8 +1,14 @@
 package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.*;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.convertValuesForDateField;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getESField;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidConditionException;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -10,12 +16,11 @@ import java.util.Iterator;
 
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -34,7 +39,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 	private static final String ERROR_1 = "When using operator %s, at least "
 			+ "one of the boundary values must not be null";
 
-	BetweenConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
+	BetweenConditionTranslator(SearchCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}
@@ -67,15 +72,24 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		if (min == null && max == null) {
 			throw invalidConditionException(condition, ERROR_1, operator);
 		}
-		String field = condition.getField();
-		RangeQueryBuilder query = QueryBuilders.rangeQuery(field);
-		query.from(min);
-		query.to(max);
-		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null) {
+		Path path = condition.getFields().iterator().next();
+		String field = path.toString();
+		QueryBuilder query = rangeQuery(field).from(min).to(max);
+
+		if (forSortField) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query, ScoreMode.None);
+		String nestedPath = getNestedPath(path, mappingInfo);
+		if (nestedPath != null) {
+			query = nestedQuery(nestedPath, query, ScoreMode.None);
+		}
+		if (condition.isFilter().booleanValue()) {
+			query = constantScoreQuery(query);
+		}
+		else if (condition.getBoost() != null) {
+			query.boost(condition.getBoost());
+		}
+		return query;
 	}
 
 	@Override

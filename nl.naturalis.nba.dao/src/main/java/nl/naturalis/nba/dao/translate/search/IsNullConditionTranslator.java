@@ -43,15 +43,18 @@ class IsNullConditionTranslator extends ConditionTranslator {
 	{
 		Path path = condition.getFields().iterator().next();
 		QueryBuilder query = existsQuery(path.toString());
+		if(forSortField) {
+			return boolQuery().mustNot(query);
+		}
 		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null && !forSortField) {
+		if (nestedPath != null) {
 			query = nestedQuery(nestedPath, query, ScoreMode.None);
 		}
 		query = boolQuery().mustNot(query);
 		if (condition.isFilter().booleanValue()) {
 			query = constantScoreQuery(query);
 		}
-		else {
+		else if (condition.getBoost() != null) {
 			query.boost(condition.getBoost());
 		}
 		return query;

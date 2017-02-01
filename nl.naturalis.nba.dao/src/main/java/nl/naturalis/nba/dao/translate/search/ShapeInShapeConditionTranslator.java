@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.translate.search;
 
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
@@ -13,7 +14,6 @@ import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilders;
-import org.elasticsearch.index.query.GeoShapeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
@@ -23,22 +23,23 @@ import org.geojson.Polygon;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
 
 /**
  * Translates conditions with an IN or NOT_IN operator when used with fields of
- * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue() search
- * term that is also a {@link GeoJsonObject} (or a JSON string that deserializes
- * into a {@link GeoJsonObject}).
+ * type {@link GeoJsonObject} and with a {@link SearchCondition#getValue()
+ * search term that is also a {@link GeoJsonObject} (or a JSON string that
+ * deserializes into a {@link GeoJsonObject}).
  * 
  * @author Ayco Holleman
  *
  */
 class ShapeInShapeConditionTranslator extends ConditionTranslator {
 
-	ShapeInShapeConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
+	ShapeInShapeConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}
@@ -46,18 +47,29 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		GeoShapeQueryBuilder query;
+		Path path = condition.getFields().iterator().next();
+		QueryBuilder query;
 		try {
-			query = geoShapeQuery(condition.getField(), getShape());
+			query = geoShapeQuery(path.toString(), getShape());
 		}
 		catch (IOException e) {
 			throw new DaoException(e);
 		}
-		String nestedPath = getNestedPath(condition, mappingInfo);
-		if (nestedPath == null || forSortField) {
+
+		if (forSortField) {
 			return query;
 		}
-		return nestedQuery(nestedPath, query, ScoreMode.None);
+		String nestedPath = getNestedPath(path, mappingInfo);
+		if (nestedPath != null) {
+			query = nestedQuery(nestedPath, query, ScoreMode.None);
+		}
+		if (condition.isFilter().booleanValue()) {
+			query = constantScoreQuery(query);
+		}
+		else if (condition.getBoost() != null) {
+			query.boost(condition.getBoost());
+		}
+		return query;
 	}
 
 	@Override

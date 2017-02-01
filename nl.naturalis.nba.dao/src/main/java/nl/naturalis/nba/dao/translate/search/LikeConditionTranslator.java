@@ -1,10 +1,11 @@
 package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.ensureValueIsString;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.getNestedPath;
-import static nl.naturalis.nba.dao.translate.query.TranslatorUtil.invalidConditionException;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsString;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidConditionException;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
@@ -12,12 +13,13 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.Path;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class LikeConditionTranslator extends ConditionTranslator {
 
-	LikeConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
+	LikeConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}
@@ -25,13 +27,24 @@ class LikeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		String nestedPath = getNestedPath(condition, mappingInfo);
-		String multiField = condition.getField() + '.' + LIKE_MULTIFIELD.getName();
+		Path path = condition.getFields().iterator().next();
+		String field = path.append(LIKE_MULTIFIELD.getName()).toString();
 		String value = condition.getValue().toString().toLowerCase();
-		if (nestedPath == null || forSortField) {
-			return termQuery(multiField, value);
+		QueryBuilder query = termQuery(field, value);
+		if (forSortField) {
+			return query;
 		}
-		return nestedQuery(nestedPath, termQuery(multiField, value), ScoreMode.None);
+		String nestedPath = getNestedPath(path, mappingInfo);
+		if (nestedPath != null) {
+			query = nestedQuery(nestedPath, query, ScoreMode.None);
+		}
+		if (condition.isFilter().booleanValue()) {
+			query = constantScoreQuery(query);
+		}
+		else if (condition.getBoost() != null) {
+			query.boost(condition.getBoost());
+		}
+		return query;
 	}
 
 	@Override
@@ -40,6 +53,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 		ensureValueIsNotNull(condition);
 		ensureValueIsString(condition);
 		String value = condition.getValue().toString();
+		//TODO: soft code upper and lower bounds of n-gram size
 		if (value.length() < 3) {
 			String fmt = "Search term must contain at least 3 characters with operator %s";
 			throw invalidConditionException(condition, fmt, condition.getOperator());

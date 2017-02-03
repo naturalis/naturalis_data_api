@@ -191,14 +191,16 @@ public class MappingInfo<T extends IDocumentObject> {
 	}
 
 	/**
-	 * Returns all fields within a document using their full path.
+	 * Returns the full path of all fields within a document.
 	 * 
 	 * @param sorted
+	 *            Whether or not to alphabetically sort the fields. If not they
+	 *            are returned in the order as the appear in the document.
 	 * @return
 	 */
 	public String[] getPathStrings(boolean sorted)
 	{
-		List<String> paths = new ArrayList<>(100);
+		List<String> paths = new ArrayList<>(200);
 		LinkedHashMap<String, ESField> properties = mapping.getProperties();
 		for (Map.Entry<String, ESField> property : properties.entrySet()) {
 			addPath(paths, null, property.getKey(), property.getValue());

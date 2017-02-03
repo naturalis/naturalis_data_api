@@ -2,7 +2,6 @@ package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidConditionException;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
@@ -38,11 +37,11 @@ class LikeConditionTranslator extends ConditionTranslator {
 		//TODO: soft code upper and lower bounds of n-gram size
 		if (value.length() < 3) {
 			String fmt = "Search term must contain at least 3 characters with operator %s";
-			throw invalidConditionException(condition, fmt, condition.getOperator());
+			throw new InvalidConditionException(condition, fmt, condition.getOperator());
 		}
 		if (value.length() > 15) {
 			String fmt = "Search term may contain no more than 15 characters with operator %s";
-			throw invalidConditionException(condition, fmt, condition.getOperator());
+			throw new InvalidConditionException(condition, fmt, condition.getOperator());
 		}
 	}
 }

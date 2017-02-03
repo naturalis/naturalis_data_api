@@ -30,7 +30,7 @@ class MatchesConditionTranslator extends ConditionTranslator {
 		if (condition.getFields().size() == 1) {
 			Path path = condition.getFields().iterator().next();
 			String field = path.append(MY_MULTIFIELD).toString();
-			String value = condition.getValue().toString().toLowerCase();
+			String value = condition.getValue().toString();
 			return matchQuery(field, value);
 		}
 		String[] fields = new String[condition.getFields().size()];

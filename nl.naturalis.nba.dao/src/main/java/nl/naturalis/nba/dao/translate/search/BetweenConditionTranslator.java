@@ -4,7 +4,6 @@ import static nl.naturalis.nba.common.es.map.ESDataType.DATE;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.convertValuesForDateField;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getESField;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidConditionException;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 
 import java.lang.reflect.Array;
@@ -49,7 +48,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		Object max;
 		if (value.getClass().isArray()) {
 			if (Array.getLength(value) != 2) {
-				throw invalidConditionException(condition, ERROR_0, operator);
+				throw new InvalidConditionException(condition, ERROR_0, operator);
 			}
 			min = Array.get(value, 0);
 			max = Array.get(value, 1);
@@ -57,16 +56,16 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		else if (value instanceof Collection) {
 			Collection<?> collection = (Collection<?>) value;
 			if (collection.size() != 2)
-				throw invalidConditionException(condition, ERROR_0, operator);
+				throw new InvalidConditionException(condition, ERROR_0, operator);
 			Iterator<?> iterator = collection.iterator();
 			min = iterator.next();
 			max = iterator.next();
 		}
 		else {
-			throw invalidConditionException(condition, ERROR_0, operator);
+			throw new InvalidConditionException(condition, ERROR_0, operator);
 		}
 		if (min == null && max == null) {
-			throw invalidConditionException(condition, ERROR_1, operator);
+			throw new InvalidConditionException(condition, ERROR_1, operator);
 		}
 		Path path = condition.getFields().iterator().next();
 		String field = path.toString();

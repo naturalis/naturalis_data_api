@@ -1,5 +1,7 @@
 package nl.naturalis.nba.dao.translate.search;
 
+import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_IN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
@@ -39,9 +41,9 @@ public abstract class ConditionTranslator {
 	 * Negating operators are operators that are translated just like their
 	 * opposite (e.g. NOT_BETWEEN <-> BETWEEN), but then wrapped into a
 	 * BoolQuery.mustNot() query. Note that NOT_EQUALS and NOT_EQUALS_IC are not
-	 * included here! For them separate ConditionTranslator subclasses have been
-	 * made. This is because they require special code for NULL handling, and
-	 * also because not having them handled separately results in valid but
+	 * included here. For them separate ConditionTranslator subclasses have been
+	 * created. This is because they require special code for NULL handling, and
+	 * also because not having them handled separately may result in valid but
 	 * awkward Elasticsearch queries (mustNot within mustNot within mustNot
 	 * queries).
 	 */
@@ -89,11 +91,13 @@ public abstract class ConditionTranslator {
 
 	/*
 	 * Implement any up-front/fail-fast checks you can think of. Throw an
-	 * InvalidConditionException if value is not compatible with operator.
+	 * InvalidConditionException if the condition is deemed invalid. You can
+	 * also use this method to preprocess the condition, e.g. cast or convert
+	 * the condition's value.
 	 */
 	abstract void checkCondition() throws InvalidConditionException;
 
-	private QueryBuilder translate(boolean sibling) throws InvalidConditionException
+	private QueryBuilder translate(boolean siblingCondition) throws InvalidConditionException
 	{
 		checkCondition();
 		List<SearchCondition> and = condition.getAnd();
@@ -101,18 +105,25 @@ public abstract class ConditionTranslator {
 		QueryBuilder query;
 		if (and == null && or == null) {
 			query = translateCondition();
-			if (!sibling && mustNegate()) {
-				query = not(translateCondition());
+			if (!siblingCondition) {
+				Path path = condition.getFields().iterator().next();
+				String nestedPath = getNestedPath(path, mappingInfo);
+				if (nestedPath != null) {
+					query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+				}
+				if (withNegativeOperator()) {
+					query = not(translateCondition());
+				}
+				else if (!condition.isFilter() && withScoringOperator()) {
+					if (condition.getBoost() != null) {
+						query.boost(condition.getBoost());
+					}
+				}
+				else {
+					query = constantScoreQuery(query);
+				}
 			}
-			Path path = condition.getFields().iterator().next();
-			String nestedPath = getNestedPath(path, mappingInfo);
-			if (nestedPath != null) {
-				query = nestedQuery(nestedPath, query, ScoreMode.Avg);
-			}
-			if (condition.isFilter() && !condition.isNegated()) {
-				query = constantScoreQuery(query);
-			}
-			else if (condition.getBoost() != null) {
+			if (condition.getBoost() != null) {
 				query.boost(condition.getBoost());
 			}
 		}
@@ -138,7 +149,7 @@ public abstract class ConditionTranslator {
 	private BoolQueryBuilder translateWithAndSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		if (mustNegate()) {
+		if (withNegativeOperator()) {
 			boolQuery.mustNot(translateCondition());
 		}
 		else {
@@ -146,7 +157,7 @@ public abstract class ConditionTranslator {
 		}
 		for (SearchCondition sibling : condition.getAnd()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
-			if (translator.mustNegate()) {
+			if (translator.withNegativeOperator()) {
 				boolQuery.mustNot(translator.translate(true));
 			}
 			else {
@@ -159,7 +170,7 @@ public abstract class ConditionTranslator {
 	private BoolQueryBuilder translateWithOrSiblings() throws InvalidConditionException
 	{
 		BoolQueryBuilder boolQuery = boolQuery();
-		if (mustNegate()) {
+		if (withNegativeOperator()) {
 			boolQuery.should(not(translateCondition()));
 		}
 		else {
@@ -167,7 +178,7 @@ public abstract class ConditionTranslator {
 		}
 		for (SearchCondition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
-			if (translator.mustNegate()) {
+			if (translator.withNegativeOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
 			else {
@@ -182,7 +193,7 @@ public abstract class ConditionTranslator {
 		BoolQueryBuilder boolQuery = boolQuery();
 		for (SearchCondition sibling : condition.getOr()) {
 			ConditionTranslator translator = getTranslator(sibling, mappingInfo);
-			if (translator.mustNegate()) {
+			if (translator.withNegativeOperator()) {
 				boolQuery.should(not(translator.translate(true)));
 			}
 			else {
@@ -212,9 +223,20 @@ public abstract class ConditionTranslator {
 	 * Whether or not the condition translated by this translator instance uses
 	 * a negating operator.
 	 */
-	private boolean mustNegate()
+	private boolean withNegativeOperator()
 	{
 		return negatingOperators.contains(condition.getOperator());
+	}
+
+	/*
+	 * Whether or not the operator used in the condition allows for calculating
+	 * a score. Only operators MATCHES and LIKE allow for this. Specifically,
+	 * NOT_MATCHES and NOT_LIKE do not allow for this!
+	 */
+	private boolean withScoringOperator()
+	{
+		ComparisonOperator op = condition.getOperator();
+		return op == MATCHES || op == LIKE;
 	}
 
 }

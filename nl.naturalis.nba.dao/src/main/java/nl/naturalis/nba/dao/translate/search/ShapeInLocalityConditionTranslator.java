@@ -4,7 +4,6 @@ import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.searchTermHasWrongType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
@@ -28,6 +27,7 @@ import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
+import nl.naturalis.nba.utils.ClassUtil;
 
 /**
  * Translates conditions with an IN or NOT_IN operator when used with fields of
@@ -70,27 +70,41 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 
 	private String[] getLocalities(Object value) throws InvalidConditionException
 	{
-		String[] localities;
 		if (value instanceof CharSequence) {
-			localities = new String[] { value.toString() };
+			return new String[] { value.toString() };
 		}
-		else if (value.getClass().isArray()) {
+		if (value.getClass().isArray()) {
+			if (ClassUtil.isA(value.getClass().getComponentType(), String.class)) {
+				return (String[]) value;
+			}
 			Object[] values = (Object[]) value;
-			localities = new String[values.length];
-			System.arraycopy(values, 0, localities, 0, values.length);
+			String[] localities = new String[values.length];
+			for (int i = 0; i < values.length; i++) {
+				if (values[i] == null || !(values[i] instanceof CharSequence)) {
+					throw invalidLocality(values[i]);
+				}
+				localities[i] = values[i].toString();
+			}
+			return localities;
 		}
-		else if (value instanceof Collection) {
+		if (value instanceof Collection) {
 			Collection<?> values = (Collection<?>) value;
-			localities = new String[values.size()];
+			String[] localities = new String[values.size()];
 			int i = 0;
 			for (Object obj : values) {
+				if (obj == null || !(obj instanceof CharSequence)) {
+					throw invalidLocality(obj);
+				}
 				localities[i++] = obj.toString();
 			}
 		}
-		else {
-			throw searchTermHasWrongType(condition);
-		}
-		return localities;
+		throw invalidLocality(value);
+	}
+
+	private InvalidConditionException invalidLocality(Object value) throws InvalidConditionException
+	{
+		String msg = "Invalid locality: " + value;
+		throw new InvalidConditionException(condition, msg);
 	}
 
 	private QueryBuilder createQueryForLocality(String locality) throws InvalidConditionException

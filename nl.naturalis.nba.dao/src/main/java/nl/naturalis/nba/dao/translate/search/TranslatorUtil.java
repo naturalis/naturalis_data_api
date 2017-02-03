@@ -10,13 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 
-import nl.naturalis.nba.api.IllegalOperatorException;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.ESDataType;
-import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
@@ -31,17 +28,6 @@ class TranslatorUtil {
 
 	private static final SimpleDateFormat[] acceptedDateFormats = new SimpleDateFormat[] { SDF0,
 			SDF1, SDF2, SDF3 };
-
-	static InvalidConditionException invalidConditionException(SearchCondition condition,
-			String msg, Object... msgArgs)
-	{
-		StringBuilder sb = new StringBuilder(100);
-		sb.append("Invalid query condition for field ");
-		sb.append(firstField(condition));
-		sb.append(". ");
-		sb.append(String.format(msg, msgArgs));
-		return new InvalidConditionException(sb.toString());
-	}
 
 	static String getNestedPath(Path path, MappingInfo<?> mappingInfo)
 	{
@@ -60,7 +46,8 @@ class TranslatorUtil {
 			return (SimpleField) mappingInfo.getField(firstField(condition));
 		}
 		catch (NoSuchFieldException e) {
-			// Won't happen because already checked in ConditionTranslatorFactory
+			// Assumption: path already validated; won't happen
+			assert (false);
 			return null;
 		}
 	}
@@ -71,36 +58,31 @@ class TranslatorUtil {
 			return (SimpleField) mappingInfo.getField(path);
 		}
 		catch (NoSuchFieldException e) {
-			// Assumption: already checked, won't happen
+			// Assumption: path already validated; won't happen
+			assert (false);
 			return null;
 		}
-	}
-
-	static InvalidConditionException searchTermMustNotBeNull(SearchCondition condition)
-	{
-		String fmt = "Search term must not be null when using operator %s";
-		return invalidConditionException(condition, fmt, condition.getOperator());
-	}
-
-	static InvalidConditionException searchTermHasWrongType(SearchCondition condition)
-	{
-		String type = condition.getValue().getClass().getName();
-		String fmt = "Search term has wrong type for query condition on field %s: %s";
-		return invalidConditionException(condition, fmt, firstField(condition), type);
 	}
 
 	static void ensureValueIsNotNull(SearchCondition condition) throws InvalidConditionException
 	{
 		if (condition.getValue() == null) {
-			String fmt = "Search term must not be null when using operator %s";
-			throw invalidConditionException(condition, fmt, condition.getOperator());
+			String fmt = "Search value must not be null when using operator %s";
+			throw new InvalidConditionException(condition, fmt, condition.getOperator());
 		}
+	}
+
+	static InvalidConditionException invalidDataType(SearchCondition condition)
+	{
+		String type = condition.getValue().getClass().getName();
+		String fmt = "Search value has invalid data type: %s";
+		return new InvalidConditionException(condition, fmt, type);
 	}
 
 	static void ensureValueIsString(SearchCondition condition) throws InvalidConditionException
 	{
 		if (condition.getValue().getClass() != String.class) {
-			throw searchTermHasWrongType(condition);
+			throw invalidDataType(condition);
 		}
 	}
 
@@ -108,7 +90,7 @@ class TranslatorUtil {
 			throws InvalidConditionException
 	{
 		if (!isNumber(condition.getValue()) && !isA(condition.getValue(), Date.class)) {
-			throw searchTermHasWrongType(condition);
+			throw invalidDataType(condition);
 		}
 	}
 
@@ -173,7 +155,7 @@ class TranslatorUtil {
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN);
 			return ((OffsetDateTime) value).format(dtf);
 		}
-		throw searchTermHasWrongType(condition);
+		throw invalidDataType(condition);
 	}
 
 	private static String firstField(SearchCondition condition)
@@ -190,30 +172,5 @@ class TranslatorUtil {
 			catch (ParseException e) {}
 		}
 		return null;
-	}
-
-	static void ensureFieldIsDateOrNumber(SearchCondition condition, MappingInfo<?> mappingInfo)
-			throws IllegalOperatorException
-	{
-		ESField field = null;
-		try {
-			field = mappingInfo.getField(firstField(condition));
-		}
-		catch (NoSuchFieldException e) {
-			// Won't happen because already checked in ConditionTranslatorFactory
-			assert (false);
-		}
-		switch (field.getType()) {
-			case BYTE:
-			case DATE:
-			case DOUBLE:
-			case FLOAT:
-			case INTEGER:
-			case LONG:
-			case SHORT:
-				break;
-			default:
-				throw new IllegalOperatorException(firstField(condition), condition.getOperator());
-		}
 	}
 }

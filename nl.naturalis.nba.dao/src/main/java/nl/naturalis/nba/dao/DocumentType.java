@@ -22,15 +22,12 @@ import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Provides information about an Elasticsearch document type. This class is very
- * much like an {@code enum} of the four document types managed by the NBA
- * (Specimen, Taxon, MultiMediaObject and GeoArea). You cannot instantiate this
- * class. There are four {@code public static final} instances of it, for each
- * of the document types just mentioned. Each {@code DocumentType} instance
- * functions as a little cache of frequently-used, heavy-weight objects
- * associated with the document type. For example, although you can easily
- * create {@link Mapping} objects yourself, it is recommendable to
- * {@link #getMapping() request} them from the appropriate {@code DocumentType}
- * instance.
+ * much like an {@code enum}. You cannot instantiate this class. Each
+ * {@code DocumentType} instance functions as a little cache of frequently-used,
+ * heavy-weight objects associated with the Elasticsearch document type. For
+ * example, although you can easily create {@link Mapping} objects yourself, it
+ * is recommendable to {@link #getMapping() request} them from the appropriate
+ * {@code DocumentType} instance.
  * 
  * @author Ayco Holleman
  *

@@ -3,7 +3,7 @@ package nl.naturalis.nba.dao.translate.search;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.convertValueForDateField;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getESField;
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.searchTermHasWrongType;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.invalidDataType;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
@@ -53,12 +53,12 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 						condition.setValue(d);
 					}
 					catch (NumberFormatException e) {
-						throw searchTermHasWrongType(condition);
+						throw invalidDataType(condition);
 					}
 				}
 				break;
 			default:
-				throw searchTermHasWrongType(condition);
+				throw invalidDataType(condition);
 		}
 	}
 

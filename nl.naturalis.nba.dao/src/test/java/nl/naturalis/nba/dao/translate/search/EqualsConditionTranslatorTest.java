@@ -15,6 +15,7 @@ import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.DocumentType;
 
+@SuppressWarnings("static-method")
 public class EqualsConditionTranslatorTest {
 
 	private static MappingInfo<Specimen> mappingInfo;
@@ -27,11 +28,13 @@ public class EqualsConditionTranslatorTest {
 	@Test
 	public void testWithStringValue_01() throws InvalidQueryException
 	{
-		SearchCondition condition = new SearchCondition("identifications.scientificName.genusOrMonomial", LIKE, "RGM.126");
-		ConditionTranslator ct = getTranslator(condition, mappingInfo);
+		SearchCondition condition1 = new SearchCondition("identifications.scientificName.genusOrMonomial", LIKE, "erica");
+		SearchCondition condition2 = new SearchCondition("identifications.scientificName.specificEpithet", EQUALS, "benthamiana");
+		ConditionTranslator ct = getTranslator(condition1, mappingInfo);
 		SearchSpec ss = new SearchSpec();
-		ss.addCondition(condition);
-		ss.setNonScoring(false);
+		ss.addCondition(condition1);
+		ss.addCondition(condition2);
+		ss.setFilterOnly(true);
 		SearchRequestBuilder query = new SearchSpecTranslator(ss, DocumentType.SPECIMEN).translate();
 		System.out.println(query);
 		

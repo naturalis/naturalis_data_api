@@ -2,13 +2,12 @@ package nl.naturalis.nba.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import static java.lang.Boolean.*;
 
 public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 
 	private List<Path> fields;
-	private Boolean filter;
-	private Float boost;
+	private boolean filter;
+	private float boost;
 
 	public SearchCondition()
 	{
@@ -157,22 +156,22 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		this.fields = fields;
 	}
 
-	public Boolean isFilter()
+	public boolean isFilter()
 	{
-		return filter == TRUE ? TRUE : FALSE;
+		return filter;
 	}
 
-	public void setFilter(Boolean filter)
+	public void setFilter(boolean filter)
 	{
 		this.filter = filter;
 	}
 
-	public Float getBoost()
+	public float getBoost()
 	{
 		return boost;
 	}
 
-	public void setBoost(Float boost)
+	public void setBoost(float boost)
 	{
 		this.boost = boost;
 	}

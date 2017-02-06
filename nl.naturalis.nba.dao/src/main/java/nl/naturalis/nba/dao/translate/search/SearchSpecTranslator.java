@@ -58,7 +58,8 @@ public class SearchSpecTranslator {
 		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
 			QueryBuilder query;
-			if (spec.isNonScoring()) {
+			if (spec.isFilterOnly()) {
+				disableIndividualFilters();
 				query = constantScoreQuery(translateConditions());
 			}
 			else {
@@ -107,11 +108,6 @@ public class SearchSpecTranslator {
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{
 		List<SearchCondition> conditions = spec.getConditions();
-		if (spec.isNonScoring()) {
-			for (SearchCondition c : conditions) {
-				turnIntoFilter(c);
-			}
-		}
 		if (conditions.size() == 1) {
 			SearchCondition c = conditions.iterator().next();
 			return getTranslator(c, dt).translate();
@@ -130,17 +126,38 @@ public class SearchSpecTranslator {
 		return result;
 	}
 
-	private static void turnIntoFilter(SearchCondition condition)
+	/*
+	 * This will set the "filter" field of all conditions in the SearchSpec to
+	 * false. We actually do this to generate a filter-only query. In this case
+	 * the Elasticsearch query from all conditions together is wrapped into one
+	 * all-encompassing constant_score query. The queries generated from the
+	 * individual conditions should then not also be wrapped into a
+	 * constant_score query.
+	 */
+	private void disableIndividualFilters()
 	{
-		condition.setFilter(Boolean.TRUE);
+		for (SearchCondition c : spec.getConditions()) {
+			disableFiltering(c);
+		}
+	}
+
+	private static void disableFiltering(SearchCondition condition)
+	{
+		if (logger.isDebugEnabled()) {
+			if (condition.isFilter()) {
+				String field = condition.getFields().iterator().next().toString();
+				logger.debug("Resetting filter setting for condition on field {} for filter-only query", field);
+			}
+		}
+		condition.setFilter(false);
 		if (condition.getAnd() != null) {
 			for (SearchCondition c : condition.getAnd()) {
-				turnIntoFilter(c);
+				disableFiltering(c);
 			}
 		}
 		if (condition.getOr() != null) {
 			for (SearchCondition c : condition.getOr()) {
-				turnIntoFilter(c);
+				disableFiltering(c);
 			}
 		}
 	}

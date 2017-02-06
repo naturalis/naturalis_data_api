@@ -132,16 +132,16 @@ import java.util.List;
  */
 public class SearchSpec extends AbstractSearchSpec<SearchCondition> {
 
-	private boolean nonScoring;
+	private boolean filterOnly;
 
-	public boolean isNonScoring()
+	public boolean isFilterOnly()
 	{
-		return nonScoring;
+		return filterOnly;
 	}
 
-	public void setNonScoring(boolean nonScoring)
+	public void setFilterOnly(boolean filterOnly)
 	{
-		this.nonScoring = nonScoring;
+		this.filterOnly = filterOnly;
 	}
 
 }

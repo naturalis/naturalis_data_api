@@ -111,19 +111,14 @@ public abstract class ConditionTranslator {
 				if (nestedPath != null) {
 					query = nestedQuery(nestedPath, query, ScoreMode.Avg);
 				}
-				if (withNegativeOperator()) {
-					query = not(translateCondition());
-				}
-				else if (!condition.isFilter() && withScoringOperator()) {
-					if (condition.getBoost() != null) {
-						query.boost(condition.getBoost());
-					}
-				}
-				else {
+				if (condition.isFilter() && !withNegativeOperator()) {
 					query = constantScoreQuery(query);
 				}
+				else if (condition.getBoost() != 0F) {
+					query.boost(condition.getBoost());
+				}
 			}
-			if (condition.getBoost() != null) {
+			if (condition.getBoost() != 0F) {
 				query.boost(condition.getBoost());
 			}
 		}

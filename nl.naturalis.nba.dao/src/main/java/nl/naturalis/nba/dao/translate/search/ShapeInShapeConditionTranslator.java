@@ -1,15 +1,11 @@
 package nl.naturalis.nba.dao.translate.search;
 
-import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
-import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.geoShapeQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.common.geo.builders.MultiPolygonBuilder;
 import org.elasticsearch.common.geo.builders.PolygonBuilder;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
@@ -48,28 +44,12 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		Path path = condition.getFields().iterator().next();
-		QueryBuilder query;
 		try {
-			query = geoShapeQuery(path.toString(), getShape());
+			return geoShapeQuery(path.toString(), getShape());
 		}
 		catch (IOException e) {
 			throw new DaoException(e);
 		}
-
-		if (forSortField) {
-			return query;
-		}
-		String nestedPath = getNestedPath(path, mappingInfo);
-		if (nestedPath != null) {
-			query = nestedQuery(nestedPath, query, ScoreMode.None);
-		}
-		if (condition.isFilter().booleanValue()) {
-			query = constantScoreQuery(query);
-		}
-		else if (condition.getBoost() != null) {
-			query.boost(condition.getBoost());
-		}
-		return query;
 	}
 
 	@Override

@@ -54,17 +54,11 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 		// dropIndex(Specimen.class);
 	}
 
-	@Test
-	public void test()
-	{
-
-	}
-
 	/*
 	 * Test with null (should get error).
 	 */
 	@Test
-	public void testQuery__01()
+	public void testWithNullValue_01()
 	{
 		String expecting = "Search term must not be null when using operator LIKE";
 		String field = "identifications.scientificName.genusOrMonomial";
@@ -82,11 +76,25 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	}
 
 	/*
-	 * Test with comparison on field within or descending from a "nested"
-	 * object.
+	 * Test with query on field within "nested" object.
 	 */
 	@Test
-	public void testQuery__02() throws InvalidQueryException
+	public void testWithNestedField_01() throws InvalidQueryException
+	{
+		String field0 = "identifications.scientificName.genusOrMonomial";
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field0, LIKE, "aru"));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// Larus fuscus (twice) and Parus major
+		assertEquals("01", 3, result.size());
+	}
+
+	/*
+	 * Test with query on multiple fields within "nested" object.
+	 */
+	@Test
+	public void testWithMultipleNestedFields_01() throws InvalidQueryException
 	{
 		String field0 = "identifications.scientificName.genusOrMonomial";
 		String field1 = "identifications.scientificName.specificEpithet";
@@ -103,7 +111,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	 * Test with odd characters
 	 */
 	@Test
-	public void testQuery__03() throws InvalidQueryException
+	public void testWithNonLettersInValue_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
@@ -118,7 +126,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	 * Test with odd characters
 	 */
 	@Test
-	public void testQuery__04() throws InvalidQueryException
+	public void testWithNonLettersInValue_02() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
@@ -133,7 +141,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	 * Test with odd characters and NOT_LIKE
 	 */
 	@Test
-	public void testQuery__05() throws InvalidQueryException
+	public void testWithNotLike_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
@@ -153,7 +161,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	{
 		/*
 		 * Can't do this test any longer because we don't have multi-valued
-		 * fields with the like_analyzer any longer.
+		 * fields (lists or arrays) with the like_analyzer any longer.
 		 */
 	}
 
@@ -161,7 +169,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	 * Make sure LIKE ignores case.
 	 */
 	@Test
-	public void testQuery__07() throws InvalidQueryException
+	public void testLikeIgnoresCase_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();
@@ -176,7 +184,7 @@ public class SpecimenDao_QueriesWithLikeOperatorTest {
 	 * Make sure NOT_LIKE ignores case.
 	 */
 	@Test
-	public void testQuery__08() throws InvalidQueryException
+	public void testNotLikeIgnoresCase_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
 		QuerySpec qs = new QuerySpec();

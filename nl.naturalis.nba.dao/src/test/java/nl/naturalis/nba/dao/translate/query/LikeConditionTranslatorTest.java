@@ -12,28 +12,34 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.translate.query.ConditionTranslator;
+import nl.naturalis.nba.dao.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class LikeConditionTranslatorTest {
 
-	private static MappingInfo<LikeTestObject> inspector;
+	private static MappingInfo<LikeTestObject> likeTestObjectMappingInfo;
+	private static MappingInfo<TestPerson> testPersonMappingInfo;
 
 	@BeforeClass
 	public static void init()
 	{
 		Mapping<LikeTestObject> m = MappingFactory.getMapping(LikeTestObject.class);
-		inspector = new MappingInfo<>(m);
+		likeTestObjectMappingInfo = new MappingInfo<>(m);
+	}
+
+	public void testWithNonNestedField_01()
+	{
+
 	}
 
 	/*
 	 * Checks that translation fails if the Condition.value is not String.
 	 */
 	@Test(expected = InvalidConditionException.class)
-	public void testTranslate_01() throws InvalidConditionException
+	public void testWithNonStringValue_01() throws InvalidConditionException
 	{
 		QueryCondition c = new QueryCondition("firstName", LIKE, new Object());
-		ConditionTranslator ct = getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
 
@@ -42,10 +48,10 @@ public class LikeConditionTranslatorTest {
 	 * field.
 	 */
 	@Test(expected = IllegalOperatorException.class)
-	public void testTranslate_02() throws InvalidConditionException
+	public void testWithNonStringField_01() throws InvalidConditionException
 	{
 		QueryCondition c = new QueryCondition("age", LIKE, "foo");
-		ConditionTranslator ct = getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
 
@@ -54,22 +60,22 @@ public class LikeConditionTranslatorTest {
 	 * least 3 characters.
 	 */
 	@Test(expected = InvalidConditionException.class)
-	public void testTranslate_03() throws InvalidConditionException
+	public void testWithMinNGramSize_01() throws InvalidConditionException
 	{
-		QueryCondition c = new QueryCondition("firstName", LIKE, "12");
-		ConditionTranslator ct = getTranslator(c, inspector);
+		QueryCondition c = new QueryCondition("firstName", LIKE, "ab");
+		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
 
 	/*
 	 * Checks that value field in Condition class is enforced to contain at most
-	 * 10 characters.
+	 * 15 characters.
 	 */
 	@Test(expected = InvalidConditionException.class)
-	public void testTranslate_04() throws InvalidConditionException
+	public void testWithMaxNGramSize_01() throws InvalidConditionException
 	{
 		QueryCondition c = new QueryCondition("firstName", LIKE, "12345678901234567890");
-		ConditionTranslator ct = getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
 
@@ -78,11 +84,11 @@ public class LikeConditionTranslatorTest {
 	 * enabling analyzer.
 	 */
 	@Test(expected = InvalidConditionException.class)
-	public void testTranslate_05() throws InvalidConditionException
+	public void testWithLikeOperatorNotAllowed() throws InvalidConditionException
 	{
 		// address field has no @Analyzers annotation
 		QueryCondition c = new QueryCondition("address", LIKE, "foo");
-		ConditionTranslator ct = getTranslator(c, inspector);
+		ConditionTranslator ct = getTranslator(c, likeTestObjectMappingInfo);
 		ct.translate();
 	}
 

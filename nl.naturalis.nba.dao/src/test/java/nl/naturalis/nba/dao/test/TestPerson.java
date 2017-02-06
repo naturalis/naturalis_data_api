@@ -1,8 +1,13 @@
 package nl.naturalis.nba.dao.test;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.Date;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
@@ -14,7 +19,9 @@ import nl.naturalis.nba.api.model.IDocumentObject;
 public class TestPerson implements IDocumentObject {
 
 	private String id;
+	@Analyzers({ CASE_INSENSITIVE, LIKE, DEFAULT })
 	private String firstName;
+	@Analyzers({ CASE_INSENSITIVE, LIKE, DEFAULT })
 	private String lastName;
 	private Date birthDate;
 	private int numChildren;

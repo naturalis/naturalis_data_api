@@ -74,7 +74,7 @@ public class MappingFactory {
 	private static final DataTypeMap dataTypeMap = DataTypeMap.getInstance();
 
 	/**
-	 * Builds an Elasticsearch {@link Mapping} object for the specified class.
+	 * Builds an Elasticsearch document type mapping for the specified class.
 	 * 
 	 * @param type
 	 * @return

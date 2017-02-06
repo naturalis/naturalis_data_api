@@ -31,7 +31,7 @@ public class EqualsConditionTranslatorTest {
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		SearchSpec ss = new SearchSpec();
 		ss.addCondition(condition);
-		ss.setNonScoring(true);
+		ss.setNonScoring(false);
 		SearchRequestBuilder query = new SearchSpecTranslator(ss, DocumentType.SPECIMEN).translate();
 		System.out.println(query);
 		

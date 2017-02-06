@@ -17,10 +17,10 @@ public class RegistryTest {
 	{
 		if (!SPECIMEN.getIndexInfo().getName().endsWith("integration_test")) {
 			/*
-			 * Unit tests are run against the nba_integration_test index.
+			 * Unit tests are run against an ***_integration_test index.
 			 * However, some performance test are run against the nba index,
 			 * which contains real data imported by the ETL programs. For that
-			 * purpose we let nba-test.properties temporarily point to the nba
+			 * purpose we manually make nba-test.properties point to the real
 			 * index. Unfornately, we forgot once too often to reset
 			 * nba-test.properties before running the unit tests again, wiping
 			 * out the data in the nba index. So here some bare-knuckle way to

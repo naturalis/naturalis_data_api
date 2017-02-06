@@ -1,13 +1,19 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotNested;
 
 public class Specimen extends NbaTraceableObject implements IDocumentObject {
 
 	private String id;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
 	private String unitGUID;
 	private String collectorsFieldNumber;

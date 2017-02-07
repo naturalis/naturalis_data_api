@@ -33,7 +33,6 @@ import nl.naturalis.nba.dao.DocumentType;
  */
 public class SearchSpecTranslator {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(SearchSpecTranslator.class);
 	private static final int DEFAULT_FROM = 0;
 	private static final int DEFAULT_SIZE = 10;
@@ -57,9 +56,9 @@ public class SearchSpecTranslator {
 	{
 		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
+			overrideNonScoring();
 			QueryBuilder query;
-			if (spec.isFilterOnly()) {
-				disableIndividualFilters();
+			if (spec.isNonScoring()) {
 				query = constantScoreQuery(translateConditions());
 			}
 			else {
@@ -127,29 +126,34 @@ public class SearchSpecTranslator {
 	}
 
 	/*
-	 * This will set the "filter" field of all conditions in the SearchSpec to
-	 * false. We actually do this to generate a filter-only query. In this case
-	 * the Elasticsearch query from all conditions together is wrapped into one
-	 * all-encompassing constant_score query. The queries generated from the
+	 * This will set the nonScoring field of individual conditions within a
+	 * SearchSpec to false if the search as a whole is non-scoring or if the
+	 * condition is negated. If we are dealing with a non-scoring search the
+	 * Elasticsearch query generated from all conditions together is wrapped
+	 * into one big constant_score query. The queries generated from the
 	 * individual conditions should then not also be wrapped into a
-	 * constant_score query.
+	 * constant_score query. Negated conditions are intrinsically non-scoring,
+	 * so do not need to be wrapped into a constant_score query.
 	 */
-	private void disableIndividualFilters()
+	private void overrideNonScoring()
 	{
-		for (SearchCondition c : spec.getConditions()) {
-			disableFiltering(c);
+		if (spec.isNonScoring()) {
+			for (SearchCondition c : spec.getConditions()) {
+				disableFiltering(c);
+			}
+		}
+		else {
+			for (SearchCondition c : spec.getConditions()) {
+				if (c.isNegated()) {
+					disableFiltering(c);
+				}
+			}
 		}
 	}
 
 	private static void disableFiltering(SearchCondition condition)
 	{
-		if (logger.isDebugEnabled()) {
-			if (condition.isFilter()) {
-				String field = condition.getFields().iterator().next().toString();
-				logger.debug("Resetting filter setting for condition on field {} for filter-only query", field);
-			}
-		}
-		condition.setFilter(false);
+		condition.setNonScoring(false);
 		if (condition.getAnd() != null) {
 			for (SearchCondition c : condition.getAnd()) {
 				disableFiltering(c);

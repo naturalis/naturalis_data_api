@@ -32,8 +32,8 @@ public class EqualsConditionTranslatorTest {
 		SearchCondition condition2 = new SearchCondition("identifications.scientificName.specificEpithet", EQUALS, "benthamiana");
 		ConditionTranslator ct = getTranslator(condition1, mappingInfo);
 		SearchSpec ss = new SearchSpec();
-		ss.addCondition(condition1);
-		ss.addCondition(condition2);
+		ss.addCondition(condition1.or(condition2));
+		//ss.addCondition(condition2);
 		ss.setNonScoring(true);
 		SearchRequestBuilder query = new SearchSpecTranslator(ss, DocumentType.SPECIMEN).translate();
 		System.out.println(query);

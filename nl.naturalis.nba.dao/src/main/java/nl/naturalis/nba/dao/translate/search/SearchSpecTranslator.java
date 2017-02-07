@@ -24,9 +24,8 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
- * A {@code SearchSpecTranslator} is responsible for translating an NBA
- * {@link SearchSpec} object into an Elasticsearch {@link SearchRequestBuilder}
- * object.
+ * A {@code SearchSpecTranslator} is responsible for translating an NBA {@link SearchSpec}
+ * object into an Elasticsearch {@link SearchRequestBuilder} object.
  * 
  * @author Ayco Holleman
  *
@@ -56,7 +55,7 @@ public class SearchSpecTranslator {
 	{
 		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
-			overrideNonScoring();
+			overrideNonScoringIfNecessary();
 			QueryBuilder query;
 			if (spec.isNonScoring()) {
 				query = constantScoreQuery(translateConditions());
@@ -87,9 +86,10 @@ public class SearchSpecTranslator {
 		for (String field : fields) {
 			if (field.equals("id")) {
 				/*
-				 * This is a special field that can be used to retrieve the
-				 * Elasticsearch document ID, which is not part of the document
-				 * itself.
+				 * This is a special field that can be used to retrieve the Elasticsearch
+				 * document ID, which is not part of the document itself, but it IS an
+				 * allowed field, populated through SearchHit.getId() rather than through
+				 * document data,
 				 */
 				continue;
 			}
@@ -126,42 +126,50 @@ public class SearchSpecTranslator {
 	}
 
 	/*
-	 * This will set the nonScoring field of individual conditions within a
-	 * SearchSpec to false if the search as a whole is non-scoring or if the
-	 * condition is negated. If we are dealing with a non-scoring search the
-	 * Elasticsearch query generated from all conditions together is wrapped
-	 * into one big constant_score query. The queries generated from the
-	 * individual conditions should then not also be wrapped into a
-	 * constant_score query. Negated conditions are intrinsically non-scoring,
-	 * so do not need to be wrapped into a constant_score query.
+	 * This will set the nonScoring field of individual conditions within a SearchSpec to
+	 * false if the SearchSpec as a whole is non-scoring or if the condition is negated.
+	 * If we are dealing with a non-scoring search the Elasticsearch query generated from
+	 * all conditions together is wrapped into one big constant_score query. The queries
+	 * generated from the individual conditions should then not also be wrapped into a
+	 * constant_score query. Negated conditions are intrinsically non-scoring, so do not
+	 * need to be wrapped into a constant_score query.
 	 */
-	private void overrideNonScoring()
+	private void overrideNonScoringIfNecessary()
 	{
 		if (spec.isNonScoring()) {
 			for (SearchCondition c : spec.getConditions()) {
-				disableFiltering(c);
+				resetToScoring(c);
 			}
 		}
 		else {
 			for (SearchCondition c : spec.getConditions()) {
 				if (c.isNegated()) {
-					disableFiltering(c);
+					resetToScoring(c);
 				}
 			}
 		}
 	}
 
-	private static void disableFiltering(SearchCondition condition)
+	private static void resetToScoring(SearchCondition condition)
 	{
-		condition.setNonScoring(false);
+		if (condition.isNonScoring()) {
+			condition.setNonScoring(false);
+			if (logger.isDebugEnabled()) {
+				String field = condition.getFields().iterator().next().toString();
+				String msg = "Condition on field {} reset to non-scoring because it "
+						+ "is a negated condition (NOT) or because it is already embedded "
+						+ "within a non-scoring context";
+				logger.debug(msg, field);
+			}
+		}
 		if (condition.getAnd() != null) {
 			for (SearchCondition c : condition.getAnd()) {
-				disableFiltering(c);
+				resetToScoring(c);
 			}
 		}
 		if (condition.getOr() != null) {
 			for (SearchCondition c : condition.getOr()) {
-				disableFiltering(c);
+				resetToScoring(c);
 			}
 		}
 	}

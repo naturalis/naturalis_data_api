@@ -27,8 +27,7 @@ import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 /**
- * Converts a {@link SearchCondition} to an Elasticsearch {@link QueryBuilder}
- * instance.
+ * Converts a {@link SearchCondition} to an Elasticsearch {@link QueryBuilder} instance.
  * 
  * @author Ayco Holleman
  *
@@ -38,14 +37,13 @@ public abstract class ConditionTranslator {
 	private static final Logger logger = getLogger(ConditionTranslator.class);
 
 	/*
-	 * Negating operators are operators that are translated just like their
-	 * opposite (e.g. NOT_BETWEEN <-> BETWEEN), but then wrapped into a
-	 * BoolQuery.mustNot() query. Note that NOT_EQUALS and NOT_EQUALS_IC are not
-	 * included here. For them separate ConditionTranslator subclasses have been
-	 * created. This is because they require special code for NULL handling, and
-	 * also because not having them handled separately may result in valid but
-	 * awkward Elasticsearch queries (mustNot within mustNot within mustNot
-	 * queries).
+	 * Negating operators are operators that are translated just like their opposite (e.g.
+	 * NOT_BETWEEN <-> BETWEEN), but then wrapped into a BoolQuery.mustNot() query. Note
+	 * that NOT_EQUALS and NOT_EQUALS_IC are not included here. For them separate
+	 * ConditionTranslator subclasses have been created. This is because they require
+	 * special code for NULL handling, and also because not having them handled separately
+	 * may result in valid but awkward Elasticsearch queries (mustNot within mustNot
+	 * within mustNot queries).
 	 */
 	private static final EnumSet<ComparisonOperator> negatingOperators;
 
@@ -72,8 +70,8 @@ public abstract class ConditionTranslator {
 
 	/**
 	 * Converts the {@link SearchCondition} passed in through the
-	 * {@link #ConditionTranslator(SearchCondition) constructor} to an
-	 * Elasticsearch {@link QueryBuilder} instance.
+	 * {@link #ConditionTranslator(SearchCondition) constructor} to an Elasticsearch
+	 * {@link QueryBuilder} instance.
 	 * 
 	 * @return
 	 * @throws InvalidConditionException
@@ -84,20 +82,20 @@ public abstract class ConditionTranslator {
 	}
 
 	/*
-	 * Convert the Condition to a QueryBuilder as appropriate for the operator
-	 * that the subclass is dealing with.
+	 * Convert the Condition to a QueryBuilder as appropriate for the operator that the
+	 * subclass is dealing with.
 	 */
 	abstract QueryBuilder translateCondition() throws InvalidConditionException;
 
 	/*
 	 * Implement any up-front/fail-fast checks you can think of. Throw an
-	 * InvalidConditionException if the condition is deemed invalid. You can
-	 * also use this method to preprocess the condition, e.g. cast or convert
-	 * the condition's value.
+	 * InvalidConditionException if the condition is deemed invalid. You can also use this
+	 * method to preprocess the condition, e.g. cast or convert the condition's value.
 	 */
 	abstract void checkCondition() throws InvalidConditionException;
 
-	private QueryBuilder translate(boolean siblingCondition) throws InvalidConditionException
+	private QueryBuilder translate(boolean siblingCondition)
+			throws InvalidConditionException
 	{
 		checkCondition();
 		List<SearchCondition> and = condition.getAnd();
@@ -120,9 +118,6 @@ public abstract class ConditionTranslator {
 					query = constantScoreQuery(query);
 				}
 			}
-			if (condition.getBoost() != 0F) {
-				query.boost(condition.getBoost());
-			}
 		}
 		else if (or != null) {
 			if (and == null) {
@@ -136,9 +131,9 @@ public abstract class ConditionTranslator {
 			query = translateWithAndSiblings();
 		}
 		/*
-		 * Condition might be negated using operator NOT as well as use a
-		 * negating comparison operator like NOT_BETWEEN, causing the condition
-		 * to be doubly negated.
+		 * Condition might be negated using operator NOT as well as use a negating
+		 * comparison operator like NOT_BETWEEN, causing the condition to be doubly
+		 * negated.
 		 */
 		return condition.isNegated() ? not(query) : query;
 	}
@@ -205,10 +200,11 @@ public abstract class ConditionTranslator {
 		return boolQuery().mustNot(query);
 	}
 
-	private ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
-			throws InvalidConditionException
+	private ConditionTranslator getTranslator(SearchCondition condition,
+			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
-		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);
+		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition,
+				mappingInfo);
 		ct.forSortField = forSortField;
 		if (logger.isDebugEnabled()) {
 			logger.debug("Translating condition using {}", ct.getClass().getSimpleName());
@@ -222,19 +218,15 @@ public abstract class ConditionTranslator {
 		if (c.isNonScoring()) {
 			return false;
 		}
-		if (c.isNegated()) {
+		if (hasNegativeOperator()) {
 			return false;
 		}
-		ComparisonOperator op = c.getOperator();
-		if (negatingOperators.contains(op)) {
-			return false;
-		}
-		return op == MATCHES || op == LIKE;
+		return true;
 	}
 
 	/*
-	 * Whether or not the condition translated by this translator instance uses
-	 * a negating operator.
+	 * Whether or not the condition translated by this translator instance uses a negating
+	 * operator.
 	 */
 	private boolean hasNegativeOperator()
 	{

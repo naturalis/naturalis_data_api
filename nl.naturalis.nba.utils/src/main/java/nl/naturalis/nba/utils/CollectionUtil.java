@@ -1,7 +1,5 @@
 package nl.naturalis.nba.utils;
 
-import static nl.naturalis.nba.utils.convert.Stringifier.BASIC_STRINGIFIER;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +7,28 @@ import java.util.List;
 import nl.naturalis.nba.utils.convert.Stringifier;
 
 public class CollectionUtil {
+
+	/**
+	 * Null-safe check on whether the specified collection is empty.
+	 * 
+	 * @param collection
+	 * @return
+	 */
+	public static boolean isEmpty(Collection<?> collection)
+	{
+		return collection == null || collection.isEmpty();
+	}
+
+	/**
+	 * Null-safe check on whether the specified collection has a non-zero size.
+	 * 
+	 * @param collection
+	 * @return
+	 */
+	public static boolean hasElements(Collection<?> collection)
+	{
+		return collection != null && !collection.isEmpty();
+	}
 
 	public static <T> List<String> stringify(Collection<T> collection, Stringifier<T> stringifier,
 			Object... options)

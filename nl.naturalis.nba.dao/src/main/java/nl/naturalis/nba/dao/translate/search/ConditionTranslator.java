@@ -8,6 +8,7 @@ import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_MATCHES;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getNestedPath;
+import static nl.naturalis.nba.utils.CollectionUtil.hasElements;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
@@ -82,25 +83,6 @@ public abstract class ConditionTranslator {
 	 */
 	public QueryBuilder translate() throws InvalidConditionException
 	{
-		return translate(false);
-	}
-
-	/*
-	 * Convert the Condition to a QueryBuilder as appropriate for the operator
-	 * that the subclass is dealing with.
-	 */
-	abstract QueryBuilder translateCondition() throws InvalidConditionException;
-
-	/*
-	 * Implement any up-front/fail-fast checks you can think of. Throw an
-	 * InvalidConditionException if the condition is deemed invalid. You can
-	 * also use this method to preprocess the condition, e.g. cast or convert
-	 * the condition's value.
-	 */
-	abstract void checkCondition() throws InvalidConditionException;
-
-	private QueryBuilder translate(boolean siblingCondition) throws InvalidConditionException
-	{
 		checkCondition();
 		QueryBuilder query = translateCondition();
 		Path path = condition.getFields().iterator().next();
@@ -117,20 +99,31 @@ public abstract class ConditionTranslator {
 		else {
 			query.boost(condition.getBoost());
 		}
-		if (condition.getAnd() != null && !condition.getAnd().isEmpty()) {
+		if (hasElements(condition.getAnd())) {
 			query = generateAndSiblings(query);
-			if (condition.getOr() != null && !condition.getOr().isEmpty()) {
+			if (hasElements(condition.getOr())) {
 				query = generateOrSiblings(query);
 			}
 		}
-		else if (condition.getOr() != null && !condition.getOr().isEmpty()) {
+		else if (hasElements(condition.getOr())) {
 			query = generateOrSiblings(query);
 		}
-		if (condition.isNegated()) {
-			return not(query);
-		}
-		return query;
+		return condition.isNegated() ? not(query) : query;
 	}
+
+	/*
+	 * Convert the Condition to a QueryBuilder as appropriate for the operator
+	 * that the subclass is dealing with.
+	 */
+	abstract QueryBuilder translateCondition() throws InvalidConditionException;
+
+	/*
+	 * Implement any up-front/fail-fast checks you can think of. Throw an
+	 * InvalidConditionException if the condition is deemed invalid. You can
+	 * also use this method to preprocess the condition, e.g. cast or convert
+	 * the condition's value.
+	 */
+	abstract void checkCondition() throws InvalidConditionException;
 
 	private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling)
 			throws InvalidConditionException
@@ -138,7 +131,7 @@ public abstract class ConditionTranslator {
 		BoolQueryBuilder query = boolQuery();
 		query.must(firstSibling);
 		for (SearchCondition c : condition.getAnd()) {
-			query.must(getTranslator(c, mappingInfo).translate(true));
+			query.must(getTranslator(c, mappingInfo).translate());
 		}
 		return query;
 	}
@@ -149,14 +142,9 @@ public abstract class ConditionTranslator {
 		BoolQueryBuilder query = boolQuery();
 		query.should(firstSibling);
 		for (SearchCondition c : condition.getOr()) {
-			query.should(getTranslator(c, mappingInfo).translate(true));
+			query.should(getTranslator(c, mappingInfo).translate());
 		}
 		return query;
-	}
-
-	private static QueryBuilder not(QueryBuilder query)
-	{
-		return boolQuery().mustNot(query);
 	}
 
 	private ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
@@ -186,6 +174,11 @@ public abstract class ConditionTranslator {
 	private boolean hasNegativeOperator()
 	{
 		return negatingOperators.contains(condition.getOperator());
+	}
+
+	private static QueryBuilder not(QueryBuilder query)
+	{
+		return boolQuery().mustNot(query);
 	}
 
 }

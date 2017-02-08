@@ -32,11 +32,12 @@ public class EqualsConditionTranslatorTest {
 		condition1.setConstantScore(true);
 		condition1.setBoost(2.3F);
 		SearchCondition condition2 = new SearchCondition("identifications.scientificName.specificEpithet", EQUALS, "benthamiana");
+		SearchCondition condition3 = new SearchCondition("unitID", EQUALS, "WAG.1779778");
 		ConditionTranslator ct = getTranslator(condition1, mappingInfo);
 		SearchSpec ss = new SearchSpec();
-		ss.addCondition(condition1.or(condition2));
+		ss.addCondition(condition1.or(condition2.and(condition3)));
 		//ss.addCondition(condition2);
-		ss.setConstantScore(false);
+		ss.setConstantScore(true);
 		SearchRequestBuilder query = new SearchSpecTranslator(ss, DocumentType.SPECIMEN).translate();
 		System.out.println(query);
 		

@@ -29,12 +29,14 @@ public class EqualsConditionTranslatorTest {
 	public void testWithStringValue_01() throws InvalidQueryException
 	{
 		SearchCondition condition1 = new SearchCondition("identifications.scientificName.genusOrMonomial", LIKE, "erica");
+		condition1.setConstantScore(true);
+		condition1.setBoost(2.3F);
 		SearchCondition condition2 = new SearchCondition("identifications.scientificName.specificEpithet", EQUALS, "benthamiana");
 		ConditionTranslator ct = getTranslator(condition1, mappingInfo);
 		SearchSpec ss = new SearchSpec();
 		ss.addCondition(condition1.or(condition2));
 		//ss.addCondition(condition2);
-		ss.setNonScoring(true);
+		ss.setConstantScore(false);
 		SearchRequestBuilder query = new SearchSpecTranslator(ss, DocumentType.SPECIMEN).translate();
 		System.out.println(query);
 		

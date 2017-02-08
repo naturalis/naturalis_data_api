@@ -8,7 +8,6 @@ import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.getESFieldTyp
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.IllegalOperatorException;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.ESDataType;
@@ -16,10 +15,10 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.utils.CollectionUtil;
 
 public class ConditionTranslatorFactory {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(ConditionTranslatorFactory.class);
 
 	private ConditionTranslatorFactory()
@@ -27,8 +26,9 @@ public class ConditionTranslatorFactory {
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link SearchCondition
-	 * condition} and the specified {@link DocumentType document type}.
+	 * Returns a {@link ConditionTranslator} for the specified
+	 * {@link SearchCondition condition} and the specified {@link DocumentType
+	 * document type}.
 	 * 
 	 * @param condition
 	 * @param type
@@ -42,80 +42,95 @@ public class ConditionTranslatorFactory {
 	}
 
 	/**
-	 * Returns a {@link ConditionTranslator} for the specified {@link SearchCondition
-	 * condition} and the specified {@link MappingInfo} object.
+	 * Returns a {@link ConditionTranslator} for the specified
+	 * {@link SearchCondition condition} and the specified {@link MappingInfo}
+	 * object.
 	 * 
 	 * @param condition
 	 * @param mappingInfo
 	 * @return
 	 * @throws InvalidConditionException
 	 */
-	public static ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
-			throws InvalidConditionException
+	public static ConditionTranslator getTranslator(SearchCondition condition,
+			MappingInfo<?> mappingInfo) throws InvalidConditionException
 	{
 		new ConditionValidator(condition, mappingInfo).validateCondition();
+		ConditionTranslator translator = null;
 		switch (condition.getOperator()) {
 			case EQUALS:
-				if (condition.getValue() == null) {
-					return new IsNullConditionTranslator(condition, mappingInfo);
-				}
-				return new EqualsConditionTranslator(condition, mappingInfo);
+				if (condition.getValue() == null)
+					translator = new IsNullConditionTranslator(condition, mappingInfo);
+				else
+					translator = new EqualsConditionTranslator(condition, mappingInfo);
+				break;
 			case NOT_EQUALS:
-				if (condition.getValue() == null) {
-					return new IsNotNullConditionTranslator(condition, mappingInfo);
-				}
-				return new NotEqualsConditionTranslator(condition, mappingInfo);
+				if (condition.getValue() == null)
+					translator = new IsNotNullConditionTranslator(condition, mappingInfo);
+				else
+					translator = new NotEqualsConditionTranslator(condition, mappingInfo);
+				break;
 			case EQUALS_IC:
-				if (condition.getValue() == null) {
-					return new IsNullConditionTranslator(condition, mappingInfo);
-				}
-				if (getESFieldType(condition, mappingInfo) == ESDataType.KEYWORD) {
-					return new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
-				}
+				if (condition.getValue() == null)
+					translator = new IsNullConditionTranslator(condition, mappingInfo);
+				else if (getESFieldType(condition, mappingInfo) == ESDataType.KEYWORD)
+					translator = new EqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
+				else
+					translator = new EqualsConditionTranslator(condition, mappingInfo);
 				/*
-				 * This is a gesture to the user. The equals-ignore-case
-				 * comparator naturally only makes sense for strings. So for
-				 * numbers, dates, etc. we tacitly submit the condition to the
-				 * EqualsConditionTranslator instead of the
+				 * Last option is a gesture to the client. The
+				 * equals-ignore-case comparator only makes sense for strings.
+				 * So for numbers, dates, etc. we tacitly submit the condition
+				 * to the EqualsConditionTranslator instead of the
 				 * EqualsIgnoreCaseConditionTranslator. This also allows for a
-				 * high-level instruction like "Do a case-insensitive query" -
-				 * i.e. ALL conditions in the QuerySpec should be handled in a
-				 * case-insensitive manner WHERE APPLICABLE (which is in case of
-				 * string fields). This is what the _ignoreCase query parameter
-				 * achieves. See the HttpQuerySpecBuilder class in the rest
-				 * module.
+				 * high-level instruction like "Do a case-insensitive query
+				 * where applicable". This is what the _ignoreCase query
+				 * parameter does. See the HttpQuerySpecBuilder class in the
+				 * rest module.
 				 */
-				return new EqualsConditionTranslator(condition, mappingInfo);
+				break;
 			case NOT_EQUALS_IC:
-				if (condition.getValue() == null) {
-					return new IsNotNullConditionTranslator(condition, mappingInfo);
-				}
-				if (getESFieldType(condition, mappingInfo) == ESDataType.KEYWORD) {
-					return new NotEqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
-				}
-				return new NotEqualsConditionTranslator(condition, mappingInfo);
+				if (condition.getValue() == null)
+					translator = new IsNotNullConditionTranslator(condition, mappingInfo);
+				else if (getESFieldType(condition, mappingInfo) == ESDataType.KEYWORD)
+					translator = new NotEqualsIgnoreCaseConditionTranslator(condition, mappingInfo);
+				else
+					translator = new NotEqualsConditionTranslator(condition, mappingInfo);
+				break;
 			case GT:
-				return new GTConditionTranslator(condition, mappingInfo);
+				translator = new GTConditionTranslator(condition, mappingInfo);
+				break;
 			case GTE:
-				return new GTEConditionTranslator(condition, mappingInfo);
+				translator = new GTEConditionTranslator(condition, mappingInfo);
+				break;
 			case LT:
-				return new LTConditionTranslator(condition, mappingInfo);
+				translator = new LTConditionTranslator(condition, mappingInfo);
+				break;
 			case LTE:
-				return new LTEConditionTranslator(condition, mappingInfo);
+				translator = new LTEConditionTranslator(condition, mappingInfo);
+				break;
 			case BETWEEN:
 			case NOT_BETWEEN:
-				return new BetweenConditionTranslator(condition, mappingInfo);
+				translator = new BetweenConditionTranslator(condition, mappingInfo);
+				break;
 			case LIKE:
 			case NOT_LIKE:
-				return new LikeConditionTranslator(condition, mappingInfo);
+				translator = new LikeConditionTranslator(condition, mappingInfo);
+				break;
 			case IN:
 			case NOT_IN:
-				return getInConditionTranslator(condition, mappingInfo);
+				translator = getInConditionTranslator(condition, mappingInfo);
+				break;
 			case MATCHES:
 			case NOT_MATCHES:
-				return new MatchesConditionTranslator(condition, mappingInfo);
+				translator = new MatchesConditionTranslator(condition, mappingInfo);
+				break;
 		}
-		return null;
+		if (logger.isDebugEnabled()) {
+			String s = CollectionUtil.implode(condition.getFields());
+			String t = translator.getClass().getSimpleName();
+			logger.debug("Condition on fields [{}] translated using {}", s, t);
+		}
+		return translator;
 	}
 
 	private static ConditionTranslator getInConditionTranslator(SearchCondition condition,

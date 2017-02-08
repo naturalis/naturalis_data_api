@@ -24,8 +24,8 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
- * A {@code SearchSpecTranslator} is responsible for translating an NBA {@link SearchSpec}
- * object into an Elasticsearch {@link SearchRequestBuilder} object.
+ * A {@code SearchSpecTranslator} translates a {@link SearchSpec} object into an
+ * Elasticsearch {@link SearchRequestBuilder query}.
  * 
  * @author Ayco Holleman
  *
@@ -33,12 +33,18 @@ import nl.naturalis.nba.dao.DocumentType;
 public class SearchSpecTranslator {
 
 	private static final Logger logger = getLogger(SearchSpecTranslator.class);
-	private static final int DEFAULT_FROM = 0;
 	private static final int DEFAULT_SIZE = 10;
 
 	private SearchSpec spec;
 	private DocumentType<?> dt;
 
+	/**
+	 * Creates a translator for the specified {@link SearchSpec} object
+	 * generating a query for the specified document type.
+	 * 
+	 * @param querySpec
+	 * @param documentType
+	 */
 	public SearchSpecTranslator(SearchSpec querySpec, DocumentType<?> documentType)
 	{
 		this.spec = querySpec;
@@ -57,7 +63,7 @@ public class SearchSpecTranslator {
 		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
 			overrideNonScoringIfNecessary();
 			QueryBuilder query;
-			if (spec.isNonScoring()) {
+			if (spec.isConstantScore()) {
 				query = constantScoreQuery(translateConditions());
 			}
 			else {
@@ -68,7 +74,7 @@ public class SearchSpecTranslator {
 		if (spec.getFields() != null) {
 			addFields(request);
 		}
-		request.setFrom(spec.getFrom() == null ? DEFAULT_FROM : spec.getFrom());
+		request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
 		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 		if (spec.getSortFields() != null) {
 			SortFieldsTranslator sft = new SortFieldsTranslator(spec, dt);
@@ -86,10 +92,10 @@ public class SearchSpecTranslator {
 		for (String field : fields) {
 			if (field.equals("id")) {
 				/*
-				 * This is a special field that can be used to retrieve the Elasticsearch
-				 * document ID, which is not part of the document itself, but it IS an
-				 * allowed field, populated through SearchHit.getId() rather than through
-				 * document data,
+				 * This is a special field that can be used to retrieve the
+				 * Elasticsearch document ID, which is not part of the document
+				 * itself, but it IS an allowed field, populated through
+				 * SearchHit.getId() rather than through document data.
 				 */
 				continue;
 			}
@@ -126,17 +132,18 @@ public class SearchSpecTranslator {
 	}
 
 	/*
-	 * This will set the nonScoring field of individual conditions within a SearchSpec to
-	 * false if the SearchSpec as a whole is non-scoring or if the condition is negated.
-	 * If we are dealing with a non-scoring search the Elasticsearch query generated from
-	 * all conditions together is wrapped into one big constant_score query. The queries
-	 * generated from the individual conditions should then not also be wrapped into a
-	 * constant_score query. Negated conditions are intrinsically non-scoring, so do not
-	 * need to be wrapped into a constant_score query.
+	 * This will set the nonScoring field of individual conditions within a
+	 * SearchSpec to false if the SearchSpec as a whole is non-scoring or if the
+	 * condition is negated. If we are dealing with a non-scoring search the
+	 * Elasticsearch query generated from all conditions together is wrapped
+	 * into one big constant_score query. The queries generated from the
+	 * individual conditions should then not also be wrapped into a
+	 * constant_score query. Negated conditions are intrinsically non-scoring,
+	 * so do not need to be wrapped into a constant_score query.
 	 */
 	private void overrideNonScoringIfNecessary()
 	{
-		if (spec.isNonScoring()) {
+		if (spec.isConstantScore()) {
 			for (SearchCondition c : spec.getConditions()) {
 				resetToScoring(c);
 			}
@@ -152,12 +159,12 @@ public class SearchSpecTranslator {
 
 	private static void resetToScoring(SearchCondition condition)
 	{
-		if (condition.isNonScoring()) {
-			condition.setNonScoring(false);
+		if (condition.isConstantScore()) {
+			condition.setConstantScore(false);
 			if (logger.isDebugEnabled()) {
 				String field = condition.getFields().iterator().next().toString();
 				String msg = "Condition on field {} reset to non-scoring because it "
-						+ "is a negated condition (NOT) or because it is already embedded "
+						+ "is a negated condition or because it is already embedded "
 						+ "within a non-scoring context";
 				logger.debug(msg, field);
 			}

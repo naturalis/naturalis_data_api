@@ -10,6 +10,14 @@
 		</File>
 	</Appenders>
 	<Loggers>
+		<Logger name="org.elasticsearch" level="ERROR" additivity="false">
+			<AppenderRef ref="FILE" />
+			<AppenderRef ref="CONSOLE"/>
+		</Logger>
+		<Logger name="io.netty" level="ERROR" additivity="false">
+			<AppenderRef ref="FILE" />
+			<AppenderRef ref="CONSOLE"/>
+		</Logger>
 		<Root level="DEBUG">
 			<AppenderRef ref="FILE" />
 			<AppenderRef ref="CONSOLE" />

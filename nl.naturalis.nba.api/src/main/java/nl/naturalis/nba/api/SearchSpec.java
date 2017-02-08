@@ -132,16 +132,16 @@ import java.util.List;
  */
 public class SearchSpec extends AbstractSearchSpec<SearchCondition> {
 
-	private boolean nonScoring;
+	private boolean constantScore;
 
-	public boolean isNonScoring()
+	public boolean isConstantScore()
 	{
-		return nonScoring;
+		return constantScore;
 	}
 
-	public void setNonScoring(boolean nonScoring)
+	public void setConstantScore(boolean constantScore)
 	{
-		this.nonScoring = nonScoring;
+		this.constantScore = constantScore;
 	}
 
 }

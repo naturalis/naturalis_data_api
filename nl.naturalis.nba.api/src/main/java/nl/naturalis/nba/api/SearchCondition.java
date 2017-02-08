@@ -6,8 +6,8 @@ import java.util.List;
 public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 
 	private List<Path> fields;
-	private boolean nonScoring;
-	private float boost;
+	private boolean constantScore;
+	private float boost = 1F;
 
 	public SearchCondition()
 	{
@@ -156,14 +156,14 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		this.fields = fields;
 	}
 
-	public boolean isNonScoring()
+	public boolean isConstantScore()
 	{
-		return nonScoring;
+		return constantScore;
 	}
 
-	public void setNonScoring(boolean nonScoring)
+	public void setConstantScore(boolean constantScore)
 	{
-		this.nonScoring = nonScoring;
+		this.constantScore = constantScore;
 	}
 
 	public float getBoost()

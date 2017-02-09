@@ -69,12 +69,12 @@ public abstract class AbstractSearchSpec<T extends AbstractSearchCondition<T>> {
 	 * 
 	 * @param field
 	 */
-	public void sortBy(String field, boolean ascending)
+	public void sortBy(String field, SortOrder sortOrder)
 	{
 		if (sortFields == null) {
 			sortFields = new ArrayList<>(2);
 		}
-		sortFields.add(new SortField(field, ascending));
+		sortFields.add(new SortField(field, sortOrder));
 	}
 
 	/**

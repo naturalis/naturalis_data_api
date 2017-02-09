@@ -23,6 +23,8 @@ import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
 
+import static nl.naturalis.nba.api.SortOrder.*;
+
 /**
  * Extracts {@link QuerySpec} objects from HTTP requests.
  * 
@@ -228,10 +230,10 @@ public class HttpQuerySpecBuilder {
 				else {
 					String order = chunk.substring(i + 1).trim().toUpperCase();
 					if (order.equals("ASC")) {
-						sortFields.add(new SortField(path));
+						sortFields.add(new SortField(path, ASC));
 					}
 					else if (order.equals("DESC")) {
-						sortFields.add(new SortField(path, false));
+						sortFields.add(new SortField(path, DESC));
 					}
 					else {
 						String msg = String.format(ERR_SORT_PARAM, PARAM_SORT_FIELDS, value);

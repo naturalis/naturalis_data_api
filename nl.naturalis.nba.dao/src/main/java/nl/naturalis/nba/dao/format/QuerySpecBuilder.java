@@ -7,10 +7,14 @@ import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
+import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.dao.format.config.ConditionXmlConfig;
 import nl.naturalis.nba.dao.format.config.ConditionsXmlConfig;
 import nl.naturalis.nba.dao.format.config.QuerySpecXmlConfig;
 import nl.naturalis.nba.dao.format.config.SortFieldXmlConfig;
+
+import static nl.naturalis.nba.api.SortOrder.*;
+import static java.lang.Boolean.*;
 
 class QuerySpecBuilder {
 
@@ -85,11 +89,8 @@ class QuerySpecBuilder {
 			return null;
 		List<SortField> sortFields = new ArrayList<>(config.getSortFields().size());
 		for (SortFieldXmlConfig sfxc : config.getSortFields()) {
-			SortField sortField = new SortField();
-			sortField.setPath(sfxc.getValue());
-			if (sfxc.isAscending() != null) {
-				sortField.setAscending(sfxc.isAscending());
-			}
+			SortOrder so = sfxc.isAscending() == FALSE ? DESC : ASC;
+			SortField sortField = new SortField(sfxc.getValue(), so);
 			sortFields.add(sortField);
 		}
 		return sortFields;

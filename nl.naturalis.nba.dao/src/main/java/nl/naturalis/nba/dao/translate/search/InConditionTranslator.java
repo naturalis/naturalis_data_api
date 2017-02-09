@@ -47,7 +47,7 @@ class InConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
 		ESField field = getESField(condition, mappingInfo);

@@ -59,7 +59,7 @@ public abstract class ConditionTranslator {
 	final SearchCondition condition;
 	final MappingInfo<?> mappingInfo;
 
-	boolean forSortField = false;
+	private boolean forSortField = false;
 
 	ConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
 	{
@@ -67,7 +67,14 @@ public abstract class ConditionTranslator {
 		this.mappingInfo = mappingInfo;
 	}
 
-	public ConditionTranslator forSortField()
+	/*
+	 * Make this translator translate the condition for the "nested_filter"
+	 * block within the "sort" section of a search request. Ordinarily
+	 * conditions are translated for the "query" section of a search request.
+	 * However, when sorting on a field belonging to a nested object, you must
+	 * copy all conditions on that same field to the sort clause.
+	 */
+	ConditionTranslator forSortField()
 	{
 		this.forSortField = true;
 		return this;
@@ -83,8 +90,49 @@ public abstract class ConditionTranslator {
 	 */
 	public QueryBuilder translate() throws InvalidConditionException
 	{
-		checkCondition();
+		preprocess();
 		QueryBuilder query = translateCondition();
+		if (forSortField)
+			query = postprocessForSortField(query);
+		else
+			query = postprocess(query);
+		if (hasElements(condition.getAnd())) {
+			query = generateAndSiblings(query);
+			if (hasElements(condition.getOr())) {
+				query = generateOrSiblings(query);
+			}
+		}
+		else if (hasElements(condition.getOr())) {
+			query = generateOrSiblings(query);
+		}
+		return condition.isNegated() ? not(query) : query;
+	}
+
+	/*
+	 * Implement any up-front/fail-fast checks you can think of. Throw an
+	 * InvalidConditionException if the condition is deemed invalid. You can
+	 * also use this method to preprocess the condition, e.g. cast or convert
+	 * the condition's value. This method is called just before
+	 * translateCondition().
+	 */
+	abstract void preprocess() throws InvalidConditionException;
+
+	/*
+	 * Convert the Condition to a QueryBuilder as appropriate for the operator
+	 * that the subclass is dealing with.
+	 */
+	abstract QueryBuilder translateCondition() throws InvalidConditionException;
+
+	/*
+	 * Applies processing steps to be taken after the condition has been turned
+	 * into an Elasticsearch query. As far as we can see these steps are
+	 * independent of the operator used in the condition, and hence are
+	 * implemented here (in the base class). However, if the need arises
+	 * subclasses can override this method. This method is called right after
+	 * translateCondition().
+	 */
+	QueryBuilder postprocess(QueryBuilder query)
+	{
 		Path path = condition.getFields().iterator().next();
 		String nestedPath = getNestedPath(path, mappingInfo);
 		if (nestedPath != null) {
@@ -99,31 +147,16 @@ public abstract class ConditionTranslator {
 		else {
 			query.boost(condition.getBoost());
 		}
-		if (hasElements(condition.getAnd())) {
-			query = generateAndSiblings(query);
-			if (hasElements(condition.getOr())) {
-				query = generateOrSiblings(query);
-			}
-		}
-		else if (hasElements(condition.getOr())) {
-			query = generateOrSiblings(query);
-		}
-		return condition.isNegated() ? not(query) : query;
+		return query;
 	}
 
-	/*
-	 * Convert the Condition to a QueryBuilder as appropriate for the operator
-	 * that the subclass is dealing with.
-	 */
-	abstract QueryBuilder translateCondition() throws InvalidConditionException;
-
-	/*
-	 * Implement any up-front/fail-fast checks you can think of. Throw an
-	 * InvalidConditionException if the condition is deemed invalid. You can
-	 * also use this method to preprocess the condition, e.g. cast or convert
-	 * the condition's value.
-	 */
-	abstract void checkCondition() throws InvalidConditionException;
+	QueryBuilder postprocessForSortField(QueryBuilder query)
+	{
+		if (hasNegativeOperator()) {
+			query = not(query);
+		}
+		return query;
+	}
 
 	private BoolQueryBuilder generateAndSiblings(QueryBuilder firstSibling)
 			throws InvalidConditionException

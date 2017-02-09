@@ -24,6 +24,8 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		fields = other.fields;
 		operator = other.operator;
 		value = other.value;
+		constantScore = other.constantScore;
+		boost = other.boost;
 		if (other.and != null) {
 			and = new ArrayList<>(other.and.size());
 			for (SearchCondition c : other.and) {

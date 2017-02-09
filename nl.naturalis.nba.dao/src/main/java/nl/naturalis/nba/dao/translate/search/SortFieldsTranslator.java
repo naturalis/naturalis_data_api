@@ -1,9 +1,9 @@
 package nl.naturalis.nba.dao.translate.search;
 
-import static nl.naturalis.nba.api.LogicalOperator.OR;
-import static nl.naturalis.nba.dao.translate.query.ConditionTranslatorFactory.getTranslator;
+import static nl.naturalis.nba.dao.translate.search.ConditionTranslatorFactory.getTranslator;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
+import static nl.naturalis.nba.api.LogicalOperator.*;
 
 import java.util.List;
 
@@ -16,6 +16,7 @@ import org.elasticsearch.search.sort.SortMode;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.SortField;
@@ -27,9 +28,11 @@ import nl.naturalis.nba.dao.DocumentType;
 
 class SortFieldsTranslator {
 
-	private static final String ERR_NESTED_FILTER_ERROR = "When sorting on field %1$s "
-			+ "you cannot nest a query condition on field %1$s within a query condition "
-			+ "on field %1$s";
+	private static final String ERR_01 = "Sorting on %1$s not allowed in combination "
+			+ "with condition on multiple fields, one of them also being %1$s.";
+
+	private static final String ERR_02 = "Sorting on %1$s not allowed in combination "
+			+ "with condition on %1$s and a sibling condition on %2$s";
 
 	private SearchSpec querySpec;
 	private DocumentType<?> dt;
@@ -46,7 +49,7 @@ class SortFieldsTranslator {
 		FieldSortBuilder[] result = new FieldSortBuilder[sortFields.size()];
 		int i = 0;
 		for (SortField sf : sortFields) {
-			String path = sf.getPath();
+			Path path = sf.getPath();
 			String nestedPath;
 			try {
 				MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
@@ -59,7 +62,7 @@ class SortFieldsTranslator {
 			catch (NoSuchFieldException e) {
 				throw invalidSortField(sf.getPath());
 			}
-			FieldSortBuilder sb = SortBuilders.fieldSort(path);
+			FieldSortBuilder sb = SortBuilders.fieldSort(path.toString());
 			sb.order(sf.isAscending() ? ASC : DESC);
 			sb.sortMode(sf.isAscending() ? SortMode.MIN : SortMode.MAX);
 			if (nestedPath != null) {
@@ -74,62 +77,70 @@ class SortFieldsTranslator {
 		return result;
 	}
 
-	private QueryBuilder translateConditions(String sortField) throws InvalidConditionException
+	private QueryBuilder translateConditions(Path sortField) throws InvalidConditionException
 	{
-		return null;
-//		List<SearchCondition> conditions = querySpec.getConditions();
-//		if (conditions == null || conditions.size() == 0) {
-//			return null;
-//		}
-//		if (conditions.size() == 1) {
-//			SearchCondition c = conditions.iterator().next();
-//			if (c.getField().equals(sortField)) {
-//				checkCondition(c, sortField);
-//				return getTranslator(c, dt).forSortField().translate();
-//			}
-//			return null;
-//		}
-//		BoolQueryBuilder result = QueryBuilders.boolQuery();
-//		boolean hasConditionWithSortField = false;
-//		for (SearchCondition c : conditions) {
-//			if (c.getField().equals(sortField)) {
-//				hasConditionWithSortField = true;
-//				checkCondition(c, sortField);
-//				if (querySpec.getLogicalOperator() == OR) {
-//					result.should(getTranslator(c, dt).forSortField().translate());
-//				}
-//				else {
-//					result.must(getTranslator(c, dt).forSortField().translate());
-//				}
-//			}
-//		}
-//		return hasConditionWithSortField ? result : null;
+		List<SearchCondition> conditions = querySpec.getConditions();
+		if (conditions == null || conditions.size() == 0) {
+			return null;
+		}
+		if (conditions.size() == 1) {
+			SearchCondition c = conditions.iterator().next();
+			if (c.getFields().contains(sortField)) {
+				checkCondition(c, sortField);
+				return getTranslator(c, dt).forSortField().translate();
+			}
+		}
+		BoolQueryBuilder result = QueryBuilders.boolQuery();
+		boolean hasConditionWithSortField = false;
+		for (SearchCondition c : conditions) {
+			if (c.getFields().contains(sortField)) {
+				hasConditionWithSortField = true;
+				checkCondition(c, sortField);
+				if (querySpec.getLogicalOperator() == OR) {
+					result.should(getTranslator(c, dt).forSortField().translate());
+				}
+				else {
+					result.must(getTranslator(c, dt).forSortField().translate());
+				}
+			}
+		}
+		return hasConditionWithSortField ? result : null;
 	}
 
-	private static void checkCondition(SearchCondition c, String path)
+	private static void checkCondition(SearchCondition condition, Path sortField)
 			throws InvalidConditionException
 	{
-//		if (c.getAnd() != null) {
-//			for (SearchCondition condition : c.getAnd()) {
-//				if (!condition.getField().equals(path)) {
-//					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
-//					throw new InvalidConditionException(msg);
-//				}
-//				checkCondition(condition, path);
-//			}
-//		}
-//		if (c.getOr() != null) {
-//			for (SearchCondition condition : c.getOr()) {
-//				if (!condition.getField().equals(path)) {
-//					String msg = String.format(ERR_NESTED_FILTER_ERROR, path, condition.getField());
-//					throw new InvalidConditionException(msg);
-//				}
-//				checkCondition(condition, path);
-//			}
-//		}
+		/*
+		 * If the condition.fields contains the sort field, it must actually not
+		 * contain any other field (the size of the fields list must be 1). In
+		 * addition, all AND and OR siblings must also have the sort field as
+		 * the ony and only field in their fields list.
+		 */
+		if (condition.getFields().size() > 1) {
+			throw new InvalidConditionException(condition, ERR_01, sortField);
+		}
+		if (condition.getAnd() != null) {
+			for (SearchCondition c : condition.getAnd()) {
+				checkCondition(c, sortField);
+				Path path = c.getFields().iterator().next();
+				if (!path.equals(sortField)) {
+					// Pass main condition to constructor, not current sibling.
+					throw new InvalidConditionException(condition, ERR_02, sortField, path);
+				}
+			}
+		}
+		if (condition.getOr() != null) {
+			for (SearchCondition c : condition.getOr()) {
+				checkCondition(c, sortField);
+				Path path = c.getFields().iterator().next();
+				if (!path.equals(sortField)) {
+					throw new InvalidConditionException(condition, ERR_02, sortField, path);
+				}
+			}
+		}
 	}
 
-	private static InvalidQueryException invalidSortField(String field)
+	private static InvalidQueryException invalidSortField(Path field)
 	{
 		String fmt = "Invalid sort field: \"%s\"";
 		String msg = String.format(fmt, field);

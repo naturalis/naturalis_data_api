@@ -13,6 +13,8 @@ import org.geojson.GeoJsonObject;
 import org.geojson.Polygon;
 import org.junit.Test;
 
+import nl.naturalis.nba.api.SortField;
+
 @SuppressWarnings("static-method")
 public class JsonUtilTest {
 
@@ -215,5 +217,10 @@ public class JsonUtilTest {
 		// even this should not work
 		String input = "Amsterdam";
 		JsonUtil.deserialize(input, String.class);
+	}
+	
+	@Test
+	public void testDeserializeSortField_01() {
+		//SortField sf = new
 	}
 }

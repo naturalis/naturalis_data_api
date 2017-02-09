@@ -63,7 +63,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
 	}

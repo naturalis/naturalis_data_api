@@ -53,7 +53,7 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 	}
 

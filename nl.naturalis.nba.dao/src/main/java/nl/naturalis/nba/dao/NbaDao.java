@@ -42,6 +42,7 @@ import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -259,7 +260,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		}
 		qs.addCondition(new QueryCondition(keyField, "!=", null));
 		qs.addCondition(new QueryCondition(valuesField, "!=", null));
-		qs.sortBy(keyField, false);
+		qs.sortBy(keyField, SortOrder.DESC);
 		Scroller scroller = new Scroller(qs, dt, handler);
 		try {
 			scroller.scroll();

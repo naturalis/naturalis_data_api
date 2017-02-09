@@ -26,6 +26,8 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 
+import static nl.naturalis.nba.api.SortOrder.*;
+
 @SuppressWarnings("static-method")
 public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 
@@ -81,7 +83,7 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 	{
 		List<Specimen> expected = sortByUnitIDDesscending();
 		QuerySpec qs = new QuerySpec();
-		qs.sortBy("unitID", false);
+		qs.sortBy("unitID", DESC);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
@@ -114,7 +116,7 @@ public class SpecimenDao_QueriesWithSortingSizingPagingTest {
 	{
 		List<Specimen> expected = sortByScientificNameDescending();
 		QuerySpec qs = new QuerySpec();
-		qs.sortBy("identifications.scientificName.fullScientificName", false);
+		qs.sortBy("identifications.scientificName.fullScientificName", DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);

@@ -42,7 +42,7 @@ class MatchesConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 		/*
 		 * We assume that Elasticsearch will let you to do nested nulti-match

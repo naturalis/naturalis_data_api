@@ -28,7 +28,7 @@ class EqualsConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 		Path path = condition.getFields().iterator().next();
 		ESField field = getESField(path, mappingInfo);

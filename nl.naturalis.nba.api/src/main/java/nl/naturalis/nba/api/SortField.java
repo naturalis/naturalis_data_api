@@ -1,5 +1,9 @@
 package nl.naturalis.nba.api;
 
+import static nl.naturalis.nba.api.SortOrder.ASC;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Represents a field that you want a set of documents to be sorted on. See
  * {@link QuerySpec#setSortFields(java.util.List) QuerySpec.setSortFields}.
@@ -9,23 +13,29 @@ package nl.naturalis.nba.api;
  */
 public class SortField {
 
-	private String path;
-	private boolean ascending;
-
-	public SortField()
-	{
-		this(null, true);
-	}
+	private Path path;
+	private SortOrder sortOrder;
 
 	public SortField(String path)
 	{
-		this(path, true);
+		this(path, ASC);
 	}
 
-	public SortField(String path, boolean ascending)
+	public SortField(@JsonProperty("path") Path path)
+	{
+		this(path, ASC);
+	}
+
+	public SortField(String path, SortOrder sortOrder)
+	{
+		this(new Path(path), sortOrder);
+	}
+
+	public SortField(@JsonProperty("path") Path path,
+			@JsonProperty("sortOrder") SortOrder sortOrder)
 	{
 		this.path = path;
-		this.ascending = ascending;
+		this.sortOrder = sortOrder;
 	}
 
 	/**
@@ -33,39 +43,22 @@ public class SortField {
 	 * 
 	 * @return
 	 */
-	public String getPath()
+	public Path getPath()
 	{
 		return path;
 	}
 
 	/**
-	 * Sets the path of the field on which to sort.
-	 * 
-	 * @param path
+	 * Returns the sort order (ascending or descending).
 	 */
-	public void setPath(String path)
+	public SortOrder getSortOrder()
 	{
-		this.path = path;
+		return sortOrder;
 	}
 
-	/**
-	 * Whether to sort in ascending order (default: {@code true}).
-	 * 
-	 * @return
-	 */
 	public boolean isAscending()
 	{
-		return ascending;
-	}
-
-	/**
-	 * Sets the sort order.
-	 * 
-	 * @param ascending
-	 */
-	public void setAscending(boolean ascending)
-	{
-		this.ascending = ascending;
+		return sortOrder == ASC;
 	}
 
 }

@@ -30,7 +30,7 @@ class LikeConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
 		String value = condition.getValue().toString();

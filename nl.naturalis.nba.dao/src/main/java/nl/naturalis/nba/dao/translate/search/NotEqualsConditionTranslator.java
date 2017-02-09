@@ -30,7 +30,7 @@ class NotEqualsConditionTranslator extends ConditionTranslator {
 	}
 
 	@Override
-	void checkCondition() throws InvalidConditionException
+	void preprocess() throws InvalidConditionException
 	{
 		ESField field = getESField(condition, mappingInfo);
 		if (field.getType() == DATE) {

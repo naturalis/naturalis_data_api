@@ -3,6 +3,8 @@ package nl.naturalis.nba.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 
 	private List<Path> fields;
@@ -78,12 +80,12 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 	{
 		this.not = not;
 		this.fields = new ArrayList<>(8);
-		fields.add(field);
+		this.fields.add(field);
 		this.operator = operator;
 		this.value = value;
 	}
 
-	public SearchCondition addSearchField(String field)
+	public SearchCondition addField(String field)
 	{
 		if (fields == null) {
 			fields = new ArrayList<>(8);
@@ -156,6 +158,13 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 	public void setFields(List<Path> fields)
 	{
 		this.fields = fields;
+	}
+
+	@JsonProperty("fields")
+	public void setField(String field)
+	{
+		fields = new ArrayList<>(8);
+		fields.add(new Path(field));
 	}
 
 	public boolean isConstantScore()

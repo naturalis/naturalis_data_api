@@ -1,7 +1,9 @@
 package nl.naturalis.nba.common.json;
 
-import static nl.naturalis.nba.common.TestUtils.*;
+import static nl.naturalis.nba.common.TestUtils.deserialize;
+import static nl.naturalis.nba.common.TestUtils.stringEqualsFileContents;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -222,6 +224,32 @@ public class JsonUtilTest {
 	}
 
 	/*
+	 * Make sure serialization of SortField object works as expected: notably
+	 * the serialization of the path field. Serialization of Path objects should
+	 * yield plain strings - nothing betraying the internals of the Path class.
+	 * See the annotations in Path class.
+	 */
+	@Test
+	public void testSerializeSortField_01()
+	{
+		SortField sf = new SortField("identifications.defaultClassification.genus", SortOrder.DESC);
+		String serialized = JsonUtil.toPrettyJson(sf, false);
+		String file = "json/JsonUtilTest__testSerializeSortField_01.json";
+		//System.out.println(serialized);
+		assertTrue("01", stringEqualsFileContents(serialized, file));
+	}
+
+	@Test
+	public void testSerializeSortField_02()
+	{
+		SortField sf = new SortField("identifications.defaultClassification.genus");
+		String serialized = JsonUtil.toPrettyJson(sf, false);
+		String file = "json/JsonUtilTest__testSerializeSortField_02.json";
+		//System.out.println(serialized);
+		assertTrue("01", stringEqualsFileContents(serialized, file));
+	}
+
+	/*
 	 * Make sure SortField deserialization works if only path is present (see
 	 * json file).
 	 */
@@ -231,8 +259,7 @@ public class JsonUtilTest {
 		String file = "json/JsonUtilTest__testDeserializeSortField_01.json";
 		SortField sf = deserialize(file, SortField.class);
 		assertEquals("01", "unitID", sf.getPath().toString());
-		assertNull("02", sf.getSortOrder());
-		// Make sure null 
+		assertNotNull("02", sf.getSortOrder());
 		assertTrue("03", sf.isAscending());
 	}
 

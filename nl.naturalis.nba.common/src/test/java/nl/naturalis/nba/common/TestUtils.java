@@ -4,16 +4,20 @@ import java.io.InputStream;
 import java.util.Map;
 
 import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.utils.FileUtil;
 
 public class TestUtils {
 
 	private TestUtils()
 	{
 	}
-	
-//	public static boolean stringEqualsFileContents(String str, String file) {
-//		
-//	}
+
+	public static boolean stringEqualsFileContents(String str, String file)
+	{
+		InputStream is = TestUtils.class.getResourceAsStream(file);
+		String contents = FileUtil.getContents(is);
+		return str.trim().equals(contents.trim());
+	}
 
 	public static <T> T deserialize(String fileName, Class<T> cast)
 	{

@@ -24,11 +24,11 @@ import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.IndexInfo;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
-/*
- * We can't test that much here because we very much depend on how Elasticsearch
- * and NBA are configured. So we mainly use the test method to print out stuff
- * for which we would otherwise have created a temporary main(String[] args)
- * method.
+/**
+ * Unit tests for methods in the ESUtil class. We can't test that much here
+ * because we very much depend on how Elasticsearch and NBA are configured. So
+ * we mainly use the test method to print out stuff for which we would otherwise
+ * have created a temporary main(String[] args) method.
  */
 @SuppressWarnings("static-method")
 public class ESUtilTest {

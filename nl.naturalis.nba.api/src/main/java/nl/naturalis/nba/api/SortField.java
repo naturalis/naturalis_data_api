@@ -1,7 +1,9 @@
 package nl.naturalis.nba.api;
 
 import static nl.naturalis.nba.api.SortOrder.ASC;
+import static nl.naturalis.nba.api.SortOrder.DESC;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -21,7 +23,7 @@ public class SortField {
 		this(path, ASC);
 	}
 
-	public SortField(@JsonProperty("path") Path path)
+	public SortField(Path path)
 	{
 		this(path, ASC);
 	}
@@ -31,6 +33,7 @@ public class SortField {
 		this(new Path(path), sortOrder);
 	}
 
+	@JsonCreator
 	public SortField(@JsonProperty("path") Path path,
 			@JsonProperty("sortOrder") SortOrder sortOrder)
 	{
@@ -58,7 +61,7 @@ public class SortField {
 
 	public boolean isAscending()
 	{
-		return sortOrder == ASC;
+		return sortOrder != DESC; // null or ASC
 	}
 
 }

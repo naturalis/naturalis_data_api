@@ -1,4 +1,4 @@
-package nl.naturalis.nba.common.test;
+package nl.naturalis.nba.common.mock;
 
 public enum PetSpecies
 {

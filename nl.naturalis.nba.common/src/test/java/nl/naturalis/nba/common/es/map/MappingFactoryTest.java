@@ -1,11 +1,11 @@
 package nl.naturalis.nba.common.es.map;
 
-import static nl.naturalis.nba.common.test.TestUtils.jsonEquals;
+import static nl.naturalis.nba.common.TestUtils.jsonEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import nl.naturalis.nba.common.test.TestPerson;
+import nl.naturalis.nba.common.mock.TestPerson;
 public class MappingFactoryTest {
 
 	@Test

@@ -1,4 +1,4 @@
-package nl.naturalis.nba.common.test;
+package nl.naturalis.nba.common.mock;
 
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;

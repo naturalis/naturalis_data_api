@@ -1,5 +1,6 @@
 package nl.naturalis.nba.common.json;
 
+import static nl.naturalis.nba.common.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +15,7 @@ import org.geojson.Polygon;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.SortField;
+import nl.naturalis.nba.api.SortOrder;
 
 @SuppressWarnings("static-method")
 public class JsonUtilTest {
@@ -218,9 +220,33 @@ public class JsonUtilTest {
 		String input = "Amsterdam";
 		JsonUtil.deserialize(input, String.class);
 	}
-	
+
+	/*
+	 * Make sure SortField deserialization works if only path is present (see
+	 * json file).
+	 */
 	@Test
-	public void testDeserializeSortField_01() {
-		//SortField sf = new
+	public void testDeserializeSortField_01()
+	{
+		String file = "json/JsonUtilTest__testDeserializeSortField_01.json";
+		SortField sf = deserialize(file, SortField.class);
+		assertEquals("01", "unitID", sf.getPath().toString());
+		assertNull("02", sf.getSortOrder());
+		// Make sure null 
+		assertTrue("03", sf.isAscending());
 	}
+
+	/*
+	 * Make sure SortField deserialization works if both path and sortOrder
+	 * present (see json file).
+	 */
+	@Test
+	public void testDeserializeSortField_02()
+	{
+		String file = "json/JsonUtilTest__testDeserializeSortField_02.json";
+		SortField sf = deserialize(file, SortField.class);
+		assertEquals("01", "unitID", sf.getPath().toString());
+		assertEquals("02", SortOrder.DESC, sf.getSortOrder());
+	}
+
 }

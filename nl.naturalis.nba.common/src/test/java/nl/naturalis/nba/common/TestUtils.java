@@ -1,4 +1,4 @@
-package nl.naturalis.nba.common.test;
+package nl.naturalis.nba.common;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -9,6 +9,16 @@ public class TestUtils {
 
 	private TestUtils()
 	{
+	}
+	
+//	public static boolean stringEqualsFileContents(String str, String file) {
+//		
+//	}
+
+	public static <T> T deserialize(String fileName, Class<T> cast)
+	{
+		InputStream is = TestUtils.class.getResourceAsStream(fileName);
+		return JsonUtil.deserialize(is, cast);
 	}
 
 	/**

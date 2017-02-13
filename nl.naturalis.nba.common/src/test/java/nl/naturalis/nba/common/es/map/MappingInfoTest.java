@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.common.test.TestPerson;
+import nl.naturalis.nba.common.mock.TestPerson;
 
 @SuppressWarnings("static-method")
 public class MappingInfoTest {

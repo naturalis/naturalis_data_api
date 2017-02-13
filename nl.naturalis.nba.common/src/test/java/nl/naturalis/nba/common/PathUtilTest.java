@@ -8,7 +8,7 @@ import org.junit.Test;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
-import nl.naturalis.nba.common.test.TestPerson;
+import nl.naturalis.nba.common.mock.TestPerson;
 
 @SuppressWarnings("static-method")
 public class PathUtilTest {

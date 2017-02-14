@@ -179,8 +179,7 @@ public final class Path {
 	}
 
 	/**
-	 * Returns this {@code Path} as a string with all path elements joined and
-	 * separated using the dot character.
+	 * Returns this {@code Path} as a string.
 	 * 
 	 * @return
 	 */

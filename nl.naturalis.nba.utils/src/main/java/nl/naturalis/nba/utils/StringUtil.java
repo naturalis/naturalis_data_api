@@ -298,7 +298,7 @@ public class StringUtil {
 	 */
 	public static String[] split(String s, String delim)
 	{
-		return split(s, delim, 10);
+		return split(s, delim, 8);
 	}
 
 	/**

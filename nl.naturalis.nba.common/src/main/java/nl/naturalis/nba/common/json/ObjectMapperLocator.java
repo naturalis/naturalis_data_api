@@ -19,6 +19,13 @@ import nl.naturalis.nba.api.model.Sex;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 
+/**
+ * Produces Jackson {@link ObjectMapper} instances tailored to the type of
+ * object to be serialized or deserialized.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class ObjectMapperLocator {
 
 	private static final ObjectMapperLocator instance = new ObjectMapperLocator();
@@ -35,6 +42,7 @@ public class ObjectMapperLocator {
 		dfault = createDefaultObjectMapper();
 	}
 
+	@SuppressWarnings("unused")
 	public ObjectMapper getObjectMapper(Class<?> forType)
 	{
 		/*
@@ -44,6 +52,7 @@ public class ObjectMapperLocator {
 		return dfault;
 	}
 
+	@SuppressWarnings("unused")
 	public ObjectMapper getObjectMapper(TypeReference<?> forType)
 	{
 		/*
@@ -62,8 +71,8 @@ public class ObjectMapperLocator {
 		om.enable(WRITE_ENUMS_USING_TO_STRING);
 		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 		SimpleModule module = new SimpleModule();
-//		module.addDeserializer(GatheringSiteCoordinates.class,
-//				new GatheringSiteCoordinatesDeserializer());
+		//		module.addDeserializer(GatheringSiteCoordinates.class,
+		//				new GatheringSiteCoordinatesDeserializer());
 		module.addDeserializer(PhaseOrStage.class, new PhaseOrStageDeserializer());
 		module.addDeserializer(Sex.class, new SexDeserializer());
 		module.addDeserializer(TaxonomicStatus.class, new TaxonomicStatusDeserializer());

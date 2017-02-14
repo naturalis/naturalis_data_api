@@ -17,12 +17,12 @@ import java.util.Set;
  * @author ayco
  *
  */
+@SuppressWarnings({ "synthetic-access", "serial" })
 public class ConfigObject {
 
 	/**
 	 * Exception thrown when a required property turns out to be missing
 	 */
-	@SuppressWarnings("serial")
 	public static class MissingPropertyException extends RuntimeException {
 
 		private MissingPropertyException(String property)
@@ -35,7 +35,6 @@ public class ConfigObject {
 	 * Exception when a property was expected to have a non-whitespace value,
 	 * but its value did in fact only contain whitespace.
 	 */
-	@SuppressWarnings("serial")
 	public static class PropertyNotSetException extends RuntimeException {
 
 		private PropertyNotSetException(String property)

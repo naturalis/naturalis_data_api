@@ -346,6 +346,19 @@ public class FileUtil {
 	// SET / ADD CONTENT
 	///////////////////////////////////////////////////////////////
 
+	/**
+	 * Exhausts the specified input stream and writes the data read from it to
+	 * the specified file. The input stream is not closed once all data is read.
+	 * 
+	 * @param file
+	 *            The file to write to
+	 * @param contents
+	 *            The input stream to
+	 * @param bufsize
+	 *            The byte size of the output buffer
+	 * @param append
+	 *            Whether to append to or replace the original file contents.
+	 */
 	public static void setContents(File file, InputStream contents, int bufsize, boolean append)
 	{
 		BufferedOutputStream bos = null;

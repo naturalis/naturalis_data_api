@@ -150,6 +150,7 @@ public class ClassUtil {
 	 *            The object to test
 	 * @return Whether the object can be represented as a number.
 	 */
+	@SuppressWarnings("unused")
 	public static boolean isNumeric(Object obj)
 	{
 		if (isNumber(obj))

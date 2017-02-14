@@ -1,0 +1,32 @@
+{
+	"conditions": [
+		{
+			"fields": [
+				"unitID",
+				"unitGUID"
+			],
+			"operator": "MATCHES",
+			"value": "ZMA",
+			"boost": 1.2
+		},
+		{
+			"fields": [
+				"gatheringEvent.dateTimeBegin"
+			],
+			"operator": "GTE",
+			"value": "2014-06-09",
+			"boost": 1.4
+		}
+	],
+	"from": 225,
+	"size": 25,
+	"sortFields": [
+		{
+			"path": "unitID"
+		},
+		{
+			"path": "gatheringEvent.dateTimeBegin",
+			"sortOrder": "DESC"
+		}
+	]
+}

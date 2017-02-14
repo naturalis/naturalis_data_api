@@ -1,0 +1,7 @@
+{
+	"fields": [
+		"unitID", "unitGUID"
+	],
+	"operator": "MATCHES",
+	"value": "ZMA"
+}

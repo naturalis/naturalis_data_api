@@ -14,8 +14,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * {@code gatheringEvent.dateTimeBegin}. Each consecutive element denotes an
  * object nested ever more deeply within the document, except for the last
  * element, which could also be a "primitive" value (strings, numbers, dates,
- * etc.). Array access is supported by including array indices in the path. For
- * example: {@code identications.0.defaultClassification.kingdom}.
+ * etc.). For some applications it may be valid to allow array indices in the
+ * path. For example: {@code identications.0.defaultClassification.kingdom}.
+ * However paths in {@link SearchCondition search conditions} must always be
+ * "pure" paths without array indices.
  * 
  * @author Ayco Holleman
  *

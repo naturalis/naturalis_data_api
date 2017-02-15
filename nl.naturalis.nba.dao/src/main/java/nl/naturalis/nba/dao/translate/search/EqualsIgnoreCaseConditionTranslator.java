@@ -23,7 +23,7 @@ class EqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		Path path = condition.getFields().iterator().next();
+		Path path = condition.getField();
 		String field = path.append(MY_MULTIFIELD).toString();
 		String value = condition.getValue().toString().toLowerCase();
 		return termQuery(field, value);

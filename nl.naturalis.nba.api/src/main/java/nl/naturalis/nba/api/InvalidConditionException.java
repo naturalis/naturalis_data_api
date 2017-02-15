@@ -27,21 +27,7 @@ public class InvalidConditionException extends InvalidQueryException {
 	{
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("Invalid condition on field");
-		if (condition.getFields().size() == 1) {
-			sb.append(condition.getFields().iterator().next());
-		}
-		else {
-			sb.append("s [");
-			boolean first = true;
-			for (Path path : condition.getFields()) {
-				if (!first)
-					sb.append(',');
-				else
-					first = false;
-				sb.append(path);
-			}
-			sb.append("]");
-		}
+		sb.append(condition.getField());
 		sb.append(" using operator").append((condition.getOperator()));
 		sb.append(". ");
 		sb.append(String.format(msg, msgArgs));

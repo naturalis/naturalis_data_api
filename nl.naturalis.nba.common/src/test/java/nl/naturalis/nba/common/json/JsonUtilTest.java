@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import org.geojson.Polygon;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.SortField;
@@ -289,24 +287,13 @@ public class JsonUtilTest {
 	{
 		String file = "json/JsonUtilTest__testDeserializeSearchCondition_01.json";
 		SearchCondition condition = deserialize(file, SearchCondition.class);
-		assertEquals("01", 1, condition.getFields().size());
-		String field = condition.getFields().iterator().next().toString();
-		assertEquals("02", "gatheringEvent.dateTimeBegin", field);
-		assertEquals("03", ComparisonOperator.EQUALS, condition.getOperator());
-		assertEquals("04", "2014-08-07", condition.getValue());
-		assertTrue("05", 1.3f == condition.getBoost());
+		String field = condition.getField().toString();
+		assertEquals("01", "gatheringEvent.dateTimeBegin", field);
+		assertEquals("02", ComparisonOperator.EQUALS, condition.getOperator());
+		assertEquals("03", "2014-08-07", condition.getValue());
+		assertTrue("04", 1.3f == condition.getBoost());
 	}
 
-	/*
-	 * Test deserialization of SearchCondition.
-	 */
-	@Test
-	public void testDeserializeSearchCondition_02()
-	{
-		String file = "json/JsonUtilTest__testDeserializeSearchCondition_02.json";
-		SearchCondition condition = deserialize(file, SearchCondition.class);
-		assertEquals("01", 2, condition.getFields().size());
-	}
 
 	/*
 	 * Test deserialization of SearchSpec.
@@ -318,33 +305,10 @@ public class JsonUtilTest {
 		SearchSpec ss = deserialize(file, SearchSpec.class);
 		assertEquals("01", 1, ss.getConditions().size());
 		SearchCondition sc = ss.getConditions().iterator().next();
-		String field = sc.getFields().iterator().next().toString();
+		String field = sc.getField().toString();
 		assertEquals("02", "gatheringEvent.dateTimeBegin", field);
 		assertTrue("03", ss.isConstantScore());
 	}
 
-	/*
-	 * Test deserialization of SearchSpec.
-	 */
-	@Test
-	public void testDeserializeSearchSpec_02()
-	{
-		String file = "json/JsonUtilTest__testDeserializeSearchSpec_02.json";
-		SearchSpec ss = deserialize(file, SearchSpec.class);
-		assertEquals("01", 2, ss.getConditions().size());
-		Iterator<SearchCondition> conditions = ss.getConditions().iterator();
-		SearchCondition sc = conditions.next();
-		assertEquals("02", 2, sc.getFields().size());
-		Iterator<Path> fields = sc.getFields().iterator();
-		Path path = fields.next();
-		assertEquals("03", "unitID", path.toString());
-		path = fields.next();
-		assertEquals("04", "unitGUID", path.toString());
-		sc = conditions.next();
-		assertEquals("05", 1, sc.getFields().size());
-		fields = sc.getFields().iterator();
-		path = fields.next();
-		assertEquals("06", "gatheringEvent.dateTimeBegin", path.toString());
-	}
 
 }

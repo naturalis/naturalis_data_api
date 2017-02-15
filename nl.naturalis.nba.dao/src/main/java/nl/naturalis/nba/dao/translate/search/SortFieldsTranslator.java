@@ -29,9 +29,6 @@ import nl.naturalis.nba.dao.DocumentType;
 class SortFieldsTranslator {
 
 	private static final String ERR_01 = "Sorting on %1$s not allowed in combination "
-			+ "with condition on multiple fields, one of them also being %1$s.";
-
-	private static final String ERR_02 = "Sorting on %1$s not allowed in combination "
 			+ "with condition on %1$s and a sibling condition on %2$s";
 
 	private SearchSpec querySpec;
@@ -85,7 +82,7 @@ class SortFieldsTranslator {
 		}
 		if (conditions.size() == 1) {
 			SearchCondition c = conditions.iterator().next();
-			if (c.getFields().contains(sortField)) {
+			if (c.getField().equals(sortField)) {
 				checkCondition(c, sortField);
 				return getTranslator(c, dt).forSortField().translate();
 			}
@@ -93,7 +90,7 @@ class SortFieldsTranslator {
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		boolean hasConditionWithSortField = false;
 		for (SearchCondition c : conditions) {
-			if (c.getFields().contains(sortField)) {
+			if (c.getField().equals(sortField)) {
 				hasConditionWithSortField = true;
 				checkCondition(c, sortField);
 				if (querySpec.getLogicalOperator() == OR) {
@@ -110,32 +107,20 @@ class SortFieldsTranslator {
 	private static void checkCondition(SearchCondition condition, Path sortField)
 			throws InvalidConditionException
 	{
-		/*
-		 * If the condition.fields contains the sort field, it must actually not
-		 * contain any other field (the size of the fields list must be 1). In
-		 * addition, all AND and OR siblings must also have the sort field as
-		 * the ony and only field in their fields list.
-		 */
-		if (condition.getFields().size() > 1) {
-			throw new InvalidConditionException(condition, ERR_01, sortField);
-		}
 		if (condition.getAnd() != null) {
 			for (SearchCondition c : condition.getAnd()) {
-				checkCondition(c, sortField);
-				Path path = c.getFields().iterator().next();
-				if (!path.equals(sortField)) {
-					// Pass main condition to constructor, not current sibling.
-					throw new InvalidConditionException(condition, ERR_02, sortField, path);
+				if (!c.getField().equals(sortField)) {
+					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
 				}
+				checkCondition(c, sortField);
 			}
 		}
 		if (condition.getOr() != null) {
 			for (SearchCondition c : condition.getOr()) {
-				checkCondition(c, sortField);
-				Path path = c.getFields().iterator().next();
-				if (!path.equals(sortField)) {
-					throw new InvalidConditionException(condition, ERR_02, sortField, path);
+				if (!c.getField().equals(sortField)) {
+					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
 				}
+				checkCondition(c, sortField);
 			}
 		}
 	}

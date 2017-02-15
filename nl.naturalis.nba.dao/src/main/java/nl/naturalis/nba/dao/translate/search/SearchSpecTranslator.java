@@ -162,10 +162,11 @@ public class SearchSpecTranslator {
 		if (condition.isConstantScore()) {
 			condition.setConstantScore(false);
 			if (logger.isDebugEnabled()) {
-				String field = condition.getFields().iterator().next().toString();
-				String msg = "Condition on field {} reset to non-scoring because it "
-						+ "is a negated condition or because it is already embedded "
-						+ "within a non-scoring context";
+				String field = condition.getField().toString();
+				String msg = "constantScore field for Condition on field {} "
+						+ "reset to false because it is a negated condition "
+						+ "or because it is already embedded  within a "
+						+ "non-scoring context";
 				logger.debug(msg, field);
 			}
 		}

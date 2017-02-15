@@ -15,7 +15,6 @@ import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonDeserializationException;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.utils.CollectionUtil;
 
 public class ConditionTranslatorFactory {
 
@@ -126,9 +125,9 @@ public class ConditionTranslatorFactory {
 				break;
 		}
 		if (logger.isDebugEnabled()) {
-			String s = CollectionUtil.implode(condition.getFields());
+			String s = condition.getField().toString();
 			String t = translator.getClass().getSimpleName();
-			logger.debug("Condition on fields [{}] translated using {}", s, t);
+			logger.debug("Condition on field {} translated using {}", s, t);
 		}
 		return translator;
 	}

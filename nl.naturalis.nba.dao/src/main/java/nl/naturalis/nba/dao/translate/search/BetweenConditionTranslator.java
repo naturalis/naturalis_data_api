@@ -14,7 +14,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -67,8 +66,7 @@ class BetweenConditionTranslator extends ConditionTranslator {
 		if (min == null && max == null) {
 			throw new InvalidConditionException(condition, ERROR_1, operator);
 		}
-		Path path = condition.getFields().iterator().next();
-		String field = path.toString();
+		String field = condition.getField().toString();
 		return rangeQuery(field).from(min).to(max);
 	}
 

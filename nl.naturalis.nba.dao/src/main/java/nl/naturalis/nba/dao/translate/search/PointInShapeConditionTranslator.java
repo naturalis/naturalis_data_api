@@ -11,7 +11,6 @@ import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -33,8 +32,8 @@ class PointInShapeConditionTranslator extends ConditionTranslator {
 				points.add(new GeoPoint(coord.getLatitude(), coord.getLongitude()));
 			}
 		}
-		Path path = condition.getFields().iterator().next();
-		return geoPolygonQuery(path.toString(),points);
+		String field = condition.getField().toString();
+		return geoPolygonQuery(field, points);
 	}
 
 	@Override

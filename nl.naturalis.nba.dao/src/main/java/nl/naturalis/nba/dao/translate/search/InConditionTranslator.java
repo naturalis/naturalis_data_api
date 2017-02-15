@@ -66,13 +66,13 @@ class InConditionTranslator extends ConditionTranslator {
 
 	private TermsQueryBuilder isOneOf(List<?> values)
 	{
-		String field = condition.getFields().iterator().next().toString();
+		String field = condition.getField().toString();
 		return termsQuery(field, values);
 	}
 
 	private BoolQueryBuilder isNull()
 	{
-		String field = condition.getFields().iterator().next().toString();
+		String field = condition.getField().toString();
 		return boolQuery().mustNot(existsQuery(field));
 	}
 

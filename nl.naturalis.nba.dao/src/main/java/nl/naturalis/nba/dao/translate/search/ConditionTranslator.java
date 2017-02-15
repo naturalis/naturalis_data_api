@@ -22,7 +22,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -133,8 +132,7 @@ public abstract class ConditionTranslator {
 	 */
 	QueryBuilder postprocess(QueryBuilder query)
 	{
-		Path path = condition.getFields().iterator().next();
-		String nestedPath = getNestedPath(path, mappingInfo);
+		String nestedPath = getNestedPath(condition.getField(), mappingInfo);
 		if (nestedPath != null) {
 			query = nestedQuery(nestedPath, query, ScoreMode.Avg);
 		}

@@ -109,7 +109,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 
 	private QueryBuilder createQueryForLocality(String locality) throws InvalidConditionException
 	{
-		String field = condition.getFields().iterator().next().toString();
+		String field = condition.getField().toString();
 		String id = getIdForLocality(locality);
 		String index = GEO_AREA.getIndexInfo().getName();
 		String type = GEO_AREA.getName();

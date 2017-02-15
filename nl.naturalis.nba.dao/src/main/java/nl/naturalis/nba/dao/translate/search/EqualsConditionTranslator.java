@@ -23,14 +23,14 @@ class EqualsConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		Path path = condition.getFields().iterator().next();
+		Path path = condition.getField();
 		return termQuery(path.toString(), condition.getValue());
 	}
 
 	@Override
 	void preprocess() throws InvalidConditionException
 	{
-		Path path = condition.getFields().iterator().next();
+		Path path = condition.getField();
 		ESField field = getESField(path, mappingInfo);
 		if (field.getType() == DATE) {
 			convertValueForDateField(condition);

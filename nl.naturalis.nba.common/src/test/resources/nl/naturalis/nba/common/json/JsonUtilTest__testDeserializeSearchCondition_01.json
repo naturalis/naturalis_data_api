@@ -1,5 +1,5 @@
 {
-	"fields": ["gatheringEvent.dateTimeBegin"],
+	"field": "gatheringEvent.dateTimeBegin",
 	"operator": "EQUALS",
 	"value": "2014-08-07",
 	"boost": 1.3

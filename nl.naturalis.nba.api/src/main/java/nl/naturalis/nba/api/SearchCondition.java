@@ -1,11 +1,10 @@
 package nl.naturalis.nba.api;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 
-	private List<Path> fields;
+	private Path field;
 	private boolean constantScore;
 	private float boost = 1F;
 
@@ -21,7 +20,7 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 	public SearchCondition(SearchCondition other)
 	{
 		not = other.not;
-		fields = other.fields;
+		field = other.field;
 		operator = other.operator;
 		value = other.value;
 		constantScore = other.constantScore;
@@ -77,19 +76,9 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 			Object value)
 	{
 		this.not = not;
-		this.fields = new ArrayList<>(8);
-		this.fields.add(field);
+		this.field = field;
 		this.operator = operator;
 		this.value = value;
-	}
-
-	public SearchCondition addField(String field)
-	{
-		if (fields == null) {
-			fields = new ArrayList<>(8);
-		}
-		fields.add(new Path(field));
-		return this;
 	}
 
 	/**
@@ -148,22 +137,19 @@ public class SearchCondition extends AbstractSearchCondition<SearchCondition> {
 		return this;
 	}
 
-	public List<Path> getFields()
+	public Path getField()
 	{
-		return fields;
+		return field;
 	}
 
-	public void setFields(List<Path> fields)
+	public void setField(Path fields)
 	{
-		this.fields = fields;
+		this.field = fields;
 	}
 
-	public void setFields(String... fields)
+	public void setFields(String fields)
 	{
-		this.fields = new ArrayList<>(fields.length);
-		for (String field : fields) {
-			this.fields.add(new Path(field));
-		}
+		this.field = new Path(fields);
 	}
 
 	public boolean isConstantScore()

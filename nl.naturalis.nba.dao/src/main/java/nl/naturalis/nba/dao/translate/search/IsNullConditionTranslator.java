@@ -6,7 +6,6 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
@@ -29,8 +28,8 @@ class IsNullConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		Path path = condition.getFields().iterator().next();
-		return boolQuery().mustNot(existsQuery(path.toString()));
+		String field = condition.getField().toString();
+		return boolQuery().mustNot(existsQuery(field));
 	}
 
 	@Override

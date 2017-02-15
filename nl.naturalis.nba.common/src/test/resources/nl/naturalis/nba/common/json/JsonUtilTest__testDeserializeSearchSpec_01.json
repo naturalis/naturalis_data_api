@@ -2,9 +2,7 @@
 	"constantScore": true,
 	"conditions": [
 		{
-			"fields": [
-				"gatheringEvent.dateTimeBegin"
-			],
+			"field": "gatheringEvent.dateTimeBegin",
 			"operator": "GTE",
 			"value": "2012-08-07"
 		}

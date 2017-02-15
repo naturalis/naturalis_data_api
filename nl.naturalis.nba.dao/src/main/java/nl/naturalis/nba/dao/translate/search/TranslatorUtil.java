@@ -43,7 +43,7 @@ class TranslatorUtil {
 	static SimpleField getESField(SearchCondition condition, MappingInfo<?> mappingInfo)
 	{
 		try {
-			return (SimpleField) mappingInfo.getField(firstField(condition));
+			return (SimpleField) mappingInfo.getField(condition.getField());
 		}
 		catch (NoSuchFieldException e) {
 			// Assumption: path already validated; won't happen
@@ -143,7 +143,7 @@ class TranslatorUtil {
 			Date d = toDate(value.toString());
 			if (d == null) {
 				String fmt = "Invalid date for query condition on field %s: %s";
-				String msg = String.format(fmt, firstField(condition));
+				String msg = String.format(fmt, condition.getField());
 				throw new InvalidConditionException(msg);
 			}
 			return SDF0.format(d);
@@ -156,11 +156,6 @@ class TranslatorUtil {
 			return ((OffsetDateTime) value).format(dtf);
 		}
 		throw invalidDataType(condition);
-	}
-
-	private static String firstField(SearchCondition condition)
-	{
-		return condition.getFields().iterator().next().toString();
 	}
 
 	private static Date toDate(String value)

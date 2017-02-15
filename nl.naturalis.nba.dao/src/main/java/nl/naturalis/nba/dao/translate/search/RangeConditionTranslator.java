@@ -10,7 +10,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -25,8 +24,8 @@ abstract class RangeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		Path path = condition.getFields().iterator().next();
-		RangeQueryBuilder query = rangeQuery(path.toString());
+		String field = condition.getField().toString();
+		RangeQueryBuilder query = rangeQuery(field);
 		setRange(query);
 		return query;
 	}

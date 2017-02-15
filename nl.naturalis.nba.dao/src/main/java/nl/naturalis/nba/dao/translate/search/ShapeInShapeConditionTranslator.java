@@ -19,7 +19,6 @@ import org.geojson.Polygon;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -43,9 +42,9 @@ class ShapeInShapeConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		Path path = condition.getFields().iterator().next();
+		String field = condition.getField().toString();
 		try {
-			return geoShapeQuery(path.toString(), getShape());
+			return geoShapeQuery(field, getShape());
 		}
 		catch (IOException e) {
 			throw new DaoException(e);

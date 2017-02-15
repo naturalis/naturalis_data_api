@@ -1,9 +1,15 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
 
 /**
  * 
@@ -24,17 +30,22 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String id;
 	private String sourceInstitutionID;
 	private String sourceID;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String owner;
 	private String licenseType;
 	private String license;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
 	private String collectionType;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String title;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String caption;
 	private String description;
 	private List<ServiceAccessPoint> serviceAccessPoints;
 	private Type type;
 	private int taxonCount;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String creator;
 	private String copyrightText;
 	private String associatedSpecimenReference;
@@ -47,6 +58,7 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private List<String> sexes;
 	private List<MultiMediaGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private List<String> theme;
 
 	// Non-persistent data

@@ -1,5 +1,9 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class SourceSystem implements INbaModelObject {
@@ -16,9 +20,8 @@ public class SourceSystem implements INbaModelObject {
 			"NDFF - Nationale Databank Flora en Fauna");
 	public static final SourceSystem GEO = new SourceSystem("GEO", "Naturalis - Geo Areas");
 
-	@Analyzers({})
 	private String code;
-	@Analyzers({})
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String name;
 
 	public SourceSystem()

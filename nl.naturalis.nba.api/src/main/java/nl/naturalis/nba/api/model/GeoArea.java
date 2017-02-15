@@ -1,6 +1,8 @@
 package nl.naturalis.nba.api.model;
 
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import org.geojson.GeoJsonObject;
 
@@ -9,13 +11,12 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 public class GeoArea extends NbaTraceableObject implements IDocumentObject {
 
 	private String id;
-	@Analyzers({ CASE_INSENSITIVE})
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String areaType;
-	@Analyzers({ CASE_INSENSITIVE})
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String locality;
 	private GeoJsonObject shape;
 	private String source;
-	@Analyzers({ CASE_INSENSITIVE})
 	private String isoCode;
 	private String countryNL;
 

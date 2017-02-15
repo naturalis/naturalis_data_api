@@ -1,6 +1,8 @@
 package nl.naturalis.nba.api.model;
 
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import java.util.List;
 
@@ -46,27 +48,27 @@ public class DefaultClassification implements INbaModelObject {
 		return dc;
 	}
 
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String kingdom;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String phylum;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String className;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String order;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String superFamily;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String family;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String genus;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String subgenus;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String specificEpithet;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String infraspecificEpithet;
-	@Analyzers({ CASE_INSENSITIVE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String infraspecificRank;
 
 	/**

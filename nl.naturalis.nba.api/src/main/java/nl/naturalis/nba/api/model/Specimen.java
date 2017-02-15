@@ -40,6 +40,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private List<String> theme;
 
 	@NotNested

@@ -42,12 +42,16 @@ import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchResult;
+import nl.naturalis.nba.api.SearchResultItem;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.csv.CsvWriter;
 import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.translate.search.SearchSpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.Scroller;
 
@@ -107,6 +111,15 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		}
 		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 		return createQueryResult(translator.translate());
+	}
+
+	public SearchResult<T> search(SearchSpec searchSpec) throws InvalidQueryException
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("search", searchSpec));
+		}
+		SearchSpecTranslator translator = new SearchSpecTranslator(searchSpec, dt);
+		return null;
 	}
 
 	@Override
@@ -312,7 +325,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	T[] processSearchRequest(SearchRequestBuilder request)
 	{
 		SearchResponse response = executeSearchRequest(request);
-		return processSearchResponse(response);
+		return processQueryResponse(response);
 	}
 
 	private QueryResult<T> createQueryResult(SearchRequestBuilder request)
@@ -320,12 +333,12 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		SearchResponse response = executeSearchRequest(request);
 		QueryResult<T> result = new QueryResult<>();
 		result.setTotalSize(response.getHits().totalHits());
-		T[] documentObjects = processSearchResponse(response);
+		T[] documentObjects = processQueryResponse(response);
 		result.setResultSet(Arrays.asList(documentObjects));
 		return result;
 	}
 
-	private T[] processSearchResponse(SearchResponse response)
+	private T[] processQueryResponse(SearchResponse response)
 	{
 		SearchHit[] hits = response.getHits().getHits();
 		T[] documentObjects = createDocumentObjectArray(hits.length);
@@ -336,6 +349,19 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		}
 		return documentObjects;
 	}
+
+//	private List<SearchResultItem<T>> processResponse(SearchResponse response)
+//	{
+//		SearchHit[] hits = response.getHits().getHits();
+//		List<SearchResultItem<T>> items = new ArrayList<>(hits.length);
+//		T[] documentObjects = createDocumentObjectArray(hits.length);
+//		for (SearchHit hit : hits) {
+//			String id = hit.getId();
+//			float score = hit.getScore();
+//			Map<String, Object> data = hit.getSource();
+//		}
+//
+//	}
 
 	private T createDocumentObject(String id, Map<String, Object> data)
 	{

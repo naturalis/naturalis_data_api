@@ -1,7 +1,5 @@
 package nl.naturalis.nba.api.model;
 
-import nl.naturalis.nba.api.annotations.Analyzers;
-
 public enum Sex implements INbaModelObject
 {
 
@@ -20,7 +18,6 @@ public enum Sex implements INbaModelObject
 		return null;
 	}
 
-	@Analyzers({})
 	private final String name;
 
 

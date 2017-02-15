@@ -7,17 +7,17 @@ import java.io.OutputStream;
 
 /**
  * An output stream that first fills up an internal buffer before flushing it
- * and switching over to an underlying output stream. In other words, first all
- * write actions operate on an in-memory buffer. Then, once a write action
- * causes the buffer to fill up or overflow, the buffer is flushed to the
+ * to, and then switching over to an underlying output stream. In other words,
+ * first all write actions operate on an in-memory buffer. Then, once a write
+ * action causes the buffer to fill up or overflow, the buffer is flushed to the
  * underlying output stream, and all subsequent write actions are simply
  * forwarded to the underlying output stream. This class is not meant to provide
  * buffering functionality like a {@link BufferedOutputStream}. Instead, you
  * would use it in situations where you hope or expect that the in-memory buffer
  * will never be swapped out to the underlying output stream. The underlying
- * outputstream is used by way of fall-back, in case the in-memory buffer does
- * flow over, and would most likely write to persistent storage (like a
- * {@link FileOutputStream}). A {@code SwapOutputStream} has no way of
+ * outputstream is used by way of fall-back, in case the in-memory buffer
+ * <i>does</i> flow over, and would most likely write to persistent storage
+ * (like a {@link FileOutputStream}). A {@code SwapOutputStream} has no way of
  * collecting all data written to it once the in-memory buffer has flown over.
  * It is up to subclasses of {@code SwapOutputStream} to provide this
  * functionality.
@@ -176,8 +176,9 @@ public class SwapOutputStream extends OutputStream {
 	/**
 	 * Writes the contents of the in-memory buffer to the specified output
 	 * stream. Note that if the buffer has overflown and bytes have been written
-	 * to the underlying output stream, this method still only writes out the
-	 * bytes in the buffer.
+	 * to the underlying output stream, this method still only writes out what
+	 * was in the in-memory buffer (it has no way of knowing what was written
+	 * subsequently).
 	 * 
 	 * @param destination
 	 * @throws IOException

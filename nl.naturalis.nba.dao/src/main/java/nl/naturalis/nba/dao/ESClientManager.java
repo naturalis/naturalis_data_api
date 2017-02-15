@@ -80,7 +80,7 @@ public class ESClientManager {
 
 	/**
 	 * Closes the Elasticsearch client. If you disconnect from Elasticsearch
-	 * this way, the next call to {@link #getClient()} is guaranteetd to return
+	 * this way, the next call to {@link #getClient()} is guaranteed to return
 	 * a new Elasticsearch {@link Client} instance.
 	 */
 	public void closeClient()

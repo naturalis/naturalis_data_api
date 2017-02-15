@@ -134,11 +134,14 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	@Override
 	public void csvQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
+		// No implementation yet
+		throw new ClientException("Not implemented yet");
 	}
 
 	@Override
 	public long count(QuerySpec querySpec) throws InvalidQueryException
 	{
+		// TODO: implement
 		return 0;
 	}
 
@@ -146,6 +149,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec)
 			throws InvalidQueryException
 	{
+		// TODO: implement
 		return null;
 	}
 
@@ -153,6 +157,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
 			QueryCondition... conditions) throws InvalidQueryException
 	{
+		// TODO: implement
 		return null;
 	}
 
@@ -160,6 +165,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
 			throws InvalidQueryException
 	{
+		// TODO: implement
 		return null;
 	}
 

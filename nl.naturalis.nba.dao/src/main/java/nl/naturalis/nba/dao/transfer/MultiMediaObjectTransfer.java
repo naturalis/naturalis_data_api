@@ -8,6 +8,7 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 
+@Deprecated
 public class MultiMediaObjectTransfer {
 
 	private MultiMediaObjectTransfer()

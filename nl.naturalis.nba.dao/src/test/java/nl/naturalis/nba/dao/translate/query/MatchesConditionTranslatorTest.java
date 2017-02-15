@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.translate.query;
 
 import static nl.naturalis.nba.api.ComparisonOperator.MATCHES;
-import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
+import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
 
@@ -18,8 +18,8 @@ import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.test.TestPerson;
-import nl.naturalis.nba.dao.translate.query.ConditionTranslator;
 
+@SuppressWarnings("static-method")
 public class MatchesConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;
@@ -39,8 +39,8 @@ public class MatchesConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
-		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/MatchesConditionTranslatorTest__testTranslate_01.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 	@Test(expected = InvalidConditionException.class)
@@ -51,8 +51,8 @@ public class MatchesConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
-		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/MatchesConditionTranslatorTest__testTranslate_01.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 	@Test(expected = InvalidConditionException.class)
@@ -63,8 +63,8 @@ public class MatchesConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
-		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/MatchesConditionTranslatorTest__testTranslate_01.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 	@Test(expected = InvalidConditionException.class)
@@ -75,8 +75,8 @@ public class MatchesConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
-		String file = "MatchesConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/MatchesConditionTranslatorTest__testTranslate_01.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 }

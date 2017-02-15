@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.translate.query;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS_IC;
-import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
+import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
 
@@ -17,6 +17,7 @@ import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.test.TestPerson;
 
+@SuppressWarnings("static-method")
 public class EqualsIgnoreCaseConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;
@@ -40,7 +41,7 @@ public class EqualsIgnoreCaseConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof NestedQueryBuilder);
-		String file = "EqualsIgnoreCaseConditionTranslatorTest__testTranslateWithNestedField_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/EqualsIgnoreCaseConditionTranslatorTest__testTranslateWithNestedField_01.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 }

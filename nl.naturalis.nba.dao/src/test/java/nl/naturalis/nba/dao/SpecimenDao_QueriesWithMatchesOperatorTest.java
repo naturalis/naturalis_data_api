@@ -45,7 +45,7 @@ public class SpecimenDao_QueriesWithMatchesOperatorTest {
 		lFuscus2 = TestSpecimens.larusFuscusSpecimen02();
 		tRex = TestSpecimens.tRexSpecimen01();
 		mSylvestris = TestSpecimens.malusSylvestrisSpecimen01();
-		ESTestUtils.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
+		DaoTestUtil.saveSpecimens(pMajor, lFuscus1, lFuscus2, tRex, mSylvestris);
 	}
 
 	@After

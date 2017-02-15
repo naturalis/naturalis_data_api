@@ -12,13 +12,13 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.dao.test.TestPerson;
+//import nl.naturalis.nba.dao.test.TestPerson;
 
 @SuppressWarnings("static-method")
 public class LikeConditionTranslatorTest {
 
 	private static MappingInfo<LikeTestObject> likeTestObjectMappingInfo;
-	private static MappingInfo<TestPerson> testPersonMappingInfo;
+	//private static MappingInfo<TestPerson> testPersonMappingInfo;
 
 	@BeforeClass
 	public static void init()

@@ -17,7 +17,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
-public class ESTestUtils {
+public class DaoTestUtil {
 
 	private static final DaoRegistry registry;
 	@SuppressWarnings("unused")
@@ -25,7 +25,7 @@ public class ESTestUtils {
 
 	static {
 		registry = DaoRegistry.getInstance();
-		logger = registry.getLogger(ESTestUtils.class);
+		logger = registry.getLogger(DaoTestUtil.class);
 	}
 
 	/**
@@ -37,9 +37,9 @@ public class ESTestUtils {
 	 * @param file
 	 * @return
 	 */
-	public static boolean queryEquals(Class<?> unitTestClass, QueryBuilder query, String file)
+	public static boolean queryEquals(QueryBuilder query, String file)
 	{
-		InputStream is = unitTestClass.getResourceAsStream(file);
+		InputStream is = DaoTestUtil.class.getResourceAsStream(file);
 		Map<String, Object> expected = JsonUtil.deserialize(is);
 		Map<String, Object> actual = JsonUtil.deserialize(query.toString());
 		return actual.equals(expected);

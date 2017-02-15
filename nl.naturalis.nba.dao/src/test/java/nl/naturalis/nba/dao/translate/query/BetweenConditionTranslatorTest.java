@@ -2,7 +2,7 @@ package nl.naturalis.nba.dao.translate.query;
 
 import static nl.naturalis.nba.api.ComparisonOperator.BETWEEN;
 import static nl.naturalis.nba.api.ComparisonOperator.NOT_BETWEEN;
-import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
+import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertTrue;
 
@@ -60,7 +60,8 @@ public class BetweenConditionTranslatorTest {
 	}
 
 	/*
-	 * Checks that translation fails if the Condition.field is not a number or date.
+	 * Checks that translation fails if the Condition.field is not a number or
+	 * date.
 	 */
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01c() throws InvalidConditionException
@@ -71,7 +72,8 @@ public class BetweenConditionTranslatorTest {
 	}
 
 	/*
-	 * Checks that translation fails if Condition.value is not a two-element array.
+	 * Checks that translation fails if Condition.value is not a two-element
+	 * array.
 	 */
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02a() throws InvalidConditionException
@@ -82,7 +84,8 @@ public class BetweenConditionTranslatorTest {
 	}
 
 	/*
-	 * Checks that translation fails if Condition.value is not a two-element array.
+	 * Checks that translation fails if Condition.value is not a two-element
+	 * array.
 	 */
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02b() throws InvalidConditionException
@@ -93,7 +96,8 @@ public class BetweenConditionTranslatorTest {
 	}
 
 	/*
-	 * Test happy flow - Condition.value is array or java.util.Collection with 2 elements.
+	 * Test happy flow - Condition.value is array or java.util.Collection with 2
+	 * elements.
 	 */
 	@Test
 	public void testTranslate_03a() throws InvalidConditionException
@@ -103,12 +107,13 @@ public class BetweenConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof RangeQueryBuilder);
-		String file = "BetweenConditionTranslatorTest__testTranslate_03.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/BetweenConditionTranslatorTest__testTranslate_03.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 	/*
-	 * Test happy flow - Condition.value is array or java.util.Collection with 2 elements.
+	 * Test happy flow - Condition.value is array or java.util.Collection with 2
+	 * elements.
 	 */
 	@Test
 	public void testTranslate_03b() throws InvalidConditionException
@@ -118,8 +123,8 @@ public class BetweenConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof RangeQueryBuilder);
-		String file = "BetweenConditionTranslatorTest__testTranslate_03.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/BetweenConditionTranslatorTest__testTranslate_03.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 	/*
@@ -135,7 +140,7 @@ public class BetweenConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "BetweenConditionTranslatorTest__testTranslate_04.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/BetweenConditionTranslatorTest__testTranslate_04.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 }

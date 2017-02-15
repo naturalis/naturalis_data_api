@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.translate.query;
 
 import static nl.naturalis.nba.api.ComparisonOperator.*;
-import static nl.naturalis.nba.dao.ESTestUtils.queryEquals;
+import static nl.naturalis.nba.dao.DaoTestUtil.queryEquals;
 import static nl.naturalis.nba.dao.translate.query.ConditionTranslatorFactory.getTranslator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +25,7 @@ import nl.naturalis.nba.dao.test.TestPerson;
 import nl.naturalis.nba.dao.translate.query.ConditionTranslator;
 import nl.naturalis.nba.dao.translate.query.ShapeInShapeConditionTranslator;
 
+@SuppressWarnings("static-method")
 public class ShapeInShapeConditionTranslatorTest {
 
 	private static MappingInfo<TestPerson> mappingInfo;
@@ -52,8 +53,8 @@ public class ShapeInShapeConditionTranslatorTest {
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
-		String file = "ShapeInShapeConditionTranslatorTest__testTranslate_01.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/ShapeInShapeConditionTranslatorTest__testTranslate_01.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 
 	/*
@@ -75,7 +76,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);
-		String file = "ShapeInShapeConditionTranslatorTest__testTranslate_02.json";
-		assertTrue("02", queryEquals(getClass(), query, file));
+		String file = "translate/query/ShapeInShapeConditionTranslatorTest__testTranslate_02.json";
+		assertTrue("02", queryEquals(query, file));
 	}
 }

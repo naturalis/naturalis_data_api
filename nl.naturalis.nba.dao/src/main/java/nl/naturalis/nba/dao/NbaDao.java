@@ -25,6 +25,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -86,7 +87,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			return null;
 		}
 		Map<String, Object> data = response.getSource();
-		return createDocumentObject(id, data);
+		return newDocumentObject(id, data);
 	}
 
 	@Override
@@ -119,7 +120,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			logger.debug(printCall("search", searchSpec));
 		}
 		SearchSpecTranslator translator = new SearchSpecTranslator(searchSpec, dt);
-		return null;
+		return createSearchResult(translator.translate());
 	}
 
 	@Override
@@ -338,6 +339,15 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return result;
 	}
 
+	private SearchResult<T> createSearchResult(SearchRequestBuilder request)
+	{
+		SearchResponse response = executeSearchRequest(request);
+		SearchResult<T> result = new SearchResult<>();
+		result.setTotalSize(response.getHits().totalHits());
+		result.setResultSet(createItems(response));
+		return result;
+	}
+
 	private T[] processQueryResponse(SearchResponse response)
 	{
 		SearchHit[] hits = response.getHits().getHits();
@@ -345,30 +355,31 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		for (int i = 0; i < hits.length; ++i) {
 			String id = hits[i].getId();
 			Map<String, Object> data = hits[i].getSource();
-			documentObjects[i] = createDocumentObject(id, data);
+			documentObjects[i] = newDocumentObject(id, data);
 		}
 		return documentObjects;
 	}
 
-//	private List<SearchResultItem<T>> processResponse(SearchResponse response)
-//	{
-//		SearchHit[] hits = response.getHits().getHits();
-//		List<SearchResultItem<T>> items = new ArrayList<>(hits.length);
-//		T[] documentObjects = createDocumentObjectArray(hits.length);
-//		for (SearchHit hit : hits) {
-//			String id = hit.getId();
-//			float score = hit.getScore();
-//			Map<String, Object> data = hit.getSource();
-//		}
-//
-//	}
-
-	private T createDocumentObject(String id, Map<String, Object> data)
+	private List<SearchResultItem<T>> createItems(SearchResponse response)
 	{
 		ObjectMapper om = dt.getObjectMapper();
-		T documentObject = om.convertValue(data, dt.getJavaType());
-		documentObject.setId(id);
-		return documentObject;
+		Class<T> type = dt.getJavaType();
+		SearchHit[] hits = response.getHits().getHits();
+		List<SearchResultItem<T>> items = new ArrayList<>(hits.length);
+		for (SearchHit hit : hits) {
+			T obj = om.convertValue(hit.getSource(), type);
+			obj.setId(hit.getId());
+			items.add(new SearchResultItem<T>(obj, hit.getScore()));
+		}
+		return items;
+	}
+
+	private T newDocumentObject(String id, Map<String, Object> data)
+	{
+		ObjectMapper om = dt.getObjectMapper();
+		T obj = om.convertValue(data, dt.getJavaType());
+		obj.setId(id);
+		return obj;
 	}
 
 }

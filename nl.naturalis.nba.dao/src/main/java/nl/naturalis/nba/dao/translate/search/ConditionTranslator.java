@@ -142,9 +142,12 @@ public abstract class ConditionTranslator {
 		if (constantScoreQueryRequired()) {
 			query = constantScoreQuery(query);
 		}
-		else {
-			query.boost(condition.getBoost());
-		}
+		/*
+		 * NB even if we created a constant_score query, we still need to honour
+		 * de condition's boost setting, because the condition might be embedded
+		 * in a bool query.
+		 */
+		query.boost(condition.getBoost());
 		return query;
 	}
 

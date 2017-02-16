@@ -86,6 +86,7 @@ class SortFieldsTranslator {
 				checkCondition(c, sortField);
 				return getTranslator(c, dt).forSortField().translate();
 			}
+			return null;
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		boolean hasConditionWithSortField = false;

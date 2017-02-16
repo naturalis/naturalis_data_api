@@ -6,7 +6,8 @@ import java.util.List;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
- * Java bean representing the result from a {@link SearchSpec search request}.
+ * A {@code SearchResult} represents the result from a {@link SearchSpec search
+ * request}.
  * 
  * @author Ayco Holleman
  *
@@ -48,7 +49,7 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	}
 
 	/**
-	 * Returns the total number of documents conforming to the {@link QuerySpec
+	 * Returns the total number of documents conforming to the {@link SearchSpec
 	 * query specification} that produced this query result.
 	 * 
 	 * @return
@@ -59,7 +60,7 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	}
 
 	/**
-	 * Sets the total number of documents conforming to the {@link QuerySpec
+	 * Sets the total number of documents conforming to the {@link SearchSpec
 	 * query specification} that produced this query result. Not meant to be
 	 * called by clients.
 	 * 

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents a field that you want a set of documents to be sorted on. See
- * {@link QuerySpec#setSortFields(java.util.List) QuerySpec.setSortFields}.
+ * {@link SearchSpec#setSortFields(java.util.List) SearchSpec.setSortFields}.
  * 
  * @author Ayco Holleman
  *

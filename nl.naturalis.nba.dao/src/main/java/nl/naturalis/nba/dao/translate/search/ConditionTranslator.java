@@ -55,9 +55,16 @@ public abstract class ConditionTranslator {
 		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN, NOT_MATCHES);
 	}
 
-	final SearchCondition condition;
-	final MappingInfo<?> mappingInfo;
+	SearchCondition condition;
+	MappingInfo<?> mappingInfo;
 
+	/*
+	 * Whether or not to translate this condition for a "nested_filter" block
+	 * within the "sort" section of a search request. Ordinarily conditions are
+	 * translated for the "query" section of a search request. However, when
+	 * sorting on a field within a nested object, you must copy all conditions
+	 * on that same field to the sort clause.
+	 */
 	private boolean forSortField = false;
 
 	ConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
@@ -66,13 +73,6 @@ public abstract class ConditionTranslator {
 		this.mappingInfo = mappingInfo;
 	}
 
-	/*
-	 * Make this translator translate the condition for the "nested_filter"
-	 * block within the "sort" section of a search request. Ordinarily
-	 * conditions are translated for the "query" section of a search request.
-	 * However, when sorting on a field belonging to a nested object, you must
-	 * copy all conditions on that same field to the sort clause.
-	 */
 	ConditionTranslator forSortField()
 	{
 		this.forSortField = true;

@@ -1,9 +1,9 @@
 package nl.naturalis.nba.dao.translate.search;
 
+import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.dao.translate.search.ConditionTranslatorFactory.getTranslator;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
-import static nl.naturalis.nba.api.LogicalOperator.*;
 
 import java.util.List;
 
@@ -42,6 +42,7 @@ class SortFieldsTranslator {
 
 	FieldSortBuilder[] translate() throws InvalidQueryException
 	{
+		MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
 		List<SortField> sortFields = querySpec.getSortFields();
 		FieldSortBuilder[] result = new FieldSortBuilder[sortFields.size()];
 		int i = 0;
@@ -49,7 +50,6 @@ class SortFieldsTranslator {
 			Path path = sf.getPath();
 			String nestedPath;
 			try {
-				MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
 				ESField f = mappingInfo.getField(path);
 				if (!(f instanceof SimpleField)) {
 					throw invalidSortField(path);
@@ -74,6 +74,14 @@ class SortFieldsTranslator {
 		return result;
 	}
 
+	/*
+	 * This method generates a "nested_filter" for a FieldSortBuilder when
+	 * necessary. This is necessary if: (1) the field being sorted on is in, or
+	 * descends from a nested object; (2) there are also conditions on that very
+	 * same field. If this is the case, those conditions must be copied from the
+	 * "query" section of the search request to the "sort" section of the search
+	 * request.
+	 */
 	private QueryBuilder translateConditions(Path sortField) throws InvalidConditionException
 	{
 		List<SearchCondition> conditions = querySpec.getConditions();
@@ -89,6 +97,9 @@ class SortFieldsTranslator {
 			return null;
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
+		/*
+		 * Do we have any conditions on the same field that we want to sort on?
+		 */
 		boolean hasConditionWithSortField = false;
 		for (SearchCondition c : conditions) {
 			if (c.getField().equals(sortField)) {
@@ -105,6 +116,12 @@ class SortFieldsTranslator {
 		return hasConditionWithSortField ? result : null;
 	}
 
+	/*
+	 * This method ensures that if we have a condition on the same field as the
+	 * sort field, then the condition's siblings and descendants must all be
+	 * conditions on that very same field. NB this restriction only applies when
+	 * generating a FieldSortBuilder for a field within a nested object.
+	 */
 	private static void checkCondition(SearchCondition condition, Path sortField)
 			throws InvalidConditionException
 	{

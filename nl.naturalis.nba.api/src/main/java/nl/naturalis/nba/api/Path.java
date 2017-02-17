@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public final class Path {
 
-	private final String[] elems;
+	private String[] elems;
 
 	// Caches value for toString()
 	private String str;

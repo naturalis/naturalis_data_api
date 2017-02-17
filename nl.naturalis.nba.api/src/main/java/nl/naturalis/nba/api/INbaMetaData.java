@@ -1,5 +1,8 @@
 package nl.naturalis.nba.api;
 
+import java.util.Map;
+import java.util.Set;
+
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
@@ -57,7 +60,7 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getPaths
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getPaths
 	 * </code>
 	 * </p>
 	 * <p>
@@ -65,8 +68,8 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * </p>
 	 * <p>
 	 * <code>
-	 * http://api.biodiversitydata.nl/v2/multimedia/getPaths<br>
-	 * http://api.biodiversitydata.nl/v2/taxon/getPaths/?sorted=true
+	 * http://api.biodiversitydata.nl/v2/multimedia/metadata/getPaths<br>
+	 * http://api.biodiversitydata.nl/v2/taxon/metadata/getPaths/?sorted=true
 	 * </code>
 	 * </p>
 	 * 
@@ -76,6 +79,35 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @return
 	 */
 	String[] getPaths(boolean sorted);
+
+	/**
+	 * Returns the set of allowed operators for each of the specified fields.
+	 * Each key in the returned map is one of the specified fields and its value
+	 * is the set of operators that you are allowed to use in conditions on that
+	 * field.
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getAllowedOperators
+	 * </code>
+	 * </p>
+	 * <p>
+	 * Examples:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/specimen/metadata/getAllowedOperators/?fields=unitID,gatheringEvent.dateTimeBegin
+	 * </code>
+	 * </p>
+	 * 
+	 * @param fields
+	 * @return
+	 */
+	Map<String, Set<ComparisonOperator>> getAllowedOperators(String... fields);
 
 	/**
 	 * <p>

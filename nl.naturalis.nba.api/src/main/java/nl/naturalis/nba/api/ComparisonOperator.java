@@ -5,9 +5,11 @@ import java.util.HashSet;
 
 import org.geojson.GeoJsonObject;
 
+import nl.naturalis.nba.api.model.GeoArea;
+
 /**
- * Symbolic constants for the operators that can be used in a {@link QueryCondition
- * query condition}.
+ * Symbolic constants for the operators that can be used in a
+ * {@link QueryCondition query condition}.
  * 
  * @author Ayco Holleman
  *
@@ -20,12 +22,19 @@ public enum ComparisonOperator
 	 * and {@link Condition#getField() field value} are equal. For text fields
 	 * the comparison is done in a case sensitive way. The EQUALS operator also
 	 * allows you to search for null values by providing a query value that is
-	 * {@code null}. This is equivalent to using the <code>IS NULL</code>
+	 * {@code null}. This is equivalent to using the
+	 * 
+	 * <pre>
+	 * IS NULL
+	 * </pre>
+	 * 
 	 * operator in SQL. For example:<br>
-	 * <code>
+	 * 
+	 * <pre>
+	 * 
 	 * // Retrieves all documents in which taxonRank is not set<br>
 	 * Condition condition = new Condition("taxonRank", EQUALS, null);
-	 * </code>
+	 * </pre>
 	 */
 	EQUALS("="),
 
@@ -34,30 +43,57 @@ public enum ComparisonOperator
 	 * equal. For text fields the comparison is done in a case sensitive way.
 	 * The NOT_EQUALS operator also allows you to search for non-null values by
 	 * providing a query value that is {@code null}. This is equivalent to using
-	 * the <code>IS NOT NULL</code> operator in SQL. For example:<br>
-	 * <code>
+	 * the
+	 * 
+	 * <pre>
+	 * IS NOT NULL
+	 * </pre>
+	 * 
+	 * operator in SQL. For example:<br>
+	 * 
+	 * <pre>
+	 * 
 	 * // Retrieves all documents in which taxonRank is set<br>
 	 * Condition condition = new Condition("taxonRank", NOT_EQUALS, null);
-	 * </code>
+	 * </pre>
 	 */
 	NOT_EQUALS("!="),
 
 	/**
-	 * <code>EQUALS IGNORE CASE</code>&#46; Operator used to establish that
-	 * query value and field value are equal ignoring case. Can only be used for
-	 * text fields. The query value may be null when using the EQUALS operator.
-	 * This is equivalent to using the <code>IS NULL</code> operator in SQL.
-	 * Although it only makes sense to use this operator with text fields, no
-	 * exception is thrown if you use it with other types of fields. It behaves
-	 * then as though you had used the {@link #EQUALS} operator.
+	 * <pre>
+	 * EQUALS IGNORE CASE
+	 * </pre>
+	 * 
+	 * &#46; Operator used to establish that query value and field value are
+	 * equal ignoring case. Can only be used for text fields. The query value
+	 * may be null when using the EQUALS operator. This is equivalent to using
+	 * the
+	 * 
+	 * <pre>
+	 * IS NULL
+	 * </pre>
+	 * 
+	 * operator in SQL. Although it only makes sense to use this operator with
+	 * text fields, no exception is thrown if you use it with other types of
+	 * fields. It behaves then as though you had used the {@link #EQUALS}
+	 * operator.
 	 */
 	EQUALS_IC,
 
 	/**
-	 * <code>NOT EQUALS IGNORE CASE</code>&#46; Operator used to establish that
-	 * query value and field value are not equal, even when ignoring case. Can
-	 * only be used for text fields. The query value may be null when using the
-	 * EQUALS operator. This is equivalent to using the <code>IS NOT NULL</code>
+	 * <pre>
+	 * NOT EQUALS IGNORE CASE
+	 * </pre>
+	 * 
+	 * &#46; Operator used to establish that query value and field value are not
+	 * equal, even when ignoring case. Can only be used for text fields. The
+	 * query value may be null when using the EQUALS operator. This is
+	 * equivalent to using the
+	 * 
+	 * <pre>
+	 * IS NOT NULL
+	 * </pre>
+	 * 
 	 * operator in SQL. Although it only makes sense to use this operator with
 	 * text fields, no exception is thrown if you use it with other types of
 	 * fields. It behaves then as though you had used the {@link #NOT_EQUALS}
@@ -80,30 +116,44 @@ public enum ComparisonOperator
 	NOT_LIKE,
 
 	/**
-	 * <code>LESS THAN</code>&#46; Operator used to establish that a field&#39;s
-	 * value is less than the query value. Can only be used for number fields
-	 * and date fields.
+	 * <pre>
+	 * LESS THAN
+	 * </pre>
+	 * 
+	 * &#46; Operator used to establish that a field&#39;s value is less than
+	 * the query value. Can only be used for number fields and date fields.
 	 */
 	LT("<"),
 
 	/**
-	 * <code>LESS THAN OR EQUAL</code>&#46; Operator used to establish that a
-	 * field&#39;s value is less than or equal to the query value. Can only be
-	 * used for number fields and date fields.
+	 * <pre>
+	 * LESS THAN OR EQUAL
+	 * </pre>
+	 * 
+	 * &#46; Operator used to establish that a field&#39;s value is less than or
+	 * equal to the query value. Can only be used for number fields and date
+	 * fields.
 	 */
 	LTE("<="),
 
 	/**
-	 * <code>GREATER THAN</code>&#46; Operator used to establish that a
-	 * field&#39;s value is greater than the query value. Can only be used for
-	 * number fields and date fields.
+	 * <pre>
+	 * GREATER THAN
+	 * </pre>
+	 * 
+	 * &#46; Operator used to establish that a field&#39;s value is greater than
+	 * the query value. Can only be used for number fields and date fields.
 	 */
 	GT(">"),
 
 	/**
-	 * <code>GREATER THAN OR EQUAL</code>&#46; Operator used to establish that a
-	 * field&#39;s value is greater than or equal to the query value. Can only
-	 * be used for number fields and date fields.
+	 * <pre>
+	 * GREATER THAN OR EQUAL
+	 * </pre>
+	 * 
+	 * &#46; Operator used to establish that a field&#39;s value is greater than
+	 * or equal to the query value. Can only be used for number fields and date
+	 * fields.
 	 */
 	GTE(">="),
 
@@ -121,9 +171,11 @@ public enum ComparisonOperator
 	 * {@link HashSet}). Example:
 	 * </p>
 	 * <p>
-	 * <code>
-	 * Condition condition = new Condition("numberOfSpecimen", BETWEEN, new int[] {10, 20});
-	 * </code>
+	 * 
+	 * <pre>
+	 * 
+	 * Condition condition = new Condition("numberOfSpecimen", BETWEEN, new int[] { 10, 20 });
+	 * </pre>
 	 * </p>
 	 */
 	BETWEEN,
@@ -142,45 +194,56 @@ public enum ComparisonOperator
 	 * within a certain geographical area. More precisely, this operator is
 	 * overloaded as follows:
 	 * <ol>
-	 * <li>If the field being queried is <i>not</i> a {@link GeoJsonObject}, the
+	 * <li>If the field being queried is <b>not</b> a {@link GeoJsonObject}, the
 	 * operator is used to establish that the field&#39;s value is one of a
-	 * given set of values specified by the condition's
-	 * {@link Condition#getValue() value}. The condition's value <b>must</b> be
-	 * an array or a {@link Collection} with zero or more elements. For
-	 * example:<br>
-	 * <br>
-	 * <code>
-	 * Condition condition0 = new Condition("phaseOrStage", IN, new String[] {"embryo", "pupa", "larva"});<br>
-	 * Condition condition1 = new Condition("numberOfSpecimen", IN, new int[] {1, 3, 5, 7, 9});
-	 * </code><br>
-	 * <br>
+	 * given set of values. The set of allowed value is specified by the condition's
+	 * {@link SearchCondition#getValue() value}. The condition's value <b>must</b> be
+	 * an array or a {@link Collection} with zero or more elements. For example:
+	 * 
+	 * <pre>
+	 * 
+	 * Condition condition0 = new Condition("phaseOrStage", IN, new String[] { "embryo", "pupa", "larva" });
+	 * Condition condition1 = new Condition("numberOfSpecimen", IN, new int[] { 1, 3, 5, 7, 9 });
+	 * </pre>
+	 * 
 	 * <li>If the field being queried is a {@link GeoJsonObject} <i>and</i> the
-	 * condition's value is a GeoJSON string or a {@code GeoJsonObject},
-	 * documents are returned where coordinates specified by the field lie
-	 * within the shape specified by the GeoJSON string/object. The condition's
-	 * value <b>must not</b> be an array or {@link Collection} object. For
-	 * example:<br>
-	 * <br>
-	 * <code>
-	 * // Using a GeoJSON string:<br>
-	 * String field = "gatheringEvent.siteCoordinates.geoShape";<br>
-	 * Condition condition = new Condition(field, IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");<br><br>
-	 * // Using a GeoJsonObject:<br>
-	 * Polygon polygon = new Polygon();<br>
-	 * polygon.setCoordinates( /&#42; etc. &#42;/ );<br>
-	 * Condition condition = new Condition(field, IN, polygon);<br><br>
-	 * </code><br>
-	 * <br>
+	 * condition's value is also a {@code GeoJsonObject} or a GeoJSON string,
+	 * documents are returned field's coordinates lie within the shape specified
+	 * by the condition's value. For example:
+	 * 
+	 * <pre>
+	 * // Using a GeoJSON string:
+	 * String field = "gatheringEvent.siteCoordinates.geoShape";
+	 * Condition condition = new Condition(field, IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");
+	 * 
+	 * // Using a GeoJsonObject:
+	 * Polygon polygon = new Polygon();
+	 * polygon.setCoordinates( /&#42; etc. &#42;/ );
+	 * Condition condition = new Condition(field, IN, polygon);
+	 * </pre>
+	 * 
 	 * <li>If the field being queried is a {@link GeoJsonObject} <i>and</i> the
 	 * condition's value is a regular (non-JSON) string or string array, the
 	 * condition's value is assumed to denote one or more pre-defined
-	 * localities. See {@link IGeoAreaAccess#getLocalities()}. For example:<br>
+	 * localities. See {@link IGeoAreaAccess#getLocalities()}. For example:
+	 * 
+	 * <pre>
+	 * 
+	 * String field = "gatheringEvent.siteCoordinates.geoShape";
+	 * Condition condition0 = new Condition(field, IN, "Amsterdam");
+	 * Condition condition1 = new Condition(field, IN, new String[] { "Amsterdam", "Berlin" });
+	 * </pre>
+	 * 
 	 * <br>
-	 * <code>
-	 * String field = "gatheringEvent.siteCoordinates.geoShape";<br>
-	 * Condition condition0 = new Condition(field, IN, "Amsterdam");<br>
-	 * Condition condition1 = new Condition(field, IN, new String[] {"Amsterdam", "Berlin"});<br><br>
-	 * </code>
+	 * In stead of a locality name you can also provide the ID of the
+	 * corresponding {@link GeoArea} document (see also {@link IGeoAreaAccess}). For example:
+	 * 
+	 * <pre>
+	 * 
+	 * String field = "gatheringEvent.siteCoordinates.geoShape";
+	 * // ID of the GeoArea document for Amsterdam:
+	 * Condition condition0 = new Condition(field, IN, "1003624@GEO");
+	 * </pre>
 	 * </ol>
 	 */
 	IN,

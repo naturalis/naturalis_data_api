@@ -24,6 +24,7 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
@@ -120,6 +121,10 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 
 	private static String getIdForLocality(String locality) throws InvalidConditionException
 	{
+		String idSuffix = '@' + SourceSystem.GEO.getCode();
+		if (locality.endsWith(idSuffix)) {
+			return locality;
+		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up document ID for locality \"{}\"", locality);
 		}

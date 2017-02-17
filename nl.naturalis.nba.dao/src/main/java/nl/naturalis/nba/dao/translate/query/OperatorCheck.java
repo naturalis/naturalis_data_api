@@ -24,9 +24,10 @@ import static nl.naturalis.nba.common.es.map.ESDataType.FLOAT;
 import static nl.naturalis.nba.common.es.map.ESDataType.GEO_POINT;
 import static nl.naturalis.nba.common.es.map.ESDataType.GEO_SHAPE;
 import static nl.naturalis.nba.common.es.map.ESDataType.INTEGER;
+import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
 import static nl.naturalis.nba.common.es.map.ESDataType.LONG;
 import static nl.naturalis.nba.common.es.map.ESDataType.SHORT;
-import static nl.naturalis.nba.common.es.map.ESDataType.KEYWORD;
+import static nl.naturalis.nba.common.es.map.MultiField.DEFAULT_MULTIFIELD;
 import static nl.naturalis.nba.common.es.map.MultiField.IGNORE_CASE_MULTIFIELD;
 import static nl.naturalis.nba.common.es.map.MultiField.LIKE_MULTIFIELD;
 
@@ -38,16 +39,16 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
+import nl.naturalis.nba.common.es.map.KeywordField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
-import nl.naturalis.nba.common.es.map.KeywordField;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Checks whether the {@link ComparisonOperator operator} used in a
- * {@link QueryCondition query condition} is valid given the type of the field being
- * queried and given the analyzers on that field.
+ * {@link QueryCondition query condition} is valid given the type of the field
+ * being queried and given the analyzers on that field.
  * 
  * @author Ayco Holleman
  *
@@ -97,6 +98,12 @@ public class OperatorCheck {
 			if (operator == LIKE || operator == NOT_LIKE) {
 				if (field instanceof KeywordField) {
 					return ((KeywordField) field).hasMultiField(LIKE_MULTIFIELD);
+				}
+				return false;
+			}
+			if (operator == MATCHES || operator == NOT_MATCHES) {
+				if (field instanceof KeywordField) {
+					return ((KeywordField) field).hasMultiField(DEFAULT_MULTIFIELD);
 				}
 				return false;
 			}

@@ -72,31 +72,36 @@ public class DebugUtil {
 	{
 		StringBuilder sb = new StringBuilder(64);
 		sb.append(methodName).append('(');
-		for (int i = 0; i < args.length; i++) {
-			if (i != 0) {
-				sb.append(", ");
-			}
-			Object arg = args[i];
-			if (arg == null) {
-				sb.append("null");
-			}
-			else if (arg instanceof CharSequence) {
-				sb.append('"').append(escapeJava(arg.toString())).append('"');
-			}
-			else if (isNumber(arg)) {
-				sb.append(arg);
-			}
-			else if (arg.getClass().isArray()) {
-				printArray(sb, arg);
-			}
-			else if (arg instanceof Collection) {
-				printCollection(sb, arg);
-			}
-			else if (arg.getClass() == char.class || arg.getClass() == Character.class) {
-				sb.append('\'').append(arg).append('\'');
-			}
-			else {
-				sb.append(arg.getClass().getSimpleName());
+		if (args == null) {
+			sb.append("null");
+		}
+		else {
+			for (int i = 0; i < args.length; i++) {
+				if (i != 0) {
+					sb.append(", ");
+				}
+				Object arg = args[i];
+				if (arg == null) {
+					sb.append("null");
+				}
+				else if (arg instanceof CharSequence) {
+					sb.append('"').append(escapeJava(arg.toString())).append('"');
+				}
+				else if (isNumber(arg)) {
+					sb.append(arg);
+				}
+				else if (arg.getClass().isArray()) {
+					printArray(sb, arg);
+				}
+				else if (arg instanceof Collection) {
+					printCollection(sb, arg);
+				}
+				else if (arg.getClass() == char.class || arg.getClass() == Character.class) {
+					sb.append('\'').append(arg).append('\'');
+				}
+				else {
+					sb.append(arg.getClass().getSimpleName());
+				}
 			}
 		}
 		sb.append(')');

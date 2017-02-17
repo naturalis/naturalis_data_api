@@ -1,12 +1,15 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.logging.log4j.Logger;
@@ -40,6 +43,34 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 			logger.debug("getMapping()");
 		}
 		return JsonUtil.toPrettyJson(dt.getMapping());
+	}
+
+	@Override
+	public Map<String, Set<ComparisonOperator>> getAllowedOperators(String... fields)
+	{
+		if (logger.isDebugEnabled()) {
+			logger.debug(printCall("getAllowedOperators", fields));
+		}
+		if (fields == null || (fields.length == 1 && fields[0].equals("*"))) {
+			fields = getPaths(true);
+		}
+		int mapSize = ((int) (fields.length / .75) + 1);
+		Map<String, Set<ComparisonOperator>> result = new LinkedHashMap<>(mapSize);
+		for (String field : fields) {
+			EnumSet<ComparisonOperator> allowed = EnumSet.noneOf(ComparisonOperator.class);
+			for (ComparisonOperator op : ComparisonOperator.values()) {
+				try {
+					if (OperatorCheck.isOperatorAllowed(field, op, dt)) {
+						allowed.add(op);
+					}
+				}
+				catch (NoSuchFieldException e) {
+					throw new DaoException(e);
+				}
+				result.put(field, allowed);
+			}
+		}
+		return result;
 	}
 
 	@Override

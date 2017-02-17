@@ -17,9 +17,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchResult;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.common.json.JsonUtil;
 
@@ -141,35 +141,38 @@ public class SpecimenDaoTest_Miscellaneous {
 	}
 
 	/*
-	 * Tests query method with a single EQUALS query condition.
+	 * Tests query method with a single EQUALS query condition. 
 	 */
 	@Test
-	public void testQuery__QuerySpec__01() throws InvalidQueryException
+	public void testQuery__SearchSpec__01() throws InvalidQueryException
 	{
-		String unitID = pMajor.getUnitID();
-		QueryCondition condition = new QueryCondition("unitID", EQUALS, unitID);
-		QuerySpec qs = new QuerySpec();
+		// TODO: move to more specific test class.
+		String expected = pMajor.getUnitID();
+		SearchCondition condition = new SearchCondition("unitID", EQUALS, expected);
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 1, result.size());
-		assertEquals("02", pMajor.getUnitID(), result.get(0).getUnitID());
+		String actual = result.get(0).getItem().getUnitID();
+		assertEquals("02", expected, actual);
 	}
 
 	/*
 	 * Tests query method with two EQUALS query conditions combined using AND.
 	 */
 	@Test
-	public void testQuery__QuerySpec__02() throws InvalidQueryException
+	public void testQuery__SearchSpec__02() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		QueryCondition condition = new QueryCondition(genus, "=", "Parus");
+		SearchCondition condition = new SearchCondition(genus, EQUALS, "Parus");
 		condition.and(species, EQUALS, "major");
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -178,16 +181,17 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * false.
 	 */
 	@Test
-	public void testQuery__QuerySpec__03() throws InvalidQueryException
+	public void testQuery__SearchSpec__03() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		QueryCondition condition = new QueryCondition(genus, EQUALS, "Parus");
+		SearchCondition condition = new SearchCondition(genus, EQUALS, "Parus");
 		condition.and(species, EQUALS, "BLA DI BLA");
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -195,16 +199,17 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * Tests query method with two EQUALS query conditions combined using OR.
 	 */
 	@Test
-	public void testQuery__QuerySpec__04() throws InvalidQueryException
+	public void testQuery__SearchSpec__04() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		QueryCondition condition = new QueryCondition(genus, EQUALS, "Parus");
+		SearchCondition condition = new SearchCondition(genus, EQUALS, "Parus");
 		condition.or(species, EQUALS, "major");
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -212,16 +217,17 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * Tests query method with using two ORed conditions, one known to be false.
 	 */
 	@Test
-	public void testQuery__QuerySpec__05() throws InvalidQueryException
+	public void testQuery__SearchSpec__05() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		QueryCondition condition = new QueryCondition(genus, EQUALS, "Parus");
+		SearchCondition condition = new SearchCondition(genus, EQUALS, "Parus");
 		condition.or(species, EQUALS, "BLA DI BLA");
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -230,16 +236,17 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * false.
 	 */
 	@Test
-	public void testQuery__QuerySpec__06() throws InvalidQueryException
+	public void testQuery__SearchSpec__06() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		String species = "identifications.defaultClassification.specificEpithet";
-		QueryCondition condition = new QueryCondition(genus, EQUALS, "BLA DI BLA");
+		SearchCondition condition = new SearchCondition(genus, EQUALS, "BLA DI BLA");
 		condition.or(species, EQUALS, "BLA DI BLA");
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -247,15 +254,16 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * Tests query method with using NOT
 	 */
 	@Test
-	public void testQuery__QuerySpec__08() throws InvalidQueryException
+	public void testQuery__SearchSpec__08() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		// This excludes pMajorSpecimen01 (so 4 remaining)
-		QueryCondition condition = new QueryCondition(NOT, genus, EQUALS, "Parus");
-		QuerySpec qs = new QuerySpec();
+		SearchCondition condition = new SearchCondition(NOT, genus, EQUALS, "Parus");
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -263,21 +271,22 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * Tests query method using negated conditions
 	 */
 	@Test
-	public void testQuery__QuerySpec__10() throws InvalidQueryException
+	public void testQuery__SearchSpec__10() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String genus = "identifications.defaultClassification.genus";
 		String sourceSystem = "sourceSystem.code";
 		// This excludes larusFuscusSpecimen01 and larusFuscusSpecimen02
-		QueryCondition condition = new QueryCondition(genus, NOT_EQUALS, "Larus");
+		SearchCondition condition = new SearchCondition(genus, NOT_EQUALS, "Larus");
 		// This excludes parusMajorSpecimen01 and tRexSpecimen01
-		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "CRS"));
+		condition.and(new SearchCondition(NOT, sourceSystem, EQUALS, "CRS"));
 		// This excludes (again) larusFuscusSpecimen02
-		condition.and(new QueryCondition(NOT, sourceSystem, EQUALS, "NDFF"));
+		condition.and(new SearchCondition(NOT, sourceSystem, EQUALS, "NDFF"));
 		// Remains: malusSylvestrisSpecimen01
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -285,13 +294,15 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * Tests query method with operator EQUALS_IC
 	 */
 	@Test
-	public void testQuery__QuerySpec__11() throws InvalidQueryException
+	public void testQuery__SearchSpec__11() throws InvalidQueryException
 	{
-		QueryCondition condition = new QueryCondition("recordBasis", EQUALS_IC, "PrEsErVeD sPeCiMeN");
-		QuerySpec qs = new QuerySpec();
+		// TODO: move to more specific test class.
+		SearchCondition condition = new SearchCondition("recordBasis", EQUALS_IC,
+				"PrEsErVeD sPeCiMeN");
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -299,15 +310,17 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * Tests query method with operator NOT_EQUALS_IC
 	 */
 	@Test
-	public void testQuery__QuerySpec__12() throws InvalidQueryException
+	public void testQuery__SearchSpec__12() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		// This excludes pMajorSpecimen01, tRexSpecimen01 and
 		// larusFuscusSpecimen01 (2 remaining).
-		QueryCondition condition = new QueryCondition("recordBasis", NOT_EQUALS_IC, "PrEsErVeD sPeCiMeN");
-		QuerySpec qs = new QuerySpec();
+		SearchCondition condition = new SearchCondition("recordBasis", NOT_EQUALS_IC,
+				"PrEsErVeD sPeCiMeN");
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 3, result.size());
 	}
 
@@ -316,29 +329,30 @@ public class SpecimenDaoTest_Miscellaneous {
 	 * conditions.
 	 */
 	@Test
-	public void testQuery__QuerySpec__13() throws InvalidQueryException
+	public void testQuery__SearchSpec__13() throws InvalidQueryException
 	{
+		// TODO: move to more specific test class.
 		String system = "sourceSystem.code";
 		String country = "gatheringEvent.country";
 		String locality = "gatheringEvent.localityText";
-		QueryCondition condition1, condition2, condition3, condition4;
+		SearchCondition condition1, condition2, condition3, condition4;
 		// This leaves 2 specimens (tRexSpecimen01 and
 		// malusSylvestrisSpecimen01)
-		condition1 = new QueryCondition("sex", EQUALS, "female");
+		condition1 = new SearchCondition("sex", EQUALS, "female");
 		// This still leaves tRexSpecimen01 and malusSylvestrisSpecimen01
-		condition2 = new QueryCondition(system, "=", "BRAHMS").or(system, "=", "CRS");
+		condition2 = new SearchCondition(system, EQUALS, "BRAHMS").or(system, EQUALS, "CRS");
 		// This exludes malusSylvestrisSpecimen01 (collected in United Kingdom)
-		condition3 = new QueryCondition(country, "=", "United States");
+		condition3 = new SearchCondition(country, EQUALS, "United States");
 		condition3.and(locality, LIKE, "Montana");
 		// This exludes tRexSpecimen01 (collected in United States)
-		condition4 = new QueryCondition(country, "=", "United Kingdom");
+		condition4 = new SearchCondition(country, EQUALS, "United Kingdom");
 		condition4.and(locality, LIKE, "Dorchester");
 		// But this will include them both again: condition3.or(condition4);
 		condition1.and(condition2).and(condition3.or(condition4));
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition1);
 		SpecimenDao dao = new SpecimenDao();
-		QueryResult<Specimen> result = dao.query(qs);
+		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 2, result.size());
 	}
 

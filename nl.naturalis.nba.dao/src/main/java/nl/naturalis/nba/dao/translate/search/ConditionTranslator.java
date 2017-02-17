@@ -132,12 +132,12 @@ public abstract class ConditionTranslator {
 	 */
 	QueryBuilder postprocess(QueryBuilder query)
 	{
+		if (hasNegativeOperator()) {
+			query = not(query);
+		}
 		String nestedPath = getNestedPath(condition.getField(), mappingInfo);
 		if (nestedPath != null) {
 			query = nestedQuery(nestedPath, query, ScoreMode.Avg);
-		}
-		if (hasNegativeOperator()) {
-			query = not(query);
 		}
 		if (constantScoreQueryRequired()) {
 			query = constantScoreQuery(query);
@@ -145,7 +145,7 @@ public abstract class ConditionTranslator {
 		/*
 		 * NB even if we created a constant_score query, we still need to honour
 		 * de condition's boost setting, because the condition might be embedded
-		 * in a bool query.
+		 * in a bool query, which _is_ a scoring query.
 		 */
 		query.boost(condition.getBoost());
 		return query;

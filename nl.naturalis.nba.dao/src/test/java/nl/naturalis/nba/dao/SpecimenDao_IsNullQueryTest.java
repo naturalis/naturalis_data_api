@@ -137,7 +137,7 @@ public class SpecimenDao_IsNullQueryTest {
 		QueryResult<Specimen> result = dao.query(qs);
 		// pMajor, lFuscus1 and lFuscus2 have site coordinates, so only
 		// tRex and mSylvestris (2 specimens) should be returned.
-		assertEquals("01", 2, result.size());
+		assertEquals("01", 1, result.size());
 	}
 
 	/*
@@ -153,7 +153,7 @@ public class SpecimenDao_IsNullQueryTest {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// pMajor, lFuscus1 and lFuscus2 have site coordinates, the other specimens don't.
-		assertEquals("01", 3, result.size());
+		assertEquals("01", 4, result.size());
 	}
 
 	/*
@@ -171,6 +171,6 @@ public class SpecimenDao_IsNullQueryTest {
 		QueryResult<Specimen> result = dao.query(qs);
 		// pMajor, lFuscus1 and lFuscus2 have site coordinates, so only
 		// tRex and mSylvestris (2 specimens) should be returned.
-		assertEquals("01", 2, result.size());
+		assertEquals("01", 1, result.size());
 	}
 }

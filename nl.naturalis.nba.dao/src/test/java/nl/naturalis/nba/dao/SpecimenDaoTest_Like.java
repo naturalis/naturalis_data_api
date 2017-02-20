@@ -67,7 +67,7 @@ public class SpecimenDaoTest_Like {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		try {
-			dao.search(qs);
+			dao.query(qs);
 			fail("Expected an InvalidQueryException");
 		}
 		catch (InvalidQueryException e) {
@@ -85,7 +85,7 @@ public class SpecimenDaoTest_Like {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(field0, LIKE, "aru"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// Larus fuscus (twice) and Parus major
 		assertEquals("01", 3, result.size());
 	}
@@ -102,7 +102,7 @@ public class SpecimenDaoTest_Like {
 		qs.addCondition(new SearchCondition(field0, LIKE, "aru"));
 		qs.addCondition(new SearchCondition(field1, LIKE, "ajor"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// Parus major!
 		assertEquals("01", 1, result.size());
 	}
@@ -117,7 +117,7 @@ public class SpecimenDaoTest_Like {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(field, LIKE, "Dorchester,"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// M. sylvestris!
 		assertEquals("01", 1, result.size());
 	}
@@ -132,7 +132,7 @@ public class SpecimenDaoTest_Like {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(field, LIKE, ", U.S.A"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// T. rex!
 		assertEquals("01", 1, result.size());
 	}
@@ -147,7 +147,7 @@ public class SpecimenDaoTest_Like {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(field, NOT_LIKE, "Dorchester,"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// All but M. sylvestris
 		assertEquals("01", 4, result.size());
 	}
@@ -175,7 +175,7 @@ public class SpecimenDaoTest_Like {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(field, LIKE, "dorchester"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// M. sylvestris!
 		assertEquals("01", 1, result.size());
 	}
@@ -190,7 +190,7 @@ public class SpecimenDaoTest_Like {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(field, NOT_LIKE, "dorchester"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// All but M. sylvestris
 		assertEquals("01", 4, result.size());
 	}

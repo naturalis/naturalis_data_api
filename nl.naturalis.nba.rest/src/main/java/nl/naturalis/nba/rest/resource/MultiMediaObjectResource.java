@@ -23,9 +23,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchResult;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
@@ -82,10 +82,10 @@ public class MultiMediaObjectResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<MultiMediaObject> query_GET(@Context UriInfo uriInfo)
+	public SearchResult<MultiMediaObject> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.query(qs);
 		}
@@ -98,11 +98,11 @@ public class MultiMediaObjectResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<MultiMediaObject> query_POST_FORM(MultivaluedMap<String, String> form,
+	public SearchResult<MultiMediaObject> query_POST_FORM(MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.query(qs);
 		}
@@ -115,59 +115,11 @@ public class MultiMediaObjectResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<MultiMediaObject> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public SearchResult<MultiMediaObject> query_POST_JSON(SearchSpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.query(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_GET(@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.queryData(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@POST
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<Map<String, Object>> queryData_POST_FORM(MultivaluedMap<String, String> form,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.queryData(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@POST
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			MultiMediaObjectDao dao = new MultiMediaObjectDao();
-			return dao.queryData(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -180,7 +132,7 @@ public class MultiMediaObjectResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
 		}
@@ -196,7 +148,7 @@ public class MultiMediaObjectResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -213,10 +165,11 @@ public class MultiMediaObjectResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			QueryCondition[] conditions = null;
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
+				conditions = qs.getConditions()
+						.toArray(new SearchCondition[qs.getConditions().size()]);
 			}
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);

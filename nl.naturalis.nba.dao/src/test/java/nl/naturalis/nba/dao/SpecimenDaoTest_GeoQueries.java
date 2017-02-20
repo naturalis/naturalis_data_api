@@ -77,7 +77,7 @@ public class SpecimenDaoTest_GeoQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -90,7 +90,7 @@ public class SpecimenDaoTest_GeoQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -103,7 +103,7 @@ public class SpecimenDaoTest_GeoQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -116,7 +116,7 @@ public class SpecimenDaoTest_GeoQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -129,7 +129,7 @@ public class SpecimenDaoTest_GeoQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -142,7 +142,7 @@ public class SpecimenDaoTest_GeoQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 

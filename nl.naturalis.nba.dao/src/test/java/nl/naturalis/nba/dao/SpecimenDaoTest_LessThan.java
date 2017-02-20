@@ -59,7 +59,7 @@ public class SpecimenDaoTest_LessThan {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -77,7 +77,7 @@ public class SpecimenDaoTest_LessThan {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -94,7 +94,7 @@ public class SpecimenDaoTest_LessThan {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 
@@ -111,7 +111,7 @@ public class SpecimenDaoTest_LessThan {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 }

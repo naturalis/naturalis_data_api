@@ -127,6 +127,19 @@ public class SearchCondition {
 	 * @param operator
 	 * @param value
 	 */
+	public SearchCondition(String field, String operator, Object value)
+	{
+		this(null, field, ComparisonOperator.parse(operator), value);
+	}
+
+	/**
+	 * Creates a condition for the specified field, comparing it to the
+	 * specified value using the specified operator.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 */
 	public SearchCondition(String field, ComparisonOperator operator, Object value)
 	{
 		this(null, field, operator, value);
@@ -177,6 +190,19 @@ public class SearchCondition {
 	 * @param value
 	 * @return
 	 */
+	public SearchCondition and(String field, String operator, Object value)
+	{
+		return and(new SearchCondition(field, operator, value));
+	}
+
+	/**
+	 * Adds an AND sibling condition to this {@code Condition}.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 * @return
+	 */
 	public SearchCondition and(String field, ComparisonOperator operator, Object value)
 	{
 		return and(new SearchCondition(field, operator, value));
@@ -195,6 +221,19 @@ public class SearchCondition {
 		}
 		and.add(sibling);
 		return this;
+	}
+
+	/**
+	 * Adds an OR sibling condition to this {@code Condition}.
+	 * 
+	 * @param field
+	 * @param operator
+	 * @param value
+	 * @return
+	 */
+	public SearchCondition or(String field, String operator, Object value)
+	{
+		return or(new SearchCondition(field, operator, value));
 	}
 
 	/**

@@ -70,7 +70,7 @@ public class SpecimenDaoTest_Matches {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		try {
-			dao.search(qs);
+			dao.query(qs);
 			fail("Expected an InvalidQueryException");
 		}
 		catch (InvalidQueryException e) {
@@ -92,7 +92,7 @@ public class SpecimenDaoTest_Matches {
 		 * "In de bossen nabij Aalten"
 		 */
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 		String unitID = result.get(0).getItem().getUnitID();
 		assertEquals("02", lFuscus1.getUnitID(), unitID);
@@ -108,7 +108,7 @@ public class SpecimenDaoTest_Matches {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(rank, NOT_MATCHES, "bossen"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -122,7 +122,7 @@ public class SpecimenDaoTest_Matches {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(new SearchCondition(rank, MATCHES, "   bossen  one two three"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -139,7 +139,7 @@ public class SpecimenDaoTest_Matches {
 		 * That's larusFuscusSpecimen01 &parusMajorSpecimen01
 		 */
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -156,7 +156,7 @@ public class SpecimenDaoTest_Matches {
 		 * That's all but larusFuscusSpecimen01 &parusMajorSpecimen01
 		 */
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 }

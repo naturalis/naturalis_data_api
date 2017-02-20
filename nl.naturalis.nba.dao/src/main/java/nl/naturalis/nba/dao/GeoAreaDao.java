@@ -10,9 +10,9 @@ import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.IGeoAreaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchResult;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.dao.exception.DaoException;
 
@@ -31,9 +31,9 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getGeoJsonForLocality", locality));
 		}
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
-		QueryResult<GeoArea> areas;
+		SearchSpec qs = new SearchSpec();
+		qs.addCondition(new SearchCondition("locality", EQUALS, locality));
+		SearchResult<GeoArea> areas;
 		try {
 			areas = query(qs);
 		}
@@ -44,7 +44,7 @@ public class GeoAreaDao extends NbaDao<GeoArea> implements IGeoAreaAccess {
 		if (areas.size() == 0) {
 			return null;
 		}
-		return areas.get(0).getShape();
+		return areas.iterator().next().getItem().getShape();
 	}
 
 	@Override

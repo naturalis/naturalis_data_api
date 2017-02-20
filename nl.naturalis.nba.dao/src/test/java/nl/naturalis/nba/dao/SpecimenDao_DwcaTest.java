@@ -7,8 +7,8 @@ import java.util.zip.ZipOutputStream;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.dao.SpecimenDao;
 
 @SuppressWarnings("static-method")
@@ -17,8 +17,8 @@ public class SpecimenDao_DwcaTest {
 	//@Test
 	public void testDynamic() throws InvalidQueryException, IOException
 	{
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition("sourceSystem.code", "=", "BRAHMS"));
+		SearchSpec qs = new SearchSpec();
+		qs.addCondition(new SearchCondition("sourceSystem.code", "=", "BRAHMS"));
 		SpecimenDao dao = new SpecimenDao();
 		long start = System.currentTimeMillis();
 		FileOutputStream fos = new FileOutputStream("/home/ayco/tmp/dwca.zip");

@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -34,9 +33,9 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchResult;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -94,10 +93,10 @@ public class TaxonResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Taxon> query_GET(@Context UriInfo uriInfo)
+	public SearchResult<Taxon> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
 		}
@@ -110,11 +109,11 @@ public class TaxonResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<Taxon> query_POST_FORM(MultivaluedMap<String, String> form,
+	public SearchResult<Taxon> query_POST_FORM(MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
 		}
@@ -127,59 +126,11 @@ public class TaxonResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Taxon> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public SearchResult<Taxon> query_POST_JSON(SearchSpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_GET(@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			return dao.queryData(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@POST
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<Map<String, Object>> queryData_POST_FORM(MultivaluedMap<String, String> form,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			return dao.queryData(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@POST
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData_POST_JSON(QuerySpec qs,
-			@Context UriInfo uriInfo)
-	{
-		try {
-			TaxonDao dao = new TaxonDao();
-			return dao.queryData(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -192,7 +143,7 @@ public class TaxonResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
 		}
@@ -208,7 +159,7 @@ public class TaxonResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -225,56 +176,13 @@ public class TaxonResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			QueryCondition[] conditions = null;
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
+				conditions = qs.getConditions().toArray(new SearchCondition[qs.getConditions().size()]);
 			}
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/csv/query")
-	public Response csvQuery_GET(@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
-			long count = dao.count(qs);
-			StreamingOutput stream = new StreamingOutput() {
-
-				public void write(OutputStream out) throws IOException
-				{
-					try {
-						if (count > 100) {
-							dao.csvQuery(qs, out);
-						}
-						else {
-							dao.csvQuery(qs, new ZipOutputStream(out));
-						}
-					}
-					catch (InvalidQueryException e) {
-						throw new HTTP400Exception(uriInfo, e.getMessage());
-					}
-					catch (Throwable e) {
-						throw new RESTException(uriInfo, e);
-					}
-				}
-			};
-			ResponseBuilder response = Response.ok(stream);
-			if (count > 100) {
-				response.type("application/zip");
-				response.header("Content-Disposition", "attachment; filename=\"nba.csv.zip\"");
-			}
-			else {
-				response.type("text/csv");
-			}
-			return response.build();
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -287,7 +195,7 @@ public class TaxonResource {
 	public Response dwcaQuery(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				public void write(OutputStream out) throws IOException

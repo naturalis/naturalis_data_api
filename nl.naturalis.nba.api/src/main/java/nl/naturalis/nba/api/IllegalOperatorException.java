@@ -12,11 +12,6 @@ import static java.lang.String.format;
  */
 public class IllegalOperatorException extends InvalidConditionException {
 
-	public IllegalOperatorException(QueryCondition condition)
-	{
-		this(condition.getField(), condition.getOperator());
-	}
-
 	public IllegalOperatorException(Path field, ComparisonOperator operator)
 	{
 		this(field.toString(), operator);

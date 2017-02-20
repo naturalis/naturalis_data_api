@@ -9,8 +9,8 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +23,7 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.translate.query.OperatorCheck;
+import nl.naturalis.nba.dao.translate.search.OperatorValidator;
 
 abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T> {
 
@@ -60,7 +60,7 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 			EnumSet<ComparisonOperator> allowed = EnumSet.noneOf(ComparisonOperator.class);
 			for (ComparisonOperator op : ComparisonOperator.values()) {
 				try {
-					if (OperatorCheck.isOperatorAllowed(field, op, dt)) {
+					if (OperatorValidator.isOperatorAllowed(field, op, dt)) {
 						allowed.add(op);
 					}
 				}
@@ -80,7 +80,7 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 			logger.debug("isOperatorAllowed(\"{}\",\"{}\")", field, operator);
 		}
 		try {
-			return OperatorCheck.isOperatorAllowed(field, operator, dt);
+			return OperatorValidator.isOperatorAllowed(field, operator, dt);
 		}
 		catch (NoSuchFieldException e) {
 			throw new DaoException(e);

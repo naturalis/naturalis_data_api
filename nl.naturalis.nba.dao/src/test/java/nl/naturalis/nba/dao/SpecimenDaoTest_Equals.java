@@ -67,7 +67,7 @@ public class SpecimenDaoTest_Equals {
 		SearchSpec query = new SearchSpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(query);
+		SearchResult<Specimen> result = dao.query(query);
 		// mSylvestris
 		assertEquals("01", 1, result.size());
 	}
@@ -85,7 +85,7 @@ public class SpecimenDaoTest_Equals {
 		SearchSpec query = new SearchSpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(query);
+		SearchResult<Specimen> result = dao.query(query);
 		// pMajor, lFuscus1, lFuscus2
 		assertEquals("01", 3, result.size());
 	}
@@ -104,7 +104,7 @@ public class SpecimenDaoTest_Equals {
 		SearchSpec query = new SearchSpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(query);
+		SearchResult<Specimen> result = dao.query(query);
 		// lFuscus2:
 		assertEquals("01", 1, result.size());
 	}
@@ -121,7 +121,7 @@ public class SpecimenDaoTest_Equals {
 		SearchSpec query = new SearchSpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(query);
+		SearchResult<Specimen> result = dao.query(query);
 		// lFuscus2 (collected by ruudAltenBurg() and vonSiebold()
 		assertEquals("01", 1, result.size());
 	}

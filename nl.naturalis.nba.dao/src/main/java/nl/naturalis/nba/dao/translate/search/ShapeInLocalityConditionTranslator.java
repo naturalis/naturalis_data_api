@@ -21,13 +21,11 @@ import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
 import nl.naturalis.nba.utils.ClassUtil;
 
 /**
@@ -128,9 +126,9 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up document ID for locality \"{}\"", locality);
 		}
-		QuerySpec qs = new QuerySpec();
-		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
-		QuerySpecTranslator translator = new QuerySpecTranslator(qs, GEO_AREA);
+		SearchSpec qs = new SearchSpec();
+		qs.addCondition(new SearchCondition("locality", EQUALS, locality));
+		SearchSpecTranslator translator = new SearchSpecTranslator(qs, GEO_AREA);
 		SearchRequestBuilder request;
 		try {
 			request = translator.translate();

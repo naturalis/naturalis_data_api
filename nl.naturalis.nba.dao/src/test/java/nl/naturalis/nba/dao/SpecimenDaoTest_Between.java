@@ -23,7 +23,7 @@ import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
-public class SpecimenDaoTest_BetweenQueries {
+public class SpecimenDaoTest_Between {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -68,7 +68,7 @@ public class SpecimenDaoTest_BetweenQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
 		// year after the next test specimen, so we can have only one query
 		// result (pMajor).
@@ -89,7 +89,7 @@ public class SpecimenDaoTest_BetweenQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// Since we use NOT_BETWEEN, all specimens except pMajor should come
 		// back.
 		assertEquals("01", 4, result.size());
@@ -109,7 +109,7 @@ public class SpecimenDaoTest_BetweenQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -127,7 +127,7 @@ public class SpecimenDaoTest_BetweenQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -143,7 +143,7 @@ public class SpecimenDaoTest_BetweenQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// tRex
 		assertEquals("01", 1, result.size());
 	}
@@ -160,7 +160,7 @@ public class SpecimenDaoTest_BetweenQueries {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// All but tRex
 		assertEquals("01", 4, result.size());
 	}

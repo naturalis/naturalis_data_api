@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao.format;
 
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
@@ -71,7 +71,7 @@ class DataSourceBuilder {
 		}
 	}
 
-	private QuerySpec getQuerySpec() throws DataSetConfigurationException
+	private SearchSpec getQuerySpec() throws DataSetConfigurationException
 	{
 		QuerySpecXmlConfig querySpecConfig = dataSourceConfig.getQuerySpec();
 		if (querySpecConfig == null)

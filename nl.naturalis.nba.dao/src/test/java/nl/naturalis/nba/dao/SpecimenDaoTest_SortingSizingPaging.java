@@ -67,7 +67,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		SearchSpec qs = new SearchSpec();
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals("01", expected.get(i).getUnitID(), unitID);
@@ -84,7 +84,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		SearchSpec qs = new SearchSpec();
 		qs.sortBy("unitID", DESC);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals("01", expected.get(i).getUnitID(), unitID);
@@ -102,7 +102,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		qs.sortBy("identifications.scientificName.fullScientificName");
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals("01", expected.get(i).getUnitID(), unitID);
@@ -120,7 +120,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		qs.sortBy("identifications.scientificName.fullScientificName", DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals(("0" + (i + 2)), expected.get(i).getUnitID(), unitID);
@@ -140,7 +140,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		qs.sortBy(field, SortOrder.DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", result.size(), 2);
 		/*
 		 * Since they both have the same scientific name, the specimens are
@@ -170,7 +170,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		qs.sortBy(field, SortOrder.DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", result.size(), 3);
 	}
 
@@ -190,7 +190,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		qs.addCondition(condition);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
-		dao.search(qs);
+		dao.query(qs);
 	}
 
 	private static List<Specimen> sortByUnitIDAscending()

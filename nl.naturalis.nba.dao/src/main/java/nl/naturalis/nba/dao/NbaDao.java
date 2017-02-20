@@ -1,11 +1,11 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,9 +39,7 @@ import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
 import nl.naturalis.nba.api.SearchResult;
 import nl.naturalis.nba.api.SearchResultItem;
 import nl.naturalis.nba.api.SearchSpec;
@@ -49,8 +47,6 @@ import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.format.csv.CsvWriter;
-import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
 import nl.naturalis.nba.dao.translate.search.SearchSpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.Scroller;
@@ -104,65 +100,17 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
+	public SearchResult<T> query(SearchSpec querySpec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("query", querySpec));
 		}
-		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-		return createQueryResult(translator.translate());
-	}
-
-	public SearchResult<T> search(SearchSpec searchSpec) throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("search", searchSpec));
-		}
-		SearchSpecTranslator translator = new SearchSpecTranslator(searchSpec, dt);
+		SearchSpecTranslator translator = new SearchSpecTranslator(querySpec, dt);
 		return createSearchResult(translator.translate());
 	}
 
 	@Override
-	public QueryResult<Map<String, Object>> queryData(QuerySpec querySpec)
-			throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("queryData", querySpec));
-		}
-		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-		SearchRequestBuilder request = translator.translate();
-		SearchResponse response = executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		List<Map<String, Object>> resultSet = new ArrayList<>(hits.length);
-		if (querySpec.getFields() != null && querySpec.getFields().contains("id")) {
-			for (SearchHit hit : hits) {
-				Map<String, Object> source = hit.getSource();
-				source.put("id", hit.getId());
-				resultSet.add(hit.getSource());
-			}
-		}
-		else {
-			for (SearchHit hit : hits) {
-				resultSet.add(hit.getSource());
-			}
-		}
-		QueryResult<Map<String, Object>> result = new QueryResult<>();
-		result.setTotalSize(response.getHits().totalHits());
-		result.setResultSet(resultSet);
-		return result;
-	}
-
-	public void csvQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug(printCall("csvQuery", querySpec, out));
-		}
-		CsvWriter<T> writer = new CsvWriter<>(out, dt);
-		writer.writeCsv(querySpec);
-	}
-
-	@Override
-	public long count(QuerySpec querySpec) throws InvalidQueryException
+	public long count(SearchSpec querySpec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("count", querySpec));
@@ -172,7 +120,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			request = newSearchRequest(dt);
 		}
 		else {
-			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+			SearchSpecTranslator translator = new SearchSpecTranslator(querySpec, dt);
 			request = translator.translate();
 		}
 		request.setSize(0);
@@ -191,7 +139,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	 * manually.
 	 */
 	@Override
-	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
+	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, SearchSpec querySpec)
 			throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
@@ -210,10 +158,10 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			}
 		}
 		else {
-			querySpec = new QuerySpec();
+			querySpec = new SearchSpec();
 		}
 		querySpec.setFields(Arrays.asList(groupByField));
-		querySpec.addCondition(new QueryCondition(groupByField, "!=", null));
+		querySpec.addCondition(new SearchCondition(groupByField, NOT_EQUALS, null));
 		querySpec.sortBy(groupByField);
 		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
 		Scroller scroller = new Scroller(querySpec, dt, handler);
@@ -228,7 +176,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
+	public Map<String, Long> getDistinctValues(String forField, SearchSpec querySpec)
 			throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
@@ -239,7 +187,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			request = newSearchRequest(dt);
 		}
 		else {
-			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
+			SearchSpecTranslator translator = new SearchSpecTranslator(querySpec, dt);
 			request = translator.translate();
 		}
 		TermsAggregationBuilder aggregation = AggregationBuilders.terms(forField);
@@ -259,20 +207,20 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
 	@Override
 	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String keyField, String valuesField,
-			QueryCondition... conditions) throws InvalidQueryException
+			SearchCondition... conditions) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getDistinctValuesPerGroup", keyField, valuesField, conditions));
 		}
 		DistinctValuesPerGroupSearchHitHandler handler;
 		handler = new DistinctValuesPerGroupSearchHitHandler(keyField, valuesField);
-		QuerySpec qs = new QuerySpec();
+		SearchSpec qs = new SearchSpec();
 		qs.setFields(Arrays.asList(keyField, valuesField));
 		if (conditions != null && conditions.length != 0) {
 			qs.setConditions(Arrays.asList(conditions));
 		}
-		qs.addCondition(new QueryCondition(keyField, "!=", null));
-		qs.addCondition(new QueryCondition(valuesField, "!=", null));
+		qs.addCondition(new SearchCondition(keyField, "!=", null));
+		qs.addCondition(new SearchCondition(valuesField, "!=", null));
 		qs.sortBy(keyField, SortOrder.DESC);
 		Scroller scroller = new Scroller(qs, dt, handler);
 		try {
@@ -326,16 +274,6 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	{
 		SearchResponse response = executeSearchRequest(request);
 		return processQueryResponse(response);
-	}
-
-	private QueryResult<T> createQueryResult(SearchRequestBuilder request)
-	{
-		SearchResponse response = executeSearchRequest(request);
-		QueryResult<T> result = new QueryResult<>();
-		result.setTotalSize(response.getHits().totalHits());
-		T[] documentObjects = processQueryResponse(response);
-		result.setResultSet(Arrays.asList(documentObjects));
-		return result;
 	}
 
 	private SearchResult<T> createSearchResult(SearchRequestBuilder request)

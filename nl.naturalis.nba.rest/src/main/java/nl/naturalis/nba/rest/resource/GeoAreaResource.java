@@ -20,9 +20,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.QueryCondition;
-import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.SearchResult;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.GeoAreaDao;
@@ -78,27 +78,12 @@ public class GeoAreaResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<GeoArea> query(@Context UriInfo uriInfo)
+	public SearchResult<GeoArea> query(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.query(qs);
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
-	@Path("/queryData")
-	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<Map<String, Object>> queryData(@Context UriInfo uriInfo)
-	{
-		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			GeoAreaDao dao = new GeoAreaDao();
-			return dao.queryData(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -111,7 +96,7 @@ public class GeoAreaResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.count(qs);
 		}
@@ -127,7 +112,7 @@ public class GeoAreaResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -144,10 +129,10 @@ public class GeoAreaResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			QueryCondition[] conditions = null;
+			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			SearchCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
+				conditions = qs.getConditions().toArray(new SearchCondition[qs.getConditions().size()]);
 			}
 			GeoAreaDao dao = new GeoAreaDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);

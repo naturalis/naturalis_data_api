@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -44,7 +44,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	@Override
-	public void writeDwcaForQuery(QuerySpec querySpec)
+	public void writeDwcaForQuery(SearchSpec querySpec)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
@@ -67,7 +67,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 	{
 		String fmt = "Generating DarwinCore archive for data set \"{}\"";
 		logger.info(fmt, cfg.getDataSetName());
-		QuerySpec query = cfg.getDataSet().getSharedDataSource().getQuerySpec();
+		SearchSpec query = cfg.getDataSet().getSharedDataSource().getQuerySpec();
 		try {
 			RandomEntryZipOutputStream rezos = createZipStream();
 			logger.info("Adding CSV files");
@@ -95,7 +95,7 @@ class SingleDataSourceDwcaWriter implements IDwcaWriter {
 		logger.info(fmt, cfg.getDataSetName());
 	}
 
-	private void writeCsvFiles(QuerySpec query, RandomEntryZipOutputStream rezos)
+	private void writeCsvFiles(SearchSpec query, RandomEntryZipOutputStream rezos)
 			throws DataSetConfigurationException, DataSetWriteException, IOException,
 			InvalidQueryException
 	{

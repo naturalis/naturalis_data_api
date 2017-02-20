@@ -52,7 +52,7 @@ public class SpecimenDaoTest_IsNotNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -66,7 +66,7 @@ public class SpecimenDaoTest_IsNotNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 5, result.size());
 	}
 
@@ -81,7 +81,7 @@ public class SpecimenDaoTest_IsNotNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// Only pMajor, lFuscus1, lFuscus2 and tRex have site coordinates.
 		assertEquals("01", 4, result.size());
 	}
@@ -98,7 +98,7 @@ public class SpecimenDaoTest_IsNotNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// pMajor, lFuscus1, lFuscus2, tRex have site coordinates, so only
 		// mSylvestris should be returned.
 		assertEquals("01", 1, result.size());

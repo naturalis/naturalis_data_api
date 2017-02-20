@@ -17,10 +17,10 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.translate.query.QuerySpecTranslator;
+import nl.naturalis.nba.dao.translate.search.SearchSpecTranslator;
 
 /**
  * Utility class for using Elasticsearch's scroll API. Note that when using this
@@ -94,7 +94,7 @@ public class Scroller {
 
 	}
 
-	public Scroller(QuerySpec querySpec, DocumentType<?> documentType,
+	public Scroller(SearchSpec querySpec, DocumentType<?> documentType,
 			SearchHitHandler searchHitHandler) throws InvalidQueryException
 	{
 		if (querySpec.getFrom() != null) {
@@ -111,7 +111,7 @@ public class Scroller {
 			}
 			querySpec.setSize(null);
 		}
-		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
+		SearchSpecTranslator qst = new SearchSpecTranslator(querySpec, documentType);
 		request = qst.translate();
 		if (querySpec.getSortFields() == null || querySpec.getSortFields().size() == 0) {
 			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);

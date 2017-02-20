@@ -54,7 +54,7 @@ public class SpecimenDaoTest_IsNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 5, result.size());
 	}
 
@@ -69,7 +69,7 @@ public class SpecimenDaoTest_IsNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -84,7 +84,7 @@ public class SpecimenDaoTest_IsNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// Only for mSylvestris is gatheringEvent.dateTimeBegin null.
 		assertEquals("01", 1, result.size());
 	}
@@ -100,7 +100,7 @@ public class SpecimenDaoTest_IsNull {
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
+		SearchResult<Specimen> result = dao.query(qs);
 		// pMajor, lFuscus1, lFuscus2 and tRex have site coordinates, so only
 		// mSylvestris should be returned.
 		assertEquals("01", 1, result.size());

@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import nl.naturalis.nba.api.QueryCondition;
-
 /**
- * Converts a condition's {@link QueryCondition#getValue() value} to a {@link List}
- * of nun-null values.
+ * Converts a condition's {@link QueryCondition#getValue() value} to a
+ * {@link List} of nun-null values.
  * 
  * @author Ayco Holleman
  *
@@ -20,8 +18,8 @@ class Exploder {
 	private boolean containsNull;
 
 	/**
-	 * Create a new {@link Exploder} for the specified value, supposedly
-	 * coming from {@link QueryCondition#getValue()}.
+	 * Create a new {@link Exploder} for the specified value, supposedly coming
+	 * from {@link QueryCondition#getValue()}.
 	 * 
 	 * @param value
 	 */
@@ -54,8 +52,8 @@ class Exploder {
 	}
 
 	/**
-	 * Whether or not a condition's {@link QueryCondition#getValue() value} <i>is</i>
-	 * or <i>contains</i> a null value.
+	 * Whether or not a condition's {@link QueryCondition#getValue() value}
+	 * <i>is</i> or <i>contains</i> a null value.
 	 * 
 	 * @return
 	 */

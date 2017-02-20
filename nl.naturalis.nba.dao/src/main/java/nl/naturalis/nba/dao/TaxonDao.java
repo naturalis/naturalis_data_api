@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
@@ -33,7 +33,7 @@ public class TaxonDao extends NbaDao<Taxon> implements ITaxonAccess {
 	}
 
 	@Override
-	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
+	public void dwcaQuery(SearchSpec querySpec, OutputStream out) throws InvalidQueryException
 	{
 		try {
 			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.TAXON);

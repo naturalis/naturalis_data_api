@@ -4,21 +4,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A {@code SearchResultItem} encapsulates a single document (or other type of
- * object) returned from a {@link SearchSpec query}.
+ * A {@code QueryResultItem} encapsulates a single document (or other type of
+ * object) returned from a {@link QuerySpec query}.
  * 
  * @author Ayco Holleman
  *
  * @param <T>
  *            The type of object coming back from the query.
  */
-public class SearchResultItem<T> {
+public class QueryResultItem<T> {
 
 	private T item;
 	private float score;
 
 	@JsonCreator
-	public SearchResultItem(@JsonProperty("item") T item, @JsonProperty("score") float score)
+	public QueryResultItem(@JsonProperty("item") T item, @JsonProperty("score") float score)
 	{
 		this.item = item;
 		this.score = score;

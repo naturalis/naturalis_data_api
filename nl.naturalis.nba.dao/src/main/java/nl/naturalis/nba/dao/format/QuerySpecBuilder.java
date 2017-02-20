@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.LogicalOperator;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.dao.format.config.ConditionXmlConfig;
@@ -27,9 +27,9 @@ class QuerySpecBuilder {
 		this.config = config;
 	}
 
-	SearchSpec build() throws DataSetConfigurationException
+	QuerySpec build() throws DataSetConfigurationException
 	{
-		SearchSpec querySpec = new SearchSpec();
+		QuerySpec querySpec = new QuerySpec();
 		querySpec.setFrom(getFrom());
 		querySpec.setSize(getSize());
 		querySpec.setConditions(getConditions());
@@ -64,10 +64,10 @@ class QuerySpecBuilder {
 		}
 	}
 
-	private List<SearchCondition> getConditions() throws DataSetConfigurationException
+	private List<QueryCondition> getConditions() throws DataSetConfigurationException
 	{
 		ConditionsXmlConfig cxcs = config.getConditions();
-		List<SearchCondition> conditions = new ArrayList<>(cxcs.getCondition().size());
+		List<QueryCondition> conditions = new ArrayList<>(cxcs.getCondition().size());
 		for (ConditionXmlConfig cxc : cxcs.getCondition()) {
 			conditions.add(new ConditionBuilder(cxc).build());
 		}

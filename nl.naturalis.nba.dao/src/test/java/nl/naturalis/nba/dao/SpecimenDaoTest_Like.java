@@ -11,9 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 /**
@@ -62,8 +62,8 @@ public class SpecimenDaoTest_Like {
 	{
 		String expecting = "Search value must not be null when using operator LIKE";
 		String field = "identifications.scientificName.genusOrMonomial";
-		SearchCondition condition = new SearchCondition(field, LIKE, null);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, LIKE, null);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		try {
@@ -82,10 +82,10 @@ public class SpecimenDaoTest_Like {
 	public void testWithNestedField_01() throws InvalidQueryException
 	{
 		String field0 = "identifications.scientificName.genusOrMonomial";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field0, LIKE, "aru"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field0, LIKE, "aru"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Larus fuscus (twice) and Parus major
 		assertEquals("01", 3, result.size());
 	}
@@ -98,11 +98,11 @@ public class SpecimenDaoTest_Like {
 	{
 		String field0 = "identifications.scientificName.genusOrMonomial";
 		String field1 = "identifications.scientificName.specificEpithet";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field0, LIKE, "aru"));
-		qs.addCondition(new SearchCondition(field1, LIKE, "ajor"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field0, LIKE, "aru"));
+		qs.addCondition(new QueryCondition(field1, LIKE, "ajor"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Parus major!
 		assertEquals("01", 1, result.size());
 	}
@@ -114,10 +114,10 @@ public class SpecimenDaoTest_Like {
 	public void testWithNonLettersInValue_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field, LIKE, "Dorchester,"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, LIKE, "Dorchester,"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// M. sylvestris!
 		assertEquals("01", 1, result.size());
 	}
@@ -129,10 +129,10 @@ public class SpecimenDaoTest_Like {
 	public void testWithNonLettersInValue_02() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field, LIKE, ", U.S.A"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, LIKE, ", U.S.A"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// T. rex!
 		assertEquals("01", 1, result.size());
 	}
@@ -144,10 +144,10 @@ public class SpecimenDaoTest_Like {
 	public void testWithNotLike_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field, NOT_LIKE, "Dorchester,"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, NOT_LIKE, "Dorchester,"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// All but M. sylvestris
 		assertEquals("01", 4, result.size());
 	}
@@ -172,10 +172,10 @@ public class SpecimenDaoTest_Like {
 	public void testLikeIgnoresCase_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field, LIKE, "dorchester"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, LIKE, "dorchester"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// M. sylvestris!
 		assertEquals("01", 1, result.size());
 	}
@@ -187,10 +187,10 @@ public class SpecimenDaoTest_Like {
 	public void testNotLikeIgnoresCase_01() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(field, NOT_LIKE, "dorchester"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(field, NOT_LIKE, "dorchester"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// All but M. sylvestris
 		assertEquals("01", 4, result.size());
 	}

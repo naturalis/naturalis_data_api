@@ -34,7 +34,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
@@ -46,7 +46,7 @@ import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Checks whether the {@link ComparisonOperator operator} used in a
- * {@link SearchCondition query condition} is valid given the type of the field
+ * {@link QueryCondition query condition} is valid given the type of the field
  * being queried and given the analyzers on that field.
  * 
  * @author Ayco Holleman

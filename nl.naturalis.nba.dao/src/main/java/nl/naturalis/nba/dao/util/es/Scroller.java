@@ -17,7 +17,7 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.translate.search.SearchSpecTranslator;
@@ -94,7 +94,7 @@ public class Scroller {
 
 	}
 
-	public Scroller(SearchSpec querySpec, DocumentType<?> documentType,
+	public Scroller(QuerySpec querySpec, DocumentType<?> documentType,
 			SearchHitHandler searchHitHandler) throws InvalidQueryException
 	{
 		if (querySpec.getFrom() != null) {

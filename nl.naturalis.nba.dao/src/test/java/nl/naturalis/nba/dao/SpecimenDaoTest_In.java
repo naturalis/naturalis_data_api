@@ -18,9 +18,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
@@ -68,12 +68,12 @@ public class SpecimenDaoTest_In {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", IN,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", IN,
 				options);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 		String unitID = result.get(0).getItem().getUnitID();
 		assertEquals("02", pMajor.getUnitID(), unitID);
@@ -92,12 +92,12 @@ public class SpecimenDaoTest_In {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", NOT_IN,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", NOT_IN,
 				options);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -114,12 +114,12 @@ public class SpecimenDaoTest_In {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		SearchCondition condition = new SearchCondition(NOT, "gatheringEvent.dateTimeBegin", IN,
+		QueryCondition condition = new QueryCondition(NOT, "gatheringEvent.dateTimeBegin", IN,
 				options);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -137,11 +137,11 @@ public class SpecimenDaoTest_In {
 		 * Wallich, but excludes Edwin van Huis, so 4 specimens should be
 		 * returned.
 		 */
-		SearchCondition condition = new SearchCondition(field, IN, options);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, IN, options);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -155,12 +155,12 @@ public class SpecimenDaoTest_In {
 	{
 		String field = "gatheringEvent.gatheringPersons.agentText";
 		String[] options = new String[] { "Also likes David Bowie", null };
-		SearchCondition condition = new SearchCondition(field, NOT_IN, options);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, NOT_IN, options);
+		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 

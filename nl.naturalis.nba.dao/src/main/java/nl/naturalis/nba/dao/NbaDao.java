@@ -39,10 +39,10 @@ import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchResultItem;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QueryResultItem;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
@@ -100,7 +100,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public SearchResult<T> query(SearchSpec querySpec) throws InvalidQueryException
+	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("query", querySpec));
@@ -110,7 +110,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public long count(SearchSpec querySpec) throws InvalidQueryException
+	public long count(QuerySpec querySpec) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("count", querySpec));
@@ -139,7 +139,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	 * manually.
 	 */
 	@Override
-	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, SearchSpec querySpec)
+	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
@@ -158,10 +158,10 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			}
 		}
 		else {
-			querySpec = new SearchSpec();
+			querySpec = new QuerySpec();
 		}
 		querySpec.setFields(Arrays.asList(groupByField));
-		querySpec.addCondition(new SearchCondition(groupByField, NOT_EQUALS, null));
+		querySpec.addCondition(new QueryCondition(groupByField, NOT_EQUALS, null));
 		querySpec.sortBy(groupByField);
 		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
 		Scroller scroller = new Scroller(querySpec, dt, handler);
@@ -176,7 +176,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public Map<String, Long> getDistinctValues(String forField, SearchSpec querySpec)
+	public Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
@@ -207,20 +207,20 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
 	@Override
 	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String keyField, String valuesField,
-			SearchCondition... conditions) throws InvalidQueryException
+			QueryCondition... conditions) throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getDistinctValuesPerGroup", keyField, valuesField, conditions));
 		}
 		DistinctValuesPerGroupSearchHitHandler handler;
 		handler = new DistinctValuesPerGroupSearchHitHandler(keyField, valuesField);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.setFields(Arrays.asList(keyField, valuesField));
 		if (conditions != null && conditions.length != 0) {
 			qs.setConditions(Arrays.asList(conditions));
 		}
-		qs.addCondition(new SearchCondition(keyField, "!=", null));
-		qs.addCondition(new SearchCondition(valuesField, "!=", null));
+		qs.addCondition(new QueryCondition(keyField, "!=", null));
+		qs.addCondition(new QueryCondition(valuesField, "!=", null));
 		qs.sortBy(keyField, SortOrder.DESC);
 		Scroller scroller = new Scroller(qs, dt, handler);
 		try {
@@ -276,10 +276,10 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return processQueryResponse(response);
 	}
 
-	private SearchResult<T> createSearchResult(SearchRequestBuilder request)
+	private QueryResult<T> createSearchResult(SearchRequestBuilder request)
 	{
 		SearchResponse response = executeSearchRequest(request);
-		SearchResult<T> result = new SearchResult<>();
+		QueryResult<T> result = new QueryResult<>();
 		result.setTotalSize(response.getHits().totalHits());
 		result.setResultSet(createItems(response));
 		return result;
@@ -297,16 +297,16 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		return documentObjects;
 	}
 
-	private List<SearchResultItem<T>> createItems(SearchResponse response)
+	private List<QueryResultItem<T>> createItems(SearchResponse response)
 	{
 		ObjectMapper om = dt.getObjectMapper();
 		Class<T> type = dt.getJavaType();
 		SearchHit[] hits = response.getHits().getHits();
-		List<SearchResultItem<T>> items = new ArrayList<>(hits.length);
+		List<QueryResultItem<T>> items = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
 			T obj = om.convertValue(hit.getSource(), type);
 			obj.setId(hit.getId());
-			items.add(new SearchResultItem<T>(obj, hit.getScore()));
+			items.add(new QueryResultItem<T>(obj, hit.getScore()));
 		}
 		return items;
 	}

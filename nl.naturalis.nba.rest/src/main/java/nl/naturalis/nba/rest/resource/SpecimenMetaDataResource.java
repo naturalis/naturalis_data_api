@@ -36,20 +36,6 @@ public class SpecimenMetaDataResource {
 	Registry registry;
 
 	@GET
-	@Path("/getMapping")
-	@Produces(JSON_CONTENT_TYPE)
-	public String getMapping(@Context UriInfo uriInfo)
-	{
-		try {
-			SpecimenMetaDataDao dao = new SpecimenMetaDataDao();
-			return dao.getMapping();
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
 	@Path("/getPaths")
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getPaths(@Context UriInfo uriInfo)

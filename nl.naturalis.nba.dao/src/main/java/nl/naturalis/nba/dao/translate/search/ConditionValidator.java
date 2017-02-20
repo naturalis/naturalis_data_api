@@ -4,14 +4,14 @@ import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.IllegalOperatorException;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 
 /**
- * Ensures the a {@link SearchCondition} specifies an existing field and that it
+ * Ensures the a {@link QueryCondition} specifies an existing field and that it
  * is a primitive field (not an object).
  * 
  * @author Ayco Holleman
@@ -19,10 +19,10 @@ import nl.naturalis.nba.common.es.map.SimpleField;
  */
 class ConditionValidator {
 
-	private SearchCondition condition;
+	private QueryCondition condition;
 	private MappingInfo<?> mappingInfo;
 
-	ConditionValidator(SearchCondition condition, MappingInfo<?> mappingInfo)
+	ConditionValidator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;

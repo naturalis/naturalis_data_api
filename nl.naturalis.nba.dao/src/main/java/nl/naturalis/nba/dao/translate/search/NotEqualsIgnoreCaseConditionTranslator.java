@@ -9,14 +9,14 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class NotEqualsIgnoreCaseConditionTranslator extends ConditionTranslator {
 
 	private static final String MY_MULTIFIELD = IGNORE_CASE_MULTIFIELD.getName();
 
-	NotEqualsIgnoreCaseConditionTranslator(SearchCondition condition, MappingInfo<?> inspector)
+	NotEqualsIgnoreCaseConditionTranslator(QueryCondition condition, MappingInfo<?> inspector)
 	{
 		super(condition, inspector);
 	}

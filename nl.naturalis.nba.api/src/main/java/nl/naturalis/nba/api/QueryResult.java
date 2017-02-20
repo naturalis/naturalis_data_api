@@ -6,7 +6,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
- * A {@code SearchResult} represents the result from a {@link SearchSpec search
+ * A {@code QueryResult} represents the result from a {@link QuerySpec search
  * request}.
  * 
  * @author Ayco Holleman
@@ -16,13 +16,13 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  *            plain, unmodified Elasticsearch document (i.e. an implementation
  *            of {@link IDocumentObject}), but that is required by this class.
  */
-public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
+public class QueryResult<T> implements Iterable<QueryResultItem<T>> {
 
 	private long totalSize;
-	private List<SearchResultItem<T>> resultSet;
+	private List<QueryResultItem<T>> resultSet;
 
 	@Override
-	public Iterator<SearchResultItem<T>> iterator()
+	public Iterator<QueryResultItem<T>> iterator()
 	{
 		return resultSet.iterator();
 	}
@@ -43,13 +43,13 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	 * @param index
 	 * @return
 	 */
-	public SearchResultItem<T> get(int index)
+	public QueryResultItem<T> get(int index)
 	{
 		return resultSet.get(index);
 	}
 
 	/**
-	 * Returns the total number of documents conforming to the {@link SearchSpec
+	 * Returns the total number of documents conforming to the {@link QuerySpec
 	 * query specification} that produced this query result.
 	 * 
 	 * @return
@@ -60,7 +60,7 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	}
 
 	/**
-	 * Sets the total number of documents conforming to the {@link SearchSpec
+	 * Sets the total number of documents conforming to the {@link QuerySpec
 	 * query specification} that produced this query result. Not meant to be
 	 * called by clients.
 	 * 
@@ -77,7 +77,7 @@ public class SearchResult<T> implements Iterable<SearchResultItem<T>> {
 	 * 
 	 * @param items
 	 */
-	public void setResultSet(List<SearchResultItem<T>> items)
+	public void setResultSet(List<QueryResultItem<T>> items)
 	{
 		this.resultSet = items;
 	}

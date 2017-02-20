@@ -19,36 +19,6 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
 	 * <p>
-	 * Returns a JSON representation of an Elasticsearch document type mapping.
-	 * This is equivalent to the Elasticsearch REST API call
-	 * <code>GET &lt;index&gt;/&lt;document-type&gt;/_mapping</code>.
-	 * </p>
-	 * <h5>REST API</h5>
-	 * <p>
-	 * The NBA REST API exposes this method through a GET request with the
-	 * following end point:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/getMapping
-	 * </code>
-	 * </p>
-	 * <p>
-	 * For example:
-	 * </p>
-	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/taxon/getMapping
-	 * </code>
-	 * </p>
-	 * 
-	 * 
-	 * @return
-	 */
-	String getMapping();
-
-	/**
-	 * <p>
 	 * Returns all fields within a document. The fields are displayed using
 	 * their full path. For example: "gatheringEvent.gatheringPersons.fullName".
 	 * Note that only indexed (queryable) fields are returned.

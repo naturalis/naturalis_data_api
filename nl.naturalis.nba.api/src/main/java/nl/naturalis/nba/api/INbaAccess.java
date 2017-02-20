@@ -122,7 +122,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	SearchResult<DOCUMENT_OBJECT> query(SearchSpec querySpec) throws InvalidQueryException;
+	QueryResult<DOCUMENT_OBJECT> query(QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
 	 * <p>
@@ -157,7 +157,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	long count(SearchSpec querySpec) throws InvalidQueryException;
+	long count(QuerySpec querySpec) throws InvalidQueryException;
 
 	/**
 	 * <p>
@@ -197,7 +197,7 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	Map<String, Long> getDistinctValues(String forField, SearchSpec querySpec)
+	Map<String, Long> getDistinctValues(String forField, QuerySpec querySpec)
 			throws InvalidQueryException;
 
 	/**
@@ -245,9 +245,9 @@ public interface INbaAccess<DOCUMENT_OBJECT extends IDocumentObject> {
 	 * @throws InvalidQueryException
 	 */
 	Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
-			SearchCondition... conditions) throws InvalidQueryException;
+			QueryCondition... conditions) throws InvalidQueryException;
 
-	List<KeyValuePair<Object, Integer>> getGroups(String groupByField, SearchSpec querySpec)
+	List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
 			throws InvalidQueryException;
 
 }

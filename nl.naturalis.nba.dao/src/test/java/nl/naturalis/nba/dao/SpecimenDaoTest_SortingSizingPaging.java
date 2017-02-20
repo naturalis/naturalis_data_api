@@ -19,9 +19,9 @@ import org.junit.Test;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.LogicalOperator;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -64,10 +64,10 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	public void test__01() throws InvalidQueryException
 	{
 		List<Specimen> expected = sortByUnitIDAscending();
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals("01", expected.get(i).getUnitID(), unitID);
@@ -81,10 +81,10 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	public void test__02() throws InvalidQueryException
 	{
 		List<Specimen> expected = sortByUnitIDDesscending();
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.sortBy("unitID", DESC);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals("01", expected.get(i).getUnitID(), unitID);
@@ -98,11 +98,11 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	public void test__03() throws InvalidQueryException
 	{
 		List<Specimen> expected = sortByScientificNameAscending();
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificName.fullScientificName");
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals("01", expected.get(i).getUnitID(), unitID);
@@ -116,11 +116,11 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	public void test__04() throws InvalidQueryException
 	{
 		List<Specimen> expected = sortByScientificNameDescending();
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificName.fullScientificName", DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		for (int i = 0; i < result.size(); i++) {
 			String unitID = result.get(i).getItem().getUnitID();
 			assertEquals(("0" + (i + 2)), expected.get(i).getUnitID(), unitID);
@@ -134,13 +134,13 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	@Test
 	public void test__05() throws InvalidQueryException
 	{
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		qs.addCondition(new SearchCondition(field, EQUALS, "Larus f. fuscus"));
+		qs.addCondition(new QueryCondition(field, EQUALS, "Larus f. fuscus"));
 		qs.sortBy(field, SortOrder.DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", result.size(), 2);
 		/*
 		 * Since they both have the same scientific name, the specimens are
@@ -162,15 +162,15 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	@Test
 	public void test__06() throws InvalidQueryException
 	{
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		qs.addCondition(new SearchCondition(field, EQUALS, "Larus f. fuscus"));
-		qs.addCondition(new SearchCondition(field, EQUALS, "Malus sylvestris"));
+		qs.addCondition(new QueryCondition(field, EQUALS, "Larus f. fuscus"));
+		qs.addCondition(new QueryCondition(field, EQUALS, "Malus sylvestris"));
 		qs.setLogicalOperator(LogicalOperator.OR);
 		qs.sortBy(field, SortOrder.DESC);
 		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", result.size(), 3);
 	}
 
@@ -182,10 +182,10 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	@Test(expected = InvalidConditionException.class)
 	public void test__07() throws InvalidQueryException
 	{
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
-		SearchCondition condition = new SearchCondition(field, EQUALS, "Larus f. fuscus");
-		SearchCondition sibling = new SearchCondition("unitID", EQUALS, "ZMA.MAM.100");
+		QueryCondition condition = new QueryCondition(field, EQUALS, "Larus f. fuscus");
+		QueryCondition sibling = new QueryCondition("unitID", EQUALS, "ZMA.MAM.100");
 		condition.and(sibling);
 		qs.addCondition(condition);
 		qs.sortBy(field);

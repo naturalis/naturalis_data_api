@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.geojson.GeoJsonObject;
 
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 
 /**
  * Utility class providing common functionality for classes in the dao package.
@@ -35,31 +35,31 @@ public class DaoUtil {
 	}
 
 	/**
-	 * Creates a copy of the specified {@link SearchSpec} with conditions that
-	 * only contain reasonably-sized {@link SearchCondition#getValue() search terms}.
+	 * Creates a copy of the specified {@link QuerySpec} with conditions that
+	 * only contain reasonably-sized {@link QueryCondition#getValue() search terms}.
 	 * Some type of search terms (especially GeoJSON strings for complicated
 	 * shapes) can easily become so large that even printing them as part of a
 	 * DEBUG message is too expensive. This method is meant for debug purposes
-	 * only, notably when passing a {@code SearchSpec} object to
+	 * only, notably when passing a {@code QuerySpec} object to
 	 * {@code logger.debug()}.
 	 * 
 	 * @param qs
 	 * @return
 	 */
-	public static SearchSpec prune(SearchSpec qs)
+	public static QuerySpec prune(QuerySpec qs)
 	{
 		if (qs == null || qs.getConditions() == null || qs.getConditions().size() == 0) {
 			return qs;
 		}
-		SearchSpec copy = new SearchSpec();
+		QuerySpec copy = new QuerySpec();
 		copy.setFields(qs.getFields());
 		copy.setFrom(qs.getFrom());
 		copy.setSize(qs.getSize());
 		copy.setLogicalOperator(qs.getLogicalOperator());
 		copy.setSortFields(qs.getSortFields());
-		List<SearchCondition> siblings = new ArrayList<>(qs.getConditions().size());
+		List<QueryCondition> siblings = new ArrayList<>(qs.getConditions().size());
 		copy.setConditions(siblings);
-		for (SearchCondition c : qs.getConditions()) {
+		for (QueryCondition c : qs.getConditions()) {
 			prune(c, siblings);
 		}
 		return copy;
@@ -67,24 +67,24 @@ public class DaoUtil {
 
 	/**
 	 * Creates a copy of the specified conditions such that the search terms in
-	 * the copies are reasonably-sized. See {@link #prune(SearchSpec)}.
+	 * the copies are reasonably-sized. See {@link #prune(QuerySpec)}.
 	 * 
 	 * @param conditions
 	 * @return
 	 */
-	public static SearchCondition[] prune(SearchCondition[] conditions)
+	public static QueryCondition[] prune(QueryCondition[] conditions)
 	{
 		if (conditions == null || conditions.length == 0) {
 			return conditions;
 		}
-		List<SearchCondition> copies = new ArrayList<>(conditions.length);
-		for (SearchCondition c : conditions) {
+		List<QueryCondition> copies = new ArrayList<>(conditions.length);
+		for (QueryCondition c : conditions) {
 			prune(c, copies);
 		}
-		return copies.toArray(new SearchCondition[copies.size()]);
+		return copies.toArray(new QueryCondition[copies.size()]);
 	}
 
-	private static void prune(SearchCondition condition, List<SearchCondition> siblings)
+	private static void prune(QueryCondition condition, List<QueryCondition> siblings)
 	{
 		Object val = condition.getValue();
 		if (val == null) {
@@ -107,25 +107,25 @@ public class DaoUtil {
 		}
 	}
 
-	private static SearchCondition createCopy(SearchCondition original, String newValue)
+	private static QueryCondition createCopy(QueryCondition original, String newValue)
 	{
 		logger.debug("Value of field {} truncated or nullified for log file!", original.getField());
-		SearchCondition copy = new SearchCondition();
+		QueryCondition copy = new QueryCondition();
 		copy.setNot(original.getNot());
 		copy.setField(original.getField());
 		copy.setOperator(original.getOperator());
 		copy.setValue(newValue);
 		if (original.getAnd() != null) {
-			List<SearchCondition> andCopy = new ArrayList<>(original.getAnd().size());
+			List<QueryCondition> andCopy = new ArrayList<>(original.getAnd().size());
 			copy.setAnd(andCopy);
-			for (SearchCondition c : original.getAnd()) {
+			for (QueryCondition c : original.getAnd()) {
 				prune(c, andCopy);
 			}
 		}
 		if (original.getOr() != null) {
-			List<SearchCondition> orCopy = new ArrayList<>(original.getOr().size());
+			List<QueryCondition> orCopy = new ArrayList<>(original.getOr().size());
 			copy.setOr(orCopy);
-			for (SearchCondition c : original.getOr()) {
+			for (QueryCondition c : original.getOr()) {
 				prune(c, orCopy);
 			}
 		}

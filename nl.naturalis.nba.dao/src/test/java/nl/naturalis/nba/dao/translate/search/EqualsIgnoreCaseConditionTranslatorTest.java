@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -35,7 +35,7 @@ public class EqualsIgnoreCaseConditionTranslatorTest {
 	@Test
 	public void testTranslateWithNestedField_01() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("addressBook.street", EQUALS_IC,
+		QueryCondition condition = new QueryCondition("addressBook.street", EQUALS_IC,
 				"Market street");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();

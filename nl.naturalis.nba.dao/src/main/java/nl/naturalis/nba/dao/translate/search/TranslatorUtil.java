@@ -12,7 +12,7 @@ import java.util.Date;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
@@ -35,12 +35,12 @@ class TranslatorUtil {
 		return MappingInfo.getNestedPath(sf);
 	}
 
-	static ESDataType getESFieldType(SearchCondition condition, MappingInfo<?> mappingInfo)
+	static ESDataType getESFieldType(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		return getESField(condition, mappingInfo).getType();
 	}
 
-	static SimpleField getESField(SearchCondition condition, MappingInfo<?> mappingInfo)
+	static SimpleField getESField(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		try {
 			return (SimpleField) mappingInfo.getField(condition.getField());
@@ -64,7 +64,7 @@ class TranslatorUtil {
 		}
 	}
 
-	static void ensureValueIsNotNull(SearchCondition condition) throws InvalidConditionException
+	static void ensureValueIsNotNull(QueryCondition condition) throws InvalidConditionException
 	{
 		if (condition.getValue() == null) {
 			String fmt = "Search value must not be null when using operator %s";
@@ -72,21 +72,21 @@ class TranslatorUtil {
 		}
 	}
 
-	static InvalidConditionException invalidDataType(SearchCondition condition)
+	static InvalidConditionException invalidDataType(QueryCondition condition)
 	{
 		String type = condition.getValue().getClass().getName();
 		String fmt = "Search value has invalid data type: %s";
 		return new InvalidConditionException(condition, fmt, type);
 	}
 
-	static void ensureValueIsString(SearchCondition condition) throws InvalidConditionException
+	static void ensureValueIsString(QueryCondition condition) throws InvalidConditionException
 	{
 		if (condition.getValue().getClass() != String.class) {
 			throw invalidDataType(condition);
 		}
 	}
 
-	static void ensureValueIsDateOrNumber(SearchCondition condition)
+	static void ensureValueIsDateOrNumber(QueryCondition condition)
 			throws InvalidConditionException
 	{
 		if (!isNumber(condition.getValue()) && !isA(condition.getValue(), Date.class)) {
@@ -94,7 +94,7 @@ class TranslatorUtil {
 		}
 	}
 
-	static void convertValueForDateField(SearchCondition condition) throws InvalidConditionException
+	static void convertValueForDateField(QueryCondition condition) throws InvalidConditionException
 	{
 		Object value = condition.getValue();
 		if (value != null) {
@@ -102,7 +102,7 @@ class TranslatorUtil {
 		}
 	}
 
-	static void convertValuesForDateField(SearchCondition condition)
+	static void convertValuesForDateField(QueryCondition condition)
 			throws InvalidConditionException
 	{
 		Object value = condition.getValue();
@@ -133,7 +133,7 @@ class TranslatorUtil {
 		}
 	}
 
-	private static String convertValueForDateField(Object value, SearchCondition condition)
+	private static String convertValueForDateField(Object value, QueryCondition condition)
 			throws InvalidConditionException
 	{
 		if (value instanceof CharSequence) {

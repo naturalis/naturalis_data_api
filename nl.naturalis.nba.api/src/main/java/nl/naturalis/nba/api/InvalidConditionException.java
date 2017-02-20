@@ -13,7 +13,7 @@ public class InvalidConditionException extends InvalidQueryException {
 		super(message);
 	}
 
-	public InvalidConditionException(SearchCondition condition, String message, Object... msgArgs)
+	public InvalidConditionException(QueryCondition condition, String message, Object... msgArgs)
 	{
 		super(createMessage(condition, message, msgArgs));
 	}
@@ -23,7 +23,7 @@ public class InvalidConditionException extends InvalidQueryException {
 		super(cause);
 	}
 
-	private static String createMessage(SearchCondition condition, String msg, Object... msgArgs)
+	private static String createMessage(QueryCondition condition, String msg, Object... msgArgs)
 	{
 		StringBuilder sb = new StringBuilder(200);
 		sb.append("Invalid condition on field ");

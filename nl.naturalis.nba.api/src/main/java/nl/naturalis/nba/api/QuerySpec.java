@@ -9,9 +9,9 @@ import nl.naturalis.nba.api.model.Taxon;
 
 /**
  * <p>
- * A {@code SearchSpec} allows you to specify an NBA query. All information
+ * A {@code QuerySpec} allows you to specify an NBA query. All information
  * required by the various {@code search} methods in the API take a
- * {@link SearchSpec} object to drive the query process.
+ * {@link QuerySpec} object to drive the query process.
  * </p>
  * <h3>Providing query specifications through the REST API</h3>
  * <p>
@@ -138,11 +138,11 @@ import nl.naturalis.nba.api.model.Taxon;
  * @author Ayco Holleman
  *
  */
-public class SearchSpec {
+public class QuerySpec {
 
 	private boolean constantScore;
 	private List<String> fields;
-	private List<SearchCondition> conditions;
+	private List<QueryCondition> conditions;
 	private LogicalOperator logicalOperator;
 	private List<SortField> sortFields;
 	private Integer from;
@@ -188,7 +188,7 @@ public class SearchSpec {
 	 * 
 	 * @param condition
 	 */
-	public void addCondition(SearchCondition condition)
+	public void addCondition(QueryCondition condition)
 	{
 		if (conditions == null) {
 			conditions = new ArrayList<>(5);
@@ -240,7 +240,7 @@ public class SearchSpec {
 	 * SELECT clause. By default all fields will be selected. Be aware of the
 	 * effect this method has when querying data model objects like {@link Taxon
 	 * taxa} or {@link Specimen specimens} (e.g. with the
-	 * {@link INbaAccess#query(SearchSpec) query} method): you <i>still</i> get
+	 * {@link INbaAccess#query(QuerySpec) query} method): you <i>still</i> get
 	 * back full-blown {@code Taxon} c.q. {@code Specimen} objects, only with
 	 * all non-selected fields set to their default value ({@code null} for
 	 * strings, dates and objects, zero for number fields and {@code false} for
@@ -290,7 +290,7 @@ public class SearchSpec {
 	 * 
 	 * @return
 	 */
-	public List<SearchCondition> getConditions()
+	public List<QueryCondition> getConditions()
 	{
 		return conditions;
 	}
@@ -301,7 +301,7 @@ public class SearchSpec {
 	 * 
 	 * @param conditions
 	 */
-	public void setConditions(List<SearchCondition> conditions)
+	public void setConditions(List<QueryCondition> conditions)
 	{
 		this.conditions = conditions;
 	}

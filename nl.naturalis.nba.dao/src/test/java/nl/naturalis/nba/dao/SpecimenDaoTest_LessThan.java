@@ -12,9 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 /*
@@ -55,11 +55,11 @@ public class SpecimenDaoTest_LessThan {
 		 * (LESS_THAN) we should get back nothing
 		 */
 		String to = "2000-01-01";
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", LT, to);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", LT, to);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -73,11 +73,11 @@ public class SpecimenDaoTest_LessThan {
 		 * null value).
 		 */
 		String from = "2000-01-01";
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", GT, from);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GT, from);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -90,11 +90,11 @@ public class SpecimenDaoTest_LessThan {
 		 * lFuscus2 should come back
 		 */
 		String from = "2008/04/03 13:04";
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", GTE, from);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 
@@ -107,11 +107,11 @@ public class SpecimenDaoTest_LessThan {
 		 * tRex should come back (mSylvestris
 		 */
 		String from = "2008/04/03 13:04";
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", GTE, from);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 }

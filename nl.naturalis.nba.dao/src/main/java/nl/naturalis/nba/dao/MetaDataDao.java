@@ -21,7 +21,6 @@ import nl.naturalis.nba.common.es.map.ComplexField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.search.OperatorValidator;
 
@@ -34,15 +33,6 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 	MetaDataDao(DocumentType<T> dt)
 	{
 		this.dt = dt;
-	}
-
-	@Override
-	public String getMapping()
-	{
-		if (logger.isDebugEnabled()) {
-			logger.debug("getMapping()");
-		}
-		return JsonUtil.toPrettyJson(dt.getMapping());
 	}
 
 	@Override

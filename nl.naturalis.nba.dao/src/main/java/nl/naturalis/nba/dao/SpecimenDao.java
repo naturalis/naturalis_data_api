@@ -20,7 +20,7 @@ import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
@@ -84,7 +84,7 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	}
 
 	@Override
-	public void dwcaQuery(SearchSpec spec, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
 	{
 		//		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
 		//		DwcaWriter writer = new DwcaWriter(dsc, out);

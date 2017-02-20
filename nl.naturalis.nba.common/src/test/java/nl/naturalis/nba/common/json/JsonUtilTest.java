@@ -17,8 +17,8 @@ import org.geojson.Polygon;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.SortOrder;
 
@@ -280,13 +280,13 @@ public class JsonUtilTest {
 	}
 
 	/*
-	 * Test deserialization of SearchCondition.
+	 * Test deserialization of QueryCondition.
 	 */
 	@Test
 	public void testDeserializeSearchCondition_01()
 	{
 		String file = "json/JsonUtilTest__testDeserializeSearchCondition_01.json";
-		SearchCondition condition = deserialize(file, SearchCondition.class);
+		QueryCondition condition = deserialize(file, QueryCondition.class);
 		String field = condition.getField().toString();
 		assertEquals("01", "gatheringEvent.dateTimeBegin", field);
 		assertEquals("02", ComparisonOperator.EQUALS, condition.getOperator());
@@ -296,15 +296,15 @@ public class JsonUtilTest {
 
 
 	/*
-	 * Test deserialization of SearchSpec.
+	 * Test deserialization of QuerySpec.
 	 */
 	@Test
 	public void testDeserializeSearchSpec_01()
 	{
 		String file = "json/JsonUtilTest__testDeserializeSearchSpec_01.json";
-		SearchSpec ss = deserialize(file, SearchSpec.class);
+		QuerySpec ss = deserialize(file, QuerySpec.class);
 		assertEquals("01", 1, ss.getConditions().size());
-		SearchCondition sc = ss.getConditions().iterator().next();
+		QueryCondition sc = ss.getConditions().iterator().next();
 		String field = sc.getField().toString();
 		assertEquals("02", "gatheringEvent.dateTimeBegin", field);
 		assertTrue("03", ss.isConstantScore());

@@ -21,7 +21,7 @@ public interface ITaxonAccess extends INbaAccess<Taxon> {
 	 * @param out
 	 * @throws InvalidQueryException
 	 */
-	void dwcaQuery(SearchSpec querySpec, OutputStream out) throws InvalidQueryException;
+	void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException;
 
 	/**
 	 * Writes a DarwinCore Archive with taxa from a predefined data set to the

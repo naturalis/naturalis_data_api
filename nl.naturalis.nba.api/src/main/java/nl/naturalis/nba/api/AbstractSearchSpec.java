@@ -93,7 +93,7 @@ public abstract class AbstractSearchSpec<T extends AbstractSearchCondition<T>> {
 	 * SELECT clause. By default all fields will be selected. Be aware of the
 	 * effect this method has when querying data model objects like {@link Taxon
 	 * taxa} or {@link Specimen specimens} (e.g. with the
-	 * {@link INbaAccess#query(SearchSpec) query} method): you <i>still</i> get
+	 * {@link INbaAccess#query(QuerySpec) query} method): you <i>still</i> get
 	 * back full-blown {@code Taxon} c.q. {@code Specimen} objects, only with
 	 * all non-selected fields set to their default value ({@code null} for
 	 * strings, dates and objects, zero for number fields and {@code false} for

@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao.format.dwca;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.format.DataSetConfigurationException;
 import nl.naturalis.nba.dao.format.DataSetWriteException;
 
@@ -31,7 +31,7 @@ public interface IDwcaWriter {
 	 * @throws DataSetConfigurationException
 	 * @throws DataSetWriteException
 	 */
-	void writeDwcaForQuery(SearchSpec querySpec)
+	void writeDwcaForQuery(QuerySpec querySpec)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException;
 
 }

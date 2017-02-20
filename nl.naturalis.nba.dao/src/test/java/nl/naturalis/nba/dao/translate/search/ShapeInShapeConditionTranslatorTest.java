@@ -17,7 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -48,7 +48,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
-		SearchCondition condition = new SearchCondition("address.locationAsShape", IN, polygon);
+		QueryCondition condition = new QueryCondition("address.locationAsShape", IN, polygon);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();
@@ -71,7 +71,7 @@ public class ShapeInShapeConditionTranslatorTest {
 		List<List<LngLatAlt>> coords = Arrays.asList(list);
 		Polygon polygon = new Polygon();
 		polygon.setCoordinates(coords);
-		SearchCondition condition = new SearchCondition("address.locationAsShape", NOT_IN, polygon);
+		QueryCondition condition = new QueryCondition("address.locationAsShape", NOT_IN, polygon);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		assertEquals("01", ShapeInShapeConditionTranslator.class, ct.getClass());
 		QueryBuilder query = ct.translate();

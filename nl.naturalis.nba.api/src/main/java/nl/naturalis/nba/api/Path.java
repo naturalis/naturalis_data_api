@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * element, which could also be a "primitive" value (strings, numbers, dates,
  * etc.). For some applications it may be valid to allow array indices in the
  * path. For example: {@code identications.0.defaultClassification.kingdom}.
- * However paths in {@link SearchCondition search conditions} must always be
+ * However paths in {@link QueryCondition search conditions} must always be
  * "pure" paths without array indices.
  * 
  * @author Ayco Holleman

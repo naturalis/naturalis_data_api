@@ -17,9 +17,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
@@ -63,12 +63,12 @@ public class SpecimenDaoTest_Between {
 		OffsetDateTime two = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime t = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { two, t };
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", BETWEEN,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
 				fromTo);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
 		// year after the next test specimen, so we can have only one query
 		// result (pMajor).
@@ -84,12 +84,12 @@ public class SpecimenDaoTest_Between {
 		OffsetDateTime from = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime to = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { from, to };
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", NOT_BETWEEN,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", NOT_BETWEEN,
 				fromTo);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Since we use NOT_BETWEEN, all specimens except pMajor should come
 		// back.
 		assertEquals("01", 4, result.size());
@@ -104,12 +104,12 @@ public class SpecimenDaoTest_Between {
 		String from = "2007-04-01";
 		String to = "2007-05-01";
 		String[] fromTo = new String[] { from, to };
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", BETWEEN,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
 				fromTo);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -122,12 +122,12 @@ public class SpecimenDaoTest_Between {
 		String from = "2007-04-01T00:00:00Z";
 		String to = "2007-05-01T23:50:00Z";
 		String[] fromTo = new String[] { from, to };
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", BETWEEN,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", BETWEEN,
 				fromTo);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -139,11 +139,11 @@ public class SpecimenDaoTest_Between {
 	{
 		String field = "gatheringEvent.siteCoordinates.longitudeDecimal";
 		double[] longitudes = new double[] { 110.0, 120.0 };
-		SearchCondition condition = new SearchCondition(field, BETWEEN, longitudes);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, BETWEEN, longitudes);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// tRex
 		assertEquals("01", 1, result.size());
 	}
@@ -156,11 +156,11 @@ public class SpecimenDaoTest_Between {
 	{
 		String field = "gatheringEvent.siteCoordinates.longitudeDecimal";
 		double[] longitudes = new double[] { 110.0, 120.0 };
-		SearchCondition condition = new SearchCondition(field, NOT_BETWEEN, longitudes);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, NOT_BETWEEN, longitudes);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// All but tRex
 		assertEquals("01", 4, result.size());
 	}

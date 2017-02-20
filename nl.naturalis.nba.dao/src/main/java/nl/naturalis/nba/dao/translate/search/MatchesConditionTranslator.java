@@ -9,14 +9,14 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 class MatchesConditionTranslator extends ConditionTranslator {
 
 	private static final String MY_MULTIFIELD = DEFAULT_MULTIFIELD.getName();
 
-	MatchesConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
+	MatchesConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

@@ -1,14 +1,14 @@
 package nl.naturalis.nba.dao.format;
 
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.Mapping;
 
 public class DataSource {
 
 	private Mapping<?> mapping;
 	private Path path;
-	private SearchSpec querySpec;
+	private QuerySpec querySpec;
 
 	DataSource()
 	{
@@ -40,12 +40,12 @@ public class DataSource {
 		this.path = path;
 	}
 
-	public SearchSpec getQuerySpec()
+	public QuerySpec getQuerySpec()
 	{
 		return querySpec;
 	}
 
-	void setQuerySpec(SearchSpec querySpec)
+	void setQuerySpec(QuerySpec querySpec)
 	{
 		this.querySpec = querySpec;
 	}

@@ -14,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -39,7 +39,7 @@ public class InConditionTranslatorTest {
 	@Test(expected=InvalidConditionException.class)
 	public void testTranslate_01a() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("firstName", IN, null);	
+		QueryCondition condition = new QueryCondition("firstName", IN, null);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 		// System.out.println(query);
@@ -51,7 +51,7 @@ public class InConditionTranslatorTest {
 	@Test
 	public void testTranslate_01b() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("firstName", IN, new Integer[] { null, null, null });		
+		QueryCondition condition = new QueryCondition("firstName", IN, new Integer[] { null, null, null });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
@@ -66,7 +66,7 @@ public class InConditionTranslatorTest {
 	@Test
 	public void testTranslate_02() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("pets.name", IN, new String[] { "Napoleon", "Max" });		
+		QueryCondition condition = new QueryCondition("pets.name", IN, new String[] { "Napoleon", "Max" });		
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
@@ -85,7 +85,7 @@ public class InConditionTranslatorTest {
 		values.add("Napoleon");
 		values.add("Max");
 		values.add(null);
-		SearchCondition condition = new SearchCondition("pets.name", IN, values);	
+		QueryCondition condition = new QueryCondition("pets.name", IN, values);	
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		// System.out.println(query);

@@ -21,8 +21,8 @@ import org.geojson.GeoJsonObject;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
@@ -30,7 +30,7 @@ import nl.naturalis.nba.utils.ClassUtil;
 
 /**
  * Translates conditions with an IN or NOT_IN operator when used with fields of
- * type {@link GeoJsonObject} and with a {@link SearchCondition#getValue()
+ * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue()
  * search term of type {@link String}, supposedly specifying a geographical name
  * like "Amsterdam" or "France".
  * 
@@ -41,7 +41,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 
 	private static final Logger logger = getLogger(ShapeInLocalityConditionTranslator.class);
 
-	ShapeInLocalityConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
+	ShapeInLocalityConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}
@@ -126,8 +126,8 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up document ID for locality \"{}\"", locality);
 		}
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition("locality", EQUALS, locality));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
 		SearchSpecTranslator translator = new SearchSpecTranslator(qs, GEO_AREA);
 		SearchRequestBuilder request;
 		try {

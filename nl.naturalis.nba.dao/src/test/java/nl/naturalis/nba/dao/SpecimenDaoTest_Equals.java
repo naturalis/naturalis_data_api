@@ -18,9 +18,9 @@ import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
@@ -63,11 +63,11 @@ public class SpecimenDaoTest_Equals {
 	{
 		String field = "gatheringEvent.localityText";
 		Object value = "Dorchester, U.K.";
-		SearchCondition condition = new SearchCondition(field, EQUALS, value);
-		SearchSpec query = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, EQUALS, value);
+		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(query);
+		QueryResult<Specimen> result = dao.query(query);
 		// mSylvestris
 		assertEquals("01", 1, result.size());
 	}
@@ -81,11 +81,11 @@ public class SpecimenDaoTest_Equals {
 	{
 		Path field = new Path("gatheringEvent.gatheringPersons.fullName");
 		Object value = "Altenburg, R.";
-		SearchCondition condition = new SearchCondition(field, EQUALS, value);
-		SearchSpec query = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, EQUALS, value);
+		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(query);
+		QueryResult<Specimen> result = dao.query(query);
 		// pMajor, lFuscus1, lFuscus2
 		assertEquals("01", 3, result.size());
 	}
@@ -100,11 +100,11 @@ public class SpecimenDaoTest_Equals {
 	{
 		String field = "gatheringEvent.gatheringPersons.fullName";
 		Object value = "Philipp Franz von Siebold";
-		SearchCondition condition = new SearchCondition(field, EQUALS, value);
-		SearchSpec query = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, EQUALS, value);
+		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(query);
+		QueryResult<Specimen> result = dao.query(query);
 		// lFuscus2:
 		assertEquals("01", 1, result.size());
 	}
@@ -117,11 +117,11 @@ public class SpecimenDaoTest_Equals {
 	{
 		Path field = new Path("gatheringEvent.gatheringPersons.agentText");
 		Object value = vonSiebold().getAgentText();
-		SearchCondition condition = new SearchCondition(field, EQUALS, value);
-		SearchSpec query = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, EQUALS, value);
+		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(query);
+		QueryResult<Specimen> result = dao.query(query);
 		// lFuscus2 (collected by ruudAltenBurg() and vonSiebold()
 		assertEquals("01", 1, result.size());
 	}

@@ -17,7 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.Mapping;
 import nl.naturalis.nba.common.es.map.MappingFactory;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -43,7 +43,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01a() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("firstName", BETWEEN, "John");
+		QueryCondition condition = new QueryCondition("firstName", BETWEEN, "John");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -54,7 +54,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01b() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("smoker", BETWEEN, true);
+		QueryCondition condition = new QueryCondition("smoker", BETWEEN, true);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -66,7 +66,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_01c() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("address", BETWEEN, new Address());
+		QueryCondition condition = new QueryCondition("address", BETWEEN, new Address());
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -78,7 +78,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02a() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("numChildren", BETWEEN, new int[] { 0 });
+		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, new int[] { 0 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
 	}
@@ -90,7 +90,7 @@ public class BetweenConditionTranslatorTest {
 	@Test(expected = InvalidConditionException.class)
 	public void testTranslate_02b() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("firstName", BETWEEN,
+		QueryCondition condition = new QueryCondition("firstName", BETWEEN,
 				new int[] { 0, 1, 2 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		ct.translate();
@@ -103,7 +103,7 @@ public class BetweenConditionTranslatorTest {
 	@Test
 	public void testTranslate_03a() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("numChildren", BETWEEN, new int[] { 2, 8 });
+		QueryCondition condition = new QueryCondition("numChildren", BETWEEN, new int[] { 2, 8 });
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
@@ -119,7 +119,7 @@ public class BetweenConditionTranslatorTest {
 	@Test
 	public void testTranslate_03b() throws InvalidConditionException
 	{
-		SearchCondition condition = new SearchCondition("numChildren", BETWEEN,
+		QueryCondition condition = new QueryCondition("numChildren", BETWEEN,
 				Arrays.asList(2, 8));
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
@@ -136,7 +136,7 @@ public class BetweenConditionTranslatorTest {
 	public void testTranslate_04a() throws InvalidConditionException
 	{
 		Set<Integer> set = new LinkedHashSet<>(Arrays.asList(30, 40));
-		SearchCondition condition = new SearchCondition("address.country.dialNumber", NOT_BETWEEN,
+		QueryCondition condition = new QueryCondition("address.country.dialNumber", NOT_BETWEEN,
 				set);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();

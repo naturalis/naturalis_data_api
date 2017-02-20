@@ -5,7 +5,7 @@ import java.util.List;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.dao.format.config.ConditionXmlConfig;
 
 class ConditionBuilder {
@@ -17,14 +17,14 @@ class ConditionBuilder {
 		this.config = config;
 	}
 
-	SearchCondition build() throws DataSetConfigurationException
+	QueryCondition build() throws DataSetConfigurationException
 	{
 		return build(config);
 	}
 
-	SearchCondition build(ConditionXmlConfig config) throws DataSetConfigurationException
+	QueryCondition build(ConditionXmlConfig config) throws DataSetConfigurationException
 	{
-		SearchCondition condition = new SearchCondition();
+		QueryCondition condition = new QueryCondition();
 		condition.setField(new Path(config.getField()));
 		condition.setOperator(ComparisonOperator.parse(config.getOperator()));
 		condition.setValue(config.getValue());
@@ -32,14 +32,14 @@ class ConditionBuilder {
 			condition.negate();
 		}
 		if (config.getAnd().size() != 0) {
-			List<SearchCondition> and = new ArrayList<>(config.getAnd().size());
+			List<QueryCondition> and = new ArrayList<>(config.getAnd().size());
 			for (ConditionXmlConfig cfg : config.getAnd()) {
 				and.add(build(cfg));
 			}
 			condition.setAnd(and);
 		}
 		if (config.getOr().size() != 0) {
-			List<SearchCondition> or = new ArrayList<>(config.getOr().size());
+			List<QueryCondition> or = new ArrayList<>(config.getOr().size());
 			for (ConditionXmlConfig cfg : config.getAnd()) {
 				or.add(build(cfg));
 			}

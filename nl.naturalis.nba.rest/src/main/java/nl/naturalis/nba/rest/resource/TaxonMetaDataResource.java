@@ -3,6 +3,9 @@ package nl.naturalis.nba.rest.resource;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
+import java.util.Map;
+import java.util.Set;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -33,20 +36,6 @@ public class TaxonMetaDataResource {
 	Registry registry;
 
 	@GET
-	@Path("/getMapping")
-	@Produces(JSON_CONTENT_TYPE)
-	public String getMapping(@Context UriInfo uriInfo)
-	{
-		try {
-			TaxonMetaDataDao dao = new TaxonMetaDataDao();
-			return dao.getMapping();
-		}
-		catch (Throwable t) {
-			throw handleError(uriInfo, t);
-		}
-	}
-
-	@GET
 	@Path("/getPaths")
 	@Produces(JSON_CONTENT_TYPE)
 	public String[] getPaths(@Context UriInfo uriInfo)
@@ -56,6 +45,25 @@ public class TaxonMetaDataResource {
 			String s = uriInfo.getQueryParameters().getFirst("sorted");
 			boolean sorted = ConfigObject.isTrueValue(s);
 			return dao.getPaths(sorted);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getAllowedOperators")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<String, Set<ComparisonOperator>> getAllowedOperators(@Context UriInfo uriInfo)
+	{
+		try {
+			TaxonMetaDataDao dao = new TaxonMetaDataDao();
+			String param = uriInfo.getQueryParameters().getFirst("fields");
+			String[] fields = null;
+			if (param != null) {
+				fields = param.split(",");
+			}
+			return dao.getAllowedOperators(fields);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

@@ -19,13 +19,13 @@ import org.geojson.Polygon;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.dao.exception.DaoException;
 
 /**
  * Translates conditions with an IN or NOT_IN operator when used with fields of
- * type {@link GeoJsonObject} and with a {@link SearchCondition#getValue()
+ * type {@link GeoJsonObject} and with a {@link QueryCondition#getValue()
  * search term that is also a {@link GeoJsonObject} (or a JSON string that
  * deserializes into a {@link GeoJsonObject}).
  * 
@@ -34,7 +34,7 @@ import nl.naturalis.nba.dao.exception.DaoException;
  */
 class ShapeInShapeConditionTranslator extends ConditionTranslator {
 
-	ShapeInShapeConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
+	ShapeInShapeConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		super(condition, mappingInfo);
 	}

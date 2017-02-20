@@ -14,9 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 /**
@@ -65,8 +65,8 @@ public class SpecimenDaoTest_Matches {
 	{
 		String expecting = "Search value must not be null when using operator MATCHES";
 		String name = "identifications.systemClassification.name";
-		SearchCondition condition = new SearchCondition(name, MATCHES, null);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(name, MATCHES, null);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		try {
@@ -85,14 +85,14 @@ public class SpecimenDaoTest_Matches {
 	public void test__02() throws InvalidQueryException
 	{
 		String rank = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(rank, MATCHES, "bossen"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(rank, MATCHES, "bossen"));
 		/*
 		 * That's larusFuscusSpecimen01 : "bossen" MATCHES
 		 * "In de bossen nabij Aalten"
 		 */
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 		String unitID = result.get(0).getItem().getUnitID();
 		assertEquals("02", lFuscus1.getUnitID(), unitID);
@@ -105,10 +105,10 @@ public class SpecimenDaoTest_Matches {
 	public void testQuery__03() throws InvalidQueryException
 	{
 		String rank = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(rank, NOT_MATCHES, "bossen"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(rank, NOT_MATCHES, "bossen"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 4, result.size());
 	}
 
@@ -119,10 +119,10 @@ public class SpecimenDaoTest_Matches {
 	public void test__04() throws InvalidQueryException
 	{
 		String rank = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(rank, MATCHES, "   bossen  one two three"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(rank, MATCHES, "   bossen  one two three"));
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -133,13 +133,13 @@ public class SpecimenDaoTest_Matches {
 	public void test__05() throws InvalidQueryException
 	{
 		String rank = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(rank, MATCHES, "   nabij"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(rank, MATCHES, "   nabij"));
 		/*
 		 * That's larusFuscusSpecimen01 &parusMajorSpecimen01
 		 */
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -150,13 +150,13 @@ public class SpecimenDaoTest_Matches {
 	public void test__06() throws InvalidQueryException
 	{
 		String rank = "gatheringEvent.localityText";
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(new SearchCondition(rank, NOT_MATCHES, "   nabij"));
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(new QueryCondition(rank, NOT_MATCHES, "   nabij"));
 		/*
 		 * That's all but larusFuscusSpecimen01 &parusMajorSpecimen01
 		 */
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 }

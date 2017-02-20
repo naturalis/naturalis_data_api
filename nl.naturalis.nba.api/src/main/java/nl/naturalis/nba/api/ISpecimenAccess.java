@@ -43,7 +43,7 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	 * @param out
 	 * @throws InvalidQueryException
 	 */
-	void dwcaQuery(SearchSpec querySpec, ZipOutputStream out) throws InvalidQueryException;
+	void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException;
 
 	/**
 	 * Writes a DarwinCore Archive with specimens from a predefined data set to

@@ -17,8 +17,8 @@ import org.elasticsearch.search.sort.SortMode;
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -31,10 +31,10 @@ class SortFieldsTranslator {
 	private static final String ERR_01 = "Sorting on %1$s not allowed in combination "
 			+ "with condition on %1$s and a sibling condition on %2$s";
 
-	private SearchSpec querySpec;
+	private QuerySpec querySpec;
 	private DocumentType<?> dt;
 
-	SortFieldsTranslator(SearchSpec querySpec, DocumentType<?> documentType)
+	SortFieldsTranslator(QuerySpec querySpec, DocumentType<?> documentType)
 	{
 		this.querySpec = querySpec;
 		this.dt = documentType;
@@ -84,12 +84,12 @@ class SortFieldsTranslator {
 	 */
 	private QueryBuilder translateConditions(Path sortField) throws InvalidConditionException
 	{
-		List<SearchCondition> conditions = querySpec.getConditions();
+		List<QueryCondition> conditions = querySpec.getConditions();
 		if (conditions == null || conditions.size() == 0) {
 			return null;
 		}
 		if (conditions.size() == 1) {
-			SearchCondition c = conditions.iterator().next();
+			QueryCondition c = conditions.iterator().next();
 			if (c.getField().equals(sortField)) {
 				checkCondition(c, sortField);
 				return getTranslator(c, dt).forSortField().translate();
@@ -101,7 +101,7 @@ class SortFieldsTranslator {
 		 * Do we have any conditions on the same field that we want to sort on?
 		 */
 		boolean hasConditionWithSortField = false;
-		for (SearchCondition c : conditions) {
+		for (QueryCondition c : conditions) {
 			if (c.getField().equals(sortField)) {
 				hasConditionWithSortField = true;
 				checkCondition(c, sortField);
@@ -122,11 +122,11 @@ class SortFieldsTranslator {
 	 * conditions on that very same field. NB this restriction only applies when
 	 * generating a FieldSortBuilder for a field within a nested object.
 	 */
-	private static void checkCondition(SearchCondition condition, Path sortField)
+	private static void checkCondition(QueryCondition condition, Path sortField)
 			throws InvalidConditionException
 	{
 		if (condition.getAnd() != null) {
-			for (SearchCondition c : condition.getAnd()) {
+			for (QueryCondition c : condition.getAnd()) {
 				if (!c.getField().equals(sortField)) {
 					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
 				}
@@ -134,7 +134,7 @@ class SortFieldsTranslator {
 			}
 		}
 		if (condition.getOr() != null) {
-			for (SearchCondition c : condition.getOr()) {
+			for (QueryCondition c : condition.getOr()) {
 				if (!c.getField().equals(sortField)) {
 					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
 				}

@@ -74,21 +74,21 @@ import java.util.List;
  * @author Ayco Holleman
  *
  */
-public class SearchCondition {
+public class QueryCondition {
 
 	private UnaryBooleanOperator not;
 	private Path field;
 	private ComparisonOperator operator;
 	private Object value;
-	private List<SearchCondition> and;
-	private List<SearchCondition> or;
+	private List<QueryCondition> and;
+	private List<QueryCondition> or;
 	private boolean constantScore;
 	private float boost = 1F;
 
 	/**
 	 * Creates an empty search condition.
 	 */
-	public SearchCondition()
+	public QueryCondition()
 	{
 	}
 
@@ -97,7 +97,7 @@ public class SearchCondition {
 	 * 
 	 * @param other
 	 */
-	public SearchCondition(SearchCondition other)
+	public QueryCondition(QueryCondition other)
 	{
 		not = other.not;
 		field = other.field;
@@ -107,14 +107,14 @@ public class SearchCondition {
 		boost = other.boost;
 		if (other.and != null) {
 			and = new ArrayList<>(other.and.size());
-			for (SearchCondition c : other.and) {
-				and.add(new SearchCondition(c));
+			for (QueryCondition c : other.and) {
+				and.add(new QueryCondition(c));
 			}
 		}
 		if (other.or != null) {
 			or = new ArrayList<>(other.or.size());
-			for (SearchCondition c : other.or) {
-				or.add(new SearchCondition(c));
+			for (QueryCondition c : other.or) {
+				or.add(new QueryCondition(c));
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public class SearchCondition {
 	 * @param operator
 	 * @param value
 	 */
-	public SearchCondition(String field, String operator, Object value)
+	public QueryCondition(String field, String operator, Object value)
 	{
 		this(null, field, ComparisonOperator.parse(operator), value);
 	}
@@ -140,7 +140,7 @@ public class SearchCondition {
 	 * @param operator
 	 * @param value
 	 */
-	public SearchCondition(String field, ComparisonOperator operator, Object value)
+	public QueryCondition(String field, ComparisonOperator operator, Object value)
 	{
 		this(null, field, operator, value);
 	}
@@ -153,7 +153,7 @@ public class SearchCondition {
 	 * @param operator
 	 * @param value
 	 */
-	public SearchCondition(Path field, ComparisonOperator operator, Object value)
+	public QueryCondition(Path field, ComparisonOperator operator, Object value)
 	{
 		this(null, field, operator, value);
 	}
@@ -167,13 +167,13 @@ public class SearchCondition {
 	 * @param operator
 	 * @param value
 	 */
-	public SearchCondition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
+	public QueryCondition(UnaryBooleanOperator not, String field, ComparisonOperator operator,
 			Object value)
 	{
 		this(not, new Path(field), operator, value);
 	}
 
-	public SearchCondition(UnaryBooleanOperator not, Path field, ComparisonOperator operator,
+	public QueryCondition(UnaryBooleanOperator not, Path field, ComparisonOperator operator,
 			Object value)
 	{
 		this.not = not;
@@ -190,9 +190,9 @@ public class SearchCondition {
 	 * @param value
 	 * @return
 	 */
-	public SearchCondition and(String field, String operator, Object value)
+	public QueryCondition and(String field, String operator, Object value)
 	{
-		return and(new SearchCondition(field, operator, value));
+		return and(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -203,9 +203,9 @@ public class SearchCondition {
 	 * @param value
 	 * @return
 	 */
-	public SearchCondition and(String field, ComparisonOperator operator, Object value)
+	public QueryCondition and(String field, ComparisonOperator operator, Object value)
 	{
-		return and(new SearchCondition(field, operator, value));
+		return and(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class SearchCondition {
 	 * @param sibling
 	 * @return
 	 */
-	public SearchCondition and(SearchCondition sibling)
+	public QueryCondition and(QueryCondition sibling)
 	{
 		if (and == null) {
 			and = new ArrayList<>(5);
@@ -231,9 +231,9 @@ public class SearchCondition {
 	 * @param value
 	 * @return
 	 */
-	public SearchCondition or(String field, String operator, Object value)
+	public QueryCondition or(String field, String operator, Object value)
 	{
-		return or(new SearchCondition(field, operator, value));
+		return or(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -244,9 +244,9 @@ public class SearchCondition {
 	 * @param value
 	 * @return
 	 */
-	public SearchCondition or(String field, ComparisonOperator operator, Object value)
+	public QueryCondition or(String field, ComparisonOperator operator, Object value)
 	{
-		return or(new SearchCondition(field, operator, value));
+		return or(new QueryCondition(field, operator, value));
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class SearchCondition {
 	 * @param sibling
 	 * @return
 	 */
-	public SearchCondition or(SearchCondition sibling)
+	public QueryCondition or(QueryCondition sibling)
 	{
 		if (or == null) {
 			or = new ArrayList<>(5);
@@ -271,7 +271,7 @@ public class SearchCondition {
 	 * 
 	 * @return
 	 */
-	public SearchCondition negate()
+	public QueryCondition negate()
 	{
 		not = (not == null ? NOT : null);
 		return this;
@@ -375,7 +375,7 @@ public class SearchCondition {
 	 * 
 	 * @return
 	 */
-	public List<SearchCondition> getAnd()
+	public List<QueryCondition> getAnd()
 	{
 		return and;
 	}
@@ -385,7 +385,7 @@ public class SearchCondition {
 	 * 
 	 * @param and
 	 */
-	public void setAnd(List<SearchCondition> and)
+	public void setAnd(List<QueryCondition> and)
 	{
 		this.and = and;
 	}
@@ -395,7 +395,7 @@ public class SearchCondition {
 	 * 
 	 * @return
 	 */
-	public List<SearchCondition> getOr()
+	public List<QueryCondition> getOr()
 	{
 		return or;
 	}
@@ -405,7 +405,7 @@ public class SearchCondition {
 	 * 
 	 * @param and
 	 */
-	public void setOr(List<SearchCondition> or)
+	public void setOr(List<QueryCondition> or)
 	{
 		this.or = or;
 	}

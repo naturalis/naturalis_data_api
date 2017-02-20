@@ -17,14 +17,14 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
- * A {@code SearchSpecTranslator} translates a {@link SearchSpec} object into an
+ * A {@code SearchSpecTranslator} translates a {@link QuerySpec} object into an
  * Elasticsearch {@link SearchRequestBuilder query}.
  * 
  * @author Ayco Holleman
@@ -35,24 +35,24 @@ public class SearchSpecTranslator {
 	private static final Logger logger = getLogger(SearchSpecTranslator.class);
 	private static final int DEFAULT_SIZE = 10;
 
-	private SearchSpec spec;
+	private QuerySpec spec;
 	private DocumentType<?> dt;
 
 	/**
-	 * Creates a translator for the specified {@link SearchSpec} object
+	 * Creates a translator for the specified {@link QuerySpec} object
 	 * generating a query for the specified document type.
 	 * 
 	 * @param querySpec
 	 * @param documentType
 	 */
-	public SearchSpecTranslator(SearchSpec querySpec, DocumentType<?> documentType)
+	public SearchSpecTranslator(QuerySpec querySpec, DocumentType<?> documentType)
 	{
 		this.spec = querySpec;
 		this.dt = documentType;
 	}
 
 	/**
-	 * Translates the {@link SearchSpec} object into an Elasticsearch query.
+	 * Translates the {@link QuerySpec} object into an Elasticsearch query.
 	 * 
 	 * @return
 	 * @throws InvalidQueryException
@@ -112,19 +112,19 @@ public class SearchSpecTranslator {
 
 	private QueryBuilder translateConditions() throws InvalidConditionException
 	{
-		List<SearchCondition> conditions = spec.getConditions();
+		List<QueryCondition> conditions = spec.getConditions();
 		if (conditions.size() == 1) {
-			SearchCondition c = conditions.iterator().next();
+			QueryCondition c = conditions.iterator().next();
 			return getTranslator(c, dt).translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
 		if (spec.getLogicalOperator() == OR) {
-			for (SearchCondition c : conditions) {
+			for (QueryCondition c : conditions) {
 				result.should(getTranslator(c, dt).translate());
 			}
 		}
 		else {
-			for (SearchCondition c : conditions) {
+			for (QueryCondition c : conditions) {
 				result.must(getTranslator(c, dt).translate());
 			}
 		}
@@ -133,7 +133,7 @@ public class SearchSpecTranslator {
 
 	/*
 	 * This will set the nonScoring field of individual conditions within a
-	 * SearchSpec to false if the SearchSpec as a whole is non-scoring or if the
+	 * QuerySpec to false if the QuerySpec as a whole is non-scoring or if the
 	 * condition is negated. If we are dealing with a non-scoring search the
 	 * Elasticsearch query generated from all conditions together is wrapped
 	 * into one big constant_score query. The queries generated from the
@@ -144,12 +144,12 @@ public class SearchSpecTranslator {
 	private void overrideNonScoringIfNecessary()
 	{
 		if (spec.isConstantScore()) {
-			for (SearchCondition c : spec.getConditions()) {
+			for (QueryCondition c : spec.getConditions()) {
 				resetToScoring(c);
 			}
 		}
 		else {
-			for (SearchCondition c : spec.getConditions()) {
+			for (QueryCondition c : spec.getConditions()) {
 				if (c.isNegated()) {
 					resetToScoring(c);
 				}
@@ -157,7 +157,7 @@ public class SearchSpecTranslator {
 		}
 	}
 
-	private static void resetToScoring(SearchCondition condition)
+	private static void resetToScoring(QueryCondition condition)
 	{
 		if (condition.isConstantScore()) {
 			condition.setConstantScore(false);
@@ -171,12 +171,12 @@ public class SearchSpecTranslator {
 			}
 		}
 		if (condition.getAnd() != null) {
-			for (SearchCondition c : condition.getAnd()) {
+			for (QueryCondition c : condition.getAnd()) {
 				resetToScoring(c);
 			}
 		}
 		if (condition.getOr() != null) {
-			for (SearchCondition c : condition.getOr()) {
+			for (QueryCondition c : condition.getOr()) {
 				resetToScoring(c);
 			}
 		}

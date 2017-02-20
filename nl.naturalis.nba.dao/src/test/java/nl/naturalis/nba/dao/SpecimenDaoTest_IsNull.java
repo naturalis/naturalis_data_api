@@ -11,9 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
@@ -50,11 +50,11 @@ public class SpecimenDaoTest_IsNull {
 	{
 		// UnitGUID is null in all test specimens, so query should return them
 		// all.
-		SearchCondition condition = new SearchCondition("unitGUID", EQUALS, null);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition("unitGUID", EQUALS, null);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 5, result.size());
 	}
 
@@ -65,11 +65,11 @@ public class SpecimenDaoTest_IsNull {
 	public void test__02() throws InvalidQueryException
 	{
 		// UnitGUID is always null, so query should return 0 specimens.
-		SearchCondition condition = new SearchCondition(NOT, "unitGUID", EQUALS, null);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(NOT, "unitGUID", EQUALS, null);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());
 	}
 
@@ -79,12 +79,12 @@ public class SpecimenDaoTest_IsNull {
 	@Test
 	public void test__03() throws InvalidQueryException
 	{
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", EQUALS,
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", EQUALS,
 				null);
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// Only for mSylvestris is gatheringEvent.dateTimeBegin null.
 		assertEquals("01", 1, result.size());
 	}
@@ -96,11 +96,11 @@ public class SpecimenDaoTest_IsNull {
 	public void test__04() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
-		SearchCondition condition = new SearchCondition(field, EQUALS, null);
-		SearchSpec qs = new SearchSpec();
+		QueryCondition condition = new QueryCondition(field, EQUALS, null);
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		// pMajor, lFuscus1, lFuscus2 and tRex have site coordinates, so only
 		// mSylvestris should be returned.
 		assertEquals("01", 1, result.size());

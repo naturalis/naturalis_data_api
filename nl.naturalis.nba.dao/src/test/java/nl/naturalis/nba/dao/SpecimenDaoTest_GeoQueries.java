@@ -17,9 +17,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
 
@@ -72,12 +72,12 @@ public class SpecimenDaoTest_GeoQueries {
 	public void testQuery_01a() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.geoShape";
-		SearchCondition condition = new SearchCondition(field, IN, aalten.getShape());
+		QueryCondition condition = new QueryCondition(field, IN, aalten.getShape());
 		// That's lFuscus1
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -85,12 +85,12 @@ public class SpecimenDaoTest_GeoQueries {
 	public void testQuery_01b() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.geoShape";
-		SearchCondition condition = new SearchCondition(field, IN, uitgeest.getShape());
+		QueryCondition condition = new QueryCondition(field, IN, uitgeest.getShape());
 		// That's pMajor and lFuscus2
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -98,12 +98,12 @@ public class SpecimenDaoTest_GeoQueries {
 	public void testQuery_01c() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.geoShape";
-		SearchCondition condition = new SearchCondition(field, IN, noordHolland.getShape());
+		QueryCondition condition = new QueryCondition(field, IN, noordHolland.getShape());
 		// That's pMajor and lFuscus2
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -111,12 +111,12 @@ public class SpecimenDaoTest_GeoQueries {
 	public void testQuery_02a() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.geoShape";
-		SearchCondition condition = new SearchCondition(field, IN, "Aalten");
+		QueryCondition condition = new QueryCondition(field, IN, "Aalten");
 		// That's lFuscus1
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 1, result.size());
 	}
 
@@ -124,12 +124,12 @@ public class SpecimenDaoTest_GeoQueries {
 	public void testQuery_02b() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.geoShape";
-		SearchCondition condition = new SearchCondition(field, IN, "Uitgeest");
+		QueryCondition condition = new QueryCondition(field, IN, "Uitgeest");
 		// That's pMajor and lFuscus2
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 2, result.size());
 	}
 
@@ -137,12 +137,12 @@ public class SpecimenDaoTest_GeoQueries {
 	public void testQuery_02c() throws InvalidQueryException
 	{
 		String site = "gatheringEvent.siteCoordinates.geoShape";
-		SearchCondition condition = new SearchCondition(site, IN, "Netherlands");
+		QueryCondition condition = new QueryCondition(site, IN, "Netherlands");
 		// That's pMajor and lFuscus2
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
 	}
 

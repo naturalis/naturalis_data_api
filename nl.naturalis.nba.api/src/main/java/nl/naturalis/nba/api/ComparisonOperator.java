@@ -197,7 +197,7 @@ public enum ComparisonOperator
 	 * <li>If the field being queried is <b>not</b> a {@link GeoJsonObject}, the
 	 * operator is used to establish that the field&#39;s value is one of a
 	 * given set of values. The set of allowed value is specified by the condition's
-	 * {@link SearchCondition#getValue() value}. The condition's value <b>must</b> be
+	 * {@link QueryCondition#getValue() value}. The condition's value <b>must</b> be
 	 * an array or a {@link Collection} with zero or more elements. For example:
 	 * 
 	 * <pre>

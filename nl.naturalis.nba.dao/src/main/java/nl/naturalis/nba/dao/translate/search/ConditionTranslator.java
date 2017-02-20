@@ -22,11 +22,11 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.InvalidConditionException;
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 
 /**
- * Translates a {@link SearchCondition} into an Elasticsearch
+ * Translates a {@link QueryCondition} into an Elasticsearch
  * {@link QueryBuilder} instance. You cannot instantiate a
  * {@code ConditionTranslator} directly. Instances are obtained using a
  * {@link ConditionTranslatorFactory}.
@@ -55,7 +55,7 @@ public abstract class ConditionTranslator {
 		negatingOperators = EnumSet.of(NOT_BETWEEN, NOT_LIKE, NOT_IN, NOT_MATCHES);
 	}
 
-	SearchCondition condition;
+	QueryCondition condition;
 	MappingInfo<?> mappingInfo;
 
 	/*
@@ -67,7 +67,7 @@ public abstract class ConditionTranslator {
 	 */
 	private boolean forSortField = false;
 
-	ConditionTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
+	ConditionTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 	{
 		this.condition = condition;
 		this.mappingInfo = mappingInfo;
@@ -80,8 +80,8 @@ public abstract class ConditionTranslator {
 	}
 
 	/**
-	 * Converts the {@link SearchCondition} passed in through the
-	 * {@link #ConditionTranslator(SearchCondition) constructor} to an
+	 * Converts the {@link QueryCondition} passed in through the
+	 * {@link #ConditionTranslator(QueryCondition) constructor} to an
 	 * Elasticsearch {@link QueryBuilder} instance.
 	 * 
 	 * @return
@@ -163,7 +163,7 @@ public abstract class ConditionTranslator {
 	{
 		BoolQueryBuilder query = boolQuery();
 		query.must(firstSibling);
-		for (SearchCondition c : condition.getAnd()) {
+		for (QueryCondition c : condition.getAnd()) {
 			query.must(getTranslator(c, mappingInfo).translate());
 		}
 		return query;
@@ -174,7 +174,7 @@ public abstract class ConditionTranslator {
 	{
 		BoolQueryBuilder query = boolQuery();
 		query.should(firstSibling);
-		for (SearchCondition c : condition.getOr()) {
+		for (QueryCondition c : condition.getOr()) {
 			query.should(getTranslator(c, mappingInfo).translate());
 		}
 		return query;
@@ -191,7 +191,7 @@ public abstract class ConditionTranslator {
 	
 	private boolean constantScoreQueryRequired()
 	{
-		SearchCondition c = condition;
+		QueryCondition c = condition;
 		if (c.getOperator() != MATCHES && c.getOperator() != LIKE) {
 			return false;
 		}
@@ -207,7 +207,7 @@ public abstract class ConditionTranslator {
 		return boolQuery().mustNot(query);
 	}
 
-	private ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
+	private ConditionTranslator getTranslator(QueryCondition condition, MappingInfo<?> mappingInfo)
 			throws InvalidConditionException
 	{
 		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);

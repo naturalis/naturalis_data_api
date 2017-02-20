@@ -22,7 +22,7 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.Path;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
@@ -60,7 +60,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 	}
 
 	@Override
-	public void writeDwcaForQuery(SearchSpec querySpec)
+	public void writeDwcaForQuery(QuerySpec querySpec)
 			throws InvalidQueryException, DataSetConfigurationException, DataSetWriteException
 	{
 		logger.info("Generating DarwinCore archive for user-defined query");
@@ -94,7 +94,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		logger.info(fmt, dwcaConfig.getDataSetName());
 	}
 
-	private void writeCsvFilesForQuery(SearchSpec querySpec) throws InvalidQueryException,
+	private void writeCsvFilesForQuery(QuerySpec querySpec) throws InvalidQueryException,
 			DataSetConfigurationException, DataSetWriteException, IOException
 	{
 		for (Entity entity : dwcaConfig.getDataSet().getEntities()) {
@@ -112,7 +112,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			String fileName = dwcaConfig.getCsvFileName(entity);
 			logger.info("Adding CSV file for entity {}", entity.getName());
 			zos.putNextEntry(new ZipEntry(fileName));
-			SearchSpec query = entity.getDataSource().getQuerySpec();
+			QuerySpec query = entity.getDataSource().getQuerySpec();
 			SearchResponse response;
 			try {
 				response = executeQuery(query);
@@ -120,7 +120,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 			catch (InvalidQueryException e) {
 				/*
 				 * Not the user's fault but the application maintainer's,
-				 * because we got the SearchSpec from the config file, so we
+				 * because we got the QuerySpec from the config file, so we
 				 * convert the InvalidQueryException to a
 				 * DataSetConfigurationException
 				 */
@@ -172,7 +172,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 		zos.flush();
 	}
 
-	private static SearchResponse executeQuery(SearchSpec spec) throws InvalidQueryException
+	private static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException
 	{
 		SearchSpecTranslator qst = new SearchSpecTranslator(spec, DocumentType.TAXON);
 		SearchRequestBuilder request = qst.translate();

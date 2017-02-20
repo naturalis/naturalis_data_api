@@ -19,16 +19,16 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.LogicalOperator;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
 
 /**
- * Extracts {@link SearchSpec} objects from HTTP requests.
+ * Extracts {@link QuerySpec} objects from HTTP requests.
  * 
- * @see SearchSpec
+ * @see QuerySpec
  * 
  * @author Ayco Holleman
  *
@@ -58,7 +58,7 @@ public class HttpQuerySpecBuilder {
 	private MultivaluedMap<String, String> params;
 
 	/**
-	 * Creates a {@link SearchSpec} from the query parameters present in the URL.
+	 * Creates a {@link QuerySpec} from the query parameters present in the URL.
 	 * 
 	 * @param uriInfo
 	 */
@@ -69,7 +69,7 @@ public class HttpQuerySpecBuilder {
 	}
 
 	/**
-	 * Creates a {@link SearchSpec} from the form data in a x-www-form-urlencoded
+	 * Creates a {@link QuerySpec} from the form data in a x-www-form-urlencoded
 	 * request body.
 	 * 
 	 * @param formData
@@ -81,7 +81,7 @@ public class HttpQuerySpecBuilder {
 		this.uriInfo = uriInfo;
 	}
 
-	public SearchSpec build()
+	public QuerySpec build()
 	{
 		logger.info("Extracting QuerySpec object from request");
 		checkParams(uriInfo);
@@ -89,7 +89,7 @@ public class HttpQuerySpecBuilder {
 		if (values != null) {
 			return buildFromSearchSpecParam(values);
 		}
-		SearchSpec qs = new SearchSpec();
+		QuerySpec qs = new QuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
 		for (String param : params.keySet()) {
 			values = params.get(param);
@@ -124,14 +124,14 @@ public class HttpQuerySpecBuilder {
 						String msg = String.format(ERR_ILLEGAL_PARAM, param);
 						throw new HTTP400Exception(uriInfo, msg);
 					}
-					qs.addCondition(new SearchCondition(param, operator, value));
+					qs.addCondition(new QueryCondition(param, operator, value));
 					break;
 			}
 		}
 		return qs;
 	}
 
-	private SearchSpec buildFromSearchSpecParam(List<String> values)
+	private QuerySpec buildFromSearchSpecParam(List<String> values)
 	{
 		if (values.size() != 1) {
 			String msg = String.format(ERR_DUPLICATE_PARAM, PARAM_QUERY_SPEC);
@@ -142,7 +142,7 @@ public class HttpQuerySpecBuilder {
 			String msg = String.format(ERR_BAD_PARAM, PARAM_QUERY_SPEC, json);
 			throw new HTTP400Exception(uriInfo, msg);
 		}
-		return deserialize(json, SearchSpec.class);
+		return deserialize(json, QuerySpec.class);
 	}
 
 	private void checkParams(UriInfo uriInfo)

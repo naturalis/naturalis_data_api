@@ -33,9 +33,9 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NoSuchDataSetException;
-import nl.naturalis.nba.api.SearchCondition;
-import nl.naturalis.nba.api.SearchResult;
-import nl.naturalis.nba.api.SearchSpec;
+import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.QueryResult;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.TaxonDao;
@@ -93,10 +93,10 @@ public class TaxonResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public SearchResult<Taxon> query_GET(@Context UriInfo uriInfo)
+	public QueryResult<Taxon> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
 		}
@@ -109,11 +109,11 @@ public class TaxonResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public SearchResult<Taxon> query_POST_FORM(MultivaluedMap<String, String> form,
+	public QueryResult<Taxon> query_POST_FORM(MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
-			SearchSpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.query(qs);
 		}
@@ -126,7 +126,7 @@ public class TaxonResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public SearchResult<Taxon> query_POST_JSON(SearchSpec qs, @Context UriInfo uriInfo)
+	public QueryResult<Taxon> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			TaxonDao dao = new TaxonDao();
@@ -143,7 +143,7 @@ public class TaxonResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.count(qs);
 		}
@@ -159,7 +159,7 @@ public class TaxonResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -176,10 +176,10 @@ public class TaxonResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			SearchCondition[] conditions = null;
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new SearchCondition[qs.getConditions().size()]);
+				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
 			}
 			TaxonDao dao = new TaxonDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
@@ -195,7 +195,7 @@ public class TaxonResource {
 	public Response dwcaQuery(@Context UriInfo uriInfo)
 	{
 		try {
-			SearchSpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
 				public void write(OutputStream out) throws IOException

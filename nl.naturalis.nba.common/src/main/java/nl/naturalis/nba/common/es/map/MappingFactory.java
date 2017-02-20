@@ -25,7 +25,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.naturalis.nba.api.SearchCondition;
+import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.annotations.Analyzer;
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.GeoShape;
@@ -46,7 +46,7 @@ import nl.naturalis.nba.api.model.IDocumentObject;
  * fit the document type because the document type was generated from the very
  * class that contains the data); it also plays an important role when querying
  * data. For example, if a field is annotated with {@link NotIndexed}, the query
- * mechanism knows beforehand that a {@link SearchCondition query condition} on
+ * mechanism knows beforehand that a {@link QueryCondition query condition} on
  * that field will fail and won't even bother sending the query to
  * Elasticsearch.
  * </p>

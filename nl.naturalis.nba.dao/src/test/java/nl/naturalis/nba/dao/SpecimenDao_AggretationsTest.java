@@ -41,11 +41,6 @@ public class SpecimenDao_AggretationsTest {
 	public void testGroup_01() throws InvalidQueryException
 	{
 		SpecimenDao dao = new SpecimenDao();
-		QuerySpec qs = new QuerySpec();
-		qs.setFrom(1);
-		qs.setSize(1);
-		//qs.sortBy("unitID", false);
-		//qs.addCondition(new Condition("sex", "!=", "female"));
 		dao.getGroups("recordBasis", null);
 	}
 

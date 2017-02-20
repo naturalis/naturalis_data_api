@@ -1,6 +1,6 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.UnaryBooleanOperator.NOT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
@@ -17,7 +17,7 @@ import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
-public class SpecimenDaoTest_IsNullQueries {
+public class SpecimenDaoTest_IsNotNull {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -43,29 +43,12 @@ public class SpecimenDaoTest_IsNullQueries {
 	}
 
 	/*
-	 * Test with condition on string field.
+	 * Test with a condition that tests for NOT NULL on string field.
 	 */
 	@Test
 	public void test__01() throws InvalidQueryException
 	{
-		// UnitGUID is null in all test specimens, so query should return them
-		// all.
-		SearchCondition condition = new SearchCondition("unitGUID", EQUALS, null);
-		SearchSpec qs = new SearchSpec();
-		qs.addCondition(condition);
-		SpecimenDao dao = new SpecimenDao();
-		SearchResult<Specimen> result = dao.search(qs);
-		assertEquals("01", 5, result.size());
-	}
-
-	/*
-	 * Test with negated condition on string field.
-	 */
-	@Test
-	public void test__02() throws InvalidQueryException
-	{
-		// UnitGUID is always null, so query should return 0 specimens.
-		SearchCondition condition = new SearchCondition(NOT, "unitGUID", EQUALS, null);
+		SearchCondition condition = new SearchCondition("unitGUID", NOT_EQUALS, null);
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
@@ -74,36 +57,50 @@ public class SpecimenDaoTest_IsNullQueries {
 	}
 
 	/*
-	 * Test with negated condition on date field.
+	 * Test with a negated condition that tests for NOT NULL on string field.
+	 */
+	@Test
+	public void test__02() throws InvalidQueryException
+	{
+		SearchCondition condition = new SearchCondition(NOT, "unitGUID", NOT_EQUALS, null);
+		SearchSpec qs = new SearchSpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		SearchResult<Specimen> result = dao.search(qs);
+		assertEquals("01", 5, result.size());
+	}
+
+	/*
+	 * Test with a condition that tests for NOT NULL on number field.
 	 */
 	@Test
 	public void test__03() throws InvalidQueryException
 	{
-		SearchCondition condition = new SearchCondition("gatheringEvent.dateTimeBegin", EQUALS,
-				null);
+		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
+		SearchCondition condition = new SearchCondition(field, NOT_EQUALS, null);
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		SearchResult<Specimen> result = dao.search(qs);
-		// Only for mSylvestris is gatheringEvent.dateTimeBegin null.
-		assertEquals("01", 1, result.size());
+		// Only pMajor, lFuscus1, lFuscus2 and tRex have site coordinates.
+		assertEquals("01", 4, result.size());
 	}
 
 	/*
-	 * Test with a nested object
+	 * Test with double negative and nested object
 	 */
 	@Test
-	public void test__04() throws InvalidQueryException
+	public void test__08() throws InvalidQueryException
 	{
 		String field = "gatheringEvent.siteCoordinates.latitudeDecimal";
-		SearchCondition condition = new SearchCondition(field, EQUALS, null);
+		SearchCondition condition = new SearchCondition(NOT, field, NOT_EQUALS, null);
+		// In other words: field EQUALS null
 		SearchSpec qs = new SearchSpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		SearchResult<Specimen> result = dao.search(qs);
-		// pMajor, lFuscus1, lFuscus2 and tRex have site coordinates, so only
+		// pMajor, lFuscus1, lFuscus2, tRex have site coordinates, so only
 		// mSylvestris should be returned.
 		assertEquals("01", 1, result.size());
 	}
-
 }

@@ -23,7 +23,7 @@ import nl.naturalis.nba.api.model.Specimen;
  *
  */
 @SuppressWarnings("static-method")
-public class SpecimenDaoTest_LikeQueries {
+public class SpecimenDaoTest_Like {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

@@ -24,7 +24,7 @@ import nl.naturalis.nba.api.SearchSpec;
 import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
-public class SpecimenDaoTest_InQueries {
+public class SpecimenDaoTest_In {
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;

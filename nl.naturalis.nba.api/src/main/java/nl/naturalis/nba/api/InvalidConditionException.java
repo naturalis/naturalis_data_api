@@ -25,10 +25,10 @@ public class InvalidConditionException extends InvalidQueryException {
 
 	private static String createMessage(SearchCondition condition, String msg, Object... msgArgs)
 	{
-		StringBuilder sb = new StringBuilder(100);
-		sb.append("Invalid condition on field");
+		StringBuilder sb = new StringBuilder(200);
+		sb.append("Invalid condition on field ");
 		sb.append(condition.getField());
-		sb.append(" using operator").append((condition.getOperator()));
+		sb.append(" using operator ").append((condition.getOperator()));
 		sb.append(". ");
 		sb.append(String.format(msg, msgArgs));
 		return sb.toString();

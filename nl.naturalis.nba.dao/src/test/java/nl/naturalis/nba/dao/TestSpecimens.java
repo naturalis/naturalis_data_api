@@ -218,6 +218,10 @@ class TestSpecimens {
 		gathering.setDateTimeBegin(datetime("2007/04/03 13:04"));
 		gathering.setGatheringPersons(Arrays.asList(edwinVanHuis()));
 
+		GatheringSiteCoordinates coords;
+		coords = new GatheringSiteCoordinates(46.5884, 112.0245);
+		gathering.setSiteCoordinates(Arrays.asList(coords));
+
 		DefaultClassification classification = new DefaultClassification();
 		classification.setKingdom("Animalia");
 		classification.setPhylum("Chordata");

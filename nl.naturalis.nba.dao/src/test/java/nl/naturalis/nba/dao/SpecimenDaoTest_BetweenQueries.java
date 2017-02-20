@@ -55,7 +55,7 @@ public class SpecimenDaoTest_BetweenQueries {
 	}
 
 	@Test
-	public void testQuery__SearchSpec__01() throws InvalidQueryException
+	public void test__01() throws InvalidQueryException
 	{
 		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
@@ -76,7 +76,7 @@ public class SpecimenDaoTest_BetweenQueries {
 	}
 
 	@Test
-	public void testQuery__SearchSpec__02() throws InvalidQueryException
+	public void test__02() throws InvalidQueryException
 	{
 		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
@@ -99,7 +99,7 @@ public class SpecimenDaoTest_BetweenQueries {
 	 * Test with plain "string dates"
 	 */
 	@Test
-	public void testQuery__SearchSpec__03() throws InvalidQueryException
+	public void test__03() throws InvalidQueryException
 	{
 		String from = "2007-04-01";
 		String to = "2007-05-01";
@@ -117,7 +117,7 @@ public class SpecimenDaoTest_BetweenQueries {
 	 * Test with plain "string dates"
 	 */
 	@Test
-	public void testQuery__SearchSpec__04() throws InvalidQueryException
+	public void test__04() throws InvalidQueryException
 	{
 		String from = "2007-04-01T00:00:00Z";
 		String to = "2007-05-01T23:50:00Z";
@@ -129,5 +129,39 @@ public class SpecimenDaoTest_BetweenQueries {
 		SpecimenDao dao = new SpecimenDao();
 		SearchResult<Specimen> result = dao.search(qs);
 		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with field in nested object
+	 */
+	@Test
+	public void testWithNestedObject_01() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.longitudeDecimal";
+		double[] longitudes = new double[] { 110.0, 120.0 };
+		SearchCondition condition = new SearchCondition(field, BETWEEN, longitudes);
+		SearchSpec qs = new SearchSpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		SearchResult<Specimen> result = dao.search(qs);
+		// tRex
+		assertEquals("01", 1, result.size());
+	}
+
+	/*
+	 * Test with field in nested object
+	 */
+	@Test
+	public void testWithNestedObject_02() throws InvalidQueryException
+	{
+		String field = "gatheringEvent.siteCoordinates.longitudeDecimal";
+		double[] longitudes = new double[] { 110.0, 120.0 };
+		SearchCondition condition = new SearchCondition(field, NOT_BETWEEN, longitudes);
+		SearchSpec qs = new SearchSpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		SearchResult<Specimen> result = dao.search(qs);
+		// All but tRex
+		assertEquals("01", 4, result.size());
 	}
 }

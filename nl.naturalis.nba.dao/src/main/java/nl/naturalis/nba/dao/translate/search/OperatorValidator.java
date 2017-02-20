@@ -64,22 +64,61 @@ public class OperatorValidator {
 			ESDataType.class);
 
 	static {
+		/*
+		 * boolean
+		 */
 		t2o.put(BOOLEAN, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN));
+
+		/*
+		 * byte
+		 */
 		t2o.put(BYTE, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * short
+		 */
 		t2o.put(SHORT, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * integer
+		 */
 		t2o.put(INTEGER, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT,
 				LTE, GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * long
+		 */
 		t2o.put(LONG, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * float
+		 */
 		t2o.put(FLOAT, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * double
+		 */
 		t2o.put(DOUBLE, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT,
 				LTE, GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * date
+		 */
 		t2o.put(DATE, EnumSet.of(EQUALS, NOT_EQUALS, EQUALS_IC, NOT_EQUALS_IC, IN, NOT_IN, LT, LTE,
 				GT, GTE, BETWEEN, NOT_BETWEEN));
+
+		/*
+		 * geo_point
+		 */
 		t2o.put(GEO_POINT, EnumSet.of(IN, NOT_IN));
+
+		/*
+		 * geo_shape
+		 */
 		t2o.put(GEO_SHAPE, EnumSet.of(IN, NOT_IN));
 	}
 
@@ -106,7 +145,7 @@ public class OperatorValidator {
 			if (operator == MATCHES || operator == NOT_MATCHES) {
 				return ((KeywordField) field).hasMultiField(DEFAULT_MULTIFIELD);
 			}
-			return false;
+			return operator == IN || operator == NOT_IN;
 		}
 		EnumSet<ComparisonOperator> ops = t2o.get(field.getType());
 		if (ops == null) {

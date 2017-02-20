@@ -1,6 +1,5 @@
 package nl.naturalis.nba.dao.translate.search;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
@@ -29,11 +28,33 @@ class IsNullConditionTranslator extends ConditionTranslator {
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
 		String field = condition.getField().toString();
-		return boolQuery().mustNot(existsQuery(field));
+		/*
+		 * Note what happens here!!! We return an existsQuery, so it seems like
+		 * this will translate into an IS NOT NULL query instead of an IS NULL
+		 * query. However, we also override hasNegativeOperator() to force the
+		 * query to be wrapped into a mustNot() query later on. See
+		 * ConditionTranslator.postprocess(). The reason we cannot simply do the
+		 * wrapping here is that if the field belongs to a nested object, you
+		 * must FIRST wrap the existsQuery into a nestedQuery and then wrap the
+		 * nestedQuery into a mustNot query. If you do it the other way round it
+		 * won't work. We violate the semantics of hasNegativeOperator somewhat,
+		 * although not entirely: IS NULL is equivalent to a unary NOT_EXISTS
+		 * operator. Alternatively we could also simply have overridden the
+		 * entire postprocess() method. But for now, simply overriding
+		 * hasNegativeOperator() does the trick.
+		 */
+		return existsQuery(field);
 	}
 
 	@Override
 	void preprocess() throws InvalidConditionException
 	{
 	}
+
+	@Override
+	boolean hasNegativeOperator()
+	{
+		return true;
+	}
+
 }

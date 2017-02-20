@@ -27,7 +27,8 @@ class IsNotNullConditionTranslator extends ConditionTranslator {
 	@Override
 	QueryBuilder translateCondition() throws InvalidConditionException
 	{
-		return existsQuery(condition.getField().toString());
+		String field = condition.getField().toString();
+		return existsQuery(field);
 	}
 
 	@Override

@@ -108,11 +108,11 @@ public abstract class ConditionTranslator {
 	}
 
 	/*
-	 * Implement any up-front/fail-fast checks you can think of. Throw an
-	 * InvalidConditionException if the condition is deemed invalid. You can
-	 * also use this method to preprocess the condition, e.g. cast or convert
-	 * the condition's value. This method is called just before
-	 * translateCondition().
+	 * Implement any up-front/fail-fast checks you can think of. Subclasses
+	 * should throw an InvalidConditionException if the condition is deemed
+	 * invalid. Subclasses can also use this method to preprocess the condition,
+	 * e.g. cast or convert the condition's value. This method is called just
+	 * before translateCondition().
 	 */
 	abstract void preprocess() throws InvalidConditionException;
 
@@ -124,28 +124,27 @@ public abstract class ConditionTranslator {
 
 	/*
 	 * Applies processing steps to be taken after the condition has been turned
-	 * into an Elasticsearch query. As far as we can see these steps are
-	 * independent of the operator used in the condition, and hence are
-	 * implemented here (in the base class). However, if the need arises
-	 * subclasses can override this method. This method is called right after
-	 * translateCondition().
+	 * into an Elasticsearch query. These steps are ordinarily
+	 * operator-independent, and hence are implemented here (in the base class).
+	 * However, if the need arises subclasses can override this method. This
+	 * method is called right after translateCondition().
 	 */
 	QueryBuilder postprocess(QueryBuilder query)
 	{
-		if (hasNegativeOperator()) {
-			query = not(query);
-		}
 		String nestedPath = getNestedPath(condition.getField(), mappingInfo);
 		if (nestedPath != null) {
 			query = nestedQuery(nestedPath, query, ScoreMode.Avg);
+		}
+		if (hasNegativeOperator()) {
+			query = not(query);
 		}
 		if (constantScoreQueryRequired()) {
 			query = constantScoreQuery(query);
 		}
 		/*
 		 * NB even if we created a constant_score query, we still need to honour
-		 * de condition's boost setting, because the condition might be embedded
-		 * in a bool query, which _is_ a scoring query.
+		 * the condition's boost setting, because the condition might be
+		 * embedded in a bool query, which _is_ a scoring query.
 		 */
 		query.boost(condition.getBoost());
 		return query;
@@ -181,14 +180,15 @@ public abstract class ConditionTranslator {
 		return query;
 	}
 
-	private ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
-			throws InvalidConditionException
+	/*
+	 * Whether or not the condition translated by this translator instance uses
+	 * a negating operator.
+	 */
+	boolean hasNegativeOperator()
 	{
-		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);
-		ct.forSortField = forSortField;
-		return ct;
+		return negatingOperators.contains(condition.getOperator());
 	}
-
+	
 	private boolean constantScoreQueryRequired()
 	{
 		SearchCondition c = condition;
@@ -201,18 +201,18 @@ public abstract class ConditionTranslator {
 		return c.isConstantScore();
 	}
 
-	/*
-	 * Whether or not the condition translated by this translator instance uses
-	 * a negating operator.
-	 */
-	private boolean hasNegativeOperator()
-	{
-		return negatingOperators.contains(condition.getOperator());
-	}
 
 	private static QueryBuilder not(QueryBuilder query)
 	{
 		return boolQuery().mustNot(query);
+	}
+
+	private ConditionTranslator getTranslator(SearchCondition condition, MappingInfo<?> mappingInfo)
+			throws InvalidConditionException
+	{
+		ConditionTranslator ct = ConditionTranslatorFactory.getTranslator(condition, mappingInfo);
+		ct.forSortField = forSortField;
+		return ct;
 	}
 
 }

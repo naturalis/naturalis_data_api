@@ -1,0 +1,118 @@
+{
+  "bool" : {
+    "must" : [
+      {
+        "term" : {
+          "firstName" : {
+            "value" : "John",
+            "boost" : 1.0
+          }
+        }
+      },
+      {
+        "term" : {
+          "lastName" : {
+            "value" : "Smith",
+            "boost" : 1.0
+          }
+        }
+      },
+      {
+        "bool" : {
+          "should" : [
+            {
+              "bool" : {
+                "must" : [
+                  {
+                    "term" : {
+                      "country" : {
+                        "value" : "Germany",
+                        "boost" : 1.0
+                      }
+                    }
+                  },
+                  {
+                    "bool" : {
+                      "should" : [
+                        {
+                          "term" : {
+                            "city" : {
+                              "value" : "Berlin",
+                              "boost" : 1.0
+                            }
+                          }
+                        },
+                        {
+                          "term" : {
+                            "city" : {
+                              "value" : "Hanover",
+                              "boost" : 1.0
+                            }
+                          }
+                        }
+                      ],
+                      "disable_coord" : false,
+                      "adjust_pure_negative" : true,
+                      "boost" : 1.0
+                    }
+                  }
+                ],
+                "disable_coord" : false,
+                "adjust_pure_negative" : true,
+                "boost" : 1.0
+              }
+            },
+            {
+              "bool" : {
+                "must" : [
+                  {
+                    "term" : {
+                      "country" : {
+                        "value" : "Netherlands",
+                        "boost" : 1.0
+                      }
+                    }
+                  },
+                  {
+                    "bool" : {
+                      "should" : [
+                        {
+                          "term" : {
+                            "city" : {
+                              "value" : "Amsterdam",
+                              "boost" : 1.0
+                            }
+                          }
+                        },
+                        {
+                          "term" : {
+                            "city" : {
+                              "value" : "Rotterdam",
+                              "boost" : 1.0
+                            }
+                          }
+                        }
+                      ],
+                      "disable_coord" : false,
+                      "adjust_pure_negative" : true,
+                      "boost" : 1.0
+                    }
+                  }
+                ],
+                "disable_coord" : false,
+                "adjust_pure_negative" : true,
+                "boost" : 1.0
+              }
+            }
+          ],
+          "disable_coord" : false,
+          "adjust_pure_negative" : true,
+          "boost" : 1.0
+        }
+      }
+    ],
+    "disable_coord" : false,
+    "adjust_pure_negative" : true,
+    "boost" : 1.0
+  }
+}

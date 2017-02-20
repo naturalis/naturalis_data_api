@@ -1,0 +1,17 @@
+{
+  "nested" : {
+    "query" : {
+      "terms" : {
+        "pets.name" : [
+          "Napoleon",
+          "Max"
+        ],
+        "boost" : 1.0
+      }
+    },
+    "path" : "pets",
+    "ignore_unmapped" : false,
+    "score_mode" : "none",
+    "boost" : 1.0
+  }
+}

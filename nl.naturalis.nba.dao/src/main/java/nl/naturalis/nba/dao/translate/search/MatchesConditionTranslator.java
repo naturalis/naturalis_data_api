@@ -2,6 +2,7 @@ package nl.naturalis.nba.dao.translate.search;
 
 import static nl.naturalis.nba.common.es.map.MultiField.DEFAULT_MULTIFIELD;
 import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsNotNull;
+import static nl.naturalis.nba.dao.translate.search.TranslatorUtil.ensureValueIsString;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 import org.elasticsearch.index.query.QueryBuilder;
@@ -33,5 +34,6 @@ class MatchesConditionTranslator extends ConditionTranslator {
 	void preprocess() throws InvalidConditionException
 	{
 		ensureValueIsNotNull(condition);
+		ensureValueIsString(condition);
 	}
 }

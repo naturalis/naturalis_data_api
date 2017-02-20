@@ -45,7 +45,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_01.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_01.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -62,7 +62,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertEquals("02", query.getClass(), ExistsQueryBuilder.class);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_02.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_02.json";
 		assertTrue("03", queryEquals(query, file));
 	}
 
@@ -78,7 +78,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_03.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -95,7 +95,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("02", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_04.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_04.json";
 		assertTrue("03", queryEquals(query, file));
 	}
 
@@ -111,7 +111,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof TermQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_05.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_05.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -127,7 +127,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_06.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_06.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -142,7 +142,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_07.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_07.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -160,7 +160,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_08.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_08.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -178,7 +178,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_09.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_09.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -204,7 +204,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_10.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_10.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -220,7 +220,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_11.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_11.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 
@@ -238,7 +238,7 @@ public class EqualsConditionTranslatorTest {
 		QueryBuilder query = ct.translate();
 		System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
-		String file = "translate/query/EqualsConditionTranslatorTest__testTranslate_12.json";
+		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_12.json";
 		assertTrue("02", queryEquals(query, file));
 	}
 

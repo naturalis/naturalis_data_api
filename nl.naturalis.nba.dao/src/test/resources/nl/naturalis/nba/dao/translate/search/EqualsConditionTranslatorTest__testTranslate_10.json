@@ -26,7 +26,7 @@
                   {
                     "term" : {
                       "country" : {
-                        "value" : "Germany",
+                        "value" : "Netherlands",
                         "boost" : 1.0
                       }
                     }
@@ -37,7 +37,7 @@
                         {
                           "term" : {
                             "city" : {
-                              "value" : "Berlin",
+                              "value" : "Amsterdam",
                               "boost" : 1.0
                             }
                           }
@@ -45,7 +45,7 @@
                         {
                           "term" : {
                             "city" : {
-                              "value" : "Hanover",
+                              "value" : "Rotterdam",
                               "boost" : 1.0
                             }
                           }
@@ -68,7 +68,7 @@
                   {
                     "term" : {
                       "country" : {
-                        "value" : "Netherlands",
+                        "value" : "Germany",
                         "boost" : 1.0
                       }
                     }
@@ -79,7 +79,7 @@
                         {
                           "term" : {
                             "city" : {
-                              "value" : "Amsterdam",
+                              "value" : "Berlin",
                               "boost" : 1.0
                             }
                           }
@@ -87,7 +87,7 @@
                         {
                           "term" : {
                             "city" : {
-                              "value" : "Rotterdam",
+                              "value" : "Hanover",
                               "boost" : 1.0
                             }
                           }

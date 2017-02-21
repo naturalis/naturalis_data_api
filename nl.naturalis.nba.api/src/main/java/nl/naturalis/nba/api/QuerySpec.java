@@ -9,24 +9,22 @@ import nl.naturalis.nba.api.model.Taxon;
 
 /**
  * <p>
- * A {@code QuerySpec} allows you to specify an NBA query. All information
- * required by the various {@code search} methods in the API take a
- * {@link QuerySpec} object to drive the query process.
+ * A {@code QuerySpec} models an NBA query. All information required by the
+ * various {@code query} methods in the API take a {@link QuerySpec} object to
+ * drive the query process.
  * </p>
  * <h3>Providing query specifications through the REST API</h3>
  * <p>
- * Whenever a method in the formal API (the set of interfaces in the
- * {@code nl.naturalis.nba.api} package) takes a {@code QuerySpec} object, the
+ * Whenever a method in the formal API takes a {@code QuerySpec} object, the
  * corresponding REST API gives you two options the encode the {@code QuerySpec}
  * object in the URL. One option is to provide a {@code _querySpec} query
  * parameter whose value is the JSON-encoded {@code QuerySpec} object (i.e. the
  * {@code QuerySpec} object serialized to JSON). For example:
  * </p>
- * <p>
- * <code>
- * http://api.biodiversitydata.nl/v2/specimen/query?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22sourceSystem.code%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BRAHMS%22%7D%5D%2C%22from%22%3A0%2C%22size%22%3A0%7D<br>
- * </code>
- * </p>
+ * 
+ * <pre>
+ * http://api.biodiversitydata.nl/v2/specimen/query?_querySpec=%7B%22conditions%22%3A%5B%7B%22field%22%3A%22sourceSystem.code%22%2C%22operator%22%3A%22EQUALS%22%2C%22value%22%3A%22BRAHMS%22%7D%5D%2C%22from%22%3A0%2C%22size%22%3A0%7D
+ * </pre>
  * <p>
  * Since these URLs are hard to read and construct for humans, you can also
  * encode the query specification as follows:
@@ -34,10 +32,12 @@ import nl.naturalis.nba.api.model.Taxon;
  * <p>
  * <ol>
  * <li>Every query parameter that does not start with an underscore is turned
- * into a {@link QueryCondition query condition}. For example:<br>
- * <code>
- * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen<br>
- * </code>
+ * into a {@link QueryCondition query condition}. For example:
+ * 
+ * <pre>
+ * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&recordBasis=FossileSpecimen
+ * </pre>
+ * 
  * <li>The {@code _fields} parameter can be used to set the fields you want
  * returned in the response. You can specify multiple fields by separating them
  * with a comma. See {@link #setFields(List) setFields}.
@@ -48,10 +48,12 @@ import nl.naturalis.nba.api.model.Taxon;
  * <li>The {@code _sortFields} parameter can be used to specify the fields on
  * which to sort. You can specify multiple fields as well as sort directions by
  * using commas to separate the fields and colons the separate field from sort
- * direction. See {@link #setSortFields(List) setSortFields}. For example:<br>
- * <code>
- * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&_sortFields=recordBasis:ASC,unitID:DESC<br>
- * </code>
+ * direction. See {@link #setSortFields(List) setSortFields}. For example:
+ * 
+ * <pre>
+ * http://api.biodiversitydata.nl/v2/specimen/query?sourceSystem.code=CRS&_sortFields=recordBasis:ASC,unitID:DESC
+ * </pre>
+ * 
  * <li>The {@code _logicalOperator} parameter can be used to specify the logical
  * operator joining the query conditions (either AND or OR). See
  * {@link #setLogicalOperator(LogicalOperator) setLogicalOperator}.
@@ -65,6 +67,26 @@ import nl.naturalis.nba.api.model.Taxon;
  * parameters listed above. Complex queries with operators other than
  * {@link ComparisonOperator#EQUALS} or with nested query conditions are not
  * possible with the second option.
+ * </p>
+ * <h3>Non-scoring queries</h3>
+ * <p>
+ * You can turn a {@code QuerySpec} into a so-called non-scoring query by
+ * setting the {@link #setConstantScore(boolean) constantScore} property to
+ * {@code true}. This will disable the calculation of relevance scores for
+ * documents returned from the query, which usually improves performance. Note
+ * that score calculation can also be disabled for individual
+ * {@link QueryCondition query conditions} within the {@code QuerySpec}. In that
+ * case those particular conditions do not contribute to the over-all score of
+ * the document while the other conditions still do. Disabling score calculation
+ * at the {@code QuerySpec}-level is more rigorous than disabling score
+ * calculation at the {@code QueryCondition}-level. Even if you disable scoring
+ * for each and every individual query condition within the {@code QuerySpec},
+ * the final score may still end up being something else than 1. This is because
+ * Elasticsearch can and will also calculate a score from the boolean expression
+ * that results from combining all conditions using {@link LogicalOperator#AND
+ * AND} or {@link LogicalOperator#OR OR}. If you disable score calculation at
+ * the {@code QuerySpec}-level you are guaranteed that no score whatsoever will
+ * be calculated.
  * </p>
  * <h3>Example</h3>
  * <p>
@@ -106,7 +128,6 @@ import nl.naturalis.nba.api.model.Taxon;
  * <b>Finally, the JSON representation of the {@code QuerySpec} (needed for the
  * REST API):</b>
  * </p>
- * <p>
  * 
  * <pre>
  * {
@@ -133,7 +154,6 @@ import nl.naturalis.nba.api.model.Taxon;
  *    "size" : 50
  * }
  * </pre>
- * </p>
  * 
  * @author Ayco Holleman
  *

@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * <p>
- * Class modeling a search condition. A condition consists of a field name, a
+ * Class modeling a query condition. A condition consists of a field name, a
  * {@link ComparisonOperator} and a value. For example: "name", EQUALS, "John".
  * A condition can optionally have a list of sibling conditions. These are
  * joined to the containing condition using the AND or OR operator. A condition
@@ -29,7 +29,7 @@ import java.util.List;
  * <pre>
  * (C AND A1 AND A2 AND A3) OR O1 OR O2 OR O3
  * </pre>
- * </p>
+ * 
  * <h3>Negating a condition</h3>
  * <p>
  * A condition may be negated using operator {@link UnaryBooleanOperator#NOT
@@ -70,6 +70,35 @@ import java.util.List;
  * querySpec.addCondition(new Condition(NOT, "genus", EQUALS, "Larus"));
  * querySpec.addCondition(new Condition(NOT, "sourceSystem.code", EQUALS, "CRS"));
  * </pre>
+ * 
+ * <h3>Scoring and non-scoring conditions</h3>
+ * <p>
+ * There is a difference between <i>whether</i> a document satisfies a query
+ * condition on the one hand and <i>how well</i> it satisfies the query
+ * condition on the other. By default a score is calculated for how well a
+ * document satisfies a query condition. You can disable this by setting the
+ * {@link #setConstantScore(boolean) constantScore} property to {@code true}.
+ * This will turn the condition into a simple yes-or-no filter, which usually
+ * improves performance. Note though that this only makes sense with text
+ * searches using operator {@link ComparisonOperator#MATCHES MATCHES} or
+ * {@link ComparisonOperator#LIKE LIKE}. It specifically does not make sense to
+ * disable scoring for:
+ * <ul>
+ * <li>Other operators besides {@link ComparisonOperator#MATCHES MATCHES} and
+ * {@link ComparisonOperator#LIKE LIKE}. These already are intrinsically
+ * non-scoring. (For example, a string either {@link ComparisonOperator#EQUALS
+ * EQUALS} another string or it does not. The semantics of the {@code EQUALS}
+ * operator does not allow for gradations.)
+ * <li>Conditions on fields with a non-textual data type
+ * <li>Negated conditions. You can calculate how well a document matches a
+ * search phrase and you can also ascertain that document does <i>not</i> match
+ * a search phrase, but it does not makes sense to ask how badly it matches the
+ * search phrase. In other words, negated conditions are also intrinsically
+ * non-scoring. (For the same reason it does not make sense to disable scoring
+ * when using operator {@link ComparisonOperator#NOT_MATCHES NOT_MATCHES} or
+ * {@link ComparisonOperator#NOT_LIKE NOT_LIKE}.)
+ * </ul>
+ * </p>
  * 
  * @author Ayco Holleman
  *

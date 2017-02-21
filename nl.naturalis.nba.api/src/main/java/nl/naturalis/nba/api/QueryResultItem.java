@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A {@code QueryResultItem} encapsulates a single document (or other type of
- * object) returned from a {@link QuerySpec query}.
+ * A {@code QueryResultItem} contains a document (or other type of object)
+ * returned from a {@link QuerySpec query}. Besides the document itself a
+ * {@code QueryResultItem} also contains query-related metadata about the
+ * document, for example a relevance score.
  * 
  * @author Ayco Holleman
  *

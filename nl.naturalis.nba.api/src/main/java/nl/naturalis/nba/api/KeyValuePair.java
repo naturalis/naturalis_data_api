@@ -1,7 +1,7 @@
 package nl.naturalis.nba.api;
 
 /**
- * Java bean encapsulating a key-value pair.
+ * A generic tuple class.
  * 
  * @author Ayco Holleman
  *

@@ -11,13 +11,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Immutable class representing a path within an Elasticsearch document. A path
  * is represented as a dot-separated string of path elements. For example:
- * {@code gatheringEvent.dateTimeBegin}. Each consecutive element denotes an
- * object nested ever more deeply within the document, except for the last
- * element, which could also be a "primitive" value (strings, numbers, dates,
- * etc.). For some applications it may be valid to allow array indices in the
- * path. For example: {@code identications.0.defaultClassification.kingdom}.
- * However paths in {@link QueryCondition search conditions} must always be
- * "pure" paths without array indices.
+ * {@code gatheringEvent.dateTimeBegin}. The {@code Path} class supports array
+ * access through the following notation:
+ * {@code identications.0.defaultClassification.kingdom}. However a path in
+ * {@link QueryCondition query condition} must always be a "pure" path without
+ * array indices.
  * 
  * @author Ayco Holleman
  *

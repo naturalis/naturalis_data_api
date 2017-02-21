@@ -179,7 +179,7 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	 * while also having a condition on that same field, and the condition has a
 	 * sibling condition on another field.
 	 */
-	@Test(expected = InvalidConditionException.class)
+	@Test
 	public void test__07() throws InvalidQueryException
 	{
 		QuerySpec qs = new QuerySpec();
@@ -190,7 +190,18 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		qs.addCondition(condition);
 		qs.sortBy(field);
 		SpecimenDao dao = new SpecimenDao();
-		dao.query(qs);
+		QueryResult<Specimen> result = dao.query(qs);
+//		assertEquals("01", result.size(), 2);
+//		/*
+//		 * Since they both have the same scientific name, the specimens are
+//		 * sorted on unitID (ascending).
+//		 */
+//		String expected = lFuscus2.getUnitID(); // "309801857"
+//		String actual = result.get(0).getItem().getUnitID();
+//		assertEquals("02", expected, actual);
+//		expected = lFuscus1.getUnitID(); // "ZMA.MAM.101"
+//		actual = result.get(1).getItem().getUnitID();
+//		assertEquals("03", expected, actual);
 	}
 
 	private static List<Specimen> sortByUnitIDAscending()

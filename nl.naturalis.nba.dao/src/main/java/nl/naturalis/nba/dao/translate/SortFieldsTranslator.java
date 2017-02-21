@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTrans
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -84,36 +85,59 @@ class SortFieldsTranslator {
 	 */
 	private QueryBuilder translateConditions(Path sortField) throws InvalidConditionException
 	{
-		List<QueryCondition> conditions = querySpec.getConditions();
-		if (conditions == null || conditions.size() == 0) {
+
+		List<QueryCondition> conditions = prune(querySpec.getConditions(), sortField);
+		if (conditions == null) {
 			return null;
 		}
 		if (conditions.size() == 1) {
 			QueryCondition c = conditions.iterator().next();
-			if (c.getField().equals(sortField)) {
-				checkCondition(c, sortField);
-				return getTranslator(c, dt).forSortField().translate();
-			}
-			return null;
+			return getTranslator(c, dt).forSortField().translate();
 		}
 		BoolQueryBuilder result = QueryBuilders.boolQuery();
+		for (QueryCondition c : conditions) {
+			if (querySpec.getLogicalOperator() == OR) {
+				result.should(getTranslator(c, dt).forSortField().translate());
+			}
+			else {
+				result.must(getTranslator(c, dt).forSortField().translate());
+			}
+		}
+		return result;
+
+		//		List<QueryCondition> conditions = querySpec.getConditions();
+		//		if (conditions == null || conditions.size() == 0) {
+		//			return null;
+		//		}
+		//		if (conditions.size() == 1) {
+		//			QueryCondition c = conditions.iterator().next();
+		//			if (c.getField().equals(sortField)) {
+		//				checkCondition(c, sortField);
+		//				return getTranslator(c, dt).forSortField().translate();
+		//			}
+		//			return null;
+		//		}
+		//		
+		//		BoolQueryBuilder result = QueryBuilders.boolQuery();
+		//		
+		//		
 		/*
 		 * Do we have any conditions on the same field that we want to sort on?
 		 */
-		boolean hasConditionWithSortField = false;
-		for (QueryCondition c : conditions) {
-			if (c.getField().equals(sortField)) {
-				hasConditionWithSortField = true;
-				checkCondition(c, sortField);
-				if (querySpec.getLogicalOperator() == OR) {
-					result.should(getTranslator(c, dt).forSortField().translate());
-				}
-				else {
-					result.must(getTranslator(c, dt).forSortField().translate());
-				}
-			}
-		}
-		return hasConditionWithSortField ? result : null;
+		//		boolean hasConditionWithSortField = false;		
+		//		for (QueryCondition c : conditions) {
+		//			if (c.getField().equals(sortField)) {
+		//				hasConditionWithSortField = true;
+		//				checkCondition(c, sortField);
+		//				if (querySpec.getLogicalOperator() == OR) {
+		//					result.should(getTranslator(c, dt).forSortField().translate());
+		//				}
+		//				else {
+		//					result.must(getTranslator(c, dt).forSortField().translate());
+		//				}
+		//			}
+		//		}
+		//		return hasConditionWithSortField ? result : null;
 	}
 
 	/*
@@ -122,25 +146,99 @@ class SortFieldsTranslator {
 	 * conditions on that very same field. NB this restriction only applies when
 	 * generating a FieldSortBuilder for a field within a nested object.
 	 */
-	private static void checkCondition(QueryCondition condition, Path sortField)
-			throws InvalidConditionException
+	//	private static void checkCondition(QueryCondition condition, Path sortField)
+	//			throws InvalidConditionException
+	//	{
+	//		if (condition.getAnd() != null) {
+	//			for (QueryCondition c : condition.getAnd()) {
+	//				if (!c.getField().equals(sortField)) {
+	//					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
+	//				}
+	//				checkCondition(c, sortField);
+	//			}
+	//		}
+	//		if (condition.getOr() != null) {
+	//			for (QueryCondition c : condition.getOr()) {
+	//				if (!c.getField().equals(sortField)) {
+	//					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
+	//				}
+	//				checkCondition(c, sortField);
+	//			}
+	//		}
+	//	}
+
+	private static List<QueryCondition> prune(List<QueryCondition> conditions, Path sortField)
 	{
+		if (conditions == null) {
+			return null;
+		}
+		List<QueryCondition> copies = new ArrayList<>(conditions.size());
+		for (QueryCondition c : conditions) {
+			c = juggle(c, sortField);
+			if (c != null) {
+				c.setAnd(prune(c.getAnd(), sortField));
+				c.setOr(prune(c.getOr(), sortField));
+				copies.add(c);
+			}
+		}
+		return copies.size() == 0 ? null : copies;
+	}
+
+	/*
+	 * Dark magic
+	 */
+	private static QueryCondition juggle(QueryCondition condition, Path sortField)
+	{
+		if (condition.getField().equals(sortField)) {
+			return condition;
+		}
+		QueryCondition alternative = null;
 		if (condition.getAnd() != null) {
+			List<QueryCondition> and = new ArrayList<>(condition.getAnd().size());
 			for (QueryCondition c : condition.getAnd()) {
-				if (!c.getField().equals(sortField)) {
-					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
+				if (c.getField().equals(sortField)) {
+					if (alternative == null && c.getAnd() == null && c.getOr() == null) {
+						alternative = c;
+					}
+					else {
+						and.add(c);
+					}
 				}
-				checkCondition(c, sortField);
+			}
+			if (alternative != null) {
+				if (and.size() != 0) {
+					alternative.setAnd(and);
+				}
+				if (condition.getOr() != null) {
+					List<QueryCondition> or = new ArrayList<>(condition.getOr().size());
+					for (QueryCondition c : condition.getOr()) {
+						if (c.getField().equals(sortField)) {
+							or.add(c);
+						}
+					}
+					if (or.size() != 0) {
+						alternative.setOr(or);
+					}
+				}
 			}
 		}
-		if (condition.getOr() != null) {
+		else if (condition.getOr() != null) {
+			List<QueryCondition> or = new ArrayList<>(condition.getOr().size());
 			for (QueryCondition c : condition.getOr()) {
-				if (!c.getField().equals(sortField)) {
-					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
+				if (c.getField().equals(sortField)) {
+					if (alternative == null && c.getAnd() == null && c.getOr() == null) {
+						alternative = c;
+					}
+					else {
+						or.add(c);
+					}
 				}
-				checkCondition(c, sortField);
+			}
+			if (alternative != null && or.size() != 0) {
+				alternative.setOr(or);
 			}
 		}
+		return alternative;
 	}
 
 	private static InvalidQueryException invalidSortField(Path field)

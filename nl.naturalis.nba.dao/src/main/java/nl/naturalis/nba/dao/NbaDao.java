@@ -47,7 +47,7 @@ import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.translate.search.SearchSpecTranslator;
+import nl.naturalis.nba.dao.translate.SearchSpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.Scroller;
 

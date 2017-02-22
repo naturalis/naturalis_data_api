@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.LogicalOperator;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
@@ -248,15 +249,15 @@ public class HttpQuerySpecBuilder {
 	/*
 	 * Returns value of _fields query parameter.
 	 */
-	private static List<String> getFields(String value)
+	private static List<Path> getFields(String value)
 	{
 		if (value.length() == 0) {
 			return null;
 		}
 		String[] chunks = value.split(",");
-		List<String> fields = new ArrayList<>(chunks.length);
+		List<Path> fields = new ArrayList<>(chunks.length);
 		for (String chunk : chunks) {
-			fields.add(chunk.trim());
+			fields.add(new Path(chunk.trim()));
 		}
 		return fields;
 	}

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -39,8 +40,9 @@ public class ArrayUtil {
 	}
 
 	/**
-	 * Converts the specified array of objects to an array of strings by calling
-	 * {@code toString()} on each of its elements.
+	 * Converts the specified array of objects to a string array by calling
+	 * {@code toString()} on each of its elements. For {@code null} values in
+	 * the source array an empty string is added to the string array.
 	 * 
 	 * @param array
 	 *            The array of objects to stringify
@@ -53,7 +55,26 @@ public class ArrayUtil {
 
 			public String execute(T obj, Object... args)
 			{
-				return obj.toString();
+				return obj == null ? StringUtil.EMPTY : obj.toString();
+			}
+		});
+	}
+
+	/**
+	 * Converts the specified collection to a string array by calling
+	 * {@code toString()} on each of its elements. For {@code null} values in
+	 * the collection an empty string is added to the string array.
+	 * 
+	 * @param collection
+	 * @return
+	 */
+	public static <T> String[] stringify(Collection<T> collection)
+	{
+		return stringify(collection, new Stringifier<T>() {
+
+			public String execute(T obj, Object... args)
+			{
+				return obj == null ? StringUtil.EMPTY : obj.toString();
 			}
 		});
 	}
@@ -75,8 +96,20 @@ public class ArrayUtil {
 	public static <T> String[] stringify(T[] array, Stringifier<T> stringifier, Object... options)
 	{
 		String[] result = new String[array.length];
-		for (int i = 0; i < array.length; ++i)
+		for (int i = 0; i < array.length; ++i) {
 			result[i] = stringifier.execute(array[i], options);
+		}
+		return result;
+	}
+
+	public static <T> String[] stringify(Collection<T> collection, Stringifier<T> stringifier,
+			Object... options)
+	{
+		String[] result = new String[collection.size()];
+		int i = 0;
+		for (T obj : collection) {
+			result[i++] = stringifier.execute(obj, options);
+		}
 		return result;
 	}
 

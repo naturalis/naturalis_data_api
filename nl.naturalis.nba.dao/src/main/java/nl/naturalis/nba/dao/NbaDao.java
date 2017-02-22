@@ -160,7 +160,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		else {
 			querySpec = new QuerySpec();
 		}
-		querySpec.setFields(Arrays.asList(groupByField));
+		querySpec.addFields(groupByField);
 		querySpec.addCondition(new QueryCondition(groupByField, NOT_EQUALS, null));
 		querySpec.sortBy(groupByField);
 		GetGroupsSearchHitHandler handler = new GetGroupsSearchHitHandler(groupByField, from, size);
@@ -215,7 +215,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		DistinctValuesPerGroupSearchHitHandler handler;
 		handler = new DistinctValuesPerGroupSearchHitHandler(keyField, valuesField);
 		QuerySpec qs = new QuerySpec();
-		qs.setFields(Arrays.asList(keyField, valuesField));
+		qs.addFields(keyField, valuesField);
 		if (conditions != null && conditions.length != 0) {
 			qs.setConditions(Arrays.asList(conditions));
 		}

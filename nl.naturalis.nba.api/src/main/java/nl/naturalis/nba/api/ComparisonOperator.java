@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.geojson.GeoJsonObject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import nl.naturalis.nba.api.model.GeoArea;
 
 /**
@@ -18,11 +20,11 @@ public enum ComparisonOperator
 {
 
 	/**
-	 * Operator used to establish that {@link Condition#getValue() query value}
-	 * and {@link Condition#getField() field value} are equal. For text fields
-	 * the comparison is done in a case sensitive way. The EQUALS operator also
-	 * allows you to search for null values by providing a query value that is
-	 * {@code null}. This is equivalent to using the
+	 * Operator used to establish that {@link QueryCondition#getValue() query
+	 * value} and {@link QueryCondition#getField() field value} are equal. For
+	 * text fields the comparison is done in a case sensitive way. The EQUALS
+	 * operator also allows you to search for null values by providing a query
+	 * value that is {@code null}. This is equivalent to using the
 	 * 
 	 * <pre>
 	 * IS NULL
@@ -32,8 +34,8 @@ public enum ComparisonOperator
 	 * 
 	 * <pre>
 	 * 
-	 * // Retrieves all documents in which taxonRank is not set<br>
-	 * Condition condition = new Condition("taxonRank", EQUALS, null);
+	 * // Retrieves all documents in which taxonRank is not set
+	 * QueryCondition condition = new QueryCondition("taxonRank", EQUALS, null);
 	 * </pre>
 	 */
 	EQUALS("="),
@@ -53,8 +55,8 @@ public enum ComparisonOperator
 	 * 
 	 * <pre>
 	 * 
-	 * // Retrieves all documents in which taxonRank is set<br>
-	 * Condition condition = new Condition("taxonRank", NOT_EQUALS, null);
+	 * // Retrieves all documents in which taxonRank is set
+	 * QueryCondition condition = new QueryCondition("taxonRank", NOT_EQUALS, null);
 	 * </pre>
 	 */
 	NOT_EQUALS("!="),
@@ -161,20 +163,21 @@ public enum ComparisonOperator
 	 * <p>
 	 * Operator used to establish that a field&#39;s value falls within a given
 	 * range. Can only be used for number fields and date fields. When using the
-	 * BETWEEN or NOT_BETWEEN operator in a {@link Condition}, the
-	 * {@link Condition#getValue() value} property of the condition <b>must</b>
-	 * be an array or a {@link Collection} object with exactly two elements. The
-	 * first element is used as the "from" value (inclusive). The second element
-	 * is used as the "to" value (inclusive). Although you can choose any
-	 * {@link Collection} implementation you like, you should not choose one
-	 * where you have no control over the order of the elements (like
+	 * BETWEEN or NOT_BETWEEN operator in a {@link QueryCondition}, the
+	 * {@link QueryCondition#getValue() value} property of the condition
+	 * <b>must</b> be an array or a {@link Collection} object with exactly two
+	 * elements. The first element is used as the "from" value (inclusive). The
+	 * second element is used as the "to" value (inclusive). Although you can
+	 * choose any {@link Collection} implementation you like, you should not
+	 * choose one where you have no control over the order of the elements (like
 	 * {@link HashSet}). Example:
 	 * </p>
 	 * <p>
 	 * 
 	 * <pre>
 	 * 
-	 * Condition condition = new Condition("numberOfSpecimen", BETWEEN, new int[] { 10, 20 });
+	 * QueryCondition condition = new QueryCondition("numberOfSpecimen", BETWEEN,
+	 * 		new int[] { 10, 20 });
 	 * </pre>
 	 * </p>
 	 */
@@ -196,14 +199,17 @@ public enum ComparisonOperator
 	 * <ol>
 	 * <li>If the field being queried is <b>not</b> a {@link GeoJsonObject}, the
 	 * operator is used to establish that the field&#39;s value is one of a
-	 * given set of values. The set of allowed value is specified by the condition's
-	 * {@link QueryCondition#getValue() value}. The condition's value <b>must</b> be
-	 * an array or a {@link Collection} with zero or more elements. For example:
+	 * given set of values. The set of allowed value is specified by the
+	 * condition's {@link QueryCondition#getValue() value}. The condition's
+	 * value <b>must</b> be an array or a {@link Collection} with zero or more
+	 * elements. For example:
 	 * 
 	 * <pre>
 	 * 
-	 * Condition condition0 = new Condition("phaseOrStage", IN, new String[] { "embryo", "pupa", "larva" });
-	 * Condition condition1 = new Condition("numberOfSpecimen", IN, new int[] { 1, 3, 5, 7, 9 });
+	 * QueryCondition condition0 = new QueryCondition("phaseOrStage", IN,
+	 * 		new String[] { "embryo", "pupa", "larva" });
+	 * QueryCondition condition1 = new QueryCondition("numberOfSpecimen", IN,
+	 * 		new int[] { 1, 3, 5, 7, 9 });
 	 * </pre>
 	 * 
 	 * <li>If the field being queried is a {@link GeoJsonObject} <i>and</i> the
@@ -214,12 +220,13 @@ public enum ComparisonOperator
 	 * <pre>
 	 * // Using a GeoJSON string:
 	 * String field = "gatheringEvent.siteCoordinates.geoShape";
-	 * Condition condition = new Condition(field, IN, "{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");
+	 * QueryCondition condition = new QueryCondition(field, IN,
+	 * 		"{\"type\": \"polygon\", \"coordinates\": [ /&#42; etc. &#42;/ ]}");
 	 * 
 	 * // Using a GeoJsonObject:
 	 * Polygon polygon = new Polygon();
 	 * polygon.setCoordinates( /&#42; etc. &#42;/ );
-	 * Condition condition = new Condition(field, IN, polygon);
+	 * QueryCondition condition = new QueryCondition(field, IN, polygon);
 	 * </pre>
 	 * 
 	 * <li>If the field being queried is a {@link GeoJsonObject} <i>and</i> the
@@ -230,19 +237,21 @@ public enum ComparisonOperator
 	 * <pre>
 	 * 
 	 * String field = "gatheringEvent.siteCoordinates.geoShape";
-	 * Condition condition0 = new Condition(field, IN, "Amsterdam");
-	 * Condition condition1 = new Condition(field, IN, new String[] { "Amsterdam", "Berlin" });
+	 * QueryCondition condition0 = new QueryCondition(field, IN, "Amsterdam");
+	 * QueryCondition condition1 = new QueryCondition(field, IN,
+	 * 		new String[] { "Amsterdam", "Berlin" });
 	 * </pre>
 	 * 
 	 * <br>
 	 * In stead of a locality name you can also provide the ID of the
-	 * corresponding {@link GeoArea} document (see also {@link IGeoAreaAccess}). For example:
+	 * corresponding {@link GeoArea} document (see also {@link IGeoAreaAccess}).
+	 * For example:
 	 * 
 	 * <pre>
 	 * 
 	 * String field = "gatheringEvent.siteCoordinates.geoShape";
 	 * // ID of the GeoArea document for Amsterdam:
-	 * Condition condition0 = new Condition(field, IN, "1003624@GEO");
+	 * QueryCondition condition0 = new QueryCondition(field, IN, "1003624@GEO");
 	 * </pre>
 	 * </ol>
 	 */
@@ -257,10 +266,10 @@ public enum ComparisonOperator
 
 	/**
 	 * Operator used to trigger a full-text search. Can only be used for text
-	 * fields. The {@link Condition#getValue() query value} is broken up along
-	 * word boundaries (commas, periods, space characters, etc.) with each word
-	 * constituting a separate search term. A match exists if any of the search
-	 * terms matches the targeted field. See the <a href=
+	 * fields. The {@link QueryCondition#getValue() query value} is broken up
+	 * along word boundaries (commas, periods, space characters, etc.) with each
+	 * word constituting a separate search term. A match exists if any of the
+	 * search terms matches the targeted field. See the <a href=
 	 * "https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html">Elasticsearch
 	 * documentation</a>.
 	 */
@@ -279,6 +288,7 @@ public enum ComparisonOperator
 	 * @param s
 	 * @return
 	 */
+	@JsonCreator
 	public static ComparisonOperator parse(String s)
 	{
 		if (s != null) {
@@ -291,10 +301,10 @@ public enum ComparisonOperator
 				}
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("No such comparison operator: " + s);
 	}
 
-	private final String symbol;
+	private String symbol;
 
 	private ComparisonOperator()
 	{

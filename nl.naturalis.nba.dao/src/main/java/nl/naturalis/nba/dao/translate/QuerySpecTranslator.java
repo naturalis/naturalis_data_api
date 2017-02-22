@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.LogicalOperator.OR;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
+import static nl.naturalis.nba.utils.ArrayUtil.stringify;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
@@ -88,9 +90,9 @@ public class QuerySpecTranslator {
 	private void addFields(SearchRequestBuilder request) throws InvalidQueryException
 	{
 		MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
-		List<String> fields = spec.getFields();
-		for (String field : fields) {
-			if (field.equals("id")) {
+		List<Path> fields = spec.getFields();
+		for (Path field : fields) {
+			if (field.toString().equals("id")) {
 				/*
 				 * This is a special field that can be used to retrieve the
 				 * Elasticsearch document ID, which is not part of the document
@@ -106,7 +108,7 @@ public class QuerySpecTranslator {
 				throw new InvalidQueryException(e.getMessage());
 			}
 		}
-		String[] include = fields.toArray(new String[fields.size()]);
+		String[] include = stringify(fields);
 		request.setFetchSource(include, null);
 	}
 
@@ -165,8 +167,7 @@ public class QuerySpecTranslator {
 				String field = condition.getField().toString();
 				String msg = "constantScore field for Condition on field {} "
 						+ "reset to false because it is a negated condition "
-						+ "or because it is already embedded  within a "
-						+ "non-scoring context";
+						+ "or because it is already embedded  within a " + "non-scoring context";
 				logger.debug(msg, field);
 			}
 		}

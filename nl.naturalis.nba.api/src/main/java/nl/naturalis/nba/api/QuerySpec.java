@@ -1,7 +1,6 @@
 package nl.naturalis.nba.api;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.Specimen;
@@ -161,7 +160,7 @@ import nl.naturalis.nba.api.model.Taxon;
 public class QuerySpec {
 
 	private boolean constantScore;
-	private List<String> fields;
+	private List<Path> fields;
 	private List<QueryCondition> conditions;
 	private LogicalOperator logicalOperator;
 	private List<SortField> sortFields;
@@ -189,18 +188,21 @@ public class QuerySpec {
 	}
 
 	/**
-	 * Specifies one or more fields to be returned in the query response. The
-	 * field must belong to the document type being queried. See
-	 * {@link #getFields() getFields}.
+	 * Specifies one or more fields to be returned in the query response. Akin
+	 * to an SQL SELECT clause. The field must belong to the document type being
+	 * queried. See {@link #getFields() getFields}.
 	 * 
 	 * @param fields
 	 */
 	public void addFields(String... fields)
 	{
 		if (this.fields == null) {
-			this.fields = new ArrayList<>();
+			int sz = Math.max(fields.length, 8);
+			this.fields = new ArrayList<>(sz);
 		}
-		this.fields.addAll(Arrays.asList(fields));
+		for (String field : fields) {
+			this.fields.add(new Path(field));
+		}
 	}
 
 	/**
@@ -250,7 +252,7 @@ public class QuerySpec {
 	 * 
 	 * @return
 	 */
-	public List<String> getFields()
+	public List<Path> getFields()
 	{
 		return fields;
 	}
@@ -273,7 +275,7 @@ public class QuerySpec {
 	 * 
 	 * @return
 	 */
-	public void setFields(List<String> fields)
+	public void setFields(List<Path> fields)
 	{
 		this.fields = fields;
 	}

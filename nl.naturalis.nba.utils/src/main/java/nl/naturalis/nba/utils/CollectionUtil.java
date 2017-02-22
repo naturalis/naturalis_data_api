@@ -30,6 +30,18 @@ public class CollectionUtil {
 		return collection != null && !collection.isEmpty();
 	}
 
+	public static <T> List<String> stringify(Collection<T> collection)
+	{
+		return stringify(collection, new Stringifier<T>() {
+
+			@Override
+			public String execute(T obj, Object... conversionArguments)
+			{
+				return obj == null ? StringUtil.EMPTY : obj.toString();
+			}
+		});
+	}
+
 	public static <T> List<String> stringify(Collection<T> collection, Stringifier<T> stringifier,
 			Object... options)
 	{

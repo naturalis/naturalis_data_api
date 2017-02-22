@@ -24,15 +24,15 @@ import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
- * A {@code SearchSpecTranslator} translates a {@link QuerySpec} object into an
+ * A {@code QuerySpecTranslator} translates a {@link QuerySpec} object into an
  * Elasticsearch {@link SearchRequestBuilder query}.
  * 
  * @author Ayco Holleman
  *
  */
-public class SearchSpecTranslator {
+public class QuerySpecTranslator {
 
-	private static final Logger logger = getLogger(SearchSpecTranslator.class);
+	private static final Logger logger = getLogger(QuerySpecTranslator.class);
 	private static final int DEFAULT_SIZE = 10;
 
 	private QuerySpec spec;
@@ -45,7 +45,7 @@ public class SearchSpecTranslator {
 	 * @param querySpec
 	 * @param documentType
 	 */
-	public SearchSpecTranslator(QuerySpec querySpec, DocumentType<?> documentType)
+	public QuerySpecTranslator(QuerySpec querySpec, DocumentType<?> documentType)
 	{
 		this.spec = querySpec;
 		this.dt = documentType;

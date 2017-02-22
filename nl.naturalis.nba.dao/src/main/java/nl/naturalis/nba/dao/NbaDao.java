@@ -47,7 +47,7 @@ import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
-import nl.naturalis.nba.dao.translate.SearchSpecTranslator;
+import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.dao.util.es.Scroller;
 
@@ -105,7 +105,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("query", querySpec));
 		}
-		SearchSpecTranslator translator = new SearchSpecTranslator(querySpec, dt);
+		QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 		return createSearchResult(translator.translate());
 	}
 
@@ -120,7 +120,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			request = newSearchRequest(dt);
 		}
 		else {
-			SearchSpecTranslator translator = new SearchSpecTranslator(querySpec, dt);
+			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 			request = translator.translate();
 		}
 		request.setSize(0);
@@ -187,7 +187,7 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			request = newSearchRequest(dt);
 		}
 		else {
-			SearchSpecTranslator translator = new SearchSpecTranslator(querySpec, dt);
+			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
 			request = translator.translate();
 		}
 		TermsAggregationBuilder aggregation = AggregationBuilders.terms(forField);

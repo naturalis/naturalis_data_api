@@ -128,7 +128,7 @@ class ShapeInLocalityConditionTranslator extends ConditionTranslator {
 		}
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(new QueryCondition("locality", EQUALS, locality));
-		SearchSpecTranslator translator = new SearchSpecTranslator(qs, GEO_AREA);
+		QuerySpecTranslator translator = new QuerySpecTranslator(qs, GEO_AREA);
 		SearchRequestBuilder request;
 		try {
 			request = translator.translate();

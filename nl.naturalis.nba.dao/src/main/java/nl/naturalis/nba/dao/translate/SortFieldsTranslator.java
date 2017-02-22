@@ -29,9 +29,6 @@ import nl.naturalis.nba.dao.DocumentType;
 
 class SortFieldsTranslator {
 
-	private static final String ERR_01 = "Sorting on %1$s not allowed in combination "
-			+ "with condition on %1$s and a sibling condition on %2$s";
-
 	private QuerySpec querySpec;
 	private DocumentType<?> dt;
 
@@ -86,7 +83,7 @@ class SortFieldsTranslator {
 	private QueryBuilder translateConditions(Path sortField) throws InvalidConditionException
 	{
 
-		List<QueryCondition> conditions = prune(querySpec.getConditions(), sortField);
+		List<QueryCondition> conditions = pruneAll(querySpec.getConditions(), sortField);
 		if (conditions == null) {
 			return null;
 		}
@@ -104,80 +101,22 @@ class SortFieldsTranslator {
 			}
 		}
 		return result;
-
-		//		List<QueryCondition> conditions = querySpec.getConditions();
-		//		if (conditions == null || conditions.size() == 0) {
-		//			return null;
-		//		}
-		//		if (conditions.size() == 1) {
-		//			QueryCondition c = conditions.iterator().next();
-		//			if (c.getField().equals(sortField)) {
-		//				checkCondition(c, sortField);
-		//				return getTranslator(c, dt).forSortField().translate();
-		//			}
-		//			return null;
-		//		}
-		//		
-		//		BoolQueryBuilder result = QueryBuilders.boolQuery();
-		//		
-		//		
-		/*
-		 * Do we have any conditions on the same field that we want to sort on?
-		 */
-		//		boolean hasConditionWithSortField = false;		
-		//		for (QueryCondition c : conditions) {
-		//			if (c.getField().equals(sortField)) {
-		//				hasConditionWithSortField = true;
-		//				checkCondition(c, sortField);
-		//				if (querySpec.getLogicalOperator() == OR) {
-		//					result.should(getTranslator(c, dt).forSortField().translate());
-		//				}
-		//				else {
-		//					result.must(getTranslator(c, dt).forSortField().translate());
-		//				}
-		//			}
-		//		}
-		//		return hasConditionWithSortField ? result : null;
 	}
 
 	/*
-	 * This method ensures that if we have a condition on the same field as the
-	 * sort field, then the condition's siblings and descendants must all be
-	 * conditions on that very same field. NB this restriction only applies when
-	 * generating a FieldSortBuilder for a field within a nested object.
+	 * Prune away any conditions that are not on the specified field.
 	 */
-	//	private static void checkCondition(QueryCondition condition, Path sortField)
-	//			throws InvalidConditionException
-	//	{
-	//		if (condition.getAnd() != null) {
-	//			for (QueryCondition c : condition.getAnd()) {
-	//				if (!c.getField().equals(sortField)) {
-	//					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
-	//				}
-	//				checkCondition(c, sortField);
-	//			}
-	//		}
-	//		if (condition.getOr() != null) {
-	//			for (QueryCondition c : condition.getOr()) {
-	//				if (!c.getField().equals(sortField)) {
-	//					throw new InvalidConditionException(c, ERR_01, sortField, c.getField());
-	//				}
-	//				checkCondition(c, sortField);
-	//			}
-	//		}
-	//	}
-
-	private static List<QueryCondition> prune(List<QueryCondition> conditions, Path sortField)
+	private static List<QueryCondition> pruneAll(List<QueryCondition> conditions, Path sortField)
 	{
 		if (conditions == null) {
 			return null;
 		}
 		List<QueryCondition> copies = new ArrayList<>(conditions.size());
 		for (QueryCondition c : conditions) {
-			c = juggle(c, sortField);
+			c = prune(c, sortField);
 			if (c != null) {
-				c.setAnd(prune(c.getAnd(), sortField));
-				c.setOr(prune(c.getOr(), sortField));
+				c.setAnd(pruneAll(c.getAnd(), sortField));
+				c.setOr(pruneAll(c.getOr(), sortField));
 				copies.add(c);
 			}
 		}
@@ -185,9 +124,21 @@ class SortFieldsTranslator {
 	}
 
 	/*
-	 * Dark magic
+	 * Dark magic. Stay away. This method prunes away all of the specified
+	 * condition's siblings that are not conditions on the sort field. If the
+	 * specified condition is itself not a condition on the sort field, we
+	 * attempt to replace it with a sibling that is. This may not always be
+	 * possible, in which case we return null. This basically means: we give up
+	 * and the documents may not be sorted correctly. We seek out a sibling that
+	 * has itself zero siblings, because this allows us to copy the original
+	 * condition's siblings to its replacement. This way we retain as many as
+	 * possible conditions on the sort field while recursively descending into
+	 * the original condition's descendants. This is all super-hairy, but
+	 * Elasticsearch is itself very vague about how all this can possibly work
+	 * with complex queries with deeply nested conditions on both the sort field
+	 * and other fields.
 	 */
-	private static QueryCondition juggle(QueryCondition condition, Path sortField)
+	private static QueryCondition prune(QueryCondition condition, Path sortField)
 	{
 		if (condition.getField().equals(sortField)) {
 			return condition;
@@ -206,6 +157,8 @@ class SortFieldsTranslator {
 				}
 			}
 			if (alternative != null) {
+				// Create copy b/c we are going to change it
+				alternative = new QueryCondition(alternative);
 				if (and.size() != 0) {
 					alternative.setAnd(and);
 				}
@@ -235,6 +188,7 @@ class SortFieldsTranslator {
 				}
 			}
 			if (alternative != null && or.size() != 0) {
+				alternative = new QueryCondition(alternative);
 				alternative.setOr(or);
 			}
 		}

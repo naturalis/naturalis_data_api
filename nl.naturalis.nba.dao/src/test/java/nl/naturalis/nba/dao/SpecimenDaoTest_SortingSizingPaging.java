@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.ComparisonOperator.EQUALS;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_EQUALS;
 import static nl.naturalis.nba.api.SortOrder.DESC;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
@@ -16,7 +17,6 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.LogicalOperator;
 import nl.naturalis.nba.api.QueryCondition;
@@ -175,9 +175,8 @@ public class SpecimenDaoTest_SortingSizingPaging {
 	}
 
 	/*
-	 * Ensure that we get an error if we sort on a field within a nested object
-	 * while also having a condition on that same field, and the condition has a
-	 * sibling condition on another field.
+	 * Sort on field in nested object while also having a condition on that
+	 * field. The condition has a sibling that is on another field.
 	 */
 	@Test
 	public void test__07() throws InvalidQueryException
@@ -185,23 +184,21 @@ public class SpecimenDaoTest_SortingSizingPaging {
 		QuerySpec qs = new QuerySpec();
 		String field = "identifications.scientificName.fullScientificName";
 		QueryCondition condition = new QueryCondition(field, EQUALS, "Larus f. fuscus");
-		QueryCondition sibling = new QueryCondition("unitID", EQUALS, "ZMA.MAM.100");
+		// A bogus, superflous extra query condition
+		QueryCondition sibling = new QueryCondition("recordBasis", NOT_EQUALS, "BLA BLA");
 		condition.and(sibling);
 		qs.addCondition(condition);
 		qs.sortBy(field);
+		qs.sortBy("unitID");
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-//		assertEquals("01", result.size(), 2);
-//		/*
-//		 * Since they both have the same scientific name, the specimens are
-//		 * sorted on unitID (ascending).
-//		 */
-//		String expected = lFuscus2.getUnitID(); // "309801857"
-//		String actual = result.get(0).getItem().getUnitID();
-//		assertEquals("02", expected, actual);
-//		expected = lFuscus1.getUnitID(); // "ZMA.MAM.101"
-//		actual = result.get(1).getItem().getUnitID();
-//		assertEquals("03", expected, actual);
+		assertEquals("01", result.size(), 2);
+		String expected = lFuscus2.getUnitID(); // "309801857"
+		String actual = result.get(0).getItem().getUnitID();
+		assertEquals("02", expected, actual);
+		expected = lFuscus1.getUnitID(); // "ZMA.MAM.101"
+		actual = result.get(1).getItem().getUnitID();
+		assertEquals("03", expected, actual);
 	}
 
 	private static List<Specimen> sortByUnitIDAscending()

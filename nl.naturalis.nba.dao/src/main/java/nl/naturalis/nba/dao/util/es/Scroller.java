@@ -20,7 +20,7 @@ import nl.naturalis.nba.api.NbaException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.translate.SearchSpecTranslator;
+import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 /**
  * Utility class for using Elasticsearch's scroll API. Note that when using this
@@ -111,7 +111,7 @@ public class Scroller {
 			}
 			querySpec.setSize(null);
 		}
-		SearchSpecTranslator qst = new SearchSpecTranslator(querySpec, documentType);
+		QuerySpecTranslator qst = new QuerySpecTranslator(querySpec, documentType);
 		request = qst.translate();
 		if (querySpec.getSortFields() == null || querySpec.getSortFields().size() == 0) {
 			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);

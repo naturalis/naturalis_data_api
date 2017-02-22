@@ -34,7 +34,7 @@ import nl.naturalis.nba.dao.format.EntityObject;
 import nl.naturalis.nba.dao.format.IEntityFilter;
 import nl.naturalis.nba.dao.format.IField;
 import nl.naturalis.nba.dao.format.csv.CsvRecordWriter;
-import nl.naturalis.nba.dao.translate.SearchSpecTranslator;
+import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
@@ -174,7 +174,7 @@ class MultiDataSourceDwcaWriter implements IDwcaWriter {
 
 	private static SearchResponse executeQuery(QuerySpec spec) throws InvalidQueryException
 	{
-		SearchSpecTranslator qst = new SearchSpecTranslator(spec, DocumentType.TAXON);
+		QuerySpecTranslator qst = new QuerySpecTranslator(spec, DocumentType.TAXON);
 		SearchRequestBuilder request = qst.translate();
 		request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
 		request.setScroll(TIME_OUT);

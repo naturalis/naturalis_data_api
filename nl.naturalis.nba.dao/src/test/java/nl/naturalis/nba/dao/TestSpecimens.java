@@ -155,6 +155,7 @@ class TestSpecimens {
 		specimen.setUnitID("309801857");
 		specimen.setSourceSystem(NDFF);
 		specimen.setPhaseOrStage(EGG);
+		specimen.setNumberOfSpecimen(4);
 		GatheringEvent gathering = new GatheringEvent();
 		gathering.setCountry("Netherlands");
 		gathering.setCity("Uitgeest");

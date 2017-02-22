@@ -54,12 +54,21 @@ public class SpecimenDaoTest_Between {
 		// dropIndex(Specimen.class);
 	}
 
+	/*
+	 * Test with dates.
+	 */
 	@Test
 	public void test__01() throws InvalidQueryException
 	{
 		Date gatheringDate = pMajor.getGatheringEvent().getDateTimeBegin();
 		Instant instant = gatheringDate.toInstant();
 		ZoneId dfault = ZoneId.systemDefault();
+		/*
+		 * Construct 2 dates just around gatheringEvent.dateTimeBegin of pMajor.
+		 * Each test specimen has a gatheringEvent.dateTimeBegin that lies one
+		 * year after the next test specimen, so we can have only one query
+		 * result (pMajor).
+		 */
 		OffsetDateTime two = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime t = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] fromTo = new OffsetDateTime[] { two, t };
@@ -69,9 +78,6 @@ public class SpecimenDaoTest_Between {
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
-		// Each test specimen has a gatheringEvent.dateTimeBegin that lies one
-		// year after the next test specimen, so we can have only one query
-		// result (pMajor).
 		assertEquals("01", 1, result.size());
 	}
 
@@ -162,6 +168,74 @@ public class SpecimenDaoTest_Between {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		// All but tRex
+		assertEquals("01", 4, result.size());
+	}
+
+	/*
+	 * Make sure null means: no lower bound
+	 */
+	@Test
+	public void testWithLowerBoundIsNull_01() throws InvalidQueryException
+	{
+		String field = "numberOfSpecimen";
+		Integer[] range = new Integer[] { null, 3 };
+		QueryCondition condition = new QueryCondition(field, BETWEEN, range);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// All but lFuscus2
+		assertEquals("01", 4, result.size());
+	}
+
+	@Test
+	public void testWithLowerBoundIsNull_02() throws InvalidQueryException
+	{
+		String field = "numberOfSpecimen";
+		Integer[] range = new Integer[] { null, 3 };
+		QueryCondition condition = new QueryCondition(field, NOT_BETWEEN, range);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// lFuscus2
+		assertEquals("01", 1, result.size());
+		String expected = lFuscus2.getUnitID();
+		String actual = result.iterator().next().getItem().getUnitID();
+		assertEquals("02", expected, actual);
+	}
+
+	/*
+	 * Make sure null means: no upper bound
+	 */
+	@Test
+	public void testWithUpperBoundIsNull_01() throws InvalidQueryException
+	{
+		String field = "numberOfSpecimen";
+		Integer[] range = new Integer[] { 3, null };
+		QueryCondition condition = new QueryCondition(field, BETWEEN, range);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// lFuscus2
+		assertEquals("01", 1, result.size());
+		String expected = lFuscus2.getUnitID();
+		String actual = result.iterator().next().getItem().getUnitID();
+		assertEquals("02", expected, actual);
+	}
+
+	@Test
+	public void testWithUpperBoundIsNull_02() throws InvalidQueryException
+	{
+		String field = "numberOfSpecimen";
+		Integer[] range = new Integer[] { 3, null };
+		QueryCondition condition = new QueryCondition(field, NOT_BETWEEN, range);
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		// All but lFuscus2
 		assertEquals("01", 4, result.size());
 	}
 }

@@ -79,8 +79,8 @@ public class SpecimenDaoTest_IsNull {
 	@Test
 	public void test__03() throws InvalidQueryException
 	{
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", EQUALS,
-				null);
+		String field = "gatheringEvent.dateTimeBegin";
+		QueryCondition condition = new QueryCondition(field, EQUALS, null);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

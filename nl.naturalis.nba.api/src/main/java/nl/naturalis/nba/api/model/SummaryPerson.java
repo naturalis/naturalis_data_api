@@ -9,11 +9,6 @@ public class SummaryPerson implements INbaModelObject {
 	{
 	}
 
-	public SummaryPerson(String fullName)
-	{
-		this.fullName = fullName;
-	}
-
 	public String getFullName()
 	{
 		return fullName;

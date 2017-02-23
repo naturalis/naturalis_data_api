@@ -26,7 +26,6 @@ public class Monomial implements INbaModelObject {
 
 	public Monomial()
 	{
-
 	}
 
 	/**

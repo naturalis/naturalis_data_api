@@ -13,5 +13,5 @@ elasticsearch.index.2.name=multimedia
 elasticsearch.index.2.types=MultiMediaObject
 elasticsearch.index.3.name=geoareas
 elasticsearch.index.3.types=GeoArea
-elasticsearch.index.4.name=sns
-elasticsearch.index.4.types=ScientificNameSummary
+elasticsearch.index.4.name=namegroups
+elasticsearch.index.4.types=NameGroup

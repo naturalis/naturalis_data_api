@@ -12,6 +12,7 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class GatheringEvent implements INbaModelObject {
 
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String projectTitle;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String worldRegion;
@@ -34,7 +35,6 @@ public class GatheringEvent implements INbaModelObject {
 	private String localityText;
 	private Date dateTimeBegin;
 	private Date dateTimeEnd;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String method;
 	private String altitude;
 	private String altitudeUnifOfMeasurement;

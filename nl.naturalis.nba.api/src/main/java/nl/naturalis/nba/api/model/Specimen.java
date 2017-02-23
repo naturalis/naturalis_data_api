@@ -16,6 +16,7 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
 	private String unitGUID;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectorsFieldNumber;
 	private String assemblageID;
 	private String sourceInstitutionID;
@@ -25,11 +26,13 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private String license;
 	private String recordBasis;
 	private String kindOfUnit;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectionType;
 	private SpecimenTypeStatus typeStatus;
 	private Sex sex;
 	private PhaseOrStage phaseOrStage;
 	private String title;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String notes;
 	private String preparationType;
 	private int numberOfSpecimen;
@@ -40,7 +43,6 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private Agent acquiredFrom;
 	private GatheringEvent gatheringEvent;
 	private List<SpecimenIdentification> identifications;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private List<String> theme;
 
 	@NotNested

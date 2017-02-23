@@ -1,11 +1,5 @@
 package nl.naturalis.nba.api.model;
 
-import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
-import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
-import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
-import nl.naturalis.nba.api.annotations.Analyzers;
-
 public class SourceSystem implements INbaModelObject {
 
 	public static final SourceSystem BRAHMS = new SourceSystem("BRAHMS",
@@ -21,7 +15,6 @@ public class SourceSystem implements INbaModelObject {
 	public static final SourceSystem GEO = new SourceSystem("GEO", "Naturalis - Geo Areas");
 
 	private String code;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String name;
 
 	public SourceSystem()

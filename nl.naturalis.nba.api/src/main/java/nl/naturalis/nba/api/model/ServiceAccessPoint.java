@@ -1,6 +1,12 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
 import java.net.URI;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
 
 public class ServiceAccessPoint implements INbaModelObject {
 
@@ -9,6 +15,7 @@ public class ServiceAccessPoint implements INbaModelObject {
 		THUMBNAIL, TRAILER, LOWER_QUALITY, MEDIUM_QUALITY, GOOD_QUALITY, BEST_QUALITY, OFFLINE
 	}
 
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private URI accessUri;
 	private String format;
 	private Variant variant;

@@ -36,11 +36,13 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String license;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectionType;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String title;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String caption;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String description;
 	private List<ServiceAccessPoint> serviceAccessPoints;
 	private Type type;
@@ -58,7 +60,6 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private List<String> sexes;
 	private List<MultiMediaGatheringEvent> gatheringEvents;
 	private List<MultiMediaContentIdentification> identifications;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private List<String> theme;
 
 	// Non-persistent data

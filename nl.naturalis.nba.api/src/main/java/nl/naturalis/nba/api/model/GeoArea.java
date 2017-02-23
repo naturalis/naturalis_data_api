@@ -11,7 +11,6 @@ import nl.naturalis.nba.api.annotations.Analyzers;
 public class GeoArea extends NbaTraceableObject implements IDocumentObject {
 
 	private String id;
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String areaType;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String locality;

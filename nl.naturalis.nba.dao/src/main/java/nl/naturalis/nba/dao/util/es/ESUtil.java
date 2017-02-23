@@ -166,7 +166,7 @@ public class ESUtil {
 		result.add(DocumentType.TAXON.getIndexInfo());
 		result.add(DocumentType.MULTI_MEDIA_OBJECT.getIndexInfo());
 		result.add(DocumentType.GEO_AREA.getIndexInfo());
-		result.add(DocumentType.SCIENTIFIC_NAME_SUMMARY.getIndexInfo());
+		result.add(DocumentType.NAME_GROUP.getIndexInfo());
 		return result;
 	}
 

@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_SUMMARY;
+import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
@@ -20,7 +20,7 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.model.ScientificNameSummary;
+import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -36,9 +36,9 @@ class NameImportUtil {
 		return h;
 	}
 
-	static List<ScientificNameSummary> loadNames(Collection<String> names)
+	static List<NameGroup> loadNames(Collection<String> names)
 	{
-		DocumentType<ScientificNameSummary> dt = SCIENTIFIC_NAME_SUMMARY;
+		DocumentType<NameGroup> dt = NAME_GROUP;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
 		query.addIds(names.toArray(new String[names.size()]));
@@ -47,18 +47,18 @@ class NameImportUtil {
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0)
 			return Collections.emptyList();
-		List<ScientificNameSummary> result = new ArrayList<>(hits.length);
+		List<NameGroup> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			ScientificNameSummary sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			NameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
 			result.add(sns);
 		}
 		return result;
 	}
 
-	static List<ScientificNameSummary> loadNames2(Collection<String> names)
+	static List<NameGroup> loadNames2(Collection<String> names)
 	{
-		DocumentType<ScientificNameSummary> dt = SCIENTIFIC_NAME_SUMMARY;
+		DocumentType<NameGroup> dt = NAME_GROUP;
 		SearchRequestBuilder request = newSearchRequest(dt);
 		String field = "fullScientificName";
 		TermsQueryBuilder query = QueryBuilders.termsQuery(field, names);
@@ -68,10 +68,10 @@ class NameImportUtil {
 		if (hits.length == 0) {
 			return Collections.emptyList();
 		}
-		List<ScientificNameSummary> result = new ArrayList<>(hits.length);
+		List<NameGroup> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			ScientificNameSummary sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			NameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
 			result.add(sns);
 		}
 		return result;

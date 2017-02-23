@@ -1,5 +1,6 @@
 package nl.naturalis.nba.rest.resource;
 
+import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
@@ -26,9 +27,8 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.ScientificNameSummary;
-import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.dao.ScientificNameSummaryDao;
+import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.dao.NameGroupDao;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
@@ -38,10 +38,10 @@ import nl.naturalis.nba.utils.StringUtil;
 @Stateless
 @LocalBean
 @SuppressWarnings("static-method")
-public class ScientificNameSummaryResource {
+public class NameGroupResource {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(ScientificNameSummaryResource.class);
+	private static final Logger logger = LogManager.getLogger(NameGroupResource.class);
 
 	@EJB
 	Registry registry;
@@ -49,13 +49,13 @@ public class ScientificNameSummaryResource {
 	@GET
 	@Path("/find/{id}")
 	@Produces(JSON_CONTENT_TYPE)
-	public ScientificNameSummary find(@PathParam("id") String id, @Context UriInfo uriInfo)
+	public NameGroup find(@PathParam("id") String id, @Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
-			ScientificNameSummary result = dao.find(id);
+			NameGroupDao dao = new NameGroupDao();
+			NameGroup result = dao.find(id);
 			if (result == null) {
-				throw new HTTP404Exception(uriInfo, DocumentType.TAXON, id);
+				throw new HTTP404Exception(uriInfo, NAME_GROUP, id);
 			}
 			return result;
 		}
@@ -67,11 +67,11 @@ public class ScientificNameSummaryResource {
 	@GET
 	@Path("/findByIds/{ids}")
 	@Produces(JSON_CONTENT_TYPE)
-	public ScientificNameSummary[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
+	public NameGroup[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.find(idArray);
 		}
 		catch (Throwable t) {
@@ -82,11 +82,11 @@ public class ScientificNameSummaryResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<ScientificNameSummary> query_GET(@Context UriInfo uriInfo)
+	public QueryResult<NameGroup> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -98,12 +98,12 @@ public class ScientificNameSummaryResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<ScientificNameSummary> query_POST_FORM(MultivaluedMap<String, String> form,
+	public QueryResult<NameGroup> query_POST_FORM(MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -115,11 +115,10 @@ public class ScientificNameSummaryResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<ScientificNameSummary> query_POST_JSON(QuerySpec qs,
-			@Context UriInfo uriInfo)
+	public QueryResult<NameGroup> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -150,7 +149,7 @@ public class ScientificNameSummaryResource {
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.getDistinctValues(field, qs);
 		}
 		catch (Throwable t) {
@@ -172,7 +171,7 @@ public class ScientificNameSummaryResource {
 				conditions = qs.getConditions()
 						.toArray(new QueryCondition[qs.getConditions().size()]);
 			}
-			ScientificNameSummaryDao dao = new ScientificNameSummaryDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
 		}
 		catch (Throwable t) {

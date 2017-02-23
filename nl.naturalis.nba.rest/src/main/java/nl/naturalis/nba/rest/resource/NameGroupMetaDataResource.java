@@ -17,18 +17,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.dao.ScientificNameSummaryMetaDataDao;
+import nl.naturalis.nba.dao.NameGroupMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
 @Path("/names/metadata")
 @Stateless
 @LocalBean
-public class ScientificNameSummaryMetaDataResource {
+public class NameGroupMetaDataResource {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager
-			.getLogger(ScientificNameSummaryMetaDataResource.class);
+	private static final Logger logger = LogManager.getLogger(NameGroupMetaDataResource.class);
 
 	@EJB
 	Registry registry;
@@ -39,7 +38,7 @@ public class ScientificNameSummaryMetaDataResource {
 	public String[] getPaths(@Context UriInfo uriInfo)
 	{
 		try {
-			ScientificNameSummaryMetaDataDao dao = new ScientificNameSummaryMetaDataDao();
+			NameGroupMetaDataDao dao = new NameGroupMetaDataDao();
 			String s = uriInfo.getQueryParameters().getFirst("sorted");
 			boolean sorted = ConfigObject.isTrueValue(s);
 			return dao.getPaths(sorted);
@@ -57,7 +56,7 @@ public class ScientificNameSummaryMetaDataResource {
 	{
 		try {
 			ComparisonOperator op = ComparisonOperator.parse(operator);
-			ScientificNameSummaryMetaDataDao dao = new ScientificNameSummaryMetaDataDao();
+			NameGroupMetaDataDao dao = new NameGroupMetaDataDao();
 			return dao.isOperatorAllowed(field, op);
 		}
 		catch (Throwable t) {

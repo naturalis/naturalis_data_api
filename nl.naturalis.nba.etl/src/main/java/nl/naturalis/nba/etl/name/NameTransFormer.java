@@ -8,9 +8,7 @@ import java.util.Set;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.ScientificNameSummary;
-import nl.naturalis.nba.api.model.ScientificNameSummary.SpecimenSummary;
-import nl.naturalis.nba.api.model.ScientificNameSummary.TaxonSummary;
+import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
@@ -18,9 +16,9 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractDocumentTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
-class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNameSummary> {
+class NameTransformer extends AbstractDocumentTransformer<Specimen, NameGroup> {
 
-	private HashMap<String, ScientificNameSummary> nameCache;
+	private HashMap<String, NameGroup> nameCache;
 	private HashMap<String, List<Taxon>> taxonCache;
 
 	NameTransformer(ETLStatistics stats)
@@ -37,14 +35,14 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 	}
 
 	@Override
-	protected List<ScientificNameSummary> doTransform()
+	protected List<NameGroup> doTransform()
 	{
 		// No record-level validations, so:
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
 			List<SpecimenIdentification> identifications = input.getIdentifications();
-			List<ScientificNameSummary> result = new ArrayList<>(identifications.size());
+			List<NameGroup> result = new ArrayList<>(identifications.size());
 			Set<String> names = new HashSet<>(identifications.size());
 			for (SpecimenIdentification si : identifications) {
 				String fsn = si.getScientificName().getFullScientificName();
@@ -53,7 +51,7 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 					stats.objectsRejected++;
 					continue;
 				}
-				ScientificNameSummary sns = nameCache.get(fsn);
+				NameGroup sns = nameCache.get(fsn);
 				addSpecimen(sns, si);
 				addTaxa(sns, fsn);
 				if (!names.contains(fsn)) {
@@ -70,75 +68,75 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 		}
 	}
 
-	private void addSpecimen(ScientificNameSummary name, SpecimenIdentification si)
+	private void addSpecimen(NameGroup name, SpecimenIdentification si)
 	{
-		Specimen specimen = input;
-		SpecimenSummary summary = new SpecimenSummary();
-		summary.setId(specimen.getId());
-		summary.setUnitID(specimen.getUnitID());
-		summary.setSourceSystem(specimen.getSourceSystem().getName());
-		summary.setRecordBasis(specimen.getRecordBasis());
-		name.addSpecimen(summary);
-		DefaultClassification dc = si.getDefaultClassification();
-		if (dc != null) {
-			if (dc.getKingdom() != null)
-				name.addKingdom(dc.getKingdom());
-			if (dc.getPhylum() != null)
-				name.addPhylum(dc.getPhylum());
-			if (dc.getClassName() != null)
-				name.addClass(dc.getClassName());
-			if (dc.getOrder() != null)
-				name.addOrder(dc.getOrder());
-			if (dc.getFamily() != null)
-				name.addFamily(dc.getFamily());
-			if (dc.getGenus() != null)
-				name.addGenus(dc.getGenus());
-			if (dc.getSubgenus() != null)
-				name.addSubgenus(dc.getSubgenus());
-			if (dc.getSpecificEpithet() != null)
-				name.addSpecificEpithet(dc.getSpecificEpithet());
-			if (dc.getInfraspecificEpithet() != null)
-				name.addInfraspecificEpithet(dc.getInfraspecificEpithet());
-		}
-		ScientificName sn = si.getScientificName();
-		if (sn != null) {
-			if (sn.getGenusOrMonomial() != null)
-				name.addGenus(sn.getGenusOrMonomial());
-			if (sn.getSpecificEpithet() != null)
-				name.addSpecificEpithet(sn.getSpecificEpithet());
-			if (sn.getInfraspecificEpithet() != null)
-				name.addInfraspecificEpithet(sn.getInfraspecificEpithet());
-		}
-		if (si.getVernacularNames() != null) {
-			for (VernacularName vn : si.getVernacularNames()) {
-				name.addVernacularName(vn.getName());
-			}
-		}
+//		Specimen specimen = input;
+//		SpecimenSummary summary = new SpecimenSummary();
+//		summary.setId(specimen.getId());
+//		summary.setUnitID(specimen.getUnitID());
+//		summary.setSourceSystem(specimen.getSourceSystem().getName());
+//		summary.setRecordBasis(specimen.getRecordBasis());
+//		name.addSpecimen(summary);
+//		DefaultClassification dc = si.getDefaultClassification();
+//		if (dc != null) {
+//			if (dc.getKingdom() != null)
+//				name.addKingdom(dc.getKingdom());
+//			if (dc.getPhylum() != null)
+//				name.addPhylum(dc.getPhylum());
+//			if (dc.getClassName() != null)
+//				name.addClass(dc.getClassName());
+//			if (dc.getOrder() != null)
+//				name.addOrder(dc.getOrder());
+//			if (dc.getFamily() != null)
+//				name.addFamily(dc.getFamily());
+//			if (dc.getGenus() != null)
+//				name.addGenus(dc.getGenus());
+//			if (dc.getSubgenus() != null)
+//				name.addSubgenus(dc.getSubgenus());
+//			if (dc.getSpecificEpithet() != null)
+//				name.addSpecificEpithet(dc.getSpecificEpithet());
+//			if (dc.getInfraspecificEpithet() != null)
+//				name.addInfraspecificEpithet(dc.getInfraspecificEpithet());
+//		}
+//		ScientificName sn = si.getScientificName();
+//		if (sn != null) {
+//			if (sn.getGenusOrMonomial() != null)
+//				name.addGenus(sn.getGenusOrMonomial());
+//			if (sn.getSpecificEpithet() != null)
+//				name.addSpecificEpithet(sn.getSpecificEpithet());
+//			if (sn.getInfraspecificEpithet() != null)
+//				name.addInfraspecificEpithet(sn.getInfraspecificEpithet());
+//		}
+//		if (si.getVernacularNames() != null) {
+//			for (VernacularName vn : si.getVernacularNames()) {
+//				name.addVernacularName(vn.getName());
+//			}
+//		}
 	}
 
-	private void addTaxa(ScientificNameSummary sns, String fullScientificName)
+	private void addTaxa(NameGroup sns, String fullScientificName)
 	{
-		List<Taxon> taxa = taxonCache.get(fullScientificName);
-		if (taxa == null) {
-			return;
-		}
-		for (Taxon taxon : taxa) {
-			TaxonSummary summary = new TaxonSummary();
-			summary.setId(taxon.getId());
-			summary.setSourceSystem(taxon.getSourceSystem().getName());
-			summary.setRank(taxon.getTaxonRank());
-			sns.addTaxon(summary);
-			if (taxon.getVernacularNames() != null) {
-				for (VernacularName vn : taxon.getVernacularNames()) {
-					sns.addVernacularName(vn.getName());
-				}
-			}
-			if (taxon.getSynonyms() != null) {
-				for (ScientificName sn : taxon.getSynonyms()) {
-					sns.addSynonym(sn.getFullScientificName());
-				}
-			}
-		}
+//		List<Taxon> taxa = taxonCache.get(fullScientificName);
+//		if (taxa == null) {
+//			return;
+//		}
+//		for (Taxon taxon : taxa) {
+//			TaxonSummary summary = new TaxonSummary();
+//			summary.setId(taxon.getId());
+//			summary.setSourceSystem(taxon.getSourceSystem().getName());
+//			summary.setRank(taxon.getTaxonRank());
+//			sns.addTaxon(summary);
+//			if (taxon.getVernacularNames() != null) {
+//				for (VernacularName vn : taxon.getVernacularNames()) {
+//					sns.addVernacularName(vn.getName());
+//				}
+//			}
+//			if (taxon.getSynonyms() != null) {
+//				for (ScientificName sn : taxon.getSynonyms()) {
+//					sns.addSynonym(sn.getFullScientificName());
+//				}
+//			}
+//		}
 	}
 
 	void prepareForBatch(List<Specimen> specimens)
@@ -156,15 +154,15 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, ScientificNa
 				}
 			}
 		}
-		List<ScientificNameSummary> names = NameImportUtil.loadNames(ids);
-		for (ScientificNameSummary name : names) {
-			nameCache.put(name.getFullScientificName(), name);
+		List<NameGroup> names = NameImportUtil.loadNames(ids);
+		for (NameGroup name : names) {
+			nameCache.put(name.getName(), name);
 		}
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
 				String key = si.getScientificName().getFullScientificName();
 				if (!nameCache.containsKey(key)) {
-					nameCache.put(key, new ScientificNameSummary(key));
+					nameCache.put(key, new NameGroup(key));
 				}
 			}
 		}

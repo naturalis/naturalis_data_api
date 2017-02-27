@@ -1,11 +1,16 @@
 package nl.naturalis.nba.api.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum PhaseOrStage implements INbaModelObject
 {
 
 	ADULT, SUBADULT, EGG, EMBRYO, IMMATURE, JUVENILE, LARVA, PUPA, NYMPH;
 
-	public static PhaseOrStage parse(String name)
+	@JsonCreator
+	public static PhaseOrStage parse(@JsonProperty("name") String name)
 	{
 		if (name == null) {
 			return null;
@@ -15,21 +20,12 @@ public enum PhaseOrStage implements INbaModelObject
 				return pos;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Invalid phase or stage: " + name);
 	}
 
-	private final String name;
+	private final String name = name().toLowerCase();
 
-	private PhaseOrStage(String name)
-	{
-		this.name = name;
-	}
-
-	private PhaseOrStage()
-	{
-		this.name = name().toLowerCase();
-	}
-
+	@JsonValue
 	public String toString()
 	{
 		return name;

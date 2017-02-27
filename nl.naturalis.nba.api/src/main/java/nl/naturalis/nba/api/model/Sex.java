@@ -1,11 +1,16 @@
 package nl.naturalis.nba.api.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Sex implements INbaModelObject
 {
 
 	MALE, FEMALE, MIXED, HERMAPHRODITE;
 
-	public static Sex parse(String name)
+	@JsonCreator
+	public static Sex parse(@JsonProperty("name") String name)
 	{
 		if (name == null) {
 			return null;
@@ -15,24 +20,12 @@ public enum Sex implements INbaModelObject
 				return sex;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Invalid sex: " + name);
 	}
+	
+	private final String name = name().toLowerCase();
 
-	private final String name;
-
-
-	private Sex(String name)
-	{
-		this.name = name;
-	}
-
-
-	private Sex()
-	{
-		this.name = this.name().toLowerCase();
-	}
-
-
+	@JsonValue
 	public String toString()
 	{
 		return name;

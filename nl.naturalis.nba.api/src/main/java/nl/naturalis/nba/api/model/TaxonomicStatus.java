@@ -1,8 +1,8 @@
 package nl.naturalis.nba.api.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
-import nl.naturalis.nba.api.annotations.Analyzers;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TaxonomicStatus implements INbaModelObject
 {
@@ -17,7 +17,7 @@ public enum TaxonomicStatus implements INbaModelObject
 	PROVISIONALLY_ACCEPTED("provisionally accepted name");
 
 	@JsonCreator
-	public static TaxonomicStatus parse(String name)
+	public static TaxonomicStatus parse(@JsonProperty("name") String name)
 	{
 		if (name == null) {
 			return null;
@@ -27,10 +27,9 @@ public enum TaxonomicStatus implements INbaModelObject
 				return status;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Invalid taxonomic status: " + name);
 	}
 
-	@Analyzers({})
 	private final String name;
 
 	private TaxonomicStatus(String name)
@@ -43,6 +42,7 @@ public enum TaxonomicStatus implements INbaModelObject
 		this.name = name().toLowerCase();
 	}
 
+	@JsonValue
 	public String toString()
 	{
 		return name;

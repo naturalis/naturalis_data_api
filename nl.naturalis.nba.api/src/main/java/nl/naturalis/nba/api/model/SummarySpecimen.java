@@ -2,14 +2,21 @@ package nl.naturalis.nba.api.model;
 
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.annotations.NotIndexed;
+
 public class SummarySpecimen implements INbaModelObject {
 
+	@NotIndexed
 	private String id;
 	private SummarySourceSystem sourceSystem;
 	private String unitID;
 	private String collectorsFieldNumber;
+	@Analyzers({})
 	private SpecimenTypeStatus typeStatus;
+	@Analyzers({})
 	private Sex sex;
+	@Analyzers({})
 	private PhaseOrStage phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
 	private List<SummarySpecimenIdentification> identifications;

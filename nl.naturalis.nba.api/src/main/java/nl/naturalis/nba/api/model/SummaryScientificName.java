@@ -18,6 +18,7 @@ public class SummaryScientificName implements INbaModelObject {
 
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String fullScientificName;
+	@Analyzers({})
 	private TaxonomicStatus taxonomicStatus;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String genusOrMonomial;

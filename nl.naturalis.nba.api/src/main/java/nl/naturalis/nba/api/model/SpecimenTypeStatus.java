@@ -1,48 +1,50 @@
 package nl.naturalis.nba.api.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum SpecimenTypeStatus implements INbaModelObject
 {
 
-	ALLOTYPE("allotype"),
-	EPITYPE("epitype"),
-	HAPANTOTYPE("hapantotype"),
-	HOLOTYPE("holotype"),
-	ISOEPITYPE("isoepitype"),
-	ISOLECTOTYPE("isolectotype"),
-	ISONEOTYPE("isoneotype"),
-	ISOSYNTYPE("isosyntype"),
-	ISOTYPE("isotype"),
-	LECTOTYPE("lectotype"),
-	NEOTYPE("neotype"),
-	PARATYPE("paratype"),
-	PARALECTOTYPE("paralectotype"),
-	SYNTYPE("syntype"),
-	TOPOTYPE("topotype"),
+	ALLOTYPE,
+	EPITYPE,
+	HAPANTOTYPE,
+	HOLOTYPE,
+	ISOEPITYPE,
+	ISOLECTOTYPE,
+	ISONEOTYPE,
+	ISOSYNTYPE,
+	ISOTYPE,
+	LECTOTYPE,
+	NEOTYPE,
+	PARATYPE,
+	PARALECTOTYPE,
+	SYNTYPE,
+	TOPOTYPE,
 	/**
 	 * A type status assigned to a specimen if it is not known whether it's a
 	 * holotype, paratype, lectotype, etc., but it is known to be one of those.
 	 */
-	TYPE("type");
+	TYPE;
 
-	public static SpecimenTypeStatus parse(String name)
+	@JsonCreator
+	public static SpecimenTypeStatus parse(@JsonProperty("name") String name)
 	{
-		if (name != null) {
-			for (SpecimenTypeStatus s : SpecimenTypeStatus.values()) {
-				if (s.name.equals(name)) {
-					return s;
-				}
+		if (name == null) {
+			return null;
+		}
+		for (SpecimenTypeStatus s : SpecimenTypeStatus.values()) {
+			if (s.name.equalsIgnoreCase(name)) {
+				return s;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Invalid type status: " + name);
 	}
 
-	private final String name;
+	private final String name = name().toLowerCase();
 
-	private SpecimenTypeStatus(String name)
-	{
-		this.name = name;
-	}
-
+	@JsonValue
 	public String toString()
 	{
 		return name;

@@ -1,9 +1,9 @@
 package nl.naturalis.nba.api;
 
 import java.util.Map;
-import java.util.Set;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.api.model.metadata.FieldInfo;
 
 /**
  * Specifies a common set of metadata retrieval methods that can be called for
@@ -51,33 +51,37 @@ public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 	String[] getPaths(boolean sorted);
 
 	/**
-	 * Returns the set of allowed operators for each of the specified fields.
-	 * Each key in the returned map is one of the specified fields and its value
-	 * is the set of operators that you are allowed to use in conditions on that
-	 * field.
+	 * Returns metadata about specified fields. Each key in the returned map is
+	 * one of the specified fields and its value a {@link FieldInfo} instance
+	 * containing metadata about the field. If you speciy null or a zero-length
+	 * array for the {@code fields} argument, all fields are returned.
 	 * <h5>REST API</h5>
 	 * <p>
 	 * The NBA REST API exposes this method through a GET request with the
 	 * following end point:
 	 * </p>
 	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getAllowedOperators
-	 * </code>
+	 * 
+	 * <pre>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getFieldInfo
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getFieldInfo/?fields=field0,field1,field2
+	 * </pre>
 	 * </p>
 	 * <p>
 	 * Examples:
 	 * </p>
 	 * <p>
-	 * <code>
-	 * http://api.biodiversitydata.nl/v2/specimen/metadata/getAllowedOperators/?fields=unitID,gatheringEvent.dateTimeBegin
-	 * </code>
+	 * 
+	 * <pre>
+	 * http://api.biodiversitydata.nl/v2/taxon/metadata/getFieldInfo
+	 * http://api.biodiversitydata.nl/v2/specimen/metadata/getFieldInfo/?fields=unitID,gatheringEvent.dateTimeBegin
+	 * </pre>
 	 * </p>
 	 * 
 	 * @param fields
 	 * @return
 	 */
-	Map<String, Set<ComparisonOperator>> getAllowedOperators(String... fields);
+	Map<String, FieldInfo> getFieldInfo(String... fields) throws NoSuchFieldException;
 
 	/**
 	 * <p>

@@ -34,13 +34,13 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.KeywordField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.DocumentType;
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.utils.CollectionUtil;
@@ -200,7 +201,7 @@ public class MappingInfo<T extends IDocumentObject> {
 	 */
 	public String[] getPathStrings(boolean sorted)
 	{
-		List<String> paths = new ArrayList<>(200);
+		List<String> paths = new ArrayList<>(150);
 		LinkedHashMap<String, ESField> properties = mapping.getProperties();
 		for (Map.Entry<String, ESField> property : properties.entrySet()) {
 			addPath(paths, null, property.getKey(), property.getValue());
@@ -245,7 +246,7 @@ public class MappingInfo<T extends IDocumentObject> {
 		ESField f = map.get(path.getElement(0));
 		if (f == null || f instanceof MultiField) {
 			// Prevent access to MultiField fields
-			throw new NoSuchFieldException(fullPath, path.getElement(0));
+			throw new NoSuchFieldException(fullPath, path.element(0));
 		}
 		if (path.countElements() == 1) {
 			return f;
@@ -254,7 +255,7 @@ public class MappingInfo<T extends IDocumentObject> {
 			map = ((ComplexField) f).getProperties();
 			return getField(fullPath, path.shift(), map);
 		}
-		throw new NoSuchFieldException(fullPath, path.getElement(0));
+		throw new NoSuchFieldException(fullPath, path.element(0));
 	}
 
 	private ESField getFromCache(Path path)

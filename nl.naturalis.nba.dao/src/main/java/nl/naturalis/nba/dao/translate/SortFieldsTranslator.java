@@ -17,13 +17,13 @@ import org.elasticsearch.search.sort.SortMode;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.DocumentType;
 

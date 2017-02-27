@@ -3,6 +3,8 @@ package nl.naturalis.nba.rest.resource;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
+import java.util.Map;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -17,7 +19,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.model.metadata.FieldInfo;
 import nl.naturalis.nba.dao.NameGroupMetaDataDao;
+import nl.naturalis.nba.dao.SpecimenMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
@@ -42,6 +46,26 @@ public class NameGroupMetaDataResource {
 			String s = uriInfo.getQueryParameters().getFirst("sorted");
 			boolean sorted = ConfigObject.isTrueValue(s);
 			return dao.getPaths(sorted);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+
+	@GET
+	@Path("/getFieldInfo")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<String, FieldInfo> getFieldInfo(@Context UriInfo uriInfo)
+	{
+		try {
+			NameGroupMetaDataDao dao = new NameGroupMetaDataDao();
+			String param = uriInfo.getQueryParameters().getFirst("fields");
+			String[] fields = null;
+			if (param != null) {
+				fields = param.split(",");
+			}
+			return dao.getFieldInfo(fields);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

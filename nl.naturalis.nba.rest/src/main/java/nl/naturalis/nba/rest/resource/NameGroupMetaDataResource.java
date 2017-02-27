@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
 import nl.naturalis.nba.dao.NameGroupMetaDataDao;
-import nl.naturalis.nba.dao.SpecimenMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")

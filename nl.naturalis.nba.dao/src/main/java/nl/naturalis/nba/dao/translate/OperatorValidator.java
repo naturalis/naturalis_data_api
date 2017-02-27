@@ -132,6 +132,9 @@ public class OperatorValidator {
 	 */
 	public static boolean isOperatorAllowed(SimpleField field, ComparisonOperator operator)
 	{
+		if (field.getIndex() == Boolean.FALSE) {
+			return false;
+		}
 		if (field instanceof KeywordField) {
 			if (operator == EQUALS || operator == NOT_EQUALS) {
 				return true;

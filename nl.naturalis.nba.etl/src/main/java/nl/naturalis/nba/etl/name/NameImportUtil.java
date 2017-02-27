@@ -113,7 +113,7 @@ class NameImportUtil {
 		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
 		ssi.setDefaultClassification(si.getDefaultClassification());
 		ssi.setScientificName(copyScientificName(si.getScientificName()));
-		return null;
+		return ssi;
 	}
 
 	private static SummaryScientificName copyScientificName(ScientificName sn)

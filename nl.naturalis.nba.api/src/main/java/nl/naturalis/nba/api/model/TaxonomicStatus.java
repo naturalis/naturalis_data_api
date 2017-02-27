@@ -1,5 +1,7 @@
 package nl.naturalis.nba.api.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import nl.naturalis.nba.api.annotations.Analyzers;
 
 public enum TaxonomicStatus implements INbaModelObject
@@ -14,6 +16,7 @@ public enum TaxonomicStatus implements INbaModelObject
 	MISSPELLED_NAME("misspelled name"),
 	PROVISIONALLY_ACCEPTED("provisionally accepted name");
 
+	@JsonCreator
 	public static TaxonomicStatus parse(String name)
 	{
 		if (name == null) {

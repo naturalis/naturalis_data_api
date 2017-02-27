@@ -29,7 +29,7 @@ class NameImporter {
 		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 	}
 
-	void importNames()
+	void importSpecimenNames()
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = new ETLStatistics();

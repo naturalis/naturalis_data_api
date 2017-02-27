@@ -27,13 +27,8 @@ public class SummaryScientificName implements INbaModelObject {
 	private String specificEpithet;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String infraspecificEpithet;
-	private String infraspecificMarker;
-	private String nameAddendum;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String authorshipVerbatim;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
-	private String author;
-	private String year;
 
 	public String getFullScientificName()
 	{
@@ -95,26 +90,6 @@ public class SummaryScientificName implements INbaModelObject {
 		this.infraspecificEpithet = infraspecificEpithet;
 	}
 
-	public String getInfraspecificMarker()
-	{
-		return infraspecificMarker;
-	}
-
-	public void setInfraspecificMarker(String infraspecificMarker)
-	{
-		this.infraspecificMarker = infraspecificMarker;
-	}
-
-	public String getNameAddendum()
-	{
-		return nameAddendum;
-	}
-
-	public void setNameAddendum(String nameAddendum)
-	{
-		this.nameAddendum = nameAddendum;
-	}
-
 	public String getAuthorshipVerbatim()
 	{
 		return authorshipVerbatim;
@@ -123,26 +98,6 @@ public class SummaryScientificName implements INbaModelObject {
 	public void setAuthorshipVerbatim(String authorshipVerbatim)
 	{
 		this.authorshipVerbatim = authorshipVerbatim;
-	}
-
-	public String getAuthor()
-	{
-		return author;
-	}
-
-	public void setAuthor(String author)
-	{
-		this.author = author;
-	}
-
-	public String getYear()
-	{
-		return year;
-	}
-
-	public void setYear(String year)
-	{
-		this.year = year;
 	}
 
 }

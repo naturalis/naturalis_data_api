@@ -29,6 +29,7 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SummaryGatheringEvent;
 import nl.naturalis.nba.api.model.SummaryGatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.SummaryPerson;
+import nl.naturalis.nba.api.model.SummaryScientificName;
 import nl.naturalis.nba.api.model.SummarySourceSystem;
 import nl.naturalis.nba.api.model.SummarySpecimen;
 import nl.naturalis.nba.api.model.SummarySpecimenIdentification;
@@ -47,21 +48,22 @@ class NameImportUtil {
 		return h;
 	}
 
-	static SummarySpecimen summarySpecimen(Specimen specimen)
+	static SummarySpecimen copySpecimen(Specimen specimen)
 	{
 		SummarySpecimen summary = new SummarySpecimen();
 		summary.setId(specimen.getId());
+		summary.setIdentifications(copyIdentifications(specimen.getIdentifications()));
 		summary.setCollectorsFieldNumber(specimen.getCollectorsFieldNumber());
 		summary.setPhaseOrStage(specimen.getPhaseOrStage());
 		summary.setSex(specimen.getSex());
-		summary.setSourceSystem(summarySourceSystem(specimen.getSourceSystem()));
+		summary.setSourceSystem(copySourceSystem(specimen.getSourceSystem()));
 		summary.setTypeStatus(specimen.getTypeStatus());
-		summary.setGatheringEvent(summaryGatheringEvent(specimen.getGatheringEvent()));
+		summary.setGatheringEvent(copyGatheringEvent(specimen.getGatheringEvent()));
 		summary.setUnitID(specimen.getUnitID());
 		return summary;
 	}
 
-	private static SummaryGatheringEvent summaryGatheringEvent(GatheringEvent ge)
+	private static SummaryGatheringEvent copyGatheringEvent(GatheringEvent ge)
 	{
 		if (ge == null) {
 			return null;
@@ -70,13 +72,13 @@ class NameImportUtil {
 		summary.setDateTimeBegin(ge.getDateTimeBegin());
 		summary.setDateTimeEnd(ge.getDateTimeEnd());
 		summary.setGatheringOrganizations(ge.getGatheringOrganizations());
-		summary.setGatheringPersons(summaryGatheringPersons(ge.getGatheringPersons()));
+		summary.setGatheringPersons(copyGatheringPersons(ge.getGatheringPersons()));
 		summary.setLocalityText(ge.getLocalityText());
-		summary.setSiteCoordinates(summarySiteCoordinates(ge.getSiteCoordinates()));
+		summary.setSiteCoordinates(copySiteCoordinates(ge.getSiteCoordinates()));
 		return summary;
 	}
 
-	private static List<SummaryGatheringSiteCoordinates> summarySiteCoordinates(
+	private static List<SummaryGatheringSiteCoordinates> copySiteCoordinates(
 			List<GatheringSiteCoordinates> coords)
 	{
 		if (coords == null) {
@@ -100,7 +102,7 @@ class NameImportUtil {
 			return null;
 		}
 		List<SummarySpecimenIdentification> summaries = new ArrayList<>(identifications.size());
-		for(SpecimenIdentification si:identifications) {
+		for (SpecimenIdentification si : identifications) {
 			summaries.add(copyIdentification(si));
 		}
 		return summaries;
@@ -109,10 +111,25 @@ class NameImportUtil {
 	private static SummarySpecimenIdentification copyIdentification(SpecimenIdentification si)
 	{
 		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
+		ssi.setDefaultClassification(si.getDefaultClassification());
+		ssi.setScientificName(copyScientificName(si.getScientificName()));
 		return null;
 	}
 
-	private static List<SummaryPerson> summaryGatheringPersons(List<Person> persons)
+	private static SummaryScientificName copyScientificName(ScientificName sn)
+	{
+		SummaryScientificName ssn = new SummaryScientificName();
+		ssn.setAuthorshipVerbatim(sn.getAuthorshipVerbatim());
+		ssn.setFullScientificName(sn.getFullScientificName());
+		ssn.setGenusOrMonomial(sn.getGenusOrMonomial());
+		ssn.setInfraspecificEpithet(sn.getInfraspecificEpithet());
+		ssn.setSpecificEpithet(sn.getSpecificEpithet());
+		ssn.setSubgenus(sn.getSubgenus());
+		ssn.setTaxonomicStatus(sn.getTaxonomicStatus());
+		return ssn;
+	}
+
+	private static List<SummaryPerson> copyGatheringPersons(List<Person> persons)
 	{
 		if (persons == null) {
 			return null;
@@ -127,26 +144,35 @@ class NameImportUtil {
 		return summaries;
 	}
 
-	private static SummarySourceSystem summarySourceSystem(SourceSystem ss)
+	private static SummarySourceSystem copySourceSystem(SourceSystem ss)
 	{
 		return new SummarySourceSystem(ss.getCode());
 	}
 
-	static String createName(ScientificName sn)
+	static String createName(SpecimenIdentification si)
 	{
-		StringBuilder sb = new StringBuilder(24);
-		if (sn.getGenusOrMonomial() != null) {
-			sb.append(sn.getGenusOrMonomial());
+		String genus = si.getScientificName().getGenusOrMonomial();
+		if (genus == null) {
+			genus = si.getDefaultClassification().getGenus();
+			if (genus == null) {
+				genus = "?";
+			}
 		}
-		if (sn.getSpecificEpithet() != null) {
-			sb.append(' ');
-			sb.append(sn.getSpecificEpithet());
+		String species = si.getScientificName().getSpecificEpithet();
+		if (species == null) {
+			species = si.getDefaultClassification().getSpecificEpithet();
+			if (species == null) {
+				species = "?";
+			}
 		}
-		if (sn.getInfraspecificEpithet() != null) {
-			sb.append(' ');
-			sb.append(sn.getInfraspecificEpithet());
+		String subspecies = si.getScientificName().getInfraspecificEpithet();
+		if (subspecies == null) {
+			subspecies = si.getDefaultClassification().getInfraspecificEpithet();
 		}
-		return sb.toString();
+		if (subspecies == null) {
+			return genus + " " + species;
+		}
+		return genus + " " + species + " " + subspecies;
 	}
 
 	static List<NameGroup> loadNameGroups(Collection<String> names)

@@ -14,6 +14,24 @@ public class SummarySpecimen implements INbaModelObject {
 	private SummaryGatheringEvent gatheringEvent;
 	private List<SummarySpecimenIdentification> identifications;
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj instanceof SummarySpecimen) {
+			return ((SummarySpecimen) obj).getId().equals(id);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return id.hashCode();
+	}
+
 	public String getId()
 	{
 		return id;

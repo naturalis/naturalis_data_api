@@ -1,17 +1,30 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class NameGroup implements IDocumentObject {
 
 	private String id;
 	private String name;
-	private List<SummarySpecimen> specimens;
-	private List<SummaryTaxon> taxa;
+	private Set<SummarySpecimen> specimens;
+	private Set<SummaryTaxon> taxa;
+
+	public NameGroup()
+	{
+	}
 
 	public NameGroup(String name)
 	{
 		this.name = name;
+	}
+
+	public void addSpecimen(SummarySpecimen specimen)
+	{
+		if (specimens == null) {
+			specimens = new HashSet<>();
+		}
+		specimens.add(specimen);
 	}
 
 	@Override
@@ -36,22 +49,22 @@ public class NameGroup implements IDocumentObject {
 		this.name = name;
 	}
 
-	public List<SummarySpecimen> getSpecimens()
+	public Set<SummarySpecimen> getSpecimens()
 	{
 		return specimens;
 	}
 
-	public void setSpecimens(List<SummarySpecimen> specimens)
+	public void setSpecimens(Set<SummarySpecimen> specimens)
 	{
 		this.specimens = specimens;
 	}
 
-	public List<SummaryTaxon> getTaxa()
+	public Set<SummaryTaxon> getTaxa()
 	{
 		return taxa;
 	}
 
-	public void setTaxa(List<SummaryTaxon> taxa)
+	public void setTaxa(Set<SummaryTaxon> taxa)
 	{
 		this.taxa = taxa;
 	}

@@ -31,7 +31,7 @@ public class NameImportAll {
 		ESUtil.deleteIndex(NAME_GROUP.getIndexInfo());
 		ESUtil.createIndex(NAME_GROUP.getIndexInfo());
 		NameImporter importer = new NameImporter();
-		importer.importNames();
+		importer.importSpecimenNames();
 	}
 
 }

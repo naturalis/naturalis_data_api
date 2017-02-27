@@ -1,6 +1,5 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.Date;
 import java.util.List;
 
 public class SummarySpecimenIdentification implements INbaModelObject {
@@ -9,7 +8,6 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
 	private List<SummaryVernacularName> vernacularNames;
-	private Date dateIdentified;
 
 	public SummaryScientificName getScientificName()
 	{
@@ -49,16 +47,6 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	public void setVernacularNames(List<SummaryVernacularName> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
-	}
-
-	public Date getDateIdentified()
-	{
-		return dateIdentified;
-	}
-
-	public void setDateIdentified(Date dateIdentified)
-	{
-		this.dateIdentified = dateIdentified;
 	}
 
 }

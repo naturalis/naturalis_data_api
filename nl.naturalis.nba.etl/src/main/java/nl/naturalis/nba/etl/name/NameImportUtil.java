@@ -25,11 +25,13 @@ import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SummaryGatheringEvent;
 import nl.naturalis.nba.api.model.SummaryGatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.SummaryPerson;
 import nl.naturalis.nba.api.model.SummarySourceSystem;
 import nl.naturalis.nba.api.model.SummarySpecimen;
+import nl.naturalis.nba.api.model.SummarySpecimenIdentification;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -55,11 +57,15 @@ class NameImportUtil {
 		summary.setSourceSystem(summarySourceSystem(specimen.getSourceSystem()));
 		summary.setTypeStatus(specimen.getTypeStatus());
 		summary.setGatheringEvent(summaryGatheringEvent(specimen.getGatheringEvent()));
+		summary.setUnitID(specimen.getUnitID());
 		return summary;
 	}
 
 	private static SummaryGatheringEvent summaryGatheringEvent(GatheringEvent ge)
 	{
+		if (ge == null) {
+			return null;
+		}
 		SummaryGatheringEvent summary = new SummaryGatheringEvent();
 		summary.setDateTimeBegin(ge.getDateTimeBegin());
 		summary.setDateTimeEnd(ge.getDateTimeEnd());
@@ -67,7 +73,7 @@ class NameImportUtil {
 		summary.setGatheringPersons(summaryGatheringPersons(ge.getGatheringPersons()));
 		summary.setLocalityText(ge.getLocalityText());
 		summary.setSiteCoordinates(summarySiteCoordinates(ge.getSiteCoordinates()));
-		return null;
+		return summary;
 	}
 
 	private static List<SummaryGatheringSiteCoordinates> summarySiteCoordinates(
@@ -85,6 +91,25 @@ class NameImportUtil {
 			summaries.add(summary);
 		}
 		return summaries;
+	}
+
+	private static List<SummarySpecimenIdentification> copyIdentifications(
+			List<SpecimenIdentification> identifications)
+	{
+		if (identifications == null) {
+			return null;
+		}
+		List<SummarySpecimenIdentification> summaries = new ArrayList<>(identifications.size());
+		for(SpecimenIdentification si:identifications) {
+			summaries.add(copyIdentification(si));
+		}
+		return summaries;
+	}
+
+	private static SummarySpecimenIdentification copyIdentification(SpecimenIdentification si)
+	{
+		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
+		return null;
 	}
 
 	private static List<SummaryPerson> summaryGatheringPersons(List<Person> persons)

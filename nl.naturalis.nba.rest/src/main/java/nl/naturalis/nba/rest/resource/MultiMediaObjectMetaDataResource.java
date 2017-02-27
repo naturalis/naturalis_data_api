@@ -4,7 +4,6 @@ import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -20,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
+import nl.naturalis.nba.api.model.metadata.FieldInfo;
 import nl.naturalis.nba.dao.MultiMediaObjectMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
@@ -53,9 +53,9 @@ public class MultiMediaObjectMetaDataResource {
 	}
 
 	@GET
-	@Path("/getAllowedOperators")
+	@Path("/getFieldInfo")
 	@Produces(JSON_CONTENT_TYPE)
-	public Map<String, Set<ComparisonOperator>> getAllowedOperators(@Context UriInfo uriInfo)
+	public Map<String, FieldInfo> getFieldInfo(@Context UriInfo uriInfo)
 	{
 		try {
 			MultiMediaObjectMetaDataDao dao = new MultiMediaObjectMetaDataDao();
@@ -64,7 +64,7 @@ public class MultiMediaObjectMetaDataResource {
 			if (param != null) {
 				fields = param.split(",");
 			}
-			return dao.getAllowedOperators(fields);
+			return dao.getFieldInfo(fields);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

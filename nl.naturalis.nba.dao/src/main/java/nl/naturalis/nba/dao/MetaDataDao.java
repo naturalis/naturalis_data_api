@@ -3,23 +3,20 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.INbaMetaData;
+import nl.naturalis.nba.api.NoSuchFieldException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.es.map.ComplexField;
+import nl.naturalis.nba.api.model.metadata.FieldInfo;
 import nl.naturalis.nba.common.es.map.ESField;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
+import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.OperatorValidator;
@@ -36,7 +33,7 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 	}
 
 	@Override
-	public Map<String, Set<ComparisonOperator>> getAllowedOperators(String... fields)
+	public Map<String, FieldInfo> getFieldInfo(String... fields) throws NoSuchFieldException
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug(printCall("getAllowedOperators", fields));
@@ -45,20 +42,26 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 			fields = getPaths(true);
 		}
 		int mapSize = ((int) (fields.length / .75) + 1);
-		Map<String, Set<ComparisonOperator>> result = new LinkedHashMap<>(mapSize);
+		Map<String, FieldInfo> result = new LinkedHashMap<>(mapSize);
+		MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
 		for (String field : fields) {
+			Path path = new Path(field);
+			ESField esField = mappingInfo.getField(path);
+			if (!(esField instanceof SimpleField)) {
+				throw new NoSuchFieldException(path);
+			}
+			SimpleField sf = (SimpleField) esField;
+			FieldInfo info = new FieldInfo();
+			info.setIndexed(sf.getIndex() != Boolean.FALSE);
+			info.setType(esField.getType().toString());
 			EnumSet<ComparisonOperator> allowed = EnumSet.noneOf(ComparisonOperator.class);
 			for (ComparisonOperator op : ComparisonOperator.values()) {
-				try {
-					if (OperatorValidator.isOperatorAllowed(field, op, dt)) {
-						allowed.add(op);
-					}
+				if (OperatorValidator.isOperatorAllowed(sf, op)) {
+					allowed.add(op);
 				}
-				catch (NoSuchFieldException e) {
-					throw new DaoException(e);
-				}
-				result.put(field, allowed);
 			}
+			info.setAllowedOperators(allowed);
+			result.put(field, info);
 		}
 		return result;
 	}
@@ -80,31 +83,7 @@ abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T>
 	@Override
 	public String[] getPaths(boolean sorted)
 	{
-		List<String> paths = new ArrayList<>(100);
-		LinkedHashMap<String, ESField> properties = dt.getMapping().getProperties();
-		for (Map.Entry<String, ESField> property : properties.entrySet()) {
-			addPath(paths, null, property.getKey(), property.getValue());
-		}
-		String[] result = paths.toArray(new String[paths.size()]);
-		if (sorted) {
-			Arrays.sort(result);
-		}
-		return result;
-	}
-
-	private static void addPath(List<String> paths, String parent, String child, ESField field)
-	{
-		String path = parent == null ? child : parent + '.' + child;
-		if (field instanceof SimpleField) {
-			paths.add(path);
-		}
-		else {
-			ComplexField cf = (ComplexField) field;
-			LinkedHashMap<String, ESField> fields = cf.getProperties();
-			for (Entry<String, ESField> e : fields.entrySet()) {
-				addPath(paths, path, e.getKey(), e.getValue());
-			}
-		}
+		return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
 	}
 
 }

@@ -2,11 +2,11 @@ package nl.naturalis.nba.dao.format.csv;
 
 import java.net.URI;
 
+import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.dao.format.DataSource;
 import nl.naturalis.nba.dao.format.FieldConfigurationException;
 import nl.naturalis.nba.dao.format.ICalculator;

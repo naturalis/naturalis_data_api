@@ -11,11 +11,11 @@ import java.util.Collection;
 import java.util.Date;
 
 import nl.naturalis.nba.api.InvalidConditionException;
+import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.common.es.map.ESDataType;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.es.map.NoSuchFieldException;
 import nl.naturalis.nba.common.es.map.SimpleField;
 
 class TranslatorUtil {

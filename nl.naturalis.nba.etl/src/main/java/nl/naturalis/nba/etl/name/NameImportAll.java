@@ -37,7 +37,7 @@ public class NameImportAll {
 			System.err.println("Invalid batch size: " + prop);
 			System.exit(1);
 		}
-		prop = System.getProperty("timeout", "60000");
+		prop = System.getProperty("timeout", "30000");
 		int timeout = 0;
 		try {
 			timeout = Integer.parseInt(prop);

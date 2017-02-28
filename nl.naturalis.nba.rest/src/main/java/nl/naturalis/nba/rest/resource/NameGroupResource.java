@@ -29,7 +29,6 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.dao.NameGroupDao;
-import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
@@ -133,7 +132,7 @@ public class NameGroupResource {
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
+			NameGroupDao dao = new NameGroupDao();
 			return dao.count(qs);
 		}
 		catch (Throwable t) {

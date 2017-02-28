@@ -27,36 +27,36 @@ public class NameImportAll {
 	{
 		ESUtil.deleteIndex(NAME_GROUP.getIndexInfo());
 		ESUtil.createIndex(NAME_GROUP.getIndexInfo());
-//		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
-//		String prop = System.getProperty("batchSize", "500");
-//		int batchSize = 0;
-//		try {
-//			batchSize = Integer.parseInt(prop);
-//		}
-//		catch (NumberFormatException e) {
-//			System.err.println("Invalid batch size: " + prop);
-//			System.exit(1);
-//		}
-//		prop = System.getProperty("timeout", "60000");
-//		int timeout = 0;
-//		try {
-//			timeout = Integer.parseInt(prop);
-//		}
-//		catch (NumberFormatException e) {
-//			System.err.println("Invalid timeout: " + prop);
-//			System.exit(1);
-//		}
-//		NameImporter importer = new NameImporter();
-//		importer.setSuppressErrors(suppressErrors);
-//		importer.setBatchSize(batchSize);
-//		importer.setTimeout(timeout);
-//		try {
-//			importer.importSpecimenNames();
-//		}
-//		catch (BulkIndexException e) {
-//			e.printStackTrace();
-//			System.exit(1);
-//		}
+		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
+		String prop = System.getProperty("batchSize", "500");
+		int batchSize = 0;
+		try {
+			batchSize = Integer.parseInt(prop);
+		}
+		catch (NumberFormatException e) {
+			System.err.println("Invalid batch size: " + prop);
+			System.exit(1);
+		}
+		prop = System.getProperty("timeout", "60000");
+		int timeout = 0;
+		try {
+			timeout = Integer.parseInt(prop);
+		}
+		catch (NumberFormatException e) {
+			System.err.println("Invalid timeout: " + prop);
+			System.exit(1);
+		}
+		NameImporter importer = new NameImporter();
+		importer.setSuppressErrors(suppressErrors);
+		importer.setBatchSize(batchSize);
+		importer.setTimeout(timeout);
+		try {
+			importer.importSpecimenNames();
+		}
+		catch (BulkIndexException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 }

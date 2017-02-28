@@ -18,6 +18,7 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.NameGroup;
@@ -161,28 +162,36 @@ class NameImportUtil {
 
 	static String createName(SpecimenIdentification si)
 	{
-		String genus = si.getScientificName().getGenusOrMonomial();
-		if (genus == null) {
-			genus = si.getDefaultClassification().getGenus();
+		ScientificName sn = si.getScientificName();
+		DefaultClassification dc = si.getDefaultClassification();
+		String genus = null;
+		String species = null;
+		String subsp = null;
+		if (sn != null) {
+			genus = sn.getGenusOrMonomial();
+			species = sn.getSpecificEpithet();
+			subsp = sn.getInfraspecificEpithet();
+		}
+		si.getScientificName().getGenusOrMonomial();
+		if (genus == null && dc != null) {
+			genus = dc.getGenus();
 			if (genus == null) {
 				genus = "?";
 			}
 		}
-		String species = si.getScientificName().getSpecificEpithet();
-		if (species == null) {
-			species = si.getDefaultClassification().getSpecificEpithet();
+		if (species == null && dc != null) {
+			species = dc.getSpecificEpithet();
 			if (species == null) {
 				species = "?";
 			}
 		}
-		String subspecies = si.getScientificName().getInfraspecificEpithet();
-		if (subspecies == null) {
-			subspecies = si.getDefaultClassification().getInfraspecificEpithet();
+		if (subsp == null && dc != null) {
+			subsp = dc.getInfraspecificEpithet();
 		}
-		if (subspecies == null) {
+		if (subsp == null) {
 			return genus + " " + species;
 		}
-		return genus + " " + species + " " + subspecies;
+		return genus + " " + species + " " + subsp;
 	}
 
 	static List<NameGroup> loadNameGroups(Collection<String> names)

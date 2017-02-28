@@ -16,6 +16,8 @@ import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.utils.IOUtil;
 
+import static nl.naturalis.nba.dao.util.es.ESUtil.*;
+
 class NameImporter {
 
 	private static final Logger logger = getLogger(NameImporter.class);
@@ -43,7 +45,7 @@ class NameImporter {
 		loader = new NameLoader(0, stats);
 		loader.suppressErrors(suppressErrors);
 		List<Specimen> batch = extractor.nextBatch();
-		ESUtil.disableAutoRefresh(NAME_GROUP.getIndexInfo());
+		disableAutoRefresh(NAME_GROUP.getIndexInfo());
 		while (batch != null) {
 			transformer.prepareForBatch(batch);
 			for (Specimen specimen : batch) {
@@ -55,13 +57,14 @@ class NameImporter {
 			NameGroupUpserter.update(transformer.getNameGroups());
 			if (stats.recordsProcessed % 100000 == 0) {
 				logger.info("Documents processed: {}", stats.recordsProcessed);
+				refreshIndex(NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading next batch of specimens");
 			}
 			batch = extractor.nextBatch();
 		}
-		ESUtil.setAutoRefreshInterval(NAME_GROUP.getIndexInfo(), "30s");
+		setAutoRefreshInterval(NAME_GROUP.getIndexInfo(), "30s");
 		IOUtil.close(loader);
 		stats.logStatistics(logger);
 		logDuration(logger, getClass(), start);

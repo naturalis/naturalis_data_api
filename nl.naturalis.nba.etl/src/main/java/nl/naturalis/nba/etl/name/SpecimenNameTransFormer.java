@@ -16,12 +16,12 @@ import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.etl.AbstractDocumentTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 
-class NameTransformer extends AbstractDocumentTransformer<Specimen, NameGroup> {
+class SpecimenNameTransformer extends AbstractDocumentTransformer<Specimen, NameGroup> {
 
 	private HashMap<String, NameGroup> nameCache;
 	private int batchSize;
 
-	NameTransformer(ETLStatistics stats, int batchSize)
+	SpecimenNameTransformer(ETLStatistics stats, int batchSize)
 	{
 		super(stats);
 		this.batchSize = batchSize;

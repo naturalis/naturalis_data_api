@@ -30,14 +30,14 @@ class NameImporter {
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		DocumentIterator<Specimen> extractor;
-		NameTransformer transformer;
+		SpecimenNameTransformer transformer;
 		NameLoader loader = null;
 		logger.info("Initializing extractor");
 		extractor = new DocumentIterator<>(SPECIMEN);
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
 		logger.info("Initializing transformer");
-		transformer = new NameTransformer(stats, batchSize);
+		transformer = new SpecimenNameTransformer(stats, batchSize);
 		transformer.setSuppressErrors(suppressErrors);
 		logger.info("Initializing loader");
 		loader = new NameLoader(0, stats);
@@ -56,7 +56,6 @@ class NameImporter {
 			if (stats.recordsProcessed % 100000 == 0) {
 				logger.info("Documents processed: {}", stats.recordsProcessed);
 			}
-			ESUtil.refreshIndex(NAME_GROUP);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading next batch of specimens");
 			}

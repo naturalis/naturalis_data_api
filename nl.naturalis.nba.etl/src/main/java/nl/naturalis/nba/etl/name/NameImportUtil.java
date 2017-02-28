@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
@@ -28,6 +29,7 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.SummaryGatheringEvent;
 import nl.naturalis.nba.api.model.SummaryGatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.SummaryOrganization;
 import nl.naturalis.nba.api.model.SummaryPerson;
 import nl.naturalis.nba.api.model.SummaryScientificName;
 import nl.naturalis.nba.api.model.SummarySourceSystem;
@@ -138,10 +140,18 @@ class NameImportUtil {
 		for (Person p : persons) {
 			SummaryPerson sp = new SummaryPerson();
 			sp.setFullName(p.getFullName());
-			sp.setOrganization(p.getOrganization());
+			sp.setOrganization(copyOrganization(p.getOrganization()));
 			summaries.add(sp);
 		}
 		return summaries;
+	}
+
+	private static SummaryOrganization copyOrganization(Organization organization)
+	{
+		if (organization == null) {
+			return null;
+		}
+		return new SummaryOrganization(organization.getName());
 	}
 
 	private static SummarySourceSystem copySourceSystem(SourceSystem ss)

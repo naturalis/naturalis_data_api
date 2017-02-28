@@ -6,16 +6,16 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 
-public class SummaryVernacularName implements INbaModelObject {
+public class SummaryOrganization implements INbaModelObject {
 
-	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String name;
 
-	public SummaryVernacularName()
+	public SummaryOrganization()
 	{
 	}
 
-	public SummaryVernacularName(String name)
+	public SummaryOrganization(String name)
 	{
 		this.name = name;
 	}

@@ -1,9 +1,16 @@
 package nl.naturalis.nba.api.model;
 
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
+
+import nl.naturalis.nba.api.annotations.Analyzers;
+
 public class SummaryPerson implements INbaModelObject {
 
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String fullName;
-	private Organization organization;
+	private SummaryOrganization organization;
 
 	public SummaryPerson()
 	{
@@ -19,12 +26,12 @@ public class SummaryPerson implements INbaModelObject {
 		this.fullName = fullName;
 	}
 
-	public Organization getOrganization()
+	public SummaryOrganization getOrganization()
 	{
 		return organization;
 	}
 
-	public void setOrganization(Organization organization)
+	public void setOrganization(SummaryOrganization organization)
 	{
 		this.organization = organization;
 	}

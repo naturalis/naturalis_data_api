@@ -5,6 +5,7 @@ import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.utils.ConfigObject;
 
 public class NameImportAll {
@@ -49,7 +50,13 @@ public class NameImportAll {
 		importer.setSuppressErrors(suppressErrors);
 		importer.setBatchSize(batchSize);
 		importer.setTimeout(timeout);
-		importer.importSpecimenNames();
+		try {
+			importer.importSpecimenNames();
+		}
+		catch (BulkIndexException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 }

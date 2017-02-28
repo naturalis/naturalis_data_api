@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl.name;
 
+import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
@@ -7,10 +9,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.ESUtil;
+import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.utils.IOUtil;
 
@@ -22,7 +24,7 @@ class NameImporter {
 	private int batchSize;
 	private int timeout;
 
-	void importSpecimenNames()
+	void importSpecimenNames() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
 		ETLStatistics stats = new ETLStatistics();
@@ -31,7 +33,7 @@ class NameImporter {
 		NameTransformer transformer;
 		NameLoader loader = null;
 		logger.info("Initializing extractor");
-		extractor = new DocumentIterator<>(DocumentType.SPECIMEN);
+		extractor = new DocumentIterator<>(SPECIMEN);
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
 		logger.info("Initializing transformer");
@@ -41,19 +43,26 @@ class NameImporter {
 		loader = new NameLoader(0, stats);
 		loader.suppressErrors(suppressErrors);
 		List<Specimen> batch = extractor.nextBatch();
+		ESUtil.disableAutoRefresh(NAME_GROUP.getIndexInfo());
 		while (batch != null) {
 			transformer.prepareForBatch(batch);
 			for (Specimen specimen : batch) {
-				List<NameGroup> names = transformer.transform(specimen);
-				loader.queue(names);
+				transformer.transform(specimen);
 			}
-			loader.flush();
-			if (stats.recordsProcessed % 10000 == 0) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Creating/updating NameGroup documents");
+			}
+			NameGroupUpserter.update(transformer.getNameGroups());
+			if (stats.recordsProcessed % 100000 == 0) {
 				logger.info("Documents processed: {}", stats.recordsProcessed);
-				logger.info("Documents indexed: {}", stats.documentsIndexed);
+			}
+			ESUtil.refreshIndex(NAME_GROUP);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Loading next batch of specimens");
 			}
 			batch = extractor.nextBatch();
 		}
+		ESUtil.setAutoRefreshInterval(NAME_GROUP.getIndexInfo(), "30s");
 		IOUtil.close(loader);
 		stats.logStatistics(logger);
 		logDuration(logger, getClass(), start);

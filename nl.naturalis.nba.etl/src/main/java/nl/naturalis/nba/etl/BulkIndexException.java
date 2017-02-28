@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class BulkIndexException extends Exception {
 	private int bulkRequestSize;
 	private List<BulkIndexFailure> failures;
 
-	public BulkIndexException(BulkResponse response, List<?> objs)
+	public BulkIndexException(BulkResponse response, Collection<?> objs)
 	{
 		super(response.buildFailureMessage());
 		bulkRequestSize = objs.size();

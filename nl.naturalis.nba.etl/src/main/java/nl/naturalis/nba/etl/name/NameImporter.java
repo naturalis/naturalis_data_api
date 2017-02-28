@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 
 import java.util.List;
 
@@ -13,21 +12,15 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
 class NameImporter {
 
-	static int BATCH_SIZE = 500;
-
 	private static final Logger logger = getLogger(NameImporter.class);
 
-	private final boolean suppressErrors;
-
-	NameImporter()
-	{
-		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
-	}
+	private boolean suppressErrors;
+	private int batchSize;
+	private int timeout;
 
 	void importSpecimenNames()
 	{
@@ -39,10 +32,10 @@ class NameImporter {
 		NameLoader loader = null;
 		logger.info("Initializing extractor");
 		extractor = new DocumentIterator<>(DocumentType.SPECIMEN);
-		extractor.setBatchSize(BATCH_SIZE);
-		extractor.setTimeout(50000);
+		extractor.setBatchSize(batchSize);
+		extractor.setTimeout(timeout);
 		logger.info("Initializing transformer");
-		transformer = new NameTransformer(stats);
+		transformer = new NameTransformer(stats, batchSize);
 		transformer.setSuppressErrors(suppressErrors);
 		logger.info("Initializing loader");
 		loader = new NameLoader(0, stats);
@@ -64,6 +57,36 @@ class NameImporter {
 		IOUtil.close(loader);
 		stats.logStatistics(logger);
 		logDuration(logger, getClass(), start);
+	}
+
+	boolean isSuppressErrors()
+	{
+		return suppressErrors;
+	}
+
+	void setSuppressErrors(boolean suppressErrors)
+	{
+		this.suppressErrors = suppressErrors;
+	}
+
+	int getBatchSize()
+	{
+		return batchSize;
+	}
+
+	void setBatchSize(int batchSize)
+	{
+		this.batchSize = batchSize;
+	}
+
+	int getTimeout()
+	{
+		return timeout;
+	}
+
+	void setTimeout(int timeout)
+	{
+		this.timeout = timeout;
 	}
 
 }

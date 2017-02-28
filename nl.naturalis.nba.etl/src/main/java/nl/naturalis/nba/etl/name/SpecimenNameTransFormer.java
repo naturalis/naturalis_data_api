@@ -19,11 +19,13 @@ import nl.naturalis.nba.etl.ETLStatistics;
 class NameTransformer extends AbstractDocumentTransformer<Specimen, NameGroup> {
 
 	private HashMap<String, NameGroup> nameCache;
+	private int batchSize;
 
-	NameTransformer(ETLStatistics stats)
+	NameTransformer(ETLStatistics stats, int batchSize)
 	{
 		super(stats);
-		this.nameCache = new HashMap<>(NameImporter.BATCH_SIZE * 4);
+		this.batchSize = batchSize;
+		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
 	@Override
@@ -58,9 +60,9 @@ class NameTransformer extends AbstractDocumentTransformer<Specimen, NameGroup> {
 	{
 		nameCache.clear();
 		/*
-		 * Assume we have around 3 identifications per specimen
+		 * Assume we have around 4 identifications per specimen
 		 */
-		Set<String> names = new HashSet<>(NameImporter.BATCH_SIZE * 3);
+		Set<String> names = new HashSet<>(batchSize * 4);
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
 				names.add(createName(si));

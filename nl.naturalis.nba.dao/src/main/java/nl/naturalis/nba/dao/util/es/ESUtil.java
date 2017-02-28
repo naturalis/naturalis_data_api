@@ -304,7 +304,6 @@ public class ESUtil {
 	 */
 	public static void refreshIndex(IndexInfo indexInfo)
 	{
-		logger.info("Refreshing index " + indexInfo.getName());
 		String index = indexInfo.getName();
 		RefreshRequestBuilder request = indices().prepareRefresh(index);
 		request.execute().actionGet();

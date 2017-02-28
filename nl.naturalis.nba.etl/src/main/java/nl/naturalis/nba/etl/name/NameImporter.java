@@ -2,6 +2,9 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.util.es.ESUtil.disableAutoRefresh;
+import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
+import static nl.naturalis.nba.dao.util.es.ESUtil.setAutoRefreshInterval;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
@@ -11,12 +14,9 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
-import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.utils.IOUtil;
-
-import static nl.naturalis.nba.dao.util.es.ESUtil.*;
 
 class NameImporter {
 
@@ -55,7 +55,7 @@ class NameImporter {
 				logger.debug("Creating/updating NameGroup documents");
 			}
 			NameGroupUpserter.update(transformer.getNameGroups());
-			if (stats.recordsProcessed % 100000 == 0) {
+			if (stats.recordsProcessed % 50000 == 0) {
 				logger.info("Documents processed: {}", stats.recordsProcessed);
 				refreshIndex(NAME_GROUP.getIndexInfo());
 			}

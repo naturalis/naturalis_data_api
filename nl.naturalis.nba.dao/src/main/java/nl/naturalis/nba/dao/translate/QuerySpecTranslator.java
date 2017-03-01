@@ -23,6 +23,7 @@ import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
@@ -61,6 +62,9 @@ public class QuerySpecTranslator {
 	 */
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Translating QuerySpec:\n{}", JsonUtil.toPrettyJson(spec));
+		}
 		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {
 			overrideNonScoringIfNecessary();

@@ -2,6 +2,7 @@ package nl.naturalis.nba.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A {@code QueryResultItem} contains a document (or other type of object)
@@ -14,10 +15,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param <T>
  *            The type of object coming back from the query.
  */
+@JsonPropertyOrder({ "score", "item" })
 public class QueryResultItem<T> {
 
-	private T item;
 	private float score;
+	private T item;
 
 	@JsonCreator
 	public QueryResultItem(@JsonProperty("item") T item, @JsonProperty("score") float score)

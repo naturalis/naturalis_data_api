@@ -7,7 +7,6 @@ import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.CT_APPLICATION_JSON;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -112,33 +111,6 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		return getQueryResult(request.getResponseBody(), queryResultTypeReference());
 	}
 
-	@Override
-	public QueryResult<Map<String, Object>> queryData(QuerySpec querySpec)
-			throws InvalidQueryException
-	{
-		TypeReference<QueryResult<Map<String, Object>>> typeRef;
-		typeRef = new TypeReference<QueryResult<Map<String, Object>>>() {};
-		SimpleHttpPost request = new SimpleHttpPost();
-		request.setAccept(CT_APPLICATION_JSON);
-		request.setBaseUrl(config.getBaseUrl());
-		request.setPath(rootPath + "queryData");
-		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
-		sendRequest(request);
-		int status = request.getStatus();
-		if (status != HTTP_OK) {
-			throw newServerException(status, request.getResponseBody());
-		}
-		return getQueryResult(request.getResponseBody(), typeRef);
-	}
-
-	@Override
-	public void csvQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
-	{
-		// No implementation yet
-		throw new ClientException("Not implemented yet");
-	}
-
-	@Override
 	public long count(QuerySpec querySpec) throws InvalidQueryException
 	{
 		// TODO: implement

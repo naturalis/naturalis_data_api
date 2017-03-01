@@ -12,6 +12,9 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -141,7 +144,7 @@ public class SpecimenDaoTest_Miscellaneous {
 	}
 
 	/*
-	 * Tests query method with a single EQUALS query condition. 
+	 * Tests query method with a single EQUALS query condition.
 	 */
 	@Test
 	public void testQuery__SearchSpec__01() throws InvalidQueryException
@@ -382,25 +385,40 @@ public class SpecimenDaoTest_Miscellaneous {
 		assertEquals("01", 3, ids.length);
 	}
 
+	/*
+	 * Test getDistinctValues with simple field an no QuerySpec
+	 */
 	@Test
 	public void testGetDistinctValues_01() throws InvalidQueryException
 	{
 		SpecimenDao dao = new SpecimenDao();
-		System.out.println(JsonUtil.toPrettyJson(dao.getDistinctValues("recordBasis", null)));
+		Map<String, Long> result = dao.getDistinctValues("recordBasis", null);
+		// System.out.println(JsonUtil.toPrettyJson(result));
+		assertEquals("01", 3, result.size());
+		Iterator<Map.Entry<String, Long>> entries = result.entrySet().iterator();
+		Map.Entry<String, Long> entry = entries.next();
+		assertEquals("02", "Preserved specimen", entry.getKey());
+		assertEquals("03", new Long(2), entry.getValue());
+		entry = entries.next();
+		assertEquals("04", "FossileSpecimen", entry.getKey());
+		assertEquals("05", new Long(1), entry.getValue());
+		entry = entries.next();
+		assertEquals("06", "Herbarium sheet", entry.getKey());
+		assertEquals("07", new Long(1), entry.getValue());
 	}
 
 	/*
-	 * Tests save method.
+	 * Test getDistinctValues with nested field an no QuerySpec
 	 */
 	@Test
-	public void testSave__Specimen__01()
+	public void testGetDistinctValues_02() throws InvalidQueryException
 	{
 		SpecimenDao dao = new SpecimenDao();
-		String id = dao.save(pMajor, true);
-		assertNotNull("01", id);
-		Specimen retrieved = dao.find(id);
-		assertNotNull("02", retrieved);
-		assertEquals("03", pMajor.getUnitID(), retrieved.getUnitID());
+		String field = "identifications.defaultClassification.genus";
+		Map<String, Long> result = dao.getDistinctValues(field, null);
+		System.out.println(JsonUtil.toPrettyJson(result));
+		// Genus Larus occurs twice
+		assertEquals("01", 4, result.size());
 	}
 
 }

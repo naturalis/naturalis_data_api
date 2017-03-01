@@ -5,13 +5,15 @@ import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.util.es.ESUtil.executeSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.nested;
+import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteResponse.Result;
@@ -28,7 +30,8 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
@@ -39,12 +42,14 @@ import nl.naturalis.nba.api.INbaAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.KeyValuePair;
 import nl.naturalis.nba.api.NbaException;
+import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortOrder;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
@@ -187,19 +192,36 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 			request = newSearchRequest(dt);
 		}
 		else {
-			QuerySpecTranslator translator = new QuerySpecTranslator(querySpec, dt);
-			request = translator.translate();
+			request = new QuerySpecTranslator(querySpec, dt).translate();
 		}
-		TermsAggregationBuilder aggregation = AggregationBuilders.terms(forField);
-		aggregation.field(forField);
-		aggregation.size(100);
 		request.setSize(0);
-		request.addAggregation(aggregation);
-		SearchResponse response = executeSearchRequest(request);
-		Terms terms = response.getAggregations().get(forField);
-		List<Bucket> buckets = terms.getBuckets();
-		Map<String, Long> result = new TreeMap<>();
-		for (Bucket bucket : buckets) {
+		MappingInfo<T> mappingInfo = new MappingInfo<>(dt.getMapping());
+		String nestedPath;
+		try {
+			nestedPath = mappingInfo.getNestedPath(forField);
+		}
+		catch (NoSuchFieldException e) {
+			throw new InvalidQueryException(e.getMessage());
+		}
+		TermsAggregationBuilder termsAggregation = terms("agg0");
+		termsAggregation.field(forField);
+		termsAggregation.size(10000);
+		Terms terms;
+		if (nestedPath == null) {
+			request.addAggregation(termsAggregation);
+			SearchResponse response = executeSearchRequest(request);
+			terms = response.getAggregations().get("agg0");
+		}
+		else {
+			NestedAggregationBuilder nestedAggregation = nested("agg1", nestedPath);
+			nestedAggregation.subAggregation(termsAggregation);
+			request.addAggregation(nestedAggregation);
+			SearchResponse response = executeSearchRequest(request);
+			Nested nested = response.getAggregations().get("agg1");
+			terms = nested.getAggregations().get("agg0");
+		}
+		Map<String, Long> result = new LinkedHashMap<>(terms.getBuckets().size());
+		for (Bucket bucket : terms.getBuckets()) {
 			result.put(bucket.getKeyAsString(), bucket.getDocCount());
 		}
 		return result;

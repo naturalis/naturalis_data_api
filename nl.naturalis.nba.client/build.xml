@@ -7,10 +7,11 @@
 	<!-- Project dependencies -->
 	<path id="non-ivy-dependencies">
 		<filelist dir="${api.module.location}/build" files="${api.module.artifact}" />
+		<filelist dir="${common.module.location}/build" files="${common.module.artifact}" />
 		<filelist dir="${utils.module.location}/build" files="${utils.module.artifact}" />
 	</path>
 
-	<target name="build" depends="build-api-module,build-utils-module,clean,package" />
+	<target name="build" depends="build-api-module,build-common-module,build-utils-module,clean,package" />
 
 
 </project>

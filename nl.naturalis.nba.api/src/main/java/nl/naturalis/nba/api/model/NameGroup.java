@@ -10,6 +10,9 @@ public class NameGroup implements IDocumentObject {
 	private Set<SummarySpecimen> specimens;
 	private Set<SummaryTaxon> taxa;
 
+	private int specimenCount;
+	private int taxonCount;
+
 	public NameGroup()
 	{
 	}
@@ -67,6 +70,26 @@ public class NameGroup implements IDocumentObject {
 	public void setTaxa(Set<SummaryTaxon> taxa)
 	{
 		this.taxa = taxa;
+	}
+
+	public int getSpecimenCount()
+	{
+		return specimenCount;
+	}
+
+	public void setSpecimenCount(int specimenCount)
+	{
+		this.specimenCount = specimenCount;
+	}
+
+	public int getTaxonCount()
+	{
+		return taxonCount;
+	}
+
+	public void setTaxonCount(int taxonCount)
+	{
+		this.taxonCount = taxonCount;
 	}
 
 }

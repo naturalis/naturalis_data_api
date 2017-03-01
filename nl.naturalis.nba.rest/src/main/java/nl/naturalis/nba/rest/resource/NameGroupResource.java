@@ -26,11 +26,11 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.dao.NameGroupDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
-import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
+import nl.naturalis.nba.rest.util.HttpNameGroupQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
 
 @Path("/names")
@@ -84,7 +84,7 @@ public class NameGroupResource {
 	public QueryResult<NameGroup> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
 			NameGroupDao dao = new NameGroupDao();
 			return dao.query(qs);
 		}
@@ -101,7 +101,7 @@ public class NameGroupResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(form, uriInfo).build();
 			NameGroupDao dao = new NameGroupDao();
 			return dao.query(qs);
 		}
@@ -114,7 +114,7 @@ public class NameGroupResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<NameGroup> query_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<NameGroup> query_POST_JSON(NameGroupQuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			NameGroupDao dao = new NameGroupDao();
@@ -131,7 +131,7 @@ public class NameGroupResource {
 	public long count(@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
 			NameGroupDao dao = new NameGroupDao();
 			return dao.count(qs);
 		}
@@ -147,7 +147,7 @@ public class NameGroupResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
 			NameGroupDao dao = new NameGroupDao();
 			return dao.getDistinctValues(field, qs);
 		}
@@ -164,7 +164,7 @@ public class NameGroupResource {
 			@Context UriInfo uriInfo)
 	{
 		try {
-			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
 			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
 				conditions = qs.getConditions()

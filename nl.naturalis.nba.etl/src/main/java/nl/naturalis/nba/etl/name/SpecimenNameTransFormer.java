@@ -45,6 +45,7 @@ class SpecimenNameTransformer extends AbstractDocumentTransformer<Specimen, Name
 			String name = createName(si);
 			NameGroup group = nameCache.get(name);
 			group.addSpecimen(copySpecimen(specimen));
+			group.setSpecimenCount(group.getSpecimens().size());
 			stats.objectsAccepted++;
 		}
 		/*

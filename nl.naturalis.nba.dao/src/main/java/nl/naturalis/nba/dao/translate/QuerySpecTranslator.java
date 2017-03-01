@@ -1,7 +1,9 @@
 package nl.naturalis.nba.dao.translate;
 
 import static nl.naturalis.nba.api.LogicalOperator.OR;
+import static nl.naturalis.nba.common.json.JsonUtil.toPrettyJson;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
+import static nl.naturalis.nba.dao.DaoUtil.prune;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.utils.ArrayUtil.stringify;
@@ -23,7 +25,6 @@ import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.common.es.map.MappingInfo;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.DocumentType;
 
 /**
@@ -63,7 +64,7 @@ public class QuerySpecTranslator {
 	public SearchRequestBuilder translate() throws InvalidQueryException
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("Translating QuerySpec:\n{}", JsonUtil.toPrettyJson(spec));
+			logger.debug("Translating QuerySpec:\n{}", toPrettyJson(prune(spec)));
 		}
 		SearchRequestBuilder request = newSearchRequest(dt);
 		if (spec.getConditions() != null && !spec.getConditions().isEmpty()) {

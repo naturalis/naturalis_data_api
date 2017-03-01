@@ -13,18 +13,19 @@ public class Demo {
 
 	public static void main(String[] args) throws InvalidQueryException
 	{
+		// Start een NBA sessie
 		String baseUrl = "http://localhost:8080/v2";
 		NbaSession session = new NbaSession(new ClientConfig(baseUrl));
 		SpecimenClient client = session.getSpecimenClient();
 
+		// Criterium voor de vindplaats v.e. specimen
 		String field1 = "gatheringEvent.localityText";
 		QueryCondition condition1 = new QueryCondition(field1, MATCHES, "France");
 
+		// Criterium voor de wetenschappelijke naam
 		String field2 = "identifications.scientificName.fullScientificName";
 		QueryCondition condition2 = new QueryCondition(field2, MATCHES, "benthamiana");
 		
-		condition1.setBoost(100);
-
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition1);
 		query.addCondition(condition2);

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.rest.resource;
 
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
@@ -27,9 +28,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.MultiMediaObjectDao;
-import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
@@ -55,7 +54,7 @@ public class MultiMediaObjectResource {
 			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			MultiMediaObject result = dao.find(id);
 			if (result == null) {
-				throw new HTTP404Exception(uriInfo, DocumentType.TAXON, id);
+				throw new HTTP404Exception(uriInfo, MULTI_MEDIA_OBJECT, id);
 			}
 			return result;
 		}
@@ -133,7 +132,7 @@ public class MultiMediaObjectResource {
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
-			TaxonDao dao = new TaxonDao();
+			MultiMediaObjectDao dao = new MultiMediaObjectDao();
 			return dao.count(qs);
 		}
 		catch (Throwable t) {

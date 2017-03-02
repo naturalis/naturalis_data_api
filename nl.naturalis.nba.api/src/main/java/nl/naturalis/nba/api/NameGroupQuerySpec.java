@@ -4,7 +4,7 @@ import nl.naturalis.nba.api.model.NameGroup;
 
 /**
  * An extension of the {@link QuerySpec} class specifically meant for queries
- * agains the {@link NameGroup} document type.
+ * agains the {@link NameGroup} index.
  * 
  * @author Ayco Holleman
  *
@@ -13,7 +13,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 
 	private Integer specimensFrom;
 	private Integer specimensSize;
-	private Boolean noTaxa;
+	private boolean noTaxa;
 
 	/**
 	 * Returns the offset within the list of specimens within the NameGroup
@@ -49,7 +49,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the maxmimum number of specimens to return per NameGroup document.
+	 * Sets the maxmimum number of specimens to include per NameGroup document.
 	 * Default all. You can specify 0 (zero) to indicate that you are only
 	 * interested in the taxa associated with the name group's name, or only in
 	 * statistics like the total specimen count for the name.
@@ -66,16 +66,16 @@ public class NameGroupQuerySpec extends QuerySpec {
 	 * 
 	 * @return
 	 */
-	public Boolean isNoTaxa()
+	public boolean isNoTaxa()
 	{
 		return noTaxa;
 	}
 
 	/**
-	 * Determines whether or not to show the taxa associated with the name
+	 * Determines whether or not to include the taxa associated with the name
 	 * group's name.
 	 */
-	public void setNoTaxa(Boolean noTaxa)
+	public void setNoTaxa(boolean noTaxa)
 	{
 		this.noTaxa = noTaxa;
 	}

@@ -19,8 +19,6 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.SummarySpecimen;
 
-import static java.lang.Boolean.*;
-
 public class NameGroupDao extends NbaDao<NameGroup> implements INameGroupAccess {
 
 	@SuppressWarnings("unused")
@@ -43,24 +41,27 @@ public class NameGroupDao extends NbaDao<NameGroup> implements INameGroupAccess 
 		QueryResult<NameGroup> result = super.query(querySpec);
 		if (querySpec instanceof NameGroupQuerySpec) {
 			NameGroupQuerySpec qs = (NameGroupQuerySpec) querySpec;
-			boolean showTaxa = qs.isNoTaxa() == null || qs.isNoTaxa().equals(TRUE);
-			if (qs.getSpecimensFrom() == null && qs.getSpecimensSize() == null && showTaxa) {
+			Integer f = qs.getSpecimensFrom();
+			Integer s = qs.getSpecimensSize();
+			int from = f == null ? 0 : Math.max(f.intValue(), 0);
+			int size = s == null ? -1 : Math.max(s.intValue(), -1);
+			if (from == 0 && size == -1 && !qs.isNoTaxa()) {
 				return result;
 			}
 			for (QueryResultItem<NameGroup> item : result) {
 				NameGroup nameGroup = item.getItem();
-				if (!showTaxa) {
+				if (qs.isNoTaxa()) {
 					nameGroup.setTaxa(null);
 				}
-				if (qs.getSpecimensSize() == 0) {
+				if (size == 0) {
 					nameGroup.setSpecimens(null);
 				}
-				List<SummarySpecimen> specimens = new ArrayList<>(nameGroup.getSpecimens());
-				int from = qs.getSpecimensFrom() == null ? 0 : qs.getSpecimensFrom();
-				int to = qs.getSpecimensSize() == null ? specimens.size() : qs.getSpecimensSize();
-				to = Math.min(to, specimens.size());
-				Set<SummarySpecimen> chunk = new LinkedHashSet<>(specimens.subList(from, to));
-				nameGroup.setSpecimens(chunk);
+				else {
+					List<SummarySpecimen> specimens = new ArrayList<>(nameGroup.getSpecimens());
+					int to = size == -1 ? specimens.size() : Math.min(specimens.size(), size);
+					Set<SummarySpecimen> chunk = new LinkedHashSet<>(specimens.subList(from, to));
+					nameGroup.setSpecimens(chunk);
+				}
 			}
 		}
 		return result;

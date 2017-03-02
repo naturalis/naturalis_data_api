@@ -3,6 +3,17 @@ package nl.naturalis.nba.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A NameGroup contains a scientific name and the specimens and taxa associated
+ * with that name. The NameGroup index is a "frozen query" on specimens and
+ * taxa, grouping them on their full scientific name. More precisely: on the
+ * combination of their genus, specific eptithet and infraspecific epithet. Each
+ * NameGroup document contains one such combination, which is guaranteed to be
+ * unique.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class NameGroup implements IDocumentObject {
 
 	private String id;

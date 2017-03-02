@@ -13,14 +13,13 @@
 		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" />
 		
 		<dependency org="org.elasticsearch" name="elasticsearch" rev="5.1.2"/>
-		<dependency org="org.elasticsearch.client" name="transport" rev="5.1.2"/>	
-		<!-- dependency org="org.elasticsearch" name="elasticsearch" rev="2.3.4"/ -->				
-		
+		<dependency org="org.elasticsearch.client" name="transport" rev="5.1.2"/>
+				
 		<dependency org="joda-time" name="joda-time" rev="2.7"/>
 		<dependency org="commons-io" name="commons-io" rev="2.4"/>
 		<dependency org="org.apache.commons" name="commons-csv" rev="1.4"/>
 		<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.4"/>
-		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.7.8"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.8.3"/>
 		<dependency org="de.grundid.opendatalab" name="geojson-jackson" rev="1.6"/>
 		<dependency org="com.ibm.icu" name="icu4j" rev="54.1.1"/>
 		<dependency org="com.googlecode.juniversalchardet" name="juniversalchardet" rev="1.0.3"/>

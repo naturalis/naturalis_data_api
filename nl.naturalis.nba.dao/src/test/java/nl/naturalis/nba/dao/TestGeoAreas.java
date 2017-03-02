@@ -34,6 +34,7 @@ public class TestGeoAreas {
 		area.setLocality("Uitgeest");
 		area.setShape(loadShape("uitgeest.geojson.txt"));
 		return area;
+		// "{\"type\":
 	}
 
 	static GeoArea NoordHolland()
@@ -53,6 +54,15 @@ public class TestGeoAreas {
 		area.setSourceSystemId("004");
 		area.setLocality("Netherlands");
 		area.setShape(loadShape("netherlands.geojson.txt"));
+		return area;
+	}
+	
+	static GeoArea Vatican() {
+		GeoArea area = new GeoArea();
+		area.setSourceSystem(SourceSystem.GEO);
+		area.setSourceSystemId("005");
+		area.setLocality("Vatican");
+		area.setShape(loadShape("vatican.geojson.txt"));
 		return area;
 	}
 

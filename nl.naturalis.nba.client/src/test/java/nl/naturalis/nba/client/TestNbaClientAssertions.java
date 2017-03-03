@@ -43,42 +43,24 @@ public class TestNbaClientAssertions {
 	public void test_find_id() {
 
 		// find(id) - Find specimen with ID = "WAG.1706236@BRAHMS"
-
+		
 		String id = "WAG.1706236@BRAHMS";
 		Specimen result = specimenClient.find(id);
-		// System.out.println("Find by id=WAG.1706236@BRAHMS: " +
-		// JsonUtil.toPrettyJson(result01));
-		int expectedHashCode = 951798267;
-		assertEquals(expectedHashCode, result.toString().hashCode());
+		// System.out.println("hash: " + test.hashCode());
+		// System.out.println("Find by id=WAG.1706236@BRAHMS: " + JsonUtil.toPrettyJson(result));
+		int expectedHashCode = -887374660;
+		assertEquals(expectedHashCode, JsonUtil.toPrettyJson(result).hashCode());
 	}
 
 	@Test
 	public void test_find_ids() {
 
-		// finds(ids) - Find multiple ids
+		// find(ids) - Find multiple ids
 
 		String[] ids = { "WAG.1706278@BRAHMS", "WAG.1706277@BRAHMS" };
 		Specimen[] result = specimenClient.find(ids);
-		// System.out.println("Find by ids: " +
-		// JsonUtil.toPrettyJson(result02));
-		int expectedHashCode = 247052944;
-		assertEquals(expectedHashCode, result.toString().hashCode());
-
-		/*
-		 * Produceert:
-		 *
-		 * http://localhost:8080/v2/specimen/findByIds/%5B%22WAG.1706278@BRAHMS%
-		 * 22,%22WAG.1706277@BRAHMS%22%5D of decoded:
-		 * http://localhost:8080/v2/specimen/findByIds/["WAG.1706278@BRAHMS",
-		 * "WAG.1706277@BRAHMS"]
-		 * 
-		 * zonder resultaten. Dit zou moeten produceren:
-		 * 
-		 * http://localhost:8080/v2/specimen/findByIds/WAG.1706278@BRAHMS,WAG.
-		 * 1706277@BRAHMS
-		 * 
-		 * Met 2 resultaten.
-		 */
+		int expectedHashCode = -644252716;
+		assertEquals(expectedHashCode, JsonUtil.toPrettyJson(result).hashCode());
 
 	}
 
@@ -89,19 +71,19 @@ public class TestNbaClientAssertions {
 
 		String unitID = "WAG.1706236";
 		Specimen[] result = specimenClient.findByUnitID(unitID);
-		// System.out.println("Find by UnitID=WAG.1706236: " +
-		// JsonUtil.toPrettyJson(result));
-		int expectedHasCode = 1497510745;
-		assertEquals(expectedHasCode, result.toString().hashCode());
+		int expectedHasCode = 1544902560;
+		assertEquals(expectedHasCode, JsonUtil.toPrettyJson(result).hashCode()   );
 	}
 
 	@Test
 	public void test_query_test_01() throws InvalidQueryException {
 
 		QuerySpec querySpec = new QuerySpec();
+		
 		String field = "collectionType";
 		QueryCondition condition = new QueryCondition(field, EQUALS, "Botany");
 		querySpec.addCondition(condition);
+
 		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
 
 		// System.out.println(JsonUtil.toPrettyJson(querySpec));
@@ -124,6 +106,7 @@ public class TestNbaClientAssertions {
 	public void test_query_test_02() throws InvalidQueryException {
 
 		QuerySpec querySpec = new QuerySpec();
+		
 		String country = "gatheringEvent.country";
 		QueryCondition condition = new QueryCondition(country, EQUALS, "Netherlands");
 		querySpec.addCondition(condition);
@@ -146,22 +129,69 @@ public class TestNbaClientAssertions {
 	@Test
 	public void test_query_test_03() throws InvalidQueryException {
 		
-		QuerySpec querySpec = new QuerySpec();
 		String country = "gatheringEvent.country";
-		QueryCondition condition = new QueryCondition(country, EQUALS, "Netherlands");
-		querySpec.addCondition(condition);
-		
 		String family = "identifications.defaultClassification.family";
-		condition = new QueryCondition(family, EQUALS, "Plantaginaceae");
-		querySpec.addCondition(condition);
-
-		family = "identifications.defaultClassification.family";
-		condition = new QueryCondition(family, EQUALS, "Apiaceae");
-		querySpec.setLogicalOperator(OR);
-		querySpec.addCondition(condition);
+		QueryCondition condition1 = new QueryCondition(country, EQUALS, "Netherlands");
+		condition1.and(family, EQUALS, "Plantaginaceae");
 		
-		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
-		System.out.println(JsonUtil.toPrettyJson(querySpec));
+		QueryCondition condition2 = new QueryCondition(country, EQUALS, "Netherlands");
+		condition2.and(family, EQUALS, "Acanthaceae");
+
+		QuerySpec query1 = new QuerySpec();
+		query1.addCondition(condition1);
+		QueryResult<Specimen> specimenResults = specimenClient.query(query1);
+		long result1 = specimenResults.getTotalSize();
+		// System.out.println("Total size: " + specimenResults.getTotalSize());
+
+		QuerySpec query2 = new QuerySpec();
+		query2.addCondition(condition2);
+		specimenResults = specimenClient.query(query2);
+		long result2 = specimenResults.getTotalSize();
+		// System.out.println("Total size: " + specimenResults.getTotalSize());
+		
+		QuerySpec query3 = new QuerySpec();
+		query3.addCondition(condition1);
+		query3.addCondition(condition2);
+		query3.setLogicalOperator(OR);
+//		query3.sortBy("unitID");
+//		query3.setFrom(10);
+//		query3.setSize(5);
+		specimenResults = specimenClient.query(query3);
+		long result3 = specimenResults.getTotalSize();
+		
+		assertEquals(result1 + result2, result3);
+		// System.out.println("Total size: " + specimenResults.getTotalSize());
+		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
+
+		
+		
+//		querySpec.addCondition(condition);
+//		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
+//		System.out.println("Total size: " + specimenResults.getTotalSize());
+//
+//		
+//		QuerySpec querySpec2 = new QuerySpec();
+//		String family1 = "identifications.defaultClassification.family";
+//		condition = new QueryCondition(family1, EQUALS, "Plantaginaceae");
+//		querySpec2.addCondition(condition);
+//
+//		querySpec2.setLogicalOperator(OR);
+//		
+//		String family2 = "identifications.defaultClassification.family";
+//		condition = new QueryCondition(family2, EQUALS, "Apiaceae");
+//		querySpec2.addCondition(condition);
+//		System.out.println(JsonUtil.toPrettyJson(querySpec));
+//		
+//		
+//		
+//		System.out.println(JsonUtil.toPrettyJson(querySpec));
+//		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
+//		System.out.println("Total size: " + specimenResults.getTotalSize());
+
+		
+		
+//		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
+//		System.out.println(JsonUtil.toPrettyJson(querySpec));
 		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
 		
 //		int setSize = 10;

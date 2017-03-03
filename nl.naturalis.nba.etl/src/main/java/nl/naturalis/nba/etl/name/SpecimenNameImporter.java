@@ -18,15 +18,15 @@ import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.etl.BulkIndexException;
 
-class NameImporter {
+class SpecimenNameImporter {
 
-	private static final Logger logger = getLogger(NameImporter.class);
+	private static final Logger logger = getLogger(SpecimenNameImporter.class);
 
 	private boolean suppressErrors;
 	private int batchSize;
 	private int timeout;
 
-	void importSpecimenNames() throws BulkIndexException
+	void importNames() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
 		DocumentIterator<Specimen> extractor;
@@ -48,7 +48,7 @@ class NameImporter {
 			}
 			NameGroupUpserter.upsert(nameGroups);
 			if (batchNo++ % 10 == 0) {
-				logger.info("Specimen processed: {}", batchNo * batchSize);
+				logger.info("Specimens processed: {}", batchNo * batchSize);
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());
 				refreshIndex(NAME_GROUP.getIndexInfo());
@@ -59,7 +59,7 @@ class NameImporter {
 			batch = extractor.nextBatch();
 		}
 		setAutoRefreshInterval(NAME_GROUP.getIndexInfo(), "30s");
-		logger.info("Specimen processed: {}", extractor.getDocCounter());
+		logger.info("Specimens processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());
 		logger.info("Name groups updated: {}", transformer.getNumUpdated());
 		logDuration(logger, getClass(), start);

@@ -36,7 +36,7 @@ class SpecimenNameTransformer {
 
 	public Collection<NameGroup> transform(Collection<Specimen> specimens)
 	{
-		prepareForBatch(specimens);
+		initializeNameGroups(specimens);
 		for (Specimen specimen : specimens) {
 			transform(specimen);
 		}
@@ -59,22 +59,27 @@ class SpecimenNameTransformer {
 		for (SpecimenIdentification si : identifications) {
 			String name = createName(si);
 			NameGroup group = nameCache.get(name);
-			group.addSpecimen(copySpecimen(specimen));
-			group.setSpecimenCount(group.getSpecimens().size());
+			if (!exists(specimen, group)) {
+				group.addSpecimen(copySpecimen(specimen));
+				group.setSpecimenCount(group.getSpecimens().size());
+			}
 		}
 	}
-	
-	private static boolean exists(Specimen specimen, NameGroup group) {
-		if(group.getSpecimens()==null) {
+
+	private static boolean exists(Specimen specimen, NameGroup group)
+	{
+		if (group.getSpecimens() == null) {
 			return false;
 		}
-		for(SummarySpecimen ss : group.getSpecimens()) {
-			//if(ss.getUnitID())
+		for (SummarySpecimen ss : group.getSpecimens()) {
+			if (ss.getUnitID().equals(specimen.getUnitID())) {
+				return true;
+			}
 		}
 		return false;
 	}
 
-	private void prepareForBatch(Collection<Specimen> specimens)
+	private void initializeNameGroups(Collection<Specimen> specimens)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing name groups");

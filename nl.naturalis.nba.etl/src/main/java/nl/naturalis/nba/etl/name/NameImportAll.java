@@ -23,12 +23,12 @@ public class NameImportAll {
 	}
 
 	@SuppressWarnings("static-method")
-	public void importNames()
+	public void importNames() throws BulkIndexException
 	{
 		ESUtil.deleteIndex(NAME_GROUP.getIndexInfo());
 		ESUtil.createIndex(NAME_GROUP.getIndexInfo());
 		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
-		String prop = System.getProperty("batchSize", "500");
+		String prop = System.getProperty("batchSize", "1000");
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);
@@ -46,17 +46,17 @@ public class NameImportAll {
 			System.err.println("Invalid timeout: " + prop);
 			System.exit(1);
 		}
-		NameImporter importer = new NameImporter();
+		TaxonNameImporter importer0=new TaxonNameImporter();
+		importer0.setSuppressErrors(suppressErrors);
+		importer0.setBatchSize(batchSize);
+		importer0.setTimeout(timeout);
+		importer0.importNames();
+		
+		SpecimenNameImporter importer = new SpecimenNameImporter();
 		importer.setSuppressErrors(suppressErrors);
 		importer.setBatchSize(batchSize);
 		importer.setTimeout(timeout);
-		try {
-			importer.importSpecimenNames();
-		}
-		catch (BulkIndexException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		importer.importNames();
 	}
 
 }

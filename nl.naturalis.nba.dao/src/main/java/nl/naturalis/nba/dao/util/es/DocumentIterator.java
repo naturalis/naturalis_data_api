@@ -20,9 +20,13 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 /**
  * An {@link Iterator} implementation that iterates over Elasticsearch
@@ -40,7 +44,9 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	private static final int DEFAULT_BATCH_SIZE = 100;
 
 	private final Client client;
+
 	private final DocumentType<T> dt;
+	private final QuerySpec qs;
 
 	/* Fields determining scroll behaviour */
 	private TimeValue timeout;
@@ -60,8 +66,14 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 
 	public DocumentIterator(DocumentType<T> dt)
 	{
+		this(dt, null);
+	}
+
+	public DocumentIterator(DocumentType<T> dt, QuerySpec qs)
+	{
 		this.client = ESClientManager.getInstance().getClient();
 		this.dt = dt;
+		this.qs = qs;
 	}
 
 	/**
@@ -139,8 +151,19 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 			if (batchSize == 0) {
 				batchSize = DEFAULT_BATCH_SIZE;
 			}
-			SearchRequestBuilder request = newSearchRequest(this.dt);
-			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+			SearchRequestBuilder request;
+			if (qs == null) {
+				request = newSearchRequest(this.dt);
+				request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+			}
+			else {
+				try {
+					request = new QuerySpecTranslator(qs, dt).translate();
+				}
+				catch (InvalidQueryException e) {
+					throw new DaoException(e);
+				}
+			}
 			request.setScroll(timeout);
 			request.setSize(batchSize);
 			SearchResponse response = executeSearchRequest(request);

@@ -52,6 +52,20 @@ class NameImportUtil {
 		return h;
 	}
 
+	static String createName(SpecimenIdentification identification)
+	{
+		ScientificName sn = identification.getScientificName();
+		DefaultClassification dc = identification.getDefaultClassification();
+		return createName(sn, dc);
+	}
+
+	static String createName(Taxon taxon)
+	{
+		ScientificName sn = taxon.getAcceptedName();
+		DefaultClassification dc = taxon.getDefaultClassification();
+		return createName(sn, dc);
+	}
+
 	static SummarySpecimen copySpecimen(Specimen specimen)
 	{
 		SummarySpecimen summary = new SummarySpecimen();
@@ -76,6 +90,47 @@ class NameImportUtil {
 		summary.setSystemClassification(taxon.getSystemClassification());
 		summary.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
 		return summary;
+	}
+
+	static List<NameGroup> loadNameGroups(Collection<String> names)
+	{
+		DocumentType<NameGroup> dt = NAME_GROUP;
+		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
+		query.addIds(names.toArray(new String[names.size()]));
+		request.setQuery(query);
+		SearchResponse response = ESUtil.executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0) {
+			return Collections.emptyList();
+		}
+		List<NameGroup> result = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			NameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			result.add(sns);
+		}
+		return result;
+	}
+
+	static List<Taxon> loadTaxa(Collection<String> names)
+	{
+		DocumentType<Taxon> dt = TAXON;
+		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+		TermsQueryBuilder query = termsQuery("acceptedName.fullScientificName", names);
+		request.setQuery(query);
+		SearchResponse response = ESUtil.executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0)
+			return Collections.emptyList();
+		List<Taxon> result = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+			taxon.setId(hit.getId());
+			result.add(taxon);
+		}
+		return result;
 	}
 
 	private static SummaryGatheringEvent copyGatheringEvent(GatheringEvent ge)
@@ -172,10 +227,8 @@ class NameImportUtil {
 		return new SummarySourceSystem(ss.getCode());
 	}
 
-	static String createName(SpecimenIdentification si)
+	private static String createName(ScientificName sn, DefaultClassification dc)
 	{
-		ScientificName sn = si.getScientificName();
-		DefaultClassification dc = si.getDefaultClassification();
 		String genus = null;
 		String species = null;
 		String subsp = null;
@@ -184,7 +237,6 @@ class NameImportUtil {
 			species = sn.getSpecificEpithet();
 			subsp = sn.getInfraspecificEpithet();
 		}
-		si.getScientificName().getGenusOrMonomial();
 		if (genus == null && dc != null) {
 			genus = dc.getGenus();
 			if (genus == null) {
@@ -204,47 +256,6 @@ class NameImportUtil {
 			return genus + " " + species;
 		}
 		return genus + " " + species + " " + subsp;
-	}
-
-	static List<NameGroup> loadNameGroups(Collection<String> names)
-	{
-		DocumentType<NameGroup> dt = NAME_GROUP;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
-		query.addIds(names.toArray(new String[names.size()]));
-		request.setQuery(query);
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return Collections.emptyList();
-		}
-		List<NameGroup> result = new ArrayList<>(hits.length);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			NameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
-			result.add(sns);
-		}
-		return result;
-	}
-
-	static List<Taxon> loadTaxa(Collection<String> names)
-	{
-		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		TermsQueryBuilder query = termsQuery("acceptedName.fullScientificName", names);
-		request.setQuery(query);
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0)
-			return Collections.emptyList();
-		List<Taxon> result = new ArrayList<>(hits.length);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			result.add(taxon);
-		}
-		return result;
 	}
 
 	private NameImportUtil()

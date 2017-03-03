@@ -46,7 +46,7 @@ class NameImporter {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating/updating NameGroup documents");
 			}
-			NameGroupUpserter.update(nameGroups);
+			NameGroupUpserter.upsert(nameGroups);
 			if (batchNo++ % 10 == 0) {
 				logger.info("Specimen processed: {}", batchNo * batchSize);
 				logger.info("Name groups created: {}", transformer.getNumCreated());

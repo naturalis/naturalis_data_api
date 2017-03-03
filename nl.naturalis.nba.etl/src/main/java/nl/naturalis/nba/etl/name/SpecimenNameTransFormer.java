@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.SummarySpecimen;
 
 class SpecimenNameTransformer {
 
@@ -37,7 +38,7 @@ class SpecimenNameTransformer {
 	{
 		prepareForBatch(specimens);
 		for (Specimen specimen : specimens) {
-			transformOne(specimen);
+			transform(specimen);
 		}
 		return nameCache.values();
 	}
@@ -52,7 +53,7 @@ class SpecimenNameTransformer {
 		return updated;
 	}
 
-	private void transformOne(Specimen specimen)
+	private void transform(Specimen specimen)
 	{
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		for (SpecimenIdentification si : identifications) {
@@ -61,6 +62,16 @@ class SpecimenNameTransformer {
 			group.addSpecimen(copySpecimen(specimen));
 			group.setSpecimenCount(group.getSpecimens().size());
 		}
+	}
+	
+	private static boolean exists(Specimen specimen, NameGroup group) {
+		if(group.getSpecimens()==null) {
+			return false;
+		}
+		for(SummarySpecimen ss : group.getSpecimens()) {
+			//if(ss.getUnitID())
+		}
+		return false;
 	}
 
 	private void prepareForBatch(Collection<Specimen> specimens)

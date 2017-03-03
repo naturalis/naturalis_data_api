@@ -1,20 +1,30 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
- * A NameGroup contains a scientific name and the specimens and taxa associated
- * with that name. The NameGroup index is a "frozen query" on specimens and
- * taxa, grouping them on their full scientific name. More precisely: on the
- * combination of their genus, specific eptithet and infraspecific epithet. Each
- * NameGroup document contains one such combination, which is guaranteed to be
- * unique.
+ * A NameGroup contains a scientific name and the specimens, taxa and various
+ * statistics associated with that name. The NameGroup index is a "frozen query"
+ * on specimens and taxa, grouping them on their full scientific name. More
+ * precisely: on the combination of their genus, specific eptithet and
+ * infraspecific epithet. Each NameGroup document contains one such combination,
+ * which is guaranteed to be unique.
  * 
  * @author Ayco Holleman
  *
  */
 public class NameGroup implements IDocumentObject {
+
+	private static final Comparator<SummarySpecimen> specimenComparator = new Comparator<SummarySpecimen>() {
+
+		@Override
+		public int compare(SummarySpecimen o1, SummarySpecimen o2)
+		{
+			return o1.getUnitID().compareTo(o2.getUnitID());
+		}
+	};
 
 	private String id;
 	private String name;
@@ -36,7 +46,7 @@ public class NameGroup implements IDocumentObject {
 	public void addSpecimen(SummarySpecimen specimen)
 	{
 		if (specimens == null) {
-			specimens = new HashSet<>();
+			specimens = new TreeSet<>(specimenComparator);
 		}
 		specimens.add(specimen);
 	}

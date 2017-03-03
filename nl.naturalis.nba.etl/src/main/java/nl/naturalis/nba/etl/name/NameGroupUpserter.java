@@ -22,7 +22,7 @@ public class NameGroupUpserter {
 
 	private static final TimeValue REQUEST_TIMEOUT = TimeValue.timeValueMinutes(5);
 
-	static void update(Collection<NameGroup> nameGroups) throws BulkIndexException
+	static void upsert(Collection<NameGroup> nameGroups) throws BulkIndexException
 	{
 		Client client = ESClientManager.getInstance().getClient();
 		DocumentType<NameGroup> dt = DocumentType.NAME_GROUP;

@@ -36,6 +36,7 @@ import nl.naturalis.nba.api.model.SummaryScientificName;
 import nl.naturalis.nba.api.model.SummarySourceSystem;
 import nl.naturalis.nba.api.model.SummarySpecimen;
 import nl.naturalis.nba.api.model.SummarySpecimenIdentification;
+import nl.naturalis.nba.api.model.SummaryTaxon;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -63,6 +64,17 @@ class NameImportUtil {
 		summary.setTypeStatus(specimen.getTypeStatus());
 		summary.setGatheringEvent(copyGatheringEvent(specimen.getGatheringEvent()));
 		summary.setUnitID(specimen.getUnitID());
+		return summary;
+	}
+
+	static SummaryTaxon copyTaxon(Taxon taxon)
+	{
+		SummaryTaxon summary = new SummaryTaxon();
+		summary.setId(taxon.getId());
+		summary.setAcceptedName(copyScientificName(taxon.getAcceptedName()));
+		summary.setDefaultClassification(taxon.getDefaultClassification());
+		summary.setSystemClassification(taxon.getSystemClassification());
+		summary.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
 		return summary;
 	}
 

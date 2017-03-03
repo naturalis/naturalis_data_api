@@ -1,13 +1,15 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.api.ComparisonOperator.IN;
-import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
-import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.DaoTestUtil.saveGeoAreas;
 import static nl.naturalis.nba.dao.DaoTestUtil.saveSpecimens;
+import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static nl.naturalis.nba.dao.TestGeoAreas.Aalten;
-import static nl.naturalis.nba.dao.TestGeoAreas.*;
+import static nl.naturalis.nba.dao.TestGeoAreas.Netherlands;
+import static nl.naturalis.nba.dao.TestGeoAreas.NoordHolland;
 import static nl.naturalis.nba.dao.TestGeoAreas.Uitgeest;
+import static nl.naturalis.nba.dao.TestGeoAreas.Vatican;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
@@ -22,6 +24,7 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_GeoQueries {
@@ -36,6 +39,7 @@ public class SpecimenDaoTest_GeoQueries {
 	static GeoArea uitgeest;
 	static GeoArea noordHolland;
 	static GeoArea netherlands;
+	static GeoArea vatican;
 
 	@BeforeClass
 	public static void before()
@@ -65,6 +69,8 @@ public class SpecimenDaoTest_GeoQueries {
 		uitgeest = Uitgeest();
 		noordHolland = NoordHolland();
 		netherlands = Netherlands();
+		vatican=Vatican();
+		
 		saveGeoAreas(aalten, uitgeest, noordHolland, netherlands);
 	}
 
@@ -144,6 +150,19 @@ public class SpecimenDaoTest_GeoQueries {
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 3, result.size());
+	}
+
+	@Test
+	public void testQuery_03c() throws InvalidQueryException
+	{
+		String site = "gatheringEvent.siteCoordinates.geoShape";
+		QueryCondition condition = new QueryCondition(site, IN, vatican.getShape());
+		QuerySpec qs = new QuerySpec();
+		qs.addCondition(condition);
+		System.out.println(JsonUtil.toPrettyJson(qs));
+		SpecimenDao dao = new SpecimenDao();
+		QueryResult<Specimen> result = dao.query(qs);
+		assertEquals("01", 0, result.size());
 	}
 
 }

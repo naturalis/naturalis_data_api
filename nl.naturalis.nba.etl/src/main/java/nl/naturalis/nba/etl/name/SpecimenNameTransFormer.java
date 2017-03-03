@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
+import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.name.NameImportUtil.copySpecimen;
 import static nl.naturalis.nba.etl.name.NameImportUtil.createName;
 import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroups;
@@ -10,54 +11,70 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
+
 import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.etl.AbstractDocumentTransformer;
-import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.api.model.SummarySpecimen;
 
-class SpecimenNameTransformer extends AbstractDocumentTransformer<Specimen, NameGroup> {
+class SpecimenNameTransformer {
+
+	private static final Logger logger = getLogger(SpecimenNameTransformer.class);
 
 	private HashMap<String, NameGroup> nameCache;
 	private int batchSize;
 
-	SpecimenNameTransformer(ETLStatistics stats, int batchSize)
+	private int created;
+	private int updated;
+
+	SpecimenNameTransformer(int batchSize)
 	{
-		super(stats);
 		this.batchSize = batchSize;
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
-	@Override
-	protected String getObjectID()
+	public Collection<NameGroup> transform(Collection<Specimen> specimens)
 	{
-		return input.getId();
+		prepareForBatch(specimens);
+		for (Specimen specimen : specimens) {
+			transform(specimen);
+		}
+		return nameCache.values();
 	}
 
-	@Override
-	protected List<NameGroup> doTransform()
+	public int getNumCreated()
 	{
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-		Specimen specimen = input;
+		return created;
+	}
+
+	public int getNumUpdated()
+	{
+		return updated;
+	}
+
+	private void transform(Specimen specimen)
+	{
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		for (SpecimenIdentification si : identifications) {
 			String name = createName(si);
 			NameGroup group = nameCache.get(name);
 			group.addSpecimen(copySpecimen(specimen));
 			group.setSpecimenCount(group.getSpecimens().size());
-			stats.objectsAccepted++;
 		}
-		/*
-		 * This class only nominally fits into the ETL architectue of the NBA.
-		 * Its output (the return value of this method) is not directly fed into
-		 * a Loader. Instead, a custom Loader class (NameGroupUpserter) is used
-		 * for indexing, and we feed it with the values in the nameCache.
-		 */
-		return null;
+	}
+	
+	private static boolean exists(Specimen specimen, NameGroup group) {
+		if(group.getSpecimens()==null) {
+			return false;
+		}
+		for(SummarySpecimen ss : group.getSpecimens()) {
+			//if(ss.getUnitID())
+		}
+		return false;
 	}
 
-	void prepareForBatch(List<Specimen> specimens)
+	private void prepareForBatch(Collection<Specimen> specimens)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing name groups");
@@ -73,6 +90,8 @@ class SpecimenNameTransformer extends AbstractDocumentTransformer<Specimen, Name
 			}
 		}
 		List<NameGroup> groups = loadNameGroups(names);
+		created += groups.size();
+		updated += (names.size() - groups.size());
 		if (logger.isDebugEnabled()) {
 			logger.debug("NameGroup documents to be updated: {}", groups.size());
 			logger.debug("NameGroup documents to be created: {}", (names.size() - groups.size()));
@@ -88,11 +107,6 @@ class SpecimenNameTransformer extends AbstractDocumentTransformer<Specimen, Name
 				nameCache.put(name, new NameGroup(name));
 			}
 		}
-	}
-
-	Collection<NameGroup> getNameGroups()
-	{
-		return nameCache.values();
 	}
 
 }

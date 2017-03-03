@@ -25,7 +25,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpException;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
 import nl.naturalis.nba.utils.http.SimpleHttpPost;
@@ -86,8 +86,8 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	@Override
 	public T[] find(String[] ids)
 	{
-		String json = JsonUtil.toJson(ids);
-		SimpleHttpGet request = getJson(rootPath + "findByIds/" + json);
+		String imploded = ArrayUtil.implode(ids);
+		SimpleHttpGet request = getJson(rootPath + "findByIds/" + imploded);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());

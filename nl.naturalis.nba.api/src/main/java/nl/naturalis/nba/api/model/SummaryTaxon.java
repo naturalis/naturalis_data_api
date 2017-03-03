@@ -10,7 +10,7 @@ import java.util.List;
 public class SummaryTaxon implements INbaModelObject {
 
 	private String id;
-	private SourceSystem sourceSystem;
+	private SummarySourceSystem sourceSystem;
 	private SummaryScientificName acceptedName;
 	private DefaultClassification defaultClassification;
 
@@ -28,12 +28,12 @@ public class SummaryTaxon implements INbaModelObject {
 		this.id = id;
 	}
 
-	public SourceSystem getSourceSystem()
+	public SummarySourceSystem getSourceSystem()
 	{
 		return sourceSystem;
 	}
 
-	public void setSourceSystem(SourceSystem sourceSystem)
+	public void setSourceSystem(SummarySourceSystem sourceSystem)
 	{
 		this.sourceSystem = sourceSystem;
 	}

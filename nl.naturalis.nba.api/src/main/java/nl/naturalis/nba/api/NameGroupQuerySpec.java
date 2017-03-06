@@ -7,7 +7,7 @@ import nl.naturalis.nba.api.model.SummarySpecimen;
 
 /**
  * An extension of the {@link QuerySpec} class specifically meant for queries
- * agains the {@link NameGroup} index.
+ * against the {@link NameGroup} index.
  * 
  * @author Ayco Holleman
  *
@@ -20,8 +20,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 	private boolean noTaxa;
 
 	/**
-	 * Returns the offset within the list of specimens within the NameGroup
-	 * document. Default 0.
+	 * Returns the offset within the {@link List} of specimens. Default 0.
 	 * 
 	 * @return
 	 */
@@ -31,8 +30,10 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the offset within the list of specimens within the NameGroup
-	 * document. Default 0.
+	 * Sets the offset within the {@link List} of specimens. Default 0. This
+	 * enables paging through specimens within a single {@code NameGroup}. For
+	 * each {@code NameGroup} returned from the query, only specimens at or
+	 * after the offset are included.
 	 * 
 	 * @param specimensFrom
 	 */
@@ -42,7 +43,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns the maxmimum number of specimens to return per NameGroup
+	 * Returns the maxmimum number of specimens to include per {@code NameGroup}
 	 * document. Default all.
 	 * 
 	 * @return
@@ -53,10 +54,10 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the maxmimum number of specimens to include per NameGroup document.
-	 * Default all. You can specify 0 (zero) to indicate that you are only
-	 * interested in the taxa associated with the name group's name, or only in
-	 * statistics like the total specimen count for the name.
+	 * Sets the maxmimum number of specimens to include per {@code NameGroup}
+	 * document. Default all. You can specify 0 (zero) to indicate that you are
+	 * only interested in the taxa associated with the name group's name, or
+	 * only in statistics like the total specimen count for the name.
 	 * 
 	 * @return
 	 */
@@ -66,8 +67,8 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns the sort order within the list of specimens of this
-	 * {@code NameGroup}
+	 * Returns the sort order within the {@link List} of specimens. Default
+	 * {@link SummarySpecimen#getUnitID() unitID}.
 	 * 
 	 * @return
 	 */
@@ -77,11 +78,16 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the sort order within the list of specimens of this
-	 * {@code NameGroup}. Each {@link SortField} in the provided {@link List}
-	 * must specify a path relative to {@link SummarySpecimen specimen} object
-	 * rather than to the root of the NameGroup document. In other words, the
-	 * path should <b>not</b> start with "specimens".
+	 * Sets the sort order within the {@link List} of specimens. Default
+	 * {@link SummarySpecimen#getUnitID() unitID}. For each {@code NameGroup},
+	 * specimens are sorted on the sort fields specified through this method.
+	 * Thus, you can sort the {@code NameGroup} documents according to one set
+	 * of sort fields (using {@link QuerySpec#setSortFields(List)
+	 * QuerySpec.setSortFields}) while sorting the specimens within each of them
+	 * according to another set of sort fields. Sort fields must be specified
+	 * relative to {@link SummarySpecimen} object rather than to the root of the
+	 * NameGroup document. In other words, the path should <b>not</b> start with
+	 * "specimens".
 	 * 
 	 * @param specimensSortFields
 	 */
@@ -91,7 +97,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns whether or not to show the taxa associated with this name.
+	 * Returns whether or not to include the taxa associated with this name.
 	 * 
 	 * @return
 	 */

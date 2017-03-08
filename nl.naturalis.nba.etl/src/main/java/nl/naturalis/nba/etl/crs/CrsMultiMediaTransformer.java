@@ -3,6 +3,7 @@ package nl.naturalis.nba.etl.crs;
 import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -91,9 +92,10 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	protected boolean skipRecord()
 	{
 		/*
-		 * Side effect: set the database identifier of the record, so we can provide both
-		 * the UnitID and the database ID of the specimen when logging messages. We
-		 * override messagePrefix() to also print out the database ID.
+		 * Side effect: set the database identifier of the record, so we can
+		 * provide both the UnitID and the database ID of the specimen when
+		 * logging messages. We override messagePrefix() to also print out the
+		 * database ID.
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		if (hasStatusDeleted()) {
@@ -187,7 +189,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			first.setSourceID(CRS.getCode());
 			first.setLicense(LICENCE);
 			first.setLicenseType(LICENCE_TYPE);
-			first.setAssociatedSpecimenReference(objectID);
+			String specimenID = getElasticsearchId(CRS, objectID);
+			first.setAssociatedSpecimenReference(specimenID);
 			first.setIdentifications(identifications);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, CRS);
 			first.setTheme(themes);
@@ -197,8 +200,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	}
 
 	/*
-	 * Create a new multimedia object, initialized with the values from the first
-	 * multimedia object of the specimen record we are processing.
+	 * Create a new multimedia object, initialized with the values from the
+	 * first multimedia object of the specimen record we are processing.
 	 */
 	private MultiMediaObject initializeFromFirst()
 	{
@@ -231,8 +234,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setScientificName(sn);
-			mmci.setDefaultClassification(
-					TransformUtil.extractClassificiationFromName(sn));
+			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
 			mmci.setIdentificationQualifiers(getQualifiers(e));
 			mmci.setVernacularNames(getVernacularNames(e));
 			if (identifications == null) {
@@ -342,8 +344,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		String mime;
 		if (url.startsWith(MEDIALIB_URL_START)) {
 			/*
-			 * HACK: attempt to repair bad medialib URLs where MEDIALIB_URL_START occurs
-			 * twice
+			 * HACK: attempt to repair bad medialib URLs where
+			 * MEDIALIB_URL_START occurs twice
 			 */
 			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START))
 				url = url.substring(MEDIALIB_URL_START.length());
@@ -363,7 +365,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			mime = TransformUtil.guessMimeType(url);
 		}
 		try {
-			new URI(url);
+			@SuppressWarnings("unused")
+			URI dummy = new URI(url);
 		}
 		catch (URISyntaxException exc) {
 			stats.objectsRejected++;

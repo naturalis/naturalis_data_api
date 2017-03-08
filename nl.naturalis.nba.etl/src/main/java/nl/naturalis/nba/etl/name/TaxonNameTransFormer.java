@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.name.NameImportUtil.copyTaxon;
-import static nl.naturalis.nba.etl.name.NameImportUtil.createName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,8 +15,9 @@ class TaxonNameTransformer {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonNameTransformer.class);
+	private static final ScientificNameGroup DUMMY = new ScientificNameGroup();
 
-	private ScientificNameGroup previousGroup;
+	private ScientificNameGroup previousGroup = DUMMY;
 
 	private int created;
 
@@ -25,40 +25,45 @@ class TaxonNameTransformer {
 	{
 	}
 
-	public Collection<ScientificNameGroup> transform(Collection<Taxon> taxa)
+	public Collection<ScientificNameGroup> transform(Collection<Taxon> batch)
 	{
-		ArrayList<Taxon> taxonList;
-		if (taxa.getClass() == ArrayList.class) {
-			taxonList = (ArrayList<Taxon>) taxa;
+		ArrayList<Taxon> taxa;
+		if (batch.getClass() == ArrayList.class) {
+			taxa = (ArrayList<Taxon>) batch;
 		}
 		else {
-			taxonList = new ArrayList<>(taxa);
+			taxa = new ArrayList<>(batch);
 		}
-		ArrayList<ScientificNameGroup> groups = new ArrayList<>(taxa.size());
-		if (previousGroup != null) {
+		ArrayList<ScientificNameGroup> groups = new ArrayList<>(batch.size());
+		if (previousGroup != DUMMY) {
 			groups.add(previousGroup);
 		}
-		for (int i = 0; i < taxa.size(); i++) {
-			Taxon taxon = taxonList.get(i);
-			String name = createName(taxon);
+		for (int i = 0; i < batch.size(); i++) {
+			Taxon taxon = taxa.get(i);
 			ScientificNameGroup group;
-			if (previousGroup == null || !name.equals(previousGroup.getName())) {
+			if (!taxon.getScientificNameGroup().equals(previousGroup.getName())) {
 				++created;
-				group = new ScientificNameGroup(name);
+				group = new ScientificNameGroup(taxon.getScientificNameGroup());
 			}
 			else {
 				group = previousGroup;
 			}
 			previousGroup = group;
 			group.addTaxon(copyTaxon(taxon));
-			if (i != taxa.size() - 1) {
+			/*
+			 * Do not add the last group in the batch; it will be added as the
+			 * first group in the next batch. This way, if the last name in the
+			 * current batch happens to be the same as the first in the next, no
+			 * duplicate group will be created.
+			 */
+			if (i != batch.size() - 1) {
 				groups.add(group);
 			}
 		}
 		return groups;
 	}
 
-	public ScientificNameGroup getLastNameGroup()
+	public ScientificNameGroup getLastGroup()
 	{
 		return previousGroup;
 	}

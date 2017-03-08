@@ -59,7 +59,7 @@ class TaxonNameImporter {
 			}
 			batch = extractor.nextBatch();
 		}
-		NameGroupUpserter.upsert(Arrays.asList(transformer.getLastNameGroup()));
+		NameGroupUpserter.upsert(Arrays.asList(transformer.getLastGroup()));
 		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
 		logger.info("Taxa processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());

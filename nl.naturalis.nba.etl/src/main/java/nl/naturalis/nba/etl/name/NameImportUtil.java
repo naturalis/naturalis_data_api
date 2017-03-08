@@ -18,7 +18,6 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
@@ -41,7 +40,7 @@ import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
-class NameImportUtil {
+public class NameImportUtil {
 
 	static long longHashCode(String s)
 	{
@@ -50,20 +49,6 @@ class NameImportUtil {
 			h = 31 * h + s.charAt(i);
 		}
 		return h;
-	}
-
-	static String createName(SpecimenIdentification identification)
-	{
-		ScientificName sn = identification.getScientificName();
-		DefaultClassification dc = identification.getDefaultClassification();
-		return createName(sn, dc);
-	}
-
-	static String createName(Taxon taxon)
-	{
-		ScientificName sn = taxon.getAcceptedName();
-		DefaultClassification dc = taxon.getDefaultClassification();
-		return createName(sn, dc);
 	}
 
 	static SummarySpecimen copySpecimen(Specimen specimen)
@@ -225,37 +210,6 @@ class NameImportUtil {
 	private static SummarySourceSystem copySourceSystem(SourceSystem ss)
 	{
 		return new SummarySourceSystem(ss.getCode());
-	}
-
-	private static String createName(ScientificName sn, DefaultClassification dc)
-	{
-		String genus = null;
-		String species = null;
-		String subsp = null;
-		if (sn != null) {
-			genus = sn.getGenusOrMonomial();
-			species = sn.getSpecificEpithet();
-			subsp = sn.getInfraspecificEpithet();
-		}
-		if (genus == null && dc != null) {
-			genus = dc.getGenus();
-			if (genus == null) {
-				genus = "?";
-			}
-		}
-		if (species == null && dc != null) {
-			species = dc.getSpecificEpithet();
-			if (species == null) {
-				species = "?";
-			}
-		}
-		if (subsp == null && dc != null) {
-			subsp = dc.getInfraspecificEpithet();
-		}
-		if (subsp == null) {
-			return genus + " " + species;
-		}
-		return genus + " " + species + " " + subsp;
 	}
 
 	private NameImportUtil()

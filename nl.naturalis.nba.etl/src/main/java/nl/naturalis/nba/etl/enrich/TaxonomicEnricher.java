@@ -111,12 +111,12 @@ public class TaxonomicEnricher {
 				TaxonomicEnrichment enrichment = enrichments.get(fsn);
 				if (enrichment == null) {
 					enrichment = new TaxonomicEnrichment();
-					if (copyTaxonAttrs(taxon, enrichment, i)) {
+					if (copyTaxonAttrs(taxon, enrichment)) {
 						enrichments.put(fsn, enrichment);
 					}
 				}
 				else {
-					copyTaxonAttrs(taxon, enrichment, i);
+					copyTaxonAttrs(taxon, enrichment);
 				}
 			}
 			if (enrichments.size() != 0) {
@@ -127,33 +127,25 @@ public class TaxonomicEnricher {
 		return enriched;
 	}
 
-	private static boolean copyTaxonAttrs(Taxon taxon, TaxonomicEnrichment enrichment,
-			int identification)
+	private static boolean copyTaxonAttrs(Taxon taxon, TaxonomicEnrichment enrichment)
 	{
 		boolean enriched = false;
 		if (taxon.getVernacularNames() != null) {
-			ArrayList<String> vernaculars = new ArrayList<>(taxon.getVernacularNames().size());
 			for (VernacularName vn : taxon.getVernacularNames()) {
-				vernaculars.add(vn.getName());
-				enrichment.addVernacularNames(vernaculars);
+				enrichment.addVernacularName(vn.getName());
 			}
 			enriched = true;
 		}
 		if (taxon.getSynonyms() != null) {
-			ArrayList<String> synonyms = new ArrayList<>(taxon.getSynonyms().size());
 			for (ScientificName sn : taxon.getSynonyms()) {
-				synonyms.add(sn.getFullScientificName());
-				enrichment.addSynonyms(synonyms);
+				enrichment.addSynonym(sn.getFullScientificName());
 			}
 			enriched = true;
 		}
 		if (enriched) {
-			if (enrichment.getIdentifications() == null) {
-				enrichment.setIdentifications(new ArrayList<Integer>(4));
-			}
-			enrichment.getIdentifications().add(identification);
+			enrichment.setScientificNameGroup(taxon.getScientificNameGroup());
 			enrichment.setTaxonId(taxon.getId());
-			enrichment.setTaxonSourceSystem(taxon.getSourceSystem().getName());
+			enrichment.setSourceSystem(taxon.getSourceSystem().getCode());
 			return true;
 		}
 		return false;

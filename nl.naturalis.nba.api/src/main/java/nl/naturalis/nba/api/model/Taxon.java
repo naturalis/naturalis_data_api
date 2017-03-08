@@ -22,6 +22,9 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String taxonRemarks;
 	private String occurrenceStatusVerbatim;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
+	private String scientificNameGroup;
+
 	private ScientificName acceptedName;
 	private DefaultClassification defaultClassification;
 
@@ -30,7 +33,7 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	private List<VernacularName> vernacularNames;
 	private List<TaxonDescription> descriptions;
 	private List<Reference> references;
-	private List<Expert> experts;	
+	private List<Expert> experts;
 
 	@Override
 	public String getId()
@@ -81,8 +84,8 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	}
 
 	/**
-	 * This property expresses DwC term
-	 * <a href= "http://rs.tdwg.org/dwc/terms/occurrenceRemarks">occurrenceRemarks</a>
+	 * This property expresses DwC term <a href=
+	 * "http://rs.tdwg.org/dwc/terms/occurrenceRemarks">occurrenceRemarks</a>
 	 * 
 	 * @return
 	 */
@@ -96,9 +99,20 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 		this.occurrenceStatusVerbatim = occurrenceStatusVerbatim;
 	}
 
+	public String getScientificNameGroup()
+	{
+		return scientificNameGroup;
+	}
+
+	public void setScientificNameGroup(String scientificNameGroup)
+	{
+		this.scientificNameGroup = scientificNameGroup;
+	}
+
 	/**
 	 * Botanical equivalent of valid name. This returns the same value as
-	 * {@link #getValidName()}. You can choose either method, according to taste.
+	 * {@link #getValidName()}. You can choose either method, according to
+	 * taste.
 	 * 
 	 * @return
 	 */
@@ -109,7 +123,8 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 
 	/**
 	 * Zoological equivalent of accepted name. This returns the same value as
-	 * {@link #getAcceptedName()}. You can choose either method, according to taste.
+	 * {@link #getAcceptedName()}. You can choose either method, according to
+	 * taste.
 	 * 
 	 * @return
 	 */
@@ -139,8 +154,8 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	}
 
 	/**
-	 * Get the system classification of this taxon, i.e. the as-is classification of the
-	 * source system.
+	 * Get the system classification of this taxon, i.e. the as-is
+	 * classification of the source system.
 	 * 
 	 * @return The system classification of this taxon
 	 */
@@ -243,6 +258,5 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 		}
 		descriptions.add(description);
 	}
-
 
 }

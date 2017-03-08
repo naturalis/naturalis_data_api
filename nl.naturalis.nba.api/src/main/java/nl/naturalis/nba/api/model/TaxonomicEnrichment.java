@@ -4,75 +4,50 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
 
+/**
+ * The {@code TaxonomicEnrichment} object enriches {@link Specimen} documents
+ * with data extracted from the {@link Taxon} index. This allows you to search
+ * for specimens by specifying taxonomic attributes.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class TaxonomicEnrichment implements INbaModelObject {
 
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> vernacularNames;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private Set<String> synonyms;
-	
+
 	@NotIndexed
-	private List<Integer> identifications;
+	private String scientificNameGroup;
 	@NotIndexed
 	private String taxonId;
 	@NotIndexed
-	private String taxonSourceSystem;
+	private String sourceSystem;
 
 	public TaxonomicEnrichment()
 	{
 	}
 
-	public void addVernacularNames(Collection<String> vernacularNames)
+	public void addVernacularName(String vernacularName)
 	{
 		if (this.vernacularNames == null)
 			this.vernacularNames = new TreeSet<>();
-		this.vernacularNames.addAll(vernacularNames);
+		this.vernacularNames.add(vernacularName);
 	}
 
-	public void addSynonyms(ArrayList<String> synonyms)
+	public void addSynonym(String synonym)
 	{
 		if (this.synonyms == null)
 			this.synonyms = new TreeSet<>();
-		this.synonyms.addAll(synonyms);
-	}
-
-	public List<Integer> getIdentifications()
-	{
-		return identifications;
-	}
-
-	public void setIdentifications(List<Integer> identifications)
-	{
-		this.identifications = identifications;
-	}
-
-	public String getTaxonId()
-	{
-		return taxonId;
-	}
-
-	public void setTaxonId(String taxonId)
-	{
-		this.taxonId = taxonId;
-	}
-
-	public String getTaxonSourceSystem()
-	{
-		return taxonSourceSystem;
-	}
-
-	public void setTaxonSourceSystem(String taxonSourceSystem)
-	{
-		this.taxonSourceSystem = taxonSourceSystem;
+		this.synonyms.add(synonym);
 	}
 
 	public Set<String> getVernacularNames()
@@ -93,6 +68,60 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	public void setSynonyms(Set<String> synonyms)
 	{
 		this.synonyms = synonyms;
+	}
+
+	public String getScientificNameGroup()
+	{
+		return scientificNameGroup;
+	}
+
+	public void setScientificNameGroup(String scientificNameGroup)
+	{
+		this.scientificNameGroup = scientificNameGroup;
+	}
+
+	/**
+	 * Returns the ID of the taxon document from which the enrichments were
+	 * extracted.
+	 * 
+	 * @return
+	 */
+	public String getTaxonId()
+	{
+		return taxonId;
+	}
+
+	/**
+	 * Sets the ID of the taxon document from which the enrichments were
+	 * extracted.
+	 * 
+	 * @param taxonId
+	 */
+	public void setTaxonId(String taxonId)
+	{
+		this.taxonId = taxonId;
+	}
+
+	/**
+	 * Returns the {@link SourceSystem#getCode() source system code} of the
+	 * {@link Taxon} (COL or NSR).
+	 * 
+	 * @return
+	 */
+	public String getSourceSystem()
+	{
+		return sourceSystem;
+	}
+
+	/**
+	 * Sets the {@link SourceSystem#getCode() source system code} of the
+	 * {@link Taxon} (COL or NSR).
+	 * 
+	 * @param sourceSystem
+	 */
+	public void setSourceSystem(String sourceSystem)
+	{
+		this.sourceSystem = sourceSystem;
 	}
 
 }

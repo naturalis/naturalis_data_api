@@ -34,6 +34,7 @@ import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.DOMUtil;
 
 /**
@@ -86,7 +87,8 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			}
 			addSystemClassification(taxon);
 			addDefaultClassification(taxon);
-			//equalizeNameComponents(taxon);
+			String nameGroup = ETLUtil.createScientificNameGroup(taxon);
+			taxon.setScientificNameGroup(nameGroup);
 			taxon.setSourceSystem(NSR);
 			taxon.setSourceSystemId(objectID);
 			taxon.setTaxonRank(rank);

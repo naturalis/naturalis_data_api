@@ -1,21 +1,22 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
 
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.model.INbaModelObject;
 
-public class SummaryOrganization implements INbaModelObject {
+public class SummaryVernacularName implements INbaModelObject {
 
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String name;
 
-	public SummaryOrganization()
+	public SummaryVernacularName()
 	{
 	}
 
-	public SummaryOrganization(String name)
+	public SummaryVernacularName(String name)
 	{
 		this.name = name;
 	}

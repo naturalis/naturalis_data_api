@@ -1,6 +1,10 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
 
 import java.util.List;
+
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.Monomial;
 
 public class SummarySpecimenIdentification implements INbaModelObject {
 

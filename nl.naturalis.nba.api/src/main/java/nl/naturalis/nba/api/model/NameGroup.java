@@ -5,6 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummaryTaxon;
+
 /**
  * A NameGroup contains a scientific name and the specimens, taxa and various
  * statistics associated with that name. The NameGroup index is a "frozen"

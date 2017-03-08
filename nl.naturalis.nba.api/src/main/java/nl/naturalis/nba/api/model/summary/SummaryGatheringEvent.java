@@ -1,10 +1,19 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
+
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import java.util.Date;
 import java.util.List;
 
+import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.Organization;
+
 public class SummaryGatheringEvent implements INbaModelObject {
 
+	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String localityText;
 	private Date dateTimeBegin;
 	private Date dateTimeEnd;

@@ -1,22 +1,29 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
+
+import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
+import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
+import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.PhaseOrStage;
+import nl.naturalis.nba.api.model.Sex;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 
 public class SummarySpecimen implements INbaModelObject {
 
 	@NotIndexed
 	private String id;
 	private SummarySourceSystem sourceSystem;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String unitID;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectorsFieldNumber;
-	@Analyzers({})
 	private SpecimenTypeStatus typeStatus;
-	@Analyzers({})
 	private Sex sex;
-	@Analyzers({})
 	private PhaseOrStage phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
 	private List<SummarySpecimenIdentification> identifications;

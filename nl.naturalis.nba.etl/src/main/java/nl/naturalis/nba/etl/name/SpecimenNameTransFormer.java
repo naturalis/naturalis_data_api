@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.NameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.model.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 class SpecimenNameTransformer {
 

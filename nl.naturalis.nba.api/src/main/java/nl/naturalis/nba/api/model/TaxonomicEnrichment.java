@@ -6,9 +6,9 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
@@ -34,14 +34,14 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	public void addVernacularNames(Collection<String> vernacularNames)
 	{
 		if (this.vernacularNames == null)
-			this.vernacularNames = new HashSet<>();
+			this.vernacularNames = new TreeSet<>();
 		this.vernacularNames.addAll(vernacularNames);
 	}
 
 	public void addSynonyms(ArrayList<String> synonyms)
 	{
 		if (this.synonyms == null)
-			this.synonyms = new HashSet<>();
+			this.synonyms = new TreeSet<>();
 		this.synonyms.addAll(synonyms);
 	}
 

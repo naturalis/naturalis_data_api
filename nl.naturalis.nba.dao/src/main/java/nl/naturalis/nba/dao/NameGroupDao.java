@@ -17,7 +17,7 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.NameGroup;
-import nl.naturalis.nba.api.model.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 public class NameGroupDao extends NbaDao<NameGroup> implements INameGroupAccess {
 

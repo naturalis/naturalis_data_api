@@ -3,7 +3,7 @@ package nl.naturalis.nba.api;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.NameGroup;
-import nl.naturalis.nba.api.model.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 /**
  * An extension of the {@link QuerySpec} class specifically meant for queries

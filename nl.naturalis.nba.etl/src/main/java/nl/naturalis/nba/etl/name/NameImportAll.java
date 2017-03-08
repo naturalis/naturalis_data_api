@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 
 import nl.naturalis.nba.dao.ESClientManager;
@@ -17,7 +17,7 @@ public class NameImportAll {
 			nameImportAll.importNames();
 		}
 		finally {
-			ESUtil.refreshIndex(NAME_GROUP);
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -25,8 +25,8 @@ public class NameImportAll {
 	@SuppressWarnings("static-method")
 	public void importNames() throws BulkIndexException
 	{
-		ESUtil.deleteIndex(NAME_GROUP.getIndexInfo());
-		ESUtil.createIndex(NAME_GROUP.getIndexInfo());
+		ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
+		ESUtil.createIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 		String prop = System.getProperty("batchSize", "1000");
 		int batchSize = 0;

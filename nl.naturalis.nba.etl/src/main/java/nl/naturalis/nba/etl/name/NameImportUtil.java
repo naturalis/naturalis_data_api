@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
@@ -92,9 +92,9 @@ class NameImportUtil {
 		return summary;
 	}
 
-	static List<NameGroup> loadNameGroups(Collection<String> names)
+	static List<ScientificNameGroup> loadNameGroups(Collection<String> names)
 	{
-		DocumentType<NameGroup> dt = NAME_GROUP;
+		DocumentType<ScientificNameGroup> dt = SCIENTIFIC_NAME_GROUP;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
 		query.addIds(names.toArray(new String[names.size()]));
@@ -104,10 +104,10 @@ class NameImportUtil {
 		if (hits.length == 0) {
 			return Collections.emptyList();
 		}
-		List<NameGroup> result = new ArrayList<>(hits.length);
+		List<ScientificNameGroup> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
-			NameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			ScientificNameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
 			result.add(sns);
 		}
 		return result;

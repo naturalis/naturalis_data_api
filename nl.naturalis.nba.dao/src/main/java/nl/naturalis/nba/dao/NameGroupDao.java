@@ -1,7 +1,7 @@
 package nl.naturalis.nba.dao;
 
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -16,29 +16,29 @@ import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
-public class NameGroupDao extends NbaDao<NameGroup> implements INameGroupAccess {
+public class NameGroupDao extends NbaDao<ScientificNameGroup> implements INameGroupAccess {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(NameGroupDao.class);
 
 	public NameGroupDao()
 	{
-		super(NAME_GROUP);
+		super(SCIENTIFIC_NAME_GROUP);
 	}
 
 	@Override
-	NameGroup[] createDocumentObjectArray(int length)
+	ScientificNameGroup[] createDocumentObjectArray(int length)
 	{
-		return new NameGroup[length];
+		return new ScientificNameGroup[length];
 	}
 
 	@Override
-	public QueryResult<NameGroup> query(QuerySpec querySpec) throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> query(QuerySpec querySpec) throws InvalidQueryException
 	{
-		QueryResult<NameGroup> result = super.query(querySpec);
+		QueryResult<ScientificNameGroup> result = super.query(querySpec);
 		if (querySpec instanceof NameGroupQuerySpec) {
 			NameGroupQuerySpec qs = (NameGroupQuerySpec) querySpec;
 			Integer f = qs.getSpecimensFrom();
@@ -48,19 +48,19 @@ public class NameGroupDao extends NbaDao<NameGroup> implements INameGroupAccess 
 			if (from == 0 && size == -1 && !qs.isNoTaxa()) {
 				return result;
 			}
-			for (QueryResultItem<NameGroup> item : result) {
-				NameGroup nameGroup = item.getItem();
+			for (QueryResultItem<ScientificNameGroup> item : result) {
+				ScientificNameGroup scientificNameGroup = item.getItem();
 				if (qs.isNoTaxa()) {
-					nameGroup.setTaxa(null);
+					scientificNameGroup.setTaxa(null);
 				}
 				if (size == 0) {
-					nameGroup.setSpecimens(null);
+					scientificNameGroup.setSpecimens(null);
 				}
 				else {
-					List<SummarySpecimen> specimens = new ArrayList<>(nameGroup.getSpecimens());
+					List<SummarySpecimen> specimens = new ArrayList<>(scientificNameGroup.getSpecimens());
 					int to = size == -1 ? specimens.size() : Math.min(specimens.size(), size);
 					Set<SummarySpecimen> chunk = new LinkedHashSet<>(specimens.subList(from, to));
-					nameGroup.setSpecimens(chunk);
+					scientificNameGroup.setSpecimens(chunk);
 				}
 			}
 		}

@@ -2,12 +2,12 @@ package nl.naturalis.nba.api;
 
 import java.util.List;
 
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 /**
  * An extension of the {@link QuerySpec} class specifically meant for queries
- * against the {@link NameGroup} index.
+ * against the {@link ScientificNameGroup} index.
  * 
  * @author Ayco Holleman
  *
@@ -31,8 +31,8 @@ public class NameGroupQuerySpec extends QuerySpec {
 
 	/**
 	 * Sets the offset within the {@link List} of specimens. Default 0. This
-	 * enables paging through specimens within a single {@code NameGroup}. For
-	 * each {@code NameGroup} returned from the query, only specimens at or
+	 * enables paging through specimens within a single {@code ScientificNameGroup}. For
+	 * each {@code ScientificNameGroup} returned from the query, only specimens at or
 	 * after the offset are included.
 	 * 
 	 * @param specimensFrom
@@ -43,7 +43,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Returns the maxmimum number of specimens to include per {@code NameGroup}
+	 * Returns the maxmimum number of specimens to include per {@code ScientificNameGroup}
 	 * document. Default all.
 	 * 
 	 * @return
@@ -54,7 +54,7 @@ public class NameGroupQuerySpec extends QuerySpec {
 	}
 
 	/**
-	 * Sets the maxmimum number of specimens to include per {@code NameGroup}
+	 * Sets the maxmimum number of specimens to include per {@code ScientificNameGroup}
 	 * document. Default all. You can specify 0 (zero) to indicate that you are
 	 * only interested in the taxa associated with the name group's name, or
 	 * only in statistics like the total specimen count for the name.
@@ -79,14 +79,14 @@ public class NameGroupQuerySpec extends QuerySpec {
 
 	/**
 	 * Sets the sort order within the {@link List} of specimens. Default
-	 * {@link SummarySpecimen#getUnitID() unitID}. For each {@code NameGroup},
+	 * {@link SummarySpecimen#getUnitID() unitID}. For each {@code ScientificNameGroup},
 	 * specimens are sorted on the sort fields specified through this method.
-	 * Thus, you can sort the {@code NameGroup} documents according to one set
+	 * Thus, you can sort the {@code ScientificNameGroup} documents according to one set
 	 * of sort fields (using {@link QuerySpec#setSortFields(List)
 	 * QuerySpec.setSortFields}) while sorting the specimens within each of them
 	 * according to another set of sort fields. Sort fields must be specified
 	 * relative to {@link SummarySpecimen} object rather than to the root of the
-	 * NameGroup document. In other words, the path should <b>not</b> start with
+	 * ScientificNameGroup document. In other words, the path should <b>not</b> start with
 	 * "specimens".
 	 * 
 	 * @param specimensSortFields

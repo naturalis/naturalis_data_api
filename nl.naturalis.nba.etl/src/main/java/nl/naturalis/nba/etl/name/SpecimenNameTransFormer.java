@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
@@ -22,7 +22,7 @@ class SpecimenNameTransformer {
 
 	private static final Logger logger = getLogger(SpecimenNameTransformer.class);
 
-	private HashMap<String, NameGroup> nameCache;
+	private HashMap<String, ScientificNameGroup> nameCache;
 	private int batchSize;
 
 	private int created;
@@ -34,7 +34,7 @@ class SpecimenNameTransformer {
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
-	public Collection<NameGroup> transform(Collection<Specimen> specimens)
+	public Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
 	{
 		initializeNameGroups(specimens);
 		for (Specimen specimen : specimens) {
@@ -58,7 +58,7 @@ class SpecimenNameTransformer {
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		for (SpecimenIdentification si : identifications) {
 			String name = createName(si);
-			NameGroup group = nameCache.get(name);
+			ScientificNameGroup group = nameCache.get(name);
 			if (!exists(specimen, group)) {
 				group.addSpecimen(copySpecimen(specimen));
 				group.setSpecimenCount(group.getSpecimens().size());
@@ -66,7 +66,7 @@ class SpecimenNameTransformer {
 		}
 	}
 
-	private static boolean exists(Specimen specimen, NameGroup group)
+	private static boolean exists(Specimen specimen, ScientificNameGroup group)
 	{
 		if (group.getSpecimens() == null) {
 			return false;
@@ -94,22 +94,22 @@ class SpecimenNameTransformer {
 				names.add(createName(si));
 			}
 		}
-		List<NameGroup> groups = loadNameGroups(names);
+		List<ScientificNameGroup> groups = loadNameGroups(names);
 		created += groups.size();
 		updated += (names.size() - groups.size());
 		if (logger.isDebugEnabled()) {
-			logger.debug("NameGroup documents to be updated: {}", groups.size());
-			logger.debug("NameGroup documents to be created: {}", (names.size() - groups.size()));
+			logger.debug("ScientificNameGroup documents to be updated: {}", groups.size());
+			logger.debug("ScientificNameGroup documents to be created: {}", (names.size() - groups.size()));
 		}
-		for (NameGroup group : groups) {
+		for (ScientificNameGroup group : groups) {
 			nameCache.put(group.getName(), group);
 		}
 		/*
-		 * Create new, empty NameGroup instances for remaining names
+		 * Create new, empty ScientificNameGroup instances for remaining names
 		 */
 		for (String name : names) {
 			if (!nameCache.containsKey(name)) {
-				nameCache.put(name, new NameGroup(name));
+				nameCache.put(name, new ScientificNameGroup(name));
 			}
 		}
 	}

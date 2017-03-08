@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.INameGroupAccess;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 
-public class NameGroupClient extends NbaClient<NameGroup> implements INameGroupAccess {
+public class NameGroupClient extends NbaClient<ScientificNameGroup> implements INameGroupAccess {
 
 	NameGroupClient(ClientConfig cfg, String rootPath)
 	{
@@ -14,21 +14,21 @@ public class NameGroupClient extends NbaClient<NameGroup> implements INameGroupA
 	}
 
 	@Override
-	Class<NameGroup> documentObjectClass()
+	Class<ScientificNameGroup> documentObjectClass()
 	{
-		return NameGroup.class;
+		return ScientificNameGroup.class;
 	}
 
 	@Override
-	Class<NameGroup[]> documentObjectArrayClass()
+	Class<ScientificNameGroup[]> documentObjectArrayClass()
 	{
-		return NameGroup[].class;
+		return ScientificNameGroup[].class;
 	}
 
 	@Override
-	TypeReference<QueryResult<NameGroup>> queryResultTypeReference()
+	TypeReference<QueryResult<ScientificNameGroup>> queryResultTypeReference()
 	{
-		return new TypeReference<QueryResult<NameGroup>>() {};
+		return new TypeReference<QueryResult<ScientificNameGroup>>() {};
 	}
 
 }

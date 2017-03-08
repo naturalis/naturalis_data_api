@@ -9,7 +9,7 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 
 class TaxonNameTransformer {
@@ -17,7 +17,7 @@ class TaxonNameTransformer {
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonNameTransformer.class);
 
-	private NameGroup previousGroup;
+	private ScientificNameGroup previousGroup;
 
 	private int created;
 
@@ -25,7 +25,7 @@ class TaxonNameTransformer {
 	{
 	}
 
-	public Collection<NameGroup> transform(Collection<Taxon> taxa)
+	public Collection<ScientificNameGroup> transform(Collection<Taxon> taxa)
 	{
 		ArrayList<Taxon> taxonList;
 		if (taxa.getClass() == ArrayList.class) {
@@ -34,17 +34,17 @@ class TaxonNameTransformer {
 		else {
 			taxonList = new ArrayList<>(taxa);
 		}
-		ArrayList<NameGroup> groups = new ArrayList<>(taxa.size());
+		ArrayList<ScientificNameGroup> groups = new ArrayList<>(taxa.size());
 		if (previousGroup != null) {
 			groups.add(previousGroup);
 		}
 		for (int i = 0; i < taxa.size(); i++) {
 			Taxon taxon = taxonList.get(i);
 			String name = createName(taxon);
-			NameGroup group;
+			ScientificNameGroup group;
 			if (previousGroup == null || !name.equals(previousGroup.getName())) {
 				++created;
-				group = new NameGroup(name);
+				group = new ScientificNameGroup(name);
 			}
 			else {
 				group = previousGroup;
@@ -58,7 +58,7 @@ class TaxonNameTransformer {
 		return groups;
 	}
 
-	public NameGroup getLastNameGroup()
+	public ScientificNameGroup getLastNameGroup()
 	{
 		return previousGroup;
 	}

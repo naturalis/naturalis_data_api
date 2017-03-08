@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.dao.DocumentType.*;
 import static nl.naturalis.nba.dao.util.es.ESUtil.disableAutoRefresh;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
@@ -15,7 +15,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.etl.BulkIndexException;
@@ -41,18 +41,18 @@ class TaxonNameImporter {
 		transformer = new TaxonNameTransformer();
 		logger.info("Initializing loader");
 		List<Taxon> batch = extractor.nextBatch();
-		disableAutoRefresh(NAME_GROUP.getIndexInfo());
+		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
 		while (batch != null) {
-			Collection<NameGroup> nameGroups = transformer.transform(batch);
+			Collection<ScientificNameGroup> scientificNameGroups = transformer.transform(batch);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Creating/updating NameGroup documents");
+				logger.debug("Creating/updating ScientificNameGroup documents");
 			}
-			NameGroupUpserter.upsert(nameGroups);
+			NameGroupUpserter.upsert(scientificNameGroups);
 			if (++batchNo % 10 == 0) {
 				logger.info("Taxa processed: {}", batchNo * batchSize);
 				logger.info("Name groups created: {}", transformer.getNumCreated());
-				refreshIndex(NAME_GROUP.getIndexInfo());
+				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading next batch of taxa");
@@ -60,7 +60,7 @@ class TaxonNameImporter {
 			batch = extractor.nextBatch();
 		}
 		NameGroupUpserter.upsert(Arrays.asList(transformer.getLastNameGroup()));
-		setAutoRefreshInterval(NAME_GROUP.getIndexInfo(), "30s");
+		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
 		logger.info("Taxa processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());
 		logDuration(logger, getClass(), start);

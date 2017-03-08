@@ -9,18 +9,19 @@ import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 
 /**
- * A NameGroup contains a scientific name and the specimens, taxa and various
- * statistics associated with that name. The NameGroup index is a "frozen"
- * aggregation query on the {@link Specimen} index and the {@link Taxon} index.
- * It groups specimens and taxa on their full scientific name. More precisely:
- * it groups them on the combination of their genus, specific eptithet and
- * infraspecific epithet. Each NameGroup document contains one such combination,
- * which is guaranteed to be unique within the NameGroup index as a whole.
+ * A ScientificNameGroup contains a scientific name and the specimens, taxa and
+ * various statistics associated with that name. The ScientificNameGroup index
+ * is a "frozen" aggregation query on the {@link Specimen} index and the
+ * {@link Taxon} index. It groups specimens and taxa on their full scientific
+ * name. More precisely: it groups them on the combination of their genus,
+ * specific eptithet and infraspecific epithet. Each ScientificNameGroup
+ * document contains one such combination, which is guaranteed to be unique
+ * within the ScientificNameGroup index as a whole.
  * 
  * @author Ayco Holleman
  *
  */
-public class NameGroup implements IDocumentObject {
+public class ScientificNameGroup implements IDocumentObject {
 
 	private static final Comparator<SummarySpecimen> specimenComparator = new Comparator<SummarySpecimen>() {
 
@@ -39,11 +40,11 @@ public class NameGroup implements IDocumentObject {
 	private int specimenCount;
 	private int taxonCount;
 
-	public NameGroup()
+	public ScientificNameGroup()
 	{
 	}
 
-	public NameGroup(String name)
+	public ScientificNameGroup(String name)
 	{
 		this.name = name;
 	}
@@ -77,7 +78,7 @@ public class NameGroup implements IDocumentObject {
 	}
 
 	/**
-	 * Returns the group value of this {@code NameGroup}.
+	 * Returns the group value of this {@code ScientificNameGroup}.
 	 */
 	public String getName()
 	{
@@ -85,7 +86,7 @@ public class NameGroup implements IDocumentObject {
 	}
 
 	/**
-	 * Sets the group value of this {@code NameGroup}.
+	 * Sets the group value of this {@code ScientificNameGroup}.
 	 * 
 	 * @param name
 	 */

@@ -132,7 +132,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 	 * Removes all synonyms from the taxon specified in the CSV record. Not part
 	 * of the {@link Transformer} API, but used by the
 	 * {@link CoLReferenceCleaner} to clean up taxa before starting the
-	 * {@link CoLReferenceImporter}.
+	 * {@link CoLReferenceBatchImporter}.
 	 * 
 	 * @param recInf
 	 * @return

@@ -4,5 +4,5 @@
 
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll bootstrap
+java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaBootstrap $@
 

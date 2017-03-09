@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
-import nl.naturalis.nba.etl.col.CoLReferenceImporter;
+import nl.naturalis.nba.etl.col.CoLReferenceBatchImporter;
 import nl.naturalis.nba.etl.col.CoLSynonymImporter;
 import nl.naturalis.nba.etl.col.CoLTaxonImporter;
 import nl.naturalis.nba.etl.col.CoLVernacularNameImporter;
@@ -177,7 +177,7 @@ public abstract class Loader<T extends IDocumentObject> implements Closeable {
 	 * import programs that enrich existing documents rather than create new
 	 * ones. This applies to all CoL import programs except the
 	 * {@link CoLTaxonImporter taxon importer}. The {@link CoLSynonymImporter
-	 * synonym importer}, {@link CoLReferenceImporter literature reference
+	 * synonym importer}, {@link CoLReferenceBatchImporter literature reference
 	 * importer} and {@link CoLVernacularNameImporter vernacular name importer}
 	 * all enrich taxon documents rather than create their own type of
 	 * documents. In order to enrich the taxon document, they first need to get

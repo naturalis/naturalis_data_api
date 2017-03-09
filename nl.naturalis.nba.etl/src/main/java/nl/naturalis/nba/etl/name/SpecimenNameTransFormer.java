@@ -91,7 +91,7 @@ class SpecimenNameTransformer {
 		Set<String> names = new HashSet<>(batchSize * 4);
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				names.add(ETLUtil.createScientificNameGroup(si));
+				names.add(si.getScientificNameGroup());
 			}
 		}
 		List<ScientificNameGroup> groups = loadNameGroups(names);
@@ -99,7 +99,8 @@ class SpecimenNameTransformer {
 		updated += (names.size() - groups.size());
 		if (logger.isDebugEnabled()) {
 			logger.debug("ScientificNameGroup documents to be updated: {}", groups.size());
-			logger.debug("ScientificNameGroup documents to be created: {}", (names.size() - groups.size()));
+			logger.debug("ScientificNameGroup documents to be created: {}",
+					(names.size() - groups.size()));
 		}
 		for (ScientificNameGroup group : groups) {
 			nameCache.put(group.getName(), group);

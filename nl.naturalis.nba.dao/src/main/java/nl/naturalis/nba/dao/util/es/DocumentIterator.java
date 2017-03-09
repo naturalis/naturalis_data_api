@@ -99,6 +99,12 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	public boolean hasNext()
 	{
 		checkReady();
+		if (hits.length == 0) {
+			return false;
+		}
+		if (hitCounter == hits.length) {
+			scroll();
+		}
 		return hits.length != 0;
 	}
 
@@ -106,11 +112,8 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	public T next()
 	{
 		checkReady();
-		if (hitCounter == hits.length) {
-			scroll();
-		}
 		docCounter++;
-		return newDocumentObject(hits[hitCounter++]);
+		return convert(hits[hitCounter++]);
 	}
 
 	public List<T> nextBatch()
@@ -122,7 +125,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		docCounter += hits.length;
 		List<T> batch = new ArrayList<>(hits.length);
 		for (int i = 0; i < hits.length; i++) {
-			batch.add(newDocumentObject(hits[i]));
+			batch.add(convert(hits[i]));
 		}
 		scroll();
 		return batch;
@@ -134,7 +137,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		return this;
 	}
 
-	private T newDocumentObject(SearchHit hit)
+	private T convert(SearchHit hit)
 	{
 		ObjectMapper om = dt.getObjectMapper();
 		T obj = om.convertValue(hit.getSource(), dt.getJavaType());

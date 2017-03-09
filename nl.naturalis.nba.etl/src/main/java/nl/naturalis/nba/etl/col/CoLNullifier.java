@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
@@ -16,6 +17,14 @@ import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRegistry;
 
+/**
+ * Sets the synonyms, vernacular names and literature references of all
+ * {@link Taxon} documents to {@code null}. This allows you to safely re-import
+ * them again.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class CoLNullifier {
 
 	public static void main(String[] args) throws BulkIndexException
@@ -52,6 +61,9 @@ public class CoLNullifier {
 		int updated = 0;
 		logger.info("Processing taxa");
 		for (Taxon taxon : iterator) {
+			if (taxon.getSourceSystem() != SourceSystem.COL) {
+				continue;
+			}
 			boolean modified = false;
 			if (nullifySynonyms && taxon.getSynonyms() != null) {
 				taxon.setSynonyms(null);

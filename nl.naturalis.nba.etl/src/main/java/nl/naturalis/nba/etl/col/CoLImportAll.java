@@ -3,8 +3,8 @@ package nl.naturalis.nba.etl.col;
 import nl.naturalis.nba.dao.DaoRegistry;
 
 /**
- * Manages the import of CoL taxa, synonyms, vernacular names and literature
- * references.
+ * Manages the import of taxa, synonyms, vernacular names and literature
+ * references from the Catalogue of Life.
  * 
  * @author Ayco Holleman
  *
@@ -14,7 +14,7 @@ public class CoLImportAll {
 	public static void main(String[] args) throws Exception
 	{
 		CoLImportAll importer = new CoLImportAll();
-		importer.importAll();		
+		importer.importAll();
 	}
 
 	public CoLImportAll()
@@ -30,8 +30,8 @@ public class CoLImportAll {
 	{
 		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		new CoLTaxonImporter().importCsv(dwcaDir + "/taxa.txt");
-		new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
-		new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");
-		new CoLReferenceImporter().importCsv(dwcaDir + "/reference.txt");
+		//new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
+		//new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");
+		new CoLReferenceBatchImporter().importCsv(dwcaDir + "/reference.txt");
 	}
 }

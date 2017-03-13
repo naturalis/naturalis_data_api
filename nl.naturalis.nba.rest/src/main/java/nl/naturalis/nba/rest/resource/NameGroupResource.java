@@ -1,6 +1,6 @@
 package nl.naturalis.nba.rest.resource;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.rest.util.ResourceUtil.JSON_CONTENT_TYPE;
 import static nl.naturalis.nba.rest.util.ResourceUtil.handleError;
 
@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.NameGroupQuerySpec;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.dao.NameGroupDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpNameGroupQuerySpecBuilder;
@@ -48,13 +48,13 @@ public class NameGroupResource {
 	@GET
 	@Path("/find/{id}")
 	@Produces(JSON_CONTENT_TYPE)
-	public NameGroup find(@PathParam("id") String id, @Context UriInfo uriInfo)
+	public ScientificNameGroup find(@PathParam("id") String id, @Context UriInfo uriInfo)
 	{
 		try {
 			NameGroupDao dao = new NameGroupDao();
-			NameGroup result = dao.find(id);
+			ScientificNameGroup result = dao.find(id);
 			if (result == null) {
-				throw new HTTP404Exception(uriInfo, NAME_GROUP, id);
+				throw new HTTP404Exception(uriInfo, SCIENTIFIC_NAME_GROUP, id);
 			}
 			return result;
 		}
@@ -66,7 +66,7 @@ public class NameGroupResource {
 	@GET
 	@Path("/findByIds/{ids}")
 	@Produces(JSON_CONTENT_TYPE)
-	public NameGroup[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
+	public ScientificNameGroup[] findByIds(@PathParam("ids") String ids, @Context UriInfo uriInfo)
 	{
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
@@ -81,7 +81,7 @@ public class NameGroupResource {
 	@GET
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
-	public QueryResult<NameGroup> query_GET(@Context UriInfo uriInfo)
+	public QueryResult<ScientificNameGroup> query_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
@@ -97,7 +97,7 @@ public class NameGroupResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<NameGroup> query_POST_FORM(MultivaluedMap<String, String> form,
+	public QueryResult<ScientificNameGroup> query_POST_FORM(MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
@@ -114,7 +114,7 @@ public class NameGroupResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<NameGroup> query_POST_JSON(NameGroupQuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<ScientificNameGroup> query_POST_JSON(NameGroupQuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
 			NameGroupDao dao = new NameGroupDao();

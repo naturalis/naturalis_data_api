@@ -1,5 +1,7 @@
 package nl.naturalis.nba.etl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -16,18 +18,41 @@ import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.exception.DaoException;
 
-class BulkIndexer<T extends IDocumentObject> {
+public class BulkIndexer<T extends IDocumentObject> {
 
 	private static final TimeValue REQUEST_TIMEOUT = TimeValue.timeValueMinutes(5);
 
 	private final DocumentType<T> dt;
 
-	BulkIndexer(DocumentType<T> dt)
+	public BulkIndexer(DocumentType<T> dt)
 	{
 		this.dt = dt;
 	}
 
-	void index(List<T> objs, List<String> ids, List<String> parentIds) throws BulkIndexException
+	public void index(Collection<T> documents) throws BulkIndexException
+	{
+		ArrayList<T> objs;
+		if (documents.getClass() == ArrayList.class) {
+			objs = (ArrayList<T>) documents;
+		}
+		else {
+			objs = new ArrayList<>(documents);
+		}
+		ArrayList<String> ids = new ArrayList<>(objs.size());
+		for (T obj : objs) {
+			if (obj.getId() == null) {
+				ids.add(null);
+			}
+			else {
+				ids.add(obj.getId());
+				obj.setId(null);
+			}
+		}
+		index(objs, ids, null);
+	}
+
+	public void index(List<T> documents, List<String> ids, List<String> parentIds)
+			throws BulkIndexException
 	{
 		Client client = ESClientManager.getInstance().getClient();
 		String index = dt.getIndexInfo().getName();
@@ -35,10 +60,10 @@ class BulkIndexer<T extends IDocumentObject> {
 		ObjectMapper om = dt.getObjectMapper();
 		BulkRequestBuilder brb = client.prepareBulk();
 		brb.setTimeout(REQUEST_TIMEOUT);
-		for (int i = 0; i < objs.size(); ++i) {
+		for (int i = 0; i < documents.size(); ++i) {
 			IndexRequestBuilder irb = client.prepareIndex(index, type);
 			try {
-				irb.setSource(om.writeValueAsBytes(objs.get(i)));
+				irb.setSource(om.writeValueAsBytes(documents.get(i)));
 				if (ids != null) {
 					irb.setId(ids.get(i));
 				}
@@ -53,7 +78,7 @@ class BulkIndexer<T extends IDocumentObject> {
 		}
 		BulkResponse response = brb.get();
 		if (response.hasFailures()) {
-			throw new BulkIndexException(response, objs);
+			throw new BulkIndexException(response, documents);
 		}
 	}
 

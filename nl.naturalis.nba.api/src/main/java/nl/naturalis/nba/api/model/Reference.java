@@ -84,10 +84,10 @@ public class Reference implements INbaModelObject {
 	public int hashCode()
 	{
 		int hash = 17;
-		hash = (hash * 31) + (titleCitation == null ? 0 : titleCitation.hashCode());
-		hash = (hash * 31) + (author == null ? 0 : author.hashCode());
-		hash = (hash * 31) + (citationDetail == null ? 0 : citationDetail.hashCode());
-		hash = (hash * 31) + (publicationDate == null ? 0 : publicationDate.hashCode());
+		hash = addHash(hash, titleCitation);
+		hash = addHash(hash, author);
+		hash = addHash(hash, citationDetail);
+		hash = addHash(hash, publicationDate);
 		// TODO: add more properties
 		return hash;
 	}
@@ -109,16 +109,15 @@ public class Reference implements INbaModelObject {
 		if (author != null) {
 			if (author.getFullName() != null)
 				sb.append(' ').append(author.getFullName());
-			else if(author.getAgentText() != null)
+			else if (author.getAgentText() != null)
 				sb.append(' ').append(author.getAgentText());
 		}
 		sb.append(';');
-		if(publicationDate != null) {
+		if (publicationDate != null) {
 			sb.append(' ').append(publicationDate);
 		}
 		return sb.toString();
 	}
-
 
 	private static boolean eq(Object obj0, Object obj1)
 	{
@@ -129,6 +128,11 @@ public class Reference implements INbaModelObject {
 			return false;
 		}
 		return obj1 == null ? false : obj0.equals(obj1);
+	}
+
+	private static int addHash(int hash, Object obj)
+	{
+		return (hash * 31) + (obj == null ? 0 : obj.hashCode());
 	}
 
 }

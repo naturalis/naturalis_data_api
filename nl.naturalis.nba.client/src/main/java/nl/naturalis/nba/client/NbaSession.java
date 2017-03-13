@@ -84,6 +84,16 @@ public class NbaSession {
 	 * 
 	 * @return
 	 */
+	public NameGroupClient getNameGroupClient()
+	{
+		return new NameGroupClient(cfg, "names/");
+	}
+
+	/**
+	 * Returns a client for taxon-related data.
+	 * 
+	 * @return
+	 */
 	public GeoAreaClient getGeoAreaClient()
 	{
 		return new GeoAreaClient(cfg, "geo/");

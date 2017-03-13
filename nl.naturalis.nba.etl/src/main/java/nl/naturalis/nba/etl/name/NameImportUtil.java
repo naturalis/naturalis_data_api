@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
@@ -18,30 +18,29 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.model.SummaryGatheringEvent;
-import nl.naturalis.nba.api.model.SummaryGatheringSiteCoordinates;
-import nl.naturalis.nba.api.model.SummaryOrganization;
-import nl.naturalis.nba.api.model.SummaryPerson;
-import nl.naturalis.nba.api.model.SummaryScientificName;
-import nl.naturalis.nba.api.model.SummarySourceSystem;
-import nl.naturalis.nba.api.model.SummarySpecimen;
-import nl.naturalis.nba.api.model.SummarySpecimenIdentification;
-import nl.naturalis.nba.api.model.SummaryTaxon;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.summary.SummaryGatheringEvent;
+import nl.naturalis.nba.api.model.summary.SummaryGatheringSiteCoordinates;
+import nl.naturalis.nba.api.model.summary.SummaryOrganization;
+import nl.naturalis.nba.api.model.summary.SummaryPerson;
+import nl.naturalis.nba.api.model.summary.SummaryScientificName;
+import nl.naturalis.nba.api.model.summary.SummarySourceSystem;
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummarySpecimenIdentification;
+import nl.naturalis.nba.api.model.summary.SummaryTaxon;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
-class NameImportUtil {
+public class NameImportUtil {
 
 	static long longHashCode(String s)
 	{
@@ -76,6 +75,47 @@ class NameImportUtil {
 		summary.setSystemClassification(taxon.getSystemClassification());
 		summary.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
 		return summary;
+	}
+
+	static List<ScientificNameGroup> loadNameGroups(Collection<String> names)
+	{
+		DocumentType<ScientificNameGroup> dt = SCIENTIFIC_NAME_GROUP;
+		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
+		query.addIds(names.toArray(new String[names.size()]));
+		request.setQuery(query);
+		SearchResponse response = ESUtil.executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0) {
+			return Collections.emptyList();
+		}
+		List<ScientificNameGroup> result = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			ScientificNameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			result.add(sns);
+		}
+		return result;
+	}
+
+	static List<Taxon> loadTaxa(Collection<String> names)
+	{
+		DocumentType<Taxon> dt = TAXON;
+		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+		TermsQueryBuilder query = termsQuery("acceptedName.fullScientificName", names);
+		request.setQuery(query);
+		SearchResponse response = ESUtil.executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0)
+			return Collections.emptyList();
+		List<Taxon> result = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
+			taxon.setId(hit.getId());
+			result.add(taxon);
+		}
+		return result;
 	}
 
 	private static SummaryGatheringEvent copyGatheringEvent(GatheringEvent ge)
@@ -170,81 +210,6 @@ class NameImportUtil {
 	private static SummarySourceSystem copySourceSystem(SourceSystem ss)
 	{
 		return new SummarySourceSystem(ss.getCode());
-	}
-
-	static String createName(SpecimenIdentification si)
-	{
-		ScientificName sn = si.getScientificName();
-		DefaultClassification dc = si.getDefaultClassification();
-		String genus = null;
-		String species = null;
-		String subsp = null;
-		if (sn != null) {
-			genus = sn.getGenusOrMonomial();
-			species = sn.getSpecificEpithet();
-			subsp = sn.getInfraspecificEpithet();
-		}
-		si.getScientificName().getGenusOrMonomial();
-		if (genus == null && dc != null) {
-			genus = dc.getGenus();
-			if (genus == null) {
-				genus = "?";
-			}
-		}
-		if (species == null && dc != null) {
-			species = dc.getSpecificEpithet();
-			if (species == null) {
-				species = "?";
-			}
-		}
-		if (subsp == null && dc != null) {
-			subsp = dc.getInfraspecificEpithet();
-		}
-		if (subsp == null) {
-			return genus + " " + species;
-		}
-		return genus + " " + species + " " + subsp;
-	}
-
-	static List<NameGroup> loadNameGroups(Collection<String> names)
-	{
-		DocumentType<NameGroup> dt = NAME_GROUP;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
-		query.addIds(names.toArray(new String[names.size()]));
-		request.setQuery(query);
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0) {
-			return Collections.emptyList();
-		}
-		List<NameGroup> result = new ArrayList<>(hits.length);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			NameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
-			result.add(sns);
-		}
-		return result;
-	}
-
-	static List<Taxon> loadTaxa(Collection<String> names)
-	{
-		DocumentType<Taxon> dt = TAXON;
-		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
-		TermsQueryBuilder query = termsQuery("acceptedName.fullScientificName", names);
-		request.setQuery(query);
-		SearchResponse response = ESUtil.executeSearchRequest(request);
-		SearchHit[] hits = response.getHits().getHits();
-		if (hits.length == 0)
-			return Collections.emptyList();
-		List<Taxon> result = new ArrayList<>(hits.length);
-		ObjectMapper om = dt.getObjectMapper();
-		for (SearchHit hit : hits) {
-			Taxon taxon = om.convertValue(hit.getSource(), dt.getJavaType());
-			taxon.setId(hit.getId());
-			result.add(taxon);
-		}
-		return result;
 	}
 
 	private NameImportUtil()

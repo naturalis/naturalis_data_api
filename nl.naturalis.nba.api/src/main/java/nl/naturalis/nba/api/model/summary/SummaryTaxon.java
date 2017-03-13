@@ -1,6 +1,11 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
 
 import java.util.List;
+
+import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.Monomial;
 
 /**
  * 
@@ -9,6 +14,7 @@ import java.util.List;
  */
 public class SummaryTaxon implements INbaModelObject {
 
+	@NotIndexed
 	private String id;
 	private SummarySourceSystem sourceSystem;
 	private SummaryScientificName acceptedName;

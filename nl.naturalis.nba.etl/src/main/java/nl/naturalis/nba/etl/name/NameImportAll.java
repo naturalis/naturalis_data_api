@@ -1,6 +1,6 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
 
 import nl.naturalis.nba.dao.ESClientManager;
@@ -17,18 +17,18 @@ public class NameImportAll {
 			nameImportAll.importNames();
 		}
 		finally {
-			ESUtil.refreshIndex(NAME_GROUP);
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
 
 	@SuppressWarnings("static-method")
-	public void importNames()
+	public void importNames() throws BulkIndexException
 	{
-		ESUtil.deleteIndex(NAME_GROUP.getIndexInfo());
-		ESUtil.createIndex(NAME_GROUP.getIndexInfo());
+		ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
+		ESUtil.createIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
-		String prop = System.getProperty("batchSize", "500");
+		String prop = System.getProperty("batchSize", "1000");
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);
@@ -46,17 +46,17 @@ public class NameImportAll {
 			System.err.println("Invalid timeout: " + prop);
 			System.exit(1);
 		}
-		NameImporter importer = new NameImporter();
+		TaxonNameImporter importer0=new TaxonNameImporter();
+		importer0.setSuppressErrors(suppressErrors);
+		importer0.setBatchSize(batchSize);
+		importer0.setTimeout(timeout);
+		importer0.importNames();
+		
+		SpecimenNameImporter importer = new SpecimenNameImporter();
 		importer.setSuppressErrors(suppressErrors);
 		importer.setBatchSize(batchSize);
 		importer.setTimeout(timeout);
-		try {
-			importer.importSpecimenNames();
-		}
-		catch (BulkIndexException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		importer.importNames();
 	}
 
 }

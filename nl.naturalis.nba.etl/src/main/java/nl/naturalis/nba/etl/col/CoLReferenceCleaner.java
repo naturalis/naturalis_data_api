@@ -19,7 +19,7 @@ import nl.naturalis.nba.utils.IOUtil;
 
 /**
  * Utility class that sets the {@code references} field in taxon documents to null.
- * Can be called before starting the {@link CoLReferenceImporter} to make sure
+ * Can be called before starting the {@link CoLReferenceBatchImporter} to make sure
  * you start with a clean slate. Note though that kicking off the
  * {@link CoLTaxonImporter} provides the ultimate clean slate, because it starts
  * by removing all taxon documents.

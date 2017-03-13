@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.MultiMediaObject;
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.common.es.map.Mapping;
@@ -52,9 +52,9 @@ public class DocumentType<T extends IDocumentObject> {
 	 */
 	public static final DocumentType<GeoArea> GEO_AREA;
 	/**
-	 * A {@code DocumentType} instance representing the NameGroup document type.
+	 * A {@code DocumentType} instance representing the ScientificNameGroup document type.
 	 */
-	public static final DocumentType<NameGroup> NAME_GROUP;
+	public static final DocumentType<ScientificNameGroup> SCIENTIFIC_NAME_GROUP;
 
 	static {
 
@@ -62,7 +62,7 @@ public class DocumentType<T extends IDocumentObject> {
 		TAXON = new DocumentType<>(Taxon.class);
 		MULTI_MEDIA_OBJECT = new DocumentType<>(MultiMediaObject.class);
 		GEO_AREA = new DocumentType<>(GeoArea.class);
-		NAME_GROUP = new DocumentType<>(NameGroup.class);
+		SCIENTIFIC_NAME_GROUP = new DocumentType<>(ScientificNameGroup.class);
 
 		try {
 			for (ConfigObject cfg : getIndexSections()) {
@@ -99,8 +99,8 @@ public class DocumentType<T extends IDocumentObject> {
 			return MULTI_MEDIA_OBJECT;
 		if (GEO_AREA.name.equalsIgnoreCase(name))
 			return GEO_AREA;
-		if (NAME_GROUP.name.equalsIgnoreCase(name))
-			return NAME_GROUP;
+		if (SCIENTIFIC_NAME_GROUP.name.equalsIgnoreCase(name))
+			return SCIENTIFIC_NAME_GROUP;
 		throw new DaoException("No such document type: \"" + name + '"');
 	}
 
@@ -120,8 +120,8 @@ public class DocumentType<T extends IDocumentObject> {
 			return MULTI_MEDIA_OBJECT;
 		if (GEO_AREA.javaType == cls)
 			return GEO_AREA;
-		if (NAME_GROUP.javaType == cls)
-			return NAME_GROUP;
+		if (SCIENTIFIC_NAME_GROUP.javaType == cls)
+			return SCIENTIFIC_NAME_GROUP;
 		throw new DaoException("No document type corresponding to " + cls);
 	}
 

@@ -20,9 +20,13 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.translate.QuerySpecTranslator;
 
 /**
  * An {@link Iterator} implementation that iterates over Elasticsearch
@@ -40,7 +44,9 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	private static final int DEFAULT_BATCH_SIZE = 100;
 
 	private final Client client;
+
 	private final DocumentType<T> dt;
+	private final QuerySpec qs;
 
 	/* Fields determining scroll behaviour */
 	private TimeValue timeout;
@@ -60,8 +66,14 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 
 	public DocumentIterator(DocumentType<T> dt)
 	{
+		this(dt, null);
+	}
+
+	public DocumentIterator(DocumentType<T> dt, QuerySpec qs)
+	{
 		this.client = ESClientManager.getInstance().getClient();
 		this.dt = dt;
+		this.qs = qs;
 	}
 
 	/**
@@ -87,6 +99,12 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	public boolean hasNext()
 	{
 		checkReady();
+		if (hits.length == 0) {
+			return false;
+		}
+		if (hitCounter == hits.length) {
+			scroll();
+		}
 		return hits.length != 0;
 	}
 
@@ -94,11 +112,8 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	public T next()
 	{
 		checkReady();
-		if (hitCounter == hits.length) {
-			scroll();
-		}
 		docCounter++;
-		return newDocumentObject(hits[hitCounter++]);
+		return convert(hits[hitCounter++]);
 	}
 
 	public List<T> nextBatch()
@@ -110,7 +125,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		docCounter += hits.length;
 		List<T> batch = new ArrayList<>(hits.length);
 		for (int i = 0; i < hits.length; i++) {
-			batch.add(newDocumentObject(hits[i]));
+			batch.add(convert(hits[i]));
 		}
 		scroll();
 		return batch;
@@ -122,7 +137,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 		return this;
 	}
 
-	private T newDocumentObject(SearchHit hit)
+	private T convert(SearchHit hit)
 	{
 		ObjectMapper om = dt.getObjectMapper();
 		T obj = om.convertValue(hit.getSource(), dt.getJavaType());
@@ -139,8 +154,19 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 			if (batchSize == 0) {
 				batchSize = DEFAULT_BATCH_SIZE;
 			}
-			SearchRequestBuilder request = newSearchRequest(this.dt);
-			request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+			SearchRequestBuilder request;
+			if (qs == null) {
+				request = newSearchRequest(this.dt);
+				request.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC);
+			}
+			else {
+				try {
+					request = new QuerySpecTranslator(qs, dt).translate();
+				}
+				catch (InvalidQueryException e) {
+					throw new DaoException(e);
+				}
+			}
 			request.setScroll(timeout);
 			request.setSize(batchSize);
 			SearchResponse response = executeSearchRequest(request);

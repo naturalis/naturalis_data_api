@@ -1,4 +1,4 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
 
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.naturalis.nba.api.annotations.GeoShape;
+import nl.naturalis.nba.api.model.INbaModelObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SummaryGatheringSiteCoordinates implements INbaModelObject {

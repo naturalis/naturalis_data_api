@@ -1,61 +1,76 @@
 package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
-import static nl.naturalis.nba.etl.name.NameImportUtil.copySpecimen;
-import static nl.naturalis.nba.etl.name.NameImportUtil.createName;
-import static nl.naturalis.nba.etl.name.NameImportUtil.*;
+import static nl.naturalis.nba.etl.name.NameImportUtil.copyTaxon;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.NameGroup;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
 
 class TaxonNameTransformer {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(TaxonNameTransformer.class);
+	private static final ScientificNameGroup DUMMY = new ScientificNameGroup();
 
-	private HashMap<String, NameGroup> nameCache;
-	private int batchSize;
+	private ScientificNameGroup previousGroup = DUMMY;
 
 	private int created;
-	private int updated;
 
-	TaxonNameTransformer(int batchSize)
+	TaxonNameTransformer()
 	{
-		this.batchSize = batchSize;
-		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
-	public Collection<NameGroup> transform(Collection<Taxon> taxa)
+	public Collection<ScientificNameGroup> transform(Collection<Taxon> batch)
 	{
-		return nameCache.values();
+		ArrayList<Taxon> taxa;
+		if (batch.getClass() == ArrayList.class) {
+			taxa = (ArrayList<Taxon>) batch;
+		}
+		else {
+			taxa = new ArrayList<>(batch);
+		}
+		ArrayList<ScientificNameGroup> groups = new ArrayList<>(batch.size());
+		if (previousGroup != DUMMY) {
+			groups.add(previousGroup);
+		}
+		for (int i = 0; i < batch.size(); i++) {
+			Taxon taxon = taxa.get(i);
+			ScientificNameGroup group;
+			if (!taxon.getScientificNameGroup().equals(previousGroup.getName())) {
+				++created;
+				group = new ScientificNameGroup(taxon.getScientificNameGroup());
+			}
+			else {
+				group = previousGroup;
+			}
+			previousGroup = group;
+			group.addTaxon(copyTaxon(taxon));
+			/*
+			 * Do not add the last group in the batch; it will be added as the
+			 * first group in the next batch. This way, if the last name in the
+			 * current batch happens to be the same as the first in the next, no
+			 * duplicate group will be created.
+			 */
+			if (i != batch.size() - 1) {
+				groups.add(group);
+			}
+		}
+		return groups;
+	}
+
+	public ScientificNameGroup getLastGroup()
+	{
+		return previousGroup;
 	}
 
 	public int getNumCreated()
 	{
 		return created;
-	}
-
-	public int getNumUpdated()
-	{
-		return updated;
-	}
-
-	private void transformOne(Taxon taxon)
-	{
-
-	}
-
-	private void prepareForBatch(Collection<Taxon> taxa)
-	{
 	}
 
 }

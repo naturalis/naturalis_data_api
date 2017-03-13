@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.api.model.SourceSystem.BRAHMS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -18,6 +19,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDate;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getMultiMediaGatheringEvent;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
+import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSystemClassification;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +37,7 @@ import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
@@ -46,8 +49,7 @@ import nl.naturalis.nba.utils.ConfigObject;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaTransformer
-		extends AbstractCSVTransformer<BrahmsCsvField, MultiMediaObject> {
+class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<BrahmsCsvField, MultiMediaObject> {
 
 	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
 	private static final ThemeCache themeCache;
@@ -97,7 +99,8 @@ class BrahmsMultiMediaTransformer
 			String uriHash = String.valueOf(uri.toString().hashCode()).replace('-', '0');
 			mmo.setUnitID(objectID + '_' + uriHash);
 			mmo.setSourceSystemId(mmo.getUnitID());
-			mmo.setAssociatedSpecimenReference(objectID);
+			String specimenID = getElasticsearchId(BRAHMS, objectID);
+			mmo.setAssociatedSpecimenReference(specimenID);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, BRAHMS);
 			mmo.setTheme(themes);
 			mmo.setDescription(input.get(PLANTDESC));
@@ -154,7 +157,9 @@ class BrahmsMultiMediaTransformer
 		DefaultClassification dc = getDefaultClassification(input, sn);
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
-		// identification.setSystemClassification(getSystemClassification(dc));
+		identification.setSystemClassification(getSystemClassification(dc));
+		String nameGroup = ETLUtil.createScientificNameGroup(identification);
+		identification.setScientificNameGroup(nameGroup);
 		return identification;
 	}
 
@@ -164,13 +169,13 @@ class BrahmsMultiMediaTransformer
 			return typeStatusNormalizer.map(input.get(TYPE));
 		}
 		catch (UnmappedValueException e) {
-			if(!suppressErrors) {
+			if (!suppressErrors) {
 				warn(e.getMessage());
 			}
 			return null;
 		}
 	}
-	
+
 	private static ServiceAccessPoint newServiceAccessPoint(URI uri)
 	{
 		return new ServiceAccessPoint(uri, "image/jpeg", Variant.MEDIUM_QUALITY);

@@ -55,6 +55,7 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.utils.ConfigObject;
 
@@ -271,6 +272,8 @@ class BrahmsImportUtil {
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
 		identification.setSystemClassification(getSystemClassification(dc));
+		String nameGroup = ETLUtil.createScientificNameGroup(identification);
+		identification.setScientificNameGroup(nameGroup);
 		return identification;
 	}
 

@@ -2,6 +2,7 @@ package nl.naturalis.nba.etl.nsr;
 
 import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
+import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -27,6 +28,7 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.NameMismatchException;
 
 /**
@@ -45,8 +47,9 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	}
 
 	/**
-	 * Set the taxon object associated with this multimedia object. The taxon object is
-	 * extracted from the same XML record by the {@link NsrTaxonTransformer}.
+	 * Set the taxon object associated with this multimedia object. The taxon
+	 * object is extracted from the same XML record by the
+	 * {@link NsrTaxonTransformer}.
 	 * 
 	 * @param taxon
 	 */
@@ -63,9 +66,9 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 
 	/**
 	 * Transforms an XML record into one ore more {@code MultiMediaObject}s. The
-	 * multimedia transformer does not keep track of record-level statistics. The
-	 * assumption is that if the taxon transformer was able to extract a taxon from the
-	 * XML record, then the record was OK at the record level.
+	 * multimedia transformer does not keep track of record-level statistics.
+	 * The assumption is that if the taxon transformer was able to extract a
+	 * taxon from the XML record, then the record was OK at the record level.
 	 */
 	@Override
 	protected List<MultiMediaObject> doTransform()
@@ -112,8 +115,7 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				}
 				format = guessMimeType(uri.toString());
 			}
-			mmo.addServiceAccessPoint(
-					new ServiceAccessPoint(uri, format, MEDIUM_QUALITY));
+			mmo.addServiceAccessPoint(new ServiceAccessPoint(uri, format, MEDIUM_QUALITY));
 			mmo.setCreator(val(e, "photographer_name"));
 			mmo.setCopyrightText(val(e, "copyright"));
 			if (mmo.getCopyrightText() == null) {
@@ -154,7 +156,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		mmo.setOwner(SOURCE_INSTITUTION_ID);
 		mmo.setSourceID("LNG NSR");
 		mmo.setCollectionType("Nederlandse soorten en exoten");
-		mmo.setAssociatedTaxonReference(taxon.getSourceSystemId());
+		String taxonId = getElasticsearchId(NSR, taxon.getSourceSystemId());
+		mmo.setAssociatedTaxonReference(taxonId);
 		mmo.setIdentifications(Arrays.asList(getIdentification()));
 		equalizeNameComponents(mmo);
 		return mmo;
@@ -169,6 +172,8 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		mmci.setDefaultClassification(t.getDefaultClassification());
 		mmci.setSystemClassification(t.getSystemClassification());
 		mmci.setVernacularNames(t.getVernacularNames());
+		String nameGroup = ETLUtil.createScientificNameGroup(mmci);
+		mmci.setScientificNameGroup(nameGroup);
 		return mmci;
 	}
 

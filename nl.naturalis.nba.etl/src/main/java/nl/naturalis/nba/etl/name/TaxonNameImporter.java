@@ -1,67 +1,68 @@
 package nl.naturalis.nba.etl.name;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
-import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.*;
 import static nl.naturalis.nba.dao.util.es.ESUtil.disableAutoRefresh;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.setAutoRefreshInterval;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.NameGroup;
-import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.etl.BulkIndexException;
 
-class NameImporter {
+class TaxonNameImporter {
 
-	private static final Logger logger = getLogger(NameImporter.class);
+	private static final Logger logger = getLogger(TaxonNameImporter.class);
 
 	private boolean suppressErrors;
 	private int batchSize;
 	private int timeout;
 
-	void importSpecimenNames() throws BulkIndexException
+	void importNames() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
-		DocumentIterator<Specimen> extractor;
-		SpecimenNameTransformer transformer;
+		DocumentIterator<Taxon> extractor;
+		TaxonNameTransformer transformer;
 		logger.info("Initializing extractor");
-		extractor = new DocumentIterator<>(SPECIMEN);
+		extractor = new DocumentIterator<>(TAXON, getQuerySpec());
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
 		logger.info("Initializing transformer");
-		transformer = new SpecimenNameTransformer(batchSize);
+		transformer = new TaxonNameTransformer();
 		logger.info("Initializing loader");
-		List<Specimen> batch = extractor.nextBatch();
-		disableAutoRefresh(NAME_GROUP.getIndexInfo());
+		List<Taxon> batch = extractor.nextBatch();
+		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
 		while (batch != null) {
-			Collection<NameGroup> nameGroups = transformer.transform(batch);
+			Collection<ScientificNameGroup> scientificNameGroups = transformer.transform(batch);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Creating/updating NameGroup documents");
+				logger.debug("Creating/updating ScientificNameGroup documents");
 			}
-			NameGroupUpserter.upsert(nameGroups);
-			if (batchNo++ % 10 == 0) {
-				logger.info("Specimen processed: {}", batchNo * batchSize);
+			NameGroupUpserter.upsert(scientificNameGroups);
+			if (++batchNo % 10 == 0) {
+				logger.info("Taxa processed: {}", batchNo * batchSize);
 				logger.info("Name groups created: {}", transformer.getNumCreated());
-				logger.info("Name groups updated: {}", transformer.getNumUpdated());
-				refreshIndex(NAME_GROUP.getIndexInfo());
+				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("Loading next batch of specimens");
+				logger.debug("Loading next batch of taxa");
 			}
 			batch = extractor.nextBatch();
 		}
-		setAutoRefreshInterval(NAME_GROUP.getIndexInfo(), "30s");
-		logger.info("Specimen processed: {}", extractor.getDocCounter());
+		NameGroupUpserter.upsert(Arrays.asList(transformer.getLastGroup()));
+		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
+		logger.info("Taxa processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());
-		logger.info("Name groups updated: {}", transformer.getNumUpdated());
 		logDuration(logger, getClass(), start);
 	}
 
@@ -93,6 +94,15 @@ class NameImporter {
 	void setTimeout(int timeout)
 	{
 		this.timeout = timeout;
+	}
+
+	private static QuerySpec getQuerySpec()
+	{
+		QuerySpec qs = new QuerySpec();
+		qs.sortBy("acceptedName.genusOrMonomial");
+		qs.sortBy("acceptedName.specificEpithet");
+		qs.sortBy("acceptedName.infraspecificEpithet");
+		return qs;
 	}
 
 }

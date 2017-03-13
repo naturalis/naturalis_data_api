@@ -1,10 +1,12 @@
-package nl.naturalis.nba.api.model;
+package nl.naturalis.nba.api.model.summary;
 
 import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
+import nl.naturalis.nba.api.model.INbaModelObject;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
 
 /**
  * Encapsulates a taxon's full scientific name and the components it is composed
@@ -18,7 +20,6 @@ public class SummaryScientificName implements INbaModelObject {
 
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String fullScientificName;
-	@Analyzers({})
 	private TaxonomicStatus taxonomicStatus;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String genusOrMonomial;

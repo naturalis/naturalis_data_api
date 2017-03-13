@@ -8,7 +8,11 @@ import java.net.URISyntaxException;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.DefaultClassification;
+import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.SourceSystem;
+import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.DocumentType;
 
@@ -33,6 +37,20 @@ public final class ETLUtil {
 
 	private ETLUtil()
 	{
+	}
+
+	public static String createScientificNameGroup(TaxonomicIdentification identification)
+	{
+		ScientificName sn = identification.getScientificName();
+		DefaultClassification dc = identification.getDefaultClassification();
+		return ETLUtil.createName(sn, dc);
+	}
+
+	public static String createScientificNameGroup(Taxon taxon)
+	{
+		ScientificName sn = taxon.getAcceptedName();
+		DefaultClassification dc = taxon.getDefaultClassification();
+		return ETLUtil.createName(sn, dc);
 	}
 
 	/**
@@ -145,6 +163,37 @@ public final class ETLUtil {
 			String msg = String.format(fmt, value, e.getMessage());
 			throw new ETLRuntimeException(msg);
 		}
+	}
+
+	private static String createName(ScientificName sn, DefaultClassification dc)
+	{
+		String genus = null;
+		String species = null;
+		String subsp = null;
+		if (sn != null) {
+			genus = sn.getGenusOrMonomial();
+			species = sn.getSpecificEpithet();
+			subsp = sn.getInfraspecificEpithet();
+		}
+		if (genus == null && dc != null) {
+			genus = dc.getGenus();
+			if (genus == null) {
+				genus = "?";
+			}
+		}
+		if (species == null && dc != null) {
+			species = dc.getSpecificEpithet();
+			if (species == null) {
+				species = "?";
+			}
+		}
+		if (subsp == null && dc != null) {
+			subsp = dc.getInfraspecificEpithet();
+		}
+		if (subsp == null) {
+			return genus + " " + species;
+		}
+		return genus + " " + species + " " + subsp;
 	}
 
 }

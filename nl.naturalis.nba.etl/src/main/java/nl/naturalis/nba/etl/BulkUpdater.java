@@ -1,7 +1,10 @@
 package nl.naturalis.nba.etl;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
+import org.elasticsearch.action.DocWriteResponse.Result;
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.update.UpdateRequest;
@@ -27,7 +30,7 @@ public class BulkUpdater<T extends IDocumentObject> {
 		this.dt = dt;
 	}
 
-	public void update(List<T> objs) throws BulkIndexException
+	public int update(Collection<T> objs) throws BulkIndexException
 	{
 		Client client = ESClientManager.getInstance().getClient();
 		ObjectMapper om = dt.getObjectMapper();
@@ -51,6 +54,16 @@ public class BulkUpdater<T extends IDocumentObject> {
 		if (response.hasFailures()) {
 			throw new BulkIndexException(response, objs);
 		}
+		int updates = 0;
+		Iterator<BulkItemResponse> iterator = response.iterator();
+		while (iterator.hasNext()) {
+			BulkItemResponse item = iterator.next();
+			Result result = item.getResponse().getResult();
+			if (result == Result.UPDATED) {
+				++updates;
+			}
+		}
+		return updates;
 	}
 
 }

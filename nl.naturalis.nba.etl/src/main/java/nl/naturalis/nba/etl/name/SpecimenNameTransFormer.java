@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.name.NameImportUtil.copySpecimen;
-import static nl.naturalis.nba.etl.name.NameImportUtil.createName;
 import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroups;
 
 import java.util.Collection;
@@ -13,16 +12,17 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
-import nl.naturalis.nba.api.model.SummarySpecimen;
+import nl.naturalis.nba.api.model.summary.SummarySpecimen;
+import nl.naturalis.nba.etl.ETLUtil;
 
 class SpecimenNameTransformer {
 
 	private static final Logger logger = getLogger(SpecimenNameTransformer.class);
 
-	private HashMap<String, NameGroup> nameCache;
+	private HashMap<String, ScientificNameGroup> nameCache;
 	private int batchSize;
 
 	private int created;
@@ -34,9 +34,9 @@ class SpecimenNameTransformer {
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
-	public Collection<NameGroup> transform(Collection<Specimen> specimens)
+	public Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
 	{
-		prepareForBatch(specimens);
+		initializeNameGroups(specimens);
 		for (Specimen specimen : specimens) {
 			transform(specimen);
 		}
@@ -57,24 +57,29 @@ class SpecimenNameTransformer {
 	{
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		for (SpecimenIdentification si : identifications) {
-			String name = createName(si);
-			NameGroup group = nameCache.get(name);
-			group.addSpecimen(copySpecimen(specimen));
-			group.setSpecimenCount(group.getSpecimens().size());
+			String name = ETLUtil.createScientificNameGroup(si);
+			ScientificNameGroup group = nameCache.get(name);
+			if (!exists(specimen, group)) {
+				group.addSpecimen(copySpecimen(specimen));
+				group.setSpecimenCount(group.getSpecimens().size());
+			}
 		}
 	}
-	
-	private static boolean exists(Specimen specimen, NameGroup group) {
-		if(group.getSpecimens()==null) {
+
+	private static boolean exists(Specimen specimen, ScientificNameGroup group)
+	{
+		if (group.getSpecimens() == null) {
 			return false;
 		}
-		for(SummarySpecimen ss : group.getSpecimens()) {
-			//if(ss.getUnitID())
+		for (SummarySpecimen ss : group.getSpecimens()) {
+			if (ss.getUnitID().equals(specimen.getUnitID())) {
+				return true;
+			}
 		}
 		return false;
 	}
 
-	private void prepareForBatch(Collection<Specimen> specimens)
+	private void initializeNameGroups(Collection<Specimen> specimens)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing name groups");
@@ -86,25 +91,26 @@ class SpecimenNameTransformer {
 		Set<String> names = new HashSet<>(batchSize * 4);
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				names.add(createName(si));
+				names.add(si.getScientificNameGroup());
 			}
 		}
-		List<NameGroup> groups = loadNameGroups(names);
+		List<ScientificNameGroup> groups = loadNameGroups(names);
 		created += groups.size();
 		updated += (names.size() - groups.size());
 		if (logger.isDebugEnabled()) {
-			logger.debug("NameGroup documents to be updated: {}", groups.size());
-			logger.debug("NameGroup documents to be created: {}", (names.size() - groups.size()));
+			logger.debug("ScientificNameGroup documents to be updated: {}", groups.size());
+			logger.debug("ScientificNameGroup documents to be created: {}",
+					(names.size() - groups.size()));
 		}
-		for (NameGroup group : groups) {
+		for (ScientificNameGroup group : groups) {
 			nameCache.put(group.getName(), group);
 		}
 		/*
-		 * Create new, empty NameGroup instances for remaining names
+		 * Create new, empty ScientificNameGroup instances for remaining names
 		 */
 		for (String name : names) {
 			if (!nameCache.containsKey(name)) {
-				nameCache.put(name, new NameGroup(name));
+				nameCache.put(name, new ScientificNameGroup(name));
 			}
 		}
 	}

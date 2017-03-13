@@ -1,14 +1,14 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.dao.DocumentType.NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 
-import nl.naturalis.nba.api.model.NameGroup;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 
-public class NameGroupMetaDataDao extends MetaDataDao<NameGroup> {
+public class NameGroupMetaDataDao extends MetaDataDao<ScientificNameGroup> {
 
 	public NameGroupMetaDataDao()
 	{
-		super(NAME_GROUP);
+		super(SCIENTIFIC_NAME_GROUP);
 	}
 
 }

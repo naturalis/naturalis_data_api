@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.utils.CollectionUtil.isEmpty;
 
 import java.util.ArrayList;
 
@@ -69,11 +68,11 @@ public class CoLNullifier {
 				taxon.setSynonyms(null);
 				modified = true;
 			}
-			if (nullifyReferences && !isEmpty(taxon.getReferences())) {
+			if (nullifyReferences && taxon.getReferences() != null) {
 				taxon.setReferences(null);
 				modified = true;
 			}
-			if (nullifyVernacularNames && !isEmpty(taxon.getVernacularNames())) {
+			if (nullifyVernacularNames && taxon.getVernacularNames() != null) {
 				taxon.setVernacularNames(null);
 				modified = true;
 			}
@@ -82,6 +81,7 @@ public class CoLNullifier {
 				++updated;
 				if (batch.size() == batchSize) {
 					indexer.index(batch);
+					batch.clear();
 				}
 			}
 			if (++processed % 100000 == 0) {

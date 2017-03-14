@@ -120,7 +120,7 @@ public class TaxonomicEnricher {
 				}
 			}
 			if (enrichments.size() != 0) {
-				specimen.setTaxonomicEnrichments(new ArrayList<>(enrichments.values()));
+				//specimen.setTaxonomicEnrichments(new ArrayList<>(enrichments.values()));
 				enriched.add(specimen);
 			}
 		}
@@ -143,7 +143,7 @@ public class TaxonomicEnricher {
 			enriched = true;
 		}
 		if (enriched) {
-			enrichment.setScientificNameGroup(taxon.getScientificNameGroup());
+			//enrichment.setScientificNameGroup(taxon.getScientificNameGroup());
 			enrichment.setTaxonId(taxon.getId());
 			enrichment.setSourceSystem(taxon.getSourceSystem().getCode());
 			return true;

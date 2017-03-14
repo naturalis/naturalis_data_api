@@ -26,8 +26,6 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	private Set<String> synonyms;
 
 	@NotIndexed
-	private String scientificNameGroup;
-	@NotIndexed
 	private String taxonId;
 	@NotIndexed
 	private String sourceSystem;
@@ -68,16 +66,6 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	public void setSynonyms(Set<String> synonyms)
 	{
 		this.synonyms = synonyms;
-	}
-
-	public String getScientificNameGroup()
-	{
-		return scientificNameGroup;
-	}
-
-	public void setScientificNameGroup(String scientificNameGroup)
-	{
-		this.scientificNameGroup = scientificNameGroup;
 	}
 
 	/**

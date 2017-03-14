@@ -44,8 +44,6 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	private List<SpecimenIdentification> identifications;
 	private List<String> theme;
 
-	private List<TaxonomicEnrichment> taxonomicEnrichments;
-
 	public void addIndentification(SpecimenIdentification identification)
 	{
 		if (identifications == null) {
@@ -324,16 +322,6 @@ public class Specimen extends NbaTraceableObject implements IDocumentObject {
 	public void setTheme(List<String> theme)
 	{
 		this.theme = theme;
-	}
-
-	public List<TaxonomicEnrichment> getTaxonomicEnrichments()
-	{
-		return taxonomicEnrichments;
-	}
-
-	public void setTaxonomicEnrichments(List<TaxonomicEnrichment> taxonomicEnrichments)
-	{
-		this.taxonomicEnrichments = taxonomicEnrichments;
 	}
 
 }

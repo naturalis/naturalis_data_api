@@ -23,6 +23,8 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 	private Date dateIdentified;
 	private List<Agent> identifiers;
 
+	private List<TaxonomicEnrichment> taxonomicEnrichments;
+
 	public void addIdentifier(Agent identifier)
 	{
 		if (identifiers == null) {
@@ -119,6 +121,16 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 	public void setIdentifiers(List<Agent> identifiers)
 	{
 		this.identifiers = identifiers;
+	}
+
+	public List<TaxonomicEnrichment> getTaxonomicEnrichments()
+	{
+		return taxonomicEnrichments;
+	}
+
+	public void setTaxonomicEnrichments(List<TaxonomicEnrichment> taxonomicEnrichments)
+	{
+		this.taxonomicEnrichments = taxonomicEnrichments;
 	}
 
 }

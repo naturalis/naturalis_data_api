@@ -30,8 +30,8 @@ public class CoLImportAll {
 	{
 		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		new CoLTaxonImporter().importCsv(dwcaDir + "/taxa.txt");
-		//new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
-		//new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");
-		new CoLReferenceBatchImporter().importCsv(dwcaDir + "/reference.txt");
+		new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
+		new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");
+		new CoLReferenceImporter().importCsv(dwcaDir + "/reference.txt");
 	}
 }

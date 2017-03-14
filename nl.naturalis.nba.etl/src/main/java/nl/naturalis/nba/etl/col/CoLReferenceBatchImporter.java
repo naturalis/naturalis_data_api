@@ -31,7 +31,7 @@ public class CoLReferenceBatchImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		String prop = System.getProperty("batchSize", "40");
+		String prop = System.getProperty("batchSize", "1000");
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);

@@ -44,7 +44,7 @@ public class CoLNullifier {
 	{
 	}
 
-	private int batchSize = 1000;
+	private int batchSize = 500;
 	private boolean nullifySynonyms = true;
 	private boolean nullifyReferences = true;
 	private boolean nullifyVernacularNames = true;

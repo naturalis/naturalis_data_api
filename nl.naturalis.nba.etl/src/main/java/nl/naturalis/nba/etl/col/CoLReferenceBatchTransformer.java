@@ -55,10 +55,12 @@ public class CoLReferenceBatchTransformer {
 	public Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
 	{
 		HashMap<String, Taxon> taxa;
-		if (LOAD_BY_ID)
+		if (LOAD_BY_ID) {
 			taxa = loadTaxaById(records);
-		else
+		}
+		else {
 			taxa = loadTaxaBySourceSystemId(records);
+		}
 		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
 			Taxon taxon = taxa.get(record.get(taxonID));
 			if (taxon == null) {
@@ -70,6 +72,9 @@ public class CoLReferenceBatchTransformer {
 				++numCreated;
 				++numUpdated;
 				taxon.addReference(ref);
+			}
+			else if(taxon.getReferences().size()==0) {
+				logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 			}
 			else if (taxon.getReferences().contains(ref) == false) {
 				++numCreated;
@@ -111,6 +116,7 @@ public class CoLReferenceBatchTransformer {
 		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
 		query.addIds(ids.toArray(new String[ids.size()]));
 		request.setQuery(query);
+		request.setSize(ids.size());
 		SearchResponse response = ESUtil.executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		HashMap<String, Taxon> taxa = new HashMap<>(hits.length + 4, 1F);
@@ -134,6 +140,7 @@ public class CoLReferenceBatchTransformer {
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
 		TermsQueryBuilder query = QueryBuilders.termsQuery("sourceSystemId", ids);
 		request.setQuery(constantScoreQuery(query));
+		request.setSize(ids.size());
 		SearchResponse response = ESUtil.executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		HashMap<String, Taxon> result = new HashMap<>(hits.length + 4, 1F);

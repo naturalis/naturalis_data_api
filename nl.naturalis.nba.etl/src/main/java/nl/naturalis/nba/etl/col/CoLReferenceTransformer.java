@@ -70,7 +70,13 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 			}
 			taxon = ESUtil.find(TAXON, id);
 			Reference reference = createReference();
-			if (taxon != null) {
+			if (taxon == null) {
+				++orphans;
+				if (!suppressErrors) {
+					error("Orphan reference: " + reference);
+				}
+			}
+			else {
 				if (taxon.getReferences() == null || !taxon.getReferences().contains(reference)) {
 					stats.objectsAccepted++;
 					taxon.addReference(reference);
@@ -78,12 +84,6 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 				}
 				if (!suppressErrors) {
 					error("Duplicate reference: " + reference);
-				}
-			}
-			else {
-				if (!suppressErrors) {
-					++orphans;
-					error("Orphan reference: " + reference);
 				}
 			}
 			stats.objectsRejected++;

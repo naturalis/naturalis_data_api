@@ -7,24 +7,22 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -34,8 +32,9 @@ import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
-import nl.naturalis.nba.etl.BulkUpdater;
+import nl.naturalis.nba.etl.BulkIndexer;
 
 public class TaxonomicEnricher {
 
@@ -50,12 +49,14 @@ public class TaxonomicEnricher {
 			System.exit(1);
 		}
 		finally {
+			ESUtil.refreshIndex(SPECIMEN);
 			ESClientManager.getInstance().closeClient();
 		}
 		System.exit(0);
 	}
 
 	private static final Logger logger = getLogger(TaxonomicEnricher.class);
+	private static final List<TaxonomicEnrichment> EMPTY = new ArrayList<>(0);
 	private static final int BATCH_SIZE = 1000;
 	private static final int FLUSH_TRESHOLD = 1000;
 
@@ -63,115 +64,116 @@ public class TaxonomicEnricher {
 	{
 		logger.info("Starting taxonomic enrichment of Specimen documents");
 		long start = System.currentTimeMillis();
-		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN);
+		QuerySpec qs = new QuerySpec();
+		qs.sortBy("identifications.scientificNameGroup");
+		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
 		extractor.setBatchSize(BATCH_SIZE);
-		BulkUpdater<Specimen> updater = new BulkUpdater<>(SPECIMEN);
+		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
 		int processed = 0;
-		int updated = 0;
+		int enriched = 0;
 		List<Specimen> queue = new ArrayList<>(FLUSH_TRESHOLD + BATCH_SIZE);
 		List<Specimen> batch = extractor.nextBatch();
 		while (batch != null) {
 			List<Specimen> enrichedSpecimens = enrichBatch(batch);
-			updated += enrichedSpecimens.size();
+			enriched += enrichedSpecimens.size();
 			queue.addAll(enrichedSpecimens);
 			if (queue.size() >= FLUSH_TRESHOLD) {
-				updater.update(enrichedSpecimens);
+				indexer.index(queue);
 				queue.clear();
 			}
 			processed += batch.size();
 			if (processed % 100000 == 0) {
 				logger.info("Specimen documents processed: {}", processed);
-				logger.info("Specimen documents updated: {}", updated);
+				logger.info("Specimen documents enriched: {}", enriched);
+				logger.info("Most recent name group: {}", batch.get(batch.size() - 1)
+						.getIdentifications().get(0).getScientificNameGroup());
 			}
 			batch = extractor.nextBatch();
 		}
+		if (!queue.isEmpty()) {
+			indexer.index(queue);
+		}
 		refreshIndex(SPECIMEN);
 		logger.info("Specimen documents processed: {}", processed);
-		logger.info("Specimen documents updated: {}", updated);
+		logger.info("Specimen documents enriched: {}", enriched);
 		logDuration(logger, getClass(), start);
 	}
 
 	private static List<Specimen> enrichBatch(List<Specimen> specimens)
 	{
-		Set<String> names = extractNames(specimens);
-		HashMap<String, Taxon> taxonCache = cacheTaxa(names);
-		List<Specimen> enriched = new ArrayList<>(specimens.size());
+		List<Specimen> result = new ArrayList<>(specimens.size());
+		HashMap<String, List<TaxonomicEnrichment>> cache;
+		cache = new HashMap<>((int) (specimens.size() / .75F) + 1);
 		for (Specimen specimen : specimens) {
+			boolean enriched = false;
 			if (specimen.getIdentifications() == null) {
 				continue;
 			}
-			HashMap<String, TaxonomicEnrichment> enrichments = new HashMap<>(8);
-			for (int i = 0; i < specimen.getIdentifications().size(); i++) {
-				SpecimenIdentification si = specimen.getIdentifications().get(i);
-				String fsn = si.getScientificName().getFullScientificName();
-				Taxon taxon = taxonCache.get(fsn);
-				if (taxon == null) {
+			for (SpecimenIdentification si : specimen.getIdentifications()) {
+				if (si.getTaxonomicEnrichments() != null) {
+					/*
+					 * This allows for incremental enrichment, in case the
+					 * program aborted, or if we re-imported Brahms or CRS.
+					 */
 					continue;
 				}
-				TaxonomicEnrichment enrichment = enrichments.get(fsn);
-				if (enrichment == null) {
-					enrichment = new TaxonomicEnrichment();
-					if (copyTaxonAttrs(taxon, enrichment)) {
-						enrichments.put(fsn, enrichment);
+				String nameGroup = si.getScientificNameGroup();
+				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
+				if (enrichments == null) {
+					List<Taxon> taxa = getTaxa(nameGroup);
+					if (taxa == null) {
+						cache.put(nameGroup, EMPTY);
+					}
+					else {
+						enrichments = createEnrichments(taxa);
+						cache.put(nameGroup, enrichments);
+						if (enrichments != EMPTY) {
+							si.setTaxonomicEnrichments(enrichments);
+							enriched = true;
+						}
 					}
 				}
-				else {
-					copyTaxonAttrs(taxon, enrichment);
-				}
 			}
-			if (enrichments.size() != 0) {
-				//specimen.setTaxonomicEnrichments(new ArrayList<>(enrichments.values()));
-				enriched.add(specimen);
+			if (enriched) {
+				result.add(specimen);
 			}
-		}
-		return enriched;
-	}
-
-	private static boolean copyTaxonAttrs(Taxon taxon, TaxonomicEnrichment enrichment)
-	{
-		boolean enriched = false;
-		if (taxon.getVernacularNames() != null) {
-			for (VernacularName vn : taxon.getVernacularNames()) {
-				enrichment.addVernacularName(vn.getName());
-			}
-			enriched = true;
-		}
-		if (taxon.getSynonyms() != null) {
-			for (ScientificName sn : taxon.getSynonyms()) {
-				enrichment.addSynonym(sn.getFullScientificName());
-			}
-			enriched = true;
-		}
-		if (enriched) {
-			//enrichment.setScientificNameGroup(taxon.getScientificNameGroup());
-			enrichment.setTaxonId(taxon.getId());
-			enrichment.setSourceSystem(taxon.getSourceSystem().getCode());
-			return true;
-		}
-		return false;
-	}
-
-	private static HashMap<String, Taxon> cacheTaxa(Set<String> names)
-	{
-		List<Taxon> taxa = loadTaxa(names);
-		HashMap<String, Taxon> result = new HashMap<>(taxa.size() + 8, 1F);
-		for (Taxon taxon : taxa) {
-			result.put(taxon.getAcceptedName().getFullScientificName(), taxon);
 		}
 		return result;
 	}
 
-	private static List<Taxon> loadTaxa(Collection<String> names)
+	private static List<TaxonomicEnrichment> createEnrichments(List<Taxon> taxa)
+	{
+		List<TaxonomicEnrichment> enrichments = new ArrayList<>(taxa.size());
+		for (Taxon taxon : taxa) {
+			if (taxon.getVernacularNames() == null && taxon.getSynonyms() == null) {
+				continue;
+			}
+			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
+			if (taxon.getVernacularNames() != null) {
+				for (VernacularName vn : taxon.getVernacularNames()) {
+					enrichment.addVernacularName(vn.getName());
+				}
+			}
+			if (taxon.getSynonyms() != null) {
+				for (ScientificName sn : taxon.getSynonyms()) {
+					enrichment.addSynonym(sn.getFullScientificName());
+				}
+			}
+			enrichments.add(enrichment);
+		}
+		return enrichments.isEmpty() ? EMPTY : enrichments;
+	}
+
+	private static List<Taxon> getTaxa(String nameGroup)
 	{
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = newSearchRequest(dt);
-		String field = "acceptedName.fullScientificName";
-		TermsQueryBuilder query = QueryBuilders.termsQuery(field, names);
-		request.setQuery(query);
+		TermQueryBuilder query = termQuery("scientificNameGroup", nameGroup);
+		request.setQuery(constantScoreQuery(query));
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
-			return Collections.emptyList();
+			return null;
 		}
 		List<Taxon> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();
@@ -180,17 +182,6 @@ public class TaxonomicEnricher {
 			result.add(sns);
 		}
 		return result;
-	}
-
-	private static Set<String> extractNames(List<Specimen> specimens)
-	{
-		Set<String> names = new HashSet<>(specimens.size() * 3);
-		for (Specimen specimen : specimens) {
-			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				names.add(si.getScientificName().getFullScientificName());
-			}
-		}
-		return names;
 	}
 
 }

@@ -97,6 +97,30 @@ public class IndexInfo {
 		return types;
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj != null && obj instanceof IndexInfo) {
+			return ((IndexInfo) obj).name.equals(name);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return name.hashCode();
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
+
 	void addType(DocumentType<?> type)
 	{
 		types.add(type);

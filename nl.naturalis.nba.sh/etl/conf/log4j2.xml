@@ -10,6 +10,10 @@
 		</File>
 	</Appenders>
 	<Loggers>
+		<Logger name="org.elasticsearch" level="ERROR" additivity="false">
+			<AppenderRef ref="FILE" />
+			<AppenderRef ref="CONSOLE" />
+		</Logger>
 		<Root level="INFO">
 			<AppenderRef ref="FILE" />
 			<AppenderRef ref="CONSOLE" />

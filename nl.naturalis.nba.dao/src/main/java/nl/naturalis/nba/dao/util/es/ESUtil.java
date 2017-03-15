@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -153,7 +152,7 @@ public class ESUtil {
 	}
 
 	/**
-	 * Returns all indices hosting the NBA {@link DocumentType document types}.
+	 * Returns all indices hosting NBA {@link DocumentType document types}.
 	 * Document types may share an index, but this method only returns unique
 	 * indices.
 	 * 
@@ -161,12 +160,10 @@ public class ESUtil {
 	 */
 	public static Set<IndexInfo> getDistinctIndices()
 	{
-		Set<IndexInfo> result = new HashSet<>(8);
-		result.add(DocumentType.SPECIMEN.getIndexInfo());
-		result.add(DocumentType.TAXON.getIndexInfo());
-		result.add(DocumentType.MULTI_MEDIA_OBJECT.getIndexInfo());
-		result.add(DocumentType.GEO_AREA.getIndexInfo());
-		result.add(DocumentType.SCIENTIFIC_NAME_GROUP.getIndexInfo());
+		Set<IndexInfo> result = new HashSet<>();
+		for (DocumentType<?> dt : DocumentType.getAllDocumentTypes()) {
+			result.add(dt.getIndexInfo());
+		}
 		return result;
 	}
 
@@ -178,7 +175,7 @@ public class ESUtil {
 	 */
 	public static Set<IndexInfo> getDistinctIndices(DocumentType<?>... documentTypes)
 	{
-		LinkedHashSet<IndexInfo> result = new LinkedHashSet<>(3);
+		Set<IndexInfo> result = new HashSet<>();
 		for (DocumentType<?> dt : documentTypes) {
 			result.add(dt.getIndexInfo());
 		}

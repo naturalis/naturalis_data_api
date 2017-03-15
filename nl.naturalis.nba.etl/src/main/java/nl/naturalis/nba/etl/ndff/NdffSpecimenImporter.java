@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
@@ -62,7 +63,7 @@ public class NdffSpecimenImporter {
 		}
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			ETLUtil.truncate(SPECIMEN, NDFF);
+			ESUtil.truncate(SPECIMEN, NDFF);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}

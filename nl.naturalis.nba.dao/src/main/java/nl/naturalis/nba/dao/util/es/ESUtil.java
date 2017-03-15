@@ -36,6 +36,10 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.reindex.BulkIndexByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryAction;
+import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -412,6 +416,35 @@ public class ESUtil {
 			}
 			throw new DaoException(msg);
 		}
+	}
+
+	/**
+	 * Deletes all documents of the specified type and the specified source
+	 * system. As of NBA version 2 this method is deprecated, because this
+	 * version runs on Elasticsearch version 2, which has dropped support for
+	 * deleting individual types from an index. Therefore this method now is a
+	 * no-op. However, we keep the method and all calls to it, because having to
+	 * delete an entire index just to re-import a single source system isn't
+	 * ideal either. Therefore, if we find an acceptable way of getting rid of
+	 * just those data we want to re-import, this method may get un-deprecated
+	 * again.
+	 * 
+	 * @param dt
+	 *            The type of the documents to be deleted
+	 * @param ss
+	 *            The source system of the documents to be deleted
+	 */
+	public static void truncate(DocumentType<?> dt, SourceSystem ss)
+	{
+		logger.info("Deleting all {} documents from {}", ss.getCode(), dt.getName());
+		DeleteByQueryAction action = DeleteByQueryAction.INSTANCE;
+		DeleteByQueryRequestBuilder request = action.newRequestBuilder(esClient());
+		TermQueryBuilder query = termQuery("sourceSystem.code", ss.getCode());
+		request.filter(query);
+		request.source(dt.getIndexInfo().getName());
+		BulkIndexByScrollResponse response = request.get();
+		long deleted = response.getDeleted();
+		logger.info("Documents deleted: {}", deleted);
 	}
 
 	/**

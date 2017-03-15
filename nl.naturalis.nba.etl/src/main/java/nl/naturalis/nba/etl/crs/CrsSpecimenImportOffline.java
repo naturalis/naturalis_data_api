@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
@@ -62,7 +63,7 @@ public class CrsSpecimenImportOffline {
 
 	public CrsSpecimenImportOffline()
 	{
-		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled("suppressErrors");
 		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
@@ -80,7 +81,7 @@ public class CrsSpecimenImportOffline {
 			logger.error("No specimen oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		ETLUtil.truncate(SPECIMEN, CRS);
+		ESUtil.truncate(SPECIMEN, CRS);
 		stats = new ETLStatistics();
 		transformer = new CrsSpecimenTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);

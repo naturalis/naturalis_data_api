@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.etl.ETLUtil.truncate;
 
 import java.io.File;
 import java.util.List;
@@ -72,7 +71,7 @@ public class CoLTaxonImporter extends CoLImporter {
 			File f = new File(path);
 			if (!f.exists())
 				throw new ETLRuntimeException("No such file: " + path);
-			truncate(TAXON, SourceSystem.COL);
+			ESUtil.truncate(TAXON, SourceSystem.COL);
 			stats = new ETLStatistics();
 			extractor = createExtractor(stats, f);
 			transformer = new CoLTaxonTransformer(stats);

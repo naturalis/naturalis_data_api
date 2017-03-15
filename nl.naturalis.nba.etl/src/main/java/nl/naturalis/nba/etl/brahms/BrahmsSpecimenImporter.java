@@ -13,10 +13,10 @@ import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -64,7 +64,7 @@ public class BrahmsSpecimenImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
 		try {
-			ETLUtil.truncate(SPECIMEN, BRAHMS);
+			ESUtil.truncate(SPECIMEN, BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, stats);
 			}

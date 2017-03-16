@@ -62,19 +62,17 @@ public class CoLReferenceBatchTransformer {
 			taxa = loadTaxaBySourceSystemId(records);
 		}
 		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
+			Reference ref = createReference(record);
 			Taxon taxon = taxa.get(record.get(taxonID));
 			if (taxon == null) {
-				logger.warn("Orphan reference. No taxon found for ID {}.", record.get(taxonID));
+				String fmt = "Orphan reference. No taxon found for ID {} ({})";
+				logger.error(fmt, record.get(taxonID), ref);
 				continue;
 			}
-			Reference ref = createReference(record);
 			if (taxon.getReferences() == null) {
 				++numCreated;
 				++numUpdated;
 				taxon.addReference(ref);
-			}
-			else if(taxon.getReferences().size()==0) {
-				logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 			}
 			else if (taxon.getReferences().contains(ref) == false) {
 				++numCreated;

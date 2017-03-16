@@ -1,4 +1,7 @@
 /**
- * Package that handles the import of the CRS data sources.
+ * Interfaces and classes for importing the CRS data sources.
+ * 
+ * @author Ayco Holleman
+ * 
  */
 package nl.naturalis.nba.etl.crs;

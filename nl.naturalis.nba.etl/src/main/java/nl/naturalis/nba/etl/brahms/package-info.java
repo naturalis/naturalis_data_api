@@ -1,4 +1,7 @@
 /**
- * Package that handles the import of the Brahms data sources.
+ * Interfaces and classes for importing the BRAHMS data sources.
+ * 
+ * @author Ayco Holleman
+ * 
  */
 package nl.naturalis.nba.etl.brahms;

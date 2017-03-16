@@ -17,29 +17,47 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
+import nl.naturalis.nba.etl.BulkIndexer;
 
 class TaxonNameImporter {
+
+	public static void main(String[] args) throws Exception
+	{
+		try {
+			ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP);
+			ESUtil.createIndex(SCIENTIFIC_NAME_GROUP);
+			TaxonNameImporter importer = new TaxonNameImporter();
+			importer.importNames();
+		}
+		finally {
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
+			ESClientManager.getInstance().closeClient();
+		}
+	}
 
 	private static final Logger logger = getLogger(TaxonNameImporter.class);
 
 	private boolean suppressErrors;
-	private int batchSize;
-	private int timeout;
+	private int batchSize = 1000;
+	private int timeout = 30000;
 
 	void importNames() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
 		DocumentIterator<Taxon> extractor;
 		TaxonNameTransformer transformer;
-		logger.info("Initializing extractor");
-		extractor = new DocumentIterator<>(TAXON, getQuerySpec());
+		QuerySpec qs = new QuerySpec();
+		qs.sortBy("scientificNameGroup");
+		extractor = new DocumentIterator<>(TAXON, qs);
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
-		logger.info("Initializing transformer");
 		transformer = new TaxonNameTransformer();
-		logger.info("Initializing loader");
+		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
+		logger.info("Loading first batch of taxa");
 		List<Taxon> batch = extractor.nextBatch();
 		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
@@ -48,10 +66,11 @@ class TaxonNameImporter {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating/updating ScientificNameGroup documents");
 			}
-			NameGroupUpserter.upsert(scientificNameGroups);
+			indexer.index(scientificNameGroups);
 			if (++batchNo % 10 == 0) {
 				logger.info("Taxa processed: {}", batchNo * batchSize);
 				logger.info("Name groups created: {}", transformer.getNumCreated());
+				logger.info("Name groups updated: {}", transformer.getNumUpdated());
 				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {
@@ -59,10 +78,11 @@ class TaxonNameImporter {
 			}
 			batch = extractor.nextBatch();
 		}
-		NameGroupUpserter.upsert(Arrays.asList(transformer.getLastGroup()));
+		indexer.index(Arrays.asList(transformer.getLastGroup()));
 		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
 		logger.info("Taxa processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());
+		logger.info("Name groups updated: {}", transformer.getNumUpdated());
 		logDuration(logger, getClass(), start);
 	}
 
@@ -94,15 +114,6 @@ class TaxonNameImporter {
 	void setTimeout(int timeout)
 	{
 		this.timeout = timeout;
-	}
-
-	private static QuerySpec getQuerySpec()
-	{
-		QuerySpec qs = new QuerySpec();
-		qs.sortBy("acceptedName.genusOrMonomial");
-		qs.sortBy("acceptedName.specificEpithet");
-		qs.sortBy("acceptedName.infraspecificEpithet");
-		return qs;
 	}
 
 }

@@ -25,8 +25,6 @@ public class NameImportAll {
 	@SuppressWarnings("static-method")
 	public void importNames() throws BulkIndexException
 	{
-		ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
-		ESUtil.createIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
 		String prop = System.getProperty("batchSize", "1000");
 		int batchSize = 0;
@@ -52,11 +50,11 @@ public class NameImportAll {
 		importer0.setTimeout(timeout);
 		importer0.importNames();
 		
-		SpecimenNameImporter importer = new SpecimenNameImporter();
-		importer.setSuppressErrors(suppressErrors);
-		importer.setBatchSize(batchSize);
-		importer.setTimeout(timeout);
-		importer.importNames();
+		SpecimenNameImporter importer1 = new SpecimenNameImporter();
+		importer1.setSuppressErrors(suppressErrors);
+		importer1.setBatchSize(batchSize);
+		importer1.setTimeout(timeout);
+		importer1.importNames();
 	}
 
 }

@@ -16,7 +16,6 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
-import nl.naturalis.nba.etl.ETLUtil;
 
 class SpecimenNameTransformer {
 
@@ -57,8 +56,7 @@ class SpecimenNameTransformer {
 	{
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		for (SpecimenIdentification si : identifications) {
-			String name = ETLUtil.createScientificNameGroup(si);
-			ScientificNameGroup group = nameCache.get(name);
+			ScientificNameGroup group = nameCache.get(si.getScientificNameGroup());
 			if (!exists(specimen, group)) {
 				group.addSpecimen(copySpecimen(specimen));
 				group.setSpecimenCount(group.getSpecimens().size());

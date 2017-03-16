@@ -13,31 +13,50 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
+import nl.naturalis.nba.etl.BulkIndexer;
 
 class SpecimenNameImporter {
+
+	public static void main(String[] args) throws Exception
+	{
+		try {
+			ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP);
+			ESUtil.createIndex(SCIENTIFIC_NAME_GROUP);
+			SpecimenNameImporter importer = new SpecimenNameImporter();
+			importer.importNames();
+		}
+		finally {
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
+			ESClientManager.getInstance().closeClient();
+		}
+	}
 
 	private static final Logger logger = getLogger(SpecimenNameImporter.class);
 
 	private boolean suppressErrors;
-	private int batchSize;
-	private int timeout;
+	private int batchSize = 1000;
+	private int timeout = 30000;
 
 	void importNames() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
 		DocumentIterator<Specimen> extractor;
 		SpecimenNameTransformer transformer;
-		logger.info("Initializing extractor");
-		extractor = new DocumentIterator<>(SPECIMEN);
+		QuerySpec qs = new QuerySpec();
+		qs.sortBy("identifications.scientificNameGroup");
+		extractor = new DocumentIterator<>(SPECIMEN, qs);
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);
-		logger.info("Initializing transformer");
 		transformer = new SpecimenNameTransformer(batchSize);
-		logger.info("Initializing loader");
+		BulkIndexer<ScientificNameGroup> indexer = new BulkIndexer<>(SCIENTIFIC_NAME_GROUP);
+		logger.info("Loading first batch of specimens");
 		List<Specimen> batch = extractor.nextBatch();
 		disableAutoRefresh(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		int batchNo = 0;
@@ -46,9 +65,9 @@ class SpecimenNameImporter {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating/updating ScientificNameGroup documents");
 			}
-			NameGroupUpserter.upsert(scientificNameGroups);
-			if (batchNo++ % 10 == 0) {
-				logger.info("Specimens processed: {}", batchNo * batchSize);
+			indexer.index(scientificNameGroups);
+			if ((++batchNo % 100) == 0) {
+				logger.info("Specimens processed: {}", (batchNo * batchSize));
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());
 				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());

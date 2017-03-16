@@ -46,6 +46,7 @@ public class ScientificNameGroup implements IDocumentObject {
 
 	public ScientificNameGroup(String name)
 	{
+		this.id = name;
 		this.name = name;
 	}
 

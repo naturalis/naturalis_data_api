@@ -20,6 +20,7 @@ class TaxonNameTransformer {
 	private ScientificNameGroup previousGroup = DUMMY;
 
 	private int created;
+	private int updated;
 
 	TaxonNameTransformer()
 	{
@@ -46,6 +47,7 @@ class TaxonNameTransformer {
 				group = new ScientificNameGroup(taxon.getScientificNameGroup());
 			}
 			else {
+				++updated;
 				group = previousGroup;
 			}
 			previousGroup = group;
@@ -71,6 +73,11 @@ class TaxonNameTransformer {
 	public int getNumCreated()
 	{
 		return created;
+	}
+
+	public int getNumUpdated()
+	{
+		return updated;
 	}
 
 }

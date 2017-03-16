@@ -93,8 +93,8 @@ public class CoLReferenceBatchImporter {
 				records.add(rec);
 				if (records.size() == batchSize) {
 					taxa = transformer.transform(records);
-					//updater.index(taxa);
-					//ESUtil.refreshIndex(TAXON);
+					updater.index(taxa);
+					ESUtil.refreshIndex(TAXON);
 					records.clear();
 				}
 				if (++processed % 100000 == 0) {

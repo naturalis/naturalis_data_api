@@ -7,6 +7,7 @@ import static nl.naturalis.nba.client.ServerException.newServerException;
 import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
+import java.io.InputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,8 @@ import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.common.json.JsonUtil;
+import nl.naturalis.nba.utils.IOUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
 
 /**
@@ -109,13 +112,32 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
 	{
+		// Copied from TaxonClient.java
+		String json = JsonUtil.toJson(querySpec);
+		SimpleHttpGet request = new SimpleHttpGet();
+		request.setBaseUrl(config.getBaseUrl());
+		request.setPath("specimen/dwca/query/" + json);
+		sendRequest(request);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		InputStream in = null;
+		try {
+			logger.info("Downloading DarwinCore archive");
+			in = request.getResponseBodyAsStream();
+			IOUtil.pipe(in, out, 4096);
+			logger.info("DarwinCore archive download complete");
+		}
+		finally {
+			IOUtil.close(in);
+		}
 	}
 
 	@Override
 	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

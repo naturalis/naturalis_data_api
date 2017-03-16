@@ -67,7 +67,7 @@ class TaxonNameImporter {
 				logger.debug("Creating/updating ScientificNameGroup documents");
 			}
 			indexer.index(scientificNameGroups);
-			if (++batchNo % 10 == 0) {
+			if ((++batchNo % 100) == 0) {
 				logger.info("Taxa processed: {}", batchNo * batchSize);
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());

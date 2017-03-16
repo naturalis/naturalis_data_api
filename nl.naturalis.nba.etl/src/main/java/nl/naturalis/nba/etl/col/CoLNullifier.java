@@ -17,19 +17,44 @@ import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
- * Sets the synonyms, vernacular names and literature references of all
- * {@link Taxon} documents to {@code null}. This allows you to safely re-import
- * them again.
+ * Sets the synonyms and/or vernacular names and/or literature references of all
+ * {@link Taxon} documents from the Catalogue of Life to {@code null}. Useful if
+ * you want re-import, for example, literature references, but leave everything
+ * else intact.
  * 
  * @author Ayco Holleman
  *
  */
 public class CoLNullifier {
 
-	public static void main(String[] args) throws BulkIndexException
+	public static void main(String[] args) throws Exception
 	{
 		try {
 			CoLNullifier nullifier = new CoLNullifier();
+			if (args.length > 0) {
+				nullifier.setNullifySynonyms(false);
+				nullifier.setNullifyReferences(false);
+				nullifier.setNullifyVernacularNames(false);
+				for (String arg : args) {
+					switch (arg.toLowerCase()) {
+						case "-s":
+							nullifier.setNullifySynonyms(true);
+							break;
+						case "-r":
+							nullifier.setNullifyReferences(true);
+							break;
+						case "-v":
+							nullifier.setNullifyVernacularNames(true);
+							break;
+						default:
+							String fmt = "Illegal argument: %s. Valid arguments: -s "
+									+ "(synonyms), -r (references), -v (vernacular names)";
+							String msg = String.format(fmt, arg);
+							throw new Exception(msg);
+
+					}
+				}
+			}
 			nullifier.nullify();
 		}
 		finally {

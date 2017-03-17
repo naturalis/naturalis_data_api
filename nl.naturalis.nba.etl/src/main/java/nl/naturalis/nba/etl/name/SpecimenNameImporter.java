@@ -32,6 +32,10 @@ class SpecimenNameImporter {
 			SpecimenNameImporter importer = new SpecimenNameImporter();
 			importer.importNames();
 		}
+		catch (Exception e) {
+			logger.fatal("SpecimenNameImporter aborted unexpectedly", e);
+			throw e;
+		}
 		finally {
 			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			ESClientManager.getInstance().closeClient();
@@ -42,7 +46,7 @@ class SpecimenNameImporter {
 
 	private boolean suppressErrors;
 	private int batchSize = 1000;
-	private int timeout = 30000;
+	private int timeout = 60000;
 
 	void importNames() throws BulkIndexException
 	{

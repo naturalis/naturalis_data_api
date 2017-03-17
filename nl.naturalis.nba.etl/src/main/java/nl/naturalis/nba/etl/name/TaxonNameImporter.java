@@ -33,6 +33,10 @@ class TaxonNameImporter {
 			TaxonNameImporter importer = new TaxonNameImporter();
 			importer.importNames();
 		}
+		catch (Exception e) {
+			logger.fatal("TaxonNameImporter aborted unexpectedly", e);
+			throw e;
+		}
 		finally {
 			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
 			ESClientManager.getInstance().closeClient();
@@ -43,7 +47,7 @@ class TaxonNameImporter {
 
 	private boolean suppressErrors;
 	private int batchSize = 1000;
-	private int timeout = 30000;
+	private int timeout = 60000;
 
 	void importNames() throws BulkIndexException
 	{

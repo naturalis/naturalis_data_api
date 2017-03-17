@@ -33,7 +33,7 @@ class SpecimenNameTransformer {
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
-	public Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
+	Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
 	{
 		initializeNameGroups(specimens);
 		for (Specimen specimen : specimens) {
@@ -42,12 +42,12 @@ class SpecimenNameTransformer {
 		return nameCache.values();
 	}
 
-	public int getNumCreated()
+	int getNumCreated()
 	{
 		return created;
 	}
 
-	public int getNumUpdated()
+	int getNumUpdated()
 	{
 		return updated;
 	}
@@ -84,9 +84,9 @@ class SpecimenNameTransformer {
 		}
 		nameCache.clear();
 		/*
-		 * Assume we have around 4 identifications per specimen
+		 * Assume we have around 3 unique identifications per specimen
 		 */
-		Set<String> names = new HashSet<>(batchSize * 4);
+		Set<String> names = new HashSet<>(batchSize * 3);
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
 				names.add(si.getScientificNameGroup());

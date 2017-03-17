@@ -26,7 +26,7 @@ class TaxonNameTransformer {
 	{
 	}
 
-	public Collection<ScientificNameGroup> transform(Collection<Taxon> batch)
+	Collection<ScientificNameGroup> transform(Collection<Taxon> batch)
 	{
 		ArrayList<Taxon> taxa;
 		if (batch.getClass() == ArrayList.class) {
@@ -65,17 +65,17 @@ class TaxonNameTransformer {
 		return groups;
 	}
 
-	public ScientificNameGroup getLastGroup()
+	ScientificNameGroup getLastGroup()
 	{
 		return previousGroup;
 	}
 
-	public int getNumCreated()
+	int getNumCreated()
 	{
 		return created;
 	}
 
-	public int getNumUpdated()
+	int getNumUpdated()
 	{
 		return updated;
 	}

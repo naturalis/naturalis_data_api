@@ -25,6 +25,7 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpException;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;
@@ -37,20 +38,19 @@ import nl.naturalis.nba.utils.http.SimpleHttpRequest;
  * HTTP request plumbing functionality for subclasses.
  * 
  * @author Ayco Holleman
+ * @Author Tom Gilissen
  *
  */
 abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 
 	private static final Logger logger = LogManager.getLogger(NbaClient.class);
 
-	static SimpleHttpRequest sendRequest(SimpleHttpRequest request)
-	{
+	static SimpleHttpRequest sendRequest(SimpleHttpRequest request) {
 		URI uri = getURI(request);
 		logger.info("Sending {} request:\n{}", request.getMethod(), uri);
 		try {
 			request.execute();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			if (t instanceof SimpleHttpException) {
 				if (t.getMessage().indexOf("Connection refused") != -1) {
 					String fmt = "NBA server down or invalid base URL: %s";
@@ -66,15 +66,13 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	final ClientConfig config;
 	final String rootPath;
 
-	NbaClient(ClientConfig config, String rootPath)
-	{
+	NbaClient(ClientConfig config, String rootPath) {
 		this.config = config;
 		this.rootPath = rootPath;
 	}
 
 	@Override
-	public T find(String id)
-	{
+	public T find(String id) {
 		SimpleHttpGet request = getJson(rootPath + "find/" + id);
 		int status = request.getStatus();
 		if (status != HTTP_OK) {
@@ -84,8 +82,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public T[] find(String[] ids)
-	{
+	public T[] find(String[] ids) {
 		String imploded = ArrayUtil.implode(ids);
 		SimpleHttpGet request = getJson(rootPath + "findByIds/" + imploded);
 		int status = request.getStatus();
@@ -96,8 +93,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 	}
 
 	@Override
-	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException
-	{
+	public QueryResult<T> query(QuerySpec querySpec) throws InvalidQueryException {
 		SimpleHttpPost request = new SimpleHttpPost();
 		request.setAccept(CT_APPLICATION_JSON);
 		request.setBaseUrl(config.getBaseUrl());
@@ -111,32 +107,37 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		return getQueryResult(request.getResponseBody(), queryResultTypeReference());
 	}
 
-	public long count(QuerySpec querySpec) throws InvalidQueryException
-	{
-		// TODO: implement
-		return 0;
+	@Override
+	public long count(QuerySpec querySpec) throws InvalidQueryException {
+		SimpleHttpGet request = new SimpleHttpGet();
+		request.setBaseUrl(config.getBaseUrl());
+		request.setPath(rootPath + "count");
+		String json = JsonUtil.toJson(querySpec);
+		request.addQueryParam("_querySpec", json);
+		sendRequest(request);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return ClientUtil.getObject(request.getResponseBody(), Long.class);
 	}
 
 	@Override
-	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec)
-			throws InvalidQueryException
-	{
+	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec) throws InvalidQueryException {
 		// TODO: implement
 		return null;
 	}
 
 	@Override
 	public Map<Object, Set<Object>> getDistinctValuesPerGroup(String groupField, String valuesField,
-			QueryCondition... conditions) throws InvalidQueryException
-	{
+			QueryCondition... conditions) throws InvalidQueryException {
 		// TODO: implement
 		return null;
 	}
 
 	@Override
 	public List<KeyValuePair<Object, Integer>> getGroups(String groupByField, QuerySpec querySpec)
-			throws InvalidQueryException
-	{
+			throws InvalidQueryException {
 		// TODO: implement
 		return null;
 	}
@@ -147,28 +148,24 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 
 	abstract TypeReference<QueryResult<T>> queryResultTypeReference();
 
-	SimpleHttpGet newJsonGetRequest()
-	{
+	SimpleHttpGet newJsonGetRequest() {
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
 		request.setAccept(CT_APPLICATION_JSON);
 		return request;
 	}
 
-	SimpleHttpGet getJson(String path)
-	{
+	SimpleHttpGet getJson(String path) {
 		SimpleHttpGet request = newJsonGetRequest();
 		request.setPath(path);
 		return (SimpleHttpGet) sendRequest(request);
 	}
 
-	private static URI getURI(SimpleHttpRequest request)
-	{
+	private static URI getURI(SimpleHttpRequest request) {
 		URI uri = null;
 		try {
 			uri = request.createUri();
-		}
-		catch (URISyntaxException e) {
+		} catch (URISyntaxException e) {
 			String fmt = "Invalid URL (path: \"%s\"; query: \"%s\")";
 			String msg = String.format(fmt, request.getPath(), request.getQuery());
 			throw new ClientException(msg);

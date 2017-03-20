@@ -34,7 +34,8 @@ import nl.naturalis.nba.utils.IOUtil;
 
 public class TestNbaClientAssertions {
 
-	private static String baseUrl = "http://localhost:8080/v2";
+	// private static String baseUrl = "http://localhost:8080/v2";
+	private static String baseUrl = "http://145.136.242.164:8080/v2";
 	private static NbaSession session;
 	private static SpecimenClient specimenClient;
 
@@ -56,11 +57,6 @@ public class TestNbaClientAssertions {
 	@Test
 	public void test_count() throws InvalidQueryException {
 
-		// NB: nog niet geimplementeerd in de client.
-
-		// http://localhost:8080/v2/specimen/count
-		// System.out.println("Total count: " + specimenClient.count(null));
-
 		QuerySpec querySpec = new QuerySpec();
 		String field = "collectionType";
 		QueryCondition condition = new QueryCondition(field, EQUALS, "Botany");
@@ -71,10 +67,13 @@ public class TestNbaClientAssertions {
 
 		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
 		long resultExpected = specimenResults.getTotalSize();
+		// System.out.println("Expected: " + resultExpected);
+
 		assertEquals(resultExpected, resultActual);
 
 	}
 
+	
 	/*
 	 * delete(String id, boolean immediate) Deletes the specimen with the
 	 * specified system ID (as can be retrieved using Specimen.getId()).
@@ -96,6 +95,7 @@ public class TestNbaClientAssertions {
 
 		// ...
 		// Afhankelijk van dwcaGetDataSetNames() (nog niet geimplementeerd)
+		System.err.println("test_dwcaGetDataSet() is nog niet geimplementeerd.\n");
 
 	}
 
@@ -107,11 +107,13 @@ public class TestNbaClientAssertions {
 	public void test_dwcaGetDataSetNames() {
 
 		// Nog niet geimplementeerd
+		System.err.println("dwcaGetDataSetNames() is nog niet geimplementeerd.\n");
 		// System.out.println("DataSetNames: " +
 		// specimenClient.dwcaGetDataSetNames());
 
 	}
 
+	
 	/*
 	 * dwcaQuery(QuerySpec querySpec, ZipOutputStream out) Writes a DarwinCore
 	 * Archive with specimens satisfying the specified query specification to
@@ -140,6 +142,7 @@ public class TestNbaClientAssertions {
 
 	}
 
+	
 	/*
 	 * exists(String unitID)
 	 * Returns whether or not the specified string is a valid UnitID (i.e. is the UnitID 
@@ -166,11 +169,10 @@ public class TestNbaClientAssertions {
 
 		String id = "WAG.1706236@BRAHMS";
 		Specimen result = specimenClient.find(id);
-		// System.out.println("hash: " + test.hashCode());
-		// System.out.println("Find by id=WAG.1706236@BRAHMS: " +
-		// JsonUtil.toPrettyJson(result));
-		int expectedHashCode = -887374660;
-		assertEquals(expectedHashCode, JsonUtil.toPrettyJson(result).hashCode());
+		// System.out.println("hash: " + result.hashCode());
+		// System.out.println("Find by id=WAG.1706236@BRAHMS: " + JsonUtil.toPrettyJson(result));
+		int expectedHashCode = 1272883899;
+		assertEquals(expectedHashCode, result.hashCode());
 	}
 
 	/*
@@ -183,8 +185,9 @@ public class TestNbaClientAssertions {
 
 		String[] ids = { "WAG.1706278@BRAHMS", "WAG.1706277@BRAHMS" };
 		Specimen[] result = specimenClient.find(ids);
-		int expectedHashCode = -644252716;
-		assertEquals(expectedHashCode, JsonUtil.toPrettyJson(result).hashCode());
+		// System.out.println("Hash code: " + result.hashCode());
+		int expectedHashCode = 2106592975;
+		assertEquals(expectedHashCode, result.hashCode());
 
 	}
 
@@ -198,11 +201,13 @@ public class TestNbaClientAssertions {
 
 		String unitID = "WAG.1706236";
 		Specimen[] result = specimenClient.findByUnitID(unitID);
-		int expectedHasCode = 1544902560;
-		assertEquals(expectedHasCode, JsonUtil.toPrettyJson(result).hashCode());
+		// System.out.println("Hash code: " + result.hashCode());
+		int expectedHasCode = 987249254;
+		assertEquals(expectedHasCode, result.hashCode());
 		
 	}
 
+	
 	/*
 	 * getDistinctValues(String forField, QuerySpec spec)
 	 * Returns the unique values of the specified field.

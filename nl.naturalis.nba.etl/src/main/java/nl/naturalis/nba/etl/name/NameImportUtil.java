@@ -51,11 +51,18 @@ public class NameImportUtil {
 		return h;
 	}
 
-	static SummarySpecimen copySpecimen(Specimen specimen)
+	static SummarySpecimen copySpecimen(Specimen specimen, String nameGroup)
 	{
 		SummarySpecimen summary = new SummarySpecimen();
 		summary.setId(specimen.getId());
-		summary.setIdentifications(copyIdentifications(specimen.getIdentifications()));
+		for (SpecimenIdentification si : specimen.getIdentifications()) {
+			if (si.getScientificNameGroup().equals(nameGroup)) {
+				summary.setMatchingIdentification(copyIdentification(si));
+			}
+			else {
+				summary.addOtherIdentification(copyIdentification(si));
+			}
+		}
 		summary.setCollectorsFieldNumber(specimen.getCollectorsFieldNumber());
 		summary.setPhaseOrStage(specimen.getPhaseOrStage());
 		summary.setSex(specimen.getSex());
@@ -93,6 +100,7 @@ public class NameImportUtil {
 		ObjectMapper om = dt.getObjectMapper();
 		for (SearchHit hit : hits) {
 			ScientificNameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			sns.setId(hit.getId());
 			result.add(sns);
 		}
 		return result;
@@ -146,19 +154,6 @@ public class NameImportUtil {
 			Double lon = coord.getLongitudeDecimal();
 			summary = new SummaryGatheringSiteCoordinates(lat, lon);
 			summaries.add(summary);
-		}
-		return summaries;
-	}
-
-	private static List<SummarySpecimenIdentification> copyIdentifications(
-			List<SpecimenIdentification> identifications)
-	{
-		if (identifications == null) {
-			return null;
-		}
-		List<SummarySpecimenIdentification> summaries = new ArrayList<>(identifications.size());
-		for (SpecimenIdentification si : identifications) {
-			summaries.add(copyIdentification(si));
 		}
 		return summaries;
 	}

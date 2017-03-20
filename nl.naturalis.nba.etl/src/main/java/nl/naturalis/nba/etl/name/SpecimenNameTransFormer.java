@@ -29,6 +29,10 @@ class SpecimenNameTransformer {
 
 	SpecimenNameTransformer(int batchSize)
 	{
+		if (batchSize > 1024) {
+			throw new IllegalArgumentException("Batch size must not exceed 1024");
+			// Because the maximum number of terms in a terms query is 1024
+		}
 		this.batchSize = batchSize;
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
@@ -58,7 +62,7 @@ class SpecimenNameTransformer {
 		for (SpecimenIdentification si : identifications) {
 			ScientificNameGroup group = nameCache.get(si.getScientificNameGroup());
 			if (!exists(specimen, group)) {
-				group.addSpecimen(copySpecimen(specimen));
+				group.addSpecimen(copySpecimen(specimen, si.getScientificNameGroup()));
 				group.setSpecimenCount(group.getSpecimens().size());
 			}
 		}

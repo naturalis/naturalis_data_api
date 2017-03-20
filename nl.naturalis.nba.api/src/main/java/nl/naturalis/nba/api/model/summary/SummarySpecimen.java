@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
@@ -26,7 +27,16 @@ public class SummarySpecimen implements INbaModelObject {
 	private Sex sex;
 	private PhaseOrStage phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
-	private List<SummarySpecimenIdentification> identifications;
+	private SummarySpecimenIdentification matchingIdentification;
+	private List<SummarySpecimenIdentification> otherIdentifications;
+
+	public void addOtherIdentification(SummarySpecimenIdentification ssi)
+	{
+		if (otherIdentifications == null) {
+			otherIdentifications = new ArrayList<>(3);
+		}
+		otherIdentifications.add(ssi);
+	}
 
 	@Override
 	public boolean equals(Object obj)
@@ -126,14 +136,24 @@ public class SummarySpecimen implements INbaModelObject {
 		this.gatheringEvent = gatheringEvent;
 	}
 
-	public List<SummarySpecimenIdentification> getIdentifications()
+	public SummarySpecimenIdentification getMatchingIdentification()
 	{
-		return identifications;
+		return matchingIdentification;
 	}
 
-	public void setIdentifications(List<SummarySpecimenIdentification> identifications)
+	public void setMatchingIdentification(SummarySpecimenIdentification matchingIdentification)
 	{
-		this.identifications = identifications;
+		this.matchingIdentification = matchingIdentification;
+	}
+
+	public List<SummarySpecimenIdentification> getOtherIdentifications()
+	{
+		return otherIdentifications;
+	}
+
+	public void setOtherIdentifications(List<SummarySpecimenIdentification> otherIdentifications)
+	{
+		this.otherIdentifications = otherIdentifications;
 	}
 
 }

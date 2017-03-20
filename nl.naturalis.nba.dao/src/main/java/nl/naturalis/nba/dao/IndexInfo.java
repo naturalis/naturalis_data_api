@@ -35,7 +35,15 @@ public class IndexInfo {
 				String msg = "Number of shards not specified for index " + name;
 				throw new InitializationException(msg);
 			}
+		}
+		try {
 			numShards = Integer.parseInt(val);
+			logger.info("-> Number of shards: " + numShards);
+		}
+		catch (NumberFormatException e) {
+			String fmt = "Invalid number of shards: \"%s\"";
+			String msg = String.format(fmt, val);
+			throw new InitializationException(msg);
 		}
 		val = cfg.get("replicas");
 		if (val == null) {
@@ -44,17 +52,26 @@ public class IndexInfo {
 				String msg = "Number of replicas not specified for index " + name;
 				throw new InitializationException(msg);
 			}
-			numReplicas = Integer.parseInt(val);
 		}
-		String[] typeNames = cfg.required("types").split(",");
+		try {
+			numReplicas = Integer.parseInt(val);
+			logger.info("-> Number of replicas: " + numReplicas);
+		}
+		catch (NumberFormatException e) {
+			String fmt = "Invalid number of replicas: \"%s\"";
+			String msg = String.format(fmt, val);
+			throw new InitializationException(msg);
+		}
+		val = cfg.required("types");
+		String[] typeNames = val.split(",");
 		types = new ArrayList<>(typeNames.length);
 		for (String typeName : typeNames) {
 			typeName = typeName.trim();
 			DocumentType<?> type = DocumentType.forName(typeName);
 			type.indexInfo = this;
 			types.add(type);
-			logger.info("Document type {} assigned to index {}", typeName, name);
 		}
+		logger.info("-> Document type(s): {}", val);
 	}
 
 	/**
@@ -95,6 +112,30 @@ public class IndexInfo {
 	public List<DocumentType<?>> getTypes()
 	{
 		return types;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) {
+			return true;
+		}
+		if (obj != null && obj instanceof IndexInfo) {
+			return ((IndexInfo) obj).name.equals(name);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return name.hashCode();
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 
 	void addType(DocumentType<?> type)

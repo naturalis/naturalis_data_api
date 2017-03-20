@@ -70,9 +70,8 @@ public class CoLSynonymImporter extends CoLImporter {
 			loader = new CoLTaxonLoader(stats, loaderQueueSize);
 			loader.enableQueueLookups(true);
 			loader.suppressErrors(suppressErrors);
-			transformer = new CoLSynonymTransformer(stats);
+			transformer = new CoLSynonymTransformer(stats,loader);
 			transformer.setSuppressErrors(suppressErrors);
-			transformer.setLoader(loader);
 			logger.info("Processing file {}", f.getAbsolutePath());
 			for (CSVRecordInfo<CoLTaxonCsvField> rec : extractor) {
 				if (rec == null)
@@ -91,6 +90,7 @@ public class CoLSynonymImporter extends CoLImporter {
 		finally {
 			IOUtil.close(loader);
 		}
+		logger.info("Number of orphans: {}", transformer.getNumOrphans());
 		stats.logStatistics(logger);
 		logger.info("(NB skipped records are accepted names)");
 		logDuration(logger, getClass(), start);

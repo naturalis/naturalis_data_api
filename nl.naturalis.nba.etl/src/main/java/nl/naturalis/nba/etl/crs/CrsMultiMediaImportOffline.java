@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
@@ -63,7 +64,7 @@ public class CrsMultiMediaImportOffline {
 
 	public CrsMultiMediaImportOffline()
 	{
-		suppressErrors = ConfigObject.isEnabled("crs.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled("suppressErrors");
 		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
 		String val = System.getProperty(key, "1000");
 		esBulkRequestSize = Integer.parseInt(val);
@@ -81,7 +82,7 @@ public class CrsMultiMediaImportOffline {
 			logger.error("No multimedia oai.xml files found. Check nda-import.propties");
 			return;
 		}
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		ESUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		int cacheFailuresBegin = MimeTypeCacheFactory.getInstance().getCache().getMisses();
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);

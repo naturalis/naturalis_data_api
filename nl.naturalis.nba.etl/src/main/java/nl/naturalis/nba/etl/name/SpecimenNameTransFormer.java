@@ -16,7 +16,6 @@ import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
-import nl.naturalis.nba.etl.ETLUtil;
 
 class SpecimenNameTransformer {
 
@@ -34,7 +33,7 @@ class SpecimenNameTransformer {
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
 	}
 
-	public Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
+	Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
 	{
 		initializeNameGroups(specimens);
 		for (Specimen specimen : specimens) {
@@ -43,12 +42,12 @@ class SpecimenNameTransformer {
 		return nameCache.values();
 	}
 
-	public int getNumCreated()
+	int getNumCreated()
 	{
 		return created;
 	}
 
-	public int getNumUpdated()
+	int getNumUpdated()
 	{
 		return updated;
 	}
@@ -57,8 +56,7 @@ class SpecimenNameTransformer {
 	{
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		for (SpecimenIdentification si : identifications) {
-			String name = ETLUtil.createScientificNameGroup(si);
-			ScientificNameGroup group = nameCache.get(name);
+			ScientificNameGroup group = nameCache.get(si.getScientificNameGroup());
 			if (!exists(specimen, group)) {
 				group.addSpecimen(copySpecimen(specimen));
 				group.setSpecimenCount(group.getSpecimens().size());
@@ -86,9 +84,9 @@ class SpecimenNameTransformer {
 		}
 		nameCache.clear();
 		/*
-		 * Assume we have around 4 identifications per specimen
+		 * Assume we have around 3 unique identifications per specimen
 		 */
-		Set<String> names = new HashSet<>(batchSize * 4);
+		Set<String> names = new HashSet<>(batchSize * 3);
 		for (Specimen specimen : specimens) {
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
 				names.add(si.getScientificNameGroup());

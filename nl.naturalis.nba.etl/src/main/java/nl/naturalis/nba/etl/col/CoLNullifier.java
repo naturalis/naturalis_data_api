@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
-import static nl.naturalis.nba.utils.CollectionUtil.isEmpty;
 
 import java.util.ArrayList;
 
@@ -18,19 +17,44 @@ import nl.naturalis.nba.etl.BulkIndexer;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
- * Sets the synonyms, vernacular names and literature references of all
- * {@link Taxon} documents to {@code null}. This allows you to safely re-import
- * them again.
+ * Sets the synonyms and/or vernacular names and/or literature references of all
+ * {@link Taxon} documents from the Catalogue of Life to {@code null}. Useful if
+ * you want re-import, for example, literature references, but leave everything
+ * else intact.
  * 
  * @author Ayco Holleman
  *
  */
 public class CoLNullifier {
 
-	public static void main(String[] args) throws BulkIndexException
+	public static void main(String[] args) throws Exception
 	{
 		try {
 			CoLNullifier nullifier = new CoLNullifier();
+			if (args.length > 0) {
+				nullifier.setNullifySynonyms(false);
+				nullifier.setNullifyReferences(false);
+				nullifier.setNullifyVernacularNames(false);
+				for (String arg : args) {
+					switch (arg.toLowerCase()) {
+						case "-s":
+							nullifier.setNullifySynonyms(true);
+							break;
+						case "-r":
+							nullifier.setNullifyReferences(true);
+							break;
+						case "-v":
+							nullifier.setNullifyVernacularNames(true);
+							break;
+						default:
+							String fmt = "Illegal argument: %s. Valid arguments: -s "
+									+ "(synonyms), -r (references), -v (vernacular names)";
+							String msg = String.format(fmt, arg);
+							throw new Exception(msg);
+
+					}
+				}
+			}
 			nullifier.nullify();
 		}
 		finally {
@@ -45,7 +69,7 @@ public class CoLNullifier {
 	{
 	}
 
-	private int batchSize = 1000;
+	private int batchSize = 500;
 	private boolean nullifySynonyms = true;
 	private boolean nullifyReferences = true;
 	private boolean nullifyVernacularNames = true;
@@ -69,11 +93,11 @@ public class CoLNullifier {
 				taxon.setSynonyms(null);
 				modified = true;
 			}
-			if (nullifyReferences && !isEmpty(taxon.getReferences())) {
+			if (nullifyReferences && taxon.getReferences() != null) {
 				taxon.setReferences(null);
 				modified = true;
 			}
-			if (nullifyVernacularNames && !isEmpty(taxon.getVernacularNames())) {
+			if (nullifyVernacularNames && taxon.getVernacularNames() != null) {
 				taxon.setVernacularNames(null);
 				modified = true;
 			}
@@ -82,6 +106,7 @@ public class CoLNullifier {
 				++updated;
 				if (batch.size() == batchSize) {
 					indexer.index(batch);
+					batch.clear();
 				}
 			}
 			if (++processed % 100000 == 0) {

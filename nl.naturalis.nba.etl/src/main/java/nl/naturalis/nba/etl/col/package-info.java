@@ -1,4 +1,7 @@
 /**
- * Package that handles the import of the Catalogue Of Life data sources.
+ * Interfaces and classes for importing the Catalogue of Life data sources.
+ * 
+ * @author Ayco Holleman
+ * 
  */
 package nl.naturalis.nba.etl.col;

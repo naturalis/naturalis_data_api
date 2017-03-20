@@ -52,9 +52,12 @@ public class DocumentType<T extends IDocumentObject> {
 	 */
 	public static final DocumentType<GeoArea> GEO_AREA;
 	/**
-	 * A {@code DocumentType} instance representing the ScientificNameGroup document type.
+	 * A {@code DocumentType} instance representing the ScientificNameGroup
+	 * document type.
 	 */
 	public static final DocumentType<ScientificNameGroup> SCIENTIFIC_NAME_GROUP;
+
+	private static final DocumentType<?>[] all;
 
 	static {
 
@@ -63,6 +66,9 @@ public class DocumentType<T extends IDocumentObject> {
 		MULTI_MEDIA_OBJECT = new DocumentType<>(MultiMediaObject.class);
 		GEO_AREA = new DocumentType<>(GeoArea.class);
 		SCIENTIFIC_NAME_GROUP = new DocumentType<>(ScientificNameGroup.class);
+
+		all = new DocumentType[] { SPECIMEN, TAXON, MULTI_MEDIA_OBJECT, GEO_AREA,
+				SCIENTIFIC_NAME_GROUP };
 
 		try {
 			for (ConfigObject cfg : getIndexSections()) {
@@ -91,16 +97,11 @@ public class DocumentType<T extends IDocumentObject> {
 	 */
 	public static DocumentType<?> forName(String name)
 	{
-		if (SPECIMEN.name.equalsIgnoreCase(name))
-			return SPECIMEN;
-		if (TAXON.name.equalsIgnoreCase(name))
-			return TAXON;
-		if (MULTI_MEDIA_OBJECT.name.equalsIgnoreCase(name))
-			return MULTI_MEDIA_OBJECT;
-		if (GEO_AREA.name.equalsIgnoreCase(name))
-			return GEO_AREA;
-		if (SCIENTIFIC_NAME_GROUP.name.equalsIgnoreCase(name))
-			return SCIENTIFIC_NAME_GROUP;
+		for (DocumentType<?> dt : all) {
+			if (dt.name.equalsIgnoreCase(name)) {
+				return dt;
+			}
+		}
 		throw new DaoException("No such document type: \"" + name + '"');
 	}
 
@@ -112,17 +113,22 @@ public class DocumentType<T extends IDocumentObject> {
 	 */
 	public static DocumentType<?> forClass(Class<? extends IDocumentObject> cls)
 	{
-		if (SPECIMEN.javaType == cls)
-			return SPECIMEN;
-		if (TAXON.javaType == cls)
-			return TAXON;
-		if (MULTI_MEDIA_OBJECT.javaType == cls)
-			return MULTI_MEDIA_OBJECT;
-		if (GEO_AREA.javaType == cls)
-			return GEO_AREA;
-		if (SCIENTIFIC_NAME_GROUP.javaType == cls)
-			return SCIENTIFIC_NAME_GROUP;
+		for (DocumentType<?> dt : all) {
+			if (dt.javaType == cls) {
+				return dt;
+			}
+		}
 		throw new DaoException("No document type corresponding to " + cls);
+	}
+
+	/**
+	 * Returns all document types managed by and accessible through the NBA.
+	 * 
+	 * @return
+	 */
+	public static DocumentType<?>[] getAllDocumentTypes()
+	{
+		return all;
 	}
 
 	IndexInfo indexInfo;

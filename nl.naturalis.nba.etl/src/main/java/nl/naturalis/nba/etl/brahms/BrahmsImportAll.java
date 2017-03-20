@@ -25,7 +25,6 @@ import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
 import nl.naturalis.nba.utils.ConfigObject;
@@ -138,8 +137,8 @@ public class BrahmsImportAll {
 		ETLStatistics mStats = new ETLStatistics();
 		mStats.setOneToMany(true);
 		try {
-			ETLUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
-			ETLUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+			ESUtil.truncate(DocumentType.SPECIMEN, SourceSystem.BRAHMS);
+			ESUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
 			for (File f : csvFiles) {
 				processFile(f, sStats, mStats);
 			}

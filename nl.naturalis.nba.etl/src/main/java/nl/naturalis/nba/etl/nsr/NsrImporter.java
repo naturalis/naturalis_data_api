@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -74,8 +75,8 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLUtil.truncate(TAXON, NSR);
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		ESUtil.truncate(TAXON, NSR);
+		ESUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
 		ETLStatistics taxonStats = new ETLStatistics();
 		ETLStatistics mediaStats = new ETLStatistics();
 		mediaStats.setOneToMany(true);
@@ -128,7 +129,7 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLUtil.truncate(TAXON, NSR);
+		ESUtil.truncate(TAXON, NSR);
 		ETLStatistics stats = new ETLStatistics();
 		NsrTaxonTransformer transformer = new NsrTaxonTransformer(stats);
 		transformer.setSuppressErrors(suppressErrors);
@@ -167,7 +168,7 @@ public class NsrImporter {
 			logger.info("No XML files to process");
 			return;
 		}
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
+		ESUtil.truncate(MULTI_MEDIA_OBJECT, NSR);
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		NsrMultiMediaTransformer transformer = new NsrMultiMediaTransformer(stats);

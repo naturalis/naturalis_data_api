@@ -1,4 +1,7 @@
 /**
- * Package that handles the import of the NSR data sources.
+ * Interfaces and classes for importing the NSR data sources.
+ * 
+ * @author Ayco Holleman
+ * 
  */
 package nl.naturalis.nba.etl.nsr;

@@ -10,11 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicIdentification;
 import nl.naturalis.nba.dao.DaoRegistry;
-import nl.naturalis.nba.dao.DocumentType;
 
 /**
  * Utility class providing common functionality used throughout this library.
@@ -66,26 +64,6 @@ public final class ETLUtil {
 			t = t.getCause();
 		}
 		return t;
-	}
-
-	/**
-	 * Deletes all documents of the specified type and the specified source
-	 * system. As of NBA version 2 this method is deprecated, because this
-	 * version runs on Elasticsearch version 2, which has dropped support for
-	 * deleting individual types from an index. Therefore this method now is a
-	 * no-op. However, we keep the method and all calls to it, because having to
-	 * delete an entire index just to re-import a single source system isn't
-	 * ideal either. Therefore, if we find an acceptable way of getting rid of
-	 * just those data we want to re-import, this method may get un-deprecated
-	 * again.
-	 * 
-	 * @param documentType
-	 * @param sourceSystem
-	 */
-	@Deprecated
-	public static void truncate(DocumentType<?> documentType, SourceSystem sourceSystem)
-	{
-		// ...
 	}
 
 	/**

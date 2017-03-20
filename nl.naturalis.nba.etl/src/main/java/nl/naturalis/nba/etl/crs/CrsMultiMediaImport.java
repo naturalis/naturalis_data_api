@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.LoadConstants;
@@ -68,7 +69,7 @@ public class CrsMultiMediaImport {
 	public void importMultimedia()
 	{
 		long start = System.currentTimeMillis();
-		ETLUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
+		ESUtil.truncate(MULTI_MEDIA_OBJECT, CRS);
 		stats = new ETLStatistics();
 		stats.setOneToMany(true);
 		transformer = new CrsMultiMediaTransformer(stats);

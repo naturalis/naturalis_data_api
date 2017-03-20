@@ -1,14 +1,15 @@
 package nl.naturalis.nba.etl.geo;
 
+import static nl.naturalis.nba.api.model.SourceSystem.GEO;
 import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 import static nl.naturalis.nba.etl.geo.GeoImportUtil.getCsvFiles;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
@@ -20,16 +21,22 @@ import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.utils.ConfigObject;
 import nl.naturalis.nba.utils.IOUtil;
 
+/**
+ * Imports geo areas into the {@link GeoArea} index.
+ * 
+ * @author Ayco Holleman
+ *
+ */
 public class GeoImporter {
 
 	public static void main(String[] args)
 	{
-		boolean bootstrap = Arrays.asList(args).contains("bootstrap");
 		try {
 			GeoImporter importer = new GeoImporter();
-			importer.importData(bootstrap);
+			importer.importAll();
 		}
 		finally {
+			ESUtil.refreshIndex(GEO_AREA);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -45,8 +52,12 @@ public class GeoImporter {
 
 	public GeoImporter()
 	{
-		suppressErrors = ConfigObject.isEnabled("geo.suppress-errors");
+		suppressErrors = ConfigObject.isEnabled("suppressErrors");
 		String key = LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
+		/*
+		 * Queue size not too big b/c documents can become huge because of the
+		 * geo json.
+		 */
 		String val = System.getProperty(key, "10");
 		esBulkRequestSize = Integer.parseInt(val);
 	}
@@ -54,27 +65,18 @@ public class GeoImporter {
 	/**
 	 * Imports specimen data from the Geo Area CSV file(s).
 	 */
-	public void importData(boolean bootstrap)
+	public void importAll()
 	{
 		long start = System.currentTimeMillis();
+		ESUtil.truncate(GEO_AREA, GEO);
 		File[] csvFiles = getCsvFiles();
 		if (csvFiles.length == 0) {
 			logger.info("No CSV files to process");
 			return;
 		}
 		ETLStatistics stats = new ETLStatistics();
-		try {
-			if (bootstrap) {
-				ESUtil.deleteIndex(GEO_AREA);
-				ESUtil.createIndex(GEO_AREA);
-				ESUtil.createType(GEO_AREA);
-			}
-			for (File f : csvFiles) {
-				processFile(f, stats);
-			}
-		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+		for (File f : csvFiles) {
+			processFile(f, stats);
 		}
 		stats.logStatistics(logger, "Geo Areas");
 		ETLUtil.logDuration(logger, getClass(), start);

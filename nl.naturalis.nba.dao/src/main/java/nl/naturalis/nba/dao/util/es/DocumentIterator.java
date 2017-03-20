@@ -40,7 +40,7 @@ public class DocumentIterator<T extends IDocumentObject> implements Iterator<T>,
 	@SuppressWarnings("unused")
 	private static final Logger logger = getLogger(DocumentIterator.class);
 
-	private static final int DEFAULT_TIMEOUT = 5000; // msec
+	private static final int DEFAULT_TIMEOUT = 30000; // msec
 	private static final int DEFAULT_BATCH_SIZE = 100;
 
 	private final Client client;

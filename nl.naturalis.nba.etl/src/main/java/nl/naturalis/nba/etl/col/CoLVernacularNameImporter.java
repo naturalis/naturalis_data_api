@@ -81,6 +81,7 @@ public class CoLVernacularNameImporter extends CoLImporter {
 		finally {
 			IOUtil.close(loader);
 		}
+		logger.info("Number of orphans: {}", transformer.getNumOrphans());
 		stats.logStatistics(logger);
 		logDuration(logger, getClass(), start);
 	}

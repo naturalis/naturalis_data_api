@@ -7,7 +7,6 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
@@ -32,8 +31,18 @@ public class CoLReferenceBatchImporter {
 
 	public static void main(String[] args) throws Exception
 	{
+		String prop = System.getProperty("batchSize", "1000");
+		int batchSize = 0;
+		try {
+			batchSize = Integer.parseInt(prop);
+		}
+		catch (NumberFormatException e) {
+			System.err.println("Invalid batch size: " + prop);
+			System.exit(1);
+		}
 		try {
 			CoLReferenceBatchImporter importer = new CoLReferenceBatchImporter();
+			importer.setBatchSize(batchSize);
 			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 			importer.importCsv(dwcaDir + "/reference.txt");
 		}
@@ -61,10 +70,11 @@ public class CoLReferenceBatchImporter {
 		long start = System.currentTimeMillis();
 		ETLStatistics stats;
 		CSVExtractor<CoLReferenceCsvField> extractor;
-		CoLReferenceBatchTransformer transformer;
+		CoLReferenceBatchTransformer transformer = null;
 		BulkIndexer<Taxon> updater;
-		List<CSVRecordInfo<CoLReferenceCsvField>> records;
+		ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records;
 		Collection<Taxon> taxa;
+		int processed = 0;
 		try {
 			File f = new File(path);
 			if (!f.exists()) {
@@ -84,7 +94,14 @@ public class CoLReferenceBatchImporter {
 				if (records.size() == batchSize) {
 					taxa = transformer.transform(records);
 					updater.index(taxa);
+					ESUtil.refreshIndex(TAXON);
 					records.clear();
+				}
+				if (++processed % 100000 == 0) {
+					logger.info("Records processed: {}", processed);
+					logger.info("References created: {}", transformer.getNumCreated());
+					logger.info("Taxa updated: {}", transformer.getNumUpdated());
+					logger.info("Duplicate references: {}", transformer.getNumDuplicates());
 				}
 			}
 			if (records.size() != 0) {
@@ -95,6 +112,10 @@ public class CoLReferenceBatchImporter {
 		catch (Throwable t) {
 			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
+		logger.info("Records processed: {}", processed);
+		logger.info("References created: {}", transformer.getNumCreated());
+		logger.info("Taxa updated: {}", transformer.getNumUpdated());
+		logger.info("Duplicate references: {}", transformer.getNumDuplicates());
 		logDuration(logger, getClass(), start);
 	}
 

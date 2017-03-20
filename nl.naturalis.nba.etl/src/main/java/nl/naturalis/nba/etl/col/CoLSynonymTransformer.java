@@ -19,10 +19,8 @@ import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
-import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.Transformer;
 import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
@@ -35,19 +33,16 @@ import nl.naturalis.nba.etl.normalize.UnmappedValueException;
  */
 class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon> {
 
+	private final CoLTaxonLoader loader;
 	private final TaxonomicStatusNormalizer statusNormalizer;
 
-	private CoLTaxonLoader loader;
+	private int orphans;
 
-	CoLSynonymTransformer(ETLStatistics stats)
+	CoLSynonymTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
 		super(stats);
-		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
-	}
-
-	void setLoader(CoLTaxonLoader loader)
-	{
 		this.loader = loader;
+		this.statusNormalizer = TaxonomicStatusNormalizer.getInstance();
 	}
 
 	@Override
@@ -116,6 +111,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 			}
 			else {
 				if (!suppressErrors) {
+					++orphans;
 					error("Orphan synonym: " + synonym);
 				}
 			}
@@ -128,50 +124,9 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 		}
 	}
 
-	/**
-	 * Removes all synonyms from the taxon specified in the CSV record. Not part
-	 * of the {@link Transformer} API, but used by the
-	 * {@link CoLReferenceCleaner} to clean up taxa before starting the
-	 * {@link CoLReferenceBatchImporter}.
-	 * 
-	 * @param recInf
-	 * @return
-	 */
-	public List<Taxon> clean(CSVRecordInfo<CoLTaxonCsvField> recInf)
+	public int getNumOrphans()
 	{
-		stats.recordsProcessed++;
-		this.input = recInf;
-		objectID = input.get(acceptedNameUsageID);
-		if (objectID == null) {
-			// This is an accepted name
-			stats.recordsSkipped++;
-			return null;
-		}
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-		List<Taxon> result = null;
-		try {
-			String id = getElasticsearchId(COL, objectID);
-			Taxon taxon = loader.findInQueue(id);
-			if (taxon == null) {
-				taxon = ESUtil.find(TAXON, id);
-				if (taxon != null && taxon.getSynonyms() != null) {
-					stats.objectsAccepted++;
-					taxon.setSynonyms(null);
-					result = Arrays.asList(taxon);
-				}
-				else {
-					stats.objectsSkipped++;
-				}
-			}
-			else {
-				stats.objectsSkipped++;
-			}
-		}
-		catch (Throwable t) {
-			handleError(t);
-		}
-		return result;
+		return orphans;
 	}
 
 	private ScientificName getScientificName()

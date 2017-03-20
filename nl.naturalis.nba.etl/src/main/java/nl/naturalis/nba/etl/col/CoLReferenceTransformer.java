@@ -18,11 +18,9 @@ import nl.naturalis.nba.api.model.Reference;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
-import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.CSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.TransformUtil;
-import nl.naturalis.nba.etl.Transformer;
 
 /**
  * Subclass of {@link CSVTransformer} that transforms CSV records into
@@ -34,6 +32,7 @@ import nl.naturalis.nba.etl.Transformer;
 class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvField, Taxon> {
 
 	private final CoLTaxonLoader loader;
+	private int orphans;
 
 	CoLReferenceTransformer(ETLStatistics stats, CoLTaxonLoader loader)
 	{
@@ -71,7 +70,13 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 			}
 			taxon = ESUtil.find(TAXON, id);
 			Reference reference = createReference();
-			if (taxon != null) {
+			if (taxon == null) {
+				++orphans;
+				if (!suppressErrors) {
+					error("Orphan reference: " + reference);
+				}
+			}
+			else {
 				if (taxon.getReferences() == null || !taxon.getReferences().contains(reference)) {
 					stats.objectsAccepted++;
 					taxon.addReference(reference);
@@ -79,11 +84,6 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 				}
 				if (!suppressErrors) {
 					error("Duplicate reference: " + reference);
-				}
-			}
-			else {
-				if (!suppressErrors) {
-					error("Orphan reference: " + reference);
 				}
 			}
 			stats.objectsRejected++;
@@ -95,46 +95,9 @@ class CoLReferenceTransformer extends AbstractCSVTransformer<CoLReferenceCsvFiel
 		}
 	}
 
-	/**
-	 * Removes all literature references from the taxon specified in the CSV
-	 * record. Not part of the {@link Transformer} API, but used by the
-	 * {@link CoLReferenceCleaner} to clean up taxa before starting the
-	 * {@link CoLReferenceBatchImporter}.
-	 * 
-	 * @param recInf
-	 * @return
-	 */
-	public List<Taxon> clean(CSVRecordInfo<CoLReferenceCsvField> recInf)
+	public int getNumOrphans()
 	{
-		this.input = recInf;
-		objectID = input.get(taxonID);
-		// Not much can go wrong here, so:
-		stats.recordsProcessed++;
-		stats.recordsAccepted++;
-		stats.objectsProcessed++;
-		List<Taxon> result = null;
-		try {
-			String id = getElasticsearchId(COL, objectID);
-			Taxon taxon = loader.findInQueue(id);
-			if (taxon == null) {
-				taxon = ESUtil.find(TAXON, id);
-				if (taxon != null && taxon.getReferences() != null) {
-					stats.objectsAccepted++;
-					taxon.setReferences(null);
-					result = Arrays.asList(taxon);
-				}
-				else {
-					stats.objectsSkipped++;
-				}
-			}
-			else {
-				stats.objectsSkipped++;
-			}
-		}
-		catch (Throwable t) {
-			handleError(t);
-		}
-		return result;
+		return orphans;
 	}
 
 	private Reference createReference()

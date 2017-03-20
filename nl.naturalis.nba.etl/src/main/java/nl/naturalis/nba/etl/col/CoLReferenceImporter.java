@@ -80,6 +80,7 @@ public class CoLReferenceImporter extends CoLImporter {
 				loader.queue(taxa);
 				if (stats.recordsProcessed != 0 && stats.recordsProcessed % 50000 == 0) {
 					logger.info("Records processed: {}", stats.recordsProcessed);
+					logger.info("Number of orphans: {}", transformer.getNumOrphans());
 					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}
 			}
@@ -90,6 +91,7 @@ public class CoLReferenceImporter extends CoLImporter {
 		finally {
 			IOUtil.close(loader);
 		}
+		logger.info("Number of orphans: {}", transformer.getNumOrphans());
 		stats.logStatistics(logger);
 		logDuration(logger, getClass(), start);
 	}

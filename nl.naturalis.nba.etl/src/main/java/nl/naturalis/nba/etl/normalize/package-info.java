@@ -5,6 +5,9 @@
  * to be sloppy about how they specify a specimen's sex (e.g. "F" or "fem." or "female").
  * The {@link nl.naturalis.nba.etl.normalize.SexNormalizer} maps all
  * these values to "female".
+ * 
+ * @author Ayco Holleman
+ * 
  */
 package nl.naturalis.nba.etl.normalize;
 

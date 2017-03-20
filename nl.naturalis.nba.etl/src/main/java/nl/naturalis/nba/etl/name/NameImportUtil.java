@@ -84,13 +84,34 @@ public class NameImportUtil {
 		return summary;
 	}
 
-	static List<ScientificNameGroup> loadNameGroups(Collection<String> names)
+	static List<ScientificNameGroup> loadNameGroupsById(Collection<String> names)
 	{
 		DocumentType<ScientificNameGroup> dt = SCIENTIFIC_NAME_GROUP;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
 		IdsQueryBuilder query = QueryBuilders.idsQuery(dt.getName());
 		query.addIds(names.toArray(new String[names.size()]));
 		request.setQuery(query);
+		SearchResponse response = ESUtil.executeSearchRequest(request);
+		SearchHit[] hits = response.getHits().getHits();
+		if (hits.length == 0) {
+			return Collections.emptyList();
+		}
+		List<ScientificNameGroup> result = new ArrayList<>(hits.length);
+		ObjectMapper om = dt.getObjectMapper();
+		for (SearchHit hit : hits) {
+			ScientificNameGroup sns = om.convertValue(hit.getSource(), dt.getJavaType());
+			sns.setId(hit.getId());
+			result.add(sns);
+		}
+		return result;
+	}
+
+	static List<ScientificNameGroup> loadNameGroupsByName(Collection<String> names)
+	{
+		DocumentType<ScientificNameGroup> dt = SCIENTIFIC_NAME_GROUP;
+		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
+		TermsQueryBuilder query = QueryBuilders.termsQuery("name", names);
+		request.setQuery(QueryBuilders.constantScoreQuery(query));
 		SearchResponse response = ESUtil.executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {

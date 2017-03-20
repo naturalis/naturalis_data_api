@@ -2,7 +2,8 @@ package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.name.NameImportUtil.copySpecimen;
-import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroups;
+import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroupsById;
+import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroupsByName;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 class SpecimenNameTransformer {
 
+	private static final boolean LOAD_NAME_GROUPS_BY_ID = false;
+
 	private static final Logger logger = getLogger(SpecimenNameTransformer.class);
 
 	private HashMap<String, ScientificNameGroup> nameCache;
@@ -31,7 +34,7 @@ class SpecimenNameTransformer {
 	{
 		if (batchSize > 1024) {
 			throw new IllegalArgumentException("Batch size must not exceed 1024");
-			// Because the maximum number of terms in a terms query is 1024
+			// Because the maximum number of terms in a terms/ids query is 1024
 		}
 		this.batchSize = batchSize;
 		this.nameCache = new HashMap<>(batchSize + 8, 1F);
@@ -96,7 +99,11 @@ class SpecimenNameTransformer {
 				names.add(si.getScientificNameGroup());
 			}
 		}
-		List<ScientificNameGroup> groups = loadNameGroups(names);
+		List<ScientificNameGroup> groups;
+		if (LOAD_NAME_GROUPS_BY_ID)
+			groups = loadNameGroupsById(names);
+		else
+			groups = loadNameGroupsByName(names);
 		created += groups.size();
 		updated += (names.size() - groups.size());
 		if (logger.isDebugEnabled()) {

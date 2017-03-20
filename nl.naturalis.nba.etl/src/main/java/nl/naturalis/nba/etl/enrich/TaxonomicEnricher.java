@@ -59,11 +59,12 @@ public class TaxonomicEnricher {
 	private static final List<TaxonomicEnrichment> EMPTY = new ArrayList<>(0);
 	private static final int BATCH_SIZE = 1000;
 	private static final int FLUSH_TRESHOLD = 1000;
-
+	
+	
 	public void enrich() throws BulkIndexException
 	{
-		logger.info("Starting taxonomic enrichment of Specimen documents");
 		long start = System.currentTimeMillis();
+		logger.info("Starting taxonomic enrichment of Specimen documents");
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificNameGroup");
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
@@ -72,9 +73,10 @@ public class TaxonomicEnricher {
 		int processed = 0;
 		int enriched = 0;
 		List<Specimen> queue = new ArrayList<>(FLUSH_TRESHOLD + BATCH_SIZE);
+		logger.info("Loading first batch of specimens");
 		List<Specimen> batch = extractor.nextBatch();
 		while (batch != null) {
-			List<Specimen> enrichedSpecimens = enrichBatch(batch);
+			List<Specimen> enrichedSpecimens = enrichSpecimens(batch);
 			enriched += enrichedSpecimens.size();
 			queue.addAll(enrichedSpecimens);
 			if (queue.size() >= FLUSH_TRESHOLD) {
@@ -98,8 +100,8 @@ public class TaxonomicEnricher {
 		logger.info("Specimen documents enriched: {}", enriched);
 		logDuration(logger, getClass(), start);
 	}
-
-	private static List<Specimen> enrichBatch(List<Specimen> specimens)
+	
+	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
 	{
 		List<Specimen> result = new ArrayList<>(specimens.size());
 		HashMap<String, List<TaxonomicEnrichment>> cache;
@@ -110,13 +112,6 @@ public class TaxonomicEnricher {
 				continue;
 			}
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				if (si.getTaxonomicEnrichments() != null) {
-					/*
-					 * This allows for incremental enrichment, in case the
-					 * program aborted, or if we re-imported Brahms or CRS.
-					 */
-					continue;
-				}
 				String nameGroup = si.getScientificNameGroup();
 				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
 				if (enrichments == null) {

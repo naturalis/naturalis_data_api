@@ -27,8 +27,16 @@ public class SummarySpecimen implements INbaModelObject {
 	private Sex sex;
 	private PhaseOrStage phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
-	private SummarySpecimenIdentification matchingIdentification;
+	private List<SummarySpecimenIdentification> matchingIdentifications;
 	private List<SummarySpecimenIdentification> otherIdentifications;
+
+	public void addMatchingIdentification(SummarySpecimenIdentification ssi)
+	{
+		if (matchingIdentifications == null) {
+			matchingIdentifications = new ArrayList<>(3);
+		}
+		matchingIdentifications.add(ssi);
+	}
 
 	public void addOtherIdentification(SummarySpecimenIdentification ssi)
 	{
@@ -136,14 +144,15 @@ public class SummarySpecimen implements INbaModelObject {
 		this.gatheringEvent = gatheringEvent;
 	}
 
-	public SummarySpecimenIdentification getMatchingIdentification()
+	public List<SummarySpecimenIdentification> getMatchingIdentifications()
 	{
-		return matchingIdentification;
+		return matchingIdentifications;
 	}
 
-	public void setMatchingIdentification(SummarySpecimenIdentification matchingIdentification)
+	public void setMatchingIdentifications(
+			List<SummarySpecimenIdentification> matchingIdentifications)
 	{
-		this.matchingIdentification = matchingIdentification;
+		this.matchingIdentifications = matchingIdentifications;
 	}
 
 	public List<SummarySpecimenIdentification> getOtherIdentifications()

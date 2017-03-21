@@ -20,10 +20,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.naturalis.nba.api.model.GatheringEvent;
 import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
-import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Organization;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
+import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.SpecimenIdentification;
@@ -57,7 +57,7 @@ public class NameImportUtil {
 		summary.setId(specimen.getId());
 		for (SpecimenIdentification si : specimen.getIdentifications()) {
 			if (si.getScientificNameGroup().equals(nameGroup)) {
-				summary.setMatchingIdentification(copyIdentification(si));
+				summary.addMatchingIdentification(copyIdentification(si));
 			}
 			else {
 				summary.addOtherIdentification(copyIdentification(si));

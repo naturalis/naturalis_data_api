@@ -20,11 +20,13 @@ import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 
 class SpecimenNameTransformer {
 
+	// You can tweak this to see if it has a performance effect
 	private static final boolean LOAD_NAME_GROUPS_BY_ID = false;
 
 	private static final Logger logger = getLogger(SpecimenNameTransformer.class);
 
 	private HashMap<String, ScientificNameGroup> nameCache;
+
 	private int batchSize;
 
 	private int created;
@@ -42,9 +44,10 @@ class SpecimenNameTransformer {
 
 	Collection<ScientificNameGroup> transform(Collection<Specimen> specimens)
 	{
-		initializeNameGroups(specimens);
-		for (Specimen specimen : specimens) {
-			transform(specimen);
+		if (initializeNameGroups(specimens)) {
+			for (Specimen specimen : specimens) {
+				transform(specimen);
+			}
 		}
 		return nameCache.values();
 	}
@@ -62,11 +65,13 @@ class SpecimenNameTransformer {
 	private void transform(Specimen specimen)
 	{
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
-		for (SpecimenIdentification si : identifications) {
-			ScientificNameGroup group = nameCache.get(si.getScientificNameGroup());
-			if (!exists(specimen, group)) {
-				group.addSpecimen(copySpecimen(specimen, si.getScientificNameGroup()));
-				group.setSpecimenCount(group.getSpecimens().size());
+		if (identifications != null) {
+			for (SpecimenIdentification si : identifications) {
+				ScientificNameGroup group = nameCache.get(si.getScientificNameGroup());
+				if (!exists(specimen, group)) {
+					group.addSpecimen(copySpecimen(specimen, si.getScientificNameGroup()));
+					group.setSpecimenCount(group.getSpecimens().size());
+				}
 			}
 		}
 	}
@@ -84,7 +89,7 @@ class SpecimenNameTransformer {
 		return false;
 	}
 
-	private void initializeNameGroups(Collection<Specimen> specimens)
+	private boolean initializeNameGroups(Collection<Specimen> specimens)
 	{
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing name groups");
@@ -95,21 +100,31 @@ class SpecimenNameTransformer {
 		 */
 		Set<String> names = new HashSet<>(batchSize * 3);
 		for (Specimen specimen : specimens) {
-			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				names.add(si.getScientificNameGroup());
+			if (specimen.getIdentifications() != null) {
+				for (SpecimenIdentification si : specimen.getIdentifications()) {
+					names.add(si.getScientificNameGroup());
+				}
 			}
 		}
-		List<ScientificNameGroup> groups;
-		if (LOAD_NAME_GROUPS_BY_ID)
-			groups = loadNameGroupsById(names);
-		else
-			groups = loadNameGroupsByName(names);
-		created += groups.size();
-		updated += (names.size() - groups.size());
+		if (names.isEmpty()) {
+			return false;
+		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("ScientificNameGroup documents to be updated: {}", groups.size());
-			logger.debug("ScientificNameGroup documents to be created: {}",
+			logger.debug("Number of unique names in batch: {}", names.size());
+		}
+		List<ScientificNameGroup> groups;
+		if (LOAD_NAME_GROUPS_BY_ID) {
+			groups = loadNameGroupsById(names);
+		}
+		else {
+			groups = loadNameGroupsByName(names);
+		}
+		created += (names.size() - groups.size());
+		updated += groups.size();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Documents to be created for this batch: {}",
 					(names.size() - groups.size()));
+			logger.debug("Documents to be updated for this batch: {}", groups.size());
 		}
 		for (ScientificNameGroup group : groups) {
 			nameCache.put(group.getName(), group);
@@ -122,6 +137,7 @@ class SpecimenNameTransformer {
 				nameCache.put(name, new ScientificNameGroup(name));
 			}
 		}
+		return true;
 	}
 
 }

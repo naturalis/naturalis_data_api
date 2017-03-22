@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
@@ -27,8 +28,6 @@ class SpecimenNameImporter {
 	public static void main(String[] args) throws Exception
 	{
 		try {
-			ESUtil.deleteIndex(SCIENTIFIC_NAME_GROUP);
-			ESUtil.createIndex(SCIENTIFIC_NAME_GROUP);
 			SpecimenNameImporter importer = new SpecimenNameImporter();
 			importer.importNames();
 		}
@@ -66,14 +65,22 @@ class SpecimenNameImporter {
 		int batchNo = 0;
 		while (batch != null) {
 			Collection<ScientificNameGroup> scientificNameGroups = transformer.transform(batch);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Creating/updating ScientificNameGroup documents");
+			if (!scientificNameGroups.isEmpty()) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Creating/updating ScientificNameGroup documents");
+				}
+				indexer.index(scientificNameGroups);
 			}
-			indexer.index(scientificNameGroups);
 			if ((++batchNo % 100) == 0) {
 				logger.info("Specimens processed: {}", (batchNo * batchSize));
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());
+				Specimen last = batch.get(batch.size() - 1);
+				List<SpecimenIdentification> sis = last.getIdentifications();
+				if (sis != null) {
+					String group = sis.get(0).getScientificNameGroup();
+					logger.info("Most recent name group: {}", group);
+				}
 				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {
@@ -81,6 +88,7 @@ class SpecimenNameImporter {
 			}
 			batch = extractor.nextBatch();
 		}
+		refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 		setAutoRefreshInterval(SCIENTIFIC_NAME_GROUP.getIndexInfo(), "30s");
 		logger.info("Specimens processed: {}", extractor.getDocCounter());
 		logger.info("Name groups created: {}", transformer.getNumCreated());

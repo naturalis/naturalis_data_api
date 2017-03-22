@@ -18,6 +18,11 @@ public class PathReader {
 
 	public List<Object> readValue(Object obj) throws InvalidPathException
 	{
+		if (obj == null) {
+			String fmt = "Object must not be null when reading %s";
+			String msg = String.format(fmt, path);
+			throw new IllegalArgumentException(msg);
+		}
 		ArrayList<Object> values = new ArrayList<>();
 		read(path, obj, values);
 		return values;
@@ -34,17 +39,19 @@ public class PathReader {
 			f.setAccessible(true);
 		}
 		Object child = getValue(f, obj);
-		if (ClassUtil.isA(f.getType(), Iterable.class)) {
-			for (Object elem :  (Iterable<?>) child) {
-				read(path.shift(), elem, values);
-			}
-		}
-		else {
-			if (path.countElements() == 1) {
-				values.add(child);
+		if (child != null) {
+			if (ClassUtil.isA(f.getType(), Iterable.class)) {
+				for (Object elem : (Iterable<?>) child) {
+					read(path.shift(), elem, values);
+				}
 			}
 			else {
-				read(path.shift(), child, values);
+				if (path.countElements() == 1) {
+					values.add(child);
+				}
+				else {
+					read(path.shift(), child, values);
+				}
 			}
 		}
 	}

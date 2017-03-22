@@ -59,8 +59,7 @@ public class TaxonomicEnricher {
 	private static final List<TaxonomicEnrichment> EMPTY = new ArrayList<>(0);
 	private static final int BATCH_SIZE = 1000;
 	private static final int FLUSH_TRESHOLD = 1000;
-	
-	
+
 	public void enrich() throws BulkIndexException
 	{
 		long start = System.currentTimeMillis();
@@ -87,8 +86,12 @@ public class TaxonomicEnricher {
 			if (processed % 100000 == 0) {
 				logger.info("Specimen documents processed: {}", processed);
 				logger.info("Specimen documents enriched: {}", enriched);
-				logger.info("Most recent name group: {}", batch.get(batch.size() - 1)
-						.getIdentifications().get(0).getScientificNameGroup());
+				Specimen last = batch.get(batch.size() - 1);
+				List<SpecimenIdentification> sis = last.getIdentifications();
+				if (sis != null) {
+					String group = sis.get(0).getScientificNameGroup();
+					logger.info("Most recent name group: {}", group);
+				}
 			}
 			batch = extractor.nextBatch();
 		}
@@ -100,7 +103,7 @@ public class TaxonomicEnricher {
 		logger.info("Specimen documents enriched: {}", enriched);
 		logDuration(logger, getClass(), start);
 	}
-	
+
 	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
 	{
 		List<Specimen> result = new ArrayList<>(specimens.size());

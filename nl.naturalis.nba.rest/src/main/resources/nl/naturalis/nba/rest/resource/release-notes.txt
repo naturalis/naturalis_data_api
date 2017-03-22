@@ -1,6 +1,28 @@
 RELEASE NOTES V 2.06
 
-* NBAVTWO-61. Sorting on nested fields now enabled.
+* NBAVTWO-285 Query specimens using taxonomic 
+  attributes.
+  
+* NBAVTWO-324 Allowed operators for SummaryXXX objects
+  (objects within the ScientificNameGroup document) now
+  the same as for the full-blown counterparts.
+  
+* NBAVTWO-291 New document type: ScientificNameGroup;
+  contains a "frozen" aggregation on taxon documents
+  and specimen documents. Taxa and Specimens are
+  grouped by their scientific name
+  
+* NBAVTWO-317 associatedTaxonReference and
+  associatedSpecimenReference field now contain true
+  Elasticsearch document IDs rather than source system
+  IDs
+  
+
+
+=======================================================
+
+RELEASE NOTES V 2.06
+* NBAVTWO-61 Sorting on nested fields now enabled.
 
 * A new service with endpoint /release-notes has been
   created.

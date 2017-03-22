@@ -1,4 +1,4 @@
-RELEASE NOTES V 2.06
+RELEASE NOTES V 2.2
 
 * NBAVTWO-285 Query specimens using taxonomic 
   attributes.

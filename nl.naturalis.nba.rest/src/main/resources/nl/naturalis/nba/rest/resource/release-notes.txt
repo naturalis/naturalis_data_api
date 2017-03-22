@@ -10,12 +10,22 @@ RELEASE NOTES V 2.06
 * NBAVTWO-291 New document type: ScientificNameGroup;
   contains a "frozen" aggregation on taxon documents
   and specimen documents. Taxa and Specimens are
-  grouped by their scientific name
+  grouped by their scientific name.
   
 * NBAVTWO-317 associatedTaxonReference and
   associatedSpecimenReference field now contain true
   Elasticsearch document IDs rather than source system
-  IDs
+  IDs.
+  
+* NBAVTWO-318 New metadata service: getFieldInfo,
+  providing information about how/if a field can be
+  queried.
+  
+* NBAVTWO-309 Document type mapping changes for one
+  document no longer require all document types to be
+  re-created.
+  
+* NBAVTWO-308 Index settings configurable per index.
   
 
 

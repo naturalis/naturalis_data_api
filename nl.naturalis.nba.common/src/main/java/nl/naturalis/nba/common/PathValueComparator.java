@@ -14,29 +14,27 @@ import nl.naturalis.nba.api.Path;
 public class PathValueComparator<T> implements Comparator<T> {
 
 	private Path path;
+	private boolean inverted;
 	private boolean last;
+	
 	private HashMap<Integer, List> cache;
 
 	public PathValueComparator(Path path)
 	{
-		this(path, false, 16);
+		this(path, false, false, 16);
 	}
 
-	public PathValueComparator(Path path, boolean last)
+	public PathValueComparator(Path path, boolean inverted, boolean last)
 	{
-		this(path, last, 16);
+		this(path, inverted, last, 16);
 	}
 
-	public PathValueComparator(Path path, int listSize)
-	{
-		this(path, false, listSize);
-	}
-
-	public PathValueComparator(Path path, boolean last, int listSize)
+	public PathValueComparator(Path path, boolean inverted, boolean last, int listSize)
 	{
 		this.path = path;
+		this.inverted=inverted;
 		this.last = last;
-		this.cache = new HashMap<>(((int) (listSize / .75F)) + 1);
+		this.cache = new HashMap<>(listSize + 1, 1F);
 	}
 
 	@Override
@@ -67,6 +65,16 @@ public class PathValueComparator<T> implements Comparator<T> {
 		}
 		if (values2.isEmpty()) {
 			return Integer.MIN_VALUE;
+		}
+		Comparable c1;
+		Comparable c2;
+		if (last) {
+			c1 = (Comparable) values1.get(values1.size() - 1);
+			c2 = (Comparable) values2.get(values2.size() - 1);
+		}
+		else {
+			c1 = (Comparable) values1.get(0);
+			c2 = (Comparable) values2.get(0);
 		}
 		return 0;
 	}

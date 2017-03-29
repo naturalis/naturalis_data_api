@@ -49,12 +49,18 @@ public class PathValueComparatorTest {
 		sn4.setFullScientificName("D");
 		si4.setScientificName(sn4);
 
+		SpecimenIdentification si5 = new SpecimenIdentification();
+		ScientificName sn5 = new ScientificName();
+		sn5.setFullScientificName(null);
+		si5.setScientificName(sn5);
+
 		specimen1.addIndentification(si1);
 		specimen1.addIndentification(si2);
 
 		specimen2.addIndentification(si2);
 		specimen2.addIndentification(si3);
 		specimen2.addIndentification(si4);
+		specimen2.addIndentification(si5);
 
 	}
 

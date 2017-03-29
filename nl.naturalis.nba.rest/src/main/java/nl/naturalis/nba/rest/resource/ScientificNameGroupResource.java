@@ -24,11 +24,11 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
-import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
-import nl.naturalis.nba.dao.NameGroupDao;
+import nl.naturalis.nba.dao.ScientificNameGroupDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpNameGroupQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
@@ -37,10 +37,10 @@ import nl.naturalis.nba.utils.StringUtil;
 @Stateless
 @LocalBean
 @SuppressWarnings("static-method")
-public class NameGroupResource {
+public class ScientificNameGroupResource {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(NameGroupResource.class);
+	private static final Logger logger = LogManager.getLogger(ScientificNameGroupResource.class);
 
 	@EJB
 	Registry registry;
@@ -51,7 +51,7 @@ public class NameGroupResource {
 	public ScientificNameGroup find(@PathParam("id") String id, @Context UriInfo uriInfo)
 	{
 		try {
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			ScientificNameGroup result = dao.find(id);
 			if (result == null) {
 				throw new HTTP404Exception(uriInfo, SCIENTIFIC_NAME_GROUP, id);
@@ -70,7 +70,7 @@ public class NameGroupResource {
 	{
 		try {
 			String[] idArray = StringUtil.split(ids, ",");
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.find(idArray);
 		}
 		catch (Throwable t) {
@@ -85,7 +85,7 @@ public class NameGroupResource {
 	{
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -102,7 +102,7 @@ public class NameGroupResource {
 	{
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(form, uriInfo).build();
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -117,7 +117,7 @@ public class NameGroupResource {
 	public QueryResult<ScientificNameGroup> query_POST_JSON(NameGroupQuerySpec qs, @Context UriInfo uriInfo)
 	{
 		try {
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.query(qs);
 		}
 		catch (Throwable t) {
@@ -132,7 +132,7 @@ public class NameGroupResource {
 	{
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.count(qs);
 		}
 		catch (Throwable t) {
@@ -148,7 +148,7 @@ public class NameGroupResource {
 	{
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.getDistinctValues(field, qs);
 		}
 		catch (Throwable t) {
@@ -170,7 +170,7 @@ public class NameGroupResource {
 				conditions = qs.getConditions()
 						.toArray(new QueryCondition[qs.getConditions().size()]);
 			}
-			NameGroupDao dao = new NameGroupDao();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
 		}
 		catch (Throwable t) {

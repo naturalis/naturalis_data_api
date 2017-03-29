@@ -3,11 +3,8 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
@@ -47,8 +44,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			NameGroupQuerySpec qs = (NameGroupQuerySpec) querySpec;
 			Integer f = qs.getSpecimensFrom();
 			Integer s = qs.getSpecimensSize();
-			int from = f == null ? 0 : Math.max(f.intValue(), 0);
-			int size = s == null ? -1 : Math.max(s.intValue(), -1);
+			int offset = f == null ? 0 : Math.max(f.intValue(), 0);
+			int maxSpecimens = s == null ? 10 : Math.max(s.intValue(), -1);
 			PathValueComparator<SummarySpecimen> comparator = null;
 			if (qs.getSpecimensSortFields() != null) {
 				Comparee[] comparees = sortFieldsToComparees(qs.getSpecimensSortFields());
@@ -59,22 +56,29 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				if (qs.isNoTaxa()) {
 					sng.setTaxa(null);
 				}
-				if (size == 0) {
+				if (sng.getSpecimenCount() == 0) {
+					continue;
+				}
+				if (maxSpecimens == 0 || sng.getSpecimenCount() < offset) {
 					sng.setSpecimens(null);
 				}
-				else if (sng.getSpecimenCount() != 0) {
-					List<SummarySpecimen> specimens = new ArrayList<>(sng.getSpecimens());
+				else {
 					if (qs.getSpecimensSortFields() != null) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Sorting specimens in name group {}", sng.getName());
+							logger.debug("Sorting specimens in name group \"{}\"", sng.getName());
 						}
-						Collections.sort(specimens, comparator);
+						Collections.sort(sng.getSpecimens(), comparator);
 					}
-					// Make sure from is never beyond the current item's number of specimens
-					int myFrom = Math.min(from, specimens.size() - 1);
-					int to = size == -1 ? specimens.size() : Math.min(specimens.size(), size);
-					Set<SummarySpecimen> chunk = new LinkedHashSet<>(specimens.subList(myFrom, to));
-					sng.setSpecimens(chunk);
+					if (offset != 0 || maxSpecimens != -1) {
+						int to;
+						if (maxSpecimens == -1) {
+							to = sng.getSpecimenCount();
+						}
+						else {
+							to = Math.min(sng.getSpecimenCount(), offset + maxSpecimens);
+						}
+						sng.setSpecimens(sng.getSpecimens().subList(offset, to));
+					}
 				}
 			}
 		}

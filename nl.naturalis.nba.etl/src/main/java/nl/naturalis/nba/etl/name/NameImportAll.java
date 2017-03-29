@@ -36,7 +36,7 @@ public class NameImportAll {
 	{
 		long start = System.currentTimeMillis();
 		boolean suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
-		String prop = System.getProperty("batchSize", "1000");
+		String prop = System.getProperty("batchSize", "512");
 		int batchSize = 0;
 		try {
 			batchSize = Integer.parseInt(prop);

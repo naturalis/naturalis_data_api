@@ -28,10 +28,12 @@ import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
+import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.ScientificNameGroupDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpNameGroupQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
+import nl.naturalis.nba.utils.debug.DebugUtil;
 
 @Path("/names")
 @Stateless
@@ -103,7 +105,8 @@ public class ScientificNameGroupResource {
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(form, uriInfo).build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			return dao.query(qs);
+			QueryResult<ScientificNameGroup> result = dao.query(qs);
+			return result;
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -118,7 +121,9 @@ public class ScientificNameGroupResource {
 	{
 		try {
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			return dao.query(qs);
+			QueryResult<ScientificNameGroup> result = dao.query(qs);
+			DebugUtil.log("/tmp/ayco.txt", JsonUtil.toPrettyJson(result));
+			return result;
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

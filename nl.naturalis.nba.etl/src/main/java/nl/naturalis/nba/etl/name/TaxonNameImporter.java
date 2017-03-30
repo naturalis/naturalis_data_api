@@ -75,6 +75,7 @@ class TaxonNameImporter {
 				logger.info("Taxa processed: {}", (batchNo * batchSize));
 				logger.info("Name groups created: {}", transformer.getNumCreated());
 				logger.info("Name groups updated: {}", transformer.getNumUpdated());
+				logger.info("Most recent name group: {}", transformer.getLastGroup().getName());
 				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());
 			}
 			if (logger.isDebugEnabled()) {

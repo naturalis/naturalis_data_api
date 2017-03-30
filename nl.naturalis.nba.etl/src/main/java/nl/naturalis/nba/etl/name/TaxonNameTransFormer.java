@@ -42,13 +42,13 @@ class TaxonNameTransformer {
 		for (int i = 0; i < batch.size(); i++) {
 			Taxon taxon = taxa.get(i);
 			ScientificNameGroup group;
-			if (!taxon.getScientificNameGroup().equals(previousGroup.getName())) {
-				++created;
-				group = new ScientificNameGroup(taxon.getScientificNameGroup());
-			}
-			else {
+			if (taxon.getScientificNameGroup().equals(previousGroup.getName())) {
 				++updated;
 				group = previousGroup;
+			}
+			else {
+				++created;
+				group = new ScientificNameGroup(taxon.getScientificNameGroup());
 			}
 			previousGroup = group;
 			group.addTaxon(copyTaxon(taxon));

@@ -34,11 +34,10 @@ public class ScientificNameGroup implements IDocumentObject {
 
 	private String id;
 	private String name;
-	private Set<SummarySpecimen> specimens;
-	private Set<SummaryTaxon> taxa;
-
 	private int specimenCount;
 	private int taxonCount;
+	private Set<SummarySpecimen> specimens;
+	private Set<SummaryTaxon> taxa;
 
 	public ScientificNameGroup()
 	{
@@ -97,46 +96,6 @@ public class ScientificNameGroup implements IDocumentObject {
 	}
 
 	/**
-	 * Returns the specimens in this group.
-	 * 
-	 * @return
-	 */
-	public Set<SummarySpecimen> getSpecimens()
-	{
-		return specimens;
-	}
-
-	/**
-	 * Sets the specimens in this group.
-	 * 
-	 * @param specimens
-	 */
-	public void setSpecimens(Set<SummarySpecimen> specimens)
-	{
-		this.specimens = specimens;
-	}
-
-	/**
-	 * Returns the taxa in this group.
-	 * 
-	 * @return
-	 */
-	public Set<SummaryTaxon> getTaxa()
-	{
-		return taxa;
-	}
-
-	/**
-	 * Sets the taxa in this group.
-	 * 
-	 * @param taxa
-	 */
-	public void setTaxa(Set<SummaryTaxon> taxa)
-	{
-		this.taxa = taxa;
-	}
-
-	/**
 	 * Returns the total number of specimens in this group.
 	 * 
 	 * @return
@@ -174,6 +133,46 @@ public class ScientificNameGroup implements IDocumentObject {
 	public void setTaxonCount(int taxonCount)
 	{
 		this.taxonCount = taxonCount;
+	}
+
+	/**
+	 * Returns the specimens in this group.
+	 * 
+	 * @return
+	 */
+	public Set<SummarySpecimen> getSpecimens()
+	{
+		return specimens;
+	}
+
+	/**
+	 * Sets the specimens in this group.
+	 * 
+	 * @param specimens
+	 */
+	public void setSpecimens(Set<SummarySpecimen> specimens)
+	{
+		this.specimens = specimens;
+	}
+
+	/**
+	 * Returns the taxa in this group.
+	 * 
+	 * @return
+	 */
+	public Set<SummaryTaxon> getTaxa()
+	{
+		return taxa;
+	}
+
+	/**
+	 * Sets the taxa in this group.
+	 * 
+	 * @param taxa
+	 */
+	public void setTaxa(Set<SummaryTaxon> taxa)
+	{
+		this.taxa = taxa;
 	}
 
 }

@@ -62,8 +62,8 @@ public class TaxonomicEnricher {
 
 	public void enrich() throws BulkIndexException
 	{
-		logger.info("Starting taxonomic enrichment of Specimen documents");
 		long start = System.currentTimeMillis();
+		logger.info("Starting taxonomic enrichment of Specimen documents");
 		QuerySpec qs = new QuerySpec();
 		qs.sortBy("identifications.scientificNameGroup");
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
@@ -72,9 +72,10 @@ public class TaxonomicEnricher {
 		int processed = 0;
 		int enriched = 0;
 		List<Specimen> queue = new ArrayList<>(FLUSH_TRESHOLD + BATCH_SIZE);
+		logger.info("Loading first batch of specimens");
 		List<Specimen> batch = extractor.nextBatch();
 		while (batch != null) {
-			List<Specimen> enrichedSpecimens = enrichBatch(batch);
+			List<Specimen> enrichedSpecimens = enrichSpecimens(batch);
 			enriched += enrichedSpecimens.size();
 			queue.addAll(enrichedSpecimens);
 			if (queue.size() >= FLUSH_TRESHOLD) {
@@ -85,8 +86,12 @@ public class TaxonomicEnricher {
 			if (processed % 100000 == 0) {
 				logger.info("Specimen documents processed: {}", processed);
 				logger.info("Specimen documents enriched: {}", enriched);
-				logger.info("Most recent name group: {}", batch.get(batch.size() - 1)
-						.getIdentifications().get(0).getScientificNameGroup());
+				Specimen last = batch.get(batch.size() - 1);
+				List<SpecimenIdentification> sis = last.getIdentifications();
+				if (sis != null) {
+					String group = sis.get(0).getScientificNameGroup();
+					logger.info("Most recent name group: {}", group);
+				}
 			}
 			batch = extractor.nextBatch();
 		}
@@ -99,7 +104,7 @@ public class TaxonomicEnricher {
 		logDuration(logger, getClass(), start);
 	}
 
-	private static List<Specimen> enrichBatch(List<Specimen> specimens)
+	private static List<Specimen> enrichSpecimens(List<Specimen> specimens)
 	{
 		List<Specimen> result = new ArrayList<>(specimens.size());
 		HashMap<String, List<TaxonomicEnrichment>> cache;
@@ -110,13 +115,6 @@ public class TaxonomicEnricher {
 				continue;
 			}
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				if (si.getTaxonomicEnrichments() != null) {
-					/*
-					 * This allows for incremental enrichment, in case the
-					 * program aborted, or if we re-imported Brahms or CRS.
-					 */
-					continue;
-				}
 				String nameGroup = si.getScientificNameGroup();
 				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
 				if (enrichments == null) {

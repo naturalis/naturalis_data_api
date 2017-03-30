@@ -36,8 +36,10 @@ import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.model.Specimen;
 import nl.naturalis.nba.api.model.Taxon;
 import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.SpecimenDao;
 import nl.naturalis.nba.dao.TaxonDao;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
@@ -137,10 +139,42 @@ public class TaxonResource {
 		}
 	}
 
+	@POST
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public long count_POST_FORM(MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			TaxonDao dao = new TaxonDao();
+			return dao.count(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+	
+	@POST
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public long count_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	{
+		try {
+			TaxonDao dao = new TaxonDao();
+			return dao.count(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 	@GET
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
-	public long count(@Context UriInfo uriInfo)
+	public long count_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();

@@ -189,13 +189,13 @@ public class SpecimenResource {
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public QueryResult<Specimen> count_POST_FORM(MultivaluedMap<String, String> form,
+	public long count_POST_FORM(MultivaluedMap<String, String> form,
 			@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
 			SpecimenDao dao = new SpecimenDao();
-			return dao.query(qs);
+			return dao.count(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

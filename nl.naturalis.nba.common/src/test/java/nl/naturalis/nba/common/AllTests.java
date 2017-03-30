@@ -13,6 +13,8 @@ import nl.naturalis.nba.common.json.JsonUtilTest;
 @SuiteClasses({
 	JsonUtilTest.class,
 	PathUtilTest.class,
+	PathValueReaderTest.class,
+	PathValueComparatorTest.class,
 	MappingFactoryTest.class,
 	MappingInfoTest.class
 })

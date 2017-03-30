@@ -27,10 +27,10 @@ import nl.naturalis.nba.utils.ConfigObject;
 @Path("/names/metadata")
 @Stateless
 @LocalBean
-public class NameGroupMetaDataResource {
+public class ScientificNameGroupMetaDataResource {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(NameGroupMetaDataResource.class);
+	private static final Logger logger = LogManager.getLogger(ScientificNameGroupMetaDataResource.class);
 
 	@EJB
 	Registry registry;

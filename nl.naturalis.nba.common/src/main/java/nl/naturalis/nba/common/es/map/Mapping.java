@@ -1,20 +1,23 @@
 package nl.naturalis.nba.common.es.map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 
 /**
- * Models an Elasticsearch type mapping. See {@link MappingFactory} for more details.
+ * Models an Elasticsearch type mapping. See {@link MappingFactory} for more
+ * details.
  * 
  * @see ComplexField
  * 
  * @author Ayco Holleman
  *
  */
+@JsonPropertyOrder({ "dynamic", "properties" })
 public class Mapping<T extends IDocumentObject> extends ComplexField {
 
-	/* NBA types are always strictly typed. */
+	/* NBA document types are always strictly typed. */
 	private final String dynamic = "strict";
 	@JsonIgnore
 	private final Class<T> mappedClass;

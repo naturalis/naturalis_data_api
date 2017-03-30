@@ -1,9 +1,7 @@
 package nl.naturalis.nba.api.model;
 
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.api.model.summary.SummaryTaxon;
@@ -23,21 +21,12 @@ import nl.naturalis.nba.api.model.summary.SummaryTaxon;
  */
 public class ScientificNameGroup implements IDocumentObject {
 
-	private static final Comparator<SummarySpecimen> specimenComparator = new Comparator<SummarySpecimen>() {
-
-		@Override
-		public int compare(SummarySpecimen o1, SummarySpecimen o2)
-		{
-			return o1.getUnitID().compareTo(o2.getUnitID());
-		}
-	};
-
 	private String id;
 	private String name;
 	private int specimenCount;
 	private int taxonCount;
-	private Set<SummarySpecimen> specimens;
-	private Set<SummaryTaxon> taxa;
+	private List<SummarySpecimen> specimens;
+	private List<SummaryTaxon> taxa;
 
 	public ScientificNameGroup()
 	{
@@ -52,7 +41,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	public void addSpecimen(SummarySpecimen specimen)
 	{
 		if (specimens == null) {
-			specimens = new TreeSet<>(specimenComparator);
+			specimens = new ArrayList<>();
 		}
 		specimens.add(specimen);
 	}
@@ -60,7 +49,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	public void addTaxon(SummaryTaxon taxon)
 	{
 		if (taxa == null) {
-			taxa = new LinkedHashSet<SummaryTaxon>(2);
+			taxa = new ArrayList<>(2);
 		}
 		taxa.add(taxon);
 	}
@@ -140,7 +129,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @return
 	 */
-	public Set<SummarySpecimen> getSpecimens()
+	public List<SummarySpecimen> getSpecimens()
 	{
 		return specimens;
 	}
@@ -150,7 +139,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @param specimens
 	 */
-	public void setSpecimens(Set<SummarySpecimen> specimens)
+	public void setSpecimens(List<SummarySpecimen> specimens)
 	{
 		this.specimens = specimens;
 	}
@@ -160,7 +149,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @return
 	 */
-	public Set<SummaryTaxon> getTaxa()
+	public List<SummaryTaxon> getTaxa()
 	{
 		return taxa;
 	}
@@ -170,7 +159,7 @@ public class ScientificNameGroup implements IDocumentObject {
 	 * 
 	 * @param taxa
 	 */
-	public void setTaxa(Set<SummaryTaxon> taxa)
+	public void setTaxa(List<SummaryTaxon> taxa)
 	{
 		this.taxa = taxa;
 	}

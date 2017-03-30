@@ -5,6 +5,7 @@ import java.util.List;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 
 public class SummarySpecimenIdentification implements INbaModelObject {
 
@@ -12,6 +13,19 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
 	private List<SummaryVernacularName> vernacularNames;
+	private List<TaxonomicEnrichment> taxonomicEnrichments;
+
+	
+	public List<TaxonomicEnrichment> getTaxonomicEnrichments()
+	{
+		return taxonomicEnrichments;
+	}
+
+	
+	public void setTaxonomicEnrichments(List<TaxonomicEnrichment> taxonomicEnrichments)
+	{
+		this.taxonomicEnrichments = taxonomicEnrichments;
+	}
 
 	public SummaryScientificName getScientificName()
 	{

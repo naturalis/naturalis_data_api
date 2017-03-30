@@ -198,6 +198,7 @@ public class NameImportUtil {
 		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
 		ssi.setDefaultClassification(si.getDefaultClassification());
 		ssi.setScientificName(copyScientificName(si.getScientificName()));
+		ssi.setTaxonomicEnrichments(si.getTaxonomicEnrichments());
 		return ssi;
 	}
 

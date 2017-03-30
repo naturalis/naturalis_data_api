@@ -169,9 +169,9 @@ public final class ETLUtil {
 			subsp = dc.getInfraspecificEpithet();
 		}
 		if (subsp == null) {
-			return genus + " " + species;
+			return (genus + " " + species).toLowerCase();
 		}
-		return genus + " " + species + " " + subsp;
+		return (genus + " " + species + " " + subsp).toLowerCase();
 	}
 
 }

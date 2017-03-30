@@ -46,7 +46,7 @@ class TaxonNameImporter {
 	private static final Logger logger = getLogger(TaxonNameImporter.class);
 
 	private boolean suppressErrors;
-	private int batchSize = 1000;
+	private int batchSize = 512;
 	private int timeout = 60000;
 
 	void importNames() throws BulkIndexException

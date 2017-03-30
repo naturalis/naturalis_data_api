@@ -185,10 +185,42 @@ public class SpecimenResource {
 		}
 	}
 
+	@POST
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public QueryResult<Specimen> count_POST_FORM(MultivaluedMap<String, String> form,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
+			SpecimenDao dao = new SpecimenDao();
+			return dao.query(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+	
+	@POST
+	@Path("/count")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public long count_POST_JSON(QuerySpec qs, @Context UriInfo uriInfo)
+	{
+		try {
+			SpecimenDao dao = new SpecimenDao();
+			return dao.count(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
 	@GET
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
-	public long count(@Context UriInfo uriInfo)
+	public long count_GET(@Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();

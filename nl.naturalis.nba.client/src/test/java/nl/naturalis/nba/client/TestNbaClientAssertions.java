@@ -63,11 +63,11 @@ public class TestNbaClientAssertions {
 		querySpec.addCondition(condition);
 
 		long resultActual = specimenClient.count(querySpec);
-		// System.out.println("Count: " + specimenClient.count(querySpec));
+		System.out.println("Count: " + specimenClient.count(querySpec));
 
 		QueryResult<Specimen> specimenResults = specimenClient.query(querySpec);
 		long resultExpected = specimenResults.getTotalSize();
-		// System.out.println("Expected: " + resultExpected);
+		System.out.println("Expected: " + resultExpected);
 
 		assertEquals(resultExpected, resultActual);
 

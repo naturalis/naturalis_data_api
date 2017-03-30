@@ -122,14 +122,14 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 		request.setPath(rootPath + "count");
 		request.setRequestBody(toJson(querySpec), CT_APPLICATION_JSON);
 		sendRequest(request);
-		int status = request.getStatus();
+		int status = request.getStatus();		
 		if (status != HTTP_OK) {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), Long.class);
-		
 	}
 	
+//	
 //	@Override
 //	public long count(QuerySpec querySpec) throws InvalidQueryException
 //	{

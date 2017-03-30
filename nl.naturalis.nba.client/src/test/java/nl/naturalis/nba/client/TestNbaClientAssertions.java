@@ -34,8 +34,8 @@ import nl.naturalis.nba.utils.IOUtil;
 
 public class TestNbaClientAssertions {
 
-	// private static String baseUrl = "http://localhost:8080/v2";
-	private static String baseUrl = "http://145.136.242.164:8080/v2";
+	private static String baseUrl = "http://localhost:8080/v2";
+	// private static String baseUrl = "http://145.136.242.164:8080/v2";
 	private static NbaSession session;
 	private static SpecimenClient specimenClient;
 
@@ -61,6 +61,7 @@ public class TestNbaClientAssertions {
 		String field = "collectionType";
 		QueryCondition condition = new QueryCondition(field, EQUALS, "Botany");
 		querySpec.addCondition(condition);
+		System.out.println("Query spec count: " + JsonUtil.toPrettyJson(querySpec));
 
 		long resultActual = specimenClient.count(querySpec);
 		System.out.println("Count: " + specimenClient.count(querySpec));
@@ -258,7 +259,7 @@ public class TestNbaClientAssertions {
 		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
 
 		int setSize = 10;
-		int resultSize = 870001;
+		int resultSize = 4841853;
 		assertEquals(setSize, specimenResults.size());
 		assertEquals(resultSize, specimenResults.getTotalSize());
 
@@ -289,7 +290,7 @@ public class TestNbaClientAssertions {
 		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
 
 		int setSize = 10;
-		int resultSize = 192;
+		int resultSize = 3464;
 		assertEquals(setSize, specimenResults.size());
 		assertEquals(resultSize, specimenResults.getTotalSize());
 

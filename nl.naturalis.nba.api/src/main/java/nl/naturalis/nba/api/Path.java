@@ -150,6 +150,21 @@ public final class Path {
 	}
 
 	/**
+	 * Returns a new {@code Path} with the path element at the specified index
+	 * replaced by the new element value.
+	 * 
+	 * @param element
+	 * @param newValue
+	 * @return
+	 */
+	public Path replace(int element, String newValue)
+	{
+		String[] copy = Arrays.copyOf(elems, elems.length);
+		copy[element] = newValue;
+		return new Path(copy);
+	}
+
+	/**
 	 * Returns a new {@code Path} with the elements of this {@code Path} minus
 	 * its first element.
 	 * 

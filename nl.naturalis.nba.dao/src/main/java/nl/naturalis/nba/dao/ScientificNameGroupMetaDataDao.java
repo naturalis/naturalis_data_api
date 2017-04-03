@@ -4,9 +4,9 @@ import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 
-public class NameGroupMetaDataDao extends MetaDataDao<ScientificNameGroup> {
+public class ScientificNameGroupMetaDataDao extends DocumentMetaDataDao<ScientificNameGroup> {
 
-	public NameGroupMetaDataDao()
+	public ScientificNameGroupMetaDataDao()
 	{
 		super(SCIENTIFIC_NAME_GROUP);
 	}

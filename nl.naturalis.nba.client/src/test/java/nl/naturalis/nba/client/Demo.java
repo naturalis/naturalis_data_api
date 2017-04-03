@@ -1,18 +1,13 @@
 package nl.naturalis.nba.client;
 
-import static nl.naturalis.nba.api.ComparisonOperator.*;
-import static nl.naturalis.nba.api.LogicalOperator.*;
-
-import java.io.InputStream;
+import java.util.Arrays;
 
 import nl.naturalis.nba.api.ISpecimenAccess;
-import nl.naturalis.nba.api.ITaxonAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
-import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.utils.StringUtil;
 
 public class Demo {
 
@@ -27,6 +22,7 @@ public class Demo {
 		QueryCondition condition = new QueryCondition(field, "!=", null);
 		QuerySpec query = new QuerySpec();
 		query.addCondition(condition);
+		query.setFields(Arrays.asList(new Path("sourceSystem.name")));
 		
 //		ITaxonAccess client = session.getTaxonClient();
 //		String field = "acceptedName.genusOrMonomial";

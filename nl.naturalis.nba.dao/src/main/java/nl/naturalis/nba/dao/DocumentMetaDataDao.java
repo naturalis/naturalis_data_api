@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.INbaMetaData;
+import nl.naturalis.nba.api.IDocumentMetaData;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
@@ -21,13 +21,13 @@ import nl.naturalis.nba.common.es.map.SimpleField;
 import nl.naturalis.nba.dao.exception.DaoException;
 import nl.naturalis.nba.dao.translate.OperatorValidator;
 
-abstract class MetaDataDao<T extends IDocumentObject> implements INbaMetaData<T> {
+abstract class DocumentMetaDataDao<T extends IDocumentObject> implements IDocumentMetaData<T> {
 
-	private static final Logger logger = getLogger(MetaDataDao.class);
+	private static final Logger logger = getLogger(DocumentMetaDataDao.class);
 
 	private final DocumentType<T> dt;
 
-	MetaDataDao(DocumentType<T> dt)
+	DocumentMetaDataDao(DocumentType<T> dt)
 	{
 		this.dt = dt;
 	}

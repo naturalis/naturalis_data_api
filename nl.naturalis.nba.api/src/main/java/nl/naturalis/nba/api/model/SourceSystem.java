@@ -12,40 +12,60 @@ public class SourceSystem implements INbaModelObject {
 	private static final String CODE_GEO = "GEO";
 	private static final String CODE_NDFF = "NDFF";
 
-	public static final SourceSystem CRS = new SourceSystem(CODE_CRS,
-			"Naturalis - Zoology and Geology catalogues");
-	public static final SourceSystem BRAHMS = new SourceSystem(CODE_BRAHMS,
-			"Naturalis - Botany catalogues");
-	public static final SourceSystem COL = new SourceSystem(CODE_COL,
-			"Species 2000 - Catalogue Of Life");
-	public static final SourceSystem NSR = new SourceSystem(CODE_NSR,
-			"Naturalis - Nederlands Soortenregister");
-	public static final SourceSystem NDFF = new SourceSystem(CODE_NDFF,
-			"NDFF - Nationale Databank Flora en Fauna");
-	public static final SourceSystem GEO = new SourceSystem(CODE_GEO, "Naturalis - Geo Areas");
+	private static final String NAME_CRS = "Naturalis - Zoology and Geology catalogues";
+	private static final String NAME_BRAHMS = "Naturalis - Botany catalogues";
+	private static final String NAME_COL = "Species 2000 - Catalogue Of Life";
+	private static final String NAME_NSR = "Naturalis - Nederlands Soortenregister";
+	private static final String NAME_GEO = "Naturalis - Geo Areas";
+	private static final String NAME_NDFF = "NDFF - Nationale Databank Flora en Fauna";
+
+	public static final SourceSystem CRS = new SourceSystem(CODE_CRS, NAME_CRS);
+	public static final SourceSystem BRAHMS = new SourceSystem(CODE_BRAHMS, NAME_BRAHMS);
+	public static final SourceSystem COL = new SourceSystem(CODE_COL, NAME_COL);
+	public static final SourceSystem NSR = new SourceSystem(CODE_NSR, NAME_NSR);
+	public static final SourceSystem GEO = new SourceSystem(CODE_GEO, NAME_GEO);
+	public static final SourceSystem NDFF = new SourceSystem(CODE_NDFF, NAME_NDFF);
 
 	@JsonCreator
-	public static SourceSystem forCode(@JsonProperty("code") String code)
+	public static SourceSystem getInstance(@JsonProperty("code") String code,
+			@JsonProperty("name") String name)
 	{
-		switch (code) {
-			case CODE_CRS:
+		if (code != null) {
+			switch (code) {
+				case CODE_CRS:
+					return CRS;
+				case CODE_BRAHMS:
+					return BRAHMS;
+				case CODE_COL:
+					return COL;
+				case CODE_NSR:
+					return NSR;
+				case CODE_NDFF:
+					return NDFF;
+				case CODE_GEO:
+					return GEO;
+			}
+			throw new IllegalArgumentException("No such source system: " + code);
+		}
+		switch (name) {
+			case NAME_CRS:
 				return CRS;
-			case CODE_BRAHMS:
+			case NAME_BRAHMS:
 				return BRAHMS;
-			case CODE_COL:
+			case NAME_COL:
 				return COL;
-			case CODE_NSR:
+			case NAME_NSR:
 				return NSR;
-			case CODE_NDFF:
+			case NAME_NDFF:
 				return NDFF;
-			case CODE_GEO:
+			case NAME_GEO:
 				return GEO;
 		}
-		throw new IllegalArgumentException("No such source system: " + code);
+		throw new IllegalArgumentException("No such source system: " + name);
 	}
 
-	private String code;
-	private String name;
+	private final String code;
+	private final String name;
 
 	private SourceSystem(String code, String name)
 	{

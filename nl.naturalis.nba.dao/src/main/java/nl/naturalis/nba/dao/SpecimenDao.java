@@ -7,6 +7,8 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.Logger;
@@ -20,6 +22,9 @@ import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
+import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
+import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
@@ -97,7 +102,30 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		return null;
+		File dir = DwcaUtil.getDwcaConfigurationDirectory(DwcaDataSetType.SPECIMEN);
+		File[] files = dir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f)
+			{
+				if (f.getName().startsWith("dynamic")) {
+					return false;
+				}
+				if (f.isFile() && f.getName().endsWith(DwcaConfig.CONF_FILE_EXTENSION)) {
+					return true;
+				}
+				return false;
+			}
+		});
+
+		String[] names = new String[files.length];
+		for (int i = 0; i < files.length; i++) {
+			String name = files[i].getName();
+			names[i] = name.substring(0, name.indexOf('.'));
+		}
+		
+		return names;
+		
 		//		File dir = getDocumentTypeDirectory(SPECIMEN);
 		//		ArrayList<String> names = new ArrayList<>(32);
 		//		for (File subdir : getSubdirectories(dir)) {
@@ -120,6 +148,8 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 		//			}
 		//		}
 		//		return names.toArray(new String[names.size()]);
+
+		// return null;
 	}
 
 	@Override

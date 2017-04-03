@@ -25,7 +25,6 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.IDocumentObject;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.utils.ArrayUtil;
 import nl.naturalis.nba.utils.http.SimpleHttpException;
 import nl.naturalis.nba.utils.http.SimpleHttpGet;

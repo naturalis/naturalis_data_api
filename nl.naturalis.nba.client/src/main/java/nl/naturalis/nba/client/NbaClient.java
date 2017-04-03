@@ -127,26 +127,7 @@ abstract class NbaClient<T extends IDocumentObject> implements INbaAccess<T> {
 			throw newServerException(status, request.getResponseBody());
 		}
 		return ClientUtil.getObject(request.getResponseBody(), Long.class);
-	}
-	
-//	
-//	@Override
-//	public long count(QuerySpec querySpec) throws InvalidQueryException
-//	{
-//		SimpleHttpGet request = new SimpleHttpGet();
-//		request.setBaseUrl(config.getBaseUrl());
-//		request.setPath(rootPath + "count");
-//		String json = JsonUtil.toJson(querySpec);
-//		request.addQueryParam("_querySpec", json);
-//		sendRequest(request);
-//		int status = request.getStatus();
-//		if (status != HTTP_OK) {
-//			throw newServerException(status, request.getResponseBody());
-//		}
-//		return ClientUtil.getObject(request.getResponseBody(), Long.class);
-//	}
-	
-	
+	}	
 
 	@Override
 	public Map<String, Long> getDistinctValues(String forField, QuerySpec spec)

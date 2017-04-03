@@ -143,8 +143,12 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		SimpleHttpGet request = getJson("specimen/dwca/getDataSetNames");
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		return getObject(request.getResponseBody(), String[].class);
 	}
 
 	@Override

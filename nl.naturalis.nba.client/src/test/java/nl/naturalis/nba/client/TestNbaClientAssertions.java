@@ -38,6 +38,7 @@ public class TestNbaClientAssertions {
 	// private static String baseUrl = "http://145.136.242.164:8080/v2";
 	private static NbaSession session;
 	private static SpecimenClient specimenClient;
+	private static TaxonClient taxonClient;
 
 	@Before
 	public void before() {
@@ -47,6 +48,7 @@ public class TestNbaClientAssertions {
 
 		// Initialize client
 		specimenClient = session.getSpecimenClient();
+		taxonClient = session.getTaxonClient();
 
 	}
 
@@ -107,10 +109,10 @@ public class TestNbaClientAssertions {
 	@Test
 	public void test_dwcaGetDataSetNames() {
 
-		// Nog niet geimplementeerd
-		System.err.println("dwcaGetDataSetNames() is nog niet geimplementeerd.\n");
-		// System.out.println("DataSetNames: " +
-		// specimenClient.dwcaGetDataSetNames());
+		// Nog niet geimplementeerd in SpecimenDao
+		// System.err.println("dwcaGetDataSetNames() is nog niet geimplementeerd.\n");
+		System.out.println("DataSetNames: " + specimenClient.dwcaGetDataSetNames());
+		// System.out.println("DataSetNames: " + JsonUtil.toPrettyJson(taxonClient.dwcaGetDataSetNames()));
 
 	}
 

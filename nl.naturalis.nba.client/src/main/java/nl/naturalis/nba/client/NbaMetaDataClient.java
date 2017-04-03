@@ -3,13 +3,13 @@ package nl.naturalis.nba.client;
 import java.util.Map;
 
 import nl.naturalis.nba.api.ComparisonOperator;
-import nl.naturalis.nba.api.INbaMetaData;
+import nl.naturalis.nba.api.IDocumentMetaData;
 import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
 
 
-abstract class NbaMetaDataClient<DOCUMENT_OBJECT extends IDocumentObject> implements INbaMetaData<DOCUMENT_OBJECT> {
+abstract class NbaMetaDataClient<DOCUMENT_OBJECT extends IDocumentObject> implements IDocumentMetaData<DOCUMENT_OBJECT> {
 
 	@Override
 	public String[] getPaths(boolean sorted)

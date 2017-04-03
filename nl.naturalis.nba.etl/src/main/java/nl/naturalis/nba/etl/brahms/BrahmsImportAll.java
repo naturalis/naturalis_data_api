@@ -2,7 +2,6 @@ package nl.naturalis.nba.etl.brahms;
 
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
-import static nl.naturalis.nba.dao.util.es.ESUtil.getDistinctIndices;
 import static nl.naturalis.nba.etl.ETLUtil.getDuration;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
@@ -19,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.ESClientManager;
-import nl.naturalis.nba.dao.IndexInfo;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -51,10 +49,14 @@ public class BrahmsImportAll {
 			try {
 				new BrahmsImportAll().importAll();
 			}
+			catch (Throwable t) {
+				logger.error("BrahmsSpecimenImporter terminated unexpectedly!", t);
+				System.exit(1);
+
+			}
 			finally {
-				for (IndexInfo ii : getDistinctIndices(SPECIMEN, MULTI_MEDIA_OBJECT)) {
-					ESUtil.refreshIndex(ii);
-				}
+				ESUtil.refreshIndex(SPECIMEN);
+				ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
 				ESClientManager.getInstance().closeClient();
 			}
 		}

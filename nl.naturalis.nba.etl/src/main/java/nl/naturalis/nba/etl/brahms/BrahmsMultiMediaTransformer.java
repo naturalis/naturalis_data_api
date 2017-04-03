@@ -6,18 +6,13 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
-import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.IMAGELIST;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.PLANTDESC;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.TYPE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDate;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getDefaultClassification;
-import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getMultiMediaGatheringEvent;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getScientificName;
 import static nl.naturalis.nba.etl.brahms.BrahmsImportUtil.getSystemClassification;
 
@@ -29,19 +24,15 @@ import java.util.List;
 
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.MultiMediaContentIdentification;
+import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
 import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
-import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
-import nl.naturalis.nba.etl.AbstractCSVTransformer;
+import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
-import nl.naturalis.nba.etl.ThemeCache;
-import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nba.etl.normalize.UnmappedValueException;
-import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.
@@ -49,26 +40,11 @@ import nl.naturalis.nba.utils.ConfigObject;
  * @author Ayco Holleman
  *
  */
-class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<BrahmsCsvField, MultiMediaObject> {
-
-	private static final SpecimenTypeStatusNormalizer typeStatusNormalizer;
-	private static final ThemeCache themeCache;
-
-	static {
-		typeStatusNormalizer = SpecimenTypeStatusNormalizer.getInstance();
-		themeCache = ThemeCache.getInstance();
-	}
+class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 
 	public BrahmsMultiMediaTransformer(ETLStatistics stats)
 	{
 		super(stats);
-		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
-	}
-
-	@Override
-	protected String getObjectID()
-	{
-		return input.get(BARCODE);
 	}
 
 	@Override
@@ -136,12 +112,6 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<BrahmsCsvField,
 		return mmo;
 	}
 
-	private static URI getUri(String url) throws URISyntaxException
-	{
-		url = url.trim().replaceAll(" ", "%20");
-		return new URI(url);
-	}
-
 	private MultiMediaContentIdentification getIdentification()
 	{
 		MultiMediaContentIdentification identification = new MultiMediaContentIdentification();
@@ -163,17 +133,18 @@ class BrahmsMultiMediaTransformer extends AbstractCSVTransformer<BrahmsCsvField,
 		return identification;
 	}
 
-	private SpecimenTypeStatus getTypeStatus()
+	private MultiMediaGatheringEvent getMultiMediaGatheringEvent(
+			CSVRecordInfo<BrahmsCsvField> record)
 	{
-		try {
-			return typeStatusNormalizer.map(input.get(TYPE));
-		}
-		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
-			}
-			return null;
-		}
+		MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
+		populateGatheringEvent(ge, record);
+		return ge;
+	}
+
+	private static URI getUri(String url) throws URISyntaxException
+	{
+		url = url.trim().replaceAll(" ", "%20");
+		return new URI(url);
 	}
 
 	private static ServiceAccessPoint newServiceAccessPoint(URI uri)

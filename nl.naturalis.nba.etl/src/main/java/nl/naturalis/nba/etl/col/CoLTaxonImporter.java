@@ -38,6 +38,10 @@ public class CoLTaxonImporter extends CoLImporter {
 			String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 			importer.importCsv(dwcaDir + "/taxa.txt");
 		}
+		catch (Throwable t) {
+			logger.error("CoLTaxonImporter terminated unexpectedly!", t);
+			System.exit(1);
+		}
 		finally {
 			ESUtil.refreshIndex(TAXON);
 			ESClientManager.getInstance().closeClient();
@@ -90,9 +94,6 @@ public class CoLTaxonImporter extends CoLImporter {
 					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}
 			}
-		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
 		finally {
 			IOUtil.close(loader);

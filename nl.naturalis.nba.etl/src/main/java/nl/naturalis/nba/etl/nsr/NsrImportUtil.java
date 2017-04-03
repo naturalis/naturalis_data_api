@@ -117,7 +117,7 @@ class NsrImportUtil {
 			for (File file : files) {
 				int pos = file.getName().toLowerCase().indexOf(".xml");
 				String chopped = file.getName().substring(0, pos + 4);
-				System.out.println(file.getName() + " ---> " + chopped);
+				logger.info(file.getName() + " ---> " + chopped);
 				chopped = dir.getAbsolutePath() + "/" + chopped;
 				file.renameTo(new File(chopped));
 			}

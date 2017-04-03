@@ -35,6 +35,10 @@ public class GeoImporter {
 			GeoImporter importer = new GeoImporter();
 			importer.importAll();
 		}
+		catch (Throwable t) {
+			logger.error("GeoImporter terminated unexpectedly!", t);
+			System.exit(1);
+		}
 		finally {
 			ESUtil.refreshIndex(GEO_AREA);
 			ESClientManager.getInstance().closeClient();

@@ -6,6 +6,7 @@ import static nl.naturalis.nba.api.model.TaxonomicStatus.BASIONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.HOMONYM;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.MISSPELLED_NAME;
 import static nl.naturalis.nba.api.model.TaxonomicStatus.SYNONYM;
+import static nl.naturalis.nba.etl.ETLUtil.createScientificNameGroup;
 import static nl.naturalis.nba.etl.TransformUtil.parseDate;
 import static nl.naturalis.nba.etl.nsr.NsrImportUtil.val;
 import static nl.naturalis.nba.utils.DOMUtil.getChild;
@@ -34,7 +35,6 @@ import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.utils.DOMUtil;
 
 /**
@@ -87,7 +87,7 @@ class NsrTaxonTransformer extends AbstractXMLTransformer<Taxon> {
 			}
 			addSystemClassification(taxon);
 			addDefaultClassification(taxon);
-			String nameGroup = ETLUtil.createScientificNameGroup(taxon);
+			String nameGroup = createScientificNameGroup(taxon);
 			taxon.setScientificNameGroup(nameGroup);
 			taxon.setSourceSystem(NSR);
 			taxon.setSourceSystemId(objectID);

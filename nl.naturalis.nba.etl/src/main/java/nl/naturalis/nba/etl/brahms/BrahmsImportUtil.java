@@ -3,21 +3,9 @@ package nl.naturalis.nba.etl.brahms;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.AUTHOR1;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.AUTHOR2;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.AUTHOR3;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CONTINENT;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COUNTRY;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAY;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAYIDENT;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DETBY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.FAMCLASS;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.FAMILY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.GENUS;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LATITUDE;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LOCNOTES;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LONGITUDE;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MAJORAREA;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTH;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTHIDENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.ORDER;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.RANK1;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.RANK2;
@@ -25,39 +13,25 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SP1;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SP2;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SP3;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.SPECIES;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.VERNACULAR;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEAR;
-import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEARIDENT;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.LocalDate;
 
-import nl.naturalis.nba.api.model.Agent;
 import nl.naturalis.nba.api.model.DefaultClassification;
-import nl.naturalis.nba.api.model.GatheringEvent;
-import nl.naturalis.nba.api.model.GatheringSiteCoordinates;
 import nl.naturalis.nba.api.model.Monomial;
-import nl.naturalis.nba.api.model.MultiMediaGatheringEvent;
-import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
-import nl.naturalis.nba.api.model.SpecimenIdentification;
 import nl.naturalis.nba.api.model.TaxonomicRank;
-import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.dao.DaoRegistry;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLRegistry;
-import nl.naturalis.nba.etl.ETLUtil;
 import nl.naturalis.nba.etl.TransformUtil;
-import nl.naturalis.nba.utils.ConfigObject;
 
 /**
  * Provides common functionality related to the Brahms ETL cycle.
@@ -67,12 +41,8 @@ import nl.naturalis.nba.utils.ConfigObject;
  */
 class BrahmsImportUtil {
 
-	private static final Logger logger = ETLRegistry.getInstance()
-			.getLogger(BrahmsImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
-	private static final boolean suppressErrors = ConfigObject.isEnabled("brahms.suppress-errors");
-
-	private static final String MSG_INVALID_NUMBER = "Invalid number in field %s: \"%s\" (value set to 0)";
 
 	private BrahmsImportUtil()
 	{
@@ -127,155 +97,12 @@ class BrahmsImportUtil {
 		for (File file : files) {
 			int pos = file.getName().toLowerCase().indexOf(".csv");
 			String chopped = file.getName().substring(0, pos + 4);
-			System.out.println(file.getName() + " ---> " + chopped);
+			logger.info(file.getName() + " ---> " + chopped);
 			chopped = dir.getAbsolutePath() + "/" + chopped;
 			file.renameTo(new File(chopped));
 		}
 	}
 
-	/**
-	 * Constructs a {@code Date} object from the date fields in a Brahms export
-	 * file. If {@code year} or {@code month} are empty or zero, {@code null} is
-	 * returned. If {@code day} is empty or zero, the date is rounded to the
-	 * first day of the month. If {@code year}, {@code month} or {@code day} are
-	 * not numeric, a warning is logged, and {@code null} is returned. If
-	 * {@code month} or {@code day} are out-of-range (e.g. 13 for month), the
-	 * result is undefined.
-	 * 
-	 * @param year
-	 * @param month
-	 * @param day
-	 * @return
-	 */
-	static Date getDate(String year, String month, String day)
-	{
-		try {
-			if ((year = year.trim()).length() == 0)
-				return null;
-			int yearInt = (int) Float.parseFloat(year);
-			if (yearInt == 0)
-				return null;
-
-			if ((month = month.trim()).length() == 0)
-				return null;
-			int monthInt = (int) Float.parseFloat(month);
-			if (monthInt == 0)
-				return null;
-
-			int dayInt;
-			if ((day = day.trim()).length() == 0)
-				dayInt = 1;
-			else {
-				dayInt = (int) Float.parseFloat(day);
-				if (dayInt == 0)
-					dayInt = 1;
-			}
-			LocalDate date = new LocalDate(yearInt, monthInt, dayInt);
-			return date.toDate();
-		}
-		catch (Exception e) {
-			if (!suppressErrors) {
-				String fmt = "Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s";
-				logger.warn(String.format(fmt, year, month, day, e.getMessage()));
-			}
-			return null;
-		}
-	}
-
-	/**
-	 * Constructs a {@code Date} object from the date fields in a Brahms export
-	 * file. Used to construct a begin and end date from problematic gathering
-	 * event dates in the source data. If {@code year} is empty or zero,
-	 * {@code null} is returned. If {@code month} is empty or zero, the month is
-	 * set to january. If {@code day} is empty or zero, the day is set to the
-	 * first day or the last day of the month depending on the value of the
-	 * {@code lastDayOfMonth} argument. If {@code year}, {@code month} or
-	 * {@code day} are not numeric, a warning is logged, and {@code null} is
-	 * returned. If {@code month} or {@code day} are out-of-range (e.g. 13 for
-	 * month), the result is undefined.
-	 * 
-	 * @param year
-	 * @param month
-	 * @param day
-	 * @param lastDayOfMonth
-	 * @return
-	 */
-	static Date getDate(String year, String month, String day, boolean lastDayOfMonth)
-	{
-		try {
-
-			if ((year = year.trim()).length() == 0)
-				return null;
-			int yearInt = (int) Float.parseFloat(year);
-			if (yearInt == 0)
-				return null;
-
-			int monthInt;
-			if ((month = month.trim()).length() == 0)
-				monthInt = 1;
-			else {
-				monthInt = (int) Float.parseFloat(month);
-				if (monthInt == 0)
-					monthInt = 1;
-			}
-
-			int dayInt;
-			if ((day = day.trim()).length() == 0)
-				dayInt = -1;
-			else {
-				dayInt = (int) Float.parseFloat(day);
-				if (dayInt == 0)
-					dayInt = -1;
-			}
-			LocalDate date;
-			if (dayInt == -1) {
-				date = new LocalDate(yearInt, monthInt, 1);
-				if (lastDayOfMonth)
-					date = date.dayOfMonth().withMaximumValue();
-			}
-			else {
-				date = new LocalDate(yearInt, monthInt, dayInt);
-			}
-			return date.toDate();
-		}
-		catch (Exception e) {
-			if (!suppressErrors) {
-				String fmt = "Unable to construct date for year=\"%s\";month=\"%s\";day=\"%s\": %s";
-				logger.warn(String.format(fmt, year, month, day, e.getMessage()));
-			}
-			return null;
-		}
-	}
-
-	/**
-	 * Extracts a {@code SpecimenIdentification} instance from a raw CSV record.
-	 * 
-	 * @param record
-	 * @return
-	 */
-	static SpecimenIdentification getSpecimenIdentification(CSVRecordInfo<BrahmsCsvField> record)
-	{
-		SpecimenIdentification identification = new SpecimenIdentification();
-		String s = record.get(DETBY);
-		if (s != null)
-			identification.addIdentifier(new Agent(s));
-		s = record.get(VERNACULAR);
-		if (s != null)
-			identification.setVernacularNames(Arrays.asList(new VernacularName(s)));
-		String y = record.get(YEARIDENT);
-		String m = record.get(MONTHIDENT);
-		String d = record.get(DAYIDENT);
-		identification.setDateIdentified(getDate(y, m, d));
-		ScientificName sn = getScientificName(record);
-		DefaultClassification dc = getDefaultClassification(record, sn);
-		identification.setTaxonRank(getTaxonRank(record));
-		identification.setScientificName(sn);
-		identification.setDefaultClassification(dc);
-		identification.setSystemClassification(getSystemClassification(dc));
-		String nameGroup = ETLUtil.createScientificNameGroup(identification);
-		identification.setScientificNameGroup(nameGroup);
-		return identification;
-	}
 
 	/**
 	 * Extracts a {@code ScientificName} instance from a raw CSV record.
@@ -347,93 +174,6 @@ class BrahmsImportUtil {
 		return dc;
 	}
 
-	/**
-	 * Extracts a {@code GatheringEvent} instance from a raw CSV record.
-	 * 
-	 * @param record
-	 * @return
-	 */
-	static GatheringEvent getGatheringEvent(CSVRecordInfo<BrahmsCsvField> record)
-	{
-		GatheringEvent ge = new GatheringEvent();
-		populateGatheringEvent(ge, record);
-		return ge;
-	}
-
-	/**
-	 * Extracts a {@code MultiMediaGatheringEvent} instance from a raw CSV
-	 * record.
-	 * 
-	 * @param record
-	 * @return
-	 */
-	static MultiMediaGatheringEvent getMultiMediaGatheringEvent(
-			CSVRecordInfo<BrahmsCsvField> record)
-	{
-		MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
-		populateGatheringEvent(ge, record);
-		return ge;
-	}
-
-	private static void populateGatheringEvent(GatheringEvent ge,
-			CSVRecordInfo<BrahmsCsvField> record)
-	{
-		ge.setWorldRegion(record.get(CONTINENT));
-		ge.setContinent(ge.getWorldRegion());
-		ge.setCountry(record.get(COUNTRY));
-		ge.setProvinceState(record.get(MAJORAREA));
-		StringBuilder sb = new StringBuilder(50);
-		if (ge.getWorldRegion() != null) {
-			sb.append(ge.getWorldRegion());
-		}
-		if (ge.getCountry() != null) {
-			if (sb.length() != 0) {
-				sb.append("; ");
-			}
-			sb.append(ge.getCountry());
-		}
-		if (ge.getProvinceState() != null) {
-			if (sb.length() != 0) {
-				sb.append("; ");
-			}
-			sb.append(ge.getProvinceState());
-		}
-		String locNotes = record.get(LOCNOTES);
-		if (locNotes != null) {
-			ge.setLocality(locNotes);
-			if (sb.length() != 0) {
-				sb.append("; ");
-			}
-			sb.append(locNotes);
-		}
-		ge.setLocalityText(sb.toString());
-		String y = record.get(YEAR);
-		String m = record.get(MONTH);
-		String d = record.get(DAY);
-		ge.setDateTimeBegin(getDate(y, m, d, false));
-		ge.setDateTimeEnd(getDate(y, m, d, true));
-		Double lat = getDouble(record, LATITUDE);
-		Double lon = getDouble(record, LONGITUDE);
-		if (lat == 0D && lon == 0D) {
-			lat = null;
-			lon = null;
-		}
-		if (lon != null && (lon < -180D || lon > 180D)) {
-			logger.error("Invalid longitude: " + lon);
-			lon = null;
-		}
-		if (lat != null && (lat < -90D || lat > 90D)) {
-			logger.error("Invalid latitude: " + lat);
-			lat = null;
-		}
-		if (lat != null || lon != null) {
-			ge.setSiteCoordinates(Arrays.asList(new GatheringSiteCoordinates(lat, lon)));
-		}
-		String collector = record.get(COLLECTOR);
-		if (collector != null) {
-			ge.setGatheringPersons(Arrays.asList(new Person(collector)));
-		}
-	}
 
 	/**
 	 * Converts a {@code DefaultClassification} instance to a system
@@ -489,7 +229,7 @@ class BrahmsImportUtil {
 		return s == null ? record.get(SP2) : s;
 	}
 
-	private static String getTaxonRank(CSVRecordInfo<BrahmsCsvField> record)
+	static String getTaxonRank(CSVRecordInfo<BrahmsCsvField> record)
 	{
 		if (record.get(SP3) == null) {
 			if (record.get(SP2) == null) {
@@ -502,36 +242,6 @@ class BrahmsImportUtil {
 			return record.get(RANK1);
 		}
 		return record.get(RANK2);
-	}
-
-	public static Double getDouble(CSVRecordInfo<BrahmsCsvField> record, BrahmsCsvField field)
-	{
-		String s = record.get(field);
-		if (s == null)
-			return null;
-		try {
-			return Double.valueOf(s);
-		}
-		catch (NumberFormatException e) {
-			if (!suppressErrors)
-				logger.warn(String.format(MSG_INVALID_NUMBER, field.ordinal(), s));
-			return null;
-		}
-	}
-
-	public static Float getFloat(CSVRecordInfo<BrahmsCsvField> record, BrahmsCsvField field)
-	{
-		String s = record.get(field);
-		if (s == null)
-			return null;
-		try {
-			return Float.valueOf(s);
-		}
-		catch (NumberFormatException e) {
-			if (!suppressErrors)
-				logger.warn(String.format(MSG_INVALID_NUMBER, field.ordinal(), s));
-			return null;
-		}
 	}
 
 	private static File getDataDir()

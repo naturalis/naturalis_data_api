@@ -134,11 +134,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
-				if (o1.isPreferred())
-					return -1;
-				if (o2.isPreferred())
-					return 1;
-				return 0;
+				if (o1.isPreferred()) {
+					return o2.isPreferred() ? 0 : -1;
+				}
+				return o2.isPreferred() ? 1 : 0;
 			}
 		});
 
@@ -174,7 +173,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			}
 			specimen.setPreparationType(tmp);
 			specimen.setPhaseOrStage(getPhaseOrStage());
-			specimen.setTypeStatus(getTypeStatus());
 			specimen.setSex(getSex());
 			specimen.setGatheringEvent(getGatheringEvent());
 			stats.objectsAccepted++;
@@ -198,6 +196,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		SpecimenIdentification si = new SpecimenIdentification();
 		String s = val(elem, "abcd:PreferredFlag");
 		si.setPreferred(s == null || s.equals("1"));
+		si.setTypeStatus(getTypeStatus(elem));
 		si.setDateIdentified(date(elem, "abcd:IdentificationDate"));
 		si.setAssociatedFossilAssemblage(val(elem, "abcd:AssociatedFossilAssemblage"));
 		si.setAssociatedMineralName(val(elem, "abcd:AssociatedMineralName"));
@@ -475,9 +474,13 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		}
 	}
 
-	private SpecimenTypeStatus getTypeStatus()
+	private SpecimenTypeStatus getTypeStatus(Element elem)
 	{
-		String raw = val(input.getRecord(), "abcd:NomenclaturalTypeText");
+		String raw = val(elem, "abcd:NomenclaturalTypeText");
+		if (raw == null) {
+			warn("Missing type status");
+			return null;
+		}
 		try {
 			return tsNormalizer.map(raw);
 		}

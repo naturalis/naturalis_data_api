@@ -1,5 +1,6 @@
 package nl.naturalis.nba.etl.brahms;
 
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_LOADER_QUEUE_SIZE;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.SourceSystem;
 import nl.naturalis.nba.dao.DocumentType;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -32,8 +34,18 @@ public class BrahmsMultiMediaImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter();
-		importer.importCsvFiles();
+		try {
+			BrahmsMultiMediaImporter importer = new BrahmsMultiMediaImporter();
+			importer.importCsvFiles();
+		}
+		catch (Throwable t) {
+			logger.error("BrahmsMultiMediaImporter terminated unexpectedly!", t);
+			System.exit(1);
+		}
+		finally {
+			ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+			ESClientManager.getInstance().closeClient();
+		}
 	}
 
 	private static final Logger logger = getLogger(BrahmsMultiMediaImporter.class);
@@ -63,14 +75,9 @@ public class BrahmsMultiMediaImporter {
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
 		stats.setOneToMany(true);
-		try {
-			ESUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
-			for (File f : csvFiles) {
-				processFile(f, stats);
-			}
-		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+		ESUtil.truncate(DocumentType.MULTI_MEDIA_OBJECT, SourceSystem.BRAHMS);
+		for (File f : csvFiles) {
+			processFile(f, stats);
 		}
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();

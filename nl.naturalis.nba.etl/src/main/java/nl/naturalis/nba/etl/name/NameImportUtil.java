@@ -71,7 +71,6 @@ public class NameImportUtil {
 		summary.setPhaseOrStage(specimen.getPhaseOrStage());
 		summary.setSex(specimen.getSex());
 		summary.setSourceSystem(copySourceSystem(specimen.getSourceSystem()));
-		summary.setTypeStatus(specimen.getTypeStatus());
 		summary.setGatheringEvent(copyGatheringEvent(specimen.getGatheringEvent()));
 		summary.setUnitID(specimen.getUnitID());
 		return summary;
@@ -196,6 +195,7 @@ public class NameImportUtil {
 	private static SummarySpecimenIdentification copyIdentification(SpecimenIdentification si)
 	{
 		SummarySpecimenIdentification ssi = new SummarySpecimenIdentification();
+		ssi.setTypeStatus(si.getTypeStatus());
 		ssi.setDefaultClassification(si.getDefaultClassification());
 		ssi.setScientificName(copyScientificName(si.getScientificName()));
 		ssi.setTaxonomicEnrichments(si.getTaxonomicEnrichments());

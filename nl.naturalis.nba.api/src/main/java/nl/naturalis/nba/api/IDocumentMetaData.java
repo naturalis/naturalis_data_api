@@ -15,7 +15,7 @@ import nl.naturalis.nba.api.model.metadata.FieldInfo;
  *            The class representing the Elasticsearch document about which you
  *            get through an implementation of this interface.
  */
-public interface INbaMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
+public interface IDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
 	 * <p>

@@ -84,9 +84,9 @@ public class NbaSession {
 	 * 
 	 * @return
 	 */
-	public NameGroupClient getNameGroupClient()
+	public ScientificNameGroupClient getNameGroupClient()
 	{
-		return new NameGroupClient(cfg, "names/");
+		return new ScientificNameGroupClient(cfg, "names/");
 	}
 
 	/**

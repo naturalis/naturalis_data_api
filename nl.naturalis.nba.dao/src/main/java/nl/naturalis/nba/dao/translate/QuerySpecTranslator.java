@@ -79,7 +79,12 @@ public class QuerySpecTranslator {
 			request.setQuery(query);
 		}
 		if (spec.getFields() != null) {
-			addFields(request);
+			if (spec.getFields().isEmpty()) {
+				request.setFetchSource(false);
+			}
+			else {
+				addFields(request);
+			}
 		}
 		request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
 		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());

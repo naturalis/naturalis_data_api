@@ -4,7 +4,7 @@ import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 
 import nl.naturalis.nba.api.model.Specimen;
 
-public class SpecimenMetaDataDao extends MetaDataDao<Specimen> {
+public class SpecimenMetaDataDao extends DocumentMetaDataDao<Specimen> {
 
 	public SpecimenMetaDataDao()
 	{

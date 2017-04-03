@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
-import nl.naturalis.nba.dao.NameGroupMetaDataDao;
+import nl.naturalis.nba.dao.ScientificNameGroupMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
 @SuppressWarnings("static-method")
@@ -41,7 +41,7 @@ public class ScientificNameGroupMetaDataResource {
 	public String[] getPaths(@Context UriInfo uriInfo)
 	{
 		try {
-			NameGroupMetaDataDao dao = new NameGroupMetaDataDao();
+			ScientificNameGroupMetaDataDao dao = new ScientificNameGroupMetaDataDao();
 			String s = uriInfo.getQueryParameters().getFirst("sorted");
 			boolean sorted = ConfigObject.isTrueValue(s);
 			return dao.getPaths(sorted);
@@ -58,7 +58,7 @@ public class ScientificNameGroupMetaDataResource {
 	public Map<String, FieldInfo> getFieldInfo(@Context UriInfo uriInfo)
 	{
 		try {
-			NameGroupMetaDataDao dao = new NameGroupMetaDataDao();
+			ScientificNameGroupMetaDataDao dao = new ScientificNameGroupMetaDataDao();
 			String param = uriInfo.getQueryParameters().getFirst("fields");
 			String[] fields = null;
 			if (param != null) {
@@ -79,7 +79,7 @@ public class ScientificNameGroupMetaDataResource {
 	{
 		try {
 			ComparisonOperator op = ComparisonOperator.parse(operator);
-			NameGroupMetaDataDao dao = new NameGroupMetaDataDao();
+			ScientificNameGroupMetaDataDao dao = new ScientificNameGroupMetaDataDao();
 			return dao.isOperatorAllowed(field, op);
 		}
 		catch (Throwable t) {

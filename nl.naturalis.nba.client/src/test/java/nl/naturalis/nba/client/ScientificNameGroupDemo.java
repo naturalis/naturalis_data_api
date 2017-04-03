@@ -2,7 +2,7 @@ package nl.naturalis.nba.client;
 
 import java.util.Arrays;
 
-import nl.naturalis.nba.api.INameGroupAccess;
+import nl.naturalis.nba.api.IScientificNameGroupAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.QueryCondition;
@@ -19,7 +19,7 @@ public class ScientificNameGroupDemo {
 	{
 		String baseUrl = "http://localhost:8080/v2";
 		NbaSession session = new NbaSession(new ClientConfig(baseUrl));
-		INameGroupAccess client = session.getNameGroupClient();
+		IScientificNameGroupAccess client = session.getNameGroupClient();
 		NameGroupQuerySpec qs = new NameGroupQuerySpec();
 		//SortField sf = new SortField("matchingIdentifications.scientificName.fullScientificName");
 		//SortField sf = new SortField("gatheringEvent.localityText");

@@ -4,7 +4,7 @@ import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
 
 import nl.naturalis.nba.api.model.GeoArea;
 
-public class GeoAreaMetaDataDao extends MetaDataDao<GeoArea> {
+public class GeoAreaMetaDataDao extends DocumentMetaDataDao<GeoArea> {
 
 	public GeoAreaMetaDataDao()
 	{

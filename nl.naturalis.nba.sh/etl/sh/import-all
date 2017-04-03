@@ -7,8 +7,8 @@ scripts=" \
 	nsr-import_reset \
 	nsr-import_taxa \
 	nsr-import_multimedia \
-	col-import \
 	geo-import \
+	col-import \
 	brahms-import_reset \
 	brahms-import_specimens \
 	brahms-import_multimedia \

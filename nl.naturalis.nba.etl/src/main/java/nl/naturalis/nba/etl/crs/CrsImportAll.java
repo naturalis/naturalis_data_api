@@ -1,8 +1,12 @@
 package nl.naturalis.nba.etl.crs;
 
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+
 import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.dao.ESClientManager;
+import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 
 /**
@@ -18,18 +22,23 @@ import nl.naturalis.nba.etl.ETLRegistry;
  */
 public class CrsImportAll {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
 		try {
 			CrsImportAll crsImportAll = new CrsImportAll();
 			crsImportAll.importAll();
 		}
+		catch (Throwable t) {
+			logger.error("CrsImportAll terminated unexpectedly!", t);
+			System.exit(1);
+		}
 		finally {
+			ESUtil.refreshIndex(SPECIMEN);
+			ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(CrsImportAll.class);
 
 	/**

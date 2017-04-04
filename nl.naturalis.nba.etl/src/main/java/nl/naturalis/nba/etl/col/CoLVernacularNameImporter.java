@@ -24,7 +24,7 @@ import nl.naturalis.nba.utils.IOUtil;
  */
 public class CoLVernacularNameImporter extends CoLImporter {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
 		CoLVernacularNameImporter importer = new CoLVernacularNameImporter();
 		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
@@ -74,9 +74,6 @@ public class CoLVernacularNameImporter extends CoLImporter {
 					logger.info("Documents indexed: {}", stats.documentsIndexed);
 				}
 			}
-		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
 		}
 		finally {
 			IOUtil.close(loader);

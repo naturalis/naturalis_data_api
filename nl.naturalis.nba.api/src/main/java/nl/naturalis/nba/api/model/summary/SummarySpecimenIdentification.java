@@ -5,26 +5,26 @@ import java.util.List;
 import nl.naturalis.nba.api.model.DefaultClassification;
 import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.api.model.Monomial;
+import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.TaxonomicEnrichment;
 
 public class SummarySpecimenIdentification implements INbaModelObject {
 
+	private SpecimenTypeStatus typeStatus;
 	private SummaryScientificName scientificName;
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
 	private List<SummaryVernacularName> vernacularNames;
 	private List<TaxonomicEnrichment> taxonomicEnrichments;
 
-	
-	public List<TaxonomicEnrichment> getTaxonomicEnrichments()
+	public SpecimenTypeStatus getTypeStatus()
 	{
-		return taxonomicEnrichments;
+		return typeStatus;
 	}
 
-	
-	public void setTaxonomicEnrichments(List<TaxonomicEnrichment> taxonomicEnrichments)
+	public void setTypeStatus(SpecimenTypeStatus typeStatus)
 	{
-		this.taxonomicEnrichments = taxonomicEnrichments;
+		this.typeStatus = typeStatus;
 	}
 
 	public SummaryScientificName getScientificName()
@@ -65,6 +65,16 @@ public class SummarySpecimenIdentification implements INbaModelObject {
 	public void setVernacularNames(List<SummaryVernacularName> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
+	}
+
+	public List<TaxonomicEnrichment> getTaxonomicEnrichments()
+	{
+		return taxonomicEnrichments;
+	}
+
+	public void setTaxonomicEnrichments(List<TaxonomicEnrichment> taxonomicEnrichments)
+	{
+		this.taxonomicEnrichments = taxonomicEnrichments;
 	}
 
 }

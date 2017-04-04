@@ -17,8 +17,8 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
@@ -43,7 +43,12 @@ public class CrsSpecimenImportOffline {
 			CrsSpecimenImportOffline importer = new CrsSpecimenImportOffline();
 			importer.importSpecimens();
 		}
+		catch (Throwable t) {
+			logger.error("CrsSpecimenImportOffline terminated unexpectedly!", t);
+			System.exit(1);
+		}
 		finally {
+			ESUtil.refreshIndex(SPECIMEN);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -78,7 +83,7 @@ public class CrsSpecimenImportOffline {
 		long start = System.currentTimeMillis();
 		File[] xmlFiles = getXmlFiles();
 		if (xmlFiles.length == 0) {
-			logger.error("No specimen oai.xml files found. Check nda-import.propties");
+			logger.error("No specimen oai.xml files found. Check nba.propties");
 			return;
 		}
 		ESUtil.truncate(SPECIMEN, CRS);

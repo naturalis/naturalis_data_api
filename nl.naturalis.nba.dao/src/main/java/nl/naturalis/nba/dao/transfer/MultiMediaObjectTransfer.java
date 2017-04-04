@@ -1,11 +1,9 @@
 package nl.naturalis.nba.dao.transfer;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.dao.types.ESMultiMediaObject;
 
 @Deprecated
@@ -52,7 +50,6 @@ public class MultiMediaObjectTransfer {
 
 		mmo.setPhasesOrStages(esMmo.getPhasesOrStages());
 		mmo.setSexes(esMmo.getSexes());
-		mmo.setSpecimenTypeStatus(SpecimenTypeStatus.parse(esMmo.getSpecimenTypeStatus()));
 		mmo.setSubjectOrientations(esMmo.getSubjectOrientations());
 		mmo.setSubjectParts(esMmo.getSubjectParts());
 		mmo.setTaxonCount(esMmo.getTaxonCount());

@@ -85,9 +85,6 @@ public class CoLReferenceImporter extends CoLImporter {
 				}
 			}
 		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
-		}
 		finally {
 			IOUtil.close(loader);
 		}

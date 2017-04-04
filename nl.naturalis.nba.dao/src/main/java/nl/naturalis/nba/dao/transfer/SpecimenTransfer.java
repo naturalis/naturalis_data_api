@@ -35,7 +35,7 @@ public class SpecimenTransfer {
 		out.setTitle(in.getTitle());
 		out.setNotes(in.getNotes());
 		out.setPreparationType(in.getPreparationType());
-		out.setTypeStatus(in.getTypeStatus());
+		//out.setTypeStatus(in.getTypeStatus());
 		out.setNumberOfSpecimen(in.getNumberOfSpecimen());
 		out.setFromCaptivity(in.isFromCaptivity());
 		out.setObjectPublic(in.isObjectPublic());
@@ -68,7 +68,7 @@ public class SpecimenTransfer {
 		out.setTitle(in.getTitle());
 		out.setNotes(in.getNotes());
 		out.setPreparationType(in.getPreparationType());
-		out.setTypeStatus(in.getTypeStatus());
+		//out.setTypeStatus(in.getTypeStatus());
 		out.setNumberOfSpecimen(in.getNumberOfSpecimen());
 		out.setFromCaptivity(in.isFromCaptivity());
 		out.setObjectPublic(in.isObjectPublic());

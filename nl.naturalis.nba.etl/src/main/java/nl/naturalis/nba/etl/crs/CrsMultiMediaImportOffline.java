@@ -17,8 +17,8 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLRegistry;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.ETLUtil;
+import nl.naturalis.nba.etl.LoadConstants;
 import nl.naturalis.nba.etl.MimeTypeCacheFactory;
 import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.XMLRecordInfo;
@@ -44,7 +44,12 @@ public class CrsMultiMediaImportOffline {
 			CrsMultiMediaImportOffline importer = new CrsMultiMediaImportOffline();
 			importer.importMultimedia();
 		}
+		catch (Throwable t) {
+			logger.error("CrsImportAll terminated unexpectedly!", t);
+			System.exit(1);
+		}
 		finally {
+			ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
 			ESClientManager.getInstance().closeClient();
 		}
 	}

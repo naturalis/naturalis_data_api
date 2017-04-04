@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.ETLStatistics;
 import nl.naturalis.nba.etl.ETLUtil;
@@ -37,18 +38,36 @@ public class NsrImporter {
 
 	public static void main(String[] args)
 	{
-		if (args.length == 0)
-			new NsrImporter().importAll();
-		else if (args[0].equalsIgnoreCase("taxa"))
-			new NsrImporter().importTaxa();
-		else if (args[0].equalsIgnoreCase("multimedia"))
-			new NsrImporter().importMultiMedia();
-		else if (args[0].equalsIgnoreCase("backup"))
-			new NsrImporter().backup();
-		else if (args[0].equalsIgnoreCase("reset"))
-			new NsrImporter().reset();
-		else
-			logger.error("Invalid argument: " + args[0]);
+		try {
+			if (args.length == 0) {
+				new NsrImporter().importAll();
+			}
+			else if (args[0].equalsIgnoreCase("taxa")) {
+				new NsrImporter().importTaxa();
+			}
+			else if (args[0].equalsIgnoreCase("multimedia")) {
+				new NsrImporter().importMultiMedia();
+			}
+			else if (args[0].equalsIgnoreCase("backup")) {
+				new NsrImporter().backup();
+			}
+			else if (args[0].equalsIgnoreCase("reset")) {
+				new NsrImporter().reset();
+			}
+		}
+		catch (Throwable t) {
+			logger.error("CrsImportAll terminated unexpectedly!", t);
+			System.exit(1);
+		}
+		finally {
+			if (args.length == 0 || args[0].equalsIgnoreCase("taxa")) {
+				ESUtil.refreshIndex(TAXON);
+			}
+			if (args.length == 0 || args[0].equalsIgnoreCase("multimedia")) {
+				ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+			}
+			ESClientManager.getInstance().closeClient();
+		}
 	}
 
 	private static final Logger logger = getLogger(NsrImporter.class);

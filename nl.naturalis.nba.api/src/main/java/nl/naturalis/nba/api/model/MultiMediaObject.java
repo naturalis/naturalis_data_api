@@ -52,7 +52,6 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	private String copyrightText;
 	private String associatedSpecimenReference;
 	private String associatedTaxonReference;
-	private SpecimenTypeStatus specimenTypeStatus;
 	private boolean multiMediaPublic;
 	private List<String> subjectParts;
 	private List<String> subjectOrientations;
@@ -265,16 +264,6 @@ public class MultiMediaObject extends NbaTraceableObject implements IDocumentObj
 	public void setAssociatedTaxonReference(String associatedTaxonReference)
 	{
 		this.associatedTaxonReference = associatedTaxonReference;
-	}
-
-	public SpecimenTypeStatus getSpecimenTypeStatus()
-	{
-		return specimenTypeStatus;
-	}
-
-	public void setSpecimenTypeStatus(SpecimenTypeStatus specimenTypeStatus)
-	{
-		this.specimenTypeStatus = specimenTypeStatus;
 	}
 
 	public boolean isMultiMediaPublic()

@@ -12,7 +12,6 @@ import nl.naturalis.nba.api.annotations.NotIndexed;
 import nl.naturalis.nba.api.model.INbaModelObject;
 import nl.naturalis.nba.api.model.PhaseOrStage;
 import nl.naturalis.nba.api.model.Sex;
-import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 
 public class SummarySpecimen implements INbaModelObject {
 
@@ -23,7 +22,6 @@ public class SummarySpecimen implements INbaModelObject {
 	private String unitID;
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String collectorsFieldNumber;
-	private SpecimenTypeStatus typeStatus;
 	private Sex sex;
 	private PhaseOrStage phaseOrStage;
 	private SummaryGatheringEvent gatheringEvent;
@@ -102,16 +100,6 @@ public class SummarySpecimen implements INbaModelObject {
 	public void setCollectorsFieldNumber(String collectorsFieldNumber)
 	{
 		this.collectorsFieldNumber = collectorsFieldNumber;
-	}
-
-	public SpecimenTypeStatus getTypeStatus()
-	{
-		return typeStatus;
-	}
-
-	public void setTypeStatus(SpecimenTypeStatus typeStatus)
-	{
-		this.typeStatus = typeStatus;
 	}
 
 	public Sex getSex()

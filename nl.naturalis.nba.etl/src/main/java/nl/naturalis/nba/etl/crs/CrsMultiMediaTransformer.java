@@ -30,7 +30,6 @@ import nl.naturalis.nba.api.model.MultiMediaObject;
 import nl.naturalis.nba.api.model.Person;
 import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.ServiceAccessPoint;
-import nl.naturalis.nba.api.model.SpecimenTypeStatus;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.AbstractXMLTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
@@ -40,8 +39,6 @@ import nl.naturalis.nba.etl.ThemeCache;
 import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.PhaseOrStageNormalizer;
 import nl.naturalis.nba.etl.normalize.SexNormalizer;
-import nl.naturalis.nba.etl.normalize.SpecimenTypeStatusNormalizer;
-import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
 /**
  * The transformer component for the CRS multimedia import.
@@ -52,7 +49,6 @@ import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> {
 
 	private final PhaseOrStageNormalizer posNormalizer;
-	private final SpecimenTypeStatusNormalizer tsNormalizer;
 	private final SexNormalizer sexNormalizer;
 	private final MimeTypeCache mimetypeCache;
 	private final ThemeCache themeCache;
@@ -68,7 +64,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		themeCache = ThemeCache.getInstance();
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
 		posNormalizer = PhaseOrStageNormalizer.getInstance();
-		tsNormalizer = SpecimenTypeStatusNormalizer.getInstance();
 		sexNormalizer = SexNormalizer.getInstance();
 	}
 
@@ -180,7 +175,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			first.setGatheringEvents(Arrays.asList(getGatheringEvent(dc)));
 			String temp = getPhaseOrStage(dc);
 			first.setPhasesOrStages(temp == null ? null : Arrays.asList(temp));
-			first.setSpecimenTypeStatus(getTypeStatus(dc));
 			temp = getSex(dc);
 			first.setSexes(temp == null ? null : Arrays.asList(temp));
 			first.setCollectionType(val(dc, "abcd:CollectionType"));
@@ -208,7 +202,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		MultiMediaObject next = new MultiMediaObject();
 		next.setGatheringEvents(first.getGatheringEvents());
 		next.setPhasesOrStages(first.getPhasesOrStages());
-		next.setSpecimenTypeStatus(first.getSpecimenTypeStatus());
 		next.setSexes(first.getSexes());
 		next.setCollectionType(first.getCollectionType());
 		next.setSourceSystem(first.getSourceSystem());
@@ -295,8 +288,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		String title = val(e, "dc:title");
 		if (title == null) {
 			title = unitID;
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				debug("Missing or empty element <dc:title>");
+			}
 		}
 		return title;
 	}
@@ -409,25 +403,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			return null;
 		String result = posNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			if (!suppressErrors)
-				warn("Ignoring rogue value for PhaseOrStage: " + raw);
-			return null;
-		}
-		return result;
-	}
-
-	private SpecimenTypeStatus getTypeStatus(Element record)
-	{
-		String raw = val(record, "abcd:TypeStatus");
-		if (raw == null)
-			return null;
-		SpecimenTypeStatus result;
-		try {
-			result = tsNormalizer.map(raw);
-		}
-		catch (UnmappedValueException e) {
-			if (!suppressErrors)
-				warn("Ignoring rogue value for TypeStatus: " + raw);
+			if (logger.isDebugEnabled())
+				debug("Ignoring rogue value for PhaseOrStage: " + raw);
 			return null;
 		}
 		return result;
@@ -440,8 +417,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			return null;
 		String result = sexNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			if (!suppressErrors)
-				warn("Ignoring rogue value for Sex: " + raw);
+			if (logger.isDebugEnabled())
+				debug("Ignoring rogue value for Sex: " + raw);
 			return null;
 		}
 		return result;

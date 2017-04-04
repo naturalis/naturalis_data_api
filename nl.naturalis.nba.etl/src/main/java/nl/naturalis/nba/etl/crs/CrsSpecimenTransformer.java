@@ -89,9 +89,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
-			if (logger.isInfoEnabled()) {
-				info("Skipping record with status \"deleted\"");
-			}
+			info("Skipping record with status \"deleted\"");
 			return null;
 		}
 
@@ -106,8 +104,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsDetermination");
 		if (elems == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing element: <ncrsDetermination>");
+			}
 			return null;
 		}
 
@@ -134,11 +133,10 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 			public int compare(SpecimenIdentification o1, SpecimenIdentification o2)
 			{
-				if (o1.isPreferred())
-					return -1;
-				if (o2.isPreferred())
-					return 1;
-				return 0;
+				if (o1.isPreferred()) {
+					return o2.isPreferred() ? 0 : -1;
+				}
+				return o2.isPreferred() ? 1 : 0;
 			}
 		});
 
@@ -174,7 +172,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			}
 			specimen.setPreparationType(tmp);
 			specimen.setPhaseOrStage(getPhaseOrStage());
-			specimen.setTypeStatus(getTypeStatus());
 			specimen.setSex(getSex());
 			specimen.setGatheringEvent(getGatheringEvent());
 			stats.objectsAccepted++;
@@ -198,6 +195,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		SpecimenIdentification si = new SpecimenIdentification();
 		String s = val(elem, "abcd:PreferredFlag");
 		si.setPreferred(s == null || s.equals("1"));
+		si.setTypeStatus(getTypeStatus(elem));
 		si.setDateIdentified(date(elem, "abcd:IdentificationDate"));
 		si.setAssociatedFossilAssemblage(val(elem, "abcd:AssociatedFossilAssemblage"));
 		si.setAssociatedMineralName(val(elem, "abcd:AssociatedMineralName"));
@@ -427,7 +425,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	@Override
 	protected String messagePrefix()
 	{
-		return super.messagePrefix() + rpad(databaseID, 12, " | ");
+		return super.messagePrefix() + rpad(databaseID, 10, " | ");
 	}
 
 	private LithoStratigraphy getLithoStratigraphyObject(Element e)
@@ -468,22 +466,26 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return posNormalizer.map(raw);
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}
 	}
 
-	private SpecimenTypeStatus getTypeStatus()
+	private SpecimenTypeStatus getTypeStatus(Element elem)
 	{
-		String raw = val(input.getRecord(), "abcd:NomenclaturalTypeText");
+		String raw = val(elem, "abcd:NomenclaturalTypeText");
+		if (raw == null) {
+			warn("Missing type status");
+			return null;
+		}
 		try {
 			return tsNormalizer.map(raw);
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}
@@ -496,8 +498,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return sexNormalizer.map(raw);
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}
@@ -556,8 +558,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return Integer.parseInt(s);
 		}
 		catch (NumberFormatException exc) {
-			if (suppressErrors)
+			if (suppressErrors) {
 				warn("Invalid integer in element <%s>: \"%s\"", tag, s);
+			}
 			return 0;
 		}
 	}
@@ -572,8 +575,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	{
 		String s = DOMUtil.getDescendantValue(e, tag);
 		if (s == null) {
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				debug("No element <%s> under element <%s>", tag, e.getTagName());
+			}
 			return null;
 		}
 		return ((s = s.trim()).length() == 0 ? null : s);

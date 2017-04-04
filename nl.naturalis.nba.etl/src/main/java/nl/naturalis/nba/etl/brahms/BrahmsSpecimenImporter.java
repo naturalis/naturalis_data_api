@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.Logger;
 
+import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVExtractor;
 import nl.naturalis.nba.etl.CSVRecordInfo;
@@ -32,8 +33,18 @@ public class BrahmsSpecimenImporter {
 
 	public static void main(String[] args) throws Exception
 	{
-		BrahmsSpecimenImporter importer = new BrahmsSpecimenImporter();
-		importer.importCsvFiles();
+		try {
+			BrahmsSpecimenImporter importer = new BrahmsSpecimenImporter();
+			importer.importCsvFiles();
+		}
+		catch (Throwable t) {
+			logger.error("BrahmsSpecimenImporter terminated unexpectedly!", t);
+			System.exit(1);
+		}
+		finally {
+			ESUtil.refreshIndex(SPECIMEN);
+			ESClientManager.getInstance().closeClient();
+		}
 	}
 
 	private static final Logger logger = getLogger(BrahmsSpecimenImporter.class);
@@ -63,14 +74,9 @@ public class BrahmsSpecimenImporter {
 		SpecimenTypeStatusNormalizer.getInstance().resetStatistics();
 		ThemeCache.getInstance().resetMatchCounters();
 		ETLStatistics stats = new ETLStatistics();
-		try {
-			ESUtil.truncate(SPECIMEN, BRAHMS);
-			for (File f : csvFiles) {
-				processFile(f, stats);
-			}
-		}
-		catch (Throwable t) {
-			logger.error(getClass().getSimpleName() + " terminated unexpectedly!", t);
+		ESUtil.truncate(SPECIMEN, BRAHMS);
+		for (File f : csvFiles) {
+			processFile(f, stats);
 		}
 		SpecimenTypeStatusNormalizer.getInstance().logStatistics();
 		ThemeCache.getInstance().logMatchInfo();

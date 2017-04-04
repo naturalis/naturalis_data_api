@@ -208,10 +208,10 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	protected void error(String pattern, Object... args)
 	{
 		if (args.length == 0) {
-			logger.error(pattern);
+			logger.error(messagePrefix() + pattern);
 		}
 		else if (args.length == 1 && args[0] instanceof Throwable) {
-			logger.error(pattern, (Throwable) args[0]);
+			logger.error(messagePrefix() + pattern, (Throwable) args[0]);
 		}
 		else {
 			String msg = messagePrefix() + String.format(pattern, args);
@@ -231,10 +231,10 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	protected void warn(String pattern, Object... args)
 	{
 		if (args.length == 0) {
-			logger.warn(pattern);
+			logger.warn(messagePrefix() + pattern);
 		}
 		else if (args.length == 1 && args[0] instanceof Throwable) {
-			logger.warn(pattern, (Throwable) args[0]);
+			logger.warn(messagePrefix() + pattern, (Throwable) args[0]);
 		}
 		else {
 			String msg = messagePrefix() + String.format(pattern, args);
@@ -254,10 +254,10 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	protected void info(String pattern, Object... args)
 	{
 		if (args.length == 0) {
-			logger.info(pattern);
+			logger.info(messagePrefix() + pattern);
 		}
 		else if (args.length == 1 && args[0] instanceof Throwable) {
-			logger.info(pattern, (Throwable) args[0]);
+			logger.info(messagePrefix() + pattern, (Throwable) args[0]);
 		}
 		else {
 			String msg = messagePrefix() + String.format(pattern, args);
@@ -277,10 +277,10 @@ public abstract class AbstractTransformer<INPUT, OUTPUT extends IDocumentObject>
 	protected void debug(String pattern, Object... args)
 	{
 		if (args.length == 0) {
-			logger.debug(pattern);
+			logger.debug(messagePrefix() + pattern);
 		}
 		else if (args.length == 1 && args[0] instanceof Throwable) {
-			logger.debug(pattern, (Throwable) args[0]);
+			logger.debug(messagePrefix() + pattern, (Throwable) args[0]);
 		}
 		else {
 			String msg = messagePrefix() + String.format(pattern, args);

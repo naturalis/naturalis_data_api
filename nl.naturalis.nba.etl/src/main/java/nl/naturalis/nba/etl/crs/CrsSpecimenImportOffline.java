@@ -83,7 +83,7 @@ public class CrsSpecimenImportOffline {
 		long start = System.currentTimeMillis();
 		File[] xmlFiles = getXmlFiles();
 		if (xmlFiles.length == 0) {
-			logger.error("No specimen oai.xml files found. Check nda-import.propties");
+			logger.error("No specimen oai.xml files found. Check nba.propties");
 			return;
 		}
 		ESUtil.truncate(SPECIMEN, CRS);

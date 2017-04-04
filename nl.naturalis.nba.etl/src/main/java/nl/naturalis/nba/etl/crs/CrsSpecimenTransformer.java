@@ -89,9 +89,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 
 		if (hasStatusDeleted()) {
 			stats.recordsSkipped++;
-			if (logger.isInfoEnabled()) {
-				info("Skipping record with status \"deleted\"");
-			}
+			info("Skipping record with status \"deleted\"");
 			return null;
 		}
 
@@ -106,8 +104,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		List<Element> elems = DOMUtil.getDescendants(record, "ncrsDetermination");
 		if (elems == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing element: <ncrsDetermination>");
+			}
 			return null;
 		}
 
@@ -426,7 +425,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	@Override
 	protected String messagePrefix()
 	{
-		return super.messagePrefix() + rpad(databaseID, 12, " | ");
+		return super.messagePrefix() + rpad(databaseID, 10, " | ");
 	}
 
 	private LithoStratigraphy getLithoStratigraphyObject(Element e)
@@ -467,8 +466,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return posNormalizer.map(raw);
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}
@@ -485,8 +484,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return tsNormalizer.map(raw);
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}
@@ -499,8 +498,8 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return sexNormalizer.map(raw);
 		}
 		catch (UnmappedValueException e) {
-			if (!suppressErrors) {
-				warn(e.getMessage());
+			if (logger.isDebugEnabled()) {
+				debug(e.getMessage());
 			}
 			return null;
 		}
@@ -559,8 +558,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			return Integer.parseInt(s);
 		}
 		catch (NumberFormatException exc) {
-			if (suppressErrors)
+			if (suppressErrors) {
 				warn("Invalid integer in element <%s>: \"%s\"", tag, s);
+			}
 			return 0;
 		}
 	}
@@ -575,8 +575,9 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 	{
 		String s = DOMUtil.getDescendantValue(e, tag);
 		if (s == null) {
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				debug("No element <%s> under element <%s>", tag, e.getTagName());
+			}
 			return null;
 		}
 		return ((s = s.trim()).length() == 0 ? null : s);

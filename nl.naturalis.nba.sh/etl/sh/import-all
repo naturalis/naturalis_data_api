@@ -21,13 +21,15 @@ scripts=" \
 for script in $scripts
 do
   script=${script/_/ }
+  echo
   echo Executing $script ...
   script="./${script}"
   $script
   result=$?
   if [ "$result" != 0 ]
   then
-    Error while executing $script. Import aborted
+    finish=$(date)
+    echo "Error while executing $script. Import aborted"
 	echo "Import started at ${start}"
 	echo "Import aborted at ${finish}"
     exit $result

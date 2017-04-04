@@ -82,7 +82,6 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 			mmo.setDescription(input.get(PLANTDESC));
 			mmo.setGatheringEvents(Arrays.asList(getMultiMediaGatheringEvent(input)));
 			mmo.setIdentifications(Arrays.asList(getIdentification()));
-			mmo.setSpecimenTypeStatus(getTypeStatus());
 			mmo.addServiceAccessPoint(newServiceAccessPoint(uri));
 			stats.objectsAccepted++;
 			return mmo;

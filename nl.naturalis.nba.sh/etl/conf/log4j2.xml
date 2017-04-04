@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- log4j configuration for unit tests -->
 <Configuration>
 	<Appenders>
 		<Console name="CONSOLE">
@@ -10,13 +9,13 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="org.elasticsearch" level="ERROR" additivity="false">
+		<Logger name="nl.naturalis" level="INFO" additivity="false">
 			<AppenderRef ref="FILE" />
-			<AppenderRef ref="CONSOLE" />
+			<!--  AppenderRef ref="CONSOLE" / -->
 		</Logger>
-		<Root level="INFO">
+		<Root level="ERROR">
 			<AppenderRef ref="FILE" />
-			<AppenderRef ref="CONSOLE" />
+			<!-- AppenderRef ref="CONSOLE" / -->
 		</Root>
 	</Loggers>
 </Configuration>

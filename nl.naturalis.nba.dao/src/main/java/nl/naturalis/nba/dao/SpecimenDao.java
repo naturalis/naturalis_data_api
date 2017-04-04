@@ -124,31 +124,8 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 			names[i] = name.substring(0, name.indexOf('.'));
 		}
 		
+		names[0] = "empty";
 		return names;
-		
-		//		File dir = getDocumentTypeDirectory(SPECIMEN);
-		//		ArrayList<String> names = new ArrayList<>(32);
-		//		for (File subdir : getSubdirectories(dir)) {
-		//			if (subdir.getName().equals("dynamic"))
-		//				continue; // Special directory for dynamic DwCA
-		//			if (!containsFile(subdir, "fields.config"))
-		//				continue; // Can't be a data set collection dir
-		//			File[] dataSetDirs = getSubdirectories(subdir);
-		//			if (dataSetDirs.length == 0) {
-		//				if (containsFile(subdir, "eml.xml")) {
-		//					names.add(subdir.getName());
-		//				}
-		//			}
-		//			else {
-		//				for (File dataSetDir : dataSetDirs) {
-		//					if (containsFile(dataSetDir, "eml.xml")) {
-		//						names.add(dataSetDir.getName());
-		//					}
-		//				}
-		//			}
-		//		}
-		//		return names.toArray(new String[names.size()]);
-
 		// return null;
 	}
 

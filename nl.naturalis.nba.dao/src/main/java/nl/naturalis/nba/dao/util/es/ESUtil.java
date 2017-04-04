@@ -289,13 +289,25 @@ public class ESUtil {
 	}
 
 	/**
+	 * Returns the value of the specified Elasticsearch index setting.
+	 * 
+	 * @param dt
+	 * @param setting
+	 * @return
+	 */
+	public static String getIndexSetting(DocumentType<?> dt, String setting)
+	{
+		return getIndexSetting(dt.getIndexInfo(), setting);
+	}
+
+	/**
 	 * Returns the value of the specified Elasticsearch index setting
 	 * 
 	 * @param indexInfo
 	 * @param setting
 	 * @return
 	 */
-	public static Object getIndexSetting(IndexInfo indexInfo, String setting)
+	public static String getIndexSetting(IndexInfo indexInfo, String setting)
 	{
 		String index = indexInfo.getName();
 		GetSettingsRequest request = new GetSettingsRequest();
@@ -316,16 +328,28 @@ public class ESUtil {
 	/**
 	 * Returns the values of the specified Elasticsearch index settings.
 	 * 
+	 * @param dt
+	 * @param settings
+	 * @return
+	 */
+	public static Map<String, String> getIndexSettings(DocumentType<?> dt, String... settings)
+	{
+		return getIndexSettings(dt.getIndexInfo(), settings);
+	}
+
+	/**
+	 * Returns the values of the specified Elasticsearch index settings.
+	 * 
 	 * @param indexInfo
 	 * @param settings
 	 * @return
 	 */
-	public static Map<String, Object> getIndexSettings(IndexInfo indexInfo, String... settings)
+	public static Map<String, String> getIndexSettings(IndexInfo indexInfo, String... settings)
 	{
 		String index = indexInfo.getName();
 		GetSettingsRequest request = new GetSettingsRequest();
 		GetSettingsResponse response = indices().getSettings(request).actionGet();
-		LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+		LinkedHashMap<String, String> result = new LinkedHashMap<>();
 		for (String setting : settings) {
 			try {
 				result.put(setting, response.getSetting(index, setting));
@@ -373,21 +397,21 @@ public class ESUtil {
 	 */
 	public static String getAutoRefreshInterval(IndexInfo indexInfo)
 	{
-		Object val = getIndexSetting(indexInfo, "index.refresh_interval");
-		return val == null ? null : val.toString();
+		return getIndexSetting(indexInfo, "index.refresh_interval");
 	}
 
 	/**
-	 * Sets the index refresh interval for -1 for the specified index.
+	 * Sets the index refresh interval to "-1" for the specified index and
+	 * returns the original refresh interval
 	 * 
 	 * @param indexInfo
 	 * @return The original refresh interval
 	 */
-	public static String disableAutoRefresh(IndexInfo indexInfo)
+	public static Object disableAutoRefresh(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
 		logger.info("Disabling auto-refresh for index " + index);
-		String origValue = getAutoRefreshInterval(indexInfo);
+		Object origValue = getAutoRefreshInterval(indexInfo);
 		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
 		Builder builder = Settings.builder();
 		builder.put("index.refresh_interval", -1);

@@ -77,8 +77,7 @@ public class TestNbaClientAssertions {
 	}
 
 	/*
-	 * delete(String id, boolean immediate) 
-	 * Deletes the specimen with the
+	 * delete(String id, boolean immediate) Deletes the specimen with the
 	 * specified system ID (as can be retrieved using Specimen.getId()).
 	 */
 	@Test
@@ -110,26 +109,32 @@ public class TestNbaClientAssertions {
 	 */
 	@Test
 	public void test_dwcaGetDataSetNames()
-	{		
-//		String[] setNames = taxonClient.dwcaGetDataSetNames();
-//		int i = 1;
-//		for (String setName : setNames) {
-//			System.out.println(i + ": " + setName);
-//			i++;
-//		}
+	{
+		// This seems to work for taxa:
+		//
+		//		String[] setNames = taxonClient.dwcaGetDataSetNames();
+		//		int i = 1;
+		//		for (String setName : setNames) {
+		//			System.out.println(i + ": " + setName);
+		//			i++;
+		//		}
 		// or,
 		// System.out.println("DataSetNames: " + JsonUtil.toPrettyJson(taxonClient.dwcaGetDataSetNames()));
-	
+
 		// Nog niet geimplementeerd in SpecimenDao
 		String[] names = specimenClient.dwcaGetDataSetNames();
-		int n = 1;
-		for (String name : names) {
-			System.out.println(n + ": " + name);
-			n++;
+		if (names.length == 0) {
+			System.out.println("No sets available!!!");
 		}
-		// System.out.println("DataSetNames: " + JsonUtil.toPrettyJson(specimenClient.dwcaGetDataSetNames()));
-		
-		
+		else {
+
+			int n = 1;
+			for (String name : names) {
+				System.out.println(n + ": " + name);
+				n++;
+			}
+			// System.out.println("DataSetNames: " + JsonUtil.toPrettyJson(specimenClient.dwcaGetDataSetNames()));
+		}
 
 	}
 
@@ -248,8 +253,7 @@ public class TestNbaClientAssertions {
 		Map uniqueValues = specimenClient.getDistinctValues(
 				"identifications.defaultClassification.specificEpithet", querySpec);
 		System.out.println(uniqueValues.values().toString());
-		
-		
+
 		// NB: nog niet geimplementeerd in de client!!!
 
 		// http://localhost:8080/v2/specimen/getDistinctValues/sourceSystem.code
@@ -270,11 +274,9 @@ public class TestNbaClientAssertions {
 		//
 		// System.out.println(JsonUtil.toPrettyJson(querySpec));
 		// System.out.println(JsonUtil.toPrettyJson(specimenResults));
-		
 
 	}
 
-	
 	/*
 	 * getDistinctValuesPerGroup(String groupField, String valuesField,
 	 * QueryCondition... conditions) Returns the unique values of the specified
@@ -288,7 +290,6 @@ public class TestNbaClientAssertions {
 
 	}
 
-	
 	/*
 	 * getGroups(String groupByField, QuerySpec querySpec)
 	 */
@@ -298,10 +299,9 @@ public class TestNbaClientAssertions {
 		// ..
 	}
 
-	
 	/*
-	 * getIdsInCollection(String collectionName)
-	 * Returns the ids of all specimens belonging to a named collection.
+	 * getIdsInCollection(String collectionName) Returns the ids of all
+	 * specimens belonging to a named collection.
 	 */
 	@Test
 	public void test_getIdsInCollection()
@@ -315,10 +315,9 @@ public class TestNbaClientAssertions {
 
 	}
 
-	
 	/*
-	 * getNamedCollections()
-	 * Returns all "special collections" defined within the specimen dataset.
+	 * getNamedCollections() Returns all "special collections" defined within
+	 * the specimen dataset.
 	 */
 	@Test
 	public void test_getNamedCollections() throws InvalidQueryException
@@ -332,10 +331,9 @@ public class TestNbaClientAssertions {
 
 	}
 
-
 	/*
-	 * query(QuerySpec querySpec)
-	 * Returns the documents conforming to the provided query specification.
+	 * query(QuerySpec querySpec) Returns the documents conforming to the
+	 * provided query specification.
 	 */
 	@Test
 	public void test_query_test_01() throws InvalidQueryException
@@ -365,8 +363,7 @@ public class TestNbaClientAssertions {
 		// }
 
 	}
-	
-	
+
 	@Test
 	public void test_query_test_02() throws InvalidQueryException
 	{
@@ -453,7 +450,6 @@ public class TestNbaClientAssertions {
 		// TODO: get the last record of the search result!!!
 
 	}
-
 
 	@Test
 	public void test_save()

@@ -117,16 +117,13 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 				return false;
 			}
 		});
-
+//		String[] names = {"Henk"};
 		String[] names = new String[files.length];
 		for (int i = 0; i < files.length; i++) {
 			String name = files[i].getName();
 			names[i] = name.substring(0, name.indexOf('.'));
-		}
-		
-		names[0] = "empty";
-		return names;
-		// return null;
+		}		
+		return names; // null;
 	}
 
 	@Override

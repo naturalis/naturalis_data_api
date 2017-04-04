@@ -28,12 +28,10 @@ import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
-import nl.naturalis.nba.common.json.JsonUtil;
 import nl.naturalis.nba.dao.ScientificNameGroupDao;
 import nl.naturalis.nba.rest.exception.HTTP404Exception;
 import nl.naturalis.nba.rest.util.HttpNameGroupQuerySpecBuilder;
 import nl.naturalis.nba.utils.StringUtil;
-import nl.naturalis.nba.utils.debug.DebugUtil;
 
 @Path("/names")
 @Stateless
@@ -105,8 +103,7 @@ public class ScientificNameGroupResource {
 		try {
 			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(form, uriInfo).build();
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
-			QueryResult<ScientificNameGroup> result = dao.query(qs);
-			return result;
+			return  dao.query(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);
@@ -117,13 +114,61 @@ public class ScientificNameGroupResource {
 	@Path("/query")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(JSON_CONTENT_TYPE)
-	public QueryResult<ScientificNameGroup> query_POST_JSON(NameGroupQuerySpec qs, @Context UriInfo uriInfo)
+	public QueryResult<ScientificNameGroup> query_POST_JSON(NameGroupQuerySpec qs,
+			@Context UriInfo uriInfo)
 	{
 		try {
 			ScientificNameGroupDao dao = new ScientificNameGroupDao();
 			QueryResult<ScientificNameGroup> result = dao.query(qs);
-			DebugUtil.log("/tmp/ayco.txt", JsonUtil.toPrettyJson(result));
 			return result;
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getSpeciesWithSpecimens")
+	@Produces(JSON_CONTENT_TYPE)
+	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens_GET(@Context UriInfo uriInfo)
+	{
+		try {
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(uriInfo).build();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
+			return dao.getSpeciesWithSpecimens(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/getSpeciesWithSpecimens")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens_POST_FORM(
+			MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
+	{
+		try {
+			NameGroupQuerySpec qs = new HttpNameGroupQuerySpecBuilder(form, uriInfo).build();
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
+			return dao.getSpeciesWithSpecimens(qs);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@POST
+	@Path("/getSpeciesWithSpecimens")
+	@Produces(JSON_CONTENT_TYPE)
+	@Consumes(JSON_CONTENT_TYPE)
+	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens_POST_JSON(NameGroupQuerySpec qs,
+			@Context UriInfo uriInfo)
+	{
+		try {
+			ScientificNameGroupDao dao = new ScientificNameGroupDao();
+			return dao.getSpeciesWithSpecimens(qs);
 		}
 		catch (Throwable t) {
 			throw handleError(uriInfo, t);

@@ -86,4 +86,10 @@ abstract class DocumentMetaDataDao<T extends IDocumentObject> implements IDocume
 		return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
 	}
 
+	public Map<String, Object> getSettings()
+	{	
+		
+		return null;
+	}
+
 }

@@ -81,7 +81,20 @@ public class NbaMetaDataResource {
 	}
 
 	@GET
-	@Path("/getContolledList/Sex")
+	@Path("/getControlledLists")
+	@Produces(JSON_CONTENT_TYPE)
+	public String[] getControlledLists(@Context UriInfo uriInfo)
+	{
+		try {
+			return new NbaMetaDataDao().getControlledLists();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getControlledList/Sex")
 	@Produces(JSON_CONTENT_TYPE)
 	public Sex[] getControlledListSex(@Context UriInfo uriInfo)
 	{
@@ -94,7 +107,7 @@ public class NbaMetaDataResource {
 	}
 
 	@GET
-	@Path("/getContolledList/PhaseOrStage")
+	@Path("/getControlledList/PhaseOrStage")
 	@Produces(JSON_CONTENT_TYPE)
 	public PhaseOrStage[] getControlledListPhaseOrStage(@Context UriInfo uriInfo)
 	{
@@ -107,7 +120,7 @@ public class NbaMetaDataResource {
 	}
 
 	@GET
-	@Path("/getContolledList/TaxonomicStatus")
+	@Path("/getControlledList/TaxonomicStatus")
 	@Produces(JSON_CONTENT_TYPE)
 	public TaxonomicStatus[] getControlledListTaxonomicStatus(@Context UriInfo uriInfo)
 	{
@@ -120,7 +133,7 @@ public class NbaMetaDataResource {
 	}
 
 	@GET
-	@Path("/getContolledList/SpecimenTypeStatus")
+	@Path("/getControlledList/SpecimenTypeStatus")
 	@Produces(JSON_CONTENT_TYPE)
 	public SpecimenTypeStatus[] getControlledListSpecimenTypeStatus(@Context UriInfo uriInfo)
 	{
@@ -139,57 +152,65 @@ public class NbaMetaDataResource {
 	@Produces(JSON_CONTENT_TYPE)
 	public RestService[] getRestServices(@Context UriInfo uriInfo)
 	{
-		if (restServices == null) {
+		try {
+			if (restServices == null) {
 
-			List<Class<? extends Annotation>> httpMethodAnnotations;
-			httpMethodAnnotations = Arrays.asList(DELETE.class, GET.class, POST.class, PUT.class);
-			
-			String baseUrl = StringUtil.rtrim(uriInfo.getBaseUri().toString(), '/');
+				List<Class<? extends Annotation>> httpMethodAnnotations;
+				httpMethodAnnotations = Arrays.asList(DELETE.class, GET.class, POST.class,
+						PUT.class);
 
-			ConfigurationBuilder config = new ConfigurationBuilder();
-			config.setUrls(ClasspathHelper.forPackage(getClass().getPackage().getName()));
-			config.setScanners(new MethodAnnotationsScanner());
-			Reflections reflections = new Reflections(config);
-			Set<Method> resourceMethods = reflections.getMethodsAnnotatedWith(Path.class);
-			ArrayList<RestService> services = new ArrayList<>(100);
-			for (Method method : resourceMethods) {
-				RestService service = new RestService();
-				services.add(service);
-				Class<?> resourceClass = method.getDeclaringClass();
-				String rootPath = resourceClass.getDeclaredAnnotation(Path.class).value();
-				String path = method.getDeclaredAnnotation(Path.class).value();
-				String endPoint = rootPath + path;
-				endPoint=endPoint.replace("//", "/");
-				service.setEndPoint(endPoint);
-				service.setUrl(baseUrl + endPoint);
-				for (Class<? extends Annotation> c : httpMethodAnnotations) {
-					if (method.getDeclaredAnnotation(c) != null) {
-						service.setMethod(c.getSimpleName());
-						break;
+				String baseUrl = StringUtil.rtrim(uriInfo.getBaseUri().toString(), '/');
+
+				ConfigurationBuilder config = new ConfigurationBuilder();
+				config.setUrls(ClasspathHelper.forPackage(getClass().getPackage().getName()));
+				config.setScanners(new MethodAnnotationsScanner());
+				Reflections reflections = new Reflections(config);
+				Set<Method> resourceMethods = reflections.getMethodsAnnotatedWith(Path.class);
+				ArrayList<RestService> services = new ArrayList<>(100);
+				for (Method method : resourceMethods) {
+					RestService service = new RestService();
+					services.add(service);
+					Class<?> resourceClass = method.getDeclaringClass();
+					String rootPath = resourceClass.getDeclaredAnnotation(Path.class).value();
+					String path = method.getDeclaredAnnotation(Path.class).value();
+					String endPoint = rootPath + path;
+					endPoint = endPoint.replace("//", "/");
+					service.setEndPoint(endPoint);
+					service.setUrl(baseUrl + endPoint);
+					for (Class<? extends Annotation> c : httpMethodAnnotations) {
+						if (method.getDeclaredAnnotation(c) != null) {
+							service.setMethod(c.getSimpleName());
+							break;
+						}
+					}
+					if (method.getDeclaredAnnotation(Produces.class) != null) {
+						service.setProduces(
+								method.getDeclaredAnnotation(Produces.class).value()[0]);
+					}
+					if (method.getDeclaredAnnotation(Consumes.class) != null) {
+						service.setConsumes(
+								method.getDeclaredAnnotation(Consumes.class).value()[0]);
 					}
 				}
-				if (method.getDeclaredAnnotation(Produces.class) != null) {
-					service.setProduces(method.getDeclaredAnnotation(Produces.class).value()[0]);
-				}
-				if (method.getDeclaredAnnotation(Consumes.class) != null) {
-					service.setConsumes(method.getDeclaredAnnotation(Consumes.class).value()[0]);
-				}
+				restServices = services.toArray(new RestService[services.size()]);
+				Arrays.sort(restServices, new Comparator<RestService>() {
+
+					@Override
+					public int compare(RestService o1, RestService o2)
+					{
+						int i = o1.getEndPoint().compareTo(o2.getEndPoint());
+						if (i == 0) {
+							i = o1.getMethod().compareTo(o2.getMethod());
+						}
+						return i;
+					}
+				});
 			}
-			restServices = services.toArray(new RestService[services.size()]);
-			Arrays.sort(restServices, new Comparator<RestService>() {
-
-				@Override
-				public int compare(RestService o1, RestService o2)
-				{
-					int i = o1.getEndPoint().compareTo(o2.getEndPoint());
-					if (i == 0) {
-						i = o1.getMethod().compareTo(o2.getMethod());
-					}
-					return i;
-				}
-			});
+			return restServices;
 		}
-		return restServices;
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
 	}
 
 }

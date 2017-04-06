@@ -32,7 +32,7 @@ import nl.naturalis.nba.utils.StringUtil;
  *
  */
 public class TransformUtil {
-	
+
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(TransformUtil.class);
 
 	private static final SimpleDateFormat DATE_FORMAT0 = new SimpleDateFormat("yyyyMMdd");
@@ -82,6 +82,21 @@ public class TransformUtil {
 	private static final String EQUALIZE = "Equalizing value of %s (copy from %s to %s: \"%s\")";
 	private static final String NAME = "scientific name";
 	private static final String CLASSIFICATION = "classification ";
+
+	public static void setScientificNameGroup(ScientificName sn)
+	{
+		String s0 = sn.getGenusOrMonomial();
+		s0 = s0 == null ? "?" : s0.toLowerCase();
+		String s1 = sn.getSpecificEpithet();
+		s1 = s1 == null ? "?" : s1.toLowerCase();
+		String s2 = sn.getInfraspecificEpithet();
+		if (s2 == null) {
+			sn.setScientificNameGroup(s0 + " " + s1);
+		}
+		else {
+			sn.setScientificNameGroup(s0 + " " + s1 + " " + s2.toLowerCase());
+		}
+	}
 
 	/**
 	 * Constructs a {@code DefaultClassification} object from the name epithets
@@ -183,14 +198,14 @@ public class TransformUtil {
 		else if (dc.getSubgenus() == null && sn.getSubgenus() != null) {
 			dc.setSubgenus(sn.getSubgenus());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SUBGENUS, NAME, CLASSIFICATION,
-						sn.getSubgenus()));
+				logger.debug(
+						String.format(EQUALIZE, SUBGENUS, NAME, CLASSIFICATION, sn.getSubgenus()));
 		}
 		else if (dc.getSubgenus() != null && sn.getSubgenus() == null) {
 			sn.setSubgenus(dc.getSubgenus());
 			if (logger.isDebugEnabled())
-				logger.debug(String.format(EQUALIZE, SUBGENUS, CLASSIFICATION, NAME,
-						sn.getSubgenus()));
+				logger.debug(
+						String.format(EQUALIZE, SUBGENUS, CLASSIFICATION, NAME, sn.getSubgenus()));
 		}
 
 		if (dc.getSpecificEpithet() != null && sn.getSpecificEpithet() != null) {
@@ -252,10 +267,10 @@ public class TransformUtil {
 			mimetype = "image/bmp";
 		else if (ext.equals(".mp3"))
 			mimetype = "audio/mpeg"; // according to
-										// http://tools.ietf.org/html/rfc3003
+									// http://tools.ietf.org/html/rfc3003
 		else if (ext.equals(".mp4"))
 			mimetype = "video/mp4"; // according to
-									// http://www.rfc-editor.org/rfc/rfc4337.txt
+		// http://www.rfc-editor.org/rfc/rfc4337.txt
 		else if (ext.equals(".pdf"))
 			mimetype = "application/pdf";
 		else {

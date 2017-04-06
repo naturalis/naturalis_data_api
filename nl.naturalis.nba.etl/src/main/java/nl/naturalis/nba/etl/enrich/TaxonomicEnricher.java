@@ -38,6 +38,7 @@ import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 
 public class TaxonomicEnricher {
 
@@ -173,10 +174,19 @@ public class TaxonomicEnricher {
 		SearchRequestBuilder request = newSearchRequest(dt);
 		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
 		request.setQuery(constantScoreQuery(query));
+		int maxDocs = 10000;
+		request.setSize(maxDocs);
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
 			return null;
+		}
+		if (response.getHits().getTotalHits() > maxDocs) {
+			/*
+			 * That would be really interesting because ordinarily you would
+			 * expect one or two (COL and/or NSR).
+			 */
+			throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
 		}
 		List<Taxon> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();

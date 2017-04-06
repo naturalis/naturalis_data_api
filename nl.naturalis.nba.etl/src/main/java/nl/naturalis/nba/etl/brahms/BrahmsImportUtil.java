@@ -41,7 +41,8 @@ import nl.naturalis.nba.etl.TransformUtil;
  */
 class BrahmsImportUtil {
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(BrahmsImportUtil.class);
+	private static final Logger logger = ETLRegistry.getInstance()
+			.getLogger(BrahmsImportUtil.class);
 	private static final SimpleDateFormat fileNameDateFormatter = new SimpleDateFormat("yyyyMMdd");
 
 	private BrahmsImportUtil()
@@ -103,7 +104,6 @@ class BrahmsImportUtil {
 		}
 	}
 
-
 	/**
 	 * Extracts a {@code ScientificName} instance from a raw CSV record.
 	 * 
@@ -150,6 +150,7 @@ class BrahmsImportUtil {
 				sn.setFullScientificName(sb.toString().trim());
 			}
 		}
+		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
 
@@ -173,7 +174,6 @@ class BrahmsImportUtil {
 		dc.setFamily(record.get(FAMILY));
 		return dc;
 	}
-
 
 	/**
 	 * Converts a {@code DefaultClassification} instance to a system

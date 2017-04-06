@@ -280,6 +280,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		sn.setInfraspecificEpithet(val(e, "abcd:subspeciesepithet"));
 		sn.setNameAddendum(val(e, "abcd:NameAddendum"));
 		sn.setAuthorshipVerbatim(val(e, "dwc:nameAccordingTo"));
+		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
 

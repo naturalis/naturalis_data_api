@@ -264,6 +264,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			if (sb.length() != 0)
 				sn.setFullScientificName(sb.toString().trim());
 		}
+		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
 

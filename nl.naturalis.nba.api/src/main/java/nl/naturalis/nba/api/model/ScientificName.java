@@ -6,9 +6,6 @@ import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 import nl.naturalis.nba.api.annotations.Analyzers;
 
 /**
@@ -39,6 +36,8 @@ public class ScientificName implements INbaModelObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String author;
 	private String year;
+	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
+	private String scientificNameGroup;
 
 	private List<Reference> references;
 	private List<Expert> experts;
@@ -118,17 +117,6 @@ public class ScientificName implements INbaModelObject {
 		return nameAddendum;
 	}
 
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
-	@JsonProperty(access = Access.WRITE_ONLY)
-	public String getScientificNameGroup()
-	{
-		String s0 = genusOrMonomial == null ? "?" : genusOrMonomial.toLowerCase();
-		String s1 = specificEpithet == null ? "?" : specificEpithet.toLowerCase();
-		if (infraspecificEpithet == null)
-			return s0 + " " + s1;
-		return s0 + " " + s1 + infraspecificEpithet.toLowerCase();
-	}
-
 	public void setNameAddendum(String nameAddendum)
 	{
 		this.nameAddendum = nameAddendum;
@@ -162,6 +150,16 @@ public class ScientificName implements INbaModelObject {
 	public void setYear(String year)
 	{
 		this.year = year;
+	}
+
+	public String getScientificNameGroup()
+	{
+		return scientificNameGroup;
+	}
+
+	public void setScientificNameGroup(String scientificNameGroup)
+	{
+		this.scientificNameGroup = scientificNameGroup;
 	}
 
 	public List<Reference> getReferences()

@@ -7,6 +7,9 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
@@ -89,7 +92,7 @@ public class TaxonomicEnricher {
 				Specimen last = batch.get(batch.size() - 1);
 				List<SpecimenIdentification> sis = last.getIdentifications();
 				if (sis != null) {
-					String group = sis.get(0).getScientificNameGroup();
+					String group = sis.get(0).getScientificName().getScientificNameGroup();
 					logger.info("Most recent name group: {}", group);
 				}
 			}
@@ -108,14 +111,14 @@ public class TaxonomicEnricher {
 	{
 		List<Specimen> result = new ArrayList<>(specimens.size());
 		HashMap<String, List<TaxonomicEnrichment>> cache;
-		cache = new HashMap<>((int) (specimens.size() / .75F) + 1);
+		cache = new HashMap<>((int) (specimens.size() / .75F) + 8);
 		for (Specimen specimen : specimens) {
 			boolean enriched = false;
 			if (specimen.getIdentifications() == null) {
 				continue;
 			}
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				String nameGroup = si.getScientificNameGroup();
+				String nameGroup = si.getScientificName().getScientificNameGroup();
 				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
 				if (enrichments == null) {
 					List<Taxon> taxa = getTaxa(nameGroup);
@@ -149,14 +152,16 @@ public class TaxonomicEnricher {
 			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
 			if (taxon.getVernacularNames() != null) {
 				for (VernacularName vn : taxon.getVernacularNames()) {
-					enrichment.addVernacularName(vn.getName());
+					enrichment.addVernacularName(copySummaryVernacularName(vn));
 				}
 			}
 			if (taxon.getSynonyms() != null) {
 				for (ScientificName sn : taxon.getSynonyms()) {
-					enrichment.addSynonym(sn.getFullScientificName());
+					enrichment.addSynonym(copyScientificName(sn));
 				}
 			}
+			enrichment.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
+			enrichment.setTaxonId(taxon.getId());
 			enrichments.add(enrichment);
 		}
 		return enrichments.isEmpty() ? EMPTY : enrichments;
@@ -166,7 +171,7 @@ public class TaxonomicEnricher {
 	{
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = newSearchRequest(dt);
-		TermQueryBuilder query = termQuery("scientificNameGroup", nameGroup);
+		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
 		request.setQuery(constantScoreQuery(query));
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();

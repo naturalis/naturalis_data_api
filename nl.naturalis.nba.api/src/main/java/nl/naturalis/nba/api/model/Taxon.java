@@ -22,8 +22,6 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
 	private String taxonRemarks;
 	private String occurrenceStatusVerbatim;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
-	private String scientificNameGroup;
 
 	private ScientificName acceptedName;
 	private DefaultClassification defaultClassification;
@@ -97,16 +95,6 @@ public class Taxon extends NbaTraceableObject implements IDocumentObject {
 	public void setOccurrenceStatusVerbatim(String occurrenceStatusVerbatim)
 	{
 		this.occurrenceStatusVerbatim = occurrenceStatusVerbatim;
-	}
-
-	public String getScientificNameGroup()
-	{
-		return scientificNameGroup;
-	}
-
-	public void setScientificNameGroup(String scientificNameGroup)
-	{
-		this.scientificNameGroup = scientificNameGroup;
 	}
 
 	/**

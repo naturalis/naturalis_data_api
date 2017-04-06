@@ -4,11 +4,14 @@ import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
 import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
 import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import nl.naturalis.nba.api.annotations.Analyzers;
 import nl.naturalis.nba.api.annotations.NotIndexed;
+import nl.naturalis.nba.api.model.summary.SummaryScientificName;
+import nl.naturalis.nba.api.model.summary.SummarySourceSystem;
+import nl.naturalis.nba.api.model.summary.SummaryVernacularName;
 
 /**
  * The {@code TaxonomicEnrichment} object enriches {@link Specimen} documents
@@ -21,49 +24,48 @@ import nl.naturalis.nba.api.annotations.NotIndexed;
 public class TaxonomicEnrichment implements INbaModelObject {
 
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
-	private Set<String> vernacularNames;
+	private List<SummaryVernacularName> vernacularNames;
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
-	private Set<String> synonyms;
+	private List<SummaryScientificName> synonyms;
 
+	private SummarySourceSystem sourceSystem;
 	@NotIndexed
 	private String taxonId;
-	@NotIndexed
-	private String sourceSystem;
 
 	public TaxonomicEnrichment()
 	{
 	}
 
-	public void addVernacularName(String vernacularName)
+	public void addVernacularName(SummaryVernacularName vernacularName)
 	{
 		if (this.vernacularNames == null)
-			this.vernacularNames = new TreeSet<>();
+			this.vernacularNames = new ArrayList<>(5);
 		this.vernacularNames.add(vernacularName);
 	}
 
-	public void addSynonym(String synonym)
+	public void addSynonym(SummaryScientificName synonym)
 	{
 		if (this.synonyms == null)
-			this.synonyms = new TreeSet<>();
+			this.synonyms = new ArrayList<>(5);
 		this.synonyms.add(synonym);
 	}
 
-	public Set<String> getVernacularNames()
+	public List<SummaryVernacularName> getVernacularNames()
 	{
 		return vernacularNames;
 	}
 
-	public void setVernacularNames(Set<String> vernacularNames)
+	public void setVernacularNames(List<SummaryVernacularName> vernacularNames)
 	{
 		this.vernacularNames = vernacularNames;
 	}
 
-	public Set<String> getSynonyms()
+	public List<SummaryScientificName> getSynonyms()
 	{
 		return synonyms;
 	}
 
-	public void setSynonyms(Set<String> synonyms)
+	public void setSynonyms(List<SummaryScientificName> synonyms)
 	{
 		this.synonyms = synonyms;
 	}
@@ -96,7 +98,7 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	 * 
 	 * @return
 	 */
-	public String getSourceSystem()
+	public SummarySourceSystem getSourceSystem()
 	{
 		return sourceSystem;
 	}
@@ -107,7 +109,7 @@ public class TaxonomicEnrichment implements INbaModelObject {
 	 * 
 	 * @param sourceSystem
 	 */
-	public void setSourceSystem(String sourceSystem)
+	public void setSourceSystem(SummarySourceSystem sourceSystem)
 	{
 		this.sourceSystem = sourceSystem;
 	}

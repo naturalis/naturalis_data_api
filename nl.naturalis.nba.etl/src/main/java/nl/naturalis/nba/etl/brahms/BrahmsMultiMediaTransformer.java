@@ -127,8 +127,6 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
 		identification.setSystemClassification(getSystemClassification(dc));
-		String nameGroup = ETLUtil.createScientificNameGroup(identification);
-		identification.setScientificNameGroup(nameGroup);
 		return identification;
 	}
 

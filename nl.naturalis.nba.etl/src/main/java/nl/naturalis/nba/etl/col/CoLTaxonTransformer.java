@@ -41,7 +41,6 @@ import nl.naturalis.nba.api.model.TaxonDescription;
 import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
 
 /**
  * The transformer component in the CoL ETL cycle.
@@ -105,8 +104,6 @@ class CoLTaxonTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Taxon
 			taxon.setTaxonRank(input.get(taxonRank));
 			taxon.setAcceptedName(getScientificName());
 			taxon.setDefaultClassification(getClassification());
-			String nameGroup = ETLUtil.createScientificNameGroup(taxon);
-			taxon.setScientificNameGroup(nameGroup);
 			addMonomials(taxon);
 			setRecordURI(taxon);
 			setTaxonDescription(taxon);

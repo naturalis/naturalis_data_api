@@ -60,7 +60,7 @@ public class TaxonomicEnricher {
 	}
 
 	private static final Logger logger = getLogger(TaxonomicEnricher.class);
-	private static final List<TaxonomicEnrichment> EMPTY = new ArrayList<>(0);
+	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 	private static final int BATCH_SIZE = 1000;
 	private static final int FLUSH_TRESHOLD = 1000;
 
@@ -69,7 +69,7 @@ public class TaxonomicEnricher {
 		long start = System.currentTimeMillis();
 		logger.info("Starting taxonomic enrichment of Specimen documents");
 		QuerySpec qs = new QuerySpec();
-		qs.sortBy("identifications.scientificNameGroup");
+		qs.sortBy("identifications.scientificName.scientificNameGroup");
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
 		extractor.setBatchSize(BATCH_SIZE);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
@@ -124,16 +124,28 @@ public class TaxonomicEnricher {
 				if (enrichments == null) {
 					List<Taxon> taxa = getTaxa(nameGroup);
 					if (taxa == null) {
-						cache.put(nameGroup, EMPTY);
+						/*
+						 * There are no taxon documents with this nameGroup
+						 */
+						cache.put(nameGroup, NONE);
 					}
 					else {
 						enrichments = createEnrichments(taxa);
 						cache.put(nameGroup, enrichments);
-						if (enrichments != EMPTY) {
+						if (enrichments != NONE) {
 							si.setTaxonomicEnrichments(enrichments);
 							enriched = true;
 						}
+						/*
+						 * Else there were taxon documents with this nameGroup,
+						 * but none of them had vernacular names and/or
+						 * synonyms.
+						 */
 					}
+				}
+				else if (enrichments != NONE) {
+					si.setTaxonomicEnrichments(enrichments);
+					enriched = true;
 				}
 			}
 			if (enriched) {
@@ -165,7 +177,7 @@ public class TaxonomicEnricher {
 			enrichment.setTaxonId(taxon.getId());
 			enrichments.add(enrichment);
 		}
-		return enrichments.isEmpty() ? EMPTY : enrichments;
+		return enrichments.isEmpty() ? NONE : enrichments;
 	}
 
 	private static List<Taxon> getTaxa(String nameGroup)

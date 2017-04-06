@@ -55,7 +55,7 @@ class TaxonNameImporter {
 		DocumentIterator<Taxon> extractor;
 		TaxonNameTransformer transformer;
 		QuerySpec qs = new QuerySpec();
-		qs.sortBy("scientificNameGroup");
+		qs.sortBy("acceptedName.scientificNameGroup");
 		extractor = new DocumentIterator<>(TAXON, qs);
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);

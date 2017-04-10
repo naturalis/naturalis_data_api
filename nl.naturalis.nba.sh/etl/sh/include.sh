@@ -40,8 +40,8 @@ then
   log_file="${log_file}__${2}"
 fi
 dt=$(date +%Y%m%d%H%m)
-log_file="${log_dir}/${log_file}.${dt}.log"
-echo "Log file: ${log_file}"
+log_file="${log_dir}/${log_file}.${dt}"
+echo "Log file: ${log_file}.log"
 
 JAVA_OPTS="-Xms2048m -Xmx2048m"
 JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF-8"

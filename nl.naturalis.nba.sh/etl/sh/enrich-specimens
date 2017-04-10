@@ -2,4 +2,11 @@
 
 . ./include.sh
 
-java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.TaxonomicEnricher
+action="${1}"
+
+if [ "${action}" = nullify ]
+then
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.EnrichmentNullifier
+else
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.enrich.TaxonomicEnricher
+fi

@@ -32,7 +32,6 @@ import nl.naturalis.nba.api.model.ServiceAccessPoint.Variant;
 import nl.naturalis.nba.api.model.VernacularName;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.ETLStatistics;
-import nl.naturalis.nba.etl.ETLUtil;
 
 /**
  * The transformer component in the ETL cycle for Brahms multimedia.
@@ -127,8 +126,6 @@ class BrahmsMultiMediaTransformer extends BrahmsTransformer<MultiMediaObject> {
 		identification.setScientificName(sn);
 		identification.setDefaultClassification(dc);
 		identification.setSystemClassification(getSystemClassification(dc));
-		String nameGroup = ETLUtil.createScientificNameGroup(identification);
-		identification.setScientificNameGroup(nameGroup);
 		return identification;
 	}
 

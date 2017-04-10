@@ -1,20 +1,12 @@
 package nl.naturalis.nba.api.model;
 
-import static nl.naturalis.nba.api.annotations.Analyzer.CASE_INSENSITIVE;
-import static nl.naturalis.nba.api.annotations.Analyzer.DEFAULT;
-import static nl.naturalis.nba.api.annotations.Analyzer.LIKE;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import nl.naturalis.nba.api.annotations.Analyzers;
-
 public abstract class TaxonomicIdentification implements INbaModelObject {
 
 	private String taxonRank;
-	@Analyzers({ CASE_INSENSITIVE, DEFAULT, LIKE })
-	private String scientificNameGroup;
 	private ScientificName scientificName;
 	private DefaultClassification defaultClassification;
 	private List<Monomial> systemClassification;
@@ -31,16 +23,6 @@ public abstract class TaxonomicIdentification implements INbaModelObject {
 			identifiers = new ArrayList<Agent>(4);
 		}
 		identifiers.add(identifier);
-	}
-
-	public String getScientificNameGroup()
-	{
-		return scientificNameGroup;
-	}
-
-	public void setScientificNameGroup(String scientificNameGroup)
-	{
-		this.scientificNameGroup = scientificNameGroup;
 	}
 
 	public String getTaxonRank()

@@ -206,8 +206,6 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 		si.setSystemClassification(sc);
 		DefaultClassification dc = DefaultClassification.fromSystemClassification(sc);
 		si.setDefaultClassification(dc);
-		String nameGroup = ETLUtil.createScientificNameGroup(si);
-		si.setScientificNameGroup(nameGroup);
 		String infraspecificRank = val(elem, "abcd:InfrasubspecificRank");
 		if (infraspecificRank != null)
 			si.setTaxonRank(infraspecificRank);
@@ -266,6 +264,7 @@ class CrsSpecimenTransformer extends AbstractXMLTransformer<Specimen> {
 			if (sb.length() != 0)
 				sn.setFullScientificName(sb.toString().trim());
 		}
+		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
 

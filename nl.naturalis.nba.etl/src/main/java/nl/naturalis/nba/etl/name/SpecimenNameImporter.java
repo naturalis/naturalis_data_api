@@ -78,7 +78,7 @@ class SpecimenNameImporter {
 				Specimen last = batch.get(batch.size() - 1);
 				List<SpecimenIdentification> sis = last.getIdentifications();
 				if (sis != null) {
-					String group = sis.get(0).getScientificNameGroup();
+					String group = sis.get(0).getScientificName().getScientificNameGroup();
 					logger.info("Most recent name group: {}", group);
 				}
 				refreshIndex(SCIENTIFIC_NAME_GROUP.getIndexInfo());

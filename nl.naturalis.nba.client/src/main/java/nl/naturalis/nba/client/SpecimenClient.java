@@ -8,7 +8,7 @@ import static nl.naturalis.nba.common.json.JsonUtil.toJson;
 import static nl.naturalis.nba.utils.http.SimpleHttpRequest.HTTP_OK;
 
 import java.io.InputStream;
-import java.util.zip.ZipOutputStream;
+import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
@@ -32,7 +33,6 @@ import nl.naturalis.nba.utils.http.SimpleHttpGet;
  */
 public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAccess {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LogManager.getLogger(SpecimenClient.class);
 
 	SpecimenClient(ClientConfig cfg, String rootPath)
@@ -110,9 +110,8 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	}
 
 	@Override
-	public void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
-		// Copied from TaxonClient.java
 		String json = JsonUtil.toJson(querySpec);
 		SimpleHttpGet request = new SimpleHttpGet();
 		request.setBaseUrl(config.getBaseUrl());
@@ -135,9 +134,26 @@ public class SpecimenClient extends NbaClient<Specimen> implements ISpecimenAcce
 	}
 
 	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
-		// TODO Auto-generated method stub
+		SimpleHttpGet request = new SimpleHttpGet();
+		request.setBaseUrl(config.getBaseUrl());
+		request.setPath("specimen/dwca/dataset/" + name);
+		sendRequest(request);
+		int status = request.getStatus();
+		if (status != HTTP_OK) {
+			throw newServerException(status, request.getResponseBody());
+		}
+		InputStream in = null;
+		try {
+			logger.info("Downloading DarwinCore archive");
+			in = request.getResponseBodyAsStream();
+			IOUtil.pipe(in, out, 4096);
+			logger.info("DarwinCore archive download complete");
+		}
+		finally {
+			IOUtil.close(in);
+		}
 	}
 
 	@Override

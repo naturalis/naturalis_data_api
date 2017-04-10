@@ -3,7 +3,6 @@ package nl.naturalis.nba.etl.nsr;
 import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALITY;
 import static nl.naturalis.nba.api.model.SourceSystem.NSR;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
-import static nl.naturalis.nba.etl.ETLUtil.createScientificNameGroup;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -172,8 +171,6 @@ class NsrMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		mmci.setDefaultClassification(t.getDefaultClassification());
 		mmci.setSystemClassification(t.getSystemClassification());
 		mmci.setVernacularNames(t.getVernacularNames());
-		String nameGroup = createScientificNameGroup(mmci);
-		mmci.setScientificNameGroup(nameGroup);
 		return mmci;
 	}
 

@@ -43,7 +43,7 @@ dt=$(date +%Y%m%d%H%m)
 log_file="${log_dir}/${log_file}.${dt}.log"
 echo "Log file: ${log_file}"
 
-JAVA_OPTS="-Xms1536m -Xmx1536m"
+JAVA_OPTS="-Xms2048m -Xmx2048m"
 JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF-8"
 JAVA_OPTS="${JAVA_OPTS} -DsuppressErrors=${suppress_errors}"
 JAVA_OPTS="${JAVA_OPTS} -DqueueSize=${queue_size}"

@@ -21,6 +21,7 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.AbstractCSVTransformer;
 import nl.naturalis.nba.etl.CSVTransformer;
 import nl.naturalis.nba.etl.ETLStatistics;
+import nl.naturalis.nba.etl.TransformUtil;
 import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
 import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
@@ -147,6 +148,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 			}
 		}
 		sn.setTaxonomicStatus(status);
+		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
 }

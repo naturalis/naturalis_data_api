@@ -11,14 +11,10 @@ public class SummaryVernacularName implements INbaModelObject {
 
 	@Analyzers({ DEFAULT, CASE_INSENSITIVE, LIKE })
 	private String name;
+	private String language;
 
 	public SummaryVernacularName()
 	{
-	}
-
-	public SummaryVernacularName(String name)
-	{
-		this.name = name;
 	}
 
 	public String getName()
@@ -29,6 +25,16 @@ public class SummaryVernacularName implements INbaModelObject {
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public String getLanguage()
+	{
+		return language;
+	}
+
+	public void setLanguage(String language)
+	{
+		this.language = language;
 	}
 
 }

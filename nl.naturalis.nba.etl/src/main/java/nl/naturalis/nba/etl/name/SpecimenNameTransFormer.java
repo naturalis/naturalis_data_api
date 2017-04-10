@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
-import static nl.naturalis.nba.etl.name.NameImportUtil.copySpecimen;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copySpecimen;
 import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroupsById;
 import static nl.naturalis.nba.etl.name.NameImportUtil.loadNameGroupsByName;
 
@@ -67,9 +67,10 @@ class SpecimenNameTransformer {
 		List<SpecimenIdentification> identifications = specimen.getIdentifications();
 		if (identifications != null) {
 			for (SpecimenIdentification si : identifications) {
-				ScientificNameGroup group = nameCache.get(si.getScientificNameGroup());
+				String name = si.getScientificName().getScientificNameGroup();
+				ScientificNameGroup group = nameCache.get(name);
 				if (!exists(specimen, group)) {
-					group.addSpecimen(copySpecimen(specimen, si.getScientificNameGroup()));
+					group.addSpecimen(copySpecimen(specimen, name));
 					group.setSpecimenCount(group.getSpecimens().size());
 				}
 			}
@@ -102,7 +103,7 @@ class SpecimenNameTransformer {
 		for (Specimen specimen : specimens) {
 			if (specimen.getIdentifications() != null) {
 				for (SpecimenIdentification si : specimen.getIdentifications()) {
-					names.add(si.getScientificNameGroup());
+					names.add(si.getScientificName().getScientificNameGroup());
 				}
 			}
 		}

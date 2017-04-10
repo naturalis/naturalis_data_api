@@ -1,6 +1,10 @@
 package nl.naturalis.nba.etl;
 
-import java.util.Arrays;
+import static nl.naturalis.nba.dao.DocumentType.GEO_AREA;
+import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
+import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
+import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
+import static nl.naturalis.nba.dao.DocumentType.TAXON;
 
 import org.apache.logging.log4j.Logger;
 
@@ -9,7 +13,9 @@ import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.brahms.BrahmsImportAll;
 import nl.naturalis.nba.etl.col.CoLImportAll;
 import nl.naturalis.nba.etl.crs.CrsImportAll;
-import nl.naturalis.nba.etl.ndff.NdffSpecimenImporter;
+import nl.naturalis.nba.etl.enrich.TaxonomicEnricher;
+import nl.naturalis.nba.etl.geo.GeoImporter;
+import nl.naturalis.nba.etl.name.NameImportAll;
 import nl.naturalis.nba.etl.nsr.NsrImporter;
 
 /**
@@ -24,29 +30,12 @@ public class NbaImportAll {
 
 	public static void main(String[] args)
 	{
-		try {
-			if (args.length == 0 || Arrays.asList(args).contains("bootstrap")) {
-				bootstrap();
-			}
-			if (args.length == 0 || Arrays.asList(args).contains("import")) {
-				NbaImportAll nbaImportAll = new NbaImportAll();
-				nbaImportAll.importAll();
-			}
-		}
-		catch (Throwable t) {
-			logger.error(t.getMessage(), t);
-		}
-		finally {
-			// ...
-		}
+		NbaImportAll nbaImportAll = new NbaImportAll();
+		nbaImportAll.importAll();
 	}
 
 	private static final Logger logger = ETLRegistry.getInstance().getLogger(NbaImportAll.class);
 
-	/**
-	 * Runs all individual import programs in the following order: NSR, Brahms,
-	 * CRS, CoL.
-	 */
 	public void importAll()
 	{
 
@@ -54,15 +43,15 @@ public class NbaImportAll {
 
 		try {
 
-			logger.info("[>--- Starting NDFF import ---<]");
-			NdffSpecimenImporter ndffImporter = new NdffSpecimenImporter();
-			ndffImporter.importSpecimens();
+			logger.info("[>--- Bootstrapping NBA indices ---<]");
+			NbaBootstrap bootstrap = new NbaBootstrap();
+			bootstrap.bootstrap("all");
 
 			logger.info("[>--- Starting NSR import ---<]");
 			NsrImporter nsrImporter = new NsrImporter();
 			nsrImporter.importAll();
 
-			logger.info("[>--- Starting Brahms import ---<]");
+			logger.info("[>--- Starting BRAHMS import ---<]");
 			BrahmsImportAll brahmsImportAll = new BrahmsImportAll();
 			brahmsImportAll.importAll();
 
@@ -70,13 +59,31 @@ public class NbaImportAll {
 			CrsImportAll crsImportAll = new CrsImportAll();
 			crsImportAll.importAll();
 
-			logger.info("[>--- Starting CoL import ---<]");
+			logger.info("[>--- Starting COL import ---<]");
 			CoLImportAll colImportAll = new CoLImportAll();
 			colImportAll.importAll();
 
+			logger.info("[>--- Starting GEO import ---<]");
+			GeoImporter geoImporter = new GeoImporter();
+			geoImporter.importAll();
+
+			logger.info("[>--- Starting Specimen enrichment ---<]");
+			TaxonomicEnricher enricher = new TaxonomicEnricher();
+			enricher.enrich();
+
+			logger.info("[>--- Starting ScientificNameGroup import ---<]");
+			NameImportAll nameImporter = new NameImportAll();
+			nameImporter.importNames();
+
+			ESUtil.refreshIndex(TAXON);
+			ESUtil.refreshIndex(MULTI_MEDIA_OBJECT);
+			ESUtil.refreshIndex(SPECIMEN);
+			ESUtil.refreshIndex(GEO_AREA);
+			ESUtil.refreshIndex(SCIENTIFIC_NAME_GROUP);
+
 		}
 		catch (Throwable t) {
-			logger.error("NBA Import failed!");
+			logger.error(t.getMessage(), t);
 		}
 		finally {
 			ETLUtil.logDuration(logger, getClass(), start);
@@ -91,14 +98,4 @@ public class NbaImportAll {
 		}
 	}
 
-	/**
-	 * Creates the NBA indices from scratch. Will delete any pre-existing
-	 * indices used by the NBA and then re-create them. All data will be lost.
-	 * WATCH OUT!
-	 */
-	public static void bootstrap()
-	{
-		ESUtil.deleteAllIndices();
-		ESUtil.createAllIndices();
-	}
 }

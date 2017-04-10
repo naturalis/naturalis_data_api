@@ -4,10 +4,11 @@ import java.util.Map;
 
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
+import nl.naturalis.nba.api.model.metadata.NbaSetting;
 
 /**
- * Specifies a common set of metadata retrieval methods that can be called for
- * any type of document within the NBA document store.
+ * Specifies methods for retrieving metadata about an Elasticsearch document
+ * type and the index containing it.
  * 
  * @author Ayco Holleman
  *
@@ -16,6 +17,34 @@ import nl.naturalis.nba.api.model.metadata.FieldInfo;
  *            get through an implementation of this interface.
  */
 public interface IDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
+
+	/**
+	 * <p>
+	 * Returns all publicly available settings for the Elasticsearch document
+	 * type and the index containing it.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getSettings
+	 * </code>
+	 * </p>
+	 * <p>
+	 * Examples:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/multimedia/metadata/getSettings<br>
+	 * </code>
+	 * </p>
+	 * 
+	 * @return
+	 */
+	Map<NbaSetting, Object> getSettings();
 
 	/**
 	 * <p>

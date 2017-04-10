@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -287,6 +289,79 @@ public class ESUtil {
 	}
 
 	/**
+	 * Returns the value of the specified Elasticsearch index setting.
+	 * 
+	 * @param dt
+	 * @param setting
+	 * @return
+	 */
+	public static String getIndexSetting(DocumentType<?> dt, String setting)
+	{
+		return getIndexSetting(dt.getIndexInfo(), setting);
+	}
+
+	/**
+	 * Returns the value of the specified Elasticsearch index setting
+	 * 
+	 * @param indexInfo
+	 * @param setting
+	 * @return
+	 */
+	public static String getIndexSetting(IndexInfo indexInfo, String setting)
+	{
+		String index = indexInfo.getName();
+		GetSettingsRequest request = new GetSettingsRequest();
+		GetSettingsResponse response = indices().getSettings(request).actionGet();
+		try {
+			return response.getSetting(index, setting);
+		}
+		/*
+		 * Hack to work around a nasty feature in Elasticsearch (2.3.3). A
+		 * NullPointerException is thrown if the index does not exist, or if no
+		 * settings have been explicitly set for it.
+		 */
+		catch (NullPointerException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the values of the specified Elasticsearch index settings.
+	 * 
+	 * @param dt
+	 * @param settings
+	 * @return
+	 */
+	public static Map<String, String> getIndexSettings(DocumentType<?> dt, String... settings)
+	{
+		return getIndexSettings(dt.getIndexInfo(), settings);
+	}
+
+	/**
+	 * Returns the values of the specified Elasticsearch index settings.
+	 * 
+	 * @param indexInfo
+	 * @param settings
+	 * @return
+	 */
+	public static Map<String, String> getIndexSettings(IndexInfo indexInfo, String... settings)
+	{
+		String index = indexInfo.getName();
+		GetSettingsRequest request = new GetSettingsRequest();
+		GetSettingsResponse response = indices().getSettings(request).actionGet();
+		LinkedHashMap<String, String> result = new LinkedHashMap<>();
+		for (String setting : settings) {
+			try {
+				result.put(setting, response.getSetting(index, setting));
+			}
+			catch (NullPointerException e) {
+				result.put(setting, null);
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Refreshes the index hosting the specified {@link DocumentType document
 	 * type} (forcing all imported data to become "visible").
 	 * 
@@ -322,33 +397,21 @@ public class ESUtil {
 	 */
 	public static String getAutoRefreshInterval(IndexInfo indexInfo)
 	{
-		String index = indexInfo.getName();
-		GetSettingsRequest request = new GetSettingsRequest();
-		GetSettingsResponse response = indices().getSettings(request).actionGet();
-		try {
-			return response.getSetting(index, "index.refresh_interval");
-		}
-		/*
-		 * Hack to work around a bug in Elasticsearch (2.3.3). You get a nasty
-		 * NullPointerException if the index does not exist, or if no settings
-		 * have been explicitly set for it.
-		 */
-		catch (NullPointerException e) {
-			return null;
-		}
+		return getIndexSetting(indexInfo, "index.refresh_interval");
 	}
 
 	/**
-	 * Sets the index refresh interval for -1 for the specified index.
+	 * Sets the index refresh interval to "-1" for the specified index and
+	 * returns the original refresh interval
 	 * 
 	 * @param indexInfo
 	 * @return The original refresh interval
 	 */
-	public static String disableAutoRefresh(IndexInfo indexInfo)
+	public static Object disableAutoRefresh(IndexInfo indexInfo)
 	{
 		String index = indexInfo.getName();
 		logger.info("Disabling auto-refresh for index " + index);
-		String origValue = getAutoRefreshInterval(indexInfo);
+		Object origValue = getAutoRefreshInterval(indexInfo);
 		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
 		Builder builder = Settings.builder();
 		builder.put("index.refresh_interval", -1);
@@ -420,14 +483,7 @@ public class ESUtil {
 
 	/**
 	 * Deletes all documents of the specified type and the specified source
-	 * system. As of NBA version 2 this method is deprecated, because this
-	 * version runs on Elasticsearch version 2, which has dropped support for
-	 * deleting individual types from an index. Therefore this method now is a
-	 * no-op. However, we keep the method and all calls to it, because having to
-	 * delete an entire index just to re-import a single source system isn't
-	 * ideal either. Therefore, if we find an acceptable way of getting rid of
-	 * just those data we want to re-import, this method may get un-deprecated
-	 * again.
+	 * system.
 	 * 
 	 * @param dt
 	 *            The type of the documents to be deleted

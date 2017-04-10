@@ -29,6 +29,23 @@ public class NameMismatchException extends Exception {
 	 */
 	public NameMismatchException(TaxonomicRank rank, DefaultClassification dc, ScientificName sn)
 	{
-		super(String.format(MSG_PAT, rank, dc.get(rank), sn.getNamePartForRank(rank)));
+		super(String.format(MSG_PAT, rank, dc.get(rank), getNamePartForRank(rank, sn)));
 	}
+
+	private static String getNamePartForRank(TaxonomicRank rank, ScientificName sn)
+	{
+		switch (rank) {
+			case GENUS:
+				return sn.getGenusOrMonomial();
+			case SUBGENUS:
+				return sn.getSubgenus();
+			case SPECIES:
+				return sn.getSpecificEpithet();
+			case SUBSPECIES:
+				return sn.getInfraspecificEpithet();
+			default:
+				return null;
+		}
+	}
+
 }

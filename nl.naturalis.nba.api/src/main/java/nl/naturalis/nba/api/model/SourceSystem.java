@@ -26,6 +26,11 @@ public class SourceSystem implements INbaModelObject {
 	public static final SourceSystem GEO = new SourceSystem(CODE_GEO, NAME_GEO);
 	public static final SourceSystem NDFF = new SourceSystem(CODE_NDFF, NAME_NDFF);
 
+	public static SourceSystem[] getAllSourceSystems()
+	{
+		return new SourceSystem[] { BRAHMS, COL, CRS, GEO, NDFF, NSR };
+	}
+
 	@JsonCreator
 	public static SourceSystem getInstance(@JsonProperty("code") String code,
 			@JsonProperty("name") String name)

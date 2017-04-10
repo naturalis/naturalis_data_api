@@ -1,7 +1,7 @@
 package nl.naturalis.nba.etl.name;
 
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
-import static nl.naturalis.nba.etl.name.NameImportUtil.copyTaxon;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copyTaxon;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,18 +39,19 @@ class TaxonNameTransformer {
 		if (previousGroup != DUMMY) {
 			groups.add(previousGroup);
 		}
+		ScientificNameGroup group;
+		String name;
 		for (int i = 0; i < batch.size(); i++) {
 			Taxon taxon = taxa.get(i);
-			ScientificNameGroup group;
-			if (taxon.getScientificNameGroup().equals(previousGroup.getName())) {
+			name = taxon.getAcceptedName().getScientificNameGroup();
+			if (name.equals(previousGroup.getName())) {
 				++updated;
 				group = previousGroup;
 			}
 			else {
 				++created;
-				group = new ScientificNameGroup(taxon.getScientificNameGroup());
+				group = new ScientificNameGroup(name);
 			}
-			previousGroup = group;
 			group.addTaxon(copyTaxon(taxon));
 			/*
 			 * Do not add the last group in the batch; it will be added as the
@@ -61,6 +62,7 @@ class TaxonNameTransformer {
 			if (i != batch.size() - 1) {
 				groups.add(group);
 			}
+			previousGroup = group;
 		}
 		return groups;
 	}

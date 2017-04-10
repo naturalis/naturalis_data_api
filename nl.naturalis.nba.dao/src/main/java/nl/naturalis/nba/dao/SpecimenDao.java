@@ -9,7 +9,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.zip.ZipOutputStream;
+import java.io.OutputStream;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -20,11 +20,16 @@ import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.format.DataSetWriteException;
 import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
 import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
 import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
+import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
@@ -87,16 +92,29 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	}
 
 	@Override
-	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
-		//		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
-		//		DwcaWriter writer = new DwcaWriter(dsc, out);
-		//		writer.processDynamicQuery(spec);
+		try {
+			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.SPECIMEN);
+			IDwcaWriter writer = config.getWriter(out);
+			writer.writeDwcaForQuery(querySpec);
+		}
+		catch (DataSetConfigurationException | DataSetWriteException e) {
+			throw new DaoException(e);
+		}
 	}
 
 	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
+		try {
+			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.SPECIMEN);
+			IDwcaWriter writer = config.getWriter(out);
+			writer.writeDwcaForDataSet();
+		}
+		catch (DataSetConfigurationException | DataSetWriteException e) {
+			throw new DaoException(e);
+		}
 	}
 
 	@Override
@@ -117,13 +135,12 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 				return false;
 			}
 		});
-//		String[] names = {"Henk"};
 		String[] names = new String[files.length];
 		for (int i = 0; i < files.length; i++) {
 			String name = files[i].getName();
 			names[i] = name.substring(0, name.indexOf('.'));
-		}		
-		return names; // null;
+		}
+		return names;
 	}
 
 	@Override

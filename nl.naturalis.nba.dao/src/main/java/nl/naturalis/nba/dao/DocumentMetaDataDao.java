@@ -15,6 +15,7 @@ import nl.naturalis.nba.api.NoSuchFieldException;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.model.IDocumentObject;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
+import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.common.es.map.ESField;
 import nl.naturalis.nba.common.es.map.MappingInfo;
 import nl.naturalis.nba.common.es.map.SimpleField;
@@ -70,7 +71,7 @@ abstract class DocumentMetaDataDao<T extends IDocumentObject> implements IDocume
 	public boolean isOperatorAllowed(String field, ComparisonOperator operator)
 	{
 		if (logger.isDebugEnabled()) {
-			logger.debug("isOperatorAllowed(\"{}\",\"{}\")", field, operator);
+			logger.debug(printCall("isOperatorAllowed", field, operator));
 		}
 		try {
 			return OperatorValidator.isOperatorAllowed(field, operator, dt);
@@ -84,6 +85,12 @@ abstract class DocumentMetaDataDao<T extends IDocumentObject> implements IDocume
 	public String[] getPaths(boolean sorted)
 	{
 		return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
+	}
+
+	@Override
+	public Map<NbaSetting, Object> getSettings()
+	{
+		return null;
 	}
 
 }

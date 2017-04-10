@@ -20,6 +20,7 @@
 		}
 	},
 	"index": {
-		"refresh_interval": "30s"
+		"refresh_interval": -1,
+		"max_result_window": 100000
 	}
 }

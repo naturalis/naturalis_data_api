@@ -1,5 +1,17 @@
 #!/bin/bash
 
+action="${1}"
+
+# This will kick of all imports from a single Java process.
+# Probably somewhat more efficient, but generates a single
+# log file.
+if [ "${action}" = single ]
+then
+	. ./include.sh
+	java -cp ${classpath} $JAVA_OPTS ${root_package}.NbaImportAll
+	exit 0
+fi
+
 start=$(date)
 
 scripts=" \

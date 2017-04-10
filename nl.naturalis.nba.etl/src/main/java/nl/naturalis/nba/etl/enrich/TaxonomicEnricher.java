@@ -7,6 +7,9 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static nl.naturalis.nba.dao.util.es.ESUtil.refreshIndex;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.logDuration;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copyScientificName;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copySourceSystem;
+import static nl.naturalis.nba.etl.SummaryObjectUtil.copySummaryVernacularName;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
@@ -35,6 +38,7 @@ import nl.naturalis.nba.dao.util.es.DocumentIterator;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.BulkIndexException;
 import nl.naturalis.nba.etl.BulkIndexer;
+import nl.naturalis.nba.etl.ETLRuntimeException;
 
 public class TaxonomicEnricher {
 
@@ -56,7 +60,7 @@ public class TaxonomicEnricher {
 	}
 
 	private static final Logger logger = getLogger(TaxonomicEnricher.class);
-	private static final List<TaxonomicEnrichment> EMPTY = new ArrayList<>(0);
+	private static final List<TaxonomicEnrichment> NONE = new ArrayList<>(0);
 	private static final int BATCH_SIZE = 1000;
 	private static final int FLUSH_TRESHOLD = 1000;
 
@@ -65,7 +69,7 @@ public class TaxonomicEnricher {
 		long start = System.currentTimeMillis();
 		logger.info("Starting taxonomic enrichment of Specimen documents");
 		QuerySpec qs = new QuerySpec();
-		qs.sortBy("identifications.scientificNameGroup");
+		qs.sortBy("identifications.scientificName.scientificNameGroup");
 		DocumentIterator<Specimen> extractor = new DocumentIterator<>(SPECIMEN, qs);
 		extractor.setBatchSize(BATCH_SIZE);
 		BulkIndexer<Specimen> indexer = new BulkIndexer<>(SPECIMEN);
@@ -89,7 +93,7 @@ public class TaxonomicEnricher {
 				Specimen last = batch.get(batch.size() - 1);
 				List<SpecimenIdentification> sis = last.getIdentifications();
 				if (sis != null) {
-					String group = sis.get(0).getScientificNameGroup();
+					String group = sis.get(0).getScientificName().getScientificNameGroup();
 					logger.info("Most recent name group: {}", group);
 				}
 			}
@@ -108,28 +112,40 @@ public class TaxonomicEnricher {
 	{
 		List<Specimen> result = new ArrayList<>(specimens.size());
 		HashMap<String, List<TaxonomicEnrichment>> cache;
-		cache = new HashMap<>((int) (specimens.size() / .75F) + 1);
+		cache = new HashMap<>((int) (specimens.size() / .75F) + 8);
 		for (Specimen specimen : specimens) {
 			boolean enriched = false;
 			if (specimen.getIdentifications() == null) {
 				continue;
 			}
 			for (SpecimenIdentification si : specimen.getIdentifications()) {
-				String nameGroup = si.getScientificNameGroup();
+				String nameGroup = si.getScientificName().getScientificNameGroup();
 				List<TaxonomicEnrichment> enrichments = cache.get(nameGroup);
 				if (enrichments == null) {
 					List<Taxon> taxa = getTaxa(nameGroup);
 					if (taxa == null) {
-						cache.put(nameGroup, EMPTY);
+						/*
+						 * There are no taxon documents with this nameGroup
+						 */
+						cache.put(nameGroup, NONE);
 					}
 					else {
 						enrichments = createEnrichments(taxa);
 						cache.put(nameGroup, enrichments);
-						if (enrichments != EMPTY) {
+						if (enrichments != NONE) {
 							si.setTaxonomicEnrichments(enrichments);
 							enriched = true;
 						}
+						/*
+						 * Else there were taxon documents with this nameGroup,
+						 * but none of them had vernacular names and/or
+						 * synonyms.
+						 */
 					}
+				}
+				else if (enrichments != NONE) {
+					si.setTaxonomicEnrichments(enrichments);
+					enriched = true;
 				}
 			}
 			if (enriched) {
@@ -149,29 +165,40 @@ public class TaxonomicEnricher {
 			TaxonomicEnrichment enrichment = new TaxonomicEnrichment();
 			if (taxon.getVernacularNames() != null) {
 				for (VernacularName vn : taxon.getVernacularNames()) {
-					enrichment.addVernacularName(vn.getName());
+					enrichment.addVernacularName(copySummaryVernacularName(vn));
 				}
 			}
 			if (taxon.getSynonyms() != null) {
 				for (ScientificName sn : taxon.getSynonyms()) {
-					enrichment.addSynonym(sn.getFullScientificName());
+					enrichment.addSynonym(copyScientificName(sn));
 				}
 			}
+			enrichment.setSourceSystem(copySourceSystem(taxon.getSourceSystem()));
+			enrichment.setTaxonId(taxon.getId());
 			enrichments.add(enrichment);
 		}
-		return enrichments.isEmpty() ? EMPTY : enrichments;
+		return enrichments.isEmpty() ? NONE : enrichments;
 	}
 
 	private static List<Taxon> getTaxa(String nameGroup)
 	{
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = newSearchRequest(dt);
-		TermQueryBuilder query = termQuery("scientificNameGroup", nameGroup);
+		TermQueryBuilder query = termQuery("acceptedName.scientificNameGroup", nameGroup);
 		request.setQuery(constantScoreQuery(query));
+		int maxDocs = 10000;
+		request.setSize(maxDocs);
 		SearchResponse response = executeSearchRequest(request);
 		SearchHit[] hits = response.getHits().getHits();
 		if (hits.length == 0) {
 			return null;
+		}
+		if (response.getHits().getTotalHits() > maxDocs) {
+			/*
+			 * That would be really interesting because ordinarily you would
+			 * expect one or two (COL and/or NSR).
+			 */
+			throw new ETLRuntimeException("Too many taxa for name group " + nameGroup);
 		}
 		List<Taxon> result = new ArrayList<>(hits.length);
 		ObjectMapper om = dt.getObjectMapper();

@@ -21,6 +21,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -53,6 +54,20 @@ public class NbaMetaDataResource {
 
 	@EJB
 	Registry registry;
+
+	@GET
+	@Path("/getSetting/{name}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Object getSetting(@PathParam("name") String name, @Context UriInfo uriInfo)
+	{
+		try {
+			NbaSetting setting = NbaSetting.parse(name);
+			return new NbaMetaDataDao().getSetting(setting);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 
 	@GET
 	@Path("/getSettings")

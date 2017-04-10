@@ -21,6 +21,7 @@ import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
+import static nl.naturalis.nba.api.model.metadata.NbaSetting.*;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.common.PathValueComparator;
 import nl.naturalis.nba.common.PathValueComparator.Comparee;
@@ -68,14 +69,18 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		QuerySpec qs = new QuerySpec();
 		qs.setConstantScore(true);
 		qs.setFields(Collections.emptyList());
-		qs.setLogicalOperator(querySpec.getLogicalOperator());
-		// TODO: soft code to maximum query result set size
-		qs.setSize(10000);
-		for (QueryCondition condition : querySpec.getConditions()) {
-			if (condition.getField().getElement(0).equals("specimens")) {
-				QueryCondition c = new QueryCondition(condition);
-				mapFields(c);
-				qs.addCondition(c);
+		ScientificNameGroupMetaDataDao metadataDao = new ScientificNameGroupMetaDataDao();
+		Object val = metadataDao.getSetting(INDEX_MAX_RESULT_WINDOW);
+		int size = Integer.parseInt(val.toString());
+		qs.setSize(size);
+		if (querySpec.getConditions() != null) {
+			qs.setLogicalOperator(querySpec.getLogicalOperator());
+			for (QueryCondition condition : querySpec.getConditions()) {
+				if (condition.getField().getElement(0).equals("specimens")) {
+					QueryCondition c = new QueryCondition(condition);
+					mapFields(c);
+					qs.addCondition(c);
+				}
 			}
 		}
 		return qs;

@@ -1,8 +1,12 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.common.json.JsonUtil.deserialize;
+import static nl.naturalis.nba.common.json.JsonUtil.readField;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.utils.debug.DebugUtil.printCall;
 
+import java.io.InputStream;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,6 +35,28 @@ abstract class DocumentMetaDataDao<T extends IDocumentObject> implements IDocume
 	DocumentMetaDataDao(DocumentType<T> dt)
 	{
 		this.dt = dt;
+	}
+
+	private static EnumMap<NbaSetting, Object> settings;
+
+	@Override
+	public Object getSetting(NbaSetting setting)
+	{
+		return getSettings().get(setting);
+	}
+
+	@Override
+	public Map<NbaSetting, Object> getSettings()
+	{
+		if (settings == null) {
+			settings = new EnumMap<>(NbaSetting.class);
+			InputStream is = getClass().getResourceAsStream("/es-settings.json");
+			Map<String, Object> esSettings = deserialize(is);
+			String path = "index.max_result_window";
+			Object val = readField(esSettings, path);
+			settings.put(NbaSetting.INDEX_MAX_RESULT_WINDOW, val);
+		}
+		return settings;
 	}
 
 	@Override
@@ -85,12 +111,6 @@ abstract class DocumentMetaDataDao<T extends IDocumentObject> implements IDocume
 	public String[] getPaths(boolean sorted)
 	{
 		return new MappingInfo<>(dt.getMapping()).getPathStrings(sorted);
-	}
-
-	@Override
-	public Map<NbaSetting, Object> getSettings()
-	{
-		return null;
 	}
 
 }

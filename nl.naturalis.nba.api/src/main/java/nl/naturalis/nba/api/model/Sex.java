@@ -22,10 +22,11 @@ public enum Sex implements INbaModelObject
 		}
 		throw new IllegalArgumentException("Invalid sex: " + name);
 	}
-	
+
 	private final String name = name().toLowerCase();
 
 	@JsonValue
+	@Override
 	public String toString()
 	{
 		return name;

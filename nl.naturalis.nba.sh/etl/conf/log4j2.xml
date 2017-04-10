@@ -2,10 +2,10 @@
 <Configuration>
 	<Appenders>
 		<Console name="CONSOLE">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} | %-5level | %c{1} | %msg%n" />
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} | %-5level | %c-24{1} | %msg%n" />
 		</Console>
 		<File name="FILE" fileName="${sys:nba.v2.etl.logfile}.log">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} | %-5level | %c{1} | %msg%n" />
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} | %-5level | %-24c{1} | %msg%n" />
 		</File>
 		<File name="JSON" fileName="${sys:nba.v2.etl.logfile}.json">
 			<JSONLayout complete="false" compact="true"

@@ -7,7 +7,9 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.newSearchRequest;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import java.util.zip.ZipOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.OutputStream;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -18,8 +20,16 @@ import org.elasticsearch.search.SearchHit;
 
 import nl.naturalis.nba.api.ISpecimenAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
+import nl.naturalis.nba.dao.exception.DaoException;
+import nl.naturalis.nba.dao.format.DataSetConfigurationException;
+import nl.naturalis.nba.dao.format.DataSetWriteException;
+import nl.naturalis.nba.dao.format.dwca.DwcaConfig;
+import nl.naturalis.nba.dao.format.dwca.DwcaDataSetType;
+import nl.naturalis.nba.dao.format.dwca.DwcaUtil;
+import nl.naturalis.nba.dao.format.dwca.IDwcaWriter;
 
 public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 
@@ -82,44 +92,55 @@ public class SpecimenDao extends NbaDao<Specimen> implements ISpecimenAccess {
 	}
 
 	@Override
-	public void dwcaQuery(QuerySpec spec, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException
 	{
-		//		DataSetCollectionConfiguration dsc = new DataSetCollectionConfiguration(SPECIMEN, "dynamic");
-		//		DwcaWriter writer = new DwcaWriter(dsc, out);
-		//		writer.processDynamicQuery(spec);
+		try {
+			DwcaConfig config = DwcaConfig.getDynamicDwcaConfig(DwcaDataSetType.SPECIMEN);
+			IDwcaWriter writer = config.getWriter(out);
+			writer.writeDwcaForQuery(querySpec);
+		}
+		catch (DataSetConfigurationException | DataSetWriteException e) {
+			throw new DaoException(e);
+		}
 	}
 
 	@Override
-	public void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException
+	public void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException
 	{
+		try {
+			DwcaConfig config = new DwcaConfig(name, DwcaDataSetType.SPECIMEN);
+			IDwcaWriter writer = config.getWriter(out);
+			writer.writeDwcaForDataSet();
+		}
+		catch (DataSetConfigurationException | DataSetWriteException e) {
+			throw new DaoException(e);
+		}
 	}
 
 	@Override
 	public String[] dwcaGetDataSetNames()
 	{
-		return null;
-		//		File dir = getDocumentTypeDirectory(SPECIMEN);
-		//		ArrayList<String> names = new ArrayList<>(32);
-		//		for (File subdir : getSubdirectories(dir)) {
-		//			if (subdir.getName().equals("dynamic"))
-		//				continue; // Special directory for dynamic DwCA
-		//			if (!containsFile(subdir, "fields.config"))
-		//				continue; // Can't be a data set collection dir
-		//			File[] dataSetDirs = getSubdirectories(subdir);
-		//			if (dataSetDirs.length == 0) {
-		//				if (containsFile(subdir, "eml.xml")) {
-		//					names.add(subdir.getName());
-		//				}
-		//			}
-		//			else {
-		//				for (File dataSetDir : dataSetDirs) {
-		//					if (containsFile(dataSetDir, "eml.xml")) {
-		//						names.add(dataSetDir.getName());
-		//					}
-		//				}
-		//			}
-		//		}
-		//		return names.toArray(new String[names.size()]);
+		File dir = DwcaUtil.getDwcaConfigurationDirectory(DwcaDataSetType.SPECIMEN);
+		File[] files = dir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f)
+			{
+				if (f.getName().startsWith("dynamic")) {
+					return false;
+				}
+				if (f.isFile() && f.getName().endsWith(DwcaConfig.CONF_FILE_EXTENSION)) {
+					return true;
+				}
+				return false;
+			}
+		});
+		String[] names = new String[files.length];
+		for (int i = 0; i < files.length; i++) {
+			String name = files[i].getName();
+			names[i] = name.substring(0, name.indexOf('.'));
+		}
+		return names;
 	}
 
 	@Override

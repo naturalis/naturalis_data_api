@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.InvalidQueryException;
 import nl.naturalis.nba.api.KeyValuePair;
+import nl.naturalis.nba.api.NoSuchDataSetException;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
@@ -189,8 +190,7 @@ public class SpecimenResource {
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long count_POST_FORM(MultivaluedMap<String, String> form,
-			@Context UriInfo uriInfo)
+	public long count_POST_FORM(MultivaluedMap<String, String> form, @Context UriInfo uriInfo)
 	{
 		try {
 			QuerySpec qs = new HttpQuerySpecBuilder(form, uriInfo).build();
@@ -201,7 +201,7 @@ public class SpecimenResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-	
+
 	@POST
 	@Path("/count")
 	@Produces(JSON_CONTENT_TYPE)
@@ -259,7 +259,8 @@ public class SpecimenResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			QueryCondition[] conditions = null;
 			if (qs.getConditions() != null && qs.getConditions().size() > 0) {
-				conditions = qs.getConditions().toArray(new QueryCondition[qs.getConditions().size()]);
+				conditions = qs.getConditions()
+						.toArray(new QueryCondition[qs.getConditions().size()]);
 			}
 			SpecimenDao dao = new SpecimenDao();
 			return dao.getDistinctValuesPerGroup(keyField, valuesField, conditions);
@@ -294,7 +295,6 @@ public class SpecimenResource {
 			QuerySpec qs = new HttpQuerySpecBuilder(uriInfo).build();
 			StreamingOutput stream = new StreamingOutput() {
 
-				@Override
 				public void write(OutputStream out) throws IOException, WebApplicationException
 				{
 					SpecimenDao dao = new SpecimenDao();
@@ -329,17 +329,20 @@ public class SpecimenResource {
 				{
 					SpecimenDao dao = new SpecimenDao();
 					try {
-						dao.dwcaGetDataSet(name, new ZipOutputStream(out));
+						dao.dwcaGetDataSet(name, out);
 					}
-					catch (InvalidQueryException e) {
-						throw new WebApplicationException(e);
+					catch (NoSuchDataSetException e) {
+						throw new HTTP404Exception(uriInfo, e.getMessage());
+					}
+					catch (Throwable e) {
+						throw new RESTException(uriInfo, e);
 					}
 				}
 			};
 			ResponseBuilder response = Response.ok(stream);
 			response.type("application/zip");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			String fmt = "attachment; filename=\"%s-%s.zip\"";
+			String fmt = "attachment; filename=\"%s-%s.dwca.zip\"";
 			String hdr = String.format(fmt, name, sdf.format(new Date()));
 			response.header("Content-Disposition", hdr);
 			return response.build();

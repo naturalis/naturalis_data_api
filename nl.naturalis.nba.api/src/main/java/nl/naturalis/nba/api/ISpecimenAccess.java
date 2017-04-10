@@ -1,6 +1,6 @@
 package nl.naturalis.nba.api;
 
-import java.util.zip.ZipOutputStream;
+import java.io.OutputStream;
 
 import nl.naturalis.nba.api.model.Specimen;
 
@@ -36,19 +36,19 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	boolean exists(String unitID);
 
 	/**
-	 * Writes a DarwinCore Archive with specimens satisfying the specified query
+	 * Writes a DarwinCore Archive with taxa satisfying the specified query
 	 * specification to the specified output stream.
 	 * 
 	 * @param querySpec
 	 * @param out
 	 * @throws InvalidQueryException
 	 */
-	void dwcaQuery(QuerySpec querySpec, ZipOutputStream out) throws InvalidQueryException;
+	void dwcaQuery(QuerySpec querySpec, OutputStream out) throws InvalidQueryException;
 
 	/**
-	 * Writes a DarwinCore Archive with specimens from a predefined data set to
-	 * the specified output stream. To get the names of all currently defined
-	 * data sets, call {@link #dwcaGetDataSetNames() dwcaGetDataSetNames}.
+	 * Writes a DarwinCore Archive with taxa from a predefined data set to the
+	 * specified output stream. To get the names of all currently defined data
+	 * sets, call {@link #dwcaGetDataSetNames() dwcaGetDataSetNames}.
 	 * 
 	 * @param name
 	 *            The name of the predefined data set
@@ -56,11 +56,10 @@ public interface ISpecimenAccess extends INbaAccess<Specimen> {
 	 *            The output stream to write to
 	 * @throws InvalidQueryException
 	 */
-	void dwcaGetDataSet(String name, ZipOutputStream out) throws InvalidQueryException;
+	void dwcaGetDataSet(String name, OutputStream out) throws NoSuchDataSetException;
 
 	/**
-	 * Returns the names of all predefined data sets with specimen/occurrence
-	 * data.
+	 * Returns the names of all predefined data sets with specimen data.
 	 * 
 	 * @return
 	 */

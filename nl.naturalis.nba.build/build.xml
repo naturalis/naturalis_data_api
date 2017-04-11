@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant"
-         xmlns:if="ant:if"
-         xmlns:unless="ant:unless"
-         basedir="."
-         name="nl.naturalis.nba.build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless" basedir="." name="nl.naturalis.nba.build">
 
 	<import file="./properties.xml" />
 	<import file="./common.xml" />
@@ -32,15 +28,12 @@
 				</resourcecount>
 			</not>
 		</condition>
-		<fail if:set="build.properties.missing"
-		      message="Missing ${build.properties.file} (copy and tune ${build.properties.file}.tpl)" />
+		<fail if:set="build.properties.missing" message="Missing ${build.properties.file} (copy and tune ${build.properties.file}.tpl)" />
 		<!-- We're good to go -->
 		<echo message="You got clearance" />
 	</target>
 
-	<target name="show-git-info"
-	        depends="git-info"
-	        description="Show info about the Git branch for this build">
+	<target name="show-git-info" depends="git-info" description="Show info about the Git branch for this build">
 		<echo message="" />
 		<echo message="" />
 		<echo message="****************************************************************" />
@@ -54,8 +47,7 @@
 			</not>
 		</condition>
 		<echo if:true="${git.show.status}" message=" " />
-		<echo if:true="${git.show.status}"
-		      message="There are uncommitted changes in branch ${git.branch}:" />
+		<echo if:true="${git.show.status}" message="There are uncommitted changes in branch ${git.branch}:" />
 		<echo if:true="${git.show.status}" message="${git.status}" />
 		<echo message="" />
 		<!-- Allow some time for a heart attack -->
@@ -64,19 +56,13 @@
 	</target>
 
 	<target name="install-service">
-		<ant antfile="${rest.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritAll="false"
-		     inheritRefs="false"
-		     target="install" />
+		<ant antfile="${rest.module.location}/build.xml" useNativeBasedir="true" inheritAll="false" inheritRefs="false" target="install" />
 	</target>
 
 	<target name="install-etl-module">
-		<ant antfile="${sh.module.location}/build.xml"
-		     useNativeBasedir="true"
-		     inheritAll="false"
-		     inheritRefs="false"
-		     target="install-etl-module" />
+		<ant antfile="${sh.module.location}/build.xml" useNativeBasedir="true" inheritAll="false" inheritRefs="false" target="install-etl-module" />
 	</target>
+
+	<target name="install" depends="build-etl-module,build-rest-module" />
 
 </project>

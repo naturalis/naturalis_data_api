@@ -75,33 +75,45 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 		qs.setSize(size);
 		if (querySpec.getConditions() != null) {
 			qs.setLogicalOperator(querySpec.getLogicalOperator());
-			for (QueryCondition condition : querySpec.getConditions()) {
-				if (condition.getField().getElement(0).equals("specimens")) {
-					QueryCondition c = new QueryCondition(condition);
-					mapFields(c);
-					qs.addCondition(c);
-				}
-			}
+			qs.setConditions(processConditions(querySpec.getConditions()));
 		}
 		return qs;
 	}
 
-	private static void mapFields(QueryCondition c)
+	private static ArrayList<QueryCondition> processConditions(List<QueryCondition> conditions)
 	{
-		if (c.getField().getElement(1).equals("matchingIdentifications")) {
-			Path mapped = c.getField().replace(1, "identifications");
-			c.setField(mapped);
+		if (conditions == null) {
+			return null;
 		}
-		if (c.getAnd() != null) {
-			for (QueryCondition condition : c.getAnd()) {
-				mapFields(condition);
+		ArrayList<QueryCondition> copy = new ArrayList<>(conditions.size());
+		for (QueryCondition condition : conditions) {
+			if (condition.getField().getElement(0).equals("specimens")) {
+				QueryCondition c = new QueryCondition(condition);
+				processCondition(c);
+				copy.add(c);
+			}
+			else {
+				String fmt = "Query condition on field {} with {} AND sibling(s) "
+						+ "and {} OR sibling(s) ignored for specimen purge. Make "
+						+ "sure all conditions on specimen fields are main "
+						+ "(non-sibling) conditions within the QuerySpec object, "
+						+ "or siblings of main conditions on specimen fields";
+				int x = condition.getAnd() == null ? 0 : condition.getAnd().size();
+				int y = condition.getOr() == null ? 0 : condition.getOr().size();
+				logger.warn(fmt, x, y);
 			}
 		}
-		if (c.getOr() != null) {
-			for (QueryCondition condition : c.getOr()) {
-				mapFields(condition);
-			}
+		return copy.isEmpty() ? null : copy;
+	}
+
+	private static void processCondition(QueryCondition condition)
+	{
+		if (condition.getField().getElement(1).equals("matchingIdentifications")) {
+			Path mapped = condition.getField().replace(1, "identifications");
+			condition.setField(mapped);
 		}
+		condition.setAnd(processConditions(condition.getAnd()));
+		condition.setOr(processConditions(condition.getOr()));
 	}
 
 	private static void purgeSpecimens(QueryResult<ScientificNameGroup> result,
@@ -128,6 +140,9 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				if (idSet.contains(ss.getId())) {
 					purged.add(ss);
 				}
+			}
+			if (logger.isDebugEnabled()) {
+
 			}
 			nameGroup.setSpecimens(purged);
 			nameGroup.setSpecimenCount(purged.size());

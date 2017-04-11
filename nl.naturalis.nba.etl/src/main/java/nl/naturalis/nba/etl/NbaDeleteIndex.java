@@ -10,17 +10,17 @@ import nl.naturalis.nba.dao.ESClientManager;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 
 /**
- * Class managing the creation of the indices used by the NBA.
+ * Deletes on or more indices managed by the NBA.
  * 
  * @author Ayco Holleman
  * 
  */
-public class NbaBootstrap {
+public class NbaDeleteIndex {
 
 	public static void main(String[] args)
 	{
 		try {
-			new NbaBootstrap().bootstrap(args);
+			new NbaDeleteIndex().deleteIndex(args);
 		}
 		catch (Throwable t) {
 			logger.error(t.getMessage(), t);
@@ -30,7 +30,7 @@ public class NbaBootstrap {
 		}
 	}
 
-	private static final Logger logger = ETLRegistry.getInstance().getLogger(NbaBootstrap.class);
+	private static final Logger logger = ETLRegistry.getInstance().getLogger(NbaDeleteIndex.class);
 
 	/**
 	 * Creates or re-creates indices hosting the specified document types. Each
@@ -42,7 +42,7 @@ public class NbaBootstrap {
 	 * @param documentTypes
 	 */
 	@SuppressWarnings("static-method")
-	public void bootstrap(String... documentTypes)
+	public void deleteIndex(String... documentTypes)
 	{
 		if (documentTypes.length == 0) {
 			throw new IllegalArgumentException("At least one document type name required");
@@ -54,13 +54,11 @@ public class NbaBootstrap {
 						"\"all\" cannot be combined with other arguments");
 			}
 			ESUtil.deleteAllIndices();
-			ESUtil.createAllIndices();
 		}
 		else {
 			for (String index : indices) {
 				DocumentType<?> dt = DocumentType.forName(index);
 				ESUtil.deleteIndex(dt);
-				ESUtil.createIndex(dt);
 			}
 		}
 	}

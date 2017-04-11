@@ -14,6 +14,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class SortField {
 
+	/**
+	 * The path to use if you want to sort documents by score: &#34;_score&#34;.
+	 */
+	public static final Path SORT_FIELD_SCORE = new Path("_score");
+
 	private Path path;
 	private SortOrder sortOrder;
 

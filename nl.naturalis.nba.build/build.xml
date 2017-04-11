@@ -79,6 +79,6 @@
 		     target="install-etl-module" />
 	</target>
 
-	<target name="install" depends="build-rest-module,build-etl-module" />
+	<target name="install" depends="install-service,install-etl-module" />
 
 </project>

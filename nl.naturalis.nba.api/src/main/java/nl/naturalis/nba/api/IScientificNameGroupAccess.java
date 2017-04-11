@@ -13,7 +13,7 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 	/**
 	 * Returns {@link ScientificNameGroup} documents conforming to the provided
 	 * query specification. This method hides {@link INbaAccess#query(QuerySpec)
-	 * INbaAccess.query}. It takes a {@link NameGroupQuerySpec} rather than a
+	 * INbaAccess.query}. It takes a {@link ScientificNameGroupQuerySpec} rather than a
 	 * {@link QuerySpec} argument, reflecting the fact that there a some
 	 * (optional) extra features when specifying a query for
 	 * {@code ScientificNameGroup} documents,
@@ -22,7 +22,7 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 	 * @return
 	 * @throws InvalidQueryException
 	 */
-	QueryResult<ScientificNameGroup> query(NameGroupQuerySpec querySpec)
+	QueryResult<ScientificNameGroup> query(ScientificNameGroupQuerySpec querySpec)
 			throws InvalidQueryException;
 
 	/**
@@ -46,7 +46,7 @@ public interface IScientificNameGroupAccess extends INbaAccess<ScientificNameGro
 	 * @param querySpec
 	 * @return
 	 */
-	QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(NameGroupQuerySpec querySpec)
+	QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(ScientificNameGroupQuerySpec querySpec)
 			throws InvalidQueryException;
 
 }

@@ -1,5 +1,6 @@
 package nl.naturalis.nba.dao;
 
+import static nl.naturalis.nba.api.model.metadata.NbaSetting.INDEX_MAX_RESULT_WINDOW;
 import static nl.naturalis.nba.dao.DaoUtil.getLogger;
 import static nl.naturalis.nba.dao.DocumentType.SCIENTIFIC_NAME_GROUP;
 
@@ -12,16 +13,15 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.IScientificNameGroupAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QueryResultItem;
 import nl.naturalis.nba.api.QuerySpec;
+import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 import nl.naturalis.nba.api.model.Specimen;
-import static nl.naturalis.nba.api.model.metadata.NbaSetting.*;
 import nl.naturalis.nba.api.model.summary.SummarySpecimen;
 import nl.naturalis.nba.common.PathValueComparator;
 import nl.naturalis.nba.common.PathValueComparator.Comparee;
@@ -43,7 +43,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(NameGroupQuerySpec querySpec)
+	public QueryResult<ScientificNameGroup> query(ScientificNameGroupQuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup> result = super.query(querySpec);
@@ -52,8 +52,8 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(NameGroupQuerySpec querySpec)
-			throws InvalidQueryException
+	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(
+			ScientificNameGroupQuerySpec querySpec) throws InvalidQueryException
 	{
 		QueryResult<ScientificNameGroup> result = super.query(querySpec);
 		QuerySpec specimenQuerySpec = createQuerySpecForSpecimens(querySpec);
@@ -135,7 +135,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	}
 
 	private static void processSpecimens(QueryResult<ScientificNameGroup> result,
-			NameGroupQuerySpec qs)
+			ScientificNameGroupQuerySpec qs)
 	{
 		Integer f = qs.getSpecimensFrom();
 		Integer s = qs.getSpecimensSize();
@@ -160,7 +160,7 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 			else {
 				if (qs.getSpecimensSortFields() != null) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Sorting specimens in name group \"{}\"", sng.getName());
+						logger.debug("Sorting specimens in name group {}", sng.getName());
 					}
 					Collections.sort(sng.getSpecimens(), comparator);
 				}
@@ -171,6 +171,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 					}
 					else {
 						to = Math.min(sng.getSpecimenCount(), offset + maxSpecimens);
+					}
+					if (logger.isDebugEnabled()) {
+						String fmt = "Extracting specimens {} to {} in name group {}";
+						logger.debug(fmt, offset, to, sng.getName());
 					}
 					sng.setSpecimens(sng.getSpecimens().subList(offset, to));
 				}

@@ -12,7 +12,7 @@ import nl.naturalis.nba.api.model.summary.SummarySpecimen;
  * @author Ayco Holleman
  *
  */
-public class NameGroupQuerySpec extends QuerySpec {
+public class ScientificNameGroupQuerySpec extends QuerySpec {
 
 	private Integer specimensFrom;
 	private Integer specimensSize;

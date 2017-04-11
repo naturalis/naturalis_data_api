@@ -53,6 +53,7 @@ class TaxonNameTransformer {
 				group = new ScientificNameGroup(name);
 			}
 			group.addTaxon(copyTaxon(taxon));
+			group.setTaxonCount(group.getTaxa().size());
 			/*
 			 * Do not add the last group in the batch; it will be added as the
 			 * first group in the next batch. This way, if the last name in the

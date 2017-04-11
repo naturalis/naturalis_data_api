@@ -18,14 +18,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "score", "item" })
 public class QueryResultItem<T> {
 
-	private float score;
+	private Float score;
 	private T item;
 
 	@JsonCreator
 	public QueryResultItem(@JsonProperty("item") T item, @JsonProperty("score") float score)
 	{
 		this.item = item;
-		this.score = score;
+		/*
+		 * When sorting on a field (rather than on relevance), Elasticsearch
+		 * returns NaN for hit.getScore()
+		 */
+		if (!Float.isNaN(score)) {
+			this.score = score;
+		}
 	}
 
 	/**
@@ -39,11 +45,13 @@ public class QueryResultItem<T> {
 	}
 
 	/**
-	 * Returns the relevance of the document returned from the query.
+	 * Returns the relevance of the document returned from the query. Note that
+	 * when sorting on a field (rather than on relevance), this method will
+	 * return {@code null}.
 	 * 
 	 * @return
 	 */
-	public float getScore()
+	public Float getScore()
 	{
 		return score;
 	}

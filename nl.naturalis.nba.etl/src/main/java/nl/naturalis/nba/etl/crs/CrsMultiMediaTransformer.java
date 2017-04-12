@@ -111,6 +111,18 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return true;
 		}
+		if (getDescendant(oaiDcElem, "frmDigitalebestanden") == null) {
+			if (logger.isDebugEnabled()) {
+				debug("Missing or empty element <frmDigitalebestanden>");
+			}
+			return true;
+		}
+		if (getDescendant(oaiDcElem, "ncrsDetermination") == null) {
+			if (logger.isDebugEnabled()) {
+				debug("Missing or empty element <ncrsDetermination>");
+			}
+			return true;
+		}
 		return false;
 	}
 
@@ -119,21 +131,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	{
 		Element oaiDcElem = getDescendant(input.getRecord(), "oai_dc:dc");
 		List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem, "frmDigitalebestanden");
-		if (frmDigitaleBestandenElems == null) {
-			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Missing or empty element <frmDigitalebestanden>");
-			}
-			return null;
-		}
 		List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
-		if (ncsrDeterminationElems == null) {
-			stats.recordsRejected++;
-			if (!suppressErrors) {
-				error("Missing or empty element <ncrsDetermination>");
-			}
-			return null;
-		}
 		ArrayList<MultiMediaContentIdentification> identifications;
 		identifications = getIdentifications(ncsrDeterminationElems);
 		if (identifications == null) {
@@ -345,9 +343,9 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	{
 		String url = val(frmDigitalebestandenElem, "abcd:fileuri");
 		if (url == null) {
-			stats.objectsRejected++;
-			if (!suppressErrors) {
-				error("Missing or empty element <abcd:fileuri>");
+			stats.objectsSkipped++;
+			if (logger.isDebugEnabled()) {
+				debug("Missing or empty element <abcd:fileuri>");
 			}
 			return null;
 		}

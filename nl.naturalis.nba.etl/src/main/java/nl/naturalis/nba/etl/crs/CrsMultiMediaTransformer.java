@@ -78,7 +78,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	@Override
 	protected String messagePrefix()
 	{
-		return super.messagePrefix() + rpad(databaseID, 12, " | ");
+		return super.messagePrefix() + rpad(databaseID, 11, " | ");
 	}
 
 	@Override

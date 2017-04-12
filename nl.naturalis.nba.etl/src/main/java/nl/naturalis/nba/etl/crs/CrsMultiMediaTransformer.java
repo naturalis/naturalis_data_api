@@ -118,14 +118,14 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				error("Missing or empty element <frmDigitalebestanden>");
 			return null;
 		}
-		List<Element> determinationElements = getDescendants(dc, "ncrsDetermination");
-		if (determinationElements == null) {
+		List<Element> ncsrDeterminationElems = getDescendants(dc, "ncrsDetermination");
+		if (ncsrDeterminationElems == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors)
 				error("Missing or empty element <ncrsDetermination>");
 			return null;
 		}
-		identifications = getIdentifications(determinationElements);
+		identifications = getIdentifications(ncsrDeterminationElems);
 		if (identifications == null) {
 			stats.recordsRejected++;
 			if (!suppressErrors)
@@ -134,7 +134,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		}
 		stats.recordsAccepted++;
 		first = null;
-		List<MultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
+		ArrayList<MultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
 		for (Element elem : mediaFileElems) {
 			stats.objectsProcessed++;
 			String[] urlInfo = getUrlInfo(elem);

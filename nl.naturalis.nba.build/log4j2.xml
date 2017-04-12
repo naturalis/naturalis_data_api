@@ -5,10 +5,10 @@
 <Configuration>
 	<Appenders>
 		<Console name="CONSOLE">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} | %-5level | %-36c{10} | %msg%n" />
+			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</Console>
 		<File name="FILE" fileName="${sys:nba.v2.log.file}">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} | %-5level | %-36c{10} | %msg%n" />
+			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</File>
 	</Appenders>
 	<Loggers>

@@ -93,14 +93,15 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				copy.add(c);
 			}
 			else {
-				String fmt = "Query condition on field {} with {} AND sibling(s) "
-						+ "and {} OR sibling(s) ignored for specimen purge. Make "
-						+ "sure all conditions on specimen fields are main "
-						+ "(non-sibling) conditions within the QuerySpec object, "
-						+ "or siblings of main conditions on specimen fields";
+				String fmt = "Query condition on field {} along with {} AND "
+						+ "sibling(s) and {} OR sibling(s) ignored for specimen "
+						+ "purge. Make sure all conditions on specimen fields "
+						+ "are main conditions within the QuerySpec (i.e. not "
+						+ "nested within other conditions), or make sure that "
+						+ "they are siblings of main conditions on specimen fields";
 				int x = condition.getAnd() == null ? 0 : condition.getAnd().size();
 				int y = condition.getOr() == null ? 0 : condition.getOr().size();
-				logger.warn(fmt, x, y);
+				logger.warn(fmt, condition.getField(), x, y);
 			}
 		}
 		return copy.isEmpty() ? null : copy;
@@ -119,6 +120,10 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 	private static void purgeSpecimens(QueryResult<ScientificNameGroup> result,
 			QuerySpec specimenQuerySpec) throws InvalidQueryException
 	{
+		if (logger.isDebugEnabled()) {
+			logger.debug("Purging specimens from name groups that do not satisfy "
+					+ "specimen-related query conditions in QuerySpec");
+		}
 		List<QueryCondition> origConditions = specimenQuerySpec.getConditions();
 		String field = "identifications.scientificNameGroup";
 		QueryCondition extraCondition = new QueryCondition(field, "=", null);
@@ -142,7 +147,9 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 				}
 			}
 			if (logger.isDebugEnabled()) {
-
+				String fmt = "Number of specimens purged from name group {}: {}";
+				int count = nameGroup.getSpecimens().size() - purged.size();
+				logger.debug(fmt, nameGroup.getName(), count);
 			}
 			nameGroup.setSpecimens(purged);
 			nameGroup.setSpecimenCount(purged.size());
@@ -186,10 +193,6 @@ public class ScientificNameGroupDao extends NbaDao<ScientificNameGroup>
 					}
 					else {
 						to = Math.min(sng.getSpecimenCount(), offset + maxSpecimens);
-					}
-					if (logger.isDebugEnabled()) {
-						String fmt = "Extracting specimens {} to {} in name group {}";
-						logger.debug(fmt, offset, to, sng.getName());
 					}
 					sng.setSpecimens(sng.getSpecimens().subList(offset, to));
 				}

@@ -111,17 +111,17 @@ public class HttpScientificNameGroupQuerySpecBuilder {
 					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
 				case PARAM_IGNORE_CASE:
 					break;
-				case PARAM_SORT_FIELDS:
-					qs.setSortFields(getSortFields(value));
+				case PARAM_OPERATOR:
+					qs.setLogicalOperator(getLogicalOperator(value));
 					break;
 				case PARAM_FROM:
 					qs.setFrom(getIntParam(param, value));
 					break;
 				case PARAM_SIZE:
-					qs.setSpecimensSize(getIntParam(param, value));
+					qs.setSize(getIntParam(param, value));
 					break;
-				case PARAM_OPERATOR:
-					qs.setLogicalOperator(getLogicalOperator(value));
+				case PARAM_SORT_FIELDS:
+					qs.setSortFields(getSortFields(value));
 					break;
 				case PARAM_FIELDS:
 					qs.setFields(getFields(value));

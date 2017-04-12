@@ -8,6 +8,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -23,6 +24,9 @@ import nl.naturalis.nba.api.model.Specimen;
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_LessThan {
 
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDaoTest_LessThan.class);
+
 	static Specimen pMajor;
 	static Specimen lFuscus1;
 	static Specimen lFuscus2;
@@ -32,6 +36,7 @@ public class SpecimenDaoTest_LessThan {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
@@ -103,8 +108,8 @@ public class SpecimenDaoTest_LessThan {
 	{
 		/*
 		 * Test with GREATHER THAN OR EQUAL. "2008/04/03 13:04" is the EXACT
-		 * dateTimeBegin of lFuscus2, so with LTE operator lFuscus2 and 
-		 * tRex should come back (mSylvestris
+		 * dateTimeBegin of lFuscus2, so with LTE operator lFuscus2 and tRex
+		 * should come back (mSylvestris
 		 */
 		String from = "2008/04/03 13:04";
 		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", GTE, from);

@@ -238,7 +238,7 @@ public class EqualsConditionTranslatorTest {
 				"Leiden");
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query);
+		//System.out.println(query);
 		assertTrue("01", query instanceof BoolQueryBuilder);
 		String file = "translate/search/EqualsConditionTranslatorTest__testTranslate_12.json";
 		assertTrue("02", queryEquals(query, file));

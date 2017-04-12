@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,10 +25,12 @@ import nl.naturalis.nba.api.QueryCondition;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_Miscellaneous {
+
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDaoTest_Miscellaneous.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -38,6 +41,7 @@ public class SpecimenDaoTest_Miscellaneous {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
@@ -430,7 +434,6 @@ public class SpecimenDaoTest_Miscellaneous {
 		SpecimenDao dao = new SpecimenDao();
 		String field = "identifications.defaultClassification.genus";
 		Map<String, Long> result = dao.getDistinctValues(field, null);
-		System.out.println(JsonUtil.toPrettyJson(result));
 		// Genus Larus occurs twice
 		assertEquals("01", 4, result.size());
 	}

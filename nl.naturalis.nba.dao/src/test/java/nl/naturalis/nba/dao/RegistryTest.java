@@ -3,6 +3,7 @@ package nl.naturalis.nba.dao;
 import static nl.naturalis.nba.dao.DocumentType.SPECIMEN;
 import static org.junit.Assert.assertNotNull;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,9 +13,12 @@ import nl.naturalis.nba.utils.ConfigObject;
 @SuppressWarnings("static-method")
 public class RegistryTest {
 
+	private static final Logger logger = DaoRegistry.getInstance().getLogger(RegistryTest.class);
+
 	@BeforeClass
 	public static void init()
 	{
+		logger.info("Starting tests");
 		if (!SPECIMEN.getIndexInfo().getName().endsWith("integration_test")) {
 			/*
 			 * Unit tests are run against an ***_integration_test index.

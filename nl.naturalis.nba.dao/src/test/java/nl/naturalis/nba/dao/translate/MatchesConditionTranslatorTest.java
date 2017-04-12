@@ -62,7 +62,7 @@ public class MatchesConditionTranslatorTest {
 		QueryCondition condition = new QueryCondition("firstName", MATCHES, 7);
 		ConditionTranslator ct = getTranslator(condition, mappingInfo);
 		QueryBuilder query = ct.translate();
-		System.out.println(query);
+		//System.out.println(query);
 		assertTrue("01", query instanceof MatchQueryBuilder);
 		String file = "translate/search/MatchesConditionTranslatorTest__testTranslate_03.json";
 		assertTrue("02", queryEquals(query, file));

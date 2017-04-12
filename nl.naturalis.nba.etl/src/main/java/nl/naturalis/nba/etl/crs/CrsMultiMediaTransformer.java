@@ -99,15 +99,15 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		if (hasStatusDeleted()) {
-			if (!suppressErrors) {
-				warn("Skipping record with status \"deleted\"");
+			if (logger.isDebugEnabled()) {
+				debug("Skipping record with status \"deleted\"");
 			}
 			return true;
 		}
 		Element oaiDcElem = getDescendant(input.getRecord(), "oai_dc:dc");
 		if (val(oaiDcElem, "abcd:RecordBasis") == null) {
-			if (!suppressErrors) {
-				warn("Skipping virtual specimen");
+			if (logger.isDebugEnabled()) {
+				debug("Skipping virtual specimen");
 			}
 			return true;
 		}

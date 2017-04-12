@@ -54,8 +54,6 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	private final ThemeCache themeCache;
 
 	private String databaseID;
-	private List<Element> mediaFileElems;
-	private List<MultiMediaContentIdentification> identifications;
 	private MultiMediaObject first;
 
 	CrsMultiMediaTransformer(ETLStatistics stats)
@@ -94,14 +92,16 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		if (hasStatusDeleted()) {
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Skipping record with status \"deleted\"");
+			}
 			return true;
 		}
-		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
-		if (val(dc, "abcd:RecordBasis") == null) {
-			if (!suppressErrors)
+		Element oaiDcElem = getDescendant(input.getRecord(), "oai_dc:dc");
+		if (val(oaiDcElem, "abcd:RecordBasis") == null) {
+			if (!suppressErrors) {
 				warn("Skipping virtual specimen");
+			}
 			return true;
 		}
 		return false;
@@ -110,53 +110,58 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	@Override
 	protected List<MultiMediaObject> doTransform()
 	{
-		Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
-		mediaFileElems = getDescendants(dc, "frmDigitalebestanden");
-		if (mediaFileElems == null) {
+		Element oaiDcElem = getDescendant(input.getRecord(), "oai_dc:dc");
+		List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem, "frmDigitalebestanden");
+		if (frmDigitaleBestandenElems == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing or empty element <frmDigitalebestanden>");
+			}
 			return null;
 		}
-		List<Element> ncsrDeterminationElems = getDescendants(dc, "ncrsDetermination");
+		List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
 		if (ncsrDeterminationElems == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing or empty element <ncrsDetermination>");
+			}
 			return null;
 		}
+		ArrayList<MultiMediaContentIdentification> identifications;
 		identifications = getIdentifications(ncsrDeterminationElems);
 		if (identifications == null) {
 			stats.recordsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Invalid/insufficient specimen identification information");
+			}
 			return null;
 		}
 		stats.recordsAccepted++;
 		first = null;
-		ArrayList<MultiMediaObject> mmos = new ArrayList<>(mediaFileElems.size());
-		for (Element elem : mediaFileElems) {
+		ArrayList<MultiMediaObject> mmos = new ArrayList<>(frmDigitaleBestandenElems.size());
+		for (int i = 0; i < frmDigitaleBestandenElems.size(); i++) {
 			stats.objectsProcessed++;
-			String[] urlInfo = getUrlInfo(elem);
+			Element frmDigitaleBestandenElem = frmDigitaleBestandenElems.get(i);
+			String[] urlInfo = getUrlInfo(frmDigitaleBestandenElem);
 			if (urlInfo == null) {
 				continue;
 			}
 			MultiMediaObject mmo;
 			try {
-				mmo = initialize();
+				mmo = initialize(oaiDcElem, identifications);
 				String url = urlInfo[0];
 				String mimetype = urlInfo[1];
 				ServiceAccessPoint sap;
 				sap = new ServiceAccessPoint(url, mimetype, MEDIUM_QUALITY);
 				mmo.addServiceAccessPoint(sap);
-				String unitID = getUnitID(url);
+				String unitID = urlInfo[2] == null ? (objectID + '_' + i) : urlInfo[2];
 				mmo.setUnitID(unitID);
 				mmo.setSourceSystemId(unitID);
-				String title = getTitle(elem, unitID);
+				String title = getTitle(frmDigitaleBestandenElem, unitID);
 				mmo.setTitle(title);
 				mmo.setCaption(title);
-				mmo.setMultiMediaPublic(bval(elem, "abcd:MultiMediaPublic"));
-				mmo.setCreator(val(elem, "dc:creator"));
+				mmo.setMultiMediaPublic(bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
+				mmo.setCreator(val(frmDigitaleBestandenElem, "dc:creator"));
 				mmos.add(mmo);
 				stats.objectsAccepted++;
 			}
@@ -167,24 +172,24 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return mmos;
 	}
 
-	private MultiMediaObject initialize()
+	private MultiMediaObject initialize(Element oaiDcElem,
+			ArrayList<MultiMediaContentIdentification> identifications)
 	{
 		if (first == null) {
-			Element dc = getDescendant(input.getRecord(), "oai_dc:dc");
 			first = new MultiMediaObject();
-			first.setGatheringEvents(Arrays.asList(getGatheringEvent(dc)));
-			String temp = getPhaseOrStage(dc);
+			first.setGatheringEvents(Arrays.asList(getGatheringEvent(oaiDcElem)));
+			String temp = getPhaseOrStage(oaiDcElem);
 			first.setPhasesOrStages(temp == null ? null : Arrays.asList(temp));
-			temp = getSex(dc);
+			temp = getSex(oaiDcElem);
 			first.setSexes(temp == null ? null : Arrays.asList(temp));
-			first.setCollectionType(val(dc, "abcd:CollectionType"));
+			first.setCollectionType(val(oaiDcElem, "abcd:CollectionType"));
 			first.setSourceSystem(CRS);
 			first.setSourceInstitutionID(SOURCE_INSTITUTION_ID);
 			first.setSourceID(CRS.getCode());
 			first.setLicense(LICENCE);
 			first.setLicenseType(LICENCE_TYPE);
-			String specimenID = getElasticsearchId(CRS, objectID);
-			first.setAssociatedSpecimenReference(specimenID);
+			String specimenId = getElasticsearchId(CRS, objectID);
+			first.setAssociatedSpecimenReference(specimenId);
 			first.setIdentifications(identifications);
 			List<String> themes = themeCache.lookup(objectID, MULTI_MEDIA_OBJECT, CRS);
 			first.setTheme(themes);
@@ -209,49 +214,52 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		next.setLicenseType(first.getLicenseType());
 		next.setAssociatedSpecimenReference(first.getAssociatedSpecimenReference());
 		next.setTheme(first.getTheme());
+		next.setIdentifications(first.getIdentifications());
 		return next;
 	}
 
-	private List<MultiMediaContentIdentification> getIdentifications(List<Element> elems)
+	private ArrayList<MultiMediaContentIdentification> getIdentifications(
+			List<Element> ncsrDeterminationElems)
 	{
 		ArrayList<MultiMediaContentIdentification> identifications = null;
-		for (Element e : elems) {
-			ScientificName sn = getScientificName(e);
+		for (Element ncrsDeterminationElem : ncsrDeterminationElems) {
+			ScientificName sn = getScientificName(ncrsDeterminationElem);
 			if (sn.getFullScientificName() == null) {
-				concatEpithets(sn, val(e, "ac:taxonCoverage"));
+				concatEpithets(sn, val(ncrsDeterminationElem, "ac:taxonCoverage"));
 			}
 			if (sn.getFullScientificName() == null) {
-				if (!suppressErrors)
+				if (!suppressErrors) {
 					warn("Missing scientific name");
+				}
 				continue;
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setScientificName(sn);
 			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
-			mmci.setIdentificationQualifiers(getQualifiers(e));
-			mmci.setVernacularNames(getVernacularNames(e));
+			mmci.setIdentificationQualifiers(getQualifiers(ncrsDeterminationElem));
+			mmci.setVernacularNames(getVernacularNames(ncrsDeterminationElem));
 			if (identifications == null) {
-				identifications = new ArrayList<>(elems.size());
+				identifications = new ArrayList<>(ncsrDeterminationElems.size());
 			}
 			identifications.add(mmci);
 		}
 		return identifications;
 	}
 
-	private MultiMediaGatheringEvent getGatheringEvent(Element e)
+	private MultiMediaGatheringEvent getGatheringEvent(Element oaiDcElem)
 	{
 		MultiMediaGatheringEvent ge = new MultiMediaGatheringEvent();
-		ge.setWorldRegion(val(e, "Iptc4xmpExt:WorldRegion"));
-		ge.setCountry(val(e, "Iptc4xmpExt:CountryName"));
-		ge.setProvinceState(val(e, "Iptc4xmpExt:ProvinceState"));
-		ge.setSublocality(val(e, "Iptc4xmpExt:Sublocation"));
-		Double lat = dval(e, "dwc:decimalLatitude");
+		ge.setWorldRegion(val(oaiDcElem, "Iptc4xmpExt:WorldRegion"));
+		ge.setCountry(val(oaiDcElem, "Iptc4xmpExt:CountryName"));
+		ge.setProvinceState(val(oaiDcElem, "Iptc4xmpExt:ProvinceState"));
+		ge.setSublocality(val(oaiDcElem, "Iptc4xmpExt:Sublocation"));
+		Double lat = dval(oaiDcElem, "dwc:decimalLatitude");
 		if (lat != null && (lat < -90 || lat > 90)) {
 			if (!suppressErrors)
 				warn("Invalid latitude: " + lat);
 			lat = null;
 		}
-		Double lon = dval(e, "dwc:decimalLongitude");
+		Double lon = dval(oaiDcElem, "dwc:decimalLongitude");
 		if (lon != null && (lon < -180 || lon > 180)) {
 			if (!suppressErrors)
 				warn("Invalid latitude: " + lon);
@@ -262,7 +270,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			coords = new GatheringSiteCoordinates(lat, lon);
 			ge.setSiteCoordinates(Arrays.asList(coords));
 		}
-		String s = val(e, "abcd:GatheringAgent");
+		String s = val(oaiDcElem, "abcd:GatheringAgent");
 		if (s != null) {
 			Person agent = new Person();
 			ge.setGatheringPersons(Arrays.asList(agent));
@@ -271,22 +279,22 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return ge;
 	}
 
-	private ScientificName getScientificName(Element e)
+	private ScientificName getScientificName(Element ncrsDeterminationElem)
 	{
 		ScientificName sn = new ScientificName();
-		sn.setFullScientificName(val(e, "dwc:scientificName"));
-		sn.setGenusOrMonomial(val(e, "abcd:GenusOrMonomial"));
-		sn.setSpecificEpithet(val(e, "abcd:SpeciesEpithet"));
-		sn.setInfraspecificEpithet(val(e, "abcd:subspeciesepithet"));
-		sn.setNameAddendum(val(e, "abcd:NameAddendum"));
-		sn.setAuthorshipVerbatim(val(e, "dwc:nameAccordingTo"));
+		sn.setFullScientificName(val(ncrsDeterminationElem, "dwc:scientificName"));
+		sn.setGenusOrMonomial(val(ncrsDeterminationElem, "abcd:GenusOrMonomial"));
+		sn.setSpecificEpithet(val(ncrsDeterminationElem, "abcd:SpeciesEpithet"));
+		sn.setInfraspecificEpithet(val(ncrsDeterminationElem, "abcd:subspeciesepithet"));
+		sn.setNameAddendum(val(ncrsDeterminationElem, "abcd:NameAddendum"));
+		sn.setAuthorshipVerbatim(val(ncrsDeterminationElem, "dwc:nameAccordingTo"));
 		TransformUtil.setScientificNameGroup(sn);
 		return sn;
 	}
 
-	private String getTitle(Element e, String unitID)
+	private String getTitle(Element frmDigitalebestandenElem, String unitID)
 	{
-		String title = val(e, "dc:title");
+		String title = val(frmDigitalebestandenElem, "dc:title");
 		if (title == null) {
 			title = unitID;
 			if (logger.isDebugEnabled()) {
@@ -312,40 +320,37 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return qualifiers;
 	}
 
-	private List<VernacularName> getVernacularNames(Element e)
+	private List<VernacularName> getVernacularNames(Element ncrsDeterminationElem)
 	{
-		String s = val(e, "dwc:vernacularName");
-		if (s != null)
+		String s = val(ncrsDeterminationElem, "dwc:vernacularName");
+		if (s != null) {
 			return Arrays.asList(new VernacularName(s));
+		}
 		return null;
 	}
 
-	private String getUnitID(String url)
+	private String[] getUrlInfo(Element frmDigitalebestandenElem)
 	{
-		int hash = url.hashCode();
-		String postfix = String.valueOf(hash).replace('-', '0');
-		return objectID + '_' + postfix;
-	}
-
-	private String[] getUrlInfo(Element e)
-	{
-		String url = val(e, "abcd:fileuri");
+		String url = val(frmDigitalebestandenElem, "abcd:fileuri");
 		if (url == null) {
 			stats.objectsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Missing or empty element <abcd:fileuri>");
+			}
 			return null;
 		}
 		String mime;
+		String medialibId;
 		if (url.startsWith(MEDIALIB_URL_START)) {
 			/*
 			 * HACK: attempt to repair bad medialib URLs where
-			 * MEDIALIB_URL_START occurs twice
+			 * MEDIALIB_URL_START occurs twice in a row
 			 */
-			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START))
+			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START)) {
 				url = url.substring(MEDIALIB_URL_START.length());
+			}
 			// Extract medialib ID
-			String medialibId = url.substring(MEDIALIB_URL_START.length());
+			medialibId = url.substring(MEDIALIB_URL_START.length());
 			int x = medialibId.indexOf('/');
 			if (x != -1) {
 				medialibId = medialibId.substring(0, x);
@@ -355,9 +360,11 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			mime = mimetypeCache.getMimeType(medialibId);
 		}
 		else {
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Encountered non-medialib URL: %s", url);
+			}
 			mime = TransformUtil.guessMimeType(url);
+			medialibId = null;
 		}
 		try {
 			@SuppressWarnings("unused")
@@ -365,11 +372,12 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		}
 		catch (URISyntaxException exc) {
 			stats.objectsRejected++;
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				error("Invalid image URL: " + url);
+			}
 			return null;
 		}
-		return new String[] { url, mime };
+		return new String[] { url, mime, medialibId };
 	}
 
 	private static void concatEpithets(ScientificName sn, String taxonCoverage)
@@ -397,29 +405,33 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return hdr.getAttribute("status").equals("deleted");
 	}
 
-	private String getPhaseOrStage(Element record)
+	private String getPhaseOrStage(Element oaiDcElem)
 	{
-		String raw = val(record, "dwc:lifeStage");
-		if (raw == null)
+		String raw = val(oaiDcElem, "dwc:lifeStage");
+		if (raw == null) {
 			return null;
+		}
 		String result = posNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				debug("Ignoring rogue value for PhaseOrStage: " + raw);
+			}
 			return null;
 		}
 		return result;
 	}
 
-	private String getSex(Element record)
+	private String getSex(Element oaiDcElem)
 	{
-		String raw = val(record, "dwc:sex");
-		if (raw == null)
+		String raw = val(oaiDcElem, "dwc:sex");
+		if (raw == null) {
 			return null;
+		}
 		String result = sexNormalizer.normalize(raw);
 		if (result == NOT_MAPPED) {
-			if (logger.isDebugEnabled())
+			if (logger.isDebugEnabled()) {
 				debug("Ignoring rogue value for Sex: " + raw);
+			}
 			return null;
 		}
 		return result;

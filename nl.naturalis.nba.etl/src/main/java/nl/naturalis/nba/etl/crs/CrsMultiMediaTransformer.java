@@ -48,6 +48,13 @@ import nl.naturalis.nba.etl.normalize.SexNormalizer;
  */
 class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> {
 
+	private static class MultiMediaInfo {
+
+		private String url;
+		private String mimeType;
+		private String medialibId;
+	}
+
 	private final PhaseOrStageNormalizer posNormalizer;
 	private final SexNormalizer sexNormalizer;
 	private final MimeTypeCache mimetypeCache;
@@ -78,7 +85,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	@Override
 	protected String messagePrefix()
 	{
-		return super.messagePrefix() + rpad(databaseID, 11, " | ");
+		return super.messagePrefix() + rpad(databaseID, 11, "| ");
 	}
 
 	@Override
@@ -140,21 +147,24 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		first = null;
 		ArrayList<MultiMediaObject> mmos = new ArrayList<>(frmDigitaleBestandenElems.size());
 		for (int i = 0; i < frmDigitaleBestandenElems.size(); i++) {
-			stats.objectsProcessed++;
-			Element frmDigitaleBestandenElem = frmDigitaleBestandenElems.get(i);
-			String[] urlInfo = getUrlInfo(frmDigitaleBestandenElem);
-			if (urlInfo == null) {
-				continue;
-			}
-			MultiMediaObject mmo;
 			try {
-				mmo = initialize(oaiDcElem, identifications);
-				String url = urlInfo[0];
-				String mimetype = urlInfo[1];
+				stats.objectsProcessed++;
+				Element frmDigitaleBestandenElem = frmDigitaleBestandenElems.get(i);
+				MultiMediaInfo info = getMultiMediaInfo(frmDigitaleBestandenElem);
+				if (info == null) {
+					continue;
+				}
+				MultiMediaObject mmo = initialize(oaiDcElem, identifications);
 				ServiceAccessPoint sap;
-				sap = new ServiceAccessPoint(url, mimetype, MEDIUM_QUALITY);
+				sap = new ServiceAccessPoint(info.url, info.mimeType, MEDIUM_QUALITY);
 				mmo.addServiceAccessPoint(sap);
-				String unitID = urlInfo[2] == null ? (objectID + '_' + i) : urlInfo[2];
+				String unitID;
+				if (info.medialibId == null) {
+					unitID = objectID + '_' + i;
+				}
+				else {
+					unitID = info.medialibId;
+				}
 				mmo.setUnitID(unitID);
 				mmo.setSourceSystemId(unitID);
 				String title = getTitle(frmDigitaleBestandenElem, unitID);
@@ -228,8 +238,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				concatEpithets(sn, val(ncrsDeterminationElem, "ac:taxonCoverage"));
 			}
 			if (sn.getFullScientificName() == null) {
-				if (!suppressErrors) {
-					warn("Missing scientific name");
+				if (logger.isDebugEnabled()) {
+					debug("Missing scientific name");
 				}
 				continue;
 			}
@@ -255,14 +265,16 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		ge.setSublocality(val(oaiDcElem, "Iptc4xmpExt:Sublocation"));
 		Double lat = dval(oaiDcElem, "dwc:decimalLatitude");
 		if (lat != null && (lat < -90 || lat > 90)) {
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Invalid latitude: " + lat);
+			}
 			lat = null;
 		}
 		Double lon = dval(oaiDcElem, "dwc:decimalLongitude");
 		if (lon != null && (lon < -180 || lon > 180)) {
-			if (!suppressErrors)
+			if (!suppressErrors) {
 				warn("Invalid latitude: " + lon);
+			}
 			lon = null;
 		}
 		if (lat != null || lon != null) {
@@ -329,7 +341,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		return null;
 	}
 
-	private String[] getUrlInfo(Element frmDigitalebestandenElem)
+	private MultiMediaInfo getMultiMediaInfo(Element frmDigitalebestandenElem)
 	{
 		String url = val(frmDigitalebestandenElem, "abcd:fileuri");
 		if (url == null) {
@@ -339,32 +351,33 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return null;
 		}
-		String mime;
-		String medialibId;
+		MultiMediaInfo info = new MultiMediaInfo();
 		if (url.startsWith(MEDIALIB_URL_START)) {
 			/*
 			 * HACK: attempt to repair bad medialib URLs where
-			 * MEDIALIB_URL_START occurs twice in a row
+			 * MEDIALIB_URL_START occurs twice at the beginning
 			 */
 			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START)) {
 				url = url.substring(MEDIALIB_URL_START.length());
 			}
 			// Extract medialib ID
-			medialibId = url.substring(MEDIALIB_URL_START.length());
+			String medialibId = url.substring(MEDIALIB_URL_START.length());
 			int x = medialibId.indexOf('/');
 			if (x != -1) {
 				medialibId = medialibId.substring(0, x);
 			}
+			info.medialibId = medialibId;
 			// Discard original URL and reconstruct from scratch
 			url = MEDIALIB_URL_START + medialibId + "/format/large";
-			mime = mimetypeCache.getMimeType(medialibId);
+			info.url = url;
+			info.mimeType = mimetypeCache.getMimeType(medialibId);
 		}
 		else {
 			if (!suppressErrors) {
 				warn("Encountered non-medialib URL: %s", url);
 			}
-			mime = TransformUtil.guessMimeType(url);
-			medialibId = null;
+			info.url = url;
+			info.mimeType = TransformUtil.guessMimeType(url);
 		}
 		try {
 			@SuppressWarnings("unused")
@@ -377,7 +390,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return null;
 		}
-		return new String[] { url, mime, medialibId };
+		return info;
 	}
 
 	private static void concatEpithets(ScientificName sn, String taxonCoverage)

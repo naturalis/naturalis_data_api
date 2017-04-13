@@ -94,7 +94,7 @@ class CoLReferenceBatchTransformer {
 		return taxa.values();
 	}
 
-	public int getNumCreated()
+	int getNumCreated()
 	{
 		return numCreated;
 	}

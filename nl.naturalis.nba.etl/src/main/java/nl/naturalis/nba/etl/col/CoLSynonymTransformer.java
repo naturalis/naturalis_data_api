@@ -72,7 +72,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
-			ScientificName syn = getScientificName();
+			ScientificName syn = createSynonym();
 			String id = getElasticsearchId(COL, objectID);
 			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
@@ -135,7 +135,7 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 		return orphans;
 	}
 
-	private ScientificName getScientificName()
+	private ScientificName createSynonym()
 	{
 		ScientificName sn = new ScientificName();
 		sn.setFullScientificName(input.get(scientificName));

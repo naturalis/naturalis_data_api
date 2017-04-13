@@ -51,10 +51,10 @@ class CoLVernacularNameTransformer
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
+			VernacularName vn = createVernacularName();
 			String id = getElasticsearchId(COL, objectID);
 			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
-				VernacularName vn = createVernacularName();
 				if (!taxon.getVernacularNames().contains(vn)) {
 					stats.objectsAccepted++;
 					taxon.addVernacularName(vn);
@@ -68,7 +68,6 @@ class CoLVernacularNameTransformer
 				return null;
 			}
 			taxon = ESUtil.find(TAXON, id);
-			VernacularName vn = createVernacularName();
 			if (taxon != null) {
 				if (taxon.getVernacularNames() == null
 						|| !taxon.getVernacularNames().contains(vn)) {

@@ -72,8 +72,8 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 		stats.recordsAccepted++;
 		stats.objectsProcessed++;
 		try {
+			ScientificName syn = getScientificName();
 			String id = getElasticsearchId(COL, objectID);
-			String synonym = input.get(scientificName);
 			Taxon taxon = loader.findInQueue(id);
 			if (taxon != null) {
 				/*
@@ -81,19 +81,18 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 				 * synonym belonging to the same taxon. Return null, because we don't want
 				 * to index the taxon twice. Otherwise the taxon object with the previous
 				 * synonym would be overwritten by the taxon object with the current
-				 * synonym (thus obliterating the previous synonym). Instead, we want to
-				 * append the current synonym to the list of synonyms of the
-				 * already-queued taxon object, and then save it once with all its
-				 * synonyms.
+				 * synonym (thus obliterating the previous synonym). However, we do want
+				 * to append the current synonym to the list of synonyms of the queued
+				 * taxon object.
 				 */
-				if (!taxon.getSynonyms().contains(synonym)) {
+				if (!hasSynonym(taxon, syn)) {
 					stats.objectsAccepted++;
-					taxon.addSynonym(getScientificName());
+					taxon.addSynonym(syn);
 				}
 				else {
 					stats.objectsRejected++;
 					if (!suppressErrors) {
-						error("Duplicate synonym: " + synonym);
+						error("Duplicate synonym: " + syn.getFullScientificName());
 					}
 				}
 				return null;
@@ -103,20 +102,19 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 			 */
 			taxon = ESUtil.find(TAXON, id);
 			if (taxon != null) {
-				if (taxon.getSynonyms() == null
-						|| !taxon.getSynonyms().contains(synonym)) {
+				if (taxon.getSynonyms() == null || !hasSynonym(taxon, syn)) {
 					stats.objectsAccepted++;
-					taxon.addSynonym(getScientificName());
+					taxon.addSynonym(syn);
 					return Arrays.asList(taxon);
 				}
 				if (!suppressErrors) {
-					error("Duplicate synonym: " + synonym);
+					error("Duplicate synonym: " + syn.getFullScientificName());
 				}
 			}
 			else {
 				++orphans;
 				if (!suppressErrors && testGenera == null) {
-					error("Orphan synonym: " + synonym);
+					error("Orphan synonym: " + syn.getFullScientificName());
 				}
 				/*
 				 * When creating a test set we are bound to have huge amounts of orphans
@@ -157,5 +155,33 @@ class CoLSynonymTransformer extends AbstractCSVTransformer<CoLTaxonCsvField, Tax
 		sn.setTaxonomicStatus(status);
 		TransformUtil.setScientificNameGroup(sn);
 		return sn;
+	}
+
+	private static boolean hasSynonym(Taxon taxon, ScientificName syn)
+	{
+		for (ScientificName sn : taxon.getSynonyms()) {
+			if (equals(sn.getFullScientificName(), syn.getFullScientificName())
+					&& sn.getTaxonomicStatus() == syn.getTaxonomicStatus()
+					&& equals(sn.getAuthorshipVerbatim(), syn.getAuthorshipVerbatim())
+					&& equals(sn.getYear(), syn.getYear())
+					&& sn.getScientificNameGroup().equals(syn.getScientificNameGroup())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean equals(Object o1, Object o2)
+	{
+		if (o1 == null) {
+			if (o2 == null) {
+				return true;
+			}
+			return false;
+		}
+		if (o2 == null) {
+			return false;
+		}
+		return o1.equals(o2);
 	}
 }

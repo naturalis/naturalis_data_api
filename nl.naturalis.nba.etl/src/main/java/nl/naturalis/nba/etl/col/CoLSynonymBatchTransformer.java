@@ -5,16 +5,17 @@ import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.creator;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.date;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.description;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.taxonID;
-import static nl.naturalis.nba.etl.col.CoLReferenceCsvField.title;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.genericName;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.infraspecificEpithet;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificName;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificNameAuthorship;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.specificEpithet;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonID;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.taxonomicStatus;
 import static org.elasticsearch.index.query.QueryBuilders.constantScoreQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -28,17 +29,25 @@ import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.naturalis.nba.api.model.Person;
-import nl.naturalis.nba.api.model.Reference;
+import nl.naturalis.nba.api.model.ScientificName;
 import nl.naturalis.nba.api.model.Taxon;
+import nl.naturalis.nba.api.model.TaxonomicStatus;
 import nl.naturalis.nba.dao.DocumentType;
 import nl.naturalis.nba.dao.util.es.ESUtil;
 import nl.naturalis.nba.etl.CSVRecordInfo;
 import nl.naturalis.nba.etl.TransformUtil;
+import nl.naturalis.nba.etl.normalize.TaxonomicStatusNormalizer;
+import nl.naturalis.nba.etl.normalize.UnmappedValueException;
 
-class CoLReferenceBatchTransformer {
+class CoLSynonymBatchTransformer {
 
-	private static final Logger logger = getLogger(CoLReferenceBatchTransformer.class);
+	private static final Logger logger;
+	private static final TaxonomicStatusNormalizer statusNormalizer;
+
+	static {
+		logger = getLogger(CoLSynonymBatchTransformer.class);
+		statusNormalizer = TaxonomicStatusNormalizer.getInstance();
+	}
 
 	// Tweak option
 	private static final boolean LOAD_BY_ID = false;
@@ -52,12 +61,12 @@ class CoLReferenceBatchTransformer {
 
 	private String[] testGenera;
 
-	CoLReferenceBatchTransformer()
+	CoLSynonymBatchTransformer()
 	{
 		testGenera = getTestGenera();
 	}
 
-	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
+	Collection<Taxon> transform(ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
 	{
 		HashMap<String, Taxon> taxa;
 		if (LOAD_BY_ID) {
@@ -66,29 +75,29 @@ class CoLReferenceBatchTransformer {
 		else {
 			taxa = loadTaxaBySourceSystemId(records);
 		}
-		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
-			Reference ref = createReference(record);
+		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
+			ScientificName synonym = createSynonym(record);
 			String id = record.get(taxonID);
 			Taxon taxon = taxa.get(id);
 			if (taxon == null) {
 				++numOrphans;
 				if (testGenera == null) {
-					logger.error("{} | Orphan reference: {} ", id, ref);
+					logger.error("{} | Orphan synonym: {} ", id, synonym);
 				}
 				continue;
 			}
-			if (taxon.getReferences() == null) {
+			if (taxon.getSynonyms() == null) {
 				++numCreated;
 				++numUpdated;
-				taxon.addReference(ref);
+				taxon.addSynonym(synonym);
 			}
-			else if (taxon.getReferences().contains(ref) == false) {
+			else if (!hasSynonym(taxon, synonym)) {
 				++numCreated;
-				taxon.addReference(ref);
+				taxon.addSynonym(synonym);
 			}
 			else {
 				++numDuplicates;
-				logger.error("{} | Duplicate reference: {}", id, ref);
+				logger.error("{} | Duplicate synonym: {}", id, synonym);
 			}
 		}
 		return taxa.values();
@@ -115,10 +124,10 @@ class CoLReferenceBatchTransformer {
 	}
 
 	private static HashMap<String, Taxon> loadTaxaById(
-			ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
+			ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
-		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
+		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
 			String id = getElasticsearchId(COL, record.get(taxonID));
 			ids.add(id);
 		}
@@ -141,10 +150,10 @@ class CoLReferenceBatchTransformer {
 	}
 
 	private static HashMap<String, Taxon> loadTaxaBySourceSystemId(
-			ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records)
+			ArrayList<CSVRecordInfo<CoLTaxonCsvField>> records)
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
-		for (CSVRecordInfo<CoLReferenceCsvField> record : records) {
+		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
 			ids.add(record.get(taxonID));
 		}
 		DocumentType<Taxon> dt = TAXON;
@@ -164,20 +173,53 @@ class CoLReferenceBatchTransformer {
 		return result;
 	}
 
-	private static Reference createReference(CSVRecordInfo<CoLReferenceCsvField> record)
+	private static ScientificName createSynonym(CSVRecordInfo<CoLTaxonCsvField> record)
 	{
-		Reference ref = new Reference();
-		ref.setTitleCitation(record.get(title));
-		ref.setCitationDetail(record.get(description));
-		String s;
-		if ((s = record.get(date)) != null) {
-			Date pubDate = TransformUtil.parseDate(s);
-			ref.setPublicationDate(pubDate);
+		ScientificName sn = new ScientificName();
+		sn.setFullScientificName(record.get(scientificName));
+		sn.setGenusOrMonomial(record.get(genericName));
+		sn.setSpecificEpithet(record.get(specificEpithet));
+		sn.setInfraspecificEpithet(record.get(infraspecificEpithet));
+		sn.setAuthorshipVerbatim(record.get(scientificNameAuthorship));
+		TaxonomicStatus status = null;
+		try {
+			status = statusNormalizer.map(record.get(taxonomicStatus));
 		}
-		if ((s = record.get(creator)) != null) {
-			ref.setAuthor(new Person(s));
+		catch (UnmappedValueException e) {
+			String id = record.get(taxonID);
+			logger.warn("{} | {}", id, e.getMessage());
 		}
-		return ref;
+		sn.setTaxonomicStatus(status);
+		TransformUtil.setScientificNameGroup(sn);
+		return sn;
+	}
+
+	private static boolean hasSynonym(Taxon taxon, ScientificName syn)
+	{
+		for (ScientificName sn : taxon.getSynonyms()) {
+			if (equals(sn.getFullScientificName(), syn.getFullScientificName())
+					&& sn.getTaxonomicStatus() == syn.getTaxonomicStatus()
+					&& equals(sn.getAuthorshipVerbatim(), syn.getAuthorshipVerbatim())
+					&& equals(sn.getYear(), syn.getYear())
+					&& sn.getScientificNameGroup().equals(syn.getScientificNameGroup())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean equals(Object o1, Object o2)
+	{
+		if (o1 == null) {
+			if (o2 == null) {
+				return true;
+			}
+			return false;
+		}
+		if (o2 == null) {
+			return false;
+		}
+		return o1.equals(o2);
 	}
 
 }

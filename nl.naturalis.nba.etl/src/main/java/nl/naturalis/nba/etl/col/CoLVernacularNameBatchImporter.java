@@ -6,6 +6,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
 
@@ -73,7 +74,7 @@ public class CoLVernacularNameBatchImporter {
 		CoLVernacularNameBatchTransformer transformer = null;
 		BulkIndexer<Taxon> indexer;
 		ArrayList<CSVRecordInfo<CoLVernacularNameCsvField>> records;
-		ArrayList<Taxon> taxa = new ArrayList<>(batchSize);
+		ArrayList<Taxon> queue = new ArrayList<>(batchSize);
 		int processed = 0;
 		try {
 			File f = new File(path);
@@ -92,25 +93,40 @@ public class CoLVernacularNameBatchImporter {
 				}
 				records.add(rec);
 				if (records.size() == batchSize) {
-					taxa.addAll(transformer.transform(records));
-					if (taxa.size() > batchSize) {
-						indexer.index(taxa);
-						ESUtil.refreshIndex(TAXON);
-						taxa.clear();
+					Collection<Taxon> updates = transformer.transform(records);
+					if (updates.size() >= 1000) {
+						throw new ETLRuntimeException("Too many taxa in queue");
 					}
+					if (queue.size() + updates.size() > 1000) {
+						indexer.index(queue);
+						ESUtil.refreshIndex(TAXON);
+						queue.clear();
+					}
+					queue.addAll(updates);
 					records.clear();
 				}
 				if (++processed % 100000 == 0) {
 					logger.info("Records processed: {}", processed);
-					logger.info("Vernacular names created: {}", transformer.getNumCreated());
+					logger.info("Vernacular names created: {}",
+							transformer.getNumCreated());
 					logger.info("Taxa updated: {}", transformer.getNumUpdated());
 				}
 			}
 			if (records.size() != 0) {
-				taxa.addAll(transformer.transform(records));
+				Collection<Taxon> updates = transformer.transform(records);
+				if (updates.size() >= 1000) {
+					throw new ETLRuntimeException("Too many taxa in queue");
+				}
+				else if (queue.size() + updates.size() > 1000) {
+					indexer.index(queue);
+					ESUtil.refreshIndex(TAXON);
+					queue.clear();
+				}
+				queue.addAll(updates);
 			}
-			if (taxa.size() != 0) {
-				indexer.index(taxa);
+			if (queue.size() != 0) {
+				indexer.index(queue);
+				ESUtil.refreshIndex(TAXON);
 			}
 		}
 		catch (Throwable t) {
@@ -134,8 +150,8 @@ public class CoLVernacularNameBatchImporter {
 		this.batchSize = batchSize;
 	}
 
-	private static CSVExtractor<CoLVernacularNameCsvField> createExtractor(ETLStatistics stats,
-			File f)
+	private static CSVExtractor<CoLVernacularNameCsvField> createExtractor(
+			ETLStatistics stats, File f)
 	{
 		CSVExtractor<CoLVernacularNameCsvField> extractor;
 		extractor = new CSVExtractor<>(f, stats);

@@ -6,6 +6,7 @@ import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
 
@@ -73,7 +74,7 @@ public class CoLReferenceBatchImporter {
 		CoLReferenceBatchTransformer transformer = null;
 		BulkIndexer<Taxon> indexer;
 		ArrayList<CSVRecordInfo<CoLReferenceCsvField>> records;
-		ArrayList<Taxon> taxa = new ArrayList<>(batchSize);
+		ArrayList<Taxon> queue = new ArrayList<>(batchSize);
 		int processed = 0;
 		try {
 			File f = new File(path);
@@ -92,11 +93,15 @@ public class CoLReferenceBatchImporter {
 				}
 				records.add(rec);
 				if (records.size() == batchSize) {
-					taxa.addAll(transformer.transform(records));
-					if (taxa.size() > batchSize) {
-						indexer.index(taxa);
+					Collection<Taxon> updates = transformer.transform(records);
+					if (queue.size() + updates.size() > 1000) {
+						indexer.index(queue);
 						ESUtil.refreshIndex(TAXON);
-						taxa.clear();
+						queue.clear();
+					}
+					queue.addAll(updates);
+					if (queue.size() >= 1000) {
+						throw new ETLRuntimeException("Too many taxa in queue");
 					}
 					records.clear();
 				}
@@ -107,10 +112,18 @@ public class CoLReferenceBatchImporter {
 				}
 			}
 			if (records.size() != 0) {
-				taxa.addAll(transformer.transform(records));
+				Collection<Taxon> updates = transformer.transform(records);
+				if (updates.size() >= 1000) {
+					throw new ETLRuntimeException("Too many taxa in queue");
+				}
+				else if (queue.size() + updates.size() > 1000) {
+					indexer.index(queue);
+					queue.clear();
+				}
+				queue.addAll(updates);
 			}
-			if (taxa.size() != 0) {
-				indexer.index(taxa);
+			if (queue.size() != 0) {
+				indexer.index(queue);
 			}
 		}
 		catch (Throwable t) {

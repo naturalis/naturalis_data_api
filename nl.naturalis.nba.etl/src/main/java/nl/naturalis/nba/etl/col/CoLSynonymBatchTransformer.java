@@ -5,6 +5,7 @@ import static nl.naturalis.nba.dao.DocumentType.TAXON;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
 import static nl.naturalis.nba.etl.ETLUtil.getLogger;
 import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
+import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.acceptedNameUsageID;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.genericName;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.infraspecificEpithet;
 import static nl.naturalis.nba.etl.col.CoLTaxonCsvField.scientificName;
@@ -52,9 +53,9 @@ class CoLSynonymBatchTransformer {
 	// Tweak option
 	private static final boolean LOAD_BY_ID = false;
 
-	// The number of references created
+	// The number of synonyms created
 	private int numCreated;
-	// The number of taxa with references
+	// The number of taxa with synonyms
 	private int numUpdated;
 	private int numDuplicates;
 	private int numOrphans;
@@ -77,7 +78,7 @@ class CoLSynonymBatchTransformer {
 		}
 		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
 			ScientificName synonym = createSynonym(record);
-			String id = record.get(taxonID);
+			String id = record.get(acceptedNameUsageID);
 			Taxon taxon = taxa.get(id);
 			if (taxon == null) {
 				++numOrphans;
@@ -103,7 +104,7 @@ class CoLSynonymBatchTransformer {
 		return taxa.values();
 	}
 
-	public int getNumCreated()
+	int getNumCreated()
 	{
 		return numCreated;
 	}
@@ -128,8 +129,10 @@ class CoLSynonymBatchTransformer {
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
 		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
-			String id = getElasticsearchId(COL, record.get(taxonID));
-			ids.add(id);
+			String id = getElasticsearchId(COL, record.get(acceptedNameUsageID));
+			if (id != null) {
+				ids.add(id);
+			}
 		}
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);
@@ -154,7 +157,10 @@ class CoLSynonymBatchTransformer {
 	{
 		HashSet<String> ids = new HashSet<>(records.size());
 		for (CSVRecordInfo<CoLTaxonCsvField> record : records) {
-			ids.add(record.get(taxonID));
+			String id = record.get(acceptedNameUsageID);
+			if (id != null) {
+				ids.add(id);
+			}
 		}
 		DocumentType<Taxon> dt = TAXON;
 		SearchRequestBuilder request = ESUtil.newSearchRequest(dt);

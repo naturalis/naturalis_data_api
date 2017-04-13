@@ -1,11 +1,12 @@
 package nl.naturalis.nba.etl.brahms;
 
-import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_SUPPRESS_ERRORS;
+import static nl.naturalis.nba.etl.LoadConstants.*;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.BARCODE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COLLECTOR;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.CONTINENT;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.COUNTRY;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.DAY;
+import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.GENUS;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LATITUDE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LOCNOTES;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.LONGITUDE;
@@ -13,6 +14,7 @@ import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MAJORAREA;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.MONTH;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.TYPE;
 import static nl.naturalis.nba.etl.brahms.BrahmsCsvField.YEAR;
+import static nl.naturalis.nba.etl.ETLUtil.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -46,10 +48,22 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 		themeCache = ThemeCache.getInstance();
 	}
 
+	private String[] testGenera;
+
 	BrahmsTransformer(ETLStatistics stats)
 	{
 		super(stats);
 		suppressErrors = ConfigObject.isEnabled(SYSPROP_SUPPRESS_ERRORS);
+		testGenera = getTestGenera();
+	}
+
+	@Override
+	protected boolean skipRecord()
+	{
+		if (testGenera != null && !isTestSetGenus()) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -162,14 +176,13 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 	}
 
 	/*
-	 * Constructs a Date object from the date fields in a Brahms export file.
-	 * Used to construct a begin and end date from problematic gathering event
-	 * dates in the source data. If year is empty or zero, null is returned. If
-	 * month is empty or zero, the month is set to january. If day is empty or
-	 * zero, the day is set to the first day or the last day of the month
-	 * depending on the value of the lastDayOfMonth argument. If year, month or
-	 * day are not numeric, a warning is logged, and null is returned. If month
-	 * or day are out-of-range (e.g. 13 for month), the result is undefined.
+	 * Constructs a Date object from the date fields in a Brahms export file. Used to
+	 * construct a begin and end date from problematic gathering event dates in the source
+	 * data. If year is empty or zero, null is returned. If month is empty or zero, the
+	 * month is set to january. If day is empty or zero, the day is set to the first day
+	 * or the last day of the month depending on the value of the lastDayOfMonth argument.
+	 * If year, month or day are not numeric, a warning is logged, and null is returned.
+	 * If month or day are out-of-range (e.g. 13 for month), the result is undefined.
 	 */
 	Date getDate(String year, String month, String day, boolean lastDayOfMonth)
 	{
@@ -249,6 +262,21 @@ abstract class BrahmsTransformer<T extends IDocumentObject>
 			}
 			return null;
 		}
+	}
+
+	private boolean isTestSetGenus()
+	{
+		String genus = input.get(GENUS);
+		if (genus == null) {
+			return false;
+		}
+		genus = genus.toLowerCase();
+		for (String s : testGenera) {
+			if (s.equals(genus)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

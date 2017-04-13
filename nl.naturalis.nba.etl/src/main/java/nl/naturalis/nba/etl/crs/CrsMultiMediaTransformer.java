@@ -4,6 +4,7 @@ import static nl.naturalis.nba.api.model.ServiceAccessPoint.Variant.MEDIUM_QUALI
 import static nl.naturalis.nba.api.model.SourceSystem.CRS;
 import static nl.naturalis.nba.dao.DocumentType.MULTI_MEDIA_OBJECT;
 import static nl.naturalis.nba.dao.util.es.ESUtil.getElasticsearchId;
+import static nl.naturalis.nba.etl.ETLUtil.getTestGenera;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE;
 import static nl.naturalis.nba.etl.LoadConstants.LICENCE_TYPE;
 import static nl.naturalis.nba.etl.LoadConstants.SOURCE_INSTITUTION_ID;
@@ -61,6 +62,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	private final ThemeCache themeCache;
 
 	private String databaseID;
+	private String[] testGenera;
 	private MultiMediaObject first;
 
 	CrsMultiMediaTransformer(ETLStatistics stats)
@@ -70,6 +72,7 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		mimetypeCache = MimeTypeCacheFactory.getInstance().getCache();
 		posNormalizer = PhaseOrStageNormalizer.getInstance();
 		sexNormalizer = SexNormalizer.getInstance();
+		testGenera = getTestGenera();
 	}
 
 	@Override
@@ -85,17 +88,16 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	@Override
 	protected String messagePrefix()
 	{
-		return super.messagePrefix() + rpad(databaseID, 11, "| ");
+		return super.messagePrefix() + rpad(databaseID, 10, "| ");
 	}
 
 	@Override
 	protected boolean skipRecord()
 	{
 		/*
-		 * Side effect: set the database identifier of the record, so we can
-		 * provide both the UnitID and the database ID of the specimen when
-		 * logging messages. We override messagePrefix() to also print out the
-		 * database ID.
+		 * Side effect: set the database identifier of the record, so we can provide both
+		 * the UnitID and the database ID of the specimen when logging messages. We
+		 * override messagePrefix() to also print out the database ID.
 		 */
 		databaseID = val(input.getRecord(), "identifier");
 		if (hasStatusDeleted()) {
@@ -130,8 +132,10 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	protected List<MultiMediaObject> doTransform()
 	{
 		Element oaiDcElem = getDescendant(input.getRecord(), "oai_dc:dc");
-		List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem, "frmDigitalebestanden");
-		List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem, "ncrsDetermination");
+		List<Element> frmDigitaleBestandenElems = getDescendants(oaiDcElem,
+				"frmDigitalebestanden");
+		List<Element> ncsrDeterminationElems = getDescendants(oaiDcElem,
+				"ncrsDetermination");
 		ArrayList<MultiMediaContentIdentification> identifications;
 		identifications = getIdentifications(ncsrDeterminationElems);
 		if (identifications == null) {
@@ -141,9 +145,14 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			return null;
 		}
+		if (testGenera != null && !hasTestGenus(identifications)) {
+			stats.recordsSkipped++;
+			return null;
+		}
 		stats.recordsAccepted++;
 		first = null;
-		ArrayList<MultiMediaObject> mmos = new ArrayList<>(frmDigitaleBestandenElems.size());
+		ArrayList<MultiMediaObject> mmos = new ArrayList<>(
+				frmDigitaleBestandenElems.size());
 		for (int i = 0; i < frmDigitaleBestandenElems.size(); i++) {
 			try {
 				stats.objectsProcessed++;
@@ -168,7 +177,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 				String title = getTitle(frmDigitaleBestandenElem, unitID);
 				mmo.setTitle(title);
 				mmo.setCaption(title);
-				mmo.setMultiMediaPublic(bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
+				mmo.setMultiMediaPublic(
+						bval(frmDigitaleBestandenElem, "abcd:MultiMediaPublic"));
 				mmo.setCreator(val(frmDigitaleBestandenElem, "dc:creator"));
 				mmos.add(mmo);
 				stats.objectsAccepted++;
@@ -207,8 +217,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 	}
 
 	/*
-	 * Create a new multimedia object, initialized with the values from the
-	 * first multimedia object of the specimen record we are processing.
+	 * Create a new multimedia object, initialized with the values from the first
+	 * multimedia object of the specimen record we are processing.
 	 */
 	private MultiMediaObject initializeFromFirst()
 	{
@@ -243,7 +253,8 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			}
 			MultiMediaContentIdentification mmci = new MultiMediaContentIdentification();
 			mmci.setScientificName(sn);
-			mmci.setDefaultClassification(TransformUtil.extractClassificiationFromName(sn));
+			mmci.setDefaultClassification(
+					TransformUtil.extractClassificiationFromName(sn));
 			mmci.setIdentificationQualifiers(getQualifiers(ncrsDeterminationElem));
 			mmci.setVernacularNames(getVernacularNames(ncrsDeterminationElem));
 			if (identifications == null) {
@@ -352,10 +363,11 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 		MultiMediaInfo info = new MultiMediaInfo();
 		if (url.startsWith(MEDIALIB_URL_START)) {
 			/*
-			 * HACK: attempt to repair bad medialib URLs where
-			 * MEDIALIB_URL_START occurs twice at the beginning
+			 * HACK: attempt to repair bad medialib URLs where MEDIALIB_URL_START occurs
+			 * twice at the beginning
 			 */
-			if (url.substring(MEDIALIB_URL_START.length()).startsWith(MEDIALIB_URL_START)) {
+			if (url.substring(MEDIALIB_URL_START.length())
+					.startsWith(MEDIALIB_URL_START)) {
 				url = url.substring(MEDIALIB_URL_START.length());
 			}
 			// Extract medialib ID
@@ -478,6 +490,27 @@ class CrsMultiMediaTransformer extends AbstractXMLTransformer<MultiMediaObject> 
 			return null;
 		}
 		return ((s = s.trim()).length() == 0 ? null : s);
+	}
+
+	private boolean hasTestGenus(
+			ArrayList<MultiMediaContentIdentification> identifications)
+	{
+		for (MultiMediaContentIdentification mmci : identifications) {
+			if (mmci.getScientificName() == null) {
+				continue;
+			}
+			String genus = mmci.getScientificName().getGenusOrMonomial();
+			if (genus == null) {
+				continue;
+			}
+			genus = genus.toLowerCase();
+			for (String testGenus : testGenera) {
+				if (genus.equals(testGenus)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

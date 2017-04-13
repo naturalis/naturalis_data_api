@@ -19,6 +19,11 @@ suppress_errors=false
 # The number of documents to index at once
 queue_size=1000
 
+# Provide a comma-separated list of genera to import.
+# This will create a test set with only the specified
+# genera from COL, NSR, CRS and BRAHMS.
+test_genera=
+
 # Make ${confDir} the first entry on the classpath so
 # that resource/config files will be found there first.
 classpath="${cnf_dir}"
@@ -50,3 +55,4 @@ JAVA_OPTS="${JAVA_OPTS} -DqueueSize=${queue_size}"
 JAVA_OPTS="${JAVA_OPTS} -Dnba.v2.conf.dir=${cnf_dir}"
 JAVA_OPTS="${JAVA_OPTS} -Dlog4j.configurationFile=${cnf_dir}/log4j2.xml"
 JAVA_OPTS="${JAVA_OPTS} -Dnba.v2.etl.logfile=${log_file}"
+JAVA_OPTS="${JAVA_OPTS} -Dnl.naturalis.nba.etl.test.genera=${test_genera}"

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl;
 
 import static nl.naturalis.nba.etl.LoadConstants.PURL_SERVER_BASE_URL;
+import static nl.naturalis.nba.etl.LoadConstants.SYSPROP_TEST_GENERA;
 import static nl.naturalis.nba.utils.StringUtil.zpad;
 
 import java.net.URISyntaxException;
@@ -34,8 +35,8 @@ public final class ETLUtil {
 	}
 
 	/**
-	 * Get root cause of the specified {@code Throwable}. Returns the
-	 * {@code Throwable} itself if it doesn't have a cause.
+	 * Get root cause of the specified {@code Throwable}. Returns the {@code Throwable}
+	 * itself if it doesn't have a cause.
 	 * 
 	 * @param t
 	 * @return
@@ -75,8 +76,7 @@ public final class ETLUtil {
 	}
 
 	/**
-	 * Get the duration between {@code start} and {@code end}, formatted as
-	 * HH:mm:ss.
+	 * Get the duration between {@code start} and {@code end}, formatted as HH:mm:ss.
 	 * 
 	 * @param start
 	 * @param end
@@ -109,6 +109,19 @@ public final class ETLUtil {
 		return ETLRegistry.getInstance().getLogger(forClass);
 	}
 
+	public static String[] getTestGenera()
+	{
+		String s = System.getProperty(SYSPROP_TEST_GENERA);
+		if (s == null || s.length() == 0) {
+			return null;
+		}
+		String[] testGenera = s.split(",");
+		for (int i = 0; i < testGenera.length; i++) {
+			testGenera[i] = testGenera[i].trim().toLowerCase();
+		}
+		return testGenera;
+	}
+
 	private static URIBuilder getPurlBuilder()
 	{
 		String value = null;
@@ -124,6 +137,5 @@ public final class ETLUtil {
 			throw new ETLRuntimeException(msg);
 		}
 	}
-
 
 }

@@ -1,6 +1,7 @@
 package nl.naturalis.nba.etl.col;
 
 import static nl.naturalis.nba.dao.DocumentType.TAXON;
+import static nl.naturalis.nba.etl.ETLUtil.logDuration;
 
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +31,6 @@ public class CoLImportAll {
 
 		}
 		finally {
-			ESUtil.refreshIndex(TAXON);
 			ESClientManager.getInstance().closeClient();
 		}
 	}
@@ -45,13 +45,18 @@ public class CoLImportAll {
 	 * Imports CoL taxa, synonyms, vernacular names and literature references.
 	 * 
 	 */
-	@SuppressWarnings("static-method")
 	public void importAll()
 	{
+		long start = System.currentTimeMillis();
 		String dwcaDir = DaoRegistry.getInstance().getConfiguration().required("col.data.dir");
 		new CoLTaxonImporter().importCsv(dwcaDir + "/taxa.txt");
-		new CoLSynonymImporter().importCsv(dwcaDir + "/taxa.txt");
-		new CoLVernacularNameImporter().importCsv(dwcaDir + "/vernacular.txt");
-		new CoLReferenceImporter().importCsv(dwcaDir + "/reference.txt");
+		ESUtil.refreshIndex(TAXON);
+		new CoLSynonymBatchImporter().importCsv(dwcaDir + "/taxa.txt");
+		ESUtil.refreshIndex(TAXON);
+		new CoLVernacularNameBatchImporter().importCsv(dwcaDir + "/vernacular.txt");
+		ESUtil.refreshIndex(TAXON);
+		new CoLReferenceBatchImporter().importCsv(dwcaDir + "/reference.txt");
+		ESUtil.refreshIndex(TAXON);
+		logDuration(logger, getClass(), start);
 	}
 }

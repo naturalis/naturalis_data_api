@@ -13,6 +13,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,6 +27,9 @@ import nl.naturalis.nba.api.model.Specimen;
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_In {
 
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDaoTest_In.class);
+
 	static Specimen pMajor;
 	static Specimen lFuscus1;
 	static Specimen lFuscus2;
@@ -35,6 +39,7 @@ public class SpecimenDaoTest_In {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
@@ -68,8 +73,7 @@ public class SpecimenDaoTest_In {
 		OffsetDateTime date2 = OffsetDateTime.ofInstant(instant, dfault).minusDays(7L);
 		OffsetDateTime date3 = OffsetDateTime.ofInstant(instant, dfault).plusDays(7L);
 		OffsetDateTime[] options = new OffsetDateTime[] { date1, date2, date3 };
-		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", IN,
-				options);
+		QueryCondition condition = new QueryCondition("gatheringEvent.dateTimeBegin", IN, options);
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
 		SpecimenDao dao = new SpecimenDao();

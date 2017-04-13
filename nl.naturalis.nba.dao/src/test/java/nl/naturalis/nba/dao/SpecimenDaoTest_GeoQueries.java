@@ -15,6 +15,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 import static org.junit.Assert.assertEquals;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,10 +25,12 @@ import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.QuerySpec;
 import nl.naturalis.nba.api.model.GeoArea;
 import nl.naturalis.nba.api.model.Specimen;
-import nl.naturalis.nba.common.json.JsonUtil;
 
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_GeoQueries {
+
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDaoTest_GeoQueries.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -44,6 +47,8 @@ public class SpecimenDaoTest_GeoQueries {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Starting tests");
+		
 		deleteIndex(SPECIMEN);
 		createIndex(SPECIMEN);
 		createType(SPECIMEN);
@@ -69,8 +74,8 @@ public class SpecimenDaoTest_GeoQueries {
 		uitgeest = Uitgeest();
 		noordHolland = NoordHolland();
 		netherlands = Netherlands();
-		vatican=Vatican();
-		
+		vatican = Vatican();
+
 		saveGeoAreas(aalten, uitgeest, noordHolland, netherlands);
 	}
 
@@ -159,7 +164,7 @@ public class SpecimenDaoTest_GeoQueries {
 		QueryCondition condition = new QueryCondition(site, IN, vatican.getShape());
 		QuerySpec qs = new QuerySpec();
 		qs.addCondition(condition);
-		System.out.println(JsonUtil.toPrettyJson(qs));
+		// System.out.println(JsonUtil.toPrettyJson(qs));
 		SpecimenDao dao = new SpecimenDao();
 		QueryResult<Specimen> result = dao.query(qs);
 		assertEquals("01", 0, result.size());

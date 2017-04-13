@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
+import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.dao.GeoAreaMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
@@ -34,6 +35,33 @@ public class GeoAreaMetaDataResource {
 
 	@EJB
 	Registry registry;
+
+	@GET
+	@Path("/getSetting/{name}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Object getSettings(@PathParam("name") String name, @Context UriInfo uriInfo)
+	{
+		try {
+			NbaSetting setting = NbaSetting.parse(name);
+			return new GeoAreaMetaDataDao().getSetting(setting);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getSettings")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<NbaSetting, Object> getSettings(@Context UriInfo uriInfo)
+	{
+		try {
+			return new GeoAreaMetaDataDao().getSettings();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 
 	@GET
 	@Path("/getPaths")

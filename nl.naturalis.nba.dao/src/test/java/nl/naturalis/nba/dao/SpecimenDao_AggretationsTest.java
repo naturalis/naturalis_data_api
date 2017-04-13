@@ -4,6 +4,7 @@ import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,6 +13,9 @@ import nl.naturalis.nba.api.model.Specimen;
 
 @SuppressWarnings("static-method")
 public class SpecimenDao_AggretationsTest {
+
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDao_AggretationsTest.class);
 
 	static Specimen pMajor;
 	static Specimen lFuscus1;
@@ -22,6 +26,7 @@ public class SpecimenDao_AggretationsTest {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);

@@ -19,9 +19,32 @@ import nl.naturalis.nba.api.model.metadata.NbaSetting;
 public interface IDocumentMetaData<DOCUMENT_OBJECT extends IDocumentObject> {
 
 	/**
+	 * Returns the value of a configuration setting related to the Elasticsearch
+	 * document type or the index containing it. Note that document-independent
+	 * settings are retrieved using {@link INbaMetaData#getSetting(NbaSetting)}
+	 * or {@link INbaMetaData#getSettings()}.
+	 * </p>
+	 * <h5>REST API</h5>
 	 * <p>
-	 * Returns all publicly available settings for the Elasticsearch document
-	 * type and the index containing it.
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/&lt;document-type&gt;/metadata/getSetting/{name}
+	 * </code>
+	 * </p>
+	 * 
+	 * @return
+	 */
+	Object getSetting(NbaSetting setting);
+
+	/**
+	 * <p>
+	 * Returns all configuration settings for the Elasticsearch document type
+	 * and the index containing it. Note that document-independent settings are
+	 * retrieved using {@link INbaMetaData#getSetting(NbaSetting)} or
+	 * {@link INbaMetaData#getSettings()}.
 	 * </p>
 	 * <h5>REST API</h5>
 	 * <p>

@@ -19,32 +19,33 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.LogicalOperator;
-import nl.naturalis.nba.api.NameGroupQuerySpec;
 import nl.naturalis.nba.api.Path;
 import nl.naturalis.nba.api.QueryCondition;
+import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
 import nl.naturalis.nba.api.SortField;
 import nl.naturalis.nba.rest.exception.HTTP400Exception;
 import nl.naturalis.nba.utils.CollectionUtil;
 
 /**
- * Extracts {@link NameGroupQuerySpec} objects from HTTP requests.
+ * Extracts {@link ScientificNameGroupQuerySpec} objects from HTTP requests.
  * 
- * @see NameGroupQuerySpec
+ * @see ScientificNameGroupQuerySpec
  * 
  * @author Ayco Holleman
  *
  */
-public class HttpNameGroupQuerySpecBuilder {
+public class HttpScientificNameGroupQuerySpecBuilder {
 
 	public static final String PARAM_QUERY_SPEC = "_querySpec";
 	public static final String PARAM_FIELDS = "_fields";
 	public static final String PARAM_FROM = "_from";
 	public static final String PARAM_SIZE = "_size";
-	public static final String PARAM_SPECIMENS_FROM = "_specimensFrom";
-	public static final String PARAM_SPECIMENS_SIZE = "_specimensSize";
 	public static final String PARAM_OPERATOR = "_logicalOperator";
 	public static final String PARAM_SORT_FIELDS = "_sortFields";
 	public static final String PARAM_IGNORE_CASE = "_ignoreCase";
+	public static final String PARAM_SPECIMENS_FROM = "_specimensFrom";
+	public static final String PARAM_SPECIMENS_SIZE = "_specimensSize";
+	public static final String PARAM_SPECIMENS_SORT_FIELDS = "_specimensSortFields";
 
 	private static final String ERR_ILLEGAL_PARAM = "Unknown or illegal parameter: %s";
 	private static final String ERR_NO_UNDERSCORE = "Unknown or illegal parameter: "
@@ -55,37 +56,39 @@ public class HttpNameGroupQuerySpecBuilder {
 	private static final String ERR_SORT_PARAM = "Parameter %s: sort order must be \"ASC\" or \"DESC\"";
 	private static final String ERR_BAD_PARAM_COMBI = "Parameter _querySpec cannot be combined with %s";
 
-	private static final Logger logger = LogManager.getLogger(HttpNameGroupQuerySpecBuilder.class);
+	private static final Logger logger = LogManager
+			.getLogger(HttpScientificNameGroupQuerySpecBuilder.class);
 
 	private UriInfo uriInfo;
 	private MultivaluedMap<String, String> params;
 
 	/**
-	 * Creates a {@link NameGroupQuerySpec} from the query parameters present in
-	 * the URL.
+	 * Creates a {@link ScientificNameGroupQuerySpec} from the query parameters
+	 * present in the URL.
 	 * 
 	 * @param uriInfo
 	 */
-	public HttpNameGroupQuerySpecBuilder(UriInfo uriInfo)
+	public HttpScientificNameGroupQuerySpecBuilder(UriInfo uriInfo)
 	{
 		this.uriInfo = uriInfo;
 		this.params = uriInfo.getQueryParameters();
 	}
 
 	/**
-	 * Creates a {@link NameGroupQuerySpec} from the form data in a
+	 * Creates a {@link ScientificNameGroupQuerySpec} from the form data in a
 	 * x-www-form-urlencoded request body.
 	 * 
 	 * @param formData
 	 * @param uriInfo
 	 */
-	public HttpNameGroupQuerySpecBuilder(MultivaluedMap<String, String> formData, UriInfo uriInfo)
+	public HttpScientificNameGroupQuerySpecBuilder(MultivaluedMap<String, String> formData,
+			UriInfo uriInfo)
 	{
 		this.params = formData;
 		this.uriInfo = uriInfo;
 	}
 
-	public NameGroupQuerySpec build()
+	public ScientificNameGroupQuerySpec build()
 	{
 		logger.info("Extracting NameGroupQuerySpec object from request");
 		checkParams(uriInfo);
@@ -93,7 +96,7 @@ public class HttpNameGroupQuerySpecBuilder {
 		if (values != null) {
 			return buildFromQuerySpecParam(values);
 		}
-		NameGroupQuerySpec qs = new NameGroupQuerySpec();
+		ScientificNameGroupQuerySpec qs = new ScientificNameGroupQuerySpec();
 		ComparisonOperator operator = getComparisonOperator();
 		for (String param : params.keySet()) {
 			values = params.get(param);
@@ -108,26 +111,29 @@ public class HttpNameGroupQuerySpecBuilder {
 					throw new HTTP400Exception(uriInfo, ERR_NO_UNDERSCORE);
 				case PARAM_IGNORE_CASE:
 					break;
-				case PARAM_SORT_FIELDS:
-					qs.setSortFields(getSortFields(value));
+				case PARAM_OPERATOR:
+					qs.setLogicalOperator(getLogicalOperator(value));
 					break;
 				case PARAM_FROM:
 					qs.setFrom(getIntParam(param, value));
 					break;
 				case PARAM_SIZE:
-					qs.setSpecimensSize(getIntParam(param, value));
+					qs.setSize(getIntParam(param, value));
+					break;
+				case PARAM_SORT_FIELDS:
+					qs.setSortFields(getSortFields(value));
+					break;
+				case PARAM_FIELDS:
+					qs.setFields(getFields(value));
 					break;
 				case PARAM_SPECIMENS_FROM:
 					qs.setSpecimensFrom(getIntParam(param, value));
 					break;
 				case PARAM_SPECIMENS_SIZE:
-					qs.setSize(getIntParam(param, value));
+					qs.setSpecimensSize(getIntParam(param, value));
 					break;
-				case PARAM_OPERATOR:
-					qs.setLogicalOperator(getLogicalOperator(value));
-					break;
-				case PARAM_FIELDS:
-					qs.setFields(getFields(value));
+				case PARAM_SPECIMENS_SORT_FIELDS:
+					qs.setSpecimensSortFields(getSortFields(value));
 					break;
 				default:
 					if (param.charAt(0) == '_') {
@@ -141,7 +147,7 @@ public class HttpNameGroupQuerySpecBuilder {
 		return qs;
 	}
 
-	private NameGroupQuerySpec buildFromQuerySpecParam(List<String> values)
+	private ScientificNameGroupQuerySpec buildFromQuerySpecParam(List<String> values)
 	{
 		if (values.size() != 1) {
 			String msg = String.format(ERR_DUPLICATE_PARAM, PARAM_QUERY_SPEC);
@@ -152,7 +158,7 @@ public class HttpNameGroupQuerySpecBuilder {
 			String msg = String.format(ERR_BAD_PARAM, PARAM_QUERY_SPEC, json);
 			throw new HTTP400Exception(uriInfo, msg);
 		}
-		return deserialize(json, NameGroupQuerySpec.class);
+		return deserialize(json, ScientificNameGroupQuerySpec.class);
 	}
 
 	private void checkParams(UriInfo uriInfo)

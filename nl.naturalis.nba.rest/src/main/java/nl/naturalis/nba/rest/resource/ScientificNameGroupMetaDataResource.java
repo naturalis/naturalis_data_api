@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.model.metadata.FieldInfo;
+import nl.naturalis.nba.api.model.metadata.NbaSetting;
 import nl.naturalis.nba.dao.ScientificNameGroupMetaDataDao;
 import nl.naturalis.nba.utils.ConfigObject;
 
@@ -30,10 +31,38 @@ import nl.naturalis.nba.utils.ConfigObject;
 public class ScientificNameGroupMetaDataResource {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = LogManager.getLogger(ScientificNameGroupMetaDataResource.class);
+	private static final Logger logger = LogManager
+			.getLogger(ScientificNameGroupMetaDataResource.class);
 
 	@EJB
 	Registry registry;
+
+	@GET
+	@Path("/getSetting/{name}")
+	@Produces(JSON_CONTENT_TYPE)
+	public Object getSettings(@PathParam("name") String name, @Context UriInfo uriInfo)
+	{
+		try {
+			NbaSetting setting = NbaSetting.parse(name);
+			return new ScientificNameGroupMetaDataDao().getSetting(setting);
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
+
+	@GET
+	@Path("/getSettings")
+	@Produces(JSON_CONTENT_TYPE)
+	public Map<NbaSetting, Object> getSettings(@Context UriInfo uriInfo)
+	{
+		try {
+			return new ScientificNameGroupMetaDataDao().getSettings();
+		}
+		catch (Throwable t) {
+			throw handleError(uriInfo, t);
+		}
+	}
 
 	@GET
 	@Path("/getPaths")
@@ -50,7 +79,6 @@ public class ScientificNameGroupMetaDataResource {
 			throw handleError(uriInfo, t);
 		}
 	}
-
 
 	@GET
 	@Path("/getFieldInfo")

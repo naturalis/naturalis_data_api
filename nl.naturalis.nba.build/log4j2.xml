@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ++++++++++++++++++++++++++++++++++ -->
 <!-- log4j configuration for unit tests -->
+<!-- ++++++++++++++++++++++++++++++++++ -->
 <Configuration>
 	<Appenders>
 		<Console name="CONSOLE">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
+			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</Console>
 		<File name="FILE" fileName="${sys:nba.v2.log.file}">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
+			<PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%c{10}: %msg%n" />
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="org.elasticsearch" level="ERROR" additivity="false">
-			<AppenderRef ref="FILE" />
-			<AppenderRef ref="CONSOLE"/>
+		<Logger name="nl.naturalis" level="INFO" additivity="false">
+			<!-- AppenderRef ref="FILE" / -->
+			<AppenderRef ref="CONSOLE" />
 		</Logger>
-		<Logger name="io.netty" level="ERROR" additivity="false">
-			<AppenderRef ref="FILE" />
-			<AppenderRef ref="CONSOLE"/>
-		</Logger>
-		<Root level="DEBUG">
-			<AppenderRef ref="FILE" />
+		<Root level="ERROR">
+			<!-- AppenderRef ref="FILE" / -->
 			<AppenderRef ref="CONSOLE" />
 		</Root>
 	</Loggers>

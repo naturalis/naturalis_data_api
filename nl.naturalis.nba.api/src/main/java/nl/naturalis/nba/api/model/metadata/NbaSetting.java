@@ -1,5 +1,9 @@
 package nl.naturalis.nba.api.model.metadata;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import nl.naturalis.nba.api.ComparisonOperator;
 import nl.naturalis.nba.api.QuerySpec;
 
@@ -32,6 +36,20 @@ public enum NbaSetting
 	 */
 	INDEX_MAX_RESULT_WINDOW("index.max_result_window");
 
+	@JsonCreator
+	public static NbaSetting parse(@JsonProperty("name") String name)
+	{
+		if (name == null) {
+			return null;
+		}
+		for (NbaSetting setting : values()) {
+			if (name.equalsIgnoreCase(setting.name)) {
+				return setting;
+			}
+		}
+		throw new IllegalArgumentException("Invalid NBA setting: " + name);
+	}
+
 	private String name;
 
 	private NbaSetting(String name)
@@ -39,6 +57,7 @@ public enum NbaSetting
 		this.name = name;
 	}
 
+	@JsonValue
 	@Override
 	public String toString()
 	{

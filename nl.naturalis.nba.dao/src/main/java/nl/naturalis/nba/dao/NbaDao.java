@@ -321,12 +321,14 @@ abstract class NbaDao<T extends IDocumentObject> implements INbaAccess<T> {
 
 	private List<QueryResultItem<T>> createItems(SearchResponse response)
 	{
-		ObjectMapper om = dt.getObjectMapper();
-		Class<T> type = dt.getJavaType();
+		if (logger.isDebugEnabled()) {
+			String type = dt.getJavaType().getSimpleName();
+			logger.debug("Converting documents to {} instances", type);
+		}
 		SearchHit[] hits = response.getHits().getHits();
 		List<QueryResultItem<T>> items = new ArrayList<>(hits.length);
 		for (SearchHit hit : hits) {
-			T obj = om.convertValue(hit.getSource(), type);
+			T obj = dt.getObjectMapper().convertValue(hit.getSource(), dt.getJavaType());
 			obj.setId(hit.getId());
 			items.add(new QueryResultItem<T>(obj, hit.getScore()));
 		}

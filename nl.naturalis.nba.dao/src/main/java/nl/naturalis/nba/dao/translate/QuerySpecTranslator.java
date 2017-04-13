@@ -16,7 +16,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 
 import nl.naturalis.nba.api.InvalidConditionException;
 import nl.naturalis.nba.api.InvalidQueryException;
@@ -89,9 +89,9 @@ public class QuerySpecTranslator {
 		request.setFrom(spec.getFrom() == null ? 0 : spec.getFrom());
 		request.setSize(spec.getSize() == null ? DEFAULT_SIZE : spec.getSize());
 		if (spec.getSortFields() != null) {
-			SortFieldsTranslator sft = new SortFieldsTranslator(spec, dt);
-			for (FieldSortBuilder sb : sft.translate()) {
-				request.addSort(sb);
+			SortFieldsTranslator sfTranslator = new SortFieldsTranslator(spec, dt);
+			for (SortBuilder<?> sortBuilder : sfTranslator.translate()) {
+				request.addSort(sortBuilder);
 			}
 		}
 		return request;

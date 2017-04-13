@@ -1,11 +1,15 @@
 package nl.naturalis.nba.dao;
 
-import static nl.naturalis.nba.api.ComparisonOperator.*;
+import static nl.naturalis.nba.api.ComparisonOperator.LIKE;
+import static nl.naturalis.nba.api.ComparisonOperator.NOT_LIKE;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createIndex;
 import static nl.naturalis.nba.dao.util.es.ESUtil.createType;
 import static nl.naturalis.nba.dao.util.es.ESUtil.deleteIndex;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,6 +29,9 @@ import nl.naturalis.nba.api.model.Specimen;
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_Like {
 
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDaoTest_Like.class);
+
 	static Specimen pMajor;
 	static Specimen lFuscus1;
 	static Specimen lFuscus2;
@@ -34,6 +41,7 @@ public class SpecimenDaoTest_Like {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Starting tests");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);
@@ -157,7 +165,7 @@ public class SpecimenDaoTest_Like {
 	 * NONE of the values of the multi-valued field are LIKE the search term.
 	 */
 	@Test
-	public void testWithNotLikeOnArrayOrList() throws InvalidQueryException
+	public void testWithNotLikeOnArrayOrList()
 	{
 		/*
 		 * Can't do this test any longer because we don't have multi-valued

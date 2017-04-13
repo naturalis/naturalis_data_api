@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,6 +26,9 @@ import nl.naturalis.nba.api.model.Specimen;
 @SuppressWarnings("static-method")
 public class SpecimenDaoTest_Between {
 
+	private static final Logger logger = DaoRegistry.getInstance()
+			.getLogger(SpecimenDaoTest_Between.class);
+
 	static Specimen pMajor;
 	static Specimen lFuscus1;
 	static Specimen lFuscus2;
@@ -34,6 +38,7 @@ public class SpecimenDaoTest_Between {
 	@BeforeClass
 	public static void before()
 	{
+		logger.info("Start");
 		deleteIndex(DocumentType.SPECIMEN);
 		createIndex(DocumentType.SPECIMEN);
 		createType(DocumentType.SPECIMEN);

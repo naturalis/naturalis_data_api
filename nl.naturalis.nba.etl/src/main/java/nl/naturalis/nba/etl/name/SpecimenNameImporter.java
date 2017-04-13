@@ -53,7 +53,7 @@ class SpecimenNameImporter {
 		DocumentIterator<Specimen> extractor;
 		SpecimenNameTransformer transformer;
 		QuerySpec qs = new QuerySpec();
-		qs.sortBy("identifications.scientificNameGroup");
+		qs.sortBy("identifications.scientificName.scientificNameGroup");
 		extractor = new DocumentIterator<>(SPECIMEN, qs);
 		extractor.setBatchSize(batchSize);
 		extractor.setTimeout(timeout);

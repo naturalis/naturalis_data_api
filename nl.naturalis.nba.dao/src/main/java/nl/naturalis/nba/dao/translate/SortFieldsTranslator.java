@@ -1,6 +1,7 @@
 package nl.naturalis.nba.dao.translate;
 
 import static nl.naturalis.nba.api.LogicalOperator.OR;
+import static nl.naturalis.nba.api.SortField.SORT_FIELD_SCORE;
 import static nl.naturalis.nba.dao.translate.ConditionTranslatorFactory.getTranslator;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
@@ -12,6 +13,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortMode;
 
@@ -38,36 +41,45 @@ class SortFieldsTranslator {
 		this.dt = documentType;
 	}
 
-	FieldSortBuilder[] translate() throws InvalidQueryException
+	SortBuilder<?>[] translate() throws InvalidQueryException
 	{
 		MappingInfo<?> mappingInfo = new MappingInfo<>(dt.getMapping());
 		List<SortField> sortFields = querySpec.getSortFields();
-		FieldSortBuilder[] result = new FieldSortBuilder[sortFields.size()];
+		SortBuilder<?>[] result = new SortBuilder[sortFields.size()];
 		int i = 0;
 		for (SortField sf : sortFields) {
 			Path path = sf.getPath();
-			String nestedPath;
-			try {
-				ESField f = mappingInfo.getField(path);
-				if (!(f instanceof SimpleField)) {
-					throw invalidSortField(path);
+			if (path.equals(SORT_FIELD_SCORE)) {
+				ScoreSortBuilder ssb = SortBuilders.scoreSort();
+				if (!sf.isAscending()) {
+					ssb.order(DESC);
 				}
-				nestedPath = MappingInfo.getNestedPath(f);
+				result[i++] = ssb;
 			}
-			catch (NoSuchFieldException e) {
-				throw invalidSortField(sf.getPath());
-			}
-			FieldSortBuilder sb = SortBuilders.fieldSort(path.toString());
-			sb.order(sf.isAscending() ? ASC : DESC);
-			sb.sortMode(sf.isAscending() ? SortMode.MIN : SortMode.MAX);
-			if (nestedPath != null) {
-				sb.setNestedPath(nestedPath);
-				QueryBuilder query = translateConditions(path);
-				if (query != null) {
-					sb.setNestedFilter(query);
+			else {
+				FieldSortBuilder fsb = SortBuilders.fieldSort(path.toString());
+				fsb.order(sf.isAscending() ? ASC : DESC);
+				fsb.sortMode(sf.isAscending() ? SortMode.MIN : SortMode.MAX);
+				String nestedPath;
+				try {
+					ESField f = mappingInfo.getField(path);
+					if (!(f instanceof SimpleField)) {
+						throw invalidSortField(path);
+					}
+					nestedPath = MappingInfo.getNestedPath(f);
 				}
+				catch (NoSuchFieldException e) {
+					throw invalidSortField(sf.getPath());
+				}
+				if (nestedPath != null) {
+					fsb.setNestedPath(nestedPath);
+					QueryBuilder query = translateConditions(path);
+					if (query != null) {
+						fsb.setNestedFilter(query);
+					}
+				}
+				result[i++] = fsb;
 			}
-			result[i++] = sb;
 		}
 		return result;
 	}
@@ -75,10 +87,10 @@ class SortFieldsTranslator {
 	/*
 	 * This method generates a "nested_filter" for a FieldSortBuilder when
 	 * necessary. This is necessary if: (1) the field being sorted on is in, or
-	 * descends from a nested object; (2) there are also conditions on that very
-	 * same field. If this is the case, those conditions must be copied from the
-	 * "query" section of the search request to the "sort" section of the search
-	 * request.
+	 * descends from a nested object; (2) there are also query conditions on
+	 * that very same field. If this is the case, those conditions must be
+	 * copied from the "query" section of the search request to the "sort"
+	 * section of the search request.
 	 */
 	private QueryBuilder translateConditions(Path sortField) throws InvalidConditionException
 	{

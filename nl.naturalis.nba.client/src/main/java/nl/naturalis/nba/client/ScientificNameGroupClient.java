@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import nl.naturalis.nba.api.IScientificNameGroupAccess;
 import nl.naturalis.nba.api.InvalidQueryException;
-import nl.naturalis.nba.api.NameGroupQuerySpec;
+import nl.naturalis.nba.api.ScientificNameGroupQuerySpec;
 import nl.naturalis.nba.api.QueryResult;
 import nl.naturalis.nba.api.model.ScientificNameGroup;
 
@@ -17,7 +17,7 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup> im
 
 
 	@Override
-	public QueryResult<ScientificNameGroup> query(NameGroupQuerySpec querySpec)
+	public QueryResult<ScientificNameGroup> query(ScientificNameGroupQuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub
@@ -25,7 +25,7 @@ public class ScientificNameGroupClient extends NbaClient<ScientificNameGroup> im
 	}
 
 	@Override
-	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(NameGroupQuerySpec querySpec)
+	public QueryResult<ScientificNameGroup> getSpeciesWithSpecimens(ScientificNameGroupQuerySpec querySpec)
 			throws InvalidQueryException
 	{
 		// TODO Auto-generated method stub

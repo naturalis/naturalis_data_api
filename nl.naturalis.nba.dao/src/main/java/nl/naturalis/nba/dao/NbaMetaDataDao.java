@@ -19,7 +19,13 @@ import nl.naturalis.nba.api.model.metadata.NbaSetting;
 
 public class NbaMetaDataDao implements INbaMetaData {
 
-	private EnumMap<NbaSetting, Object> settings;
+	private static EnumMap<NbaSetting, Object> settings;
+
+	@Override
+	public Object getSetting(NbaSetting setting)
+	{
+		return getSettings().get(setting);
+	}
 
 	@Override
 	public Map<NbaSetting, Object> getSettings()
@@ -28,11 +34,11 @@ public class NbaMetaDataDao implements INbaMetaData {
 			settings = new EnumMap<>(NbaSetting.class);
 			InputStream is = getClass().getResourceAsStream("/es-settings.json");
 			Map<String, Object> esSettings = deserialize(is);
-			String key = "analysis.tokenizer.like_tokenizer.min_gram";
-			Object val = readField(esSettings, key);
+			String path = "analysis.tokenizer.like_tokenizer.min_gram";
+			Object val = readField(esSettings, path);
 			settings.put(OPERATOR_LIKE_MIN_TERM_LENGTH, val);
-			key = "analysis.tokenizer.like_tokenizer.max_gram";
-			val = readField(esSettings, key);
+			path = "analysis.tokenizer.like_tokenizer.max_gram";
+			val = readField(esSettings, path);
 			settings.put(OPERATOR_LIKE_MAX_TERM_LENGTH, val);
 		}
 		return settings;

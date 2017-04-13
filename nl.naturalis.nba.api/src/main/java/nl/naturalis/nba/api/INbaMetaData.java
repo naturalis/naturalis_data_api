@@ -19,6 +19,46 @@ import nl.naturalis.nba.api.model.metadata.NbaSetting;
  */
 public interface INbaMetaData {
 
+	/**
+	 * Returns the value of a document-independent configuration setting. Note
+	 * that document-specific settings are retrieved using
+	 * {@link IDocumentMetaData#getSetting(NbaSetting)} or
+	 * {@link IDocumentMetaData#getSettings()}.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/metadata/getSetting/{name}
+	 * </code>
+	 * </p>
+	 * 
+	 * @return
+	 */
+	Object getSetting(NbaSetting setting);
+
+	/**
+	 * Returns a map of all document-independent configuration settings and
+	 * their values. Note that document-specific settings are retrieved using
+	 * {@link IDocumentMetaData#getSetting(NbaSetting)} or
+	 * {@link IDocumentMetaData#getSettings()}.
+	 * </p>
+	 * <h5>REST API</h5>
+	 * <p>
+	 * The NBA REST API exposes this method through a GET request with the
+	 * following end point:
+	 * </p>
+	 * <p>
+	 * <code>
+	 * http://api.biodiversitydata.nl/v2/metadata/getSettings
+	 * </code>
+	 * </p>
+	 * 
+	 * @return
+	 */
 	Map<NbaSetting, Object> getSettings();
 
 	/**
